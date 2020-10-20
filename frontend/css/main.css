@@ -1,0 +1,330 @@
+/*** Main ***/
+body, html {
+	height: 100%;
+	margin: 0px;
+}
+html {
+	background: white;
+}
+body {
+	font-family: "Quicksand", sans-serif;
+	font-size: 14px;
+	color: #070707;
+	margin: 0px;
+}
+#container {
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: column;
+	align-items: stretch;
+	height: 100%;
+	max-height: 100%;
+}
+#header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 62px;
+	background-color: #314351;
+	color: white;
+	box-sizing: border-box;
+	padding: 5px 15px;
+	font-size: 20px;
+	font-weight: 100;
+}
+
+#login {
+	flex-grow: 1;
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: row;
+	align-items: stretch;
+}
+#login-form {
+	flex-grow: 1;
+	flex-shrink: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-around;
+	background-color: #FAFAFA;
+	min-width: 350px;
+	width: 30%;
+	border-right: 2px solid #DDDDDD;
+	overflow: auto;
+}
+#login-form form {
+	flex-shrink: 1;
+	width: 80%;
+}
+#login-form form input,
+#login-form form button {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	margin-bottom: 10px;
+}
+#login-form button {
+	font-weight: bold;
+}
+#login-form img {
+	opacity: 0.2;
+}
+#login-bg {
+	flex-grow: 1;
+	flex-shrink: 1;
+	background: url('../img/bg.jpg');
+	background-size: cover;
+	background-position: center;
+	width: 70%;
+	height: 100%;
+}
+
+#explorer {
+	flex-grow: 1;
+	display: flex;
+	flex-wrap: nowrap;
+	flex-direction: row;
+	align-items: stretch;
+	height: calc(100% - 62px);
+}
+#explorer-tree {
+	position: relative;
+	flex-grow: 1;
+	flex-shrink: 1;
+	background-color: white;
+	resize: horizontal;
+	width: 20%;
+	height: 100%;
+	border-right: 2px solid #DDDDDD;
+	overflow: auto;
+	box-sizing: border-box;
+	white-space: nowrap;
+}
+#explorer-tree a {
+	display: block;
+	text-decoration: none;
+	color: inherit;
+	padding: 5px;
+	border-radius: 4px;
+}
+#explorer-tree a:hover {
+	background-color: #eeeeee;
+}
+#explorer-tree a img {
+	width: 15px;
+	margin-right: 5px;
+	margin-bottom: 2px;
+	vertical-align: middle;
+}
+#explorer-tree .subnode {
+	margin-left: 25px;
+}
+#explorer-content {
+	background-color: #FAFAFA;
+	flex-basis: 80%;
+	padding: 20px;
+	box-sizing: border-box;
+	overflow: scroll;
+	height: 100%;
+}
+#explorer-content > *:first-child {
+	margin-top: 0px;
+	padding-top: 0px;
+}
+#homepage {
+	text-align: center;
+}
+#homepage .title {
+	font-size: 20px;
+}
+#homepage .subtitle {
+	font-size: 92%;
+	opacity: 0.6;
+}
+#loader-container {
+	display: none;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	background-color: transparent;
+	transition: background-color 0.1s ease;
+}
+#loader-container img {
+	height: 90px;
+}
+body.loading #explorer {
+	filter: blur(6px);
+}
+body.loading #loader-container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0,0,0,0.3);
+}
+
+div.contextMenu {
+	position: fixed;
+	background-color: #FAFAFA;
+	border-radius: 4px;
+	box-shadow: 0px 0px 4px black;
+	padding: 4px;
+}
+div.contextMenu button {
+	border-width: 1px;
+	border-radius: 2px;
+	padding: 4px;
+	box-sizing: border-box;
+}
+div.contextMenu button img {
+	width: 18px;
+}
+
+.hidden {
+	display: none;
+}
+
+.gallery {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+}
+.gallery > * {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 0px;
+}
+.gallery > * > * {
+	width: 100%;
+}
+.gallery > * > *:first-child {
+	margin-top: 0px;
+}
+
+h1 img {
+	margin-right: 15px;
+	margin-bottom: 5px;
+	vertical-align: middle;
+	width: 35px;
+}
+
+table {
+	border-spacing: 0px;
+}
+table th, table td {
+	text-align: left;
+	padding: 2px 4px;
+}
+
+table.list {
+	border-spacing: 0;
+	background-color: white;
+}
+table.list tr th, table.list tr td {
+	border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+table.list tr:first-child th,
+table.list tr:first-child td {
+	border-top: 1px solid rgba(0,0,0,0.2);
+}
+table.list tr th:first-child,
+table.list tr td:first-child {
+	border-left: 1px solid rgba(0,0,0,0.2);
+}
+table.list tr th:last-child,
+table.list tr td:last-child {
+	border-right: 1px solid rgba(0,0,0,0.2);
+}
+table.list tr:first-child th:first-child,
+table.list tr:first-child td:first-child {
+	border-top-left-radius: 2px;
+}
+table.list tr:first-child th:last-child,
+table.list tr:first-child td:last-child {
+	border-top-right-radius: 2px;
+}
+table.list tr:last-child th:first-child,
+table.list tr:last-child td:first-child {
+	border-bottom-left-radius: 2px;
+}
+table.list tr:last-child th:last-child,
+table.list tr:last-child td:last-child {
+	border-bottom-right-radius: 2px;
+}
+
+table.list .sortbutton {
+	width:100%; height:100%; border: none; background-color: transparent; font: inherit; color: inherit; text-align: inherit; padding: 0; cursor: pointer;
+}
+table.list .sortsymbol::after {
+	display: inline-block; letter-spacing: -.2em; margin-left:.1em; width: 1.8em;
+}
+table.list .sortsymbol.sortedasc::after {
+	content: "▲▽";
+}
+table.list .sortsymbol.sorteddesc::after {
+	content: "△▼";
+}
+table.list .sortsymbol.unsorted::after {
+	content: "△▽";
+}
+
+input, select, button, textarea {
+	font-family: inherit;
+	font-size: inherit;
+}
+input, textarea {
+	padding: 4px;
+}
+button {
+	padding: 4px 4px 1px 4px;
+}
+button > img {
+	vertical-align: middle;
+	margin-top: -2px;
+	margin-bottom: 2px;
+}
+input.tableSearch {
+	width: 100%;
+	min-width: 80px;
+	padding: 2px;
+	box-sizing: border-box;
+}
+
+.green {
+	color: green;
+}
+.red {
+	color: red;
+}
+
+@media (prefers-color-scheme: dark) {
+	html, #explorer-tree, #explorer-content, #login-form {
+		background-color: #1B2A32;
+	}
+	#explorer-tree a:hover {
+		background-color: #324F61;
+	}
+	body, a {
+		color: #E9ECEF;
+	}
+	table.list {
+		background-color: #22343C;
+	}
+	table.list tr th, table.list tr td {
+		border-bottom: 1px solid #485764;
+	}
+	table.list tr:first-child th,
+	table.list tr:first-child td {
+		border-top: 1px solid #485764;
+	}
+	table.list tr th:first-child,
+	table.list tr td:first-child {
+		border-left: 1px solid #485764;
+	}
+	table.list tr th:last-child,
+	table.list tr td:last-child {
+		border-right: 1px solid #485764;
+	}
+}
