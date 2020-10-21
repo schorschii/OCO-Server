@@ -24,6 +24,7 @@ if(!empty($_GET['id'])) {
 	echo "<table class='list'>";
 	echo "<tr><th>Start</th><td>".htmlspecialchars($container->start_time)."</td></tr>";
 	echo "<tr><th>Ende</th><td>".htmlspecialchars($container->end_time ?? "-")."</td></tr>";
+	echo "<tr><th>Beschreibung</th><td>".htmlspecialchars($container->notes)."</td></tr>";
 	echo "</table>";
 	echo "</p>";
 
