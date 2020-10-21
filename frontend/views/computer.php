@@ -109,7 +109,7 @@ foreach($computer as $c) {
 	<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.svg'>&nbsp;Bereitstellen</button>
 	<button onclick='addSelectedComputerToGroup("computer_id[]", sltNewGroup.value)'><img src='img/plus.svg'>
 		&nbsp;Hinzufügen zu
-		<select id='sltNewGroup'>
+		<select id='sltNewGroup' onclick='event.stopPropagation()'>
 			<?php
 			foreach($db->getAllComputerGroup() as $g) {
 				echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";

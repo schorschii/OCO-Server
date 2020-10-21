@@ -186,6 +186,10 @@ function removeSelectedPackage(checkboxName) {
 			ids.push(entry.value);
 		}
 	});
+	if(ids.length == 0) {
+		alert('Keine Elemente ausgewählt');
+		return;
+	}
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
@@ -202,6 +206,10 @@ function removeSelectedPackageFromGroup(checkboxName, groupId) {
 			ids.push(entry.value);
 		}
 	});
+	if(ids.length == 0) {
+		alert('Keine Elemente ausgewählt');
+		return;
+	}
 	var params = [];
 	params.push({'key':'remove_from_group_id', 'value':groupId});
 	ids.forEach(function(entry) {
@@ -242,6 +250,10 @@ function addSelectedPackageToGroup(checkboxName, groupId) {
 			ids.push(entry.value);
 		}
 	});
+	if(ids.length == 0) {
+		alert('Keine Elemente ausgewählt');
+		return;
+	}
 	var params = [];
 	params.push({'key':'add_to_group_id', 'value':groupId});
 	ids.forEach(function(entry) {
@@ -287,6 +299,10 @@ function removeSelectedComputerFromGroup(checkboxName, groupId) {
 			ids.push(entry.value);
 		}
 	});
+	if(ids.length == 0) {
+		alert('Keine Elemente ausgewählt');
+		return;
+	}
 	var params = [];
 	params.push({'key':'remove_from_group_id', 'value':groupId});
 	ids.forEach(function(entry) {
@@ -302,6 +318,10 @@ function removeSelectedComputer(checkboxName) {
 			ids.push(entry.value);
 		}
 	});
+	if(ids.length == 0) {
+		alert('Keine Elemente ausgewählt');
+		return;
+	}
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
@@ -343,6 +363,10 @@ function addSelectedComputerToGroup(checkboxName, groupId) {
 			ids.push(entry.value);
 		}
 	});
+	if(ids.length == 0) {
+		alert('Keine Elemente ausgewählt');
+		return;
+	}
 	var params = [];
 	params.push({'key':'add_to_group_id', 'value':groupId});
 	ids.forEach(function(entry) {

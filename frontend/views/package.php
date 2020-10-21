@@ -98,7 +98,7 @@ foreach($packages as $p) {
 	<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.svg'>&nbsp;Bereitstellen</button>
 	<button onclick='addSelectedPackageToGroup("package_id[]", sltNewGroup.value)'><img src='img/plus.svg'>
 		&nbsp;Hinzufügen zu
-		<select id='sltNewGroup'>
+		<select id='sltNewGroup' onclick='event.stopPropagation()'>
 			<?php
 			foreach($db->getAllPackageGroup() as $g) {
 				echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
