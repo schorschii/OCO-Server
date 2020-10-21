@@ -37,7 +37,7 @@ if(!empty($_GET['id'])) {
 		echo "<td>".htmlspecialchars($job->package_procedure)."</td>";
 		echo "<td>".htmlspecialchars($job->sequence)."</td>";
 		if(!empty($job->message)) {
-			echo "<td><a href='#' onclick=\"alert('".addslashes($job->message)."')\">".getJobStateString($job->state)."</a></td>";
+			echo "<td><a href='#' onclick='alert(this.getAttribute(\"message\"))' message='".addslashes(trim($job->message))."'>".getJobStateString($job->state)."</a></td>";
 		} else {
 			echo "<td>".getJobStateString($job->state)."</td>";
 		}
