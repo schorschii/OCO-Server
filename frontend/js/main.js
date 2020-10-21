@@ -162,6 +162,7 @@ function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids
 
 // package operations
 function createPackage(name, version, author, description, archive, install_procedure, uninstall_procedure) {
+	btnCreatePackage.disabled = true;
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('name', name);
@@ -175,7 +176,8 @@ function createPackage(name, version, author, description, archive, install_proc
 	req.send(formData);
 	req.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
-			refreshContentPackageDetail();
+			alert('Paket wurde erstellt');
+			refreshContentPackage();
 		}
 	};
 }
