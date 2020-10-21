@@ -251,6 +251,34 @@ function addSelectedPackageToGroup(checkboxName, groupId) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/package.php', paramString, null, function() { alert('Pakete wurden hinzugefügt') });
 }
+function confirmUninstallPackage(assignment_id) {
+	if(confirm('Möchten Sie das Paket wirklich deinstallieren? Es wird ein Deinstallationsjob erstellt.')) {
+		let req = new XMLHttpRequest();
+		let formData = new FormData();
+		formData.append('uninstall_package_assignment_id', assignment_id);
+		req.open('POST', 'views/computer_detail.php');
+		req.send(formData);
+		req.onreadystatechange = function() {
+			if(this.readyState == 4 && this.status == 200) {
+				refreshSidebar();
+			}
+		};
+	}
+}
+function confirmRemovePackageComputerAssignment(assignment_id) {
+	if(confirm('Möchten Sie die Computer-Paket-Zuordnung wirklich aufheben? Normalerweise sollte das Paket deinstalliert werden.')) {
+		let req = new XMLHttpRequest();
+		let formData = new FormData();
+		formData.append('remove_package_assignment_id', assignment_id);
+		req.open('POST', 'views/computer_detail.php');
+		req.send(formData);
+		req.onreadystatechange = function() {
+			if(this.readyState == 4 && this.status == 200) {
+				refreshContent();
+			}
+		};
+	}
+}
 
 // computer operations
 function removeSelectedComputerFromGroup(checkboxName, groupId) {

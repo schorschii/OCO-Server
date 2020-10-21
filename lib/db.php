@@ -93,7 +93,7 @@ class db {
 	}
 	public function getComputerPackage($cid) {
 		$sql = "
-			SELECT p.id AS 'package_id', p.name AS 'package_name', cp.installed_procedure AS 'installed_procedure', cp.installed AS 'installed'
+			SELECT cp.id AS 'id', p.id AS 'package_id', p.name AS 'package_name', cp.installed_procedure AS 'installed_procedure', cp.installed AS 'installed'
 			FROM computer_package cp
 			INNER JOIN package p ON p.id = cp.package_id
 			WHERE cp.computer_id = ?
@@ -311,6 +311,17 @@ class db {
 			return $row;
 		}
 	}
+	public function getComputerAssignedPackage($id) {
+		$sql = "SELECT * FROM computer_package WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $id)) return null;
+		if(!$this->statement->execute()) return null;
+		$result = $this->statement->get_result();
+		if($result->num_rows == 0) return null;
+		while($row = $result->fetch_object()) {
+			return $row;
+		}
+	}
 	public function getPackageGroup($id) {
 		$sql = "SELECT * FROM package_group WHERE id = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
@@ -364,6 +375,12 @@ class db {
 		$sql = "DELETE FROM package_group_member WHERE package_id = ? AND package_group_id = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
 		if(!$this->statement->bind_param('ii', $pid, $gid)) return null;
+		return $this->statement->execute();
+	}
+	public function removeComputerAssignedPackage($id) {
+		$sql = "DELETE FROM computer_package WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $id)) return null;
 		return $this->statement->execute();
 	}
 

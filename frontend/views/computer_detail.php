@@ -3,6 +3,21 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['remove_package_assignment_id'])) {
+	$db->removeComputerAssignedPackage($_POST['remove_package_assignment_id']);
+	die();
+}
+if(!empty($_POST['uninstall_package_assignment_id'])) {
+	$ap = $db->getComputerAssignedPackage($_POST['uninstall_package_assignment_id']);
+	$p = $db->getPackage($ap->package_id);
+	$jcid = $db->addJobContainer(
+		'Uninstall '.date('y-m-d H:i:s'),
+		date('Y-m-d H:i:s'), null, ''
+	);
+	$db->addJob($jcid, $ap->computer_id, $ap->package_id, $p->uninstall_procedure, 0);
+	die();
+}
+
 $computer = null;
 if(!empty($_GET['id']))
   $computer = $db->getComputer($_GET['id']);
@@ -128,6 +143,7 @@ if($computer === null) die();
 			<th class='searchable sortable'>Paket</th>
 			<th class='searchable sortable'>Prozedur</th>
 			<th class='searchable sortable'>Installationszeitpunkt</th>
+			<th>Aktion</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -139,6 +155,10 @@ if($computer === null) die();
 		echo '<td><a href="#" onclick="refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).'</a></td>';
 		echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 		echo '<td>'.htmlspecialchars($p->installed).'</td>';
+		echo '<td>';
+		echo ' <button title="Zuweisung entfernen" onclick="confirmRemovePackageComputerAssignment('.$p->id.')"><img src="img/remove.svg"></button>';
+		echo ' <button title="Paket deinstallieren" onclick="confirmUninstallPackage('.$p->id.')"><img src="img/delete.svg"></button>';
+		echo '</td>';
 		echo '</tr>';
 	}
 	?>
