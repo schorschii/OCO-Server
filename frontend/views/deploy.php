@@ -54,7 +54,8 @@ if(!empty($_POST['add_jobcontainer'])) {
 	$jcid = $db->addJobContainer(
 		$_POST['add_jobcontainer'],
 		empty($_POST['date_start']) ? date('Y-m-d H:i:s') : $_POST['date_start'],
-		empty($_POST['date_end']) ? null : $_POST['date_end']
+		empty($_POST['date_end']) ? null : $_POST['date_end'],
+		$_POST['description']
 	);
 	foreach($computer_ids as $computer_id) {
 		foreach($packages as $package) {
@@ -87,6 +88,12 @@ if(!empty($_POST['add_jobcontainer'])) {
 		<td>
 			<input type='date' id='dteEnd' value=''></input>
 			<input type='time' id='tmeEnd' value=''></input>
+		</td>
+	</tr>
+	<tr>
+		<th>Beschreibung:</th>
+		<td>
+			<textarea id='txtDescription'></textarea>
 		</td>
 	</tr>
 </table>
@@ -148,5 +155,5 @@ if(!empty($_POST['add_jobcontainer'])) {
 </div>
 
 <p>
-	<button onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", computer, computer_group, package, package_group)'><img src='img/send.svg'>&nbsp;Bereitstellen</button>
+	<button onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, computer, computer_group, package, package_group)'><img src='img/send.svg'>&nbsp;Bereitstellen</button>
 </p>

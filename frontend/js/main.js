@@ -331,11 +331,12 @@ function confirmRemoveJobContainer(id) {
 		ajaxRequestPost('views/jobcontainer.php', urlencodeObject({'remove_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
-function deploy(title, start, end, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup) {
+function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup) {
 	var params = [
 		{'key':'add_jobcontainer', 'value':title},
 		{'key':'date_start', 'value':start},
-		{'key':'date_end', 'value':end}
+		{'key':'date_end', 'value':end},
+		{'key':'description', 'value':description}
 	];
 	getSelectValues(sltPackage).forEach(function(entry) {
 		params.push({'key':'package_id[]', 'value':entry});

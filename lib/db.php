@@ -368,15 +368,15 @@ class db {
 	}
 
 	// Job Operations
-	public function addJobContainer($name, $start_time, $end_time) {
-		$sql = "INSERT INTO job_container (name, start_time, end_time) VALUES (?,?,?)";
+	public function addJobContainer($name, $start_time, $end_time, $notes) {
+		$sql = "INSERT INTO job_container (name, start_time, end_time, notes) VALUES (?,?,?,?)";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('sss', $name, $start_time, $end_time)) return false;
+		if(!$this->statement->bind_param('ssss', $name, $start_time, $end_time, $notes)) return false;
 		if(!$this->statement->execute()) return false;
 		return $this->statement->insert_id;
 	}
 	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $sequence) {
-		$sql = "INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, sequence) VALUES (?,?,?,?,?)";
+		$sql = "INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, sequence, message) VALUES (?,?,?,?,?,'')";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
 		if(!$this->statement->bind_param('iiisi', $job_container_id, $computer_id, $package_id, $package_procedure, $sequence)) return false;
 		if(!$this->statement->execute()) return false;
