@@ -467,7 +467,7 @@ class db {
 		$sql = "UPDATE job SET state = ?, message = ?, last_update = CURRENT_TIMESTAMP WHERE id = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
 		if(!$this->statement->bind_param('isi', $state, $message, $id)) return false;
-		$cid = $this->statement->execute();
+		return $this->statement->execute();
 	}
 	public function getJobContainerIcon($id) {
 		$container = $this->getJobContainer($id);
@@ -578,13 +578,32 @@ class db {
 	public function getSystemuserByLogin($username) {
 		$sql = "SELECT * FROM systemuser WHERE username = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $username)) return null;
+		if(!$this->statement->bind_param('s', $username)) return null;
 		if(!$this->statement->execute()) return null;
 		$result = $this->statement->get_result();
 		if($result->num_rows == 0) return null;
 		while($row = $result->fetch_object()) {
 			return $row;
 		}
+	}
+	public function addSystemuser($login, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
+		$sql = "INSERT INTO systemuser (username, fullname, password, ldap, email, phone, mobile, description, locked) VALUES (?,?,?,?,?,?,?,?,?)";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('sssissssi', $login, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked)) return null;
+		if(!$this->statement->execute()) return null;
+		return $this->statement->insert_id;
+	}
+	public function updateSystemuser($id, $login, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
+		$sql = "UPDATE systemuser SET username = ?, fullname = ?, password = ?, ldap = ?, email = ?, phone = ?, mobile = ?, description = ?, locked = ? WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
+		if(!$this->statement->bind_param('sssissssii', $login, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $id)) return false;
+		return $this->statement->execute();
+	}
+	public function removeSystemuser($id) {
+		$sql = "DELETE FROM systemuser WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $id)) return null;
+		return $this->statement->execute();
 	}
 
 }
