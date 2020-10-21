@@ -24,10 +24,14 @@ switch($srcdata['method']) {
 		}
 		$data = $params['data'];
 		$db->updateJobState($data['job-id'], $data['state'], $data['message']);
-		if($data['state'] === 1) {
+		if($data['state'] === 2) { // 2 = installation successful
 			$job = $db->getJob($data['job-id']);
 			if($job !== null) {
-				$db->addPackageToComputer($job->package_id, $job->computer_id, $job->package_procedure);
+				if($job->is_uninstall == 0) {
+					$db->addPackageToComputer($job->package_id, $job->computer_id, $job->package_procedure);
+				} elseif($job->is_uninstall == 1) {
+					$db->removeComputerAssignedPackageByIds($job->computer_id, $job->package_id);
+				}
 			}
 		}
 		$resdata['error'] = null;

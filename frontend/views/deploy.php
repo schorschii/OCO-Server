@@ -59,7 +59,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	);
 	foreach($computer_ids as $computer_id) {
 		foreach($packages as $package) {
-			$db->addJob($jcid, $computer_id, $package['id'], $package['procedure'], $package['sequence']);
+			$db->addJob($jcid, $computer_id, $package['id'], $package['procedure'], 0, $package['sequence']);
 		}
 	}
 

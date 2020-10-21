@@ -14,7 +14,7 @@ if(!empty($_POST['uninstall_package_assignment_id'])) {
 		'Uninstall '.date('y-m-d H:i:s'),
 		date('Y-m-d H:i:s'), null, ''
 	);
-	$db->addJob($jcid, $ap->computer_id, $ap->package_id, $p->uninstall_procedure, 0);
+	$db->addJob($jcid, $ap->computer_id, $ap->package_id, $p->uninstall_procedure, 1, 0);
 	die();
 }
 

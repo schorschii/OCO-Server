@@ -383,6 +383,12 @@ class db {
 		if(!$this->statement->bind_param('i', $id)) return null;
 		return $this->statement->execute();
 	}
+	public function removeComputerAssignedPackageByIds($cid, $pid) {
+		$sql = "DELETE FROM computer_package WHERE computer_id = ? AND package_id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('ii', $cid, $pid)) return null;
+		return $this->statement->execute();
+	}
 
 	// Job Operations
 	public function addJobContainer($name, $start_time, $end_time, $notes) {
@@ -392,10 +398,10 @@ class db {
 		if(!$this->statement->execute()) return false;
 		return $this->statement->insert_id;
 	}
-	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $sequence) {
-		$sql = "INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, sequence, message) VALUES (?,?,?,?,?,'')";
+	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $is_uninstall, $sequence) {
+		$sql = "INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, is_uninstall, sequence, message) VALUES (?,?,?,?,?,?,'')";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('iiisi', $job_container_id, $computer_id, $package_id, $package_procedure, $sequence)) return false;
+		if(!$this->statement->bind_param('iiisii', $job_container_id, $computer_id, $package_id, $package_procedure, $is_uninstall, $sequence)) return false;
 		if(!$this->statement->execute()) return false;
 		return $this->statement->insert_id;
 	}
