@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Erstellungszeit: 20. Okt 2020 um 21:01
+-- Erstellungszeit: 21. Okt 2020 um 22:35
 -- Server-Version: 5.7.31-0ubuntu0.18.04.1
 -- PHP-Version: 7.2.24-0ubuntu0.18.04.7
 
@@ -205,6 +205,7 @@ CREATE TABLE `job` (
   `computer_id` int(11) NOT NULL,
   `package_id` int(11) NOT NULL,
   `package_procedure` text NOT NULL,
+  `is_uninstall` tinyint(4) NOT NULL DEFAULT '0',
   `sequence` int(11) NOT NULL DEFAULT '0',
   `state` int(11) NOT NULL DEFAULT '0',
   `message` text NOT NULL,
@@ -301,15 +302,14 @@ CREATE TABLE `systemuser` (
   `id` int(11) NOT NULL,
   `username` text NOT NULL,
   `fullname` text NOT NULL,
-  `password` text NOT NULL
+  `password` text,
+  `ldap` tinyint(4) NOT NULL DEFAULT '0',
+  `email` text,
+  `phone` text,
+  `mobile` text,
+  `description` text,
+  `locked` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Daten für Tabelle `systemuser`
---
-
-INSERT INTO `systemuser` (`id`, `username`, `fullname`, `password`) VALUES
-(1, 'admin', 'Admin', '$2y$10$B92cbIK8NlK54DxTdvx8bOz.ymLWR7wmkfh7X0SyfgZW.ar9oZl4G');
 
 --
 -- Indizes der exportierten Tabellen
@@ -451,7 +451,7 @@ ALTER TABLE `systemuser`
 -- AUTO_INCREMENT für Tabelle `computer`
 --
 ALTER TABLE `computer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `computer_command`
 --
@@ -461,22 +461,22 @@ ALTER TABLE `computer_command`
 -- AUTO_INCREMENT für Tabelle `computer_group`
 --
 ALTER TABLE `computer_group`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `computer_group_member`
 --
 ALTER TABLE `computer_group_member`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `computer_network`
 --
 ALTER TABLE `computer_network`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=269;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `computer_package`
 --
 ALTER TABLE `computer_package`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `computer_partition`
 --
@@ -491,57 +491,57 @@ ALTER TABLE `computer_printer`
 -- AUTO_INCREMENT für Tabelle `computer_screen`
 --
 ALTER TABLE `computer_screen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `computer_software`
 --
 ALTER TABLE `computer_software`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124032;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `domainuser`
 --
 ALTER TABLE `domainuser`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `domainuser_logon`
 --
 ALTER TABLE `domainuser_logon`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=353;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `job`
 --
 ALTER TABLE `job`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `job_container`
 --
 ALTER TABLE `job_container`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `package`
 --
 ALTER TABLE `package`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `package_group`
 --
 ALTER TABLE `package_group`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `package_group_member`
 --
 ALTER TABLE `package_group_member`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `setting`
 --
 ALTER TABLE `setting`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- AUTO_INCREMENT für Tabelle `systemuser`
 --
 ALTER TABLE `systemuser`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 --
 -- Constraints der exportierten Tabellen
 --
