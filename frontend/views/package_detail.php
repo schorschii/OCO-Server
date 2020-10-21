@@ -39,10 +39,6 @@ if($package === null) die();
 		<td><?php echo htmlspecialchars($package->uninstall_procedure); ?></td>
 	</tr>
 	<tr>
-		<th>Prozeduren (getrennt mit Komma)</th>
-		<td><?php echo htmlspecialchars($package->procedures); ?></td>
-	</tr>
-	<tr>
 		<th>Erstellt</th>
 		<td><?php echo htmlspecialchars($package->created); ?></td>
 	</tr>

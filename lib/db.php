@@ -262,10 +262,10 @@ class db {
 	}
 
 	// Package Operations
-	public function addPackage($name, $version, $author, $description, $filename, $install_procedure, $uninstall_procedure, $procedures) {
-		$sql = "INSERT INTO package (name, version, author, notes, filename, install_procedure, uninstall_procedure, procedures) VALUES (?,?,?,?,?,?,?,?)";
+	public function addPackage($name, $version, $author, $description, $filename, $install_procedure, $uninstall_procedure) {
+		$sql = "INSERT INTO package (name, version, author, notes, filename, install_procedure, uninstall_procedure) VALUES (?,?,?,?,?,?,?)";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('ssssssss', $name, $version, $author, $description, $filename, $install_procedure, $uninstall_procedure, $procedures)) return false;
+		if(!$this->statement->bind_param('sssssss', $name, $version, $author, $description, $filename, $install_procedure, $uninstall_procedure)) return false;
 		if(!$this->statement->execute()) return false;
 		return $this->statement->insert_id;
 	}

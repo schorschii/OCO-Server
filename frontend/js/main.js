@@ -161,7 +161,7 @@ function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids
 }
 
 // package operations
-function createPackage(name, version, author, description, archive, install_procedure, uninstall_procedure, procedures) {
+function createPackage(name, version, author, description, archive, install_procedure, uninstall_procedure) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('name', name);
@@ -171,7 +171,6 @@ function createPackage(name, version, author, description, archive, install_proc
 	formData.append('archive', archive);
 	formData.append('install_procedure', install_procedure);
 	formData.append('uninstall_procedure', uninstall_procedure);
-	formData.append('procedures', procedures);
 	req.open('POST', 'views/package_new.php');
 	req.send(formData);
 	req.onreadystatechange = function() {

@@ -14,8 +14,7 @@ if(!empty($_POST['name'])) {
 			$_POST['description'],
 			$filename,
 			$_POST['install_procedure'],
-			$_POST['uninstall_procedure'],
-			$_POST['procedures']
+			$_POST['uninstall_procedure']
 		);
 	} else {
 		error_log('can not move uploaded file');
@@ -65,10 +64,6 @@ function randomString($length = 8) {
 		<th>Deinstallations-Prozedur</th>
 		<td><input type='text' id='txtUninstallProcedure'></td>
 	</tr>
-	<tr>
-		<th>Prozeduren (getrennt mit Komma)</th>
-		<td><input type='text' id='txtProcedures'></td>
-	</tr>
 </table>
 
 <p>
@@ -76,5 +71,5 @@ function randomString($length = 8) {
 </p>
 
 <p>
-	<button onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value, txtProcedures.value)'><img src='img/send.svg'>&nbsp;Senden</button>
+	<button onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;Senden</button>
 </p>
