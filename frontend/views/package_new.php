@@ -6,14 +6,13 @@ require_once('../session.php');
 if(!empty($_POST['name'])) {
 	$filename = randomString().'.zip';
 	$filepath = PACKAGE_PATH.'/'.$filename;
-	$fileurl = PACKAGE_URL.'/'.$filename;
 	if(move_uploaded_file($_FILES['archive']['tmp_name'], $filepath)) {
 		$db->addPackage(
 			$_POST['name'],
 			$_POST['version'],
 			$_POST['author'],
 			$_POST['description'],
-			$fileurl,
+			$filename,
 			$_POST['install_procedure'],
 			$_POST['uninstall_procedure'],
 			$_POST['procedures']
