@@ -4,6 +4,7 @@ const LANG = [
 	'app_name_frontpage' => '[ Open Computer Orchestration ]',
 	'app_subtitle' => 'Client inventory and software delivery made simple',
 	'refresh' => 'Refresh',
+	'search_placeholder' => 'Search...',
 	'done' => 'Finish',
 	'setup' => 'Setup',
 	'login' => 'Login',

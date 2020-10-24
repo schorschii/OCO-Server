@@ -222,7 +222,7 @@ function initTableSearch() {
 			var thSearch = document.createElement("th");
 			if(ths[i].classList.contains("searchable")) {
 				let txtSearch = document.createElement("input");
-				txtSearch.setAttribute("placeholder", "Suche...");
+				txtSearch.setAttribute("placeholder", L__SEARCH_PLACEHOLDER);
 				txtSearch.classList.add("tableSearch");
 				txtSearch.addEventListener("input", function(){ tableSearch(table, currentColumnIndex, txtSearch) });
 				txtSearch.addEventListener("paste", function(){ tableSearch(table, currentColumnIndex, txtSearch) });
