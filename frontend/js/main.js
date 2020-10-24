@@ -111,9 +111,7 @@ function refreshSidebar() {
 	ajaxRequest('views/tree.php', 'explorer-tree');
 }
 function refreshContent() {
-	if(currentExplorerContentUrl == null) {
-		alert('Kein View aktiv!');
-	} else {
+	if(currentExplorerContentUrl != null) {
 		ajaxRequest(currentExplorerContentUrl, 'explorer-content');
 	}
 }
@@ -176,7 +174,7 @@ function createPackage(name, version, author, description, archive, install_proc
 	req.send(formData);
 	req.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
-			alert('Paket wurde erstellt');
+			alert(L__PACKAGE_CREATED);
 			refreshContentPackage();
 		}
 	};
@@ -189,7 +187,7 @@ function removeSelectedPackage(checkboxName) {
 		}
 	});
 	if(ids.length == 0) {
-		alert('Keine Elemente ausgewählt');
+		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
 	var params = [];
@@ -197,7 +195,7 @@ function removeSelectedPackage(checkboxName) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	if(confirm('Wirklich löschen?')) {
+	if(confirm(L__CONFIRM_DELETE)) {
 		ajaxRequestPost('views/package.php', paramString, null, refreshContent);
 	}
 }
@@ -209,7 +207,7 @@ function removeSelectedPackageFromGroup(checkboxName, groupId) {
 		}
 	});
 	if(ids.length == 0) {
-		alert('Keine Elemente ausgewählt');
+		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
 	var params = [];
@@ -230,7 +228,7 @@ function deploySelectedPackage(checkboxName) {
 	refreshContentDeploy(ids);
 }
 function newPackageGroup() {
-	var newName = prompt('Name für die neue Gruppe');
+	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
 		ajaxRequestPost('views/package.php', urlencodeObject({'add_group':newName}), null, refreshSidebar);
 	}
@@ -241,7 +239,7 @@ function confirmRemovePackageGroup(ids) {
 		params.push({'key':'remove_group_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	if(confirm('Möchten Sie die Gruppe wirklich löschen? Pakete innerhalb der Gruppe werden nicht gelöscht.')) {
+	if(confirm(L__CONFIRM_DELETE_GROUP)) {
 		ajaxRequestPost('views/package.php', paramString, null, function(){ refreshContentPackage(); refreshSidebar(); });
 	}
 }
@@ -253,7 +251,7 @@ function addSelectedPackageToGroup(checkboxName, groupId) {
 		}
 	});
 	if(ids.length == 0) {
-		alert('Keine Elemente ausgewählt');
+		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
 	var params = [];
@@ -262,10 +260,10 @@ function addSelectedPackageToGroup(checkboxName, groupId) {
 		params.push({'key':'add_to_group_package_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package.php', paramString, null, function() { alert('Pakete wurden hinzugefügt') });
+	ajaxRequestPost('views/package.php', paramString, null, function() { alert(L__PACKAGES_ADDED) });
 }
 function confirmUninstallPackage(assignment_id) {
-	if(confirm('Möchten Sie das Paket wirklich deinstallieren? Es wird ein Deinstallationsjob erstellt.')) {
+	if(confirm(L__CONFIRM_UNINSTALL_PACKAGE)) {
 		let req = new XMLHttpRequest();
 		let formData = new FormData();
 		formData.append('uninstall_package_assignment_id', assignment_id);
@@ -279,7 +277,7 @@ function confirmUninstallPackage(assignment_id) {
 	}
 }
 function confirmRemovePackageComputerAssignment(assignment_id) {
-	if(confirm('Möchten Sie die Computer-Paket-Zuordnung wirklich aufheben? Normalerweise sollte das Paket deinstalliert werden.')) {
+	if(confirm(L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT)) {
 		let req = new XMLHttpRequest();
 		let formData = new FormData();
 		formData.append('remove_package_assignment_id', assignment_id);
@@ -302,7 +300,7 @@ function removeSelectedComputerFromGroup(checkboxName, groupId) {
 		}
 	});
 	if(ids.length == 0) {
-		alert('Keine Elemente ausgewählt');
+		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
 	var params = [];
@@ -321,7 +319,7 @@ function removeSelectedComputer(checkboxName) {
 		}
 	});
 	if(ids.length == 0) {
-		alert('Keine Elemente ausgewählt');
+		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
 	var params = [];
@@ -343,7 +341,7 @@ function deploySelectedComputer(checkboxName) {
 	refreshContentDeploy([],[],ids);
 }
 function newComputerGroup() {
-	var newName = prompt('Name für die neue Gruppe');
+	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
 		ajaxRequestPost('views/computer.php', urlencodeObject({'add_group':newName}), null, refreshSidebar);
 	}
@@ -354,7 +352,7 @@ function confirmRemoveComputerGroup(ids) {
 		params.push({'key':'remove_group_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	if(confirm('Möchten Sie die Gruppe(n) wirklich löschen? Die Computer in der Gruppe werden nicht gelöscht.')) {
+	if(confirm(L__CONFIRM_DELETE_GROUP)) {
 		ajaxRequestPost('views/computer.php', paramString, null, function(){ refreshContentComputer(); refreshSidebar(); });
 	}
 }
@@ -366,7 +364,7 @@ function addSelectedComputerToGroup(checkboxName, groupId) {
 		}
 	});
 	if(ids.length == 0) {
-		alert('Keine Elemente ausgewählt');
+		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
 	var params = [];
@@ -375,12 +373,12 @@ function addSelectedComputerToGroup(checkboxName, groupId) {
 		params.push({'key':'add_to_group_computer_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computer.php', paramString, null, function() { alert('Computer wurden hinzugefügt') });
+	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__COMPUTER_ADDED) });
 }
 
 // job operations
 function confirmRemoveJobContainer(id) {
-	if(confirm('Möchten Sie diesen Jobcontainer wirklich löschen? Ausstehende Jobs werden nicht verteilt.')) {
+	if(confirm(L__CONFIRM_DELETE_JOBCONTAINER)) {
 		ajaxRequestPost('views/jobcontainer.php', urlencodeObject({'remove_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
@@ -420,7 +418,7 @@ function removeSelectedDomainuser(checkboxName) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	if(confirm('Sind Sie sicher?')) {
+	if(confirm(L__CONFIRM_DELETE)) {
 		ajaxRequestPost('views/domainuser.php', paramString, null, refreshContent);
 	}
 }

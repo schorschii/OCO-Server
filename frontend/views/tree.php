@@ -5,11 +5,11 @@ require_once('../session.php');
 ?>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentDomainuser()'><img src='img/users.dyn.svg'>Benutzer</a>
+	<a href='#' onclick='refreshContentDomainuser()'><img src='img/users.dyn.svg'><?php echo LANG['users']; ?></a>
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentComputer()'><img src='img/computer.dyn.svg'>Computer</a>
+	<a href='#' onclick='refreshContentComputer()'><img src='img/computer.dyn.svg'><?php echo LANG['computer']; ?></a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllComputerGroup() as $group) {
@@ -20,7 +20,7 @@ require_once('../session.php');
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentPackage()'><img src='img/software.dyn.svg'>Pakete</a>
+	<a href='#' onclick='refreshContentPackage()'><img src='img/software.dyn.svg'><?php echo LANG['packages']; ?></a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllPackageGroup() as $group) {
@@ -31,7 +31,7 @@ require_once('../session.php');
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentJobContainer()'><img src='img/job.dyn.svg'>Jobs</a>
+	<a href='#' onclick='refreshContentJobContainer()'><img src='img/job.dyn.svg'><?php echo LANG['jobs']; ?></a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllJobContainer() as $container) {

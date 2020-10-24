@@ -16,7 +16,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 	$user = $db->getSystemuserByLogin($_POST['username']);
 	if($user === null) {
 		sleep(2);
-		$info = "Benutzer existiert nicht";
+		$info = LANG['user_does_not_exist'];
 		$infoclass = "red";
 	} else {
 		if(validatePassword($user, $_POST['password'])) {
@@ -26,7 +26,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 			die();
 		} else {
 			sleep(2);
-			$info = "Anmeldung fehlgeschlagen";
+			$info = LANG['login_failed'];
 			$infoclass = "red";
 		}
 	}
@@ -34,7 +34,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 elseif(isset($_GET['logout'])) {
 	if(isset($_SESSION['um_username'])) {
 		session_destroy();
-		$info = "Abmeldung erfolgreich";
+		$info = LANG['log_out_successful'];
 		$infoclass = "green";
 	}
 }
@@ -56,7 +56,7 @@ function validatePassword($userObject, $checkPassword) {
 <!DOCTYPE html>
 <html>
 <head>
-	<title>[Login] <?php echo APP_NAME; ?></title>
+	<title>[<?php echo LANG['login']; ?>] <?php echo LANG['app_name']; ?></title>
 	<?php require_once('head.inc.php'); ?>
 </head>
 <body>
@@ -64,7 +64,7 @@ function validatePassword($userObject, $checkPassword) {
 <div id='container'>
 
 	<div id='header'>
-		<span class='left'><?php echo APP_NAME; ?></span>
+		<span class='left'><?php echo LANG['app_name']; ?></span>
 		<span class='right'>
 		</span>
 	</div>
@@ -72,13 +72,13 @@ function validatePassword($userObject, $checkPassword) {
 	<div id='login'>
 		<div id='login-form'>
 			<form method='POST' action='login.php' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
-				<h1>Anmeldung</h1>
+				<h1><?php echo LANG['login']; ?></h1>
 				<?php if($info !== null) { ?>
 					<h3 class='<?php echo $infoclass; ?>'><?php echo $info; ?></h3>
 				<?php } ?>
-				<input id='txtUsername' type='text' name='username' placeholder='Benutzername' autofocus='true'>
-				<input id='txtPassword' type='password' name='password' placeholder='Kennwort'>
-				<button id='btnLogin'>Anmelden</button>
+				<input id='txtUsername' type='text' name='username' placeholder='<?php echo LANG['username']; ?>' autofocus='true'>
+				<input id='txtPassword' type='password' name='password' placeholder='<?php echo LANG['password']; ?>'>
+				<button id='btnLogin'><?php echo LANG['log_in']; ?></button>
 			</form>
 			<img src='img/logo.dyn.svg'>
 		</div>

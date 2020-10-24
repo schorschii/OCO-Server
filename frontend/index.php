@@ -5,7 +5,7 @@ require_once('session.php');
 <!DOCTYPE html>
 <html>
 <head>
-	<title><?php echo APP_NAME; ?></title>
+	<title><?php echo LANG['app_name']; ?></title>
 	<?php require_once('head.inc.php'); ?>
 	<script src='js/table.js'></script>
 </head>
@@ -14,7 +14,7 @@ require_once('session.php');
 <div id='container'>
 
 	<div id='header'>
-		<span class='left'><a href='index.php'><?php echo APP_NAME; ?></a></span>
+		<span class='left'><a href='index.php'><?php echo LANG['app_name']; ?></a></span>
 		<span class='right'>
 			<!--<button><img src='img/settings.svg' onclick='openSettings()'></button>-->
 			<button><img src='img/exit.svg' onclick='window.location.href="login.php?logout"' title='<?php echo htmlspecialchars($_SESSION['um_username']); ?>'></button>
@@ -28,8 +28,8 @@ require_once('session.php');
 		<div id='explorer-content' oncontextmenu='return toggleContextMenu(ctmExplorerContent)'>
 			<div id='homepage'>
 				<img src='img/logo.dyn.svg'>
-				<div class='title'>[ Open Computer Orchestration ]</div>
-				<div class='subtitle'>Client inventory and software delivery made simple</div>
+				<div class='title'><?php echo LANG['app_name_frontpage']; ?></div>
+				<div class='subtitle'><?php echo LANG['app_subtitle']; ?></div>
 			</div>
 		</div>
 	</div>
@@ -39,10 +39,10 @@ require_once('session.php');
 	</div>
 
 	<div id='ctmExplorerTree' class='contextMenu hidden'>
-		<button onclick='refreshSidebar()'><img src='img/refresh.svg'>&nbsp;Aktualisieren</button>
+		<button onclick='refreshSidebar()'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['refresh']; ?></button>
 	</div>
 	<div id='ctmExplorerContent' class='contextMenu hidden'>
-		<button onclick='refreshContent()'><img src='img/refresh.svg'>&nbsp;Aktualisieren</button>
+		<button onclick='refreshContent()'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['refresh']; ?></button>
 	</div>
 
 	<script>

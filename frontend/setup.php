@@ -13,7 +13,7 @@ if($db->existsSchema() && count($db->getAllSystemuser()) > 0) {
 // create initial admin user
 if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2'])) {
 	if($_POST['password'] !== $_POST['password2']) {
-		$info = "Kennwörter stimmen nicht überein";
+		$info = LANG['passwords_do_not_match'];
 		$infoclass = "red";
 	} else {
 		if(
@@ -26,7 +26,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 			header('Location: login.php');
 			die();
 		} else {
-			$info = "Datenbankfehler. Bitte die Logdateien überprüfen.";
+			$info = LANG['database_error'];
 			$infoclass = "red";
 		}
 	}
@@ -35,7 +35,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 <!DOCTYPE html>
 <html>
 <head>
-	<title>[Login] <?php echo APP_NAME; ?></title>
+	<title>[<?php echo LANG['setup']; ?>] <?php echo LANG['app_name']; ?></title>
 	<?php require_once('head.inc.php'); ?>
 </head>
 <body>
@@ -43,7 +43,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 <div id='container'>
 
 	<div id='header'>
-		<span class='left'><?php echo APP_NAME; ?></span>
+		<span class='left'><?php echo LANG['app_name']; ?></span>
 		<span class='right'>
 		</span>
 	</div>
@@ -51,14 +51,14 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 	<div id='login'>
 		<div id='login-form'>
 			<form method='POST' action='setup.php' onsubmit='btnFinish.disabled = true'>
-				<h1>Setup</h1>
+				<h1><?php echo LANG['setup']; ?></h1>
 				<?php if($info !== null) { ?>
 					<h3 class='<?php echo $infoclass; ?>'><?php echo $info; ?></h3>
 				<?php } ?>
 				<input type='text' name='username' placeholder='Admin-Benutzername wählen...' autofocus='true'>
 				<input type='password' name='password' placeholder='Kennwort wählen...'>
 				<input type='password' name='password2' placeholder='Kennwort bestätigen...'>
-				<button id='btnFinish'>Fertig stellen</button>
+				<button id='btnFinish'><?php echo LANG['done']; ?></button>
 			</form>
 			<img src='img/logo.dyn.svg'>
 		</div>

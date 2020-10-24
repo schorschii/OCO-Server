@@ -33,55 +33,41 @@ function randomString($length = 8) {
 }
 ?>
 
-<h1>Neues Paket</h1>
+<h1><?php echo LANG['new_package']; ?></h1>
 
 <table>
 	<tr>
-		<th>Name</th>
+		<th><?php echo LANG['name']; ?></th>
 		<td><input type='text' id='txtName'></td>
 	</tr>
 	<tr>
-		<th>Version</th>
+		<th><?php echo LANG['version']; ?></th>
 		<td><input type='text' id='txtVersion'></td>
 	</tr>
 	<tr>
-		<th>Autor</th>
+		<th><?php echo LANG['author']; ?></th>
 		<td><input type='text' id='txtAuthor' value='<?php echo htmlspecialchars($_SESSION['um_username']); ?>'></td>
 	</tr>
 	<tr>
-		<th>Beschreibung</th>
+		<th><?php echo LANG['description']; ?></th>
 		<td><textarea id='txtDescription'></textarea></td>
 	</tr>
 	<tr>
-		<th>ZIP-Archiv</th>
+		<th><?php echo LANG['zip_archive']; ?></th>
 		<td><input type='file' id='fleArchive'></td>
 	</tr>
 	<tr>
-		<th>Installations-Prozedur</th>
+		<th><?php echo LANG['install_procedure']; ?></th>
 		<td><input type='text' id='txtInstallProcedure'></td>
 	</tr>
 	<tr>
-		<th>Deinstallations-Prozedur</th>
+		<th><?php echo LANG['uninstall_procedure']; ?></th>
 		<td><input type='text' id='txtUninstallProcedure'></td>
 	</tr>
 </table>
 
-<p>
-	Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
-</p>
-<p>
-	Beispiel-Prozeduren:
-	<ul>
-		<li>EXE-Setup unter Windows: <code>installer.exe /S</code> (kein Deinstallations-Support)</li>
-		<li>Eigene Batch-Datei unter Windows: <code>myscript.bat</code></li>
-		<li>MSI-Installation unter Windows: <code>msiexec /i package.msi</code></li>
-		<li>MSI-Deinstallation unter Windows: <code>msiexec /x {PRODUCT-GUID}</code></li>
-		<li>DEB-Paket unter Linux: <code>gdebi -n package.deb</code></li>
-		<li>DEB-Paket unter Linux deinstallieren: <code>apt remove -y packagename</code></li>
-		<li>Eigenes Shell-Skript unter Linux: <code>myscript.sh</code></li>
-	</ul>
-</p>
+<?php echo LANG['package_creation_notes']; ?>
 
 <p>
-	<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;Senden</button>
+	<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
 </p>

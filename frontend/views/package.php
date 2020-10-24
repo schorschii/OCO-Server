@@ -7,35 +7,40 @@ if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		$db->removePackage($id);
 	}
+	die();
 }
 if(!empty($_POST['remove_group_id']) && is_array($_POST['remove_group_id'])) {
 	foreach($_POST['remove_group_id'] as $id) {
 		$db->removePackageGroup($id);
 	}
+	die();
 }
 if(!empty($_POST['remove_from_group_id']) && !empty($_POST['remove_from_group_package_id']) && is_array($_POST['remove_from_group_package_id'])) {
 	foreach($_POST['remove_from_group_package_id'] as $pid) {
 		$db->removePackageFromGroup($pid, $_POST['remove_from_group_id']);
 	}
+	die();
 }
 if(!empty($_POST['add_group'])) {
 	$db->addPackageGroup($_POST['add_group']);
+	die();
 }
 if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_group_package_id']) && is_array($_POST['add_to_group_package_id'])) {
 	foreach($_POST['add_to_group_package_id'] as $pid) {
 		$db->addPackageToGroup($pid, $_POST['add_to_group_id']);
 	}
+	die();
 }
 
 $group = null;
 $packages = [];
 if(empty($_GET['id'])) {
 	$packages = $db->getAllPackage();
-	echo "<h1>"."Komplette Paket-Bibliothek"."</h1>";
+	echo "<h1>".LANG['complete_package_library']."</h1>";
 
 	echo "<p>";
-	echo "<button onclick='refreshContentPackageDetail()'><img src='img/add.svg'>&nbsp;Neues Paket</button>";
-	echo "<button onclick='newPackageGroup()'><img src='img/add.svg'>&nbsp;Neue Gruppe</button>";
+	echo "<button onclick='refreshContentPackageDetail()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button>";
+	echo "<button onclick='newPackageGroup()'><img src='img/add.svg'>&nbsp;".LANG['new_group']."</button>";
 	echo "</p>";
 } else {
 	$packages = $db->getPackageByGroup($_GET['id']);
@@ -44,8 +49,8 @@ if(empty($_GET['id'])) {
 	echo "<h1>".htmlspecialchars($group->name)."</h1>";
 
 	echo "<p>Gruppe:&nbsp;";
-	echo "<button onclick='refreshContentDeploy([],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;Alle bereitstellen</button>";
-	echo "<button onclick='confirmRemovePackageGroup([".$group->id."])'><img src='img/delete.svg'>&nbsp;Gruppe löschen</button>";
+	echo "<button onclick='refreshContentDeploy([],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_all']."</button>";
+	echo "<button onclick='confirmRemovePackageGroup([".$group->id."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button>";
 	echo "</p>";
 }
 ?>
@@ -56,14 +61,14 @@ if(empty($_GET['id'])) {
 <thead>
 	<tr>
 		<th></th>
-		<th class='searchable sortable'>Name</th>
-		<th class='searchable sortable'>Version</th>
-		<th class='searchable sortable'>Autor</th>
-		<th class='searchable sortable'>Installations-Prozedur</th>
-		<th class='searchable sortable'>Deinstallations-Prozedur</th>
-		<th class='searchable sortable'>Reihenfolge</th>
-		<th class='searchable sortable'>Erstellt</th>
-		<th class='searchable sortable'>Aktion</th>
+		<th class='searchable sortable'><?php echo LANG['name']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['version']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['author']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['install_procedure']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['uninstall_procedure']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['order']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['created']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['action']; ?></th>
 	</tr>
 </thead>
 
@@ -81,7 +86,7 @@ foreach($packages as $p) {
 	echo "<td>".htmlspecialchars($p->sequence ?? '-')."</td>";
 	echo "<td>".htmlspecialchars($p->created)."</td>";
 	echo "<td>";
-	echo  "<button title='Download' onclick='frmDownload.src=\"payloadprovider.php?id=".$p->id."\"'><img src='img/download.svg'></button>";
+	echo  "<button title='".LANG['download']."' onclick='frmDownload.src=\"payloadprovider.php?id=".$p->id."\"'><img src='img/download.svg'></button>";
 	echo "</td>";
 	echo "</tr>";
 }
@@ -89,15 +94,15 @@ foreach($packages as $p) {
 
 <tfoot>
 	<tr>
-		<td colspan='999'><span class='counter'><?php echo $counter; ?></span> Element(e)</td>
+		<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
 	</tr>
 </tfoot>
 </table>
 
-<p>Ausgewählte Elemente:&nbsp;
-	<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.svg'>&nbsp;Bereitstellen</button>
+<p><?php echo LANG['selected_elements']; ?>:&nbsp;
+	<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='addSelectedPackageToGroup("package_id[]", sltNewGroup.value)'><img src='img/plus.svg'>
-		&nbsp;Hinzufügen zu
+		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewGroup' onclick='event.stopPropagation()'>
 			<?php
 			foreach($db->getAllPackageGroup() as $g) {
@@ -107,7 +112,7 @@ foreach($packages as $p) {
 		</select>
 	</button>
 	<?php if($group !== null) { ?>
-		<button onclick='removeSelectedPackageFromGroup("package_id[]", <?php echo $group->id; ?>)'><img src='img/remove.svg'>&nbsp;Aus Gruppe entfernen</button>
+		<button onclick='removeSelectedPackageFromGroup("package_id[]", <?php echo $group->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
 	<?php } ?>
-	<button onclick='removeSelectedPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;Löschen</button>
+	<button onclick='removeSelectedPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 </p>

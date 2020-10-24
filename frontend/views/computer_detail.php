@@ -20,80 +20,80 @@ if(!empty($_POST['uninstall_package_assignment_id'])) {
 
 $computer = null;
 if(!empty($_GET['id']))
-  $computer = $db->getComputer($_GET['id']);
+	$computer = $db->getComputer($_GET['id']);
 
 if($computer === null) die();
 ?>
 
 <h1><?php echo htmlspecialchars($computer->hostname); ?></h1>
 
-<h2>Allgemein</h2>
+<h2><?php echo LANG['general']; ?></h2>
 <table class='list'>
 	<tr>
-		<th>Betriebssystem</th>
+		<th><?php echo LANG['os']; ?></th>
 		<td><?php echo htmlspecialchars($computer->os); ?></td>
 	</tr>
 	<tr>
-		<th>Version</th>
+		<th><?php echo LANG['version']; ?></th>
 		<td><?php echo htmlspecialchars($computer->os_version); ?></td>
 	</tr>
 	<tr>
-		<th>Kernel-Version</th>
+		<th><?php echo LANG['kernel_version']; ?></th>
 		<td><?php echo htmlspecialchars($computer->kernel_version); ?></td>
 	</tr>
 	<tr>
-		<th>Architektur</th>
+		<th><?php echo LANG['architecture']; ?></th>
 		<td><?php echo htmlspecialchars($computer->architecture); ?></td>
 	</tr>
 	<tr>
-		<th>CPU</th>
+		<th><?php echo LANG['cpu']; ?></th>
 		<td><?php echo htmlspecialchars($computer->cpu); ?></td>
 	</tr>
 	<tr>
-		<th>RAM</th>
+		<th><?php echo LANG['ram']; ?></th>
 		<td><?php echo htmlspecialchars($computer->ram); ?></td>
 	</tr>
 	<tr>
-		<th>Seriennummer</th>
+		<th><?php echo LANG['serial_no']; ?></th>
 		<td><?php echo htmlspecialchars($computer->serial); ?></td>
 	</tr>
 	<tr>
-		<th>Hersteller</th>
+		<th><?php echo LANG['vendor']; ?></th>
 		<td><?php echo htmlspecialchars($computer->manufacturer); ?></td>
 	</tr>
 	<tr>
-		<th>Modell</th>
+		<th><?php echo LANG['model']; ?></th>
 		<td><?php echo htmlspecialchars($computer->model); ?></td>
 	</tr>
 	<tr>
-		<th>BIOS-Version</th>
+		<th><?php echo LANG['bios_version']; ?></th>
 		<td><?php echo htmlspecialchars($computer->bios_version); ?></td>
 	</tr>
 	<tr>
-		<th>Boot-Typ</th>
+		<th><?php echo LANG['boot_type']; ?></th>
 		<td><?php echo htmlspecialchars($computer->boot_type); ?></td>
 	</tr>
 	<tr>
-		<th>Secure-Boot</th>
+		<th><?php echo LANG['secure_boot']; ?></th>
 		<td><?php echo htmlspecialchars($computer->secure_boot); ?></td>
 	</tr>
 	<tr>
-		<th>Agent-Version</th>
+		<th><?php echo LANG['agent_version']; ?></th>
 		<td><?php echo htmlspecialchars($computer->agent_version); ?></td>
 	</tr>
 	<tr>
-		<th>Zuletzt gesehen</th>
+		<th><?php echo LANG['last_seen']; ?></th>
 		<td><?php echo htmlspecialchars($computer->last_ping); ?></td>
 	</tr>
 	<tr>
-		<th>Zuletzt aktualisiert</th>
+		<th><?php echo LANG['last_updated']; ?></th>
 		<td><?php echo htmlspecialchars($computer->last_update); ?></td>
 	</tr>
 </table>
 
-<h2>Anmeldungen</h2>
+<h2><?php echo LANG['logins']; ?></h2>
 <table class='list'>
-	<tr><th>Computer</th><th>Anzahl</th><th>Letzte Anmeldung</th></tr>
+	<tr><th><?php echo LANG['computer']; ?></th><th><?php echo LANG['count']; ?></th><th><?php echo LANG['last_login']; ?></th></tr>
 	<?php
 	foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
 		echo "<tr>";
@@ -105,9 +105,9 @@ if($computer === null) die();
 	?>
 </table>
 
-<h2>Netzwerk</h2>
+<h2><?php echo LANG['network']; ?></h2>
 <table class='list'>
-	<tr><th>IP-Adresse</th><th>Netzmaske</th><th>Broadcast</th><th>MAC-Adresse</th><th>Domain</th></tr>
+	<tr><th><?php echo LANG['ip_address']; ?></th><th><?php echo LANG['netmask']; ?></th><th><?php echo LANG['broadcast']; ?></th><th><?php echo LANG['mac_address']; ?></th><th><?php echo LANG['domain']; ?></th></tr>
 	<?php
 	foreach($db->getComputerNetwork($computer->id) as $n) {
 		echo '<tr>';
@@ -121,9 +121,9 @@ if($computer === null) die();
 	?>
 </table>
 
-<h2>Bildschirme</h2>
+<h2><?php echo LANG['screens']; ?></h2>
 <table class='list'>
-	<tr><th>Name</th><th>Hersteller</th><th>Typ</th><th>Auflösung</th></tr>
+	<tr><th><?php echo LANG['name']; ?></th><th><?php echo LANG['vendor']; ?></th><th>Typ</th><th><?php echo LANG['resolution']; ?></th></tr>
 	<?php
 	foreach($db->getComputerScreen($computer->id) as $s) {
 		echo '<tr>';
@@ -136,14 +136,14 @@ if($computer === null) die();
 	?>
 </table>
 
-<h2>Installierte Pakete</h2>
+<h2><?php echo LANG['installed_packages']; ?></h2>
 <table id='tblInstalledPackageData' class='list searchable sortable savesort'>
 	<thead>
 		<tr>
-			<th class='searchable sortable'>Paket</th>
-			<th class='searchable sortable'>Prozedur</th>
-			<th class='searchable sortable'>Installationszeitpunkt</th>
-			<th>Aktion</th>
+			<th class='searchable sortable'><?php echo LANG['package']; ?></th>
+			<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
+			<th class='searchable sortable'><?php echo LANG['installation_date']; ?></th>
+			<th><?php echo LANG['action']; ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -156,8 +156,8 @@ if($computer === null) die();
 		echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 		echo '<td>'.htmlspecialchars($p->installed).'</td>';
 		echo '<td>';
-		echo ' <button title="Zuweisung entfernen" onclick="confirmRemovePackageComputerAssignment('.$p->id.')"><img src="img/remove.svg"></button>';
-		echo ' <button title="Paket deinstallieren" onclick="confirmUninstallPackage('.$p->id.')"><img src="img/delete.svg"></button>';
+		echo ' <button title="'.LANG['remove_assignment'].'" onclick="confirmRemovePackageComputerAssignment('.$p->id.')"><img src="img/remove.svg"></button>';
+		echo ' <button title="'.LANG['uninstall_package'].'" onclick="confirmUninstallPackage('.$p->id.')"><img src="img/delete.svg"></button>';
 		echo '</td>';
 		echo '</tr>';
 	}
@@ -165,18 +165,18 @@ if($computer === null) die();
 	</tbody>
 	<tfoot>
 		<tr>
-			<td colspan='999'><span class='counter'><?php echo $counter; ?></span> Element(e)</td>
+			<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
 		</tr>
 	</tfoot>
 </table>
 
-<h2>Erkannte Software</h2>
+<h2><?php echo LANG['recognised_software']; ?></h2>
 <table id='tblSoftwareInventoryData' class='list searchable sortable savesort'>
 	<thead>
 		<tr>
-			<th class='searchable sortable'>Name</th>
-			<th class='searchable sortable'>Version</th>
-			<th class='searchable sortable'>Beschreibung</th>
+			<th class='searchable sortable'><?php echo LANG['name']; ?></th>
+			<th class='searchable sortable'><?php echo LANG['version']; ?></th>
+			<th class='searchable sortable'><?php echo LANG['description']; ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -194,7 +194,7 @@ if($computer === null) die();
 	</tbody>
 	<tfoot>
 		<tr>
-			<td colspan='999'><span class='counter'><?php echo $counter; ?></span> Element(e)</td>
+			<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
 		</tr>
 	</tfoot>
 </table>

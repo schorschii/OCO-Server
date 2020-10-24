@@ -67,41 +67,41 @@ if(!empty($_POST['add_jobcontainer'])) {
 }
 ?>
 
-<h1>Bereitstellungs-Assistent</h1>
+<h1><?php echo LANG['deployment_assistant']; ?></h1>
 
 <table>
 	<tr>
-		<th>Name:</th>
+		<th><?php echo LANG['name']; ?>:</th>
 		<td>
 			<input type='text' id='txtName' value='Job <?php echo date('y-m-d H:i:s'); ?>'></input>
 		</td>
 	</tr>
 	<tr>
-		<th>Start:</th>
+		<th><?php echo LANG['start']; ?>:</th>
 		<td>
 			<input type='date' id='dteStart' value='<?php echo date('Y-m-d'); ?>'></input>
 			<input type='time' id='tmeStart' value='<?php echo date('H:i:s'); ?>'></input>
 		</td>
 	</tr>
 	<tr>
-		<th><label><input type='checkbox' id='chkDateEndEnabled'>Ende:</label></th>
+		<th><label><input type='checkbox' id='chkDateEndEnabled'><?php echo LANG['end']; ?>:</label></th>
 		<td>
 			<input type='date' id='dteEnd' value=''></input>
 			<input type='time' id='tmeEnd' value=''></input>
 		</td>
 	</tr>
 	<tr>
-		<th>Beschreibung:</th>
+		<th><?php echo LANG['description']; ?>:</th>
 		<td>
 			<textarea id='txtDescription'></textarea>
 		</td>
 	</tr>
 </table>
 
-<h2>Zielcomputer</h2>
+<h2><?php echo LANG['target_computer']; ?></h2>
 <div class='gallery'>
 	<div>
-		<h3>Computer</h3>
+		<h3><?php echo LANG['computer']; ?></h3>
 		<select id='computer' size='10' multiple='true'>
 			<?php
 			foreach($db->getAllComputer() as $computer) {
@@ -113,7 +113,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 		</select>
 	</div>
 	<div>
-		<h3>Computergruppen</h3>
+		<h3><?php echo LANG['computer_groups']; ?></h3>
 		<select id='computer_group' size='10' multiple='true'>
 			<?php
 			foreach($db->getAllComputerGroup() as $group) {
@@ -126,10 +126,10 @@ if(!empty($_POST['add_jobcontainer'])) {
 	</div>
 </div>
 
-<h2>Zu verteilende Pakete</h2>
+<h2><?php echo LANG['packages_to_deploy']; ?></h2>
 <div class='gallery'>
 	<div>
-		<h3>Pakete</h3>
+		<h3><?php echo LANG['packages']; ?></h3>
 		<select id='package' size='10' multiple='true'>
 			<?php
 			foreach($db->getAllPackage() as $package) {
@@ -141,7 +141,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 		</select>
 	</div>
 	<div>
-		<h3>Paketgruppen</h3>
+		<h3><?php echo LANG['package_groups']; ?></h3>
 		<select id='package_group' size='10' multiple='true'>
 			<?php
 			foreach($db->getAllPackageGroup() as $group) {
@@ -155,5 +155,5 @@ if(!empty($_POST['add_jobcontainer'])) {
 </div>
 
 <p>
-	<button onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, computer, computer_group, package, package_group)'><img src='img/send.svg'>&nbsp;Bereitstellen</button>
+	<button onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, computer, computer_group, package, package_group)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 </p>

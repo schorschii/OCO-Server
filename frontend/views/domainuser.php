@@ -7,20 +7,21 @@ if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		$db->removeDomainuser($id);
 	}
+	die();
 }
 
 $domainuser = $db->getAllDomainuser();
 ?>
 
-<h1>Alle Domänen-Benutzer</h1>
+<h1><?php echo LANG['all_domain_user']; ?></h1>
 
 
 <table id='tblDomainuserData' class='list searchable sortable savesort'>
 <thead>
 	<tr>
 		<th></th>
-		<th class='searchable sortable'>Anmeldename</th>
-		<th class='searchable sortable'>Letzte Anmeldung</th>
+		<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
 	</tr>
 </thead>
 
@@ -38,12 +39,12 @@ foreach($domainuser as $u) {
 
 <tfoot>
 	<tr>
-		<td colspan='999'><span class='counter'><?php echo $counter; ?></span> Element(e)</td>
+		<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
 	</tr>
 </tfoot>
 </table>
 
 
-<p>Ausgewählte Elemente:&nbsp;
-	<button onclick='removeSelectedDomainuser("domainuser_id[]")'><img src='img/delete.svg'>&nbsp;Löschen</button>
+<p><?php echo LANG['selected_elements']; ?>:&nbsp;
+	<button onclick='removeSelectedDomainuser("domainuser_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 </p>

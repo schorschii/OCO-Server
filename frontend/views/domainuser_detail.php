@@ -12,9 +12,9 @@ if($domainuser === null) die();
 
 <h1><?php echo htmlspecialchars($domainuser->username); ?></h1>
 
-<h2>Anmeldungen</h2>
+<h2><?php echo LANG['logins']; ?></h2>
 <table class='list'>
-	<tr><th>Computer</th><th>Anzahl</th><th>Letzte Anmeldung</th></tr>
+	<tr><th><?php echo LANG['computer']; ?></th><th><?php echo LANG['count']; ?></th><th><?php echo LANG['last_login']; ?></th></tr>
 	<?php
 	foreach($db->getDomainuserLogonByDomainuser($domainuser->id) as $logon) {
 		echo "<tr>";

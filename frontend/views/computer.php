@@ -12,34 +12,39 @@ if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		$db->removeComputer($id);
 	}
+	die();
 }
 if(!empty($_POST['remove_group_id']) && is_array($_POST['remove_group_id'])) {
 	foreach($_POST['remove_group_id'] as $id) {
 		$db->removeComputerGroup($id);
 	}
+	die();
 }
 if(!empty($_POST['remove_from_group_id']) && !empty($_POST['remove_from_group_computer_id']) && is_array($_POST['remove_from_group_computer_id'])) {
 	foreach($_POST['remove_from_group_computer_id'] as $cid) {
 		$db->removeComputerFromGroup($cid, $_POST['remove_from_group_id']);
 	}
+	die();
 }
 if(!empty($_POST['add_group'])) {
 	$db->addComputerGroup($_POST['add_group']);
+	die();
 }
 if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_group_computer_id']) && is_array($_POST['add_to_group_computer_id'])) {
 	foreach($_POST['add_to_group_computer_id'] as $cid) {
 		$db->addComputerToGroup($cid, $_POST['add_to_group_id']);
 	}
+	die();
 }
 
 $group = null;
 $computer = [];
 if(empty($_GET['id'])) {
 	$computer = $db->getAllComputer();
-	echo "<h1>"."Alle Computer"."</h1>";
+	echo "<h1>".LANG['all_computer']."</h1>";
 
 	echo "<p>";
-	echo "<button onclick='newComputerGroup()'><img src='img/add.svg'>&nbsp;Neue Gruppe</button>";
+	echo "<button onclick='newComputerGroup()'><img src='img/add.svg'>&nbsp;".LANG['new_group']."</button>";
 	echo "</p>";
 } else {
 	$computer = $db->getComputerByGroup($_GET['id']);
@@ -48,8 +53,8 @@ if(empty($_GET['id'])) {
 	echo "<h1>".htmlspecialchars($group->name)."</h1>";
 
 	echo "<p>Gruppe:&nbsp;";
-	echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;Für alle bereitstellen</button>";
-	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."])'><img src='img/delete.svg'>&nbsp;Gruppe löschen</button>";
+	echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_for_all']."</button>";
+	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button>";
 	echo "</p>";
 }
 ?>
@@ -58,16 +63,16 @@ if(empty($_GET['id'])) {
 <thead>
 	<tr>
 		<th></th>
-		<th class='searchable sortable'>Hostname</th>
-		<th class='searchable sortable'>Betriebssystem</th>
-		<th class='searchable sortable'>Version</th>
-		<th class='searchable sortable'>CPU</th>
-		<th class='searchable sortable'>RAM</th>
-		<th class='searchable sortable'>IP-Adressen</th>
-		<th class='searchable sortable'>MAC-Adressen</th>
-		<th class='searchable sortable'>Seriennummer</th>
-		<th class='searchable sortable'>Agent</th>
-		<th class='searchable sortable'>Zuletzt gesehen</th>
+		<th class='searchable sortable'><?php echo LANG['hostname']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['os']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['version']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['cpu']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['ram']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['ip_addresses']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['mac_addresses']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['serial_no']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['agent']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['last_seen']; ?></th>
 	</tr>
 </thead>
 
@@ -100,15 +105,15 @@ foreach($computer as $c) {
 
 <tfoot>
 	<tr>
-		<td colspan='999'><span class='counter'><?php echo $counter; ?></span> Element(e)</td>
+		<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
 	</tr>
 </tfoot>
 </table>
 
-<p>Ausgewählte Elemente:&nbsp;
-	<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.svg'>&nbsp;Bereitstellen</button>
+<p><?php echo LANG['selected_elements']; ?>:&nbsp;
+	<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='addSelectedComputerToGroup("computer_id[]", sltNewGroup.value)'><img src='img/plus.svg'>
-		&nbsp;Hinzufügen zu
+		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewGroup' onclick='event.stopPropagation()'>
 			<?php
 			foreach($db->getAllComputerGroup() as $g) {
@@ -118,7 +123,7 @@ foreach($computer as $c) {
 		</select>
 	</button>
 	<?php if($group !== null) { ?>
-		<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)'><img src='img/remove.svg'>&nbsp;Aus Gruppe entfernen</button>
+		<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
 	<?php } ?>
-	<button onclick='removeSelectedComputer("computer_id[]")'><img src='img/delete.svg'>&nbsp;Löschen</button>
+	<button onclick='removeSelectedComputer("computer_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 </p>
