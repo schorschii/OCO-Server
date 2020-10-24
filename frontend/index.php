@@ -14,7 +14,7 @@ require_once('session.php');
 <div id='container'>
 
 	<div id='header'>
-		<span class='left'><?php echo APP_NAME; ?></span>
+		<span class='left'><a href='index.php'><?php echo APP_NAME; ?></a></span>
 		<span class='right'>
 			<!--<button><img src='img/settings.svg' onclick='openSettings()'></button>-->
 			<button><img src='img/exit.svg' onclick='window.location.href="login.php?logout"' title='<?php echo htmlspecialchars($_SESSION['um_username']); ?>'></button>
@@ -27,7 +27,7 @@ require_once('session.php');
 		</div>
 		<div id='explorer-content' oncontextmenu='return toggleContextMenu(ctmExplorerContent)'>
 			<div id='homepage'>
-				<img src='img/logo.svg'>
+				<img src='img/logo.dyn.svg'>
 				<div class='title'>[ Open Computer Orchestration ]</div>
 				<div class='subtitle'>Client inventory and software delivery made simple</div>
 			</div>

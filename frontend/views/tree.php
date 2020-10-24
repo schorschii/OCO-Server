@@ -5,33 +5,33 @@ require_once('../session.php');
 ?>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentDomainuser()'><img src='img/users.svg'>Benutzer</a>
+	<a href='#' onclick='refreshContentDomainuser()'><img src='img/users.dyn.svg'>Benutzer</a>
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentComputer()'><img src='img/computer.svg'>Computer</a>
+	<a href='#' onclick='refreshContentComputer()'><img src='img/computer.dyn.svg'>Computer</a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllComputerGroup() as $group) {
-			echo "<a href='#' onclick='refreshContentComputer(".$group->id.")'><img src='img/folder.svg'>".htmlspecialchars($group->name)."</a>";
+			echo "<a href='#' onclick='refreshContentComputer(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
 		}
 		?>
 	</div>
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentPackage()'><img src='img/software.svg'>Pakete</a>
+	<a href='#' onclick='refreshContentPackage()'><img src='img/software.dyn.svg'>Pakete</a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllPackageGroup() as $group) {
-			echo "<a href='#' onclick='refreshContentPackage(".$group->id.")'><img src='img/folder.svg'>".htmlspecialchars($group->name)."</a>";
+			echo "<a href='#' onclick='refreshContentPackage(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
 		}
 		?>
 	</div>
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentJobContainer()'><img src='img/job.svg'>Jobs</a>
+	<a href='#' onclick='refreshContentJobContainer()'><img src='img/job.dyn.svg'>Jobs</a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllJobContainer() as $container) {

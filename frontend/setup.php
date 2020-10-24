@@ -60,7 +60,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 				<input type='password' name='password2' placeholder='Kennwort bestätigen...'>
 				<button id='btnFinish'>Fertig stellen</button>
 			</form>
-			<img src='img/logo.svg'>
+			<img src='img/logo.dyn.svg'>
 		</div>
 		<div id='login-bg'>
 

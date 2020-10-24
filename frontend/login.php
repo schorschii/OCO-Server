@@ -80,7 +80,7 @@ function validatePassword($userObject, $checkPassword) {
 				<input id='txtPassword' type='password' name='password' placeholder='Kennwort'>
 				<button id='btnLogin'>Anmelden</button>
 			</form>
-			<img src='img/logo.svg'>
+			<img src='img/logo.dyn.svg'>
 		</div>
 		<div id='login-bg'>
 

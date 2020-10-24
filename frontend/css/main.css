@@ -32,6 +32,10 @@ body {
 	font-size: 20px;
 	font-weight: 100;
 }
+#header a {
+	color: inherit;
+	text-decoration: none;
+}
 
 #login {
 	flex-grow: 1;
