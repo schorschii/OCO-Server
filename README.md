@@ -40,3 +40,7 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
 ```
 
 3. Start the first sync manually by executing `cd /var/www/oco/lib && php ldapsync.php`. Now you can log in with the synced accounts on the web frontend.
+
+## Additional Features
+### Remote Screen Access
+OCO does not contain a remote access solution as found in some commercial client management systems. OCO doesn't want to reinvent the wheel. Please a VNC server/client for this.
