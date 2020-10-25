@@ -10,6 +10,7 @@ const LANG = [
 	'login' => 'Login',
 	'log_in' => 'Login',
 	'login_failed' => 'Login failed',
+	'user_locked' => 'User locked',
 	'username' => 'Username',
 	'password' => 'Password',
 	'user_does_not_exist' => 'User does not exist',
@@ -112,6 +113,13 @@ const LANG = [
 	'packages_added' => 'Packages have been added',
 	'remove_assignment' => 'Remove Assignment',
 	'uninstall_package' => 'Uninstall Package',
+	'settings' => 'Settings',
+	'full_name' => 'Display Name',
+	'system_users' => 'System Users',
+	'ldap_account' => 'LDAP Account',
+	'locked' => 'Locked',
+	'lock' => 'Lock',
+	'unlock' => 'Unlock',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

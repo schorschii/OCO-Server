@@ -3,7 +3,5 @@
 <link rel='stylesheet' type='text/css' href='css/font.css'>
 <link rel='stylesheet' type='text/css' href='css/main.css'>
 <link rel='stylesheet' type='text/css' href='css/infobox.css'>
-<script src='js/main.js'></script>
-<script src='js/strings.js.php'></script>
 <meta name='viewport' content='width=720'>
 <meta name='author' content='Georg Sieber'>

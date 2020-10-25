@@ -19,14 +19,20 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		$info = LANG['user_does_not_exist'];
 		$infoclass = "red";
 	} else {
-		if(validatePassword($user, $_POST['password'])) {
-			$_SESSION['um_username'] = $user->username;
-			$_SESSION['um_userid'] = $user->id;
-			header('Location: index.php');
-			die();
+		if(!$user->locked) {
+			if(validatePassword($user, $_POST['password'])) {
+				$_SESSION['um_username'] = $user->username;
+				$_SESSION['um_userid'] = $user->id;
+				header('Location: index.php');
+				die();
+			} else {
+				sleep(2);
+				$info = LANG['login_failed'];
+				$infoclass = "red";
+			}
 		} else {
-			sleep(2);
-			$info = LANG['login_failed'];
+			sleep(1);
+			$info = LANG['user_locked'];
 			$infoclass = "red";
 		}
 	}

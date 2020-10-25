@@ -7,6 +7,8 @@ require_once('session.php');
 <head>
 	<title><?php echo LANG['app_name']; ?></title>
 	<?php require_once('head.inc.php'); ?>
+	<script src='js/strings.js.php'></script>
+	<script src='js/main.js'></script>
 	<script src='js/table.js'></script>
 </head>
 <body onclick='toggleContextMenu(null)' onkeydown='handleRefresh(event)'>
@@ -16,8 +18,8 @@ require_once('session.php');
 	<div id='header'>
 		<span class='left'><a href='index.php'><?php echo LANG['app_name']; ?></a></span>
 		<span class='right'>
-			<!--<button><img src='img/settings.svg' onclick='openSettings()'></button>-->
-			<button><img src='img/exit.svg' onclick='window.location.href="login.php?logout"' title='<?php echo htmlspecialchars($_SESSION['um_username']); ?>'></button>
+			<button onclick='refreshContentSettings()'><img src='img/settings.svg'></button>
+			<button onclick='window.location.href="login.php?logout"' title='<?php echo htmlspecialchars($_SESSION['um_username']); ?>'><img src='img/exit.svg'></button>
 		</span>
 	</div>
 

@@ -274,6 +274,10 @@ table.list .sortsymbol.unsorted::after {
 	content: "△▽";
 }
 
+table img {
+	height: 18px;
+}
+
 input, select, button, textarea {
 	font-family: inherit;
 	font-size: inherit;

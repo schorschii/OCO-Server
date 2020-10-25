@@ -125,6 +125,9 @@ function refreshContent() {
 		ajaxRequest(currentExplorerContentUrl, 'explorer-content');
 	}
 }
+function refreshContentSettings(id='') {
+	ajaxRequest('views/setting.php?id='+encodeURIComponent(id), 'explorer-content');
+}
 function refreshContentDomainuser() {
 	ajaxRequest('views/domainuser.php', 'explorer-content');
 }
@@ -441,4 +444,54 @@ function confirmRemoveSelectedDomainuser(checkboxName) {
 	if(confirm(L__CONFIRM_DELETE)) {
 		ajaxRequestPost('views/domainuser.php', paramString, null, refreshContent);
 	}
+}
+
+// systemuser operations
+function confirmRemoveSelectedSystemuser(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_systemuser_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(L__CONFIRM_DELETE)) {
+		ajaxRequestPost('views/setting.php', paramString, null, refreshContent);
+	}
+}
+function lockSelectedSystemuser(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'lock_systemuser_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('views/setting.php', paramString, null, refreshContent);
+}
+function unlockSelectedSystemuser(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'unlock_systemuser_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('views/setting.php', paramString, null, refreshContent);
 }

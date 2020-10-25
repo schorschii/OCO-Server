@@ -575,6 +575,17 @@ class db {
 		if(!$this->statement->execute()) return null;
 		return self::getResultObjectArray($this->statement->get_result());
 	}
+	public function getSystemuser($id) {
+		$sql = "SELECT * FROM systemuser WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $id)) return null;
+		if(!$this->statement->execute()) return null;
+		$result = $this->statement->get_result();
+		if($result->num_rows == 0) return null;
+		while($row = $result->fetch_object()) {
+			return $row;
+		}
+	}
 	public function getSystemuserByLogin($username) {
 		$sql = "SELECT * FROM systemuser WHERE username = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;

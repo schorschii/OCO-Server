@@ -10,6 +10,7 @@ const LANG = [
 	'login' => 'Anmeldung',
 	'log_in' => 'Anmelden',
 	'login_failed' => 'Anmeldung fehlgeschlagen',
+	'user_locked' => 'Benutzer gesperrt',
 	'username' => 'Benutzername',
 	'password' => 'Kennwort',
 	'user_does_not_exist' => 'Benutzer existiert nicht',
@@ -112,6 +113,13 @@ const LANG = [
 	'packages_added' => 'Pakete wurden hinzugefügt',
 	'remove_assignment' => 'Zuweisung entfernen',
 	'uninstall_package' => 'Paket deinstallieren',
+	'settings' => 'Einstellungen',
+	'full_name' => 'Anzeigename',
+	'system_users' => 'Systembenutzer',
+	'ldap_account' => 'LDAP-Account',
+	'locked' => 'Gesperrt',
+	'lock' => 'Sperren',
+	'unlock' => 'Entsperren',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
