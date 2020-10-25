@@ -15,7 +15,7 @@ if(!empty($_GET['id'])) {
 	if($container === null) die('not found');
 
 	$icon = $db->getJobContainerIcon($container->id);
-	echo "<h1><img src='img/$icon.svg'>".htmlspecialchars($container->name)."</h1>";
+	echo "<h1><img src='img/$icon.dyn.svg'>".htmlspecialchars($container->name)."</h1>";
 
 	echo "<p>";
 	echo "<button onclick='confirmRemoveJobContainer(".htmlspecialchars($container->id).")'><img src='img/delete.svg'>&nbsp;".LANG['delete_container']."</button>";
@@ -59,7 +59,7 @@ if(!empty($_GET['id'])) {
 	echo "<tr><th></th><th>".LANG['name']."</th><th>".LANG['start']."</th><th>".LANG['end']."</th><th>".LANG['created']."</th></tr>";
 	foreach($db->getAllJobContainer() as $jc) {
 		echo "<tr>";
-		echo "<td><img src='img/".$db->getJobContainerIcon($jc->id).".svg'></td>";
+		echo "<td><img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'></td>";
 		echo "<td><a href='#' onclick='refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
 		echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 		echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";

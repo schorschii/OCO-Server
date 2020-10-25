@@ -35,7 +35,7 @@ require_once('../session.php');
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllJobContainer() as $container) {
-			echo "<a href='#' onclick='refreshContentJobContainer(".$container->id.")'><img src='img/".$db->getJobContainerIcon($container->id).".svg'>".htmlspecialchars($container->name)."</a>";
+			echo "<a href='#' onclick='refreshContentJobContainer(".$container->id.")'><img src='img/".$db->getJobContainerIcon($container->id).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
 		}
 		?>
 	</div>
