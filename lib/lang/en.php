@@ -9,6 +9,7 @@ const LANG = [
 	'setup' => 'Setup',
 	'login' => 'Login',
 	'log_in' => 'Login',
+	'login_failed' => 'Login failed',
 	'username' => 'Username',
 	'password' => 'Password',
 	'user_does_not_exist' => 'User does not exist',
