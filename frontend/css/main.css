@@ -274,8 +274,12 @@ table.list .sortsymbol.unsorted::after {
 	content: "△▽";
 }
 
-table img {
+table tr th > img,
+table tr td > img {
 	height: 18px;
+}
+table tr td button > img {
+	height: 24px;
 }
 
 input, select, button, textarea {
