@@ -51,7 +51,7 @@ if($computer === null) die();
 	</tr>
 	<tr>
 		<th><?php echo LANG['ram']; ?></th>
-		<td><?php echo htmlspecialchars($computer->ram); ?></td>
+		<td><?php echo bytesToGb($computer->ram); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['serial_no']; ?></th>

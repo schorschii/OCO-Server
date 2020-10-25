@@ -3,11 +3,6 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
-function gbSize($bytes) {
-	if(empty($bytes)) return '';
-	return round($bytes/1024/1024/2014).'&nbsp;GiB';
-}
-
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		$db->removeComputer($id);
@@ -93,7 +88,7 @@ foreach($computer as $c) {
 	echo "<td>".htmlspecialchars($c->os)."</td>";
 	echo "<td>".htmlspecialchars($c->os_version)."</td>";
 	echo "<td>".htmlspecialchars($c->cpu)."</td>";
-	echo "<td>".gbSize($c->ram)."</td>";
+	echo "<td>".bytesToGb($c->ram)."</td>";
 	echo "<td>".htmlspecialchars(implode($ip_addresses,', '))."</td>";
 	echo "<td>".htmlspecialchars(implode($mac_addresses,', '))."</td>";
 	echo "<td>".htmlspecialchars($c->serial)."</td>";
