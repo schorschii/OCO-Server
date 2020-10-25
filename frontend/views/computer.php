@@ -31,7 +31,9 @@ if(!empty($_POST['add_group'])) {
 }
 if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_group_computer_id']) && is_array($_POST['add_to_group_computer_id'])) {
 	foreach($_POST['add_to_group_computer_id'] as $cid) {
-		$db->addComputerToGroup($cid, $_POST['add_to_group_id']);
+		if(count($db->getComputerByComputerAndGroup($cid, $_POST['add_to_group_id'])) == 0) {
+			$db->addComputerToGroup($cid, $_POST['add_to_group_id']);
+		}
 	}
 	die();
 }

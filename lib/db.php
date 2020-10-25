@@ -234,6 +234,28 @@ class db {
 		if(!$this->statement->execute()) return null;
 		return self::getResultObjectArray($this->statement->get_result());
 	}
+	public function getComputerByComputerAndGroup($cid, $gid) {
+		$sql = "
+			SELECT * FROM computer_group_member
+			WHERE computer_id = ? AND computer_group_id = ?
+		";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('ii', $cid, $gid)) return null;
+		if(!$this->statement->execute()) return null;
+		return self::getResultObjectArray($this->statement->get_result());
+	}
+	public function getGroupByComputer($cid) {
+		$sql = "
+			SELECT cg.id AS 'id', cg.name AS 'name'
+			FROM computer_group_member cgm
+			INNER JOIN computer_group cg ON cg.id = cgm.computer_group_id
+			WHERE cgm.computer_id = ?
+		";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $cid)) return null;
+		if(!$this->statement->execute()) return null;
+		return self::getResultObjectArray($this->statement->get_result());
+	}
 	public function addComputerGroup($name) {
 		$sql = "INSERT INTO computer_group (name) VALUES (?)";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;

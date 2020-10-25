@@ -49,6 +49,7 @@ const LANG = [
 	'boot_type' => 'Boot-Type',
 	'secure_boot' => 'Secure Boot',
 	'agent_version' => 'Agent-Version',
+	'assigned_groups' => 'Assigned Groups',
 	'logins' => 'Logins',
 	'computer' => 'Computer',
 	'count' => 'Count',

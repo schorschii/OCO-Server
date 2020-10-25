@@ -89,6 +89,20 @@ if($computer === null) die();
 		<th><?php echo LANG['last_updated']; ?></th>
 		<td><?php echo htmlspecialchars($computer->last_update); ?></td>
 	</tr>
+	<tr>
+		<th><?php echo LANG['assigned_groups']; ?></th>
+		<td>
+			<?php
+			$res = $db->getGroupByComputer($computer->id);
+			$groups = [];
+			$i = 0;
+			foreach($res as $group) {
+				echo "<a href='#' onclick='refreshContentComputer(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
+				if(++$i != count($res)) { echo ", "; }
+			}
+			?>
+		</td>
+	</tr>
 </table>
 
 <h2><?php echo LANG['logins']; ?></h2>
