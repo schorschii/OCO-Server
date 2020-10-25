@@ -3,10 +3,11 @@ function obj(id) {
 }
 
 function handleRefresh(e) {
-	if((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82)
-	e.preventDefault();
-	refreshContent();
-	refreshSidebar();
+	if((e.which || e.keyCode) == 116) {
+		e.preventDefault();
+		refreshContent();
+		refreshSidebar();
+	}
 };
 
 var currentOpenContextMenu = null;
