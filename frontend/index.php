@@ -9,7 +9,7 @@ require_once('session.php');
 	<?php require_once('head.inc.php'); ?>
 	<script src='js/table.js'></script>
 </head>
-<body onclick='toggleContextMenu(null)'>
+<body onclick='toggleContextMenu(null)' onkeydown='handleRefresh(event)'>
 
 <div id='container'>
 
