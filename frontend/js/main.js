@@ -299,6 +299,12 @@ function confirmRemovePackageComputerAssignment(assignment_id) {
 }
 
 // computer operations
+function newComputer() {
+	var newName = prompt(L__ENTER_NAME);
+	if(newName != null && newName != '') {
+		ajaxRequestPost('views/computer.php', urlencodeObject({'add_computer':newName}), null, refreshContent);
+	}
+}
 function removeSelectedComputerFromGroup(checkboxName, groupId) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {

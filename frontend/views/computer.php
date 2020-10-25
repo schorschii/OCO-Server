@@ -3,6 +3,10 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['add_computer'])) {
+	$db->addComputer($_POST['add_computer'], '', []);
+	die();
+}
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		$db->removeComputer($id);
@@ -39,6 +43,7 @@ if(empty($_GET['id'])) {
 	echo "<h1>".LANG['all_computer']."</h1>";
 
 	echo "<p>";
+	echo "<button onclick='newComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button>";
 	echo "<button onclick='newComputerGroup()'><img src='img/add.svg'>&nbsp;".LANG['new_group']."</button>";
 	echo "</p>";
 } else {

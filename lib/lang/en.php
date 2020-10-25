@@ -35,6 +35,7 @@ const LANG = [
 	'remove_from_group' => 'Remove from Group',
 	'add_to' => 'Add to',
 	'new_group' => 'New Group',
+	'new_computer' => 'New Computer',
 	'all_computer' => 'All Computer',
 	'deploy_for_all' => 'Deploy for All',
 	'delete_group' => 'Delete Gruppe',
