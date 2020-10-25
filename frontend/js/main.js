@@ -422,13 +422,17 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 }
 
 // domainuser operations
-function removeSelectedDomainuser(checkboxName) {
+function confirmRemoveSelectedDomainuser(checkboxName) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
 			ids.push(entry.value);
 		}
 	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
