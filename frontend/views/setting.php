@@ -36,6 +36,7 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 <h1><?php echo LANG['settings']; ?></h1>
 
 
+<h2><?php echo LANG['system_users']; ?></h2>
 <table id='tblSystemuserData' class='list searchable sortable savesort'>
 <thead>
 	<tr>
