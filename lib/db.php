@@ -276,9 +276,9 @@ class db {
 		if(!$this->statement->execute()) return false;
 		return $this->statement->insert_id;
 	}
-	public function getPackageComputerInstallation($pid) {
+	public function getPackageComputer($pid) {
 		$sql = "
-			SELECT c.id AS 'computer_id', c.hostname AS 'computer_hostname', cp.installed_procedure AS 'installed_procedure', cp.installed AS 'installed'
+			SELECT cp.id AS 'id', c.id AS 'computer_id', c.hostname AS 'computer_hostname', cp.installed_procedure AS 'installed_procedure', cp.installed AS 'installed'
 			FROM computer_package cp
 			INNER JOIN computer c ON c.id = cp.computer_id
 			WHERE cp.package_id = ?

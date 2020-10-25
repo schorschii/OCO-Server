@@ -28,7 +28,7 @@ if($package === null) die();
 	</tr>
 	<tr>
 		<th><?php echo LANG['zip_archive']; ?></th>
-		<td><?php echo htmlspecialchars($package->filename); ?></td>
+		<td><a href='payloadprovider.php?id=<?php echo $package->id ?>' target='_blank'><?php echo htmlspecialchars($package->filename); ?></a></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['install_procedure']; ?></th>
@@ -46,13 +46,24 @@ if($package === null) die();
 
 <h2><?php echo LANG['installed_on']; ?></h2>
 <table class='list'>
-	<tr><th><?php echo LANG['computer']; ?></th><th><?php echo LANG['procedure']; ?></th><th><?php echo LANG['installation_date']; ?></th></tr>
+	<thead>
+		<tr>
+			<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
+			<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
+			<th class='searchable sortable'><?php echo LANG['installation_date']; ?></th>
+			<th><?php echo LANG['action']; ?></th>
+		</tr>
+	</thead>
 	<?php
-	foreach($db->getPackageComputerInstallation($package->id) as $p) {
+	foreach($db->getPackageComputer($package->id) as $p) {
 		echo '<tr>';
 		echo '<td><a href="#" onclick="refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
 		echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 		echo '<td>'.htmlspecialchars($p->installed).'</td>';
+		echo '<td>';
+		echo ' <button title="'.LANG['remove_assignment'].'" onclick="confirmRemovePackageComputerAssignment('.$p->id.')"><img src="img/remove.svg"></button>';
+		echo ' <button title="'.LANG['uninstall_package'].'" onclick="confirmUninstallPackage('.$p->id.')"><img src="img/delete.svg"></button>';
+		echo '</td>';
 		echo '</tr>';
 	}
 	?>
