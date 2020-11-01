@@ -85,11 +85,22 @@ class db {
 		return self::getResultObjectArray($this->statement->get_result());
 	}
 	public function getComputerSoftware($cid) {
-		$sql = "SELECT * FROM computer_software WHERE computer_id = ? ORDER BY name";
+		$sql = "
+			SELECT cs.id AS 'id', s.name AS 'name', s.description AS 'description', cs.version AS 'version', cs.installed AS 'installed'
+			FROM computer_software cs
+			INNER JOIN software s ON cs.software_id = s.id
+			WHERE cs.computer_id = ? ORDER BY s.name
+		";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
 		if(!$this->statement->bind_param('i', $cid)) return null;
 		if(!$this->statement->execute()) return null;
 		return self::getResultObjectArray($this->statement->get_result());
+	}
+	public function removeComputerSoftware($id) {
+		$sql = "DELETE FROM computer_software WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $id)) return null;
+		return $this->statement->execute();
 	}
 	public function getComputerPackage($cid) {
 		$sql = "
@@ -134,11 +145,13 @@ class db {
 	public function updateComputer($id, $hostname, $os, $os_version, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $networks, $screens, $software, $logins) {
 		$this->mysqli->autocommit(false);
 
+		// update general info
 		$sql = "UPDATE computer SET hostname = ?, os = ?, os_version = ?, kernel_version = ?, architecture = ?, cpu = ?, gpu = ?, ram = ?, agent_version = ?, serial = ?, manufacturer = ?, model = ?, bios_version = ?, boot_type = ?, secure_boot = ?, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP WHERE id = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
 		if(!$this->statement->bind_param('sssssssssssssssi', $hostname, $os, $os_version, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $id)) return false;
 		if(!$this->statement->execute()) return false;
 
+		// update networks
 		$sql = "DELETE FROM computer_network WHERE computer_id = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
 		if(!$this->statement->bind_param('i', $id)) return false;
@@ -150,6 +163,7 @@ class db {
 			if(!$this->statement->execute()) return false;
 		}
 
+		// update screens
 		$sql = "DELETE FROM computer_screen WHERE computer_id = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
 		if(!$this->statement->bind_param('i', $id)) return false;
@@ -161,22 +175,38 @@ class db {
 			if(!$this->statement->execute()) return false;
 		}
 
-		$sql = "DELETE FROM computer_software WHERE computer_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('i', $id)) return false;
-		if(!$this->statement->execute()) return false;
+		// insert software
 		foreach($software as $index => $s) {
-			$sql = "INSERT INTO computer_software (computer_id, name, version, description) VALUES (?,?,?,?)";
-			if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-			if(!$this->statement->bind_param('isss', $id, $s['name'], $s['version'], $s['description'])) return false;
-			if(!$this->statement->execute()) return false;
+			$sid = null;
+			$existingSoftware = $this->getSoftwareByName($s['name']);
+			if($existingSoftware === null) {
+				$sid = $this->addSoftware($s['name'], $s['description']);
+			} else {
+				$sid = $existingSoftware->id;
+			}
+			if($this->getComputerSoftwareByComputerSoftwareVersion($id, $sid, $s['version']) === null) {
+				$sql = "INSERT INTO computer_software (computer_id, software_id, version) VALUES (?,?,?)";
+				if(!$this->statement = $this->mysqli->prepare($sql)) return false;
+				if(!$this->statement->bind_param('iis', $id, $sid, $s['version'])) return false;
+				if(!$this->statement->execute()) return false;
+			}
+		}
+		// remove software, which can not be found in agent output
+		foreach($this->getComputerSoftware($id) as $s) {
+			$found = false;
+			foreach($software as $s2) {
+				if($s->name == $s2['name']) {
+					$found = true;
+					break;
+				}
+			}
+			if(!$found) {
+				$this->removeComputerSoftware($s->id);
+			}
 		}
 
+		// insert new domainuser logins
 		$domainusers = $this->getAllDomainuser();
-		$sql = "DELETE FROM domainuser_logon WHERE computer_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('i', $id)) return false;
-		if(!$this->statement->execute()) return false;
 		foreach($logins as $index => $l) {
 			$domainuser = null;
 			foreach($domainusers as $du) {
@@ -189,10 +219,12 @@ class db {
 				$du_id = $this->addDomainuser($l['username']);
 				$domainuser = $this->getDomainuser($du_id);
 			}
-			$sql = "INSERT INTO domainuser_logon (computer_id, domainuser_id, console, timestamp) VALUES (?,?,?,?)";
-			if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-			if(!$this->statement->bind_param('iiss', $id, $domainuser->id, $l['console'], $l['timestamp'])) return false;
-			if(!$this->statement->execute()) return false;
+			if($this->getDomainuserLogonByComputerDomainuserConsoleTimestamp($id, $domainuser->id, $l['console'], $l['timestamp']) === null) {
+				$sql = "INSERT INTO domainuser_logon (computer_id, domainuser_id, console, timestamp) VALUES (?,?,?,?)";
+				if(!$this->statement = $this->mysqli->prepare($sql)) return false;
+				if(!$this->statement->bind_param('iiss', $id, $domainuser->id, $l['console'], $l['timestamp'])) return false;
+				if(!$this->statement->execute()) return false;
+			}
 		}
 
 		$this->mysqli->commit();
@@ -540,6 +572,20 @@ class db {
 			return $row;
 		}
 	}
+	public function getDomainuserLogonByComputerDomainuserConsoleTimestamp($cid, $did, $console, $timestamp) {
+		$sql = "
+			SELECT * FROM domainuser_logon dl
+			WHERE dl.computer_id = ? AND dl.domainuser_id = ? AND dl.console = ? AND dl.timestamp = ?
+		";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('iiss', $cid, $did, $console, $timestamp)) return null;
+		if(!$this->statement->execute()) return null;
+		$result = $this->statement->get_result();
+		if($result->num_rows == 0) return null;
+		while($row = $result->fetch_object()) {
+			return $row;
+		}
+	}
 	public function getDomainuserLogonByDomainuser($id) {
 		$sql = "
 			SELECT c.id AS 'computer_id', c.hostname AS 'hostname', COUNT(c.hostname) AS 'amount',
@@ -637,6 +683,54 @@ class db {
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
 		if(!$this->statement->bind_param('i', $id)) return null;
 		return $this->statement->execute();
+	}
+
+	// Software Operations
+	public function getAllSoftware() {
+		$sql = "SELECT * FROM software ORDER BY name ASC";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->execute()) return null;
+		return self::getResultObjectArray($this->statement->get_result());
+	}
+	public function getSoftware($id) {
+		$sql = "SELECT * FROM software WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $id)) return null;
+		if(!$this->statement->execute()) return null;
+		$result = $this->statement->get_result();
+		if($result->num_rows == 0) return null;
+		while($row = $result->fetch_object()) {
+			return $row;
+		}
+	}
+	public function getSoftwareByName($name) {
+		$sql = "SELECT * FROM software WHERE name = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('s', $name)) return null;
+		if(!$this->statement->execute()) return null;
+		$result = $this->statement->get_result();
+		if($result->num_rows == 0) return null;
+		while($row = $result->fetch_object()) {
+			return $row;
+		}
+	}
+	public function getComputerSoftwareByComputerSoftwareVersion($cid, $sid, $version) {
+		$sql = "SELECT * FROM computer_software WHERE computer_id = ? AND software_id = ? AND version = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('iis', $cid, $sid, $version)) return null;
+		if(!$this->statement->execute()) return null;
+		$result = $this->statement->get_result();
+		if($result->num_rows == 0) return null;
+		while($row = $result->fetch_object()) {
+			return $row;
+		}
+	}
+	public function addSoftware($name, $description) {
+		$sql = "INSERT INTO software (name, description) VALUES (?,?)";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('ss', $name, $description)) return null;
+		if(!$this->statement->execute()) return null;
+		return $this->statement->insert_id;
 	}
 
 }

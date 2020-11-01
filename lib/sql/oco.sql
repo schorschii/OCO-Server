@@ -1,13 +1,10 @@
 -- phpMyAdmin SQL Dump
--- version 4.6.6deb5
+-- version 4.9.5deb2
 -- https://www.phpmyadmin.net/
---
--- Host: localhost:3306
--- Erstellungszeit: 21. Okt 2020 um 22:35
--- Server-Version: 5.7.31-0ubuntu0.18.04.1
--- PHP-Version: 7.2.24-0ubuntu0.18.04.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
 SET time_zone = "+00:00";
 
 
@@ -43,8 +40,8 @@ CREATE TABLE `computer` (
   `bios_version` text NOT NULL,
   `boot_type` text NOT NULL,
   `secure_boot` text NOT NULL,
-  `last_ping` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_update` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_ping` datetime NOT NULL DEFAULT current_timestamp(),
+  `last_update` datetime DEFAULT current_timestamp(),
   `notes` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -95,9 +92,9 @@ CREATE TABLE `computer_network` (
   `nic_number` int(11) NOT NULL,
   `addr` text NOT NULL,
   `netmask` text NOT NULL,
-  `broadcast` text,
-  `mac` text,
-  `domain` text
+  `broadcast` text DEFAULT NULL,
+  `mac` text DEFAULT NULL,
+  `domain` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -111,7 +108,7 @@ CREATE TABLE `computer_package` (
   `computer_id` int(11) NOT NULL,
   `package_id` int(11) NOT NULL,
   `installed_procedure` text NOT NULL,
-  `installed` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `installed` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -163,9 +160,9 @@ CREATE TABLE `computer_screen` (
 CREATE TABLE `computer_software` (
   `id` int(11) NOT NULL,
   `computer_id` int(11) NOT NULL,
-  `name` text NOT NULL,
+  `software_id` int(11) NOT NULL,
   `version` text NOT NULL,
-  `description` text NOT NULL
+  `installed` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -189,8 +186,8 @@ CREATE TABLE `domainuser_logon` (
   `id` int(11) NOT NULL,
   `computer_id` int(11) NOT NULL,
   `domainuser_id` int(11) NOT NULL,
-  `console` text,
-  `timestamp` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `console` text DEFAULT NULL,
+  `timestamp` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -205,11 +202,11 @@ CREATE TABLE `job` (
   `computer_id` int(11) NOT NULL,
   `package_id` int(11) NOT NULL,
   `package_procedure` text NOT NULL,
-  `is_uninstall` tinyint(4) NOT NULL DEFAULT '0',
-  `sequence` int(11) NOT NULL DEFAULT '0',
-  `state` int(11) NOT NULL DEFAULT '0',
+  `is_uninstall` tinyint(4) NOT NULL DEFAULT 0,
+  `sequence` int(11) NOT NULL DEFAULT 0,
+  `state` int(11) NOT NULL DEFAULT 0,
   `message` text NOT NULL,
-  `last_update` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `last_update` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -221,10 +218,10 @@ CREATE TABLE `job` (
 CREATE TABLE `job_container` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
-  `start_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `start_time` datetime NOT NULL DEFAULT current_timestamp(),
   `end_time` datetime DEFAULT NULL,
   `notes` text NOT NULL,
-  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -242,7 +239,7 @@ CREATE TABLE `package` (
   `filename` text NOT NULL,
   `install_procedure` text NOT NULL,
   `uninstall_procedure` text NOT NULL,
-  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `created` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -266,7 +263,19 @@ CREATE TABLE `package_group_member` (
   `id` int(11) NOT NULL,
   `package_id` int(11) NOT NULL,
   `package_group_id` int(11) NOT NULL,
-  `sequence` int(11) NOT NULL DEFAULT '0'
+  `sequence` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `report`
+--
+
+CREATE TABLE `report` (
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `query` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -295,6 +304,18 @@ INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `software`
+--
+
+CREATE TABLE `software` (
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `description` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `systemuser`
 --
 
@@ -302,13 +323,13 @@ CREATE TABLE `systemuser` (
   `id` int(11) NOT NULL,
   `username` text NOT NULL,
   `fullname` text NOT NULL,
-  `password` text,
-  `ldap` tinyint(4) NOT NULL DEFAULT '0',
-  `email` text,
-  `phone` text,
-  `mobile` text,
-  `description` text,
-  `locked` tinyint(4) NOT NULL DEFAULT '0'
+  `password` text DEFAULT NULL,
+  `ldap` tinyint(4) NOT NULL DEFAULT 0,
+  `email` text DEFAULT NULL,
+  `phone` text DEFAULT NULL,
+  `mobile` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `locked` tinyint(4) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -380,7 +401,8 @@ ALTER TABLE `computer_screen`
 --
 ALTER TABLE `computer_software`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_computer_software_1` (`computer_id`);
+  ADD KEY `fk_computer_software_1` (`computer_id`),
+  ADD KEY `fk_computer_software_2` (`software_id`);
 
 --
 -- Indizes für die Tabelle `domainuser`
@@ -432,9 +454,21 @@ ALTER TABLE `package_group_member`
   ADD KEY `fk_package_group_2` (`package_id`);
 
 --
+-- Indizes für die Tabelle `report`
+--
+ALTER TABLE `report`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indizes für die Tabelle `setting`
 --
 ALTER TABLE `setting`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indizes für die Tabelle `software`
+--
+ALTER TABLE `software`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -451,97 +485,128 @@ ALTER TABLE `systemuser`
 -- AUTO_INCREMENT für Tabelle `computer`
 --
 ALTER TABLE `computer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `computer_command`
 --
 ALTER TABLE `computer_command`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `computer_group`
 --
 ALTER TABLE `computer_group`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `computer_group_member`
 --
 ALTER TABLE `computer_group_member`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `computer_network`
 --
 ALTER TABLE `computer_network`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `computer_package`
 --
 ALTER TABLE `computer_package`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `computer_partition`
 --
 ALTER TABLE `computer_partition`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `computer_printer`
 --
 ALTER TABLE `computer_printer`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `computer_screen`
 --
 ALTER TABLE `computer_screen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `computer_software`
 --
 ALTER TABLE `computer_software`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `domainuser`
 --
 ALTER TABLE `domainuser`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `domainuser_logon`
 --
 ALTER TABLE `domainuser_logon`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `job`
 --
 ALTER TABLE `job`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `job_container`
 --
 ALTER TABLE `job_container`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `package`
 --
 ALTER TABLE `package`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `package_group`
 --
 ALTER TABLE `package_group`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `package_group_member`
 --
 ALTER TABLE `package_group_member`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `report`
+--
+ALTER TABLE `report`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `setting`
 --
 ALTER TABLE `setting`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+--
+-- AUTO_INCREMENT für Tabelle `software`
+--
+ALTER TABLE `software`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- AUTO_INCREMENT für Tabelle `systemuser`
 --
 ALTER TABLE `systemuser`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 --
 -- Constraints der exportierten Tabellen
 --
@@ -576,7 +641,8 @@ ALTER TABLE `computer_screen`
 -- Constraints der Tabelle `computer_software`
 --
 ALTER TABLE `computer_software`
-  ADD CONSTRAINT `fk_computer_software_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `fk_computer_software_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_computer_software_2` FOREIGN KEY (`software_id`) REFERENCES `software` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `domainuser_logon`
@@ -599,6 +665,7 @@ ALTER TABLE `job`
 ALTER TABLE `package_group_member`
   ADD CONSTRAINT `fk_package_group_1` FOREIGN KEY (`package_group_id`) REFERENCES `package_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_package_group_2` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
