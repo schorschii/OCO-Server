@@ -86,7 +86,7 @@ class db {
 	}
 	public function getComputerSoftware($cid) {
 		$sql = "
-			SELECT cs.id AS 'id', s.name AS 'name', s.description AS 'description', cs.version AS 'version', cs.installed AS 'installed'
+			SELECT cs.id AS 'id', s.id AS 'software_id', s.name AS 'name', s.description AS 'description', cs.version AS 'version', cs.installed AS 'installed'
 			FROM computer_software cs
 			INNER JOIN software s ON cs.software_id = s.id
 			WHERE cs.computer_id = ? ORDER BY s.name
@@ -251,6 +251,32 @@ class db {
 	public function getAllComputerGroup() {
 		$sql = "SELECT * FROM computer_group ORDER BY name";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->execute()) return null;
+		return self::getResultObjectArray($this->statement->get_result());
+	}
+	public function getComputerBySoftware($sid) {
+		$sql = "
+			SELECT c.id AS 'id', c.hostname AS 'hostname', cs.version AS 'version'
+			FROM computer_software cs
+			INNER JOIN computer c ON cs.computer_id = c.id
+			WHERE cs.software_id = ?
+			ORDER BY c.hostname
+		";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $sid)) return null;
+		if(!$this->statement->execute()) return null;
+		return self::getResultObjectArray($this->statement->get_result());
+	}
+	public function getComputerBySoftwareVersion($sid, $version) {
+		$sql = "
+			SELECT c.id AS 'id', c.hostname AS 'hostname', cs.version AS 'version'
+			FROM computer_software cs
+			INNER JOIN computer c ON cs.computer_id = c.id
+			WHERE cs.software_id = ? AND cs.version = ?
+			ORDER BY c.hostname
+		";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('is', $sid, $version)) return null;
 		if(!$this->statement->execute()) return null;
 		return self::getResultObjectArray($this->statement->get_result());
 	}
@@ -687,7 +713,7 @@ class db {
 
 	// Software Operations
 	public function getAllSoftware() {
-		$sql = "SELECT * FROM software ORDER BY name ASC";
+		$sql = "SELECT *, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS 'installations' FROM software s ORDER BY name ASC";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
 		if(!$this->statement->execute()) return null;
 		return self::getResultObjectArray($this->statement->get_result());

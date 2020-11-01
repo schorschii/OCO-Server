@@ -20,6 +20,10 @@ require_once('../session.php');
 </div>
 
 <div class='node'>
+	<a href='#' onclick='refreshContentSoftware()'><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></a>
+</div>
+
+<div class='node'>
 	<a href='#' onclick='refreshContentPackage()'><img src='img/software.dyn.svg'><?php echo LANG['packages']; ?></a>
 	<div class='subnode'>
 		<?php

@@ -198,11 +198,11 @@ if($computer === null) die();
 	$counter = 0;
 	foreach($db->getComputerSoftware($computer->id) as $s) {
 		$counter ++;
-		echo '<tr>';
-		echo '<td>'.htmlspecialchars($s->name).'</a></td>';
-		echo '<td>'.htmlspecialchars($s->version).'</td>';
-		echo '<td>'.htmlspecialchars($s->description).'</td>';
-		echo '</tr>';
+		echo "<tr>";
+		echo "<td><a href='#' onclick='refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->name)."</a></td>";
+		echo "<td><a href='#' onclick='refreshContentSoftware(".$s->software_id.", \"".htmlspecialchars($s->version)."\")'>".htmlspecialchars($s->version)."</a></td>";
+		echo "<td>".htmlspecialchars($s->description)."</td>";
+		echo "</tr>";
 	}
 	?>
 	</tbody>
