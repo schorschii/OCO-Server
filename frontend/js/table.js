@@ -272,3 +272,36 @@ function tableSearch(table, column, input) {
 		}
 	}
 }
+
+function toggleCheckboxesInTable(table, checked) {
+	let inputs = table.getElementsByTagName("input");
+	for(var i = 0; i < inputs.length; i++) {
+		if(inputs[i].type == "checkbox") {
+			inputs[i].checked = checked;
+		}
+	}
+	refreshCheckedCounter(table);
+}
+
+function refreshCheckedCounter(table) {
+	// count
+	let counter = 0;
+	let tbody = table.getElementsByTagName("tbody");
+	if(tbody && tbody.length > 0) {
+		let inputs = tbody[0].getElementsByTagName("input");
+		for(var i = 0; i < inputs.length; i++) {
+			if(inputs[i].type == "checkbox" && inputs[i].checked) {
+				counter ++;
+			}
+		}
+	}
+
+	// refresh counter
+	tfoot = table.getElementsByTagName("tfoot");
+	if(tfoot && tfoot.length == 1) {
+		spnCount = tfoot[0].querySelectorAll("span.counter-checked");
+		if(spnCount && spnCount.length > 0) {
+			spnCount[0].innerText = String(counter);
+		}
+	}
+}

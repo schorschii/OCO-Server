@@ -30,6 +30,7 @@ const LANG = [
 	'last_seen' => 'Zuletzt gesehen',
 	'last_updated' => 'Zuletzt aktualisiert',
 	'elements' => 'Element(e)',
+	'elements_checked' => 'Element(e) ausgewählt',
 	'deploy' => 'Bereitstellen',
 	'selected_elements' => 'Ausgewählte Elemente',
 	'delete' => 'Löschen',

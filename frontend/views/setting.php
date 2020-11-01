@@ -40,7 +40,7 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 <table id='tblSystemuserData' class='list searchable sortable savesort'>
 <thead>
 	<tr>
-		<th></th>
+		<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblSystemuserData, this.checked)'></th>
 		<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['full_name']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['description']; ?></th>
@@ -51,7 +51,7 @@ $counter = 0;
 foreach($db->getAllSystemuser() as $u) {
 	$counter ++;
 	echo "<tr>";
-	echo "<td><input type='checkbox' name='systemuser_id[]' value='".$u->id."'></td>";
+	echo "<td><input type='checkbox' name='systemuser_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblSystemuserData)'></td>";
 	echo "<td>";
 	if($u->ldap) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG['ldap_account']."'>&nbsp;";
 	if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG['locked']."'>&nbsp;";
@@ -64,7 +64,10 @@ foreach($db->getAllSystemuser() as $u) {
 ?>
 <tfoot>
 	<tr>
-		<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
+		<td colspan='999'>
+			<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+			<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+		</td>
 	</tr>
 </tfoot>
 </table>

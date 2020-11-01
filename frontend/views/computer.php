@@ -64,7 +64,7 @@ if(empty($_GET['id'])) {
 <table id='tblComputerData' class='list searchable sortable savesort'>
 <thead>
 	<tr>
-		<th></th>
+		<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblComputerData, this.checked)'></th>
 		<th class='searchable sortable'><?php echo LANG['hostname']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['os']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['version']; ?></th>
@@ -90,7 +90,7 @@ foreach($computer as $c) {
 		$mac_addresses[] = $n->mac;
 	}
 	echo "<tr>";
-	echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."'></td>";
+	echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
 	echo "<td><a href='#' onclick='refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
 	echo "<td>".htmlspecialchars($c->os)."</td>";
 	echo "<td>".htmlspecialchars($c->os_version)."</td>";
@@ -107,7 +107,10 @@ foreach($computer as $c) {
 
 <tfoot>
 	<tr>
-		<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
+		<td colspan='999'>
+			<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+			<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+		</td>
 	</tr>
 </tfoot>
 </table>
