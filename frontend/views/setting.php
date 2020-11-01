@@ -69,8 +69,9 @@ foreach($db->getAllSystemuser() as $u) {
 </tfoot>
 </table>
 
-<p><?php echo LANG['selected_elements']; ?>:&nbsp;
+<div class='controls'>
+	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 	<button onclick='lockSelectedSystemuser("systemuser_id[]")'><img src='img/lock.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
 	<button onclick='unlockSelectedSystemuser("systemuser_id[]")'><img src='img/unlock.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
 	<button onclick='confirmRemoveSelectedSystemuser("systemuser_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-</p>
+</div>

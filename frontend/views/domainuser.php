@@ -45,6 +45,7 @@ foreach($domainuser as $u) {
 </table>
 
 
-<p><?php echo LANG['selected_elements']; ?>:&nbsp;
+<div class='controls'>
+	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 	<button onclick='confirmRemoveSelectedDomainuser("domainuser_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-</p>
+</div>

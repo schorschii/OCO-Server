@@ -69,7 +69,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 
 <h1><?php echo LANG['deployment_assistant']; ?></h1>
 
-<table>
+<table class='form'>
 	<tr>
 		<th><?php echo LANG['name']; ?>:</th>
 		<td>
@@ -154,6 +154,6 @@ if(!empty($_POST['add_jobcontainer'])) {
 	</div>
 </div>
 
-<p>
+<div class='controls'>
 	<button onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, computer, computer_group, package, package_group)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-</p>
+</div>

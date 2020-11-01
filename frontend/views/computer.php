@@ -44,20 +44,20 @@ if(empty($_GET['id'])) {
 	$computer = $db->getAllComputer();
 	echo "<h1>".LANG['all_computer']."</h1>";
 
-	echo "<p>";
+	echo "<div class='controls'>";
 	echo "<button onclick='newComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button> ";
 	echo "<button onclick='newComputerGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
-	echo "</p>";
+	echo "</div>";
 } else {
 	$computer = $db->getComputerByGroup($_GET['id']);
 	$group = $db->getComputerGroup($_GET['id']);
 	if($group === null) die();
 	echo "<h1>".htmlspecialchars($group->name)."</h1>";
 
-	echo "<p>Gruppe:&nbsp;";
+	echo "<div class='controls'><span>Gruppe:&nbsp;</span>";
 	echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_for_all']."</button> ";
 	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
-	echo "</p>";
+	echo "</div>";
 }
 ?>
 
@@ -112,7 +112,8 @@ foreach($computer as $c) {
 </tfoot>
 </table>
 
-<p><?php echo LANG['selected_elements']; ?>:&nbsp;
+<div class='controls'>
+	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 	<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='addSelectedComputerToGroup("computer_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
@@ -128,4 +129,4 @@ foreach($computer as $c) {
 		<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
 	<?php } ?>
 	<button onclick='removeSelectedComputer("computer_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-</p>
+</div>

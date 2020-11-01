@@ -17,9 +17,9 @@ if(!empty($_GET['id'])) {
 	$icon = $db->getJobContainerIcon($container->id);
 	echo "<h1><img src='img/$icon.dyn.svg'>".htmlspecialchars($container->name)."</h1>";
 
-	echo "<p>";
+	echo "<div class='controls'>";
 	echo "<button onclick='confirmRemoveJobContainer(".htmlspecialchars($container->id).")'><img src='img/delete.svg'>&nbsp;".LANG['delete_container']."</button>";
-	echo "</p>";
+	echo "</div>";
 
 	echo "<p>";
 	echo "<table class='list'>";
@@ -51,9 +51,9 @@ if(!empty($_GET['id'])) {
 
 	echo "<h1>".LANG['jobs']."</h1>";
 
-	echo "<p>";
+	echo "<div class='controls'>";
 	echo "<button onclick='refreshContentDeploy()'><img src='img/add.svg'>&nbsp;".LANG['new_deployment_job']."</button>";
-	echo "</p>";
+	echo "</div>";
 
 	echo "<table class='list'>";
 	echo "<tr><th></th><th>".LANG['name']."</th><th>".LANG['start']."</th><th>".LANG['end']."</th><th>".LANG['created']."</th></tr>";

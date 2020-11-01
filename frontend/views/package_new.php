@@ -35,7 +35,7 @@ function randomString($length = 8) {
 
 <h1><?php echo LANG['new_package']; ?></h1>
 
-<table>
+<table class='form'>
 	<tr>
 		<th><?php echo LANG['name']; ?></th>
 		<td><input type='text' id='txtName'></td>
@@ -68,6 +68,6 @@ function randomString($length = 8) {
 
 <?php echo LANG['package_creation_notes']; ?>
 
-<p>
+<div class='controls'>
 	<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
-</p>
+</div>

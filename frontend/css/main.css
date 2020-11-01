@@ -112,7 +112,9 @@ body {
 	padding: 5px;
 	border-radius: 4px;
 }
-#explorer-tree a:hover {
+#explorer-tree a:focus,
+#explorer-tree a:hover,
+#explorer-tree a:active {
 	background-color: #eeeeee;
 }
 #explorer-tree a img {
@@ -207,6 +209,28 @@ div.contextMenu button img {
 	margin-top: 0px;
 }
 
+.controls {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	margin: 14px 0px;
+}
+.controls > * {
+	display: inline-block;
+	vertical-align: middle;
+	margin-right: 4px;
+}
+.controls > *:last-child {
+	margin-right: 0px;
+}
+.controls > span {
+	display: flex;
+	align-items: center;
+}
+.controls select {
+	max-width: 150px;
+}
+
 h1 img {
 	margin-right: 15px;
 	margin-bottom: 5px;
@@ -220,6 +244,56 @@ table {
 table th, table td {
 	text-align: left;
 	padding: 2px 4px;
+}
+
+table.list, input, select, button, textarea {
+	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.08);
+}
+input, select, button, textarea {
+	box-sizing: border-box;
+	font-family: inherit;
+	font-size: inherit;
+	border: 1px solid rgba(0,0,0,0.2);
+	border-radius: 2px;
+}
+input, select, textarea, button {
+	padding: 4px;
+	background-color: white;
+}
+button {
+	background-color: rgb(238,238,238);
+}
+button > img {
+	vertical-align: middle;
+}
+button > select {
+	padding: 1px;
+}
+input.tableSearch {
+	width: 100%;
+	min-width: 80px;
+	padding: 2px;
+	border: none;
+	box-shadow: none !important;
+}
+table.form input:not([type=checkbox]):not([type=radio]),
+table.form select,
+table.form textarea {
+	width: 100%;
+}
+button:focus, button:hover,
+input:focus, input:hover,
+textarea:focus, textarea:hover,
+select:focus, select:hover {
+	outline: none;
+	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15);
+}
+button:active,
+input:active,
+textarea:active,
+select:active {
+	outline: none;
+	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15) inset;
 }
 
 table.list {
@@ -259,10 +333,22 @@ table.list tr:last-child td:last-child {
 }
 
 table.list .sortbutton {
-	width:100%; height:100%; border: none; background-color: transparent; font: inherit; color: inherit; text-align: inherit; padding: 0; cursor: pointer;
+	width:100%;
+	height:100%;
+	border: none;
+	background-color: transparent;
+	font: inherit;
+	color: inherit;
+	text-align: inherit;
+	padding: 0;
+	cursor: pointer;
+	box-shadow: none;
 }
 table.list .sortsymbol::after {
-	display: inline-block; letter-spacing: -.2em; margin-left:.1em; width: 1.8em;
+	display: inline-block;
+	letter-spacing: -.2em;
+	margin-left:.1em;
+	width: 1.8em;
 }
 table.list .sortsymbol.sortedasc::after {
 	content: "▲▽";
@@ -282,28 +368,6 @@ table tr td button > img {
 	height: 24px;
 }
 
-input, select, button, textarea {
-	font-family: inherit;
-	font-size: inherit;
-}
-input, textarea {
-	padding: 4px;
-}
-button {
-	padding: 4px 4px 1px 4px;
-}
-button > img {
-	vertical-align: middle;
-	margin-top: -2px;
-	margin-bottom: 2px;
-}
-input.tableSearch {
-	width: 100%;
-	min-width: 80px;
-	padding: 2px;
-	box-sizing: border-box;
-}
-
 .green {
 	color: green;
 }
@@ -315,7 +379,9 @@ input.tableSearch {
 	html, #explorer-tree, #explorer-content, #login-form {
 		background-color: #1B2A32;
 	}
-	#explorer-tree a:hover {
+	#explorer-tree a:focus,
+	#explorer-tree a:hover,
+	#explorer-tree a:active {
 		background-color: #324F61;
 	}
 	body, a {
@@ -338,5 +404,16 @@ input.tableSearch {
 	table.list tr th:last-child,
 	table.list tr td:last-child {
 		border-right: 1px solid #485764;
+	}
+	input, select, textarea {
+		color: white;
+		background-color: transparent;
+		border: none;
+		border-bottom: 1px solid rgba(255,255,255,0.4);
+		border-radius: 0px;
+		box-shadow: none;
+	}
+	button > select {
+		color: black;
 	}
 }
