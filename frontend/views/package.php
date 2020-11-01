@@ -68,7 +68,7 @@ if(empty($_GET['id'])) {
 		<th class='searchable sortable'><?php echo LANG['uninstall_procedure']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['order']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['created']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['action']; ?></th>
+		<th><?php echo LANG['action']; ?></th>
 	</tr>
 </thead>
 
