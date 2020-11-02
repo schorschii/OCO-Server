@@ -45,26 +45,40 @@ if($package === null) die();
 </table>
 
 <h2><?php echo LANG['installed_on']; ?></h2>
-<table class='list'>
+<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>
 	<thead>
 		<tr>
+			<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageAssignedComputersData, this.checked)'></th>
 			<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
 			<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
 			<th class='searchable sortable'><?php echo LANG['installation_date']; ?></th>
-			<th><?php echo LANG['action']; ?></th>
 		</tr>
 	</thead>
+	<tbody>
 	<?php
+	$counter = 0;
 	foreach($db->getPackageComputer($package->id) as $p) {
+		$counter ++;
 		echo '<tr>';
+		echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
 		echo '<td><a href="#" onclick="refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
 		echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 		echo '<td>'.htmlspecialchars($p->installed).'</td>';
-		echo '<td>';
-		echo ' <button title="'.LANG['remove_assignment'].'" onclick="confirmRemovePackageComputerAssignment('.$p->id.')"><img src="img/remove.svg"></button>';
-		echo ' <button title="'.LANG['uninstall_package'].'" onclick="confirmUninstallPackage('.$p->id.')"><img src="img/delete.svg"></button>';
-		echo '</td>';
 		echo '</tr>';
 	}
 	?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan='999'>
+				<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+				<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+			</td>
+		</tr>
+	</tfoot>
 </table>
+<div class='controls'>
+	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+	<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+	<button onclick='confirmUninstallPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+</div>

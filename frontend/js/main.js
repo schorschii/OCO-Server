@@ -279,32 +279,44 @@ function addSelectedPackageToGroup(checkboxName, groupId) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/package.php', paramString, null, function() { alert(L__PACKAGES_ADDED) });
 }
-function confirmUninstallPackage(assignment_id) {
+function confirmUninstallPackage(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'uninstall_package_assignment_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_UNINSTALL_PACKAGE)) {
-		let req = new XMLHttpRequest();
-		let formData = new FormData();
-		formData.append('uninstall_package_assignment_id', assignment_id);
-		req.open('POST', 'views/computer_detail.php');
-		req.send(formData);
-		req.onreadystatechange = function() {
-			if(this.readyState == 4 && this.status == 200) {
-				refreshSidebar();
-			}
-		};
+		ajaxRequestPost('views/computer_detail.php', paramString, null, function() { refreshSidebar() });
 	}
 }
-function confirmRemovePackageComputerAssignment(assignment_id) {
+function confirmRemovePackageComputerAssignment(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_package_assignment_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT)) {
-		let req = new XMLHttpRequest();
-		let formData = new FormData();
-		formData.append('remove_package_assignment_id', assignment_id);
-		req.open('POST', 'views/computer_detail.php');
-		req.send(formData);
-		req.onreadystatechange = function() {
-			if(this.readyState == 4 && this.status == 200) {
-				refreshContent();
-			}
-		};
+		ajaxRequestPost('views/computer_detail.php', paramString, null, function() { refreshContent() });
 	}
 }
 

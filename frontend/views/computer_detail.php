@@ -3,18 +3,22 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
-if(!empty($_POST['remove_package_assignment_id'])) {
-	$db->removeComputerAssignedPackage($_POST['remove_package_assignment_id']);
+if(!empty($_POST['remove_package_assignment_id']) && is_array($_POST['remove_package_assignment_id'])) {
+	foreach($_POST['remove_package_assignment_id'] as $id) {
+		$db->removeComputerAssignedPackage($id);
+	}
 	die();
 }
-if(!empty($_POST['uninstall_package_assignment_id'])) {
-	$ap = $db->getComputerAssignedPackage($_POST['uninstall_package_assignment_id']);
-	$p = $db->getPackage($ap->package_id);
+if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninstall_package_assignment_id'])) {
 	$jcid = $db->addJobContainer(
 		'Uninstall '.date('y-m-d H:i:s'),
 		date('Y-m-d H:i:s'), null, ''
 	);
-	$db->addJob($jcid, $ap->computer_id, $ap->package_id, $p->uninstall_procedure, 1, 0);
+	foreach($_POST['uninstall_package_assignment_id'] as $id) {
+		$ap = $db->getComputerAssignedPackage($id);
+		$p = $db->getPackage($ap->package_id);
+		$db->addJob($jcid, $ap->computer_id, $ap->package_id, $p->uninstall_procedure, 1, 0);
+	}
 	die();
 }
 
@@ -154,10 +158,10 @@ if($computer === null) die();
 <table id='tblInstalledPackageData' class='list searchable sortable savesort'>
 	<thead>
 		<tr>
+			<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblInstalledPackageData, this.checked)'></th>
 			<th class='searchable sortable'><?php echo LANG['package']; ?></th>
 			<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
 			<th class='searchable sortable'><?php echo LANG['installation_date']; ?></th>
-			<th><?php echo LANG['action']; ?></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -166,23 +170,28 @@ if($computer === null) die();
 	foreach($db->getComputerPackage($computer->id) as $p) {
 		$counter ++;
 		echo '<tr>';
+		echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
 		echo '<td><a href="#" onclick="refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).'</a></td>';
 		echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 		echo '<td>'.htmlspecialchars($p->installed).'</td>';
-		echo '<td>';
-		echo ' <button title="'.LANG['remove_assignment'].'" onclick="confirmRemovePackageComputerAssignment('.$p->id.')"><img src="img/remove.svg"></button>';
-		echo ' <button title="'.LANG['uninstall_package'].'" onclick="confirmUninstallPackage('.$p->id.')"><img src="img/delete.svg"></button>';
-		echo '</td>';
 		echo '</tr>';
 	}
 	?>
 	</tbody>
 	<tfoot>
 		<tr>
-			<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
+			<td colspan='999'>
+				<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+				<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+			</td>
 		</tr>
 	</tfoot>
 </table>
+<div class='controls'>
+	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+	<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+	<button onclick='confirmUninstallPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+</div>
 
 <h2><?php echo LANG['recognised_software']; ?></h2>
 <table id='tblSoftwareInventoryData' class='list searchable sortable savesort'>
