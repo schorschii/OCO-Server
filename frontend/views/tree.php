@@ -24,7 +24,7 @@ require_once('../session.php');
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentPackage()'><img src='img/software.dyn.svg'><?php echo LANG['packages']; ?></a>
+	<a href='#' onclick='refreshContentPackage()'><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllPackageGroup() as $group) {
