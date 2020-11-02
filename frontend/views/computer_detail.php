@@ -30,6 +30,10 @@ if($computer === null) die();
 ?>
 
 <h1><?php echo htmlspecialchars($computer->hostname); ?></h1>
+<div class='controls'>
+	<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+</div>
 
 <h2><?php echo LANG['general']; ?></h2>
 <table class='list'>

@@ -207,6 +207,9 @@ function removeSelectedPackage(checkboxName) {
 		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
+	confirmRemovePackage(ids);
+}
+function confirmRemovePackage(ids) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
@@ -357,6 +360,9 @@ function removeSelectedComputer(checkboxName) {
 		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
+	confirmRemoveComputer(ids);
+}
+function confirmRemoveComputer(ids) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
