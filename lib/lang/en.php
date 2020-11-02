@@ -123,6 +123,13 @@ const LANG = [
 	'lock' => 'Lock',
 	'unlock' => 'Unlock',
 	'installations' => 'Installations',
+	'client_registration_enabled' => 'Enable Client Self-Registration (via Agent)',
+	'client_key' => 'Client Key',
+	'client_update_interval' => 'Client Update Interval (Seconds)',
+	'purge_succeeded_jobs_after' => 'Purge Succeded Jobs after x Seconds',
+	'purge_failed_jobs_after' => 'Purge Failed Jobs after x Seconds',
+	'save' => 'Save',
+	'saved' => 'Saved',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

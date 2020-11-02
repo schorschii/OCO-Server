@@ -123,6 +123,13 @@ const LANG = [
 	'lock' => 'Sperren',
 	'unlock' => 'Entsperren',
 	'installations' => 'Installationen',
+	'client_registration_enabled' => 'Client Selbst-Registrierung (via Agent) aktivieren',
+	'client_key' => 'Client-Key',
+	'client_update_interval' => 'Client Update-Intervall (Sekunden)',
+	'purge_succeeded_jobs_after' => 'Entferne erfolgreiche Jobs nach x Sekunden',
+	'purge_failed_jobs_after' => 'Entferne fehlgeschlagene Jobs nach x Sekunden',
+	'save' => 'Speichern',
+	'saved' => 'Gespeichert',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

@@ -661,6 +661,12 @@ class db {
 			return $row->value;
 		}
 	}
+	public function updateSetting($name, $value) {
+		$sql = "UPDATE setting SET value = ? WHERE setting = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
+		if(!$this->statement->bind_param('ss', $value, $name)) return false;
+		return $this->statement->execute();
+	}
 
 	// Systemuser Operations
 	public function getAllSystemuser() {

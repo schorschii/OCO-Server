@@ -11,3 +11,4 @@ var L__CONFIRM_DELETE_JOBCONTAINER = "<?php echo LANG['confirm_delete_jobcontain
 var L__COMPUTER_ADDED = "<?php echo LANG['computer_added']; ?>";
 var L__PACKAGES_ADDED = "<?php echo LANG['packages_added']; ?>";
 var L__SEARCH_PLACEHOLDER = "<?php echo LANG['search_placeholder']; ?>";
+var L__SAVED = "<?php echo LANG['saved']; ?>";

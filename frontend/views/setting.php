@@ -3,6 +3,19 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+const GENERAL_SETTING_KEYS = [
+	'client-key',
+	'client-update-interval',
+	'client-registration-enabled',
+	'purge-succeeded-jobs',
+	'purge-failed-jobs'
+];
+foreach(GENERAL_SETTING_KEYS as $key) {
+	if(isset($_POST[$key])) {
+		$db->updateSetting($key, $_POST[$key]);
+	}
+}
+
 if(!empty($_POST['remove_systemuser_id']) && is_array($_POST['remove_systemuser_id'])) {
 	foreach($_POST['remove_systemuser_id'] as $id) {
 		$db->removeSystemuser($id);
@@ -35,6 +48,43 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 
 <h1><?php echo LANG['settings']; ?></h1>
 
+
+<h2><?php echo LANG['general']; ?></h2>
+<table class='form'>
+	<tr>
+		<th><?php echo LANG['client_registration_enabled']; ?>:</th>
+		<td>
+			<input type='checkbox' id='chkClientRegistrationEnabled' <?php if($db->getSettingByName('client-registration-enabled')) echo 'checked'; ?>></input>
+		</td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['client_key']; ?>:</th>
+		<td>
+			<input type='text' id='txtClientKey' value='<?php echo $db->getSettingByName('client-key'); ?>'></input>
+		</td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['client_update_interval']; ?>:</th>
+		<td>
+			<input type='number' min='1' id='txtClientUpdateInterval' value='<?php echo $db->getSettingByName('client-update-interval'); ?>'></input>
+		</td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['purge_succeeded_jobs_after']; ?>:</th>
+		<td>
+			<input type='number' min='1' id='txtPurgeSucceededJobsAfter' value='<?php echo $db->getSettingByName('purge-succeeded-jobs'); ?>'></input>
+		</td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['purge_failed_jobs_after']; ?>:</th>
+		<td>
+			<input type='number' min='1' id='txtPurgeFailedJobsAfter' value='<?php echo $db->getSettingByName('purge-failed-jobs'); ?>'></input>
+		</td>
+	</tr>
+</table>
+<div class='controls'>
+	<button onclick='saveGeneralSettings()'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
+</div>
 
 <h2><?php echo LANG['system_users']; ?></h2>
 <table id='tblSystemuserData' class='list searchable sortable savesort'>

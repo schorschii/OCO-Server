@@ -517,3 +517,15 @@ function unlockSelectedSystemuser(checkboxName) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/setting.php', paramString, null, refreshContent);
 }
+
+// setting operations
+function saveGeneralSettings() {
+	var values = {
+		"client-registration-enabled": chkClientRegistrationEnabled.checked ? 1 : 0,
+		"client-key": txtClientKey.value,
+		"client-update-interval": txtClientUpdateInterval.value,
+		"purge-succeeded-jobs": txtPurgeSucceededJobsAfter.value,
+		"purge-failed-jobs": txtPurgeFailedJobsAfter.value
+	};
+	ajaxRequestPost('views/setting.php', urlencodeObject(values), null, function(){ alert(L__SAVED); refreshContent(); });
+}
