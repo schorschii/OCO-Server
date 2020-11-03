@@ -360,6 +360,9 @@ function refreshDeployCount() {
 }
 
 // computer operations
+function saveComputerNotes(id, notes) {
+	ajaxRequestPost('views/computer_detail.php', urlencodeObject({'update_note_computer_id':id, 'update_note':notes}), null, function(){ alert(L__SAVED); });
+}
 function newComputer() {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {

@@ -3,6 +3,10 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['update_note_computer_id']) && isset($_POST['update_note'])) {
+	$db->updateComputerNote($_POST['update_note_computer_id'], $_POST['update_note']);
+	die();
+}
 if(!empty($_POST['remove_package_assignment_id']) && is_array($_POST['remove_package_assignment_id'])) {
 	foreach($_POST['remove_package_assignment_id'] as $id) {
 		$db->removeComputerAssignedPackage($id);
@@ -109,6 +113,13 @@ if($computer === null) die();
 				if(++$i != count($res)) { echo ", "; }
 			}
 			?>
+		</td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['notes']; ?></th>
+		<td>
+			<textarea id='txtNotes'><?php echo htmlspecialchars($computer->notes); ?></textarea>
+			<br><button onclick='saveComputerNotes(<?php echo $computer->id; ?>, txtNotes.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
 		</td>
 	</tr>
 </table>

@@ -142,6 +142,12 @@ class db {
 		if(!$this->statement->bind_param('i', $id)) return false;
 		if(!$this->statement->execute()) return false;
 	}
+	public function updateComputerNote($id, $note) {
+		$sql = "UPDATE computer SET notes = ? WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
+		if(!$this->statement->bind_param('si', $note, $id)) return false;
+		if(!$this->statement->execute()) return false;
+	}
 	public function updateComputer($id, $hostname, $os, $os_version, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $networks, $screens, $software, $logins) {
 		$this->mysqli->autocommit(false);
 

@@ -73,6 +73,7 @@ if(empty($_GET['id'])) {
 		<th class='searchable sortable'><?php echo LANG['ip_addresses']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['mac_addresses']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['serial_no']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['notes']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['agent']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['last_seen']; ?></th>
 	</tr>
@@ -99,6 +100,7 @@ foreach($computer as $c) {
 	echo "<td>".htmlspecialchars(implode($ip_addresses,', '))."</td>";
 	echo "<td>".htmlspecialchars(implode($mac_addresses,', '))."</td>";
 	echo "<td>".htmlspecialchars($c->serial)."</td>";
+	echo "<td>".htmlspecialchars($c->notes)."</td>";
 	echo "<td>".htmlspecialchars($c->agent_version)."</td>";
 	echo "<td>".htmlspecialchars($c->last_ping);
 	echo "</tr>";
