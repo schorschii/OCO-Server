@@ -65,6 +65,11 @@ if(!empty($_POST['add_jobcontainer'])) {
 
 	die();
 }
+
+$computers = $db->getAllComputer();
+$computerGroups = $db->getAllComputerGroup();
+$packages = $db->getAllPackage();
+$packageGroups = $db->getAllPackageGroup();
 ?>
 
 <h1><?php echo LANG['deployment_assistant']; ?></h1>
@@ -101,25 +106,25 @@ if(!empty($_POST['add_jobcontainer'])) {
 <h2><?php echo LANG['target_computer']; ?></h2>
 <div class='gallery'>
 	<div>
-		<h3><?php echo LANG['computer']; ?></h3>
-		<select id='computer' size='10' multiple='true'>
+		<h3><?php echo LANG['computer']; ?> (<span id='spnSelectedComputers'>0</span>/<?php echo count($computers); ?>)</h3>
+		<select id='sltComputer' size='10' multiple='true' onchange='refreshDeployCount()'>
 			<?php
-			foreach($db->getAllComputer() as $computer) {
+			foreach($computers as $c) {
 				$selected = '';
-				if(in_array($computer->id, $select_computer_ids)) $selected = 'selected';
-				echo "<option value='".htmlspecialchars($computer->id)."' ".$selected.">".htmlspecialchars($computer->hostname)."</option>";
+				if(in_array($c->id, $select_computer_ids)) $selected = 'selected';
+				echo "<option value='".htmlspecialchars($c->id)."' ".$selected.">".htmlspecialchars($c->hostname)."</option>";
 			}
 			?>
 		</select>
 	</div>
 	<div>
-		<h3><?php echo LANG['computer_groups']; ?></h3>
-		<select id='computer_group' size='10' multiple='true'>
+		<h3><?php echo LANG['computer_groups']; ?> (<span id='spnSelectedComputerGroups'>0</span>/<?php echo count($computerGroups); ?>)</h3>
+		<select id='sltComputerGroup' size='10' multiple='true' onchange='refreshDeployCount()'>
 			<?php
-			foreach($db->getAllComputerGroup() as $group) {
+			foreach($computerGroups as $cg) {
 				$selected = '';
-				if(in_array($group->id, $select_computer_group_ids)) $selected = 'selected';
-				echo "<option value='".htmlspecialchars($group->id)."' ".$selected.">".htmlspecialchars($group->name)."</option>";
+				if(in_array($cg->id, $select_computer_group_ids)) $selected = 'selected';
+				echo "<option value='".htmlspecialchars($cg->id)."' ".$selected.">".htmlspecialchars($cg->name)."</option>";
 			}
 			?>
 		</select>
@@ -129,10 +134,10 @@ if(!empty($_POST['add_jobcontainer'])) {
 <h2><?php echo LANG['packages_to_deploy']; ?></h2>
 <div class='gallery'>
 	<div>
-		<h3><?php echo LANG['packages']; ?></h3>
-		<select id='package' size='10' multiple='true'>
+		<h3><?php echo LANG['packages']; ?> (<span id='spnSelectedPackages'>0</span>/<?php echo count($packages); ?>)</h3>
+		<select id='sltPackage' size='10' multiple='true' onchange='refreshDeployCount()'>
 			<?php
-			foreach($db->getAllPackage() as $package) {
+			foreach($packages as $package) {
 				$selected = '';
 				if(in_array($package->id, $select_package_ids)) $selected = 'selected';
 				echo "<option value='".htmlspecialchars($package->id)."' ".$selected.">".htmlspecialchars($package->name)."</option>";
@@ -141,10 +146,10 @@ if(!empty($_POST['add_jobcontainer'])) {
 		</select>
 	</div>
 	<div>
-		<h3><?php echo LANG['package_groups']; ?></h3>
-		<select id='package_group' size='10' multiple='true'>
+		<h3><?php echo LANG['package_groups']; ?> (<span id='spnSelectedPackageGroups'>0</span>/<?php echo count($packageGroups); ?>)</h3>
+		<select id='sltPackageGroup' size='10' multiple='true' onchange='refreshDeployCount()'>
 			<?php
-			foreach($db->getAllPackageGroup() as $group) {
+			foreach($packageGroups as $group) {
 				$selected = '';
 				if(in_array($group->id, $select_package_group_ids)) $selected = 'selected';
 				echo "<option value='".htmlspecialchars($group->id)."' ".$selected.">".htmlspecialchars($group->name)."</option>";
@@ -155,5 +160,5 @@ if(!empty($_POST['add_jobcontainer'])) {
 </div>
 
 <div class='controls'>
-	<button onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, computer, computer_group, package, package_group)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 </div>

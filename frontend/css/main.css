@@ -375,6 +375,12 @@ table tr td button > img {
 	color: red;
 }
 
+#sltComputer, #sltComputerGroup,
+#sltPackage, #sltPackageGroup {
+	resize: vertical;
+	min-height: 100px;
+}
+
 @media (prefers-color-scheme: dark) {
 	html, #explorer-tree, #explorer-content, #login-form {
 		background-color: #1B2A32;

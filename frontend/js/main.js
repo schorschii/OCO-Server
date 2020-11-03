@@ -202,7 +202,7 @@ function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids
 		params.push({'key':'computer_group_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequest('views/deploy.php?'+paramString, 'explorer-content');
+	ajaxRequest('views/deploy.php?'+paramString, 'explorer-content', function(){ refreshDeployCount() });
 }
 
 // package operations
@@ -351,6 +351,12 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 	if(confirm(L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT)) {
 		ajaxRequestPost('views/computer_detail.php', paramString, null, function() { refreshContent() });
 	}
+}
+function refreshDeployCount() {
+	spnSelectedComputers.innerHTML = getSelectValues(sltComputer).length;
+	spnSelectedComputerGroups.innerHTML = getSelectValues(sltComputerGroup).length;
+	spnSelectedPackages.innerHTML = getSelectValues(sltPackage).length;
+	spnSelectedPackageGroups.innerHTML = getSelectValues(sltPackageGroup).length;
 }
 
 // computer operations
