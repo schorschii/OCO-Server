@@ -83,6 +83,7 @@ const LANG = [
 	'all_domain_user' => 'All Domain User',
 	'login_name' => 'Login Name',
 	'jobs' => 'Jobs',
+	'job_container' => 'Job Container',
 	'delete_container' => 'Delete Container',
 	'order' => 'Order',
 	'status' => 'Status',

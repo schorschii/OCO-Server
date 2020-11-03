@@ -83,6 +83,7 @@ const LANG = [
 	'all_domain_user' => 'Alle Domänen-Benutzer',
 	'login_name' => 'Anmeldename',
 	'jobs' => 'Jobs',
+	'job_container' => 'Jobcontainer',
 	'delete_container' => 'Container löschen',
 	'order' => 'Reihenfolge',
 	'status' => 'Status',

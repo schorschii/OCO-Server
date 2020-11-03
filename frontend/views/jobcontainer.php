@@ -29,8 +29,11 @@ if(!empty($_GET['id'])) {
 	echo "</table>";
 	echo "</p>";
 
-	echo "<table class='list'>";
+	echo "<table id='tblJobData' class='list sortable savesort'>";
+	echo "<thead>";
 	echo "<tr><th>".LANG['computer']."</th><th>".LANG['package']."</th><th>".LANG['procedure']."</th><th>".LANG['order']."</th><th>".LANG['status']."</th><th>".LANG['last_change']."</th></tr>";
+	echo "</thead>";
+	echo "<tbody>";
 	foreach($jobs as $job) {
 		echo "<tr>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer)."</a></td>";
@@ -45,18 +48,22 @@ if(!empty($_GET['id'])) {
 		echo "<td>".htmlspecialchars($job->last_update);
 		echo "</tr>";
 	}
+	echo "</tbody>";
 	echo "</table>";
 
 } else {
 
-	echo "<h1>".LANG['jobs']."</h1>";
+	echo "<h1>".LANG['job_container']."</h1>";
 
 	echo "<div class='controls'>";
 	echo "<button onclick='refreshContentDeploy()'><img src='img/add.svg'>&nbsp;".LANG['new_deployment_job']."</button>";
 	echo "</div>";
 
-	echo "<table class='list'>";
+	echo "<table id='tblJobcontainerData' class='list sortable savesort'>";
+	echo "<thead>";
 	echo "<tr><th></th><th>".LANG['name']."</th><th>".LANG['start']."</th><th>".LANG['end']."</th><th>".LANG['created']."</th></tr>";
+	echo "</thead>";
+	echo "<tbody>";
 	foreach($db->getAllJobContainer() as $jc) {
 		echo "<tr>";
 		echo "<td><img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'></td>";
@@ -66,6 +73,7 @@ if(!empty($_GET['id'])) {
 		echo "<td>".htmlspecialchars($jc->created);
 		echo "</tr>";
 	}
+	echo "</tbody>";
 	echo "</table>";
 
 }
