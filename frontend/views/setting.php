@@ -16,6 +16,15 @@ foreach(GENERAL_SETTING_KEYS as $key) {
 	}
 }
 
+if(!empty($_POST['add_systemuser_username'])) {
+	$db->addSystemuser(
+		$_POST['add_systemuser_username'],
+		$_POST['add_systemuser_fullname'],
+		password_hash($_POST['add_systemuser_password'], PASSWORD_DEFAULT),
+		0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, ''/*description*/, 0
+	);
+	die();
+}
 if(!empty($_POST['remove_systemuser_id']) && is_array($_POST['remove_systemuser_id'])) {
 	foreach($_POST['remove_systemuser_id'] as $id) {
 		$db->removeSystemuser($id);
@@ -83,10 +92,16 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 	</tr>
 </table>
 <div class='controls'>
-	<button onclick='saveGeneralSettings()'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
+	<button id='btnSaveGeneralSettings' onclick='saveGeneralSettings()'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
 </div>
 
 <h2><?php echo LANG['system_users']; ?></h2>
+<div class='controls'>
+	<input type='text' id='txtUsername' placeholder='<?php echo LANG['username']; ?>'></input>
+	<input type='text' id='txtFullname' placeholder='<?php echo LANG['full_name']; ?>'></input>
+	<input type='password' id='txtPassword' placeholder='<?php echo LANG['password']; ?>'></input>
+	<button id='btnCreateUser' onclick='createSystemuser(txtUsername.value, txtFullname.value, txtPassword.value)'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+</div>
 <table id='tblSystemuserData' class='list searchable sortable savesort'>
 <thead>
 	<tr>

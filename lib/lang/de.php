@@ -3,7 +3,7 @@ const LANG = [
 	'app_name' => 'OCO IT Client Manager',
 	'app_name_frontpage' => '[ Open Computer Orchestration ]',
 	'app_subtitle' => 'Client inventory and software delivery made simple',
-	'refresh' => 'Aktualisieren',
+	'refresh' => 'Aktualisieren (F5)',
 	'search_placeholder' => 'Suche...',
 	'done' => 'Fertig stellen',
 	'setup' => 'Setup',
@@ -130,6 +130,7 @@ const LANG = [
 	'purge_failed_jobs_after' => 'Entferne fehlgeschlagene Jobs nach x Sekunden',
 	'save' => 'Speichern',
 	'saved' => 'Gespeichert',
+	'add' => 'Hinzufügen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

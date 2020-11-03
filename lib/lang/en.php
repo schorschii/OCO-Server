@@ -3,7 +3,7 @@ const LANG = [
 	'app_name' => 'OCO IT Client Manager',
 	'app_name_frontpage' => '[ Open Computer Orchestration ]',
 	'app_subtitle' => 'Client inventory and software delivery made simple',
-	'refresh' => 'Refresh',
+	'refresh' => 'Refresh (F5)',
 	'search_placeholder' => 'Search...',
 	'done' => 'Finish',
 	'setup' => 'Setup',
@@ -130,6 +130,7 @@ const LANG = [
 	'purge_failed_jobs_after' => 'Purge Failed Jobs after x Seconds',
 	'save' => 'Save',
 	'saved' => 'Saved',
+	'add' => 'Add',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

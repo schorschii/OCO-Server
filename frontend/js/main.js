@@ -575,6 +575,7 @@ function unlockSelectedSystemuser(checkboxName) {
 
 // setting operations
 function saveGeneralSettings() {
+	btnSaveGeneralSettings.disabled = true;
 	var values = {
 		"client-registration-enabled": chkClientRegistrationEnabled.checked ? 1 : 0,
 		"client-key": txtClientKey.value,
@@ -583,4 +584,19 @@ function saveGeneralSettings() {
 		"purge-failed-jobs": txtPurgeFailedJobsAfter.value
 	};
 	ajaxRequestPost('views/setting.php', urlencodeObject(values), null, function(){ alert(L__SAVED); refreshContent(); });
+}
+function createSystemuser(username, fullname, password) {
+	btnCreateUser.disabled = true;
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('add_systemuser_username', username);
+	formData.append('add_systemuser_fullname', username);
+	formData.append('add_systemuser_password', password);
+	req.open('POST', 'views/setting.php');
+	req.send(formData);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			refreshContent();
+		}
+	};
 }
