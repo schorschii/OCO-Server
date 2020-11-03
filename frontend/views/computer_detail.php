@@ -105,7 +105,7 @@ if($computer === null) die();
 			$groups = [];
 			$i = 0;
 			foreach($res as $group) {
-				echo "<a href='#' onclick='refreshContentComputer(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
+				echo "<a href='#' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
 				if(++$i != count($res)) { echo ", "; }
 			}
 			?>
@@ -119,7 +119,7 @@ if($computer === null) die();
 	<?php
 	foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
 		echo "<tr>";
-		echo "<td><a href='#' onclick='refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->username)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->username)."</a></td>";
 		echo "<td>".htmlspecialchars($logon->amount)."</td>";
 		echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 		echo "</tr>";
@@ -175,7 +175,7 @@ if($computer === null) die();
 		$counter ++;
 		echo '<tr>';
 		echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
-		echo '<td><a href="#" onclick="refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).'</a></td>';
+		echo '<td><a href="#" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).'</a></td>';
 		echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 		echo '<td>'.htmlspecialchars($p->installed).'</td>';
 		echo '</tr>';
@@ -212,8 +212,8 @@ if($computer === null) die();
 	foreach($db->getComputerSoftware($computer->id) as $s) {
 		$counter ++;
 		echo "<tr>";
-		echo "<td><a href='#' onclick='refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->name)."</a></td>";
-		echo "<td><a href='#' onclick='refreshContentSoftware(".$s->software_id.", \"".htmlspecialchars($s->version)."\")'>".htmlspecialchars($s->version)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->name)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.", \"".htmlspecialchars($s->version)."\")'>".htmlspecialchars($s->version)."</a></td>";
 		echo "<td>".htmlspecialchars($s->description)."</td>";
 		echo "</tr>";
 	}

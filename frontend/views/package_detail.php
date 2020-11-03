@@ -65,7 +65,7 @@ if($package === null) die();
 		$counter ++;
 		echo '<tr>';
 		echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
-		echo '<td><a href="#" onclick="refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
+		echo '<td><a href="#" onclick="event.preventDefault();refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
 		echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 		echo '<td>'.htmlspecialchars($p->installed).'</td>';
 		echo '</tr>';

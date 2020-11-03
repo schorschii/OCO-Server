@@ -33,12 +33,12 @@ if(!empty($_GET['id'])) {
 	echo "<tr><th>".LANG['computer']."</th><th>".LANG['package']."</th><th>".LANG['procedure']."</th><th>".LANG['order']."</th><th>".LANG['status']."</th><th>".LANG['last_change']."</th></tr>";
 	foreach($jobs as $job) {
 		echo "<tr>";
-		echo "<td><a href='#' onclick='refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer)."</a></td>";
-		echo "<td><a href='#' onclick='refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package)."</a></td>";
 		echo "<td>".htmlspecialchars($job->package_procedure)."</td>";
 		echo "<td>".htmlspecialchars($job->sequence)."</td>";
 		if(!empty($job->message)) {
-			echo "<td><a href='#' onclick='alert(this.getAttribute(\"message\"))' message='".addslashes(trim($job->message))."'>".getJobStateString($job->state)."</a></td>";
+			echo "<td><a href='#' onclick='event.preventDefault();alert(this.getAttribute(\"message\"))' message='".addslashes(trim($job->message))."'>".getJobStateString($job->state)."</a></td>";
 		} else {
 			echo "<td>".getJobStateString($job->state)."</td>";
 		}
@@ -60,7 +60,7 @@ if(!empty($_GET['id'])) {
 	foreach($db->getAllJobContainer() as $jc) {
 		echo "<tr>";
 		echo "<td><img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'></td>";
-		echo "<td><a href='#' onclick='refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
 		echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 		echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
 		echo "<td>".htmlspecialchars($jc->created);

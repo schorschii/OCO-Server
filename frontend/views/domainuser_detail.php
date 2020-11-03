@@ -18,7 +18,7 @@ if($domainuser === null) die();
 	<?php
 	foreach($db->getDomainuserLogonByDomainuser($domainuser->id) as $logon) {
 		echo "<tr>";
-		echo "<td><a href='#' onclick='refreshContentComputerDetail(".$logon->computer_id.")'>".htmlspecialchars($logon->hostname)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(".$logon->computer_id.")'>".htmlspecialchars($logon->hostname)."</a></td>";
 		echo "<td>".htmlspecialchars($logon->amount)."</td>";
 		echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 		echo "</tr>";

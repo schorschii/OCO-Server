@@ -5,41 +5,41 @@ require_once('../session.php');
 ?>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentDomainuser()'><img src='img/users.dyn.svg'><?php echo LANG['users']; ?></a>
+	<a href='#' onclick='event.preventDefault();refreshContentDomainuser()'><img src='img/users.dyn.svg'><?php echo LANG['users']; ?></a>
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentComputer()'><img src='img/computer.dyn.svg'><?php echo LANG['computer']; ?></a>
+	<a href='#' onclick='event.preventDefault();refreshContentComputer()'><img src='img/computer.dyn.svg'><?php echo LANG['computer']; ?></a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllComputerGroup() as $group) {
-			echo "<a href='#' onclick='refreshContentComputer(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+			echo "<a href='#' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
 		}
 		?>
 	</div>
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentSoftware()'><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></a>
+	<a href='#' onclick='event.preventDefault();refreshContentSoftware()'><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></a>
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentPackage()'><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
+	<a href='#' onclick='event.preventDefault();refreshContentPackage()'><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllPackageGroup() as $group) {
-			echo "<a href='#' onclick='refreshContentPackage(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+			echo "<a href='#' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
 		}
 		?>
 	</div>
 </div>
 
 <div class='node'>
-	<a href='#' onclick='refreshContentJobContainer()'><img src='img/job.dyn.svg'><?php echo LANG['jobs']; ?></a>
+	<a href='#' onclick='event.preventDefault();refreshContentJobContainer()'><img src='img/job.dyn.svg'><?php echo LANG['jobs']; ?></a>
 	<div class='subnode'>
 		<?php
 		foreach($db->getAllJobContainer() as $container) {
-			echo "<a href='#' onclick='refreshContentJobContainer(".$container->id.")'><img src='img/".$db->getJobContainerIcon($container->id).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
+			echo "<a href='#' onclick='event.preventDefault();refreshContentJobContainer(".$container->id.")'><img src='img/".$db->getJobContainerIcon($container->id).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
 		}
 		?>
 	</div>

@@ -49,6 +49,9 @@ require_once('session.php');
 
 	<script>
 	refreshSidebar();
+	<?php if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) == 'views') { ?>
+		ajaxRequest("<?php echo htmlspecialchars($_GET['explorer-content']); ?>", "explorer-content");
+	<?php } ?>
 	</script>
 
 </div>

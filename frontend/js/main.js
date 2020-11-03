@@ -10,6 +10,33 @@ function handleRefresh(e) {
 	}
 };
 
+function rewriteUrlContentParameter(value) {
+	key = encodeURIComponent('explorer-content');
+	value = encodeURIComponent(value);
+	// kvp looks like ['key1=value1', 'key2=value2', ...]
+	var kvp = document.location.search.substr(1).split('&');
+	let i=0;
+	for(; i<kvp.length; i++) {
+		if(kvp[i].startsWith(key + '=')) {
+			let pair = kvp[i].split('=');
+			pair[1] = value;
+			kvp[i] = pair.join('=');
+			break;
+		}
+	}
+	if(i >= kvp.length) {
+		kvp[kvp.length] = [key,value].join('=');
+	}
+	let params = kvp.join('&');
+	window.history.pushState(currentExplorerContentUrl, "", document.location.pathname+"?"+params);
+}
+window.onpopstate = function (event) {
+	if(event.state != null) {
+		// browser's back button pressed
+		ajaxRequest(event.state, 'explorer-content', null, false);
+	}
+};
+
 var currentOpenContextMenu = null;
 function toggleContextMenu(menu) {
 	if(currentOpenContextMenu != null) {
@@ -25,7 +52,7 @@ function toggleContextMenu(menu) {
 }
 
 var currentExplorerContentUrl = null;
-function ajaxRequest(url, objID, callback) {
+function ajaxRequest(url, objID, callback, addToHistory=true) {
 	let timer = null;
 	if(objID == 'explorer-content') {
 		currentExplorerContentUrl = url;
@@ -37,6 +64,9 @@ function ajaxRequest(url, objID, callback) {
 			if(obj(objID) != null) {
 				obj(objID).innerHTML = this.responseText;
 				if(objID == 'explorer-content') {
+					if(addToHistory) {
+						rewriteUrlContentParameter(currentExplorerContentUrl);
+					}
 					initTableSort()
 					initTableSearch()
 					clearTimeout(timer);

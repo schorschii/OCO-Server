@@ -23,7 +23,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	foreach($db->getComputerBySoftwareVersion($_GET['id'], $_GET['version']) as $c) {
 		$counter ++;
 		echo "<tr>";
-		echo "<td><a href='#' onclick='refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
 		echo "</tr>";
 	}
 	?>
@@ -57,8 +57,8 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	foreach($db->getComputerBySoftware($_GET['id'], $_GET['version']) as $c) {
 		$counter ++;
 		echo "<tr>";
-		echo "<td><a href='#' onclick='refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
-		echo "<td><a href='#' onclick='refreshContentSoftware(".$software->id.", \"".htmlspecialchars($c->version)."\")'>".htmlspecialchars($c->version)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$software->id.", \"".htmlspecialchars($c->version)."\")'>".htmlspecialchars($c->version)."</a></td>";
 		echo "</tr>";
 	}
 	?>
@@ -88,7 +88,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	foreach($db->getAllSoftware() as $s) {
 		$counter ++;
 		echo "<tr>";
-		echo "<td><a href='#' onclick='refreshContentSoftware(\"".$s->id."\")'>".htmlspecialchars($s->name)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(\"".$s->id."\")'>".htmlspecialchars($s->name)."</a></td>";
 		echo "<td>".$s->installations."</td>";
 		echo "</tr>";
 	}

@@ -78,7 +78,7 @@ foreach($packages as $p) {
 	$counter ++;
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)'></td>";
-	echo "<td><a href='#' onclick='refreshContentPackageDetail(".$p->id.")'>".htmlspecialchars($p->name)."</a></td>";
+	echo "<td><a href='#' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")'>".htmlspecialchars($p->name)."</a></td>";
 	echo "<td>".htmlspecialchars($p->version)."</td>";
 	echo "<td>".htmlspecialchars($p->author)."</td>";
 	echo "<td>".htmlspecialchars($p->install_procedure)."</td>";

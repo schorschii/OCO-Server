@@ -31,7 +31,7 @@ foreach($domainuser as $u) {
 	$counter ++;
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='domainuser_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblDomainuserData)'></td>";
-	echo "<td><a href='#' onclick='refreshContentDomainuserDetail(\"".$u->id."\")'>".htmlspecialchars($u->username)."</a></td>";
+	echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(\"".$u->id."\")'>".htmlspecialchars($u->username)."</a></td>";
 	echo "<td>".htmlspecialchars($u->timestamp)."</td>";
 	echo "</tr>";
 }
