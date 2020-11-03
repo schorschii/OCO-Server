@@ -298,7 +298,7 @@ INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
 (1, 'client-key', '123'),
 (2, 'client-update-interval', '7200'),
 (3, 'client-registration-enabled', '1'),
-(4, 'purge-successful-jobs', '7200'),
+(4, 'purge-succeeded-jobs', '7200'),
 (5, 'purge-failed-jobs', '7200');
 
 -- --------------------------------------------------------
