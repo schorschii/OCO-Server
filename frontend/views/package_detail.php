@@ -3,6 +3,18 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_computer_group_package_assignment_id']) && is_array($_POST['add_to_computer_group_package_assignment_id'])) {
+	foreach($_POST['add_to_computer_group_package_assignment_id'] as $pid) {
+		$assignedPackage = $db->getComputerAssignedPackage($pid);
+		if($assignedPackage != null) {
+			if(count($db->getComputerByComputerAndGroup($assignedPackage->computer_id, $_POST['add_to_group_id'])) == 0) {
+				$db->addComputerToGroup($assignedPackage->computer_id, $_POST['add_to_group_id']);
+			}
+		}
+	}
+	die();
+}
+
 $package = null;
 if(!empty($_GET['id'])) {
 	$package = $db->getPackage($_GET['id']);
@@ -83,6 +95,16 @@ if($package === null) die();
 </table>
 <div class='controls'>
 	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+	<button onclick='addSelectedPackageComputerToGroup("package_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
+		&nbsp;<?php echo LANG['add_to']; ?>
+		<select id='sltNewGroup' onclick='event.stopPropagation()'>
+			<?php
+			foreach($db->getAllComputerGroup() as $g) {
+				echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
+			}
+			?>
+		</select>
+	</button>
 	<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 	<button onclick='confirmUninstallPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 </div>

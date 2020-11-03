@@ -452,6 +452,25 @@ function addSelectedComputerToGroup(checkboxName, groupId) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__COMPUTER_ADDED) });
 }
+function addSelectedPackageComputerToGroup(checkboxName, groupId) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	var params = [];
+	params.push({'key':'add_to_group_id', 'value':groupId});
+	ids.forEach(function(entry) {
+		params.push({'key':'add_to_computer_group_package_assignment_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('views/package_detail.php', paramString, null, function() { alert(L__COMPUTER_ADDED) });
+}
 
 // job operations
 function confirmRemoveJobContainer(id) {
