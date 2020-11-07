@@ -58,6 +58,11 @@ if(!empty($_POST['add_jobcontainer'])) {
 		$_POST['description']
 	);
 	foreach($computer_ids as $computer_id) {
+		if($_POST['use_wol']) {
+			foreach($db->getComputerNetwork($computer_id) as $n) {
+				wol($n->mac);
+			}
+		}
 		foreach($packages as $package) {
 			$db->addJob($jcid, $computer_id, $package['id'], $package['procedure'], 0, $package['sequence']);
 		}
@@ -82,7 +87,7 @@ $packageGroups = $db->getAllPackageGroup();
 		</td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['start']; ?>:</th>
+		<th><?php echo LANG['start']; ?>:<br><label><input type='checkbox' id='chkWol'><?php echo LANG['wol']; ?></label></th>
 		<td>
 			<input type='date' id='dteStart' value='<?php echo date('Y-m-d'); ?>'></input>
 			<input type='time' id='tmeStart' value='<?php echo date('H:i:s'); ?>'></input>
@@ -160,5 +165,5 @@ $packageGroups = $db->getAllPackageGroup();
 </div>
 
 <div class='controls'>
-	<button onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 </div>

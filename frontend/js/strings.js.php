@@ -12,3 +12,4 @@ var L__COMPUTER_ADDED = "<?php echo LANG['computer_added']; ?>";
 var L__PACKAGES_ADDED = "<?php echo LANG['packages_added']; ?>";
 var L__SEARCH_PLACEHOLDER = "<?php echo LANG['search_placeholder']; ?>";
 var L__SAVED = "<?php echo LANG['saved']; ?>";
+var L__WOL_SENT = "<?php echo LANG['wol_packet_sent']; ?>";

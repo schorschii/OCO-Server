@@ -133,6 +133,8 @@ const LANG = [
 	'saved' => 'Saved',
 	'add' => 'Add',
 	'notes' => 'Notes',
+	'wol' => 'WOL',
+	'wol_packet_sent' => 'WOL packet(s) sent',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

@@ -3,6 +3,17 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['wol_id']) && is_array($_POST['wol_id'])) {
+	foreach($_POST['wol_id'] as $id) {
+		$c = $db->getComputer($id);
+		if($c != null) {
+			foreach($db->getComputerNetwork($c->id) as $n) {
+				wol($n->mac);
+			}
+		}
+	}
+	die();
+}
 if(!empty($_POST['add_computer'])) {
 	$db->addComputer($_POST['add_computer'], '', []);
 	die();
@@ -120,6 +131,7 @@ foreach($computer as $c) {
 <div class='controls'>
 	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 	<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button onclick='wolSelectedComputer("computer_id[]")'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
 	<button onclick='addSelectedComputerToGroup("computer_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewGroup' onclick='event.stopPropagation()'>

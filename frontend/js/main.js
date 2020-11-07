@@ -420,6 +420,27 @@ function deploySelectedComputer(checkboxName) {
 	});
 	refreshContentDeploy([],[],ids);
 }
+function wolSelectedComputer(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	confirmWolComputer(ids);
+}
+function confirmWolComputer(ids) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'wol_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__WOL_SENT) });
+}
 function newComputerGroup() {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
@@ -481,11 +502,12 @@ function confirmRemoveJobContainer(id) {
 		ajaxRequestPost('views/jobcontainer.php', urlencodeObject({'remove_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
-function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup) {
+function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol) {
 	var params = [
 		{'key':'add_jobcontainer', 'value':title},
 		{'key':'date_start', 'value':start},
 		{'key':'date_end', 'value':end},
+		{'key':'use_wol', 'value':useWol ? 1 : 0},
 		{'key':'description', 'value':description}
 	];
 	getSelectValues(sltPackage).forEach(function(entry) {
