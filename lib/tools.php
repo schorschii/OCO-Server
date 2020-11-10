@@ -5,6 +5,11 @@ function bytesToGb($bytes) {
 	return round($bytes/1024/1024/1014).'&nbsp;GiB';
 }
 
+function replaceComputerActionUrl($computer, $url) {
+	$url = str_replace('$$HOSTNAME$$', $computer->hostname, $url);
+	return $url;
+}
+
 function wol($mac) {
 	// create magic packet
 	$mac = str_replace('-', '', $mac);

@@ -381,6 +381,12 @@ table tr td button > img {
 	color: red;
 }
 
+.vl {
+	display: inline-block;
+	width: 2px;
+	background-color: #DDDDDD;
+}
+
 #sltComputer, #sltComputerGroup,
 #sltPackage, #sltPackageGroup {
 	resize: vertical;

@@ -38,6 +38,13 @@ if($computer === null) die();
 	<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
 	<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+	<?php
+	$commands = $db->getAllComputerCommand();
+	if(count($commands) > 0) echo "<span class='vl'></span>";
+	foreach($commands as $c) {
+	?>
+		<button title='<?php echo LANG['client_extension_note']; ?>' onclick='window.location="<?php echo htmlspecialchars(replaceComputerActionUrl($computer, $c->command)); ?>"'><img src='<?php echo $c->icon; ?>'>&nbsp;<?php echo htmlspecialchars($c->name); ?></button>
+	<?php } ?>
 </div>
 
 <h2><?php echo LANG['general']; ?></h2>

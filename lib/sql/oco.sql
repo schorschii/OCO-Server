@@ -53,9 +53,21 @@ CREATE TABLE `computer` (
 
 CREATE TABLE `computer_command` (
   `id` int(11) NOT NULL,
-  `command` text NOT NULL,
-  `notes` text NOT NULL
+  `icon` text NOT NULL,
+  `name` text NOT NULL,
+  `command` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Daten für Tabelle `computer_command`
+--
+
+INSERT INTO `computer_command` (`id`, `icon`, `name`, `command`) VALUES
+(1, 'img/screen-access.svg', 'VNC', 'vnc://$$HOSTNAME$$'),
+(2, 'img/screen-access.svg', 'RDP', 'rdp://$$HOSTNAME$$'),
+(3, 'img/screen-access.svg', 'SSH', 'ssh://$$HOSTNAME$$'),
+(4, 'img/ping.svg', 'Ping', 'ping://$$HOSTNAME$$'),
+(5, 'img/portscan.svg', 'Nmap', 'nmap://$$HOSTNAME$$');
 
 -- --------------------------------------------------------
 

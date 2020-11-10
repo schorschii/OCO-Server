@@ -48,6 +48,12 @@ class db {
 	}
 
 	// Computer Operations
+	public function getAllComputerCommand() {
+		$sql = "SELECT * FROM computer_command";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->execute()) return null;
+		return self::getResultObjectArray($this->statement->get_result());
+	}
 	public function getComputerByName($name) {
 		$sql = "SELECT * FROM computer WHERE hostname = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;

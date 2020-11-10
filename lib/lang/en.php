@@ -137,6 +137,7 @@ const LANG = [
 	'wol_packet_sent' => 'WOL packet(s) sent',
 	'move_up' => 'Move Up',
 	'move_down' => 'Move Down',
+	'client_extension_note' => 'This feature requires the OCO client extension installed on your computer.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

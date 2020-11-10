@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=OCO Linux Client Extension
+Exec=/usr/bin/oco-client-extension-linux.py %u
+StartupNotify=false
+MimeType=x-scheme-handler/rdp;
+NoDisplay=true
+
+# execute `update-desktop-database` after copying into /usr/share/applications
