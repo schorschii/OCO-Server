@@ -138,6 +138,8 @@ const LANG = [
 	'move_up' => 'Nach oben schieben',
 	'move_down' => 'Nach unten schieben',
 	'client_extension_note' => 'Für diese Funktion muss die OCO-Client-Extension auf Ihrem Computer installiert sein.',
+	'logons' => 'Anmeldungen',
+	'computers' => 'Computer',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

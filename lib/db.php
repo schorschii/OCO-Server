@@ -628,13 +628,24 @@ class db {
 		return $this->statement->insert_id;
 	}
 	public function getAllDomainuser() {
-		$sql = "SELECT *, (SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS 'timestamp' FROM domainuser du ORDER BY username ASC";
+		$sql = "
+			SELECT *,
+				(SELECT count(dl2.id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS 'amount',
+				(SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS 'computer_amount',
+				(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS 'timestamp'
+			FROM domainuser du
+			ORDER BY username ASC
+		";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
 		if(!$this->statement->execute()) return null;
 		return self::getResultObjectArray($this->statement->get_result());
 	}
 	public function getDomainuser($id) {
-		$sql = "SELECT *, (SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS 'timestamp' FROM domainuser du WHERE id = ?";
+		$sql = "
+			SELECT *, (SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS 'timestamp'
+			FROM domainuser du
+			WHERE id = ?
+		";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
 		if(!$this->statement->bind_param('i', $id)) return null;
 		if(!$this->statement->execute()) return null;

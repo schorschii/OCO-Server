@@ -21,6 +21,8 @@ $domainuser = $db->getAllDomainuser();
 	<tr>
 		<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDomainuserData, this.checked)'></th>
 		<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['logons']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['computers']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
 	</tr>
 </thead>
@@ -32,6 +34,8 @@ foreach($domainuser as $u) {
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='domainuser_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblDomainuserData)'></td>";
 	echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(\"".$u->id."\")'>".htmlspecialchars($u->username)."</a></td>";
+	echo "<td>".htmlspecialchars($u->amount)."</td>";
+	echo "<td>".htmlspecialchars($u->computer_amount)."</td>";
 	echo "<td>".htmlspecialchars($u->timestamp)."</td>";
 	echo "</tr>";
 }
