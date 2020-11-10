@@ -3,6 +3,10 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['move_in_group']) && !empty($_POST['move_from_pos']) && !empty($_POST['move_to_pos'])) {
+	$db->reorderPackageInGroup($_POST['move_in_group'], $_POST['move_from_pos'], $_POST['move_to_pos']);
+	die();
+}
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		$db->removePackage($id);
@@ -55,8 +59,6 @@ if(empty($_GET['id'])) {
 }
 ?>
 
-<iframe id='frmDownload' style='display:none'></iframe>
-
 <table id='tblPackageData' class='list searchable sortable savesort'>
 <thead>
 	<tr>
@@ -85,8 +87,11 @@ foreach($packages as $p) {
 	echo "<td>".htmlspecialchars($p->uninstall_procedure)."</td>";
 	echo "<td>".htmlspecialchars($p->sequence ?? '-')."</td>";
 	echo "<td>".htmlspecialchars($p->created)."</td>";
-	echo "<td>";
-	echo  "<button title='".LANG['download']."' onclick='frmDownload.src=\"payloadprovider.php?id=".$p->id."\"'><img src='img/download.svg'></button>";
+	echo "<td class='updown'>";
+	if($group !== null) {
+		echo "<button title='".LANG['move_up']."' class='updown' onclick='reorderPackageInGroup(".$group->id.", ".$p->sequence.", ".($p->sequence-1).")'><img src='img/up.svg'></button>";
+		echo "<button title='".LANG['move_down']."' class='updown' onclick='reorderPackageInGroup(".$group->id.", ".$p->sequence.", ".($p->sequence+1).")'><img src='img/down.svg'></button>";
+	}
 	echo "</td>";
 	echo "</tr>";
 }

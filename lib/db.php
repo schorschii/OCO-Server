@@ -445,6 +445,21 @@ class db {
 		if(!$this->statement->execute()) return false;
 		return $this->statement->insert_id;
 	}
+	public function reorderPackageInGroup($package_group_id, $old_seq, $new_seq) {
+		$sql = "
+			SET @oldpos = ".intval($old_seq).";
+			SET @newpos = ".intval($new_seq).";
+			UPDATE package_group_member
+			SET sequence = CASE WHEN sequence = @oldpos THEN @newpos
+			WHEN @newpos < @oldpos AND sequence < @oldpos THEN
+			sequence + 1
+			WHEN @newpos > @oldpos AND sequence > @oldpos THEN
+			sequence - 1
+			END
+			WHERE package_group_id = ".intval($package_group_id)." AND sequence BETWEEN LEAST(@newpos, @oldpos) AND GREATEST(@newpos, @oldpos)
+		";
+		return $this->mysqli->multi_query($sql);
+	}
 	public function removePackage($id) {
 		$sql = "DELETE FROM package WHERE id = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;

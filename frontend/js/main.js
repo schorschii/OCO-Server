@@ -226,6 +226,14 @@ function createPackage(name, version, author, description, archive, install_proc
 		}
 	};
 }
+function reorderPackageInGroup(groupId, oldPos, newPos) {
+	var params = [];
+	params.push({'key':'move_in_group', 'value':groupId});
+	params.push({'key':'move_from_pos', 'value':oldPos});
+	params.push({'key':'move_to_pos', 'value':newPos});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('views/package.php', paramString, null, refreshContent);
+}
 function removeSelectedPackage(checkboxName) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
