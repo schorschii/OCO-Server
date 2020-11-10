@@ -51,18 +51,29 @@ if(!empty($_POST['add_jobcontainer'])) {
 		}
 	}
 
+	// wol handling
+	$wolSent = 0;
+	if($_POST['use_wol']) {
+		if(strtotime($_POST['date_start']) <= time()) {
+			// instant WOL if start time is already in the past
+			$wolSent = 1;
+			foreach($computer_ids as $cid) {
+				foreach($db->getComputerNetwork($cid) as $cn) {
+					wol($cn->mac);
+				}
+			}
+		}
+	}
+
+	// create jobs
 	$jcid = $db->addJobContainer(
 		$_POST['add_jobcontainer'],
 		empty($_POST['date_start']) ? date('Y-m-d H:i:s') : $_POST['date_start'],
 		empty($_POST['date_end']) ? null : $_POST['date_end'],
-		$_POST['description']
+		$_POST['description'],
+		$wolSent
 	);
 	foreach($computer_ids as $computer_id) {
-		if($_POST['use_wol']) {
-			foreach($db->getComputerNetwork($computer_id) as $n) {
-				wol($n->mac);
-			}
-		}
 		foreach($packages as $package) {
 			$db->addJob($jcid, $computer_id, $package['id'], $package['procedure'], 0, $package['sequence']);
 		}

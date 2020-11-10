@@ -16,7 +16,7 @@ if(!empty($_POST['remove_package_assignment_id']) && is_array($_POST['remove_pac
 if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninstall_package_assignment_id'])) {
 	$jcid = $db->addJobContainer(
 		'Uninstall '.date('y-m-d H:i:s'),
-		date('Y-m-d H:i:s'), null, ''
+		date('Y-m-d H:i:s'), null, '', 0
 	);
 	foreach($_POST['uninstall_package_assignment_id'] as $id) {
 		$ap = $db->getComputerAssignedPackage($id);

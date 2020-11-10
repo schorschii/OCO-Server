@@ -522,6 +522,19 @@ class db {
 			return $row;
 		}
 	}
+	public function getComputerMacByContainer($id) {
+		$sql = "
+			SELECT c.id AS 'id', c.hostname AS 'hostname', cn.mac AS 'mac'
+			FROM job j
+			INNER JOIN computer c ON c.id = j.computer_id
+			INNER JOIN computer_network cn ON cn.computer_id = c.id
+			WHERE j.job_container_id = ?
+		";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $id)) return null;
+		if(!$this->statement->execute()) return null;
+		return self::getResultObjectArray($this->statement->get_result());
+	}
 	public function getAllJobByContainer($id) {
 		$sql = "
 			SELECT j.id AS 'id', j.computer_id AS 'computer_id', c.hostname AS 'computer', j.package_id AS 'package_id', p.name AS 'package', j.package_procedure AS 'package_procedure', j.sequence AS 'sequence', j.state AS 'state', j.message AS 'message', j.last_update AS 'last_update'
@@ -553,6 +566,12 @@ class db {
 		$sql = "UPDATE job SET state = ?, message = ?, last_update = CURRENT_TIMESTAMP WHERE id = ?";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
 		if(!$this->statement->bind_param('isi', $state, $message, $id)) return false;
+		return $this->statement->execute();
+	}
+	public function updateJobContainer($id, $name, $start_time, $end_time, $notes, $wol_sent) {
+		$sql = "UPDATE job_container SET name = ?, start_time = ?, end_time = ?, notes = ?, wol_sent = ? WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
+		if(!$this->statement->bind_param('ssssii', $name, $start_time, $end_time, $notes, $wol_sent, $id)) return false;
 		return $this->statement->execute();
 	}
 	public function getJobContainerIcon($id) {
