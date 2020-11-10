@@ -84,7 +84,7 @@ var TableSortUltra = function(tab, startsort) {
 	var getCellData = function(ele, col) {
 		var val = ele.textContent;
 		if(ele.getAttribute("sort_key")) val = ele.getAttribute("sort_key");
-		sorttype[col] = "s";
+		if(isNaN(val)) sorttype[col] = "s";
 		return val;
 	}
 
