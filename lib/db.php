@@ -666,7 +666,7 @@ class db {
 			INNER JOIN computer c ON dl.computer_id = c.id
 			WHERE dl.domainuser_id = ?
 			GROUP BY dl.domainuser_id, dl.computer_id
-			ORDER BY amount, timestamp DESC
+			ORDER BY timestamp DESC, amount DESC, hostname ASC
 		";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
 		if(!$this->statement->bind_param('i', $id)) return null;
@@ -681,7 +681,7 @@ class db {
 			INNER JOIN domainuser du ON dl.domainuser_id = du.id
 			WHERE dl.computer_id = ?
 			GROUP BY dl.computer_id, dl.domainuser_id
-			ORDER BY amount, timestamp DESC
+			ORDER BY timestamp DESC, amount DESC, username ASC
 		";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
 		if(!$this->statement->bind_param('i', $id)) return null;
