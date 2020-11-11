@@ -445,9 +445,20 @@ class db {
 		return self::getResultObjectArray($this->statement->get_result());
 	}
 	public function addPackageToGroup($pid, $gid) {
-		$sql = "INSERT INTO package_group_member (package_id, package_group_id) VALUES (?,?)";
+		$seq = 1;
+		$sql = "SELECT max(sequence) AS 'max_sequence' FROM package_group_member WHERE package_group_id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $gid)) return null;
+		if(!$this->statement->execute()) return null;
+		$result = $this->statement->get_result();
+		if($result->num_rows == 0) return null;
+		while($row = $result->fetch_object()) {
+			$seq = $row->max_sequence + 1;
+		}
+
+		$sql = "INSERT INTO package_group_member (package_id, package_group_id, sequence) VALUES (?,?,?)";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('ii', $pid, $gid)) return false;
+		if(!$this->statement->bind_param('iii', $pid, $gid, $seq)) return false;
 		if(!$this->statement->execute()) return false;
 		return $this->statement->insert_id;
 	}
