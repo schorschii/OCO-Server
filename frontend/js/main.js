@@ -610,9 +610,9 @@ function unlockSelectedSystemuser(checkboxName) {
 function saveGeneralSettings() {
 	btnSaveGeneralSettings.disabled = true;
 	var values = {
-		"client-registration-enabled": chkClientRegistrationEnabled.checked ? 1 : 0,
-		"client-key": txtClientKey.value,
-		"client-update-interval": txtClientUpdateInterval.value,
+		"agent-registration-enabled": chkAgentRegistrationEnabled.checked ? 1 : 0,
+		"agent-key": txtAgentKey.value,
+		"agent-update-interval": txtAgentUpdateInterval.value,
 		"purge-succeeded-jobs": txtPurgeSucceededJobsAfter.value,
 		"purge-failed-jobs": txtPurgeFailedJobsAfter.value
 	};

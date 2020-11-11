@@ -1,11 +1,23 @@
 <?php
 require_once('../lib/loader.php');
-session_write_close();
+session_start();
 
-if(!empty($_GET['client-key']) && $_GET['client-key'] !== $db->getSettingByName('client-key')) {
+function authErrorExit() {
 	header('HTTP/1.1 401 Client Not Authorized'); die();
 }
 
+// check if client is allowed to download
+if(!isset($_SESSION['um_username'])) {
+	if(empty($_GET['agent-key']) || empty($_GET['hostname'])) {
+		authErrorExit();
+	}
+	$computer = $db->getComputerByName($_GET['hostname']);
+	if($computer == null || $_GET['agent-key'] != $computer->agent_key) {
+		authErrorExit();
+	}
+}
+
+// get package and start download
 if(!empty($_GET['id'])) {
 	$package = $db->getPackage($_GET['id']);
 	$path = PACKAGE_PATH.'/'.$package->filename;

@@ -42,7 +42,8 @@ CREATE TABLE `computer` (
   `secure_boot` text NOT NULL,
   `last_ping` datetime NOT NULL DEFAULT current_timestamp(),
   `last_update` datetime DEFAULT current_timestamp(),
-  `notes` text NOT NULL
+  `notes` text NOT NULL,
+  `agent_key` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -308,9 +309,9 @@ CREATE TABLE `setting` (
 --
 
 INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
-(1, 'client-key', '123'),
-(2, 'client-update-interval', '7200'),
-(3, 'client-registration-enabled', '1'),
+(1, 'agent-key', '123'),
+(2, 'agent-update-interval', '7200'),
+(3, 'agent-registration-enabled', '1'),
 (4, 'purge-succeeded-jobs', '7200'),
 (5, 'purge-failed-jobs', '7200');
 

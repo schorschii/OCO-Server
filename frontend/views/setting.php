@@ -4,9 +4,9 @@ require_once('../../lib/loader.php');
 require_once('../session.php');
 
 const GENERAL_SETTING_KEYS = [
-	'client-key',
-	'client-update-interval',
-	'client-registration-enabled',
+	'agent-key',
+	'agent-update-interval',
+	'agent-registration-enabled',
 	'purge-succeeded-jobs',
 	'purge-failed-jobs'
 ];
@@ -63,19 +63,19 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 	<tr>
 		<th><?php echo LANG['client_registration_enabled']; ?>:</th>
 		<td>
-			<input type='checkbox' id='chkClientRegistrationEnabled' <?php if($db->getSettingByName('client-registration-enabled')) echo 'checked'; ?>></input>
+			<input type='checkbox' id='chkAgentRegistrationEnabled' <?php if($db->getSettingByName('agent-registration-enabled')) echo 'checked'; ?>></input>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['client_key']; ?>:</th>
 		<td>
-			<input type='text' id='txtClientKey' value='<?php echo $db->getSettingByName('client-key'); ?>'></input>
+			<input type='text' id='txtAgentKey' value='<?php echo $db->getSettingByName('agent-key'); ?>'></input>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['client_update_interval']; ?>:</th>
 		<td>
-			<input type='number' min='1' id='txtClientUpdateInterval' value='<?php echo $db->getSettingByName('client-update-interval'); ?>'></input>
+			<input type='number' min='1' id='txtAgentUpdateInterval' value='<?php echo $db->getSettingByName('agent-update-interval'); ?>'></input>
 		</td>
 	</tr>
 	<tr>

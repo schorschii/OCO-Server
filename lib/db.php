@@ -126,10 +126,10 @@ class db {
 		if(!$this->statement->execute()) return null;
 		return self::getResultObjectArray($this->statement->get_result());
 	}
-	public function addComputer($hostname, $agent_version, $networks) {
-		$sql = "INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, notes) VALUES (?,?,CURRENT_TIMESTAMP,'2000-01-01 00:00:00', '', '', '', '', '', '', '', '', '', '', '', '', '', '')";
+	public function addComputer($hostname, $agent_version, $networks, $agent_key) {
+		$sql = "INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, notes, agent_key) VALUES (?,?,CURRENT_TIMESTAMP,'2000-01-01 00:00:00', '', '', '', '', '', '', '', '', '', '', '', '', '', '', ?)";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('ss', $hostname, $agent_version)) return false;
+		if(!$this->statement->bind_param('sss', $hostname, $agent_version, $agent_key)) return false;
 		if(!$this->statement->execute()) return false;
 		$cid = $this->statement->insert_id;
 

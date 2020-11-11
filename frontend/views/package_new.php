@@ -4,7 +4,7 @@ require_once('../../lib/loader.php');
 require_once('../session.php');
 
 if(!empty($_POST['name'])) {
-	$filename = randomString().'.zip';
+	$filename = randomString(8).'.zip';
 	$filepath = PACKAGE_PATH.'/'.$filename;
 	if(move_uploaded_file($_FILES['archive']['tmp_name'], $filepath)) {
 		$db->addPackage(
@@ -20,16 +20,6 @@ if(!empty($_POST['name'])) {
 		error_log('can not move uploaded file');
 	}
 	die();
-}
-
-function randomString($length = 8) {
-	$characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-	$charactersLength = strlen($characters);
-	$randomString = '';
-	for ($i = 0; $i < $length; $i++) {
-		$randomString .= $characters[rand(0, $charactersLength - 1)];
-	}
-	return $randomString;
 }
 ?>
 

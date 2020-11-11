@@ -19,10 +19,12 @@ $resdata = ['id' => $srcdata['id']];
 $params = $srcdata['params'];
 switch($srcdata['method']) {
 	case 'oco.update_deploy_status':
-		if($params['client-key'] !== $db->getSettingByName('client-key')) {
+		$data = $params['data'];
+		$computer = $db->getComputerByName($params['hostname']);
+		if($params['agent-key'] !== $computer->agent_key) {
 			header('HTTP/1.1 401 Client Not Authorized'); die();
 		}
-		$data = $params['data'];
+
 		$db->updateJobState($data['job-id'], $data['state'], $data['message']);
 		if($data['state'] === 2) { // 2 = installation successful
 			$job = $db->getJob($data['job-id']);
@@ -41,56 +43,66 @@ switch($srcdata['method']) {
 		];
 		break;
 
-	case 'oco.client_hello':
-		if($params['client-key'] !== $db->getSettingByName('client-key')) {
-			header('HTTP/1.1 401 Client Not Authorized'); die();
-		}
-
+	case 'oco.agent_hello':
 		$data = $params['data'];
-		$computer = $db->getComputerByName($data['hostname']);
-		$jobs = [];
-		$update = 0;
+		$computer = $db->getComputerByName($params['hostname']);
+		$jobs = []; $update = 0; $agent_key = null; $success = false;
+
 		if($computer == null) {
-			if($db->getSettingByName('client-registration-enabled') == '1') {
+			if($params['agent-key'] !== $db->getSettingByName('agent-key')) {
+				header('HTTP/1.1 401 Client Not Authorized'); die();
+			}
+
+			if($db->getSettingByName('agent-registration-enabled') == '1') {
+				$agent_key = randomString();
 				$update = 1;
-				$db->addComputer(
-					$data['hostname'],
+				if($db->addComputer(
+					$params['hostname'],
 					$data['agent_version'],
-					$data['networks']
-				);
+					$data['networks'],
+					$agent_key
+				)) {
+					$success = true;
+				}
 			}
 		} else {
+			if($params['agent-key'] !== $computer->agent_key) {
+				header('HTTP/1.1 401 Client Not Authorized'); die();
+			}
+
 			$db->updateComputerPing($computer->id);
-			if(time() - strtotime($computer->last_update) > $db->getSettingByName('client-update-interval')) {
+			if(time() - strtotime($computer->last_update) > $db->getSettingByName('agent-update-interval')) {
 				$update = 1;
 			}
 			$jobs = $db->getPendingJobsForComputer($computer->id);
+			$success = true;
 		}
 
 		$resdata['error'] = null;
 		$resdata['result'] = [
-			'success' => true,
+			'success' => $success,
 			'params' => [
+				'agent-key' => $agent_key,
 				'update' => $update,
-				'software-jobs' => $jobs
+				'software-jobs' => $jobs,
 			]
 		];
 
 		break;
 
-		case 'oco.client_update':
-			if($params['client-key'] !== $db->getSettingByName('client-key')) {
+		case 'oco.agent_update':
+			$data = $params['data'];
+			$computer = $db->getComputerByName($params['hostname']);
+			if($params['agent-key'] !== $computer->agent_key) {
 				header('HTTP/1.1 401 Client Not Authorized'); die();
 			}
 
-			$data = $params['data'];
-			$computer = $db->getComputerByName($data['hostname']);
 			if($computer !== null) {
 				$db->updateComputerPing($computer->id);
-				if(time() - strtotime($computer->last_update) > $db->getSettingByName('client-update-interval')) {
+				if(time() - strtotime($computer->last_update) > $db->getSettingByName('agent-update-interval')) {
 					$db->updateComputer(
 						$computer->id,
-						$data['hostname'],
+						$params['hostname'],
 						$data['os'],
 						$data['os_version'],
 						$data['kernel_version'],
