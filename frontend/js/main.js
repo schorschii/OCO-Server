@@ -204,6 +204,9 @@ function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids
 	var paramString = urlencodeArray(params);
 	ajaxRequest('views/deploy.php?'+paramString, 'explorer-content', function(){ refreshDeployCount() });
 }
+function refreshContentReport(id='') {
+	ajaxRequest('views/report.php?id='+encodeURIComponent(id), 'explorer-content');
+}
 
 // package operations
 function createPackage(name, version, author, description, archive, install_procedure, uninstall_procedure) {

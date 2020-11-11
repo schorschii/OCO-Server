@@ -44,3 +44,14 @@ require_once('../session.php');
 		?>
 	</div>
 </div>
+
+<div class='node'>
+	<a href='#' onclick='event.preventDefault();refreshContentReport()'><img src='img/report.dyn.svg'><?php echo LANG['reports']; ?></a>
+	<div class='subnode'>
+		<?php
+		foreach($db->getAllReport() as $report) {
+			echo "<a href='#' onclick='event.preventDefault();refreshContentReport(".$report->id.")'>".htmlspecialchars($report->name)."</a>";
+		}
+		?>
+	</div>
+</div>

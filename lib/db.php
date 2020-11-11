@@ -833,4 +833,36 @@ class db {
 		return $this->statement->insert_id;
 	}
 
+	// Report Operations
+	public function getAllReport() {
+		$sql = "SELECT * FROM report";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->execute()) return null;
+		return self::getResultObjectArray($this->statement->get_result());
+	}
+	public function getReport($id) {
+		$sql = "SELECT * FROM report WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $id)) return null;
+		if(!$this->statement->execute()) return null;
+		$result = $this->statement->get_result();
+		if($result->num_rows == 0) return null;
+		while($row = $result->fetch_object()) {
+			return $row;
+		}
+	}
+	public function executeReport($id) {
+		$sql = "SELECT * FROM report WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
+		if(!$this->statement->bind_param('i', $id)) return null;
+		if(!$this->statement->execute()) return null;
+		$result = $this->statement->get_result();
+		if($result->num_rows == 0) return null;
+		while($row = $result->fetch_object()) {
+			if(!$this->statement = $this->mysqli->prepare($row->query)) return null;
+			if(!$this->statement->execute()) return null;
+			return self::getResultObjectArray($this->statement->get_result());
+		}
+	}
+
 }
