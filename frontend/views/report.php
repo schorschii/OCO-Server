@@ -6,15 +6,25 @@ require_once('../session.php');
 if(empty($_GET['id'])) {
 	echo "<h1>".LANG['reports']."</h1>";
 
+	echo "<table id='tblReportsData' class='list sortable savesort'>";
+	echo "<thead>";
+	echo "<tr><th>".LANG['name']."</th></tr>";
+	echo "</thead>";
+	echo "<tbody>";
 	foreach($db->getAllReport() as $r) {
-		echo "<a href='#' onclick='event.preventDefault();refreshContentReport(".$r->id.")'>".htmlspecialchars($r->name)."</a><br>";
+		echo "<tr>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentReport(".$r->id.")'>".htmlspecialchars($r->name)."</a></td>";
+		echo "</tr>";
 	}
+	echo "</tbody>";
+	echo "</table>";
 } else {
 	$report = $db->getReport($_GET['id']);
 	if($report === null) die();
 	echo "<h1>".htmlspecialchars($report->name)."</h1>";
 	$results = $db->executeReport($report->id);
 	if(count($results) == 0) die();
+	echo "<p><code>".htmlspecialchars($report->query)."</code></p>";
 ?>
 
 <table class='list searchable sortable'>
