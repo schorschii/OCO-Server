@@ -135,7 +135,7 @@ switch($srcdata['method']) {
 
 	default:
 		$resdata['result'] = null;
-		$resdata['error'] = LANG['unknown_method'];
+		$resdata['error'] = 'Unknown Method';
 }
 
 // return response
