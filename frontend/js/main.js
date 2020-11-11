@@ -363,6 +363,19 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 		ajaxRequestPost('views/computer_detail.php', paramString, null, function() { refreshContent() });
 	}
 }
+function deployFromPackageDetails(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.getAttribute('computer_id'));
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	refreshContentDeploy([], [], ids);
+}
 function refreshDeployCount() {
 	spnSelectedComputers.innerHTML = getSelectValues(sltComputer).length;
 	spnSelectedComputerGroups.innerHTML = getSelectValues(sltComputerGroup).length;

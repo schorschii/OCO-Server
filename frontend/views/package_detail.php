@@ -76,7 +76,7 @@ if($package === null) die();
 	foreach($db->getPackageComputer($package->id) as $p) {
 		$counter ++;
 		echo '<tr>';
-		echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
+		echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
 		echo '<td><a href="#" onclick="event.preventDefault();refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
 		echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 		echo '<td>'.htmlspecialchars($p->installed).'</td>';
@@ -95,6 +95,7 @@ if($package === null) die();
 </table>
 <div class='controls'>
 	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+	<button onclick='deployFromPackageDetails("package_id[]");'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='addSelectedPackageComputerToGroup("package_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewGroup' onclick='event.stopPropagation()'>
