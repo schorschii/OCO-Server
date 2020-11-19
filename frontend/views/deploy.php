@@ -47,7 +47,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	}
 	foreach($package_group_ids as $package_group_id) {
 		foreach($db->getPackageByGroup($package_group_id) as $package) {
-			$packages[] = ['id'=>$package->id, 'sequence'=>$package->sequence, 'procedure'=>$package->procedure];
+			$packages[] = ['id'=>$package->id, 'sequence'=>$package->sequence, 'procedure'=>$package->install_procedure];
 		}
 	}
 
