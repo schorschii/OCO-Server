@@ -152,8 +152,8 @@ const LANG = [
 			<ul>
 				<li>EXE-Setup unter Windows: <code>installer.exe /S</code> (kein Deinstallations-Support)</li>
 				<li>Eigene Batch-Datei unter Windows: <code>myscript.bat</code></li>
-				<li>MSI-Installation unter Windows: <code>msiexec /i package.msi</code></li>
-				<li>MSI-Deinstallation unter Windows: <code>msiexec /x {PRODUCT-GUID}</code></li>
+				<li>MSI-Installation unter Windows: <code>msiexec /quiet /i package.msi</code></li>
+				<li>MSI-Deinstallation unter Windows: <code>msiexec /quiet /x package.msi</code> oder <code>{PRODUCT-GUID}</code></li>
 				<li>DEB-Paket unter Linux: <code>gdebi -n package.deb</code></li>
 				<li>DEB-Paket unter Linux deinstallieren: <code>apt remove -y packagename</code></li>
 				<li>Eigenes Shell-Skript unter Linux: <code>myscript.sh</code></li>
