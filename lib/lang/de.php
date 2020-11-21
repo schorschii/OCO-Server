@@ -141,6 +141,7 @@ const LANG = [
 	'logons' => 'Anmeldungen',
 	'computers' => 'Computer',
 	'reports' => 'Reports',
+	'id' => 'ID',
 	'no_results' => 'Die Abfrage lieferte keine Ergebnisse.',
 	'report_creation_notes' => 'Reports müssen manuell in der Datenbank (Tabelle ›report‹) angelegt werden.',
 	'package_creation_notes' => '

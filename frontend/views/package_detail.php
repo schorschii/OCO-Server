@@ -20,6 +20,10 @@ if($package === null) die();
 <h2><?php echo LANG['general']; ?></h2>
 <table class='list'>
 	<tr>
+		<th><?php echo LANG['id']; ?></th>
+		<td><?php echo htmlspecialchars($package->id); ?></td>
+	</tr>
+	<tr>
 		<th><?php echo LANG['version']; ?></th>
 		<td><?php echo htmlspecialchars($package->version); ?></td>
 	</tr>

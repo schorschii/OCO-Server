@@ -141,6 +141,7 @@ const LANG = [
 	'logons' => 'Logons',
 	'computers' => 'Computers',
 	'reports' => 'Reports',
+	'id' => 'ID',
 	'no_results' => 'Query returned no results.',
 	'report_creation_notes' => 'Reports must be created manually in the database (table ›report‹).',
 	'package_creation_notes' => '

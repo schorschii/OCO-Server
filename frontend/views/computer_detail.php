@@ -50,6 +50,10 @@ if($computer === null) die();
 <h2><?php echo LANG['general']; ?></h2>
 <table class='list'>
 	<tr>
+		<th><?php echo LANG['id']; ?></th>
+		<td><?php echo htmlspecialchars($computer->id); ?></td>
+	</tr>
+	<tr>
 		<th><?php echo LANG['os']; ?></th>
 		<td><?php echo htmlspecialchars($computer->os); ?></td>
 	</tr>
