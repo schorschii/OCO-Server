@@ -237,11 +237,15 @@ function reorderPackageInGroup(groupId, oldPos, newPos) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/package.php', paramString, null, refreshContent);
 }
-function removeSelectedPackage(checkboxName) {
+function removeSelectedPackage(checkboxName, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
-			ids.push(entry.value);
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
 		}
 	});
 	if(ids.length == 0) {
@@ -279,11 +283,15 @@ function removeSelectedPackageFromGroup(checkboxName, groupId) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/package.php', paramString, null, refreshContent);
 }
-function deploySelectedPackage(checkboxName) {
+function deploySelectedPackage(checkboxName, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
-			ids.push(entry.value);
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
 		}
 	});
 	refreshContentDeploy(ids);
@@ -304,11 +312,15 @@ function confirmRemovePackageGroup(ids) {
 		ajaxRequestPost('views/package.php', paramString, null, function(){ refreshContentPackage(); refreshSidebar(); });
 	}
 }
-function addSelectedPackageToGroup(checkboxName, groupId) {
+function addSelectedPackageToGroup(checkboxName, groupId, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
-			ids.push(entry.value);
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
 		}
 	});
 	if(ids.length == 0) {
@@ -363,19 +375,6 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 		ajaxRequestPost('views/computer_detail.php', paramString, null, function() { refreshContent() });
 	}
 }
-function deployFromPackageDetails(checkboxName) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			ids.push(entry.getAttribute('computer_id'));
-		}
-	});
-	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
-		return;
-	}
-	refreshContentDeploy([], [], ids);
-}
 function refreshDeployCount() {
 	spnSelectedComputers.innerHTML = getSelectValues(sltComputer).length;
 	spnSelectedComputerGroups.innerHTML = getSelectValues(sltComputerGroup).length;
@@ -412,11 +411,15 @@ function removeSelectedComputerFromGroup(checkboxName, groupId) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/computer.php', paramString, null, refreshContent);
 }
-function removeSelectedComputer(checkboxName) {
+function removeSelectedComputer(checkboxName, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
-			ids.push(entry.value);
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
 		}
 	});
 	if(ids.length == 0) {
@@ -435,20 +438,28 @@ function confirmRemoveComputer(ids) {
 		ajaxRequestPost('views/computer.php', paramString, null, refreshContent);
 	}
 }
-function deploySelectedComputer(checkboxName) {
+function deploySelectedComputer(checkboxName, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
-			ids.push(entry.value);
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
 		}
 	});
 	refreshContentDeploy([],[],ids);
 }
-function wolSelectedComputer(checkboxName) {
+function wolSelectedComputer(checkboxName, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
-			ids.push(entry.value);
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
 		}
 	});
 	if(ids.length == 0) {
@@ -481,11 +492,15 @@ function confirmRemoveComputerGroup(ids) {
 		ajaxRequestPost('views/computer.php', paramString, null, function(){ refreshContentComputer(); refreshSidebar(); });
 	}
 }
-function addSelectedComputerToGroup(checkboxName, groupId) {
+function addSelectedComputerToGroup(checkboxName, groupId, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
-			ids.push(entry.value);
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
 		}
 	});
 	if(ids.length == 0) {
@@ -499,25 +514,6 @@ function addSelectedComputerToGroup(checkboxName, groupId) {
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__COMPUTER_ADDED) });
-}
-function addSelectedPackageComputerToGroup(checkboxName, groupId) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			ids.push(entry.value);
-		}
-	});
-	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
-		return;
-	}
-	var params = [];
-	params.push({'key':'add_to_group_id', 'value':groupId});
-	ids.forEach(function(entry) {
-		params.push({'key':'add_to_computer_group_package_assignment_id[]', 'value':entry});
-	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package_detail.php', paramString, null, function() { alert(L__COMPUTER_ADDED) });
 }
 
 // job operations

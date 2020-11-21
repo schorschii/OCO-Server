@@ -3,17 +3,6 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
-if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_computer_group_package_assignment_id']) && is_array($_POST['add_to_computer_group_package_assignment_id'])) {
-	foreach($_POST['add_to_computer_group_package_assignment_id'] as $pid) {
-		$assignedPackage = $db->getComputerAssignedPackage($pid);
-		if($assignedPackage != null) {
-			if(count($db->getComputerByComputerAndGroup($assignedPackage->computer_id, $_POST['add_to_group_id'])) == 0) {
-				$db->addComputerToGroup($assignedPackage->computer_id, $_POST['add_to_group_id']);
-			}
-		}
-	}
-	die();
-}
 
 $package = null;
 if(!empty($_GET['id'])) {
@@ -95,8 +84,8 @@ if($package === null) die();
 </table>
 <div class='controls'>
 	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-	<button onclick='deployFromPackageDetails("package_id[]");'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-	<button onclick='addSelectedPackageComputerToGroup("package_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
+	<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button onclick='addSelectedComputerToGroup("package_id[]", sltNewGroup.value, "computer_id")'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewGroup' onclick='event.stopPropagation()'>
 			<?php
