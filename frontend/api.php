@@ -64,6 +64,8 @@ switch($srcdata['method']) {
 				)) {
 					$success = true;
 				}
+			} else {
+				header('HTTP/1.1 403 Client Self-Registration Disabled'); die();
 			}
 		} else {
 			if(empty($computer->agent_key)) {
