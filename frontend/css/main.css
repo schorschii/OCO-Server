@@ -412,6 +412,15 @@ table tr td button > img {
 	width: 2px;
 	background-color: #DDDDDD;
 }
+.fullwidth {
+	width: 100%;
+}
+.margintop {
+	margin-top: 15px;
+}
+.center {
+	text-align: center;
+}
 
 #sltComputer, #sltComputerGroup,
 #sltPackage, #sltPackageGroup {

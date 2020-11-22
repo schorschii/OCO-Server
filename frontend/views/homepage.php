@@ -8,4 +8,14 @@ require_once(__DIR__.'/../session.php');
 	<img src='img/logo.dyn.svg'>
 	<div class='title'><?php echo LANG['app_name_frontpage']; ?></div>
 	<div class='subtitle'><?php echo LANG['app_subtitle']; ?></div>
+
+	<table class='list fullwidth margintop'>
+		<tr>
+			<th class='center'><img src='img/users.dyn.svg'><br><?php echo count($db->getAllDomainuser()).' '.LANG['users']; ?></th>
+			<th class='center'><img src='img/computer.dyn.svg'><br><?php echo count($db->getAllComputer()).' '.LANG['computer']; ?></th>
+			<th class='center'><img src='img/package.dyn.svg'><br><?php echo count($db->getAllPackage()).' '.LANG['packages']; ?></th>
+			<th class='center'><img src='img/job.dyn.svg'><br><?php echo count($db->getAllJobcontainer()).' '.LANG['job_container']; ?></th>
+			<th class='center'><img src='img/report.dyn.svg'><br><?php echo count($db->getAllReport()).' '.LANG['reports']; ?></th>
+		</tr>
+	</table>
 </div>
