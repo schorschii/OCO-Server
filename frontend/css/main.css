@@ -148,6 +148,7 @@ body {
 	font-size: 92%;
 	opacity: 0.6;
 }
+
 #loader-container {
 	display: none;
 	position: fixed;
@@ -161,14 +162,39 @@ body {
 #loader-container img {
 	height: 90px;
 }
-body.loading #explorer {
-	filter: blur(6px);
+body.loading {
+	cursor: wait;
 }
-body.loading #loader-container {
+body.loading2 #loader-container {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	background-color: rgba(0,0,0,0.3);
+}
+
+#dialog-container {
+	display: none;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+#dialog-container.active {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgba(0,0,0,0.3);
+}
+#dialog-container #dialog-box {
+	width: 75%;
+	height: 75%;
+	padding: 15px;
+	background-color: white;
+	border-radius: 4px;
+}
+#dialog-container #dialog-box > * {
+	width: 100%;
 }
 
 div.contextMenu {

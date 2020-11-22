@@ -51,16 +51,30 @@ function toggleContextMenu(menu) {
 	return false;
 }
 
+function showErrorDialog(active, title='', text='') {
+	if(active) {
+		obj('dialog-container').classList.add('active');
+		obj('dialog-title').innerHTML = title;
+		obj('txtDialogText').innerHTML = text;
+	} else {
+		obj('dialog-container').classList.remove('active');
+	}
+}
+
 var currentExplorerContentUrl = null;
 function ajaxRequest(url, objID, callback, addToHistory=true) {
 	let timer = null;
 	if(objID == 'explorer-content') {
 		currentExplorerContentUrl = url;
-		timer = setTimeout(function(){ showLoader(true) }, 100);
+		showLoader(true);
+		timer = setTimeout(function(){ showLoader2(true) }, 100);
 	}
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
-		if(this.readyState == 4 && this.status == 200) {
+		if(this.readyState != 4) {
+			return;
+		}
+		if(this.status == 200) {
 			if(obj(objID) != null) {
 				obj(objID).innerHTML = this.responseText;
 				if(objID == 'explorer-content') {
@@ -71,6 +85,8 @@ function ajaxRequest(url, objID, callback, addToHistory=true) {
 					initTableSearch()
 					clearTimeout(timer);
 					showLoader(false);
+					showLoader2(false);
+					showErrorDialog(false);
 				}
 			}
 			if(callback != undefined && typeof callback == 'function') {
@@ -78,6 +94,10 @@ function ajaxRequest(url, objID, callback, addToHistory=true) {
 			}
 		} else if(this.status == 401) {
 			window.location.href = 'login.php';
+		} else {
+			showLoader(false);
+			showLoader2(false);
+			showErrorDialog(true, L__ERROR+' '+this.status, '');
 		}
 	};
 	xhttp.open("GET", url, true);
@@ -130,6 +150,13 @@ function showLoader(state) {
 		document.body.classList.remove('loading');
 	}
 }
+function showLoader2(state) {
+	if(state) {
+		document.body.classList.add('loading2');
+	} else {
+		document.body.classList.remove('loading2');
+	}
+}
 
 function getSelectValues(select) {
 	var result = [];
@@ -155,6 +182,9 @@ function refreshContent() {
 	if(currentExplorerContentUrl != null) {
 		ajaxRequest(currentExplorerContentUrl, 'explorer-content');
 	}
+}
+function refreshContentHomepage() {
+	ajaxRequest('views/homepage.php', 'explorer-content');
 }
 function refreshContentSettings(id='') {
 	ajaxRequest('views/setting.php?id='+encodeURIComponent(id), 'explorer-content');
@@ -223,9 +253,13 @@ function createPackage(name, version, author, description, archive, install_proc
 	req.open('POST', 'views/package_new.php');
 	req.send(formData);
 	req.onreadystatechange = function() {
-		if(this.readyState == 4 && this.status == 200) {
-			alert(L__PACKAGE_CREATED);
-			refreshContentPackage();
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				alert(L__PACKAGE_CREATED);
+				refreshContentPackage();
+			} else {
+				alert(L__ERROR+' '+this.status);
+			}
 		}
 	};
 }

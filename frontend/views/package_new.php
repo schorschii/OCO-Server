@@ -3,7 +3,10 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
-if(!empty($_POST['name'])) {
+if(isset($_POST['name'])) {
+	if(empty($_POST['name']) || empty($_POST['install_procedure'])) {
+		header('HTTP/1.1 400 Missing Information'); die();
+	}
 	$filename = randomString(8).'.zip';
 	$filepath = PACKAGE_PATH.'/'.$filename;
 	if(move_uploaded_file($_FILES['archive']['tmp_name'], $filepath)) {
@@ -17,7 +20,8 @@ if(!empty($_POST['name'])) {
 			$_POST['uninstall_procedure']
 		);
 	} else {
-		error_log('can not move uploaded file');
+		error_log('Can not move uploaded file to: '.$filepath);
+		header('HTTP/1.1 500 Can Not Move Uploaded File'); die();
 	}
 	die();
 }

@@ -28,16 +28,24 @@ require_once('session.php');
 
 		</div>
 		<div id='explorer-content' oncontextmenu='return toggleContextMenu(ctmExplorerContent)'>
-			<div id='homepage'>
-				<img src='img/logo.dyn.svg'>
-				<div class='title'><?php echo LANG['app_name_frontpage']; ?></div>
-				<div class='subtitle'><?php echo LANG['app_subtitle']; ?></div>
-			</div>
+			<?php require('views/homepage.php'); ?>
 		</div>
 	</div>
 
 	<div id='loader-container'>
 		<img src='img/loader.svg'>
+	</div>
+
+	<div id='dialog-container'>
+		<div id='dialog-box'>
+			<h2 id='dialog-title'></h2>
+			<textarea readonly='true' rows='15' id='txtDialogText'></textarea>
+			<div>
+				<button onclick='showErrorDialog(false);'><?php echo LANG['close']; ?>
+				<button onclick='showErrorDialog(false);refreshContent();'><?php echo LANG['retry']; ?>
+				<button onclick='showErrorDialog(false);refreshContentHomepage();'><?php echo LANG['home_page']; ?>
+			</div>
+		</div>
 	</div>
 
 	<div id='ctmExplorerTree' class='contextMenu hidden'>
