@@ -3,7 +3,7 @@ Type=Application
 Name=OCO Linux Client Extension
 Exec=/usr/bin/oco-client-extension-linux.py %u
 StartupNotify=false
-MimeType=x-scheme-handler/nmap;
+MimeType=x-scheme-handler/rdp;x-scheme-handler/vnc;x-scheme-handler/ssh;x-scheme-handler/ping;x-scheme-handler/nmap
 NoDisplay=true
 
 # execute `update-desktop-database` after copying into /usr/share/applications
