@@ -154,6 +154,12 @@ class db {
 		if(!$this->statement->bind_param('si', $note, $id)) return false;
 		if(!$this->statement->execute()) return false;
 	}
+	public function updateComputerAgentkey($id, $agent_key) {
+		$sql = "UPDATE computer SET agent_key = ? WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
+		if(!$this->statement->bind_param('si', $agent_key, $id)) return false;
+		if(!$this->statement->execute()) return false;
+	}
 	public function updateComputer($id, $hostname, $os, $os_version, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $networks, $screens, $software, $logins) {
 		$this->mysqli->autocommit(false);
 

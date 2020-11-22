@@ -15,7 +15,7 @@ if(!empty($_POST['wol_id']) && is_array($_POST['wol_id'])) {
 	die();
 }
 if(!empty($_POST['add_computer'])) {
-	$db->addComputer($_POST['add_computer'], '', []);
+	$db->addComputer($_POST['add_computer'], '', [], '');
 	die();
 }
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {

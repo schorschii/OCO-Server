@@ -66,8 +66,19 @@ switch($srcdata['method']) {
 				}
 			}
 		} else {
-			if($params['agent-key'] !== $computer->agent_key) {
-				header('HTTP/1.1 401 Client Not Authorized'); die();
+			if(empty($computer->agent_key)) {
+				// computer was pre-registered in the web frontend: check global key and generate individual key
+				if($params['agent-key'] !== $db->getSettingByName('agent-key')) {
+					header('HTTP/1.1 401 Client Not Authorized'); die();
+				} else {
+					$agent_key = randomString();
+					$db->updateComputerAgentkey($computer->id, $agent_key);
+				}
+			} else {
+				// check individual agent key
+				if($params['agent-key'] !== $computer->agent_key) {
+					header('HTTP/1.1 401 Client Not Authorized'); die();
+				}
 			}
 
 			$db->updateComputerPing($computer->id);
