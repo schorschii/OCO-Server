@@ -5,9 +5,18 @@ require_once(__DIR__.'/../session.php');
 ?>
 
 <div id='homepage'>
+	<a href='https://github.com/schorschii/oco-server' target='_blank'>
+		<img id='forkme' src='img/forkme.png'>
+	</a>
+
 	<img src='img/logo.dyn.svg'>
-	<div class='title'><?php echo LANG['app_name_frontpage']; ?></div>
-	<div class='subtitle'><?php echo LANG['app_subtitle']; ?></div>
+	<p>
+		<div class='title'><?php echo LANG['app_name_frontpage']; ?></div>
+		<div class='subtitle'><?php echo LANG['app_subtitle']; ?></div>
+	</p>
+	<p>
+		<div class='subtitle2'><?php echo LANG['version'].' '.APP_VERSION; ?></div>
+	</p>
 
 	<table class='list fullwidth margintop'>
 		<tr>

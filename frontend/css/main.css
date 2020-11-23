@@ -136,6 +136,7 @@ body {
 	margin-left: 25px;
 }
 #explorer-content {
+	position: relative;
 	background-color: #FAFAFA;
 	flex-basis: 80%;
 	padding: 20px;
@@ -156,6 +157,14 @@ body {
 #homepage .subtitle {
 	font-size: 92%;
 	opacity: 0.6;
+}
+#homepage .subtitle2 {
+	font-weight: bold;
+}
+#homepage img#forkme {
+	position: absolute;
+	top: 0px;
+	right: 0px;
 }
 
 #loader-container {
