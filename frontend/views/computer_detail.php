@@ -75,7 +75,7 @@ if($computer === null) die();
 	</tr>
 	<tr>
 		<th><?php echo LANG['ram']; ?></th>
-		<td><?php echo bytesToGb($computer->ram); ?></td>
+		<td><?php echo niceSize($computer->ram, true, 0); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['serial_no']; ?></th>

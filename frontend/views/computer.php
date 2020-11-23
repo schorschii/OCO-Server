@@ -107,7 +107,7 @@ foreach($computer as $c) {
 	echo "<td>".htmlspecialchars($c->os)."</td>";
 	echo "<td>".htmlspecialchars($c->os_version)."</td>";
 	echo "<td>".htmlspecialchars($c->cpu)."</td>";
-	echo "<td>".bytesToGb($c->ram)."</td>";
+	echo "<td>".niceSize($c->ram, true, 0)."</td>";
 	echo "<td>".htmlspecialchars(implode($ip_addresses,', '))."</td>";
 	echo "<td>".htmlspecialchars(implode($mac_addresses,', '))."</td>";
 	echo "<td>".htmlspecialchars($c->serial)."</td>";
