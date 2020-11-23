@@ -301,7 +301,8 @@ INSERT INTO `report` (`id`, `name`, `query`) VALUES
 (2, 'Pakete ohne Installationen', 'SELECT p.id AS package_id, name, count(cp.package_id) AS install_count FROM package p LEFT JOIN computer_package cp ON p.id = cp.package_id GROUP BY p.id HAVING install_count = 0'),
 (3, 'Erkannte Software Chrome', 'SELECT id as software_id, name FROM software WHERE name LIKE \'%chrome%\''),
 (4, 'Domänenbenutzer mit mehreren PCs', 'SELECT du.id AS domainuser_id, username, count(du.id) AS computer_count FROM domainuser du LEFT JOIN domainuser_logon dul ON du.id = dul.domainuser_id GROUP BY du.id, dul.computer_id HAVING computer_count > 1'),
-(5, 'Abgelaufene Jobcontainer', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()');
+(5, 'Abgelaufene Jobcontainer', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
+(6, 'Vorregistrierte Computer', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update <= \'2000-01-01 00:00:00\'');
 
 -- --------------------------------------------------------
 
