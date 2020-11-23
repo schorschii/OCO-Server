@@ -31,7 +31,7 @@ if($package === null) die();
 </div>
 
 <h2><?php echo LANG['general']; ?></h2>
-<table class='list'>
+<table class='list form'>
 	<tr>
 		<th><?php echo LANG['id']; ?></th>
 		<td><?php echo htmlspecialchars($package->id); ?></td>
