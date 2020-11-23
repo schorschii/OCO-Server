@@ -10,6 +10,13 @@ require_once('session.php');
 	<script src='js/strings.js.php'></script>
 	<script src='js/main.js'></script>
 	<script src='js/table.js'></script>
+	<!--
+		Wir begrüßen Sie an diesem wunderschönen <?php echo date("l"); ?>,
+		<?php echo time(); ?> Sekunden nach dem Unix-Urknall!
+
+		Überdies hinaus begrüße ich Sie in der <?php echo date("G"); ?>. Stunde dieses Tages.
+		PS. Obacht! Heute ist der <?php echo date("N"); ?>. Tag der Woche und die Woche zieht sich schon wieder!!!
+	-->
 </head>
 <body onclick='toggleContextMenu(null)' onkeydown='handleRefresh(event)'>
 

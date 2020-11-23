@@ -6,11 +6,6 @@ const DB_NAME = 'ocm';
 const DB_USER = 'ocm';
 const DB_PASS = 'PASSWORD';
 
-
-///// GENERAL CONFIGURATION /////
-const PACKAGE_PATH = '/var/www/oco/payload';
-
-
 ///// LDAP CONFIGURATION (optional) /////
 /*
  If you want to use LDAP user sync and login, please fill the following config lines.
@@ -35,3 +30,15 @@ const LDAP_QUERY_ROOT = '';
 
 // Example: 'CN=MasterplanUsers,OU=Benutzer,DC=sieber,DC=systems' or null
 const LDAP_SYNC_GROUP = null;
+
+///// GENERAL CONFIGURATION /////
+const PACKAGE_PATH = '/var/www/oco/payload';
+const MOTD = [
+	"Have you tried turning it off and on again?",
+	"The fact that ACPI was designed by a group of monkeys high on LSD, and is some of the worst designs in the industry obviously makes running it at any point pretty damn ugly. ~ Torvalds, Linus",
+	"Microsoft isn't evil, they just make really crappy operating systems. ~ Torvalds, Linus",
+	"XML is crap. Really. There are no excuses. XML is nasty to parse for humans, and it's a disaster to parse even for computers. There's just no reason for that horrible crap to exist. ~ Torvalds, Linus",
+	"The memory management on the PowerPC can be used to frighten small children. ~ Torvalds, Linus",
+	"Software is like sex; it's better when it's free. ~ Torvalds, Linus",
+	"Now, most of you are probably going to be totally bored out of your minds on Christmas day, and here's the perfect distraction. Test 2.6.15-rc7. All the stores will be closed, and there's really nothing better to do in between meals. ~ Torvalds, Linus"
+];

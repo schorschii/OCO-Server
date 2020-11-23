@@ -75,6 +75,7 @@ body {
 	opacity: 0.2;
 }
 #login-bg {
+	position: relative;
 	flex-grow: 1;
 	flex-shrink: 1;
 	background: url('../img/bg.jpg');
@@ -82,6 +83,14 @@ body {
 	background-position: center;
 	width: 70%;
 	height: 100%;
+}
+#motd {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	padding: 20px;
+	color: rgba(255,255,255,0.2);
 }
 
 #explorer {

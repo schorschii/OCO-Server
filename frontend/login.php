@@ -89,7 +89,7 @@ function validatePassword($userObject, $checkPassword) {
 			<img src='img/logo.dyn.svg'>
 		</div>
 		<div id='login-bg'>
-
+			<div id='motd'><?php echo MOTD[ rand(0, sizeof(MOTD)-1) ]; ?></div>
 		</div>
 	</div>
 
