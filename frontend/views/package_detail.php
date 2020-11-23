@@ -4,6 +4,19 @@ require_once('../../lib/loader.php');
 require_once('../session.php');
 
 
+if(!empty($_POST['edit_id'])) {
+	$db->updatePackage(
+		$_POST['edit_id'],
+		$_POST['name'],
+		$_POST['version'],
+		$_POST['author'],
+		$_POST['description'],
+		$_POST['install_procedure'],
+		$_POST['uninstall_procedure']
+	);
+	die();
+}
+
 $package = null;
 if(!empty($_GET['id'])) {
 	$package = $db->getPackage($_GET['id']);
@@ -24,16 +37,28 @@ if($package === null) die();
 		<td><?php echo htmlspecialchars($package->id); ?></td>
 	</tr>
 	<tr>
+		<th><?php echo LANG['name']; ?></th>
+		<td><input type='text' id='txtName' value='<?php echo htmlspecialchars($package->name); ?>'></td>
+	</tr>
+	<tr>
 		<th><?php echo LANG['version']; ?></th>
-		<td><?php echo htmlspecialchars($package->version); ?></td>
+		<td><input type='text' id='txtVersion' value='<?php echo htmlspecialchars($package->version); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['author']; ?></th>
-		<td><?php echo htmlspecialchars($package->author); ?></td>
+		<td><input type='text' id='txtAuthor' value='<?php echo htmlspecialchars($package->author); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['description']; ?></th>
-		<td><?php echo htmlspecialchars($package->notes); ?></td>
+		<td><textarea id='txtDescription'><?php echo htmlspecialchars($package->notes); ?></textarea></td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['install_procedure']; ?></th>
+		<td><input type='text' id='txtInstallProcedure' value='<?php echo htmlspecialchars($package->install_procedure); ?>'></td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['uninstall_procedure']; ?></th>
+		<td><input type='text' id='txtUninstallProcedure' value='<?php echo htmlspecialchars($package->uninstall_procedure); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['zip_archive']; ?></th>
@@ -43,16 +68,12 @@ if($package === null) die();
 		</td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['install_procedure']; ?></th>
-		<td><?php echo htmlspecialchars($package->install_procedure); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['uninstall_procedure']; ?></th>
-		<td><?php echo htmlspecialchars($package->uninstall_procedure); ?></td>
-	</tr>
-	<tr>
 		<th><?php echo LANG['created']; ?></th>
 		<td><?php echo htmlspecialchars($package->created); ?></td>
+	</tr>
+	<tr>
+		<th></th>
+		<td><button id='btnEditPackage' onclick='updatePackage(<?php echo $package->id; ?>, txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button></td>
 	</tr>
 </table>
 

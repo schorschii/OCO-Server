@@ -367,6 +367,12 @@ class db {
 		if(!$this->statement->execute()) return false;
 		return $this->statement->insert_id;
 	}
+	public function updatePackage($id, $name, $version, $author, $description, $install_procedure, $uninstall_procedure) {
+		$sql = "UPDATE package SET name = ?, version = ?, author = ?, notes = ?, install_procedure = ?, uninstall_procedure = ? WHERE id = ?";
+		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
+		if(!$this->statement->bind_param('ssssssi', $name, $version, $author, $description, $install_procedure, $uninstall_procedure, $id)) return false;
+		return $this->statement->execute();
+	}
 	public function addPackageToComputer($pid, $cid, $procedure) {
 		$sql = "INSERT INTO computer_package (package_id, computer_id, installed_procedure) VALUES (?,?,?)";
 		if(!$this->statement = $this->mysqli->prepare($sql)) return false;

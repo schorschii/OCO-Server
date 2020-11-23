@@ -263,6 +263,30 @@ function createPackage(name, version, author, description, archive, install_proc
 		}
 	};
 }
+function updatePackage(id, name, version, author, description, install_procedure, uninstall_procedure) {
+	btnEditPackage.disabled = true;
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('edit_id', id);
+	formData.append('name', name);
+	formData.append('version', version);
+	formData.append('author', author);
+	formData.append('description', description);
+	formData.append('install_procedure', install_procedure);
+	formData.append('uninstall_procedure', uninstall_procedure);
+	req.open('POST', 'views/package_detail.php');
+	req.send(formData);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				alert(L__SAVED);
+				refreshContent();
+			} else {
+				alert(L__ERROR+' '+this.status);
+			}
+		}
+	};
+}
 function reorderPackageInGroup(groupId, oldPos, newPos) {
 	var params = [];
 	params.push({'key':'move_in_group', 'value':groupId});
