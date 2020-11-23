@@ -1,6 +1,12 @@
 <?php
 
 function niceSize($value, $useBinary=true, $round=1) {
+	if($value === 0) {
+		return "0 B";
+	}
+	if(empty($value)) {
+		return "";
+	}
 	if($useBinary) {
 		if($value < 1024) return $value . " B";
 		else if($value < 1024*1024) return round($value / 1024, $round) . " KiB";
