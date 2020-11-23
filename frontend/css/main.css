@@ -223,10 +223,13 @@ div.contextMenu {
 	padding: 4px;
 }
 div.contextMenu button {
+	display: block;
+	width: 100%;
 	border-width: 1px;
 	border-radius: 2px;
 	padding: 4px;
 	box-sizing: border-box;
+	text-align: left;
 }
 div.contextMenu button img {
 	width: 18px;

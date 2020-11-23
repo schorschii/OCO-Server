@@ -59,6 +59,7 @@ require_once('session.php');
 		<button onclick='refreshSidebar()'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['refresh']; ?></button>
 	</div>
 	<div id='ctmExplorerContent' class='contextMenu hidden'>
+		<button onclick='document.execCommand("copy");'><img src='img/copy.svg'>&nbsp;<?php echo LANG['copy']; ?></button>
 		<button onclick='refreshContent()'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['refresh']; ?></button>
 	</div>
 
