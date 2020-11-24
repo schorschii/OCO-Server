@@ -20,5 +20,8 @@ OCO has a feature called "Client Commands" which allows you to seamlessly open V
 
 When clicking on a Computer Command button, a custom URL will be opened in your browser. In case of the pre-defined commands, this will be `vnc://HOSTNAME`, `rdp://HOSTNAME` and `ssh://hostname`. You need an appropriate counterpart on your computer to handle this URL. For the pre-defined commands, this will be the OCO Client Extension, found in `/lib/client-extension`. Please install it on your computer. After that, the Client Extension will handle the VNC, RDP and SSH URLs and open an appropriate program like Remmina to start the remote access.
 
+### Linux XDG Configuration
+It is possible that another application already registered the `ssh://` protocol. Firefox lets you select the application which should be used to open these URLs but Chrome always uses the default application. In this case, you can set the OCO Client Extensions as default with: `xdg-settings set default-url-scheme-handler ssh oco-client-extension-linux.desktop`.
+
 ## Remote Screen Access
 OCO does not contain a remote access solution as found in some commercial client management systems. OCO doesn't want to reinvent the wheel. Please use a VNC server/client for this.
