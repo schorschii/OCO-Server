@@ -430,6 +430,10 @@ table tr td button > img {
 	height: 24px;
 }
 
+table.fixed {
+	table-layout: fixed;
+}
+
 .green {
 	color: green;
 }

@@ -42,11 +42,11 @@ if($package === null) die();
 	</tr>
 	<tr>
 		<th><?php echo LANG['version']; ?></th>
-		<td><input type='text' id='txtVersion' value='<?php echo htmlspecialchars($package->version); ?>' readonly='true'></td>
+		<td><input type='text' id='txtVersion' readonly='true' value='<?php echo htmlspecialchars($package->version); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['author']; ?></th>
-		<td><input type='text' id='txtAuthor' value='<?php echo htmlspecialchars($package->author); ?>'></td>
+		<td><input type='text' id='txtAuthor' readonly='true' value='<?php echo htmlspecialchars($package->author); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['description']; ?></th>
@@ -54,11 +54,11 @@ if($package === null) die();
 	</tr>
 	<tr>
 		<th><?php echo LANG['install_procedure']; ?></th>
-		<td><input type='text' id='txtInstallProcedure' value='<?php echo htmlspecialchars($package->install_procedure); ?>'></td>
+		<td><input type='text' id='txtInstallProcedure' readonly='true' value='<?php echo htmlspecialchars($package->install_procedure); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
-		<td><input type='text' id='txtUninstallProcedure' value='<?php echo htmlspecialchars($package->uninstall_procedure); ?>'></td>
+		<td><input type='text' id='txtUninstallProcedure' readonly='true' value='<?php echo htmlspecialchars($package->uninstall_procedure); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['zip_archive']; ?></th>

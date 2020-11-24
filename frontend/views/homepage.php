@@ -14,7 +14,7 @@ require_once(__DIR__.'/../session.php');
 		<div class='subtitle2'><?php echo LANG['version'].' '.APP_VERSION; ?></div>
 	</p>
 
-	<table class='list fullwidth margintop'>
+	<table class='list fullwidth margintop fixed'>
 		<tr>
 			<th class='center'><img src='img/users.dyn.svg'><br><?php echo count($db->getAllDomainuser()).' '.LANG['users']; ?></th>
 			<th class='center'><img src='img/computer.dyn.svg'><br><?php echo count($db->getAllComputer()).' '.LANG['computer']; ?></th>
