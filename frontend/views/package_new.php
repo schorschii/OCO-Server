@@ -48,7 +48,7 @@ if(isset($_POST['name'])) {
 	</tr>
 	<tr>
 		<th><?php echo LANG['zip_archive']; ?></th>
-		<td><input type='file' id='fleArchive'></td>
+		<td><input type='file' id='fleArchive' accept='application/zip, application/x-zip-compressed, multipart/x-zip'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['install_procedure']; ?></th>

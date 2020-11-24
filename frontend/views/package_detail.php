@@ -42,7 +42,7 @@ if($package === null) die();
 	</tr>
 	<tr>
 		<th><?php echo LANG['version']; ?></th>
-		<td><input type='text' id='txtVersion' value='<?php echo htmlspecialchars($package->version); ?>'></td>
+		<td><input type='text' id='txtVersion' value='<?php echo htmlspecialchars($package->version); ?>' readonly='true'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['author']; ?></th>
