@@ -3,6 +3,7 @@ const LANG = [
 	'app_name' => 'OCO IT Client Manager',
 	'app_name_frontpage' => '[ Open Computer Orchestration ]',
 	'app_subtitle' => 'Client inventory and software delivery made simple',
+	'please_fill_required_fields' => 'Please fill the required fields.',
 	'copy' => 'Copy (CTRL+C)',
 	'refresh' => 'Refresh (F5)',
 	'retry' => 'Retry',

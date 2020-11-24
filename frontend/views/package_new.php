@@ -5,7 +5,8 @@ require_once('../session.php');
 
 if(isset($_POST['name'])) {
 	if(empty($_POST['name']) || empty($_POST['install_procedure'])) {
-		header('HTTP/1.1 400 Missing Information'); die();
+		header('HTTP/1.1 400 Missing Information');
+		die(LANG['please_fill_required_fields']);
 	}
 	$filename = randomString(8).'.zip';
 	$filepath = PACKAGE_PATH.'/'.$filename;
@@ -21,7 +22,8 @@ if(isset($_POST['name'])) {
 		);
 	} else {
 		error_log('Can not move uploaded file to: '.$filepath);
-		header('HTTP/1.1 500 Can Not Move Uploaded File'); die();
+		header('HTTP/1.1 500 Can Not Move Uploaded File');
+		die();
 	}
 	die();
 }

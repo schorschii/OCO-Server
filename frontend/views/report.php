@@ -22,8 +22,13 @@ if(empty($_GET['id'])) {
 } else {
 	$report = $db->getReport($_GET['id']);
 	if($report === null) die();
+	try {
+		$results = $db->executeReport($report->id);
+	} catch (Exception $e) {
+		header('HTTP/1.1 500 Query Failed');
+		die('SQL-Error: '.$e->getMessage());
+	}
 	echo "<h1>".htmlspecialchars($report->name)."</h1>";
-	$results = $db->executeReport($report->id);
 	echo "<p><code>".htmlspecialchars($report->query)."</code></p>";
 	if(count($results) == 0) die(LANG['no_results']);
 ?>

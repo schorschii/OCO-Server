@@ -54,8 +54,8 @@ function toggleContextMenu(menu) {
 function showErrorDialog(active, title='', text='') {
 	if(active) {
 		obj('dialog-container').classList.add('active');
-		obj('dialog-title').innerHTML = title;
-		obj('txtDialogText').innerHTML = text;
+		obj('dialog-title').innerText = title;
+		obj('dialog-text').innerText = text;
 	} else {
 		obj('dialog-container').classList.remove('active');
 	}
@@ -97,7 +97,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true) {
 		} else {
 			showLoader(false);
 			showLoader2(false);
-			showErrorDialog(true, L__ERROR+' '+this.status, '');
+			showErrorDialog(true, L__ERROR+' '+this.status+' '+this.statusText, this.responseText);
 		}
 	};
 	xhttp.open("GET", url, true);
@@ -258,7 +258,7 @@ function createPackage(name, version, author, description, archive, install_proc
 				alert(L__PACKAGE_CREATED);
 				refreshContentPackage();
 			} else {
-				alert(L__ERROR+' '+this.status);
+				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
 			}
 		}
 	};
@@ -282,7 +282,7 @@ function updatePackage(id, name, version, author, description, install_procedure
 				alert(L__SAVED);
 				refreshContent();
 			} else {
-				alert(L__ERROR+' '+this.status);
+				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
 			}
 		}
 	};

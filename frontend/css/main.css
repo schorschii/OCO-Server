@@ -210,9 +210,12 @@ body.loading2 #loader-container {
 	padding: 15px;
 	background-color: white;
 	border-radius: 4px;
+	overflow-y: scroll;
 }
-#dialog-container #dialog-box > * {
-	width: 100%;
+#dialog-container #dialog-box #dialog-text {
+	border-left: 2px solid rgb(200,200,200);
+	padding: 10px;
+	margin-top: 25px;
 }
 
 div.contextMenu {

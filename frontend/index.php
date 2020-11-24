@@ -46,12 +46,12 @@ require_once('session.php');
 	<div id='dialog-container'>
 		<div id='dialog-box'>
 			<h2 id='dialog-title'></h2>
-			<textarea readonly='true' rows='15' id='txtDialogText'></textarea>
 			<div>
-				<button onclick='showErrorDialog(false);'><?php echo LANG['close']; ?>
+				<button onclick='showErrorDialog(false);showLoader(false);showLoader2(false);'><?php echo LANG['close']; ?>
 				<button onclick='showErrorDialog(false);refreshContent();'><?php echo LANG['retry']; ?>
 				<button onclick='showErrorDialog(false);refreshContentHomepage();'><?php echo LANG['home_page']; ?>
 			</div>
+			<div id='dialog-text'></div>
 		</div>
 	</div>
 
