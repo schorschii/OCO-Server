@@ -1,4 +1,6 @@
 conf.php
 payload/*
 !payload/.placeholder
+frontend/css/custom.css
+frontend/css/custombg.jpg
 todo
