@@ -13,6 +13,17 @@ The OCO server provides the API (used to communicate with the OCO agent) and the
 ![Deployment Wizard](.github/2.png)
 ![Dark Mode](.github/3.png)
 
+## System Rquirements
+### Server
+- Linux Server
+- MySQL Database Server
+- Apache2 Web Server with PHP 7.0 or newer
+
+### Client
+- Chromium-based Web Browser (Chrome/Chromium v80 or newer, Opera etc.)
+- Firefox (v80 or newer)
+- (optional) OCO Client Extensions (for opening RDP, VNC, SSH sessions from the web interface)
+
 ## Installation
 0. Install PHP 7.x and a web sever of your choice.
 1. Copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.

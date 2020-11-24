@@ -7,7 +7,7 @@ An OCO package can therefore contains `.deb` files for Debian-based Linux Distro
 
 In the 'Procedure' fields, you define which commands should be executed when deploying or uninstalling a package.
 
-When deploying, the ZIP archive is unpacked into a temporary directory. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
+When deploying, the `.zip` archive is unpacked into a temporary directory. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (`.bat` or `.sh`) you have written yourself.
 
 Example Procedures:
 - EXE setup for Windows: `installer.exe /S` (no uninstallation support)
@@ -16,7 +16,7 @@ Example Procedures:
 - MSI uninstallation for Windows: `msiexec /quiet /x package.msi` or `{PRODUCT-GUID}`
 - DEB package for Linux: `gdebi -n package.deb`
 - DEB package for Linux uninstallation: `apt remove -y packagename`
-- Own Shell script for Linux: `myscript.sh`
+- Own Shell script for Linux/macOS: `myscript.sh`
 - PKG package on macOS: `sudo installer -pkg package.pkg -target /`
 
 ### Creating Own DEB Packages For Linux
@@ -27,4 +27,7 @@ Example Procedures:
 
 ### Creating Own MSI Packages For Windows
 - https://wixtoolset.org/
+- https://www.advancedinstaller.com/
+- https://www.masterpackager.com/  
+  (use the "Repackager" to create MSIs for software which is shipped as `.exe` only to get uninstall support)
 - https://www.heise.de/download/product/scalable-smart-packager-ce-89948
