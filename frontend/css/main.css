@@ -84,7 +84,12 @@ body {
 	width: 70%;
 	height: 100%;
 }
-#motd {
+#login-bg img#forkme {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+#login-bg #motd {
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
@@ -160,11 +165,6 @@ body {
 }
 #homepage .subtitle2 {
 	font-weight: bold;
-}
-#homepage img#forkme {
-	position: absolute;
-	top: 0px;
-	right: 0px;
 }
 
 #loader-container {
@@ -316,6 +316,7 @@ input:not([type=file]):read-only, textarea:read-only {
 	background-image: repeating-linear-gradient(45deg, rgb(255,255,255), rgb(255,255,255) 10px, rgb(240, 240, 240) 10px, rgb(240, 240, 240) 20px);
 }
 button {
+	cursor: pointer;
 	background-color: rgb(238,238,238);
 }
 button > img {

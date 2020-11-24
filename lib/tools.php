@@ -1,5 +1,11 @@
 <?php
 
+function isIE() {
+	return preg_match('~MSIE|Internet Explorer~i', $_SERVER['HTTP_USER_AGENT'])
+		|| (strpos($_SERVER['HTTP_USER_AGENT'], 'Trident/7.0; rv:11.0') !== false)
+		|| strpos($_SERVER['HTTP_USER_AGENT'], 'Edge');
+}
+
 function niceSize($value, $useBinary=true, $round=1) {
 	if($value === 0) {
 		return "0 B";

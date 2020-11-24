@@ -77,18 +77,26 @@ function validatePassword($userObject, $checkPassword) {
 
 	<div id='login'>
 		<div id='login-form'>
-			<form method='POST' action='login.php' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
-				<h1><?php echo LANG['login']; ?></h1>
-				<?php if($info !== null) { ?>
-					<h3 class='<?php echo $infoclass; ?>'><?php echo $info; ?></h3>
-				<?php } ?>
-				<input id='txtUsername' type='text' name='username' placeholder='<?php echo LANG['username']; ?>' autofocus='true'>
-				<input id='txtPassword' type='password' name='password' placeholder='<?php echo LANG['password']; ?>'>
-				<button id='btnLogin'><?php echo LANG['log_in']; ?></button>
-			</form>
-			<img src='img/logo.dyn.svg'>
+			<?php if(isIE()) { ?>
+				<img src='img/ietroll.png'>
+			<?php } else { ?>
+				<form method='POST' action='login.php' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
+					<h1><?php echo LANG['login']; ?></h1>
+					<?php if($info !== null) { ?>
+						<h3 class='<?php echo $infoclass; ?>'><?php echo $info; ?></h3>
+					<?php } ?>
+					<input id='txtUsername' type='text' name='username' placeholder='<?php echo LANG['username']; ?>' autofocus='true'>
+					<input id='txtPassword' type='password' name='password' placeholder='<?php echo LANG['password']; ?>'>
+					<button id='btnLogin'><?php echo LANG['log_in']; ?></button>
+				</form>
+				<img src='img/logo.dyn.svg'>
+			<?php } ?>
 		</div>
+
 		<div id='login-bg'>
+			<a href='https://github.com/schorschii/oco-server' target='_blank'>
+				<img id='forkme' src='img/forkme.png'>
+			</a>
 			<div id='motd'><?php echo MOTD[ rand(0, sizeof(MOTD)-1) ]; ?></div>
 		</div>
 	</div>
