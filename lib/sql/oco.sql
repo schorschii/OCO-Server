@@ -302,7 +302,7 @@ INSERT INTO `report` (`id`, `name`, `query`) VALUES
 (3, 'Erkannte Software Chrome', 'SELECT id as software_id, name FROM software WHERE name LIKE \'%chrome%\''),
 (4, 'Domänenbenutzer mit mehreren PCs', 'SELECT du.id AS domainuser_id, username, (SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS \'computer_count\' FROM domainuser du HAVING computer_count > 1'),
 (5, 'Abgelaufene Jobcontainer', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
-(6, 'Vorregistrierte Computer', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update <= \'2000-01-01 00:00:00\'');
+(6, 'Vorregistrierte Computer', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update IS NULL OR last_update <= \'2000-01-01 00:00:00\'');
 
 -- --------------------------------------------------------
 
