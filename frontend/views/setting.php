@@ -25,6 +25,17 @@ if(!empty($_POST['add_systemuser_username'])) {
 	);
 	die();
 }
+if(!empty($_POST['change_systemuser_id']) && !empty($_POST['change_systemuser_password'])) {
+	$u = $db->getSystemuser($_POST['change_systemuser_id']);
+	if($u != null) {
+		$db->updateSystemuser(
+			$u->id, $u->username, $u->fullname,
+			password_hash($_POST['change_systemuser_password'], PASSWORD_DEFAULT),
+			$u->ldap, $u->email, $u->phone, $u->mobile, $u->description, $u->locked
+		);
+	}
+	die();
+}
 if(!empty($_POST['remove_systemuser_id']) && is_array($_POST['remove_systemuser_id'])) {
 	foreach($_POST['remove_systemuser_id'] as $id) {
 		$db->removeSystemuser($id);
@@ -139,6 +150,11 @@ foreach($db->getAllSystemuser() as $u) {
 
 <div class='controls'>
 	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+	<button id='btnChangePassword' onclick='changeSelectedSystemuserPassword("systemuser_id[]", txtNewPassword1.value, txtNewPassword2.value)'>
+		<img src='img/edit.svg'>&nbsp;<?php echo LANG['change']; ?>
+		<input type='password' onclick='event.stopPropagation()' placeholder='<?php echo LANG['new_password']; ?>' id='txtNewPassword1'>
+		<input type='password' onclick='event.stopPropagation()' placeholder='<?php echo LANG['confirm_password']; ?>' id='txtNewPassword2'>
+	</button>
 	<button onclick='lockSelectedSystemuser("systemuser_id[]")'><img src='img/lock.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
 	<button onclick='unlockSelectedSystemuser("systemuser_id[]")'><img src='img/unlock.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
 	<button onclick='confirmRemoveSelectedSystemuser("systemuser_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>

@@ -675,19 +675,6 @@ function unlockSelectedSystemuser(checkboxName) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/setting.php', paramString, null, refreshContent);
 }
-
-// setting operations
-function saveGeneralSettings() {
-	btnSaveGeneralSettings.disabled = true;
-	var values = {
-		"agent-registration-enabled": chkAgentRegistrationEnabled.checked ? 1 : 0,
-		"agent-key": txtAgentKey.value,
-		"agent-update-interval": txtAgentUpdateInterval.value,
-		"purge-succeeded-jobs": txtPurgeSucceededJobsAfter.value,
-		"purge-failed-jobs": txtPurgeFailedJobsAfter.value
-	};
-	ajaxRequestPost('views/setting.php', urlencodeObject(values), null, function(){ alert(L__SAVED); refreshContent(); });
-}
 function createSystemuser(username, fullname, password) {
 	btnCreateUser.disabled = true;
 	let req = new XMLHttpRequest();
@@ -702,4 +689,46 @@ function createSystemuser(username, fullname, password) {
 			refreshContent();
 		}
 	};
+}
+function changeSelectedSystemuserPassword(checkboxName, password, password2) {
+	if(password != password2) {
+		alert(L__PASSWORDS_DO_NOT_MATCH);
+		return;
+	}
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	btnChangePassword.disabled = true;
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('change_systemuser_id', ids[0]);
+	formData.append('change_systemuser_password', password);
+	req.open('POST', 'views/setting.php');
+	req.send(formData);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			alert(L__SAVED);
+			refreshContent();
+		}
+	};
+}
+
+// setting operations
+function saveGeneralSettings() {
+	btnSaveGeneralSettings.disabled = true;
+	var values = {
+		"agent-registration-enabled": chkAgentRegistrationEnabled.checked ? 1 : 0,
+		"agent-key": txtAgentKey.value,
+		"agent-update-interval": txtAgentUpdateInterval.value,
+		"purge-succeeded-jobs": txtPurgeSucceededJobsAfter.value,
+		"purge-failed-jobs": txtPurgeFailedJobsAfter.value
+	};
+	ajaxRequestPost('views/setting.php', urlencodeObject(values), null, function(){ alert(L__SAVED); refreshContent(); });
 }
