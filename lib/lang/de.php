@@ -112,6 +112,7 @@ const LANG = [
 	'package_created' => 'Paket wurde erstellt',
 	'no_elements_selected' => 'Keine Elemente ausgewählt',
 	'confirm_delete' => 'Wirklich löschen?',
+	'confirm_delete_package' => 'Sind Sie sicher, dass Sie das Paket bzw. die Pakete löschen möchten?\n\nAlle Computerzuordungen gehen verloren und Sie können das Paket nicht länger über die Webanwendung deinstallieren.',
 	'enter_name' => 'Bitte geben Sie einen Namen ein',
 	'confirm_uninstall_package' => 'Möchten Sie das Paket wirklich deinstallieren? Es wird ein Deinstallationsjob erstellt.',
 	'confirm_remove_package_assignment' => 'Möchten Sie die Computer-Paket-Zuordnung wirklich aufheben? Normalerweise sollte das Paket deinstalliert werden.',

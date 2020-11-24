@@ -318,7 +318,7 @@ function confirmRemovePackage(ids) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	if(confirm(L__CONFIRM_DELETE)) {
+	if(confirm(L__CONFIRM_DELETE_PACKAGE)) {
 		ajaxRequestPost('views/package.php', paramString, null, refreshContent);
 	}
 }
@@ -492,7 +492,7 @@ function confirmRemoveComputer(ids) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	if(confirm('Sind Sie sicher?')) {
+	if(confirm(L__CONFIRM_DELETE)) {
 		ajaxRequestPost('views/computer.php', paramString, null, refreshContent);
 	}
 }
