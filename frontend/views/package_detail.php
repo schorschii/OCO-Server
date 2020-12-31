@@ -63,8 +63,8 @@ if($package === null) die();
 	<tr>
 		<th><?php echo LANG['zip_archive']; ?></th>
 		<td>
-			<a href='payloadprovider.php?id=<?php echo $package->id ?>' target='_blank'><?php echo htmlspecialchars($package->filename); ?></a>
-			(<?php $size = filesize(PACKAGE_PATH.'/'.$package->filename); echo niceSize($size, true).', '.niceSize($size, false); ?>)
+			<a href='payloadprovider.php?id=<?php echo intval($package->id) ?>' target='_blank'><?php echo LANG['download']; ?></a>
+			(<?php $size = filesize(PACKAGE_PATH.'/'.intval($package->id).'.zip'); echo niceSize($size, true).', '.niceSize($size, false); ?>)
 		</td>
 	</tr>
 	<tr>

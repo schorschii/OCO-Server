@@ -8,20 +8,28 @@ if(isset($_POST['name'])) {
 		header('HTTP/1.1 400 Missing Information');
 		die(LANG['please_fill_required_fields']);
 	}
-	$filename = randomString(8).'.zip';
+	$mimeType = mime_content_type($_FILES['archive']['tmp_name']);
+	if($mimeType != 'application/zip') {
+		header('HTTP/1.1 400 Invalid Zip File');
+		die(htmlspecialchars($mimeType));
+	}
+	$insertId = $db->addPackage(
+		$_POST['name'],
+		$_POST['version'],
+		$_POST['author'],
+		$_POST['description'],
+		$_POST['install_procedure'],
+		$_POST['uninstall_procedure']
+	);
+	if(!$insertId) {
+		header('HTTP/1.1 500 Failed');
+		die(LANG['database_error']);
+	}
+	$filename = intval($insertId).'.zip';
 	$filepath = PACKAGE_PATH.'/'.$filename;
-	if(move_uploaded_file($_FILES['archive']['tmp_name'], $filepath)) {
-		$db->addPackage(
-			$_POST['name'],
-			$_POST['version'],
-			$_POST['author'],
-			$_POST['description'],
-			$filename,
-			$_POST['install_procedure'],
-			$_POST['uninstall_procedure']
-		);
-	} else {
+	if(!move_uploaded_file($_FILES['archive']['tmp_name'], $filepath)) {
 		error_log('Can not move uploaded file to: '.$filepath);
+		$db->removePackage($insertId);
 		header('HTTP/1.1 500 Can Not Move Uploaded File');
 		die();
 	}
@@ -60,10 +68,9 @@ if(isset($_POST['name'])) {
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
 		<td><input type='text' id='txtUninstallProcedure'></td>
 	</tr>
+	<tr>
+		<th></th>
+		<td><button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button></td>
 </table>
 
 <?php echo LANG['package_creation_notes']; ?>
-
-<div class='controls'>
-	<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
-</div>

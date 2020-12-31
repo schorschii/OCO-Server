@@ -20,7 +20,7 @@ if(!isset($_SESSION['um_username'])) {
 // get package and start download
 if(!empty($_GET['id'])) {
 	$package = $db->getPackage($_GET['id']);
-	$path = PACKAGE_PATH.'/'.$package->filename;
+	$path = PACKAGE_PATH.'/'.intval($package->id).'.zip';
 	if(file_exists($path)) {
 		try {
 			$download = new ResumeDownload($path);

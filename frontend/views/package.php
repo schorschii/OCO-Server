@@ -10,7 +10,7 @@ if(!empty($_POST['move_in_group']) && !empty($_POST['move_from_pos']) && !empty(
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		$package = $db->getPackage($id);
-		$path = PACKAGE_PATH.'/'.$package->filename;
+		$path = PACKAGE_PATH.'/'.intval($package->id).'.zip';
 		if(unlink($path)) {
 			$db->removePackage($id);
 		}

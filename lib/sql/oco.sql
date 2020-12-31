@@ -250,7 +250,6 @@ CREATE TABLE `package` (
   `notes` text NOT NULL,
   `version` text NOT NULL,
   `author` text NOT NULL,
-  `filename` text NOT NULL,
   `install_procedure` text NOT NULL,
   `uninstall_procedure` text NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp()
