@@ -466,7 +466,7 @@ table.fixed {
 }
 
 @media (prefers-color-scheme: dark) {
-	html, #explorer-tree, #explorer-content, #login-form {
+	html, #explorer-tree, #explorer-content, #login-form, #dialog-container #dialog-box {
 		background-color: #1B2A32;
 	}
 	#explorer-tree a:focus,
