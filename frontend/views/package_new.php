@@ -8,10 +8,18 @@ if(isset($_POST['name'])) {
 		header('HTTP/1.1 400 Missing Information');
 		die(LANG['please_fill_required_fields']);
 	}
+	$tmpName = $_FILES['archive']['tmp_name'];
 	$mimeType = mime_content_type($_FILES['archive']['tmp_name']);
 	if($mimeType != 'application/zip') {
-		header('HTTP/1.1 400 Invalid Zip File');
-		die(htmlspecialchars($mimeType));
+		// create zip with uploaded file
+		$tmpName = '/tmp/ocotmparchive.zip';
+		$zip = new ZipArchive();
+		if(!$zip->open($tmpName, ZipArchive::CREATE)) {
+			header('HTTP/1.1 500 Cannot Create Zip Archive');
+			die(htmlspecialchars($mimeType));
+		}
+		$zip->addFile($_FILES['archive']['tmp_name'], '/'.basename($_FILES['archive']['name']));
+		$zip->close();
 	}
 	$insertId = $db->addPackage(
 		$_POST['name'],
@@ -27,7 +35,12 @@ if(isset($_POST['name'])) {
 	}
 	$filename = intval($insertId).'.zip';
 	$filepath = PACKAGE_PATH.'/'.$filename;
-	if(!move_uploaded_file($_FILES['archive']['tmp_name'], $filepath)) {
+	if($tmpName == $_FILES['archive']['tmp_name']) {
+		$result = move_uploaded_file($tmpName, $filepath);
+	} else {
+		$result = rename($tmpName, $filepath);
+	}
+	if(!$result) {
 		error_log('Can not move uploaded file to: '.$filepath);
 		$db->removePackage($insertId);
 		header('HTTP/1.1 500 Can Not Move Uploaded File');

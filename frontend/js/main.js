@@ -259,6 +259,7 @@ function createPackage(name, version, author, description, archive, install_proc
 				refreshContentPackage();
 			} else {
 				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+				btnCreatePackage.disabled = false;
 			}
 		}
 	};
@@ -283,6 +284,7 @@ function updatePackage(id, name, version, author, description, install_procedure
 				refreshContent();
 			} else {
 				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+				btnEditPackage.disabled = false;
 			}
 		}
 	};
