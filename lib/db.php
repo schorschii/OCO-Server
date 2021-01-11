@@ -441,9 +441,9 @@ class db {
 		$this->stmt->execute([':pid' => $pid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPackage');
 	}
-	public function getAllPackage() {
+	public function getAllPackage($distinct=false) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM package'
+			$distinct ? 'SELECT DISTINCT name FROM package' : 'SELECT * FROM package'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
@@ -463,6 +463,13 @@ class db {
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package') as $row) {
 			return $row;
 		}
+	}
+	public function getPackageByNameVersion($name, $version) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM package WHERE name = :name AND version = :version'
+		);
+		$this->stmt->execute([':name' => $name, ':version' => $version]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
 	public function getComputerAssignedPackage($id) {
 		$this->stmt = $this->dbh->prepare(

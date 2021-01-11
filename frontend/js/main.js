@@ -264,17 +264,12 @@ function createPackage(name, version, author, description, archive, install_proc
 		}
 	};
 }
-function updatePackage(id, name, version, author, description, install_procedure, uninstall_procedure) {
+function updatePackage(id, description) {
 	btnEditPackage.disabled = true;
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('edit_id', id);
-	formData.append('name', name);
-	formData.append('version', version);
-	formData.append('author', author);
 	formData.append('description', description);
-	formData.append('install_procedure', install_procedure);
-	formData.append('uninstall_procedure', uninstall_procedure);
 	req.open('POST', 'views/package_detail.php');
 	req.send(formData);
 	req.onreadystatechange = function() {

@@ -155,6 +155,7 @@ const LANG = [
 	'no_results' => 'Die Abfrage lieferte keine Ergebnisse.',
 	'report_creation_notes' => 'Reports müssen manuell in der Datenbank (Tabelle ›report‹) angelegt werden.',
 	'not_found' => 'Nicht gefunden',
+	'package_exists_with_version' => 'Es existiert bereits ein Paket mit diesem Namen und dieser Version.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

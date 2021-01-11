@@ -43,6 +43,16 @@ function randomString($length = 30) {
 	return $randomString;
 }
 
+function shorter($text, $charsLimit=40, $dots=true) {
+	if(strlen($text) > $charsLimit) {
+		$new_text = substr($text, 0, $charsLimit);
+		$new_text = trim($new_text);
+		return $new_text . ($dots ? "..." : "");
+	} else {
+		return $text;
+	}
+}
+
 function wol($mac) {
 	// create magic packet
 	$mac = str_replace('-', '', $mac);

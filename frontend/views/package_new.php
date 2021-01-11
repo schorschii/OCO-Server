@@ -4,9 +4,13 @@ require_once('../../lib/loader.php');
 require_once('../session.php');
 
 if(isset($_POST['name'])) {
-	if(empty($_POST['name']) || empty($_POST['install_procedure'])) {
+	if(empty($_POST['name']) || empty($_POST['install_procedure']) || empty($_FILES['archive'])) {
 		header('HTTP/1.1 400 Missing Information');
 		die(LANG['please_fill_required_fields']);
+	}
+	if(!empty($db->getPackageByNameVersion($_POST['name'], $_POST['version']))) {
+		header('HTTP/1.1 400 Already Exists');
+		die(LANG['package_exists_with_version']);
 	}
 	$tmpName = $_FILES['archive']['tmp_name'];
 	$mimeType = mime_content_type($_FILES['archive']['tmp_name']);
@@ -52,10 +56,14 @@ if(isset($_POST['name'])) {
 
 <h1><?php echo LANG['new_package']; ?></h1>
 
+<datalist id='lstPackageNames'>
+	<option><?php foreach($db->getAllPackage(true) as $p) echo htmlspecialchars($p->name); ?></option>
+</datalist>
+
 <table class='form'>
 	<tr>
 		<th><?php echo LANG['name']; ?></th>
-		<td><input type='text' id='txtName'></td>
+		<td><input type='text' id='txtName' datalist='lstPackageNames'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['version']; ?></th>

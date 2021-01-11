@@ -5,14 +5,19 @@ require_once('../session.php');
 
 
 if(!empty($_POST['edit_id'])) {
+	$package = $db->getPackage($_POST['edit_id']);
+	if(empty($package)) {
+		header('HTTP/1.1 404 Not Found');
+		die(LANG['not_found']);
+	}
 	$db->updatePackage(
-		$_POST['edit_id'],
-		$_POST['name'],
-		$_POST['version'],
-		$_POST['author'],
+		$package->id,
+		$package->name,
+		$package->version,
+		$package->author,
 		$_POST['description'],
-		$_POST['install_procedure'],
-		$_POST['uninstall_procedure']
+		$package->install_procedure,
+		$package->uninstall_procedure
 	);
 	die();
 }
@@ -38,15 +43,15 @@ if($package === null) die();
 	</tr>
 	<tr>
 		<th><?php echo LANG['name']; ?></th>
-		<td><input type='text' id='txtName' value='<?php echo htmlspecialchars($package->name); ?>'></td>
+		<td><?php echo htmlspecialchars($package->name); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['version']; ?></th>
-		<td><input type='text' id='txtVersion' readonly='true' value='<?php echo htmlspecialchars($package->version); ?>'></td>
+		<td><?php echo htmlspecialchars($package->version); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['author']; ?></th>
-		<td><input type='text' id='txtAuthor' readonly='true' value='<?php echo htmlspecialchars($package->author); ?>'></td>
+		<td><?php echo htmlspecialchars($package->author); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['description']; ?></th>
@@ -54,11 +59,11 @@ if($package === null) die();
 	</tr>
 	<tr>
 		<th><?php echo LANG['install_procedure']; ?></th>
-		<td><input type='text' id='txtInstallProcedure' readonly='true' value='<?php echo htmlspecialchars($package->install_procedure); ?>'></td>
+		<td><?php echo htmlspecialchars($package->install_procedure); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
-		<td><input type='text' id='txtUninstallProcedure' readonly='true' value='<?php echo htmlspecialchars($package->uninstall_procedure); ?>'></td>
+		<td><?php echo htmlspecialchars($package->uninstall_procedure); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['zip_archive']; ?></th>
@@ -77,7 +82,7 @@ if($package === null) die();
 	</tr>
 	<tr>
 		<th></th>
-		<td><button id='btnEditPackage' onclick='updatePackage(<?php echo $package->id; ?>, txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button></td>
+		<td><button id='btnEditPackage' onclick='updatePackage(<?php echo $package->id; ?>, txtDescription.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button></td>
 	</tr>
 </table>
 
