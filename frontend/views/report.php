@@ -37,7 +37,7 @@ if(empty($_GET['id'])) {
 <thead>
 	<tr>
 		<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblReportData, this.checked)'></th>
-		<?php foreach(get_object_vars($results[0]) as $key => $value) { ?>
+		<?php foreach($results[0] as $key => $value) { ?>
 		<th class='searchable sortable'><?php echo htmlspecialchars($key); ?></th>
 		<?php } ?>
 	</tr>
@@ -52,12 +52,12 @@ foreach($results as $result) {
 	echo "<tr>";
 
 	// checkbox
-	$computerId = -1; if(property_exists($result, 'computer_id')) $computerId = intval($result->computer_id);
-	$packageId = -1; if(property_exists($result, 'package_id')) $packageId = intval($result->package_id);
+	$computerId = -1; if(!empty($result['computer_id'])) $computerId = intval($result['computer_id']);
+	$packageId = -1; if(!empty($result['package_id'])) $packageId = intval($result['package_id']);
 	echo "<td><input type='checkbox' name='id[]' computer_id='".$computerId."' package_id='".$packageId."' onchange='refreshCheckedCounter(tblReportData)'></td>";
 
 	// attributes
-	foreach(get_object_vars($result) as $key => $value) {
+	foreach($result as $key => $value) {
 		if($key == 'computer_id') {
 			$hasComputerIds = true;
 			echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(\"".intval($value)."\")'>".$value."</a></td>";

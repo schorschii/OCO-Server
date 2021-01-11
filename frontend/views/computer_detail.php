@@ -142,8 +142,8 @@ if($computer === null) die();
 	<?php
 	foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
 		echo "<tr>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->username)."</a></td>";
-		echo "<td>".htmlspecialchars($logon->amount)."</td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
+		echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 		echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 		echo "</tr>";
 	}
@@ -235,9 +235,9 @@ if($computer === null) die();
 	foreach($db->getComputerSoftware($computer->id) as $s) {
 		$counter ++;
 		echo "<tr>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->name)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->software_name)."</a></td>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.", \"".htmlspecialchars($s->version)."\")'>".htmlspecialchars($s->version)."</a></td>";
-		echo "<td>".htmlspecialchars($s->description)."</td>";
+		echo "<td>".htmlspecialchars($s->software_description)."</td>";
 		echo "</tr>";
 	}
 	?>

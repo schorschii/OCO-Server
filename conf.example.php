@@ -1,6 +1,8 @@
 <?php
 
 ///// MySQL CONFIGURATION /////
+const DB_TYPE = 'mysql';
+const DB_PORT = '3306';
 const DB_HOST = 'localhost';
 const DB_NAME = 'ocm';
 const DB_USER = 'ocm';

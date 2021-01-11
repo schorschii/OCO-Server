@@ -19,8 +19,8 @@ foreach($db->getAllJobContainer() as $container) {
 		if(strtotime($container->start_time) <= time()) {
 			echo('Execute WOL for Job Container #'.$container->id.' ('.$container->name.')'."\n");
 			foreach($db->getComputerMacByContainer($container->id) as $c) {
-				echo('   Send WOL Magic Packet to '.$c->mac."\n");
-				wol($c->mac);
+				echo('   Send WOL Magic Packet to '.$c->computer_network_mac."\n");
+				wol($c->computer_network_mac);
 			}
 			$db->updateJobContainer(
 				$container->id,

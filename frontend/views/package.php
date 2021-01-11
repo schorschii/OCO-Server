@@ -92,12 +92,12 @@ foreach($packages as $p) {
 	echo "<td>".htmlspecialchars($p->author)."</td>";
 	echo "<td>".htmlspecialchars($p->install_procedure)."</td>";
 	echo "<td>".htmlspecialchars($p->uninstall_procedure)."</td>";
-	echo "<td>".htmlspecialchars($p->sequence ?? '-')."</td>";
+	echo "<td>".htmlspecialchars($p->package_group_member_sequence ?? '-')."</td>";
 	echo "<td>".htmlspecialchars($p->created)."</td>";
 	echo "<td class='updown'>";
 	if($group !== null) {
-		echo "<button title='".LANG['move_up']."' class='updown' onclick='reorderPackageInGroup(".$group->id.", ".$p->sequence.", ".($p->sequence-1).")'><img src='img/up.svg'></button>";
-		echo "<button title='".LANG['move_down']."' class='updown' onclick='reorderPackageInGroup(".$group->id.", ".$p->sequence.", ".($p->sequence+1).")'><img src='img/down.svg'></button>";
+		echo "<button title='".LANG['move_up']."' class='updown' onclick='reorderPackageInGroup(".$group->id.", ".$p->package_group_member_sequence.", ".($p->package_group_member_sequence-1).")'><img src='img/up.svg'></button>";
+		echo "<button title='".LANG['move_down']."' class='updown' onclick='reorderPackageInGroup(".$group->id.", ".$p->package_group_member_sequence.", ".($p->package_group_member_sequence+1).")'><img src='img/down.svg'></button>";
 	}
 	echo "</td>";
 	echo "</tr>";

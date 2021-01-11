@@ -58,7 +58,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 		$counter ++;
 		echo "<tr>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$software->id.", \"".htmlspecialchars($c->version)."\")'>".htmlspecialchars($c->version)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$software->id.", \"".htmlspecialchars($c->software_version)."\")'>".htmlspecialchars($c->software_version)."</a></td>";
 		echo "</tr>";
 	}
 	?>

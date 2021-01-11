@@ -1,196 +1,223 @@
 <?php
 
 class db {
-	private $mysqli;
-	private $statement;
+	private $dbh;
+	private $stmt;
 
 	function __construct() {
-		mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT); // debug
-		$link = @new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-		if($link->connect_error) {
-			die(':-O !!! failed to establish database connection: ' . $link->connect_error);
+		try {
+			$this->dbh = new PDO(
+				DB_TYPE.':host='.DB_HOST.';port='.DB_PORT.';dbname='.DB_NAME.';',
+				DB_USER, DB_PASS,
+				array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8')
+			);
+			$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		} catch(Exception $e) {
+			error_log($e->getMessage());
+			throw new Exception('Failed to establish database connection to ›'.DB_HOST.'‹. Gentle panic.');
 		}
-		$link->set_charset("utf8");
-		$this->mysqli = $link;
 	}
 
 	public function getDbHandle() {
-		return $this->mysqli;
+		return $this->dbh;
 	}
 	public function getLastStatement() {
-		return $this->statement;
-	}
-
-	public function beginTransaction() {
-		return $this->mysqli->autocommit(false);
-	}
-	public function commitTransaction() {
-		return $this->mysqli->commit();
-	}
-	public function rollbackTransaction() {
-		return $this->mysqli->rollback();
-	}
-
-	public static function getResultObjectArray($result) {
-		$resultArray = [];
-		while($row = $result->fetch_object()) {
-			$resultArray[] = $row;
-		}
-		return $resultArray;
+		return $this->stmt;
 	}
 
 	public function existsSchema() {
-		$sql = "SHOW TABLES LIKE 'setting'";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		return ($result->num_rows == 1);
+		$this->stmt = $this->dbh->prepare(
+			'SHOW TABLES LIKE "setting"'
+		);
+		$this->stmt->execute();
+		return ($this->stmt->rowCount() == 1);
 	}
 
 	// Computer Operations
 	public function getAllComputerCommand() {
-		$sql = "SELECT * FROM computer_command";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_command'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerCommand');
 	}
-	public function getComputerByName($name) {
-		$sql = "SELECT * FROM computer WHERE hostname = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('s', $name)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+	public function getComputerByName($hostname) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer WHERE hostname = :hostname'
+		);
+		$this->stmt->execute([':hostname' => $hostname]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer') as $row) {
 			return $row;
 		}
 	}
 	public function getComputer($id) {
-		$sql = "SELECT * FROM computer WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer') as $row) {
 			return $row;
 		}
 	}
 	public function getComputerNetwork($cid) {
-		$sql = "SELECT * FROM computer_network WHERE computer_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $cid)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_network WHERE computer_id = :cid'
+		);
+		$this->stmt->execute([':cid' => $cid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerNetwork');
 	}
 	public function getComputerScreen($cid) {
-		$sql = "SELECT * FROM computer_screen WHERE computer_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $cid)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_screen WHERE computer_id = :cid'
+		);
+		$this->stmt->execute([':cid' => $cid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerNetwork');
 	}
 	public function getComputerSoftware($cid) {
-		$sql = "
-			SELECT cs.id AS 'id', s.id AS 'software_id', s.name AS 'name', s.description AS 'description', cs.version AS 'version', cs.installed AS 'installed'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cs.id AS "id", s.id AS "software_id", s.name AS "software_name", s.description AS "software_description", cs.version AS "version", cs.installed AS "installed"
 			FROM computer_software cs
 			INNER JOIN software s ON cs.software_id = s.id
-			WHERE cs.computer_id = ? ORDER BY s.name
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $cid)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE cs.computer_id = :cid ORDER BY s.name'
+		);
+		$this->stmt->execute([':cid' => $cid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerSoftware');
 	}
 	public function removeComputerSoftware($id) {
-		$sql = "DELETE FROM computer_software WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_software WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
 	}
 	public function getComputerPackage($cid) {
-		$sql = "
-			SELECT cp.id AS 'id', p.id AS 'package_id', p.name AS 'package_name', cp.installed_procedure AS 'installed_procedure', cp.installed AS 'installed'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cp.id AS "id", p.id AS "package_id", p.name AS "package_name", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN package p ON p.id = cp.package_id
-			WHERE cp.computer_id = ?
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $cid)) return false;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE cp.computer_id = :cid'
+		);
+		$this->stmt->execute([':cid' => $cid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPackage');
 	}
 	public function getAllComputer() {
-		$sql = "SELECT * FROM computer ORDER BY hostname ASC";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer ORDER BY hostname ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
 	}
 	public function addComputer($hostname, $agent_version, $networks, $agent_key) {
-		$sql = "INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, notes, agent_key) VALUES (?,?,CURRENT_TIMESTAMP,NULL, '', '', '', '', '', '', '', '', '', '', '', '', '', '', ?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('sss', $hostname, $agent_version, $agent_key)) return false;
-		if(!$this->statement->execute()) return false;
-		$cid = $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, notes, agent_key)
+			VALUES (:hostname, :agent_version, CURRENT_TIMESTAMP, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", :agent_key)'
+		);
+		$this->stmt->execute([
+			':hostname' => $hostname,
+			':agent_version' => $agent_version,
+			':agent_key' => $agent_key,
+		]);
+		$cid = $this->dbh->lastInsertId();
 
 		foreach($networks as $index => $network) {
-			$sql = "INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, domain) VALUES (?,?,?,?,?,?,?)";
-			if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-			if(!$this->statement->bind_param('iisssss', $cid, $index, $network['addr'], $network['netmask'], $network['broadcast'], $network['mac'], $network['domain'])) return false;
-			if(!$this->statement->execute()) return false;
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, domain)
+				VALUES (:computer_id, :nic_number, :addr, :netmask, :broadcast, :mac, :domain)'
+			);
+			$this->stmt->execute([
+				':computer_id' => $cid,
+				':nic_number' => $index,
+				':addr' =>  $network['addr'],
+				':netmask' => $network['netmask'],
+				':broadcast' => $network['broadcast'],
+				':mac' => $network['mac'],
+				':domain' => $network['domain'],
+			]);
 		}
 
 		return $cid;
 	}
 	public function updateComputerPing($id) {
-		$sql = "UPDATE computer SET last_ping = CURRENT_TIMESTAMP WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('i', $id)) return false;
-		if(!$this->statement->execute()) return false;
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer SET last_ping = CURRENT_TIMESTAMP WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
 	}
-	public function updateComputerNote($id, $note) {
-		$sql = "UPDATE computer SET notes = ? WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('si', $note, $id)) return false;
-		if(!$this->statement->execute()) return false;
+	public function updateComputerNote($id, $notes) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer SET notes = :notes WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':notes' => $notes]);
 	}
 	public function updateComputerAgentkey($id, $agent_key) {
-		$sql = "UPDATE computer SET agent_key = ? WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('si', $agent_key, $id)) return false;
-		if(!$this->statement->execute()) return false;
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer SET agent_key = :agent_key WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':agent_key' => $agent_key]);
 	}
 	public function updateComputer($id, $hostname, $os, $os_version, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $networks, $screens, $software, $logins) {
-		$this->mysqli->autocommit(false);
+		$this->dbh->beginTransaction();
 
 		// update general info
-		$sql = "UPDATE computer SET hostname = ?, os = ?, os_version = ?, kernel_version = ?, architecture = ?, cpu = ?, gpu = ?, ram = ?, agent_version = ?, serial = ?, manufacturer = ?, model = ?, bios_version = ?, boot_type = ?, secure_boot = ?, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('sssssssssssssssi', $hostname, $os, $os_version, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $id)) return false;
-		if(!$this->statement->execute()) return false;
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer SET hostname = :hostname, os = :os, os_version = :os_version, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, boot_type = :boot_type, secure_boot = :secure_boot, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP WHERE id = :id'
+		);
+		if(!$this->stmt->execute([
+			':id' => $id,
+			':hostname' => $hostname,
+			':os' => $os,
+			':os_version' => $os_version,
+			':kernel_version' => $kernel_version,
+			':architecture' => $architecture,
+			':cpu' => $cpu,
+			':gpu' => $gpu,
+			':ram' => $ram,
+			':agent_version' => $agent_version,
+			':serial' => $serial,
+			':manufacturer' => $manufacturer,
+			':model' => $model,
+			':bios_version' => $bios_version,
+			':boot_type' => $boot_type,
+			':secure_boot' => $secure_boot,
+		])) return false;
 
 		// update networks
-		$sql = "DELETE FROM computer_network WHERE computer_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('i', $id)) return false;
-		if(!$this->statement->execute()) return false;
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_network WHERE computer_id = :id'
+		);
+		if(!$this->stmt->execute([':id' => $id])) return false;
 		foreach($networks as $index => $network) {
-			$sql = "INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, domain) VALUES (?,?,?,?,?,?,?)";
-			if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-			if(!$this->statement->bind_param('iisssss', $id, $index, $network['addr'], $network['netmask'], $network['broadcast'], $network['mac'], $network['domain'])) return false;
-			if(!$this->statement->execute()) return false;
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, domain)
+				VALUES (:computer_id, :nic_number, :addr, :netmask, :broadcast, :mac, :domain)'
+			);
+			if(!$this->stmt->execute([
+				':computer_id' => $id,
+				':nic_number' => $index,
+				':addr' => $network['addr'],
+				':netmask' => $network['netmask'],
+				':broadcast' => $network['broadcast'],
+				':mac' => $network['mac'],
+				':domain' => $network['domain'],
+			])) return false;
 		}
 
 		// update screens
-		$sql = "DELETE FROM computer_screen WHERE computer_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('i', $id)) return false;
-		if(!$this->statement->execute()) return false;
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_screen WHERE computer_id = :id'
+		);
+		if(!$this->stmt->execute([':id' => $id])) return false;
 		foreach($screens as $index => $screen) {
-			$sql = "INSERT INTO computer_screen (computer_id, name, manufacturer, type, resolution) VALUES (?,?,?,?,?)";
-			if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-			if(!$this->statement->bind_param('issss', $id, $screen['name'], $screen['manufacturer'], $screen['type'], $screen['resolution'])) return false;
-			if(!$this->statement->execute()) return false;
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO computer_screen (computer_id, name, manufacturer, type, resolution)
+				VALUES (:computer_id, :name, :manufacturer, :type, :resolution)'
+			);
+			if(!$this->stmt->execute([
+				':computer_id' => $id,
+				':name' => $screen['name'],
+				':manufacturer' => $screen['manufacturer'],
+				':type' => $screen['type'],
+				':resolution' => $screen['resolution'],
+			])) return false;
 		}
 
 		// insert software
@@ -203,17 +230,22 @@ class db {
 				$sid = $existingSoftware->id;
 			}
 			if($this->getComputerSoftwareByComputerSoftwareVersion($id, $sid, $s['version']) === null) {
-				$sql = "INSERT INTO computer_software (computer_id, software_id, version) VALUES (?,?,?)";
-				if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-				if(!$this->statement->bind_param('iis', $id, $sid, $s['version'])) return false;
-				if(!$this->statement->execute()) return false;
+				$this->stmt = $this->dbh->prepare(
+					'INSERT INTO computer_software (computer_id, software_id, version)
+					VALUES (:computer_id, :software_id, :version)'
+				);
+				if(!$this->stmt->execute([
+					':computer_id' => $id,
+					':software_id' => $sid,
+					':version' => $s['version'],
+				])) return false;
 			}
 		}
 		// remove software, which can not be found in agent output
 		foreach($this->getComputerSoftware($id) as $s) {
 			$found = false;
 			foreach($software as $s2) {
-				if($s->name == $s2['name']) {
+				if($s->software_name == $s2['name']) {
 					$found = true;
 					break;
 				}
@@ -238,385 +270,412 @@ class db {
 				$domainuser = $this->getDomainuser($du_id);
 			}
 			if($this->getDomainuserLogonByComputerDomainuserConsoleTimestamp($id, $domainuser->id, $l['console'], $l['timestamp']) === null) {
-				$sql = "INSERT INTO domainuser_logon (computer_id, domainuser_id, console, timestamp) VALUES (?,?,?,?)";
-				if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-				if(!$this->statement->bind_param('iiss', $id, $domainuser->id, $l['console'], $l['timestamp'])) return false;
-				if(!$this->statement->execute()) return false;
+				$this->stmt = $this->dbh->prepare(
+					'INSERT INTO domainuser_logon (computer_id, domainuser_id, console, timestamp)
+					VALUES (:computer_id, :domainuser_id, :console, :timestamp)'
+				);
+				if(!$this->stmt->execute([
+					':computer_id' => $id,
+					':domainuser_id' => $domainuser->id,
+					':console' => $l['console'],
+					':timestamp' => $l['timestamp'],
+				])) return false;
 			}
 		}
 
-		$this->mysqli->commit();
+		$this->dbh->commit();
 		return true;
 	}
 	public function removeComputer($id) {
-		$sql = "DELETE FROM computer WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer WHERE id = :computer_id'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $id,
+		])) return false;
 	}
 
 	public function getComputerGroup($id) {
-		$sql = "SELECT * FROM computer_group WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_group WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup') as $row) {
 			return $row;
 		}
 	}
 	public function getAllComputerGroup() {
-		$sql = "SELECT * FROM computer_group ORDER BY name";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_group ORDER BY name'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup');
 	}
 	public function getComputerBySoftware($sid) {
-		$sql = "
-			SELECT c.id AS 'id', c.hostname AS 'hostname', cs.version AS 'version'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT c.id AS "id", c.hostname AS "hostname", cs.version AS "software_version"
 			FROM computer_software cs
 			INNER JOIN computer c ON cs.computer_id = c.id
-			WHERE cs.software_id = ?
-			ORDER BY c.hostname
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $sid)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE cs.software_id = :id
+			ORDER BY c.hostname'
+		);
+		$this->stmt->execute([':id' => $sid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
 	}
 	public function getComputerBySoftwareVersion($sid, $version) {
-		$sql = "
-			SELECT c.id AS 'id', c.hostname AS 'hostname', cs.version AS 'version'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT c.id AS "id", c.hostname AS "hostname", cs.version AS "software_version"
 			FROM computer_software cs
 			INNER JOIN computer c ON cs.computer_id = c.id
-			WHERE cs.software_id = ? AND cs.version = ?
-			ORDER BY c.hostname
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('is', $sid, $version)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE cs.software_id = :id AND cs.version = :version
+			ORDER BY c.hostname'
+		);
+		$this->stmt->execute([':id' => $sid, ':version' => $version]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
 	}
 	public function getComputerByGroup($id) {
-		$sql = "
-			SELECT c.* FROM computer c
+		$this->stmt = $this->dbh->prepare(
+			'SELECT c.* FROM computer c
 			INNER JOIN computer_group_member cgm ON c.id = cgm.computer_id
-			WHERE cgm.computer_group_id = ?
-			ORDER BY c.hostname
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE cgm.computer_group_id = :id
+			ORDER BY c.hostname'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
 	}
 	public function getComputerByComputerAndGroup($cid, $gid) {
-		$sql = "
-			SELECT * FROM computer_group_member
-			WHERE computer_id = ? AND computer_group_id = ?
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('ii', $cid, $gid)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT c.* FROM computer_group_member cgm
+			INNER JOIN computer c ON c.id = cgm.computer_id
+			WHERE cgm.computer_id = :cid AND cgm.computer_group_id = :gid'
+		);
+		$this->stmt->execute([':cid' => $cid, ':gid' => $gid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
 	}
 	public function getGroupByComputer($cid) {
-		$sql = "
-			SELECT cg.id AS 'id', cg.name AS 'name'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cg.id AS "id", cg.name AS "name"
 			FROM computer_group_member cgm
 			INNER JOIN computer_group cg ON cg.id = cgm.computer_group_id
-			WHERE cgm.computer_id = ?
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $cid)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE cgm.computer_id = :cid'
+		);
+		$this->stmt->execute([':cid' => $cid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup');
 	}
 	public function addComputerGroup($name) {
-		$sql = "INSERT INTO computer_group (name) VALUES (?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('s', $name)) return false;
-		if(!$this->statement->execute()) return false;
-		return $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_group (name) VALUES (:name)'
+		);
+		$this->stmt->execute([':name' => $name]);
+		return $this->dbh->lastInsertId();
 	}
 	public function removeComputerGroup($id) {
-		$sql = "DELETE FROM computer_group WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_group WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
 	}
 	public function addComputerToGroup($cid, $gid) {
-		$sql = "INSERT INTO computer_group_member (computer_id, computer_group_id) VALUES (?,?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('ii', $cid, $gid)) return false;
-		if(!$this->statement->execute()) return false;
-		return $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_group_member (computer_id, computer_group_id) VALUES (:cid, :gid)'
+		);
+		$this->stmt->execute([':cid' => $cid, ':gid' => $gid]);
+		return $this->dbh->lastInsertId();
 	}
 	public function removeComputerFromGroup($cid, $gid) {
-		$sql = "DELETE FROM computer_group_member WHERE computer_id = ? AND computer_group_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('ii', $cid, $gid)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_group_member WHERE computer_id = :cid AND computer_group_id = :gid'
+		);
+		return $this->stmt->execute([':cid' => $cid, ':gid' => $gid]);
 	}
 
 	// Package Operations
-	public function addPackage($name, $version, $author, $description, $install_procedure, $uninstall_procedure) {
-		$sql = "INSERT INTO package (name, version, author, notes, install_procedure, uninstall_procedure) VALUES (?,?,?,?,?,?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('ssssss', $name, $version, $author, $description, $install_procedure, $uninstall_procedure)) return false;
-		if(!$this->statement->execute()) return false;
-		return $this->statement->insert_id;
+	public function addPackage($name, $version, $author, $notes, $install_procedure, $uninstall_procedure) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO package (name, version, author, notes, install_procedure, uninstall_procedure)
+			VALUES (:name, :version, :author, :notes, :install_procedure, :uninstall_procedure)'
+		);
+		$this->stmt->execute([
+			':name' => $name,
+			':version' => $version,
+			':author' => $author,
+			':notes' => $notes,
+			':install_procedure' => $install_procedure,
+			':uninstall_procedure' => $uninstall_procedure,
+		]);
+		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $name, $version, $author, $description, $install_procedure, $uninstall_procedure) {
-		$sql = "UPDATE package SET name = ?, version = ?, author = ?, notes = ?, install_procedure = ?, uninstall_procedure = ? WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('ssssssi', $name, $version, $author, $description, $install_procedure, $uninstall_procedure, $id)) return false;
-		return $this->statement->execute();
+	public function updatePackage($id, $name, $version, $author, $notes, $install_procedure, $uninstall_procedure) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET name = :name, version = :version, author = :author, notes = :notes, install_procedure = :install_procedure, uninstall_procedure = :uninstall_procedure WHERE id = :id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':name' => $name,
+			':version' => $version,
+			':author' => $author,
+			':notes' => $notes,
+			':install_procedure' => $install_procedure,
+			':uninstall_procedure' => $uninstall_procedure,
+		]);
 	}
 	public function addPackageToComputer($pid, $cid, $procedure) {
-		$sql = "INSERT INTO computer_package (package_id, computer_id, installed_procedure) VALUES (?,?,?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('iis', $pid, $cid, $procedure)) return false;
-		if(!$this->statement->execute()) return false;
-		return $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_package (package_id, computer_id, installed_procedure)
+			VALUES (:package_id, :computer_id, :installed_procedure)'
+		);
+		$this->stmt->execute([
+			':package_id' => $pid,
+			':computer_id' => $cid,
+			':installed_procedure' => $procedure,
+		]);
+		return $this->dbh->lastInsertId();
 	}
 	public function getPackageComputer($pid) {
-		$sql = "
-			SELECT cp.id AS 'id', c.id AS 'computer_id', c.hostname AS 'computer_hostname', cp.installed_procedure AS 'installed_procedure', cp.installed AS 'installed'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cp.id AS "id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN computer c ON c.id = cp.computer_id
-			WHERE cp.package_id = ?
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $pid)) return false;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE cp.package_id = :pid'
+		);
+		$this->stmt->execute([':pid' => $pid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPackage');
 	}
 	public function getAllPackage() {
-		$sql = "SELECT * FROM package";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM package'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
 	public function getAllPackageGroup() {
-		$sql = "SELECT * FROM package_group ORDER BY name";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM package_group ORDER BY name'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup');
 	}
 	public function getPackage($id) {
-		$sql = "SELECT * FROM package WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM package WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package') as $row) {
 			return $row;
 		}
 	}
 	public function getComputerAssignedPackage($id) {
-		$sql = "SELECT * FROM computer_package WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_package WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPackage') as $row) {
 			return $row;
 		}
 	}
 	public function getPackageGroup($id) {
-		$sql = "SELECT * FROM package_group WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM package_group WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup') as $row) {
 			return $row;
 		}
 	}
 	public function addPackageGroup($name) {
-		$sql = "INSERT INTO package_group (name) VALUES (?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('s', $name)) return false;
-		if(!$this->statement->execute()) return false;
-		return $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO package_group (name) VALUES (:name)'
+		);
+		$this->stmt->execute([':name' => $name]);
+		return $this->dbh->lastInsertId();
 	}
 	public function getPackageByGroup($id) {
-		$sql = "
-			SELECT p.*, pgm.sequence AS 'sequence' FROM package p
+		$this->stmt = $this->dbh->prepare(
+			'SELECT p.*, pgm.sequence AS "package_group_member_sequence" FROM package p
 			INNER JOIN package_group_member pgm ON p.id = pgm.package_id
-			WHERE pgm.package_group_id = ?
-			ORDER BY pgm.sequence
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE pgm.package_group_id = :id
+			ORDER BY pgm.sequence'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
 	public function addPackageToGroup($pid, $gid) {
-		$seq = 1;
-		$sql = "SELECT max(sequence) AS 'max_sequence' FROM package_group_member WHERE package_group_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $gid)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
-			$seq = $row->max_sequence + 1;
+		$seq = -1;
+
+		$this->stmt = $this->dbh->prepare(
+			'SELECT max(sequence) AS "max_sequence" FROM package_group_member WHERE package_group_id = :package_group_id'
+		);
+		$this->stmt->execute([':package_group_id' => $gid]);
+		foreach($this->stmt->fetchAll() as $row) {
+			$seq = $row['max_sequence'] + 1;
 		}
 
-		$sql = "INSERT INTO package_group_member (package_id, package_group_id, sequence) VALUES (?,?,?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('iii', $pid, $gid, $seq)) return false;
-		if(!$this->statement->execute()) return false;
-		return $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO package_group_member (package_id, package_group_id, sequence)
+			VALUES (:package_id, :package_group_id, :sequence)'
+		);
+		$this->stmt->execute([':package_id' => $pid, ':package_group_id' => $gid, ':sequence' => $seq]);
+		return $this->dbh->lastInsertId();
 	}
 	public function reorderPackageInGroup($package_group_id, $old_seq, $new_seq) {
-		$sql = "
-			SET @oldpos = ".intval($old_seq).";
-			SET @newpos = ".intval($new_seq).";
-			UPDATE package_group_member
-			SET sequence = CASE WHEN sequence = @oldpos THEN @newpos
-			WHEN @newpos < @oldpos AND sequence < @oldpos THEN
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package_group_member
+			SET sequence = CASE WHEN sequence = :oldpos THEN :newpos
+			WHEN :newpos < :oldpos AND sequence < :oldpos THEN
 			sequence + 1
-			WHEN @newpos > @oldpos AND sequence > @oldpos THEN
+			WHEN :newpos > :oldpos AND sequence > :oldpos THEN
 			sequence - 1
 			END
-			WHERE package_group_id = ".intval($package_group_id)." AND sequence BETWEEN LEAST(@newpos, @oldpos) AND GREATEST(@newpos, @oldpos)
-		";
-		return $this->mysqli->multi_query($sql);
+			WHERE package_group_id = :package_group_id AND sequence BETWEEN LEAST(:newpos, :oldpos) AND GREATEST(:newpos, :oldpos)'
+		);
+		return $this->stmt->execute([
+			':package_group_id' => $package_group_id,
+			':oldpos' => $old_seq,
+			':newpos' => $new_seq,
+		]);
 	}
 	public function removePackage($id) {
-		$sql = "DELETE FROM package WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM package WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
 	}
 	public function removePackageGroup($id) {
-		$sql = "DELETE FROM package_group WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM package_group WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
 	}
 	public function removePackageFromGroup($pid, $gid) {
-		$sql = "DELETE FROM package_group_member WHERE package_id = ? AND package_group_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('ii', $pid, $gid)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM package_group_member WHERE package_id = :package_id AND package_group_id = :package_group_id'
+		);
+		return $this->stmt->execute([':package_id' => $pid, ':package_group_id' => $gid]);
 	}
 	public function removeComputerAssignedPackage($id) {
-		$sql = "DELETE FROM computer_package WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_package WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
 	}
 	public function removeComputerAssignedPackageByIds($cid, $pid) {
-		$sql = "DELETE FROM computer_package WHERE computer_id = ? AND package_id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('ii', $cid, $pid)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_package WHERE computer_id = :computer_id AND package_id = :package_id'
+		);
+		return $this->stmt->execute([':computer_id' => $cid, ':package_id' => $pid]);
 	}
 
 	// Job Operations
 	public function addJobContainer($name, $start_time, $end_time, $notes) {
-		$sql = "INSERT INTO job_container (name, start_time, end_time, notes) VALUES (?,?,?,?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('ssss', $name, $start_time, $end_time, $notes)) return false;
-		if(!$this->statement->execute()) return false;
-		return $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO job_container (name, start_time, end_time, notes)
+			VALUES (:name, :start_time, :end_time, :notes)'
+		);
+		$this->stmt->execute([
+			':name' => $name,
+			':start_time' => $start_time,
+			':end_time' => $end_time,
+			':notes' => $notes,
+		]);
+		return $this->dbh->lastInsertId();
 	}
 	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $is_uninstall, $sequence) {
-		$sql = "INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, is_uninstall, sequence, message) VALUES (?,?,?,?,?,?,'')";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('iiisii', $job_container_id, $computer_id, $package_id, $package_procedure, $is_uninstall, $sequence)) return false;
-		if(!$this->statement->execute()) return false;
-		return $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, is_uninstall, sequence, message)
+			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :is_uninstall, :sequence, "")'
+		);
+		$this->stmt->execute([
+			':job_container_id' => $job_container_id,
+			':computer_id' => $computer_id,
+			':package_id' => $package_id,
+			':package_procedure' => $package_procedure,
+			':is_uninstall' => $is_uninstall,
+			':sequence' => $sequence,
+		]);
+		return $this->dbh->lastInsertId();
 	}
 	public function getJobContainer($id) {
-		$sql = "SELECT * FROM job_container WHERE id = ? ORDER BY created DESC";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM job_container WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'JobContainer') as $row) {
 			return $row;
 		}
 	}
 	public function getAllJobContainer() {
-		$sql = "
-			SELECT jc.*, (SELECT MAX(last_update) FROM job j WHERE j.job_container_id = jc.id) AS 'last_update'
-			FROM job_container jc
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT jc.*, (SELECT MAX(last_update) FROM job j WHERE j.job_container_id = jc.id) AS "last_update"
+			FROM job_container jc'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'JobContainer');
 	}
-	public function getJob($jid) {
-		$sql = "SELECT * FROM job WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $jid)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+	public function getJob($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM job WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job') as $row) {
 			return $row;
 		}
 	}
 	public function getComputerMacByContainer($id) {
-		$sql = "
-			SELECT c.id AS 'id', c.hostname AS 'hostname', cn.mac AS 'mac'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT c.id AS "id", c.hostname AS "hostname", cn.mac AS "computer_network_mac"
 			FROM job j
 			INNER JOIN computer c ON c.id = j.computer_id
 			INNER JOIN computer_network cn ON cn.computer_id = c.id
-			WHERE j.job_container_id = ?
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE j.job_container_id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
 	}
 	public function getAllJobByContainer($id) {
-		$sql = "
-			SELECT j.id AS 'id', j.computer_id AS 'computer_id', c.hostname AS 'computer', j.package_id AS 'package_id', p.name AS 'package', j.package_procedure AS 'package_procedure', j.sequence AS 'sequence', j.state AS 'state', j.message AS 'message', j.last_update AS 'last_update'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.*, p.name AS "package_name", c.hostname AS "computer_hostname"
 			FROM job j
 			INNER JOIN computer c ON c.id = j.computer_id
 			INNER JOIN package p ON p.id = j.package_id
-			WHERE j.job_container_id = ?
-			ORDER BY j.computer_id, j.sequence
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE j.job_container_id = :id
+			ORDER BY j.computer_id, j.sequence'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
 	}
-	public function getPendingJobsForComputer($cid) {
-		$sql = "
-			SELECT j.id AS 'id', j.package_id AS 'package_id', j.package_procedure AS 'procedure'
+	public function getPendingJobsForComputer($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure"
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
-			WHERE j.computer_id = ? AND j.state = 0 AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
-			ORDER BY j.sequence
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $cid)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			WHERE j.computer_id = :id AND j.state = 0 AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
+			ORDER BY j.sequence'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll();
 	}
 	public function updateJobState($id, $state, $message) {
-		$sql = "UPDATE job SET state = ?, message = ?, last_update = CURRENT_TIMESTAMP WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('isi', $state, $message, $id)) return false;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job SET state = :state, message = :message, last_update = CURRENT_TIMESTAMP WHERE id = :id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':state' => $state,
+			':message' => $message,
+		]);
 	}
 	public function updateJobContainer($id, $name, $start_time, $end_time, $notes, $wol_sent) {
-		$sql = "UPDATE job_container SET name = ?, start_time = ?, end_time = ?, notes = ?, wol_sent = ? WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('ssssii', $name, $start_time, $end_time, $notes, $wol_sent, $id)) return false;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job_container SET name = :name, start_time = :start_time, end_time = :end_time, notes = :notes, wol_sent = :wol_sent WHERE id = :id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':name' => $name,
+			':start_time' => $start_time,
+			':end_time' => $end_time,
+			':notes' => $notes,
+			':wol_sent' => $wol_sent,
+		]);
 	}
 	public function getJobContainerIcon($id) {
 		$container = $this->getJobContainer($id);
@@ -636,245 +695,251 @@ class db {
 		return 'tick';
 	}
 	public function removeJobContainer($id) {
-		$sql = "DELETE FROM job_container WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM job_container WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
 	}
 
 	// Domainuser Operations
 	public function addDomainuser($username) {
-		$sql = "INSERT INTO domainuser (username) VALUES (?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('s', $username)) return false;
-		if(!$this->statement->execute()) return false;
-		return $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO domainuser (username) VALUES (:username)'
+		);
+		$this->stmt->execute([
+			':username' => $username,
+		]);
+		return $this->dbh->lastInsertId();
 	}
 	public function getAllDomainuser() {
-		$sql = "
-			SELECT *,
-				(SELECT count(dl2.id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS 'amount',
-				(SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS 'computer_amount',
-				(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS 'timestamp'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT *,
+				(SELECT count(dl2.id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS "logon_amount",
+				(SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS "computer_amount",
+				(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
 			FROM domainuser du
-			ORDER BY username ASC
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			ORDER BY username ASC'
+		);
+		$this->stmt->execute([]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Domainuser');
 	}
 	public function getDomainuser($id) {
-		$sql = "
-			SELECT *, (SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS 'timestamp'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT *, (SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
 			FROM domainuser du
-			WHERE id = ?
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+			WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Domainuser') as $row) {
 			return $row;
 		}
 	}
 	public function getDomainuserLogonByComputerDomainuserConsoleTimestamp($cid, $did, $console, $timestamp) {
-		$sql = "
-			SELECT * FROM domainuser_logon dl
-			WHERE dl.computer_id = ? AND dl.domainuser_id = ? AND dl.console = ? AND dl.timestamp = ?
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('iiss', $cid, $did, $console, $timestamp)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM domainuser_logon dl
+			WHERE dl.computer_id = :computer_id AND dl.domainuser_id = :domainuser_id AND dl.console = :console AND dl.timestamp = :timestamp'
+		);
+		$this->stmt->execute([
+			':computer_id' => $cid,
+			':domainuser_id' => $did,
+			':console' => $console,
+			':timestamp' => $timestamp,
+		]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainuserLogon') as $row) {
 			return $row;
 		}
 	}
 	public function getDomainuserLogonByDomainuser($id) {
-		$sql = "
-			SELECT c.id AS 'computer_id', c.hostname AS 'hostname', COUNT(c.hostname) AS 'amount',
-			(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domainuser_id = dl.domainuser_id ORDER BY timestamp DESC LIMIT 1) AS 'timestamp'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT c.id AS "computer_id", c.hostname AS "computer_hostname", COUNT(c.hostname) AS "logon_amount",
+			(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domainuser_id = dl.domainuser_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
 			FROM domainuser_logon dl
 			INNER JOIN computer c ON dl.computer_id = c.id
-			WHERE dl.domainuser_id = ?
+			WHERE dl.domainuser_id = :domainuser_id
 			GROUP BY dl.domainuser_id, dl.computer_id
-			ORDER BY timestamp DESC, amount DESC, hostname ASC
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			ORDER BY timestamp DESC, logon_amount DESC, computer_hostname ASC'
+		);
+		$this->stmt->execute([
+			':domainuser_id' => $id,
+		]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainuserLogon');
 	}
 	public function getDomainuserLogonByComputer($id) {
-		$sql = "
-			SELECT du.id AS 'domainuser_id', du.username AS 'username', COUNT(du.username) AS 'amount',
-			(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domainuser_id = dl.domainuser_id ORDER BY timestamp DESC LIMIT 1) AS 'timestamp'
+		$this->stmt = $this->dbh->prepare(
+			'SELECT du.id AS "domainuser_id", du.username AS "domainuser_username", COUNT(du.username) AS "logon_amount",
+			(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domainuser_id = dl.domainuser_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
 			FROM domainuser_logon dl
 			INNER JOIN domainuser du ON dl.domainuser_id = du.id
-			WHERE dl.computer_id = ?
+			WHERE dl.computer_id = :computer_id
 			GROUP BY dl.computer_id, dl.domainuser_id
-			ORDER BY timestamp DESC, amount DESC, username ASC
-		";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+			ORDER BY timestamp DESC, logon_amount DESC, domainuser_username ASC'
+		);
+		$this->stmt->execute([
+			':computer_id' => $id,
+		]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainuserLogon');
 	}
 	public function removeDomainuser($id) {
-		$sql = "DELETE FROM domainuser WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM domainuser WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
 	}
 
 	// Settings Operations
 	public function getSettingByName($name) {
-		$sql = "SELECT value FROM setting WHERE setting = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('s', $name)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
-			return $row->value;
+		$this->stmt = $this->dbh->prepare(
+			'SELECT value FROM setting WHERE setting = :setting'
+		);
+		$this->stmt->execute([':setting' => $name]);
+		foreach($this->stmt->fetchAll() as $row) {
+			return $row['value'];
 		}
 	}
 	public function updateSetting($name, $value) {
-		$sql = "UPDATE setting SET value = ? WHERE setting = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('ss', $value, $name)) return false;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE setting SET value = :value WHERE setting = :setting'
+		);
+		return $this->stmt->execute([':setting' => $name, ':value' => $value]);
 	}
 
 	// Systemuser Operations
 	public function getAllSystemuser() {
-		$sql = "SELECT * FROM systemuser ORDER BY username ASC";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM systemuser ORDER BY username ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Systemuser');
 	}
 	public function getSystemuser($id) {
-		$sql = "SELECT * FROM systemuser WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM systemuser WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Systemuser') as $row) {
 			return $row;
 		}
 	}
 	public function getSystemuserByLogin($username) {
-		$sql = "SELECT * FROM systemuser WHERE username = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('s', $username)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM systemuser WHERE username = :username'
+		);
+		$this->stmt->execute([':username' => $username]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Systemuser') as $row) {
 			return $row;
 		}
 	}
-	public function addSystemuser($login, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
-		$sql = "INSERT INTO systemuser (username, fullname, password, ldap, email, phone, mobile, description, locked) VALUES (?,?,?,?,?,?,?,?,?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('sssissssi', $login, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked)) return null;
-		if(!$this->statement->execute()) return null;
-		return $this->statement->insert_id;
+	public function addSystemuser($username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO systemuser (username, fullname, password, ldap, email, phone, mobile, description, locked)
+			VALUES (:username, :fullname, :password, :ldap, :email, :phone, :mobile, :description, :locked)'
+		);
+		$this->stmt->execute([
+			':username' => $username,
+			':fullname' => $fullname,
+			':password' => $password,
+			':ldap' => $ldap,
+			':email' => $email,
+			':phone' => $phone,
+			':mobile' => $mobile,
+			':description' => $description,
+			':locked' => $locked,
+		]);
+		return $this->dbh->lastInsertId();
 	}
-	public function updateSystemuser($id, $login, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
-		$sql = "UPDATE systemuser SET username = ?, fullname = ?, password = ?, ldap = ?, email = ?, phone = ?, mobile = ?, description = ?, locked = ? WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return false;
-		if(!$this->statement->bind_param('sssissssii', $login, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $id)) return false;
-		return $this->statement->execute();
+	public function updateSystemuser($id, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE systemuser SET username = :username, fullname = :fullname, password = :password, ldap = :ldap, email = :email, phone = :phone, mobile = :mobile, description = :description, locked = :locked WHERE id = :id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':username' => $username,
+			':fullname' => $fullname,
+			':password' => $password,
+			':ldap' => $ldap,
+			':email' => $email,
+			':phone' => $phone,
+			':mobile' => $mobile,
+			':description' => $description,
+			':locked' => $locked,
+		]);
 	}
 	public function removeSystemuser($id) {
-		$sql = "DELETE FROM systemuser WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		return $this->statement->execute();
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM systemuser WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
 	}
 
 	// Software Operations
 	public function getAllSoftware() {
-		$sql = "SELECT *, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS 'installations' FROM software s ORDER BY name ASC";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT *, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations" FROM software s ORDER BY name ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
 	}
 	public function getSoftware($id) {
-		$sql = "SELECT * FROM software WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM software WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
 			return $row;
 		}
 	}
 	public function getSoftwareByName($name) {
-		$sql = "SELECT * FROM software WHERE name = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('s', $name)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM software WHERE name = :name'
+		);
+		$this->stmt->execute([':name' => $name]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
 			return $row;
 		}
 	}
 	public function getComputerSoftwareByComputerSoftwareVersion($cid, $sid, $version) {
-		$sql = "SELECT * FROM computer_software WHERE computer_id = ? AND software_id = ? AND version = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('iis', $cid, $sid, $version)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_software WHERE computer_id = :computer_id AND software_id = :software_id AND version = :version'
+		);
+		$this->stmt->execute([':computer_id' => $cid, ':software_id' => $sid, ':version' => $version]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
 			return $row;
 		}
 	}
 	public function addSoftware($name, $description) {
-		$sql = "INSERT INTO software (name, description) VALUES (?,?)";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('ss', $name, $description)) return null;
-		if(!$this->statement->execute()) return null;
-		return $this->statement->insert_id;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO software (name, description) VALUES (:name, :description)'
+		);
+		$this->stmt->execute([
+			':name' => $name,
+			':description' => $description,
+		]);
+		return $this->dbh->lastInsertId();
 	}
 
 	// Report Operations
 	public function getAllReport() {
-		$sql = "SELECT * FROM report";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->execute()) return null;
-		return self::getResultObjectArray($this->statement->get_result());
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM report'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
 	}
 	public function getReport($id) {
-		$sql = "SELECT * FROM report WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM report WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report') as $row) {
 			return $row;
 		}
 	}
 	public function executeReport($id) {
-		$sql = "SELECT * FROM report WHERE id = ?";
-		if(!$this->statement = $this->mysqli->prepare($sql)) return null;
-		if(!$this->statement->bind_param('i', $id)) return null;
-		if(!$this->statement->execute()) return null;
-		$result = $this->statement->get_result();
-		if($result->num_rows == 0) return null;
-		while($row = $result->fetch_object()) {
-			if(!$this->statement = $this->mysqli->prepare($row->query)) return null;
-			if(!$this->statement->execute()) return null;
-			return self::getResultObjectArray($this->statement->get_result());
-		}
+		$report = $this->getReport($id);
+		if(!$report) return false;
+		$this->stmt = $this->dbh->prepare($report->query);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 
 }
