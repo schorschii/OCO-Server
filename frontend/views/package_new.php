@@ -57,7 +57,9 @@ if(isset($_POST['name'])) {
 <h1><?php echo LANG['new_package']; ?></h1>
 
 <datalist id='lstPackageNames'>
-	<option><?php foreach($db->getAllPackage(true) as $p) echo htmlspecialchars($p->name); ?></option>
+	<?php foreach($db->getAllPackage(true) as $p) { ?>
+		<option><?php echo htmlspecialchars($p->name); ?></option>
+	<?php } ?>
 </datalist>
 <datalist id='lstInstallProceduresTemplates'>
 	<option>msiexec /quiet /i</option>

@@ -93,7 +93,7 @@ foreach($packages as $p) {
 	echo "<td>".htmlspecialchars($p->version)."</td>";
 	echo "<td>".htmlspecialchars($p->author)."</td>";
 	echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
-	echo "<td>".($size ? htmlspecialchars(niceSize($size)) : LANG['not_found'])."</td>";
+	echo "<td sort_key='".htmlspecialchars($size)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG['not_found'])."</td>";
 	echo "<td>".htmlspecialchars($p->package_group_member_sequence ?? '-')."</td>";
 	echo "<td>".htmlspecialchars($p->created)."</td>";
 	echo "<td class='updown'>";
