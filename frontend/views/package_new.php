@@ -59,11 +59,31 @@ if(isset($_POST['name'])) {
 <datalist id='lstPackageNames'>
 	<option><?php foreach($db->getAllPackage(true) as $p) echo htmlspecialchars($p->name); ?></option>
 </datalist>
+<datalist id='lstInstallProceduresTemplates'>
+	<option>msiexec /quiet /i</option>
+	<option>gdebi -n</option>
+	<option>msiexec /quiet /i [FILENAME]</option>
+	<option>gdebi -n [FILENAME]</option>
+</datalist>
+<datalist id='lstUninstallProceduresTemplates'>
+	<option>msiexec /quiet /x</option>
+	<option>apt remove -y</option>
+	<option>msiexec /quiet /x [FILENAME]</option>
+	<option>apt remove -y [FILENAME]</option>
+</datalist>
+<datalist id='lstInstallProcedures'>
+	<option>msiexec /quiet /i</option>
+	<option>gdebi -n</option>
+</datalist>
+<datalist id='lstUninstallProcedures'>
+	<option>msiexec /quiet /x</option>
+	<option>apt remove -y</option>
+</datalist>
 
 <table class='form'>
 	<tr>
 		<th><?php echo LANG['name']; ?></th>
-		<td><input type='text' id='txtName' datalist='lstPackageNames'></td>
+		<td><input type='text' id='txtName' list='lstPackageNames'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['version']; ?></th>
@@ -79,15 +99,15 @@ if(isset($_POST['name'])) {
 	</tr>
 	<tr>
 		<th><?php echo LANG['zip_archive']; ?></th>
-		<td><input type='file' id='fleArchive' accept='application/zip, application/x-zip-compressed, multipart/x-zip'></td>
+		<td><input type='file' id='fleArchive' onchange='updatePackageProcedureTemplates()'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['install_procedure']; ?></th>
-		<td><input type='text' id='txtInstallProcedure'></td>
+		<td><input type='text' id='txtInstallProcedure' list='lstInstallProcedures'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
-		<td><input type='text' id='txtUninstallProcedure'></td>
+		<td><input type='text' id='txtUninstallProcedure' list='lstUninstallProcedures'></td>
 	</tr>
 	<tr>
 		<th></th>

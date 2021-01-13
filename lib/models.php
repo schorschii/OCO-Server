@@ -77,6 +77,17 @@ class Package {
 	public $created;
 	// joined package group attributes
 	public $package_group_member_sequence;
+
+	public function getFilePath() {
+		$path = PACKAGE_PATH.'/'.intval($this->id).'.zip';
+		if(!file_exists($path)) return false;
+		else return $path;
+	}
+	public function getSize() {
+		$path = $this->getFilePath();
+		if(!$path) return false;
+		return filesize($path);
+	}
 }
 class PackageGroup {
 	public $id;

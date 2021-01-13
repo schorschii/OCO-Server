@@ -156,9 +156,13 @@ const LANG = [
 	'report_creation_notes' => 'Reports müssen manuell in der Datenbank (Tabelle ›report‹) angelegt werden.',
 	'not_found' => 'Nicht gefunden',
 	'package_exists_with_version' => 'Es existiert bereits ein Paket mit diesem Namen und dieser Version.',
+	'size' => 'Größe',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
+		</p>
+		<p>
+			Wenn Sie einen anderen Dateityp als ein ZIP-Archiv hochladen wird automatisch ein ZIP-Archiv mit der hochgeladenen Datei erstellt.
 		</p>
 		<p>
 			Beispiel-Prozeduren:

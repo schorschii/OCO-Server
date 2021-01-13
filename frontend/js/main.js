@@ -239,6 +239,23 @@ function refreshContentReport(id='') {
 }
 
 // package operations
+function updatePackageProcedureTemplates() {
+	if(fleArchive.files.length > 0) {
+		var newOptions = '';
+		var i, L = lstInstallProceduresTemplates.options.length - 1;
+		for(i = L; i >= 0; i--) {
+			newOptions += '<option>'+lstInstallProceduresTemplates.options[i].innerText.replace('[FILENAME]',fleArchive.files[0].name)+'</option>';
+		}
+		lstInstallProcedures.innerHTML = newOptions;
+
+		var newOptions2 = '';
+		var i, L = lstUninstallProceduresTemplates.options.length - 1;
+		for(i = L; i >= 0; i--) {
+			newOptions2 += '<option>'+lstUninstallProceduresTemplates.options[i].innerText.replace('[FILENAME]',fleArchive.files[0].name)+'</option>';
+		}
+		lstUninstallProcedures.innerHTML = newOptions2;
+	}
+}
 function createPackage(name, version, author, description, archive, install_procedure, uninstall_procedure) {
 	btnCreatePackage.disabled = true;
 	let req = new XMLHttpRequest();

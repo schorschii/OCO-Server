@@ -11,8 +11,8 @@ if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		$package = $db->getPackage($id);
 		if(!empty($package)) {
-			$path = PACKAGE_PATH.'/'.intval($package->id).'.zip';
-			unlink($path);
+			$path = $package->getFilePath();
+			if(!empty($path)) unlink($path);
 			$db->removePackage($package->id);
 		}
 	}
@@ -72,8 +72,7 @@ if(empty($_GET['id'])) {
 		<th class='searchable sortable'><?php echo LANG['version']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['author']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['description']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['install_procedure']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['uninstall_procedure']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['size']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['order']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['created']; ?></th>
 		<th><?php echo LANG['action']; ?></th>
@@ -84,17 +83,17 @@ if(empty($_GET['id'])) {
 $counter = 0;
 foreach($packages as $p) {
 	$counter ++;
+	$size = $p->getSize();
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)'></td>";
 	echo "<td>"
-		.(file_exists(PACKAGE_PATH.'/'.intval($p->id).'.zip') ? '' : '<img src="img/warning.dyn.svg" title="'.LANG['not_found'].'">')
+		.($p->getFilePath() ? '' : '<img src="img/warning.dyn.svg" title="'.LANG['not_found'].'">')
 		."<a href='#' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")'>".htmlspecialchars($p->name)."</a>"
 		."</td>";
 	echo "<td>".htmlspecialchars($p->version)."</td>";
 	echo "<td>".htmlspecialchars($p->author)."</td>";
 	echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
-	echo "<td>".htmlspecialchars($p->install_procedure)."</td>";
-	echo "<td>".htmlspecialchars($p->uninstall_procedure)."</td>";
+	echo "<td>".($size ? htmlspecialchars(niceSize($size)) : LANG['not_found'])."</td>";
 	echo "<td>".htmlspecialchars($p->package_group_member_sequence ?? '-')."</td>";
 	echo "<td>".htmlspecialchars($p->created)."</td>";
 	echo "<td class='updown'>";
