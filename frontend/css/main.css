@@ -361,6 +361,10 @@ select:active {
 	white-space: nowrap;
 }
 
+table.largepadding td,
+table.largepadding th {
+	padding: 15px;
+}
 table.list {
 	border-spacing: 0;
 	background-color: white;
