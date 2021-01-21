@@ -25,8 +25,13 @@ require_once('session.php');
 	<div id='header'>
 		<span class='left'><a href='index.php'><?php echo LANG['app_name']; ?></a></span>
 		<span class='right'>
-			<button onclick='refreshContentSettings()'><img src='img/settings.svg'></button>
-			<button onclick='window.location.href="login.php?logout"' title='<?php echo htmlspecialchars($_SESSION['um_username']); ?>'><img src='img/exit.svg'></button>
+			<button onclick='location.href="index.php"' title='<?php echo LANG['home_page']; ?>'><img src='img/home.light.svg'></button>
+			<span class='separator'></span>
+			<button onclick='refreshContent();refreshSidebar();' title='<?php echo LANG['refresh']; ?>'><img src='img/refresh.light.svg'></button>
+			<span class='separator'></span>
+			<button onclick='refreshContentSettings()' title='<?php echo LANG['settings']; ?>'><img src='img/settings.light.svg'></button>
+			<span class='separator'></span>
+			<button onclick='window.location.href="login.php?logout"' title='<?php echo LANG['log_out']; ?>'><?php echo htmlspecialchars($_SESSION['um_username']); ?>&nbsp;<img src='img/exit.light.svg'></button>
 		</span>
 	</div>
 

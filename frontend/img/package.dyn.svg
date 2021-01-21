@@ -13,20 +13,31 @@
    id="svg4"
    sodipodi:docname="package.dyn.svg"
    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <metadata
+     id="metadata11">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
   <path
-     style="opacity:1;fill:none;stroke-width:2.10241938;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="opacity:1;fill:none;stroke-width:2.10241938;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
      d="M 2.31634,18.085405 V 5.9804651 L 12.012811,1.3013835 21.68366,5.9556918 V 18.011086 l -9.61961,4.679081 z"
      id="path4532"
      inkscape:connector-curvature="0"
      sodipodi:nodetypes="ccccccc" />
   <path
      id="path4536"
-     style="fill:none;stroke-width:2.13769126;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     style="fill:none;stroke-width:2.13769126;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;"
      d="M 12.121506,11.806863 2.4113158,7.3503159 M 21.215752,7.5314761 12.049043,11.7344 11.991583,22.745303 v 0 0"
      inkscape:connector-curvature="0" />
   <path
      style="fill:none;stroke-width:1.92392206;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-     d="M 17.719893,9.5998101 6.3093698,3.9714111"
+     d="M 17.773826,9.4020598 6.3633017,3.7736608"
      id="path4536-2"
      inkscape:connector-curvature="0"
      sodipodi:nodetypes="cc" />
