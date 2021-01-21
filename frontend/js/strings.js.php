@@ -1,4 +1,7 @@
-<?php require_once('../../lib/lang.php'); ?>
+<?php
+require_once('../../lib/lang.php');
+header('Content-Type: text/javascript');
+?>
 
 var L__PACKAGE_CREATED = "<?php echo LANG['package_created']; ?>";
 var L__NO_ELEMENTS_SELECTED = "<?php echo LANG['no_elements_selected']; ?>";
@@ -16,3 +19,5 @@ var L__SAVED = "<?php echo LANG['saved']; ?>";
 var L__WOL_SENT = "<?php echo LANG['wol_packet_sent']; ?>";
 var L__ERROR = "<?php echo LANG['error']; ?>";
 var L__PASSWORDS_DO_NOT_MATCH = "<?php echo LANG['passwords_do_not_match']; ?>";
+var L__NO_CONNECTION_TO_SERVER = "<?php echo LANG['no_connection_to_server']; ?>";
+var L__PLEASE_CHECK_NETWORK = "<?php echo LANG['please_check_network']; ?>";

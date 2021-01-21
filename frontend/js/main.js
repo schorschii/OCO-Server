@@ -97,7 +97,11 @@ function ajaxRequest(url, objID, callback, addToHistory=true) {
 		} else {
 			showLoader(false);
 			showLoader2(false);
-			showErrorDialog(true, L__ERROR+' '+this.status+' '+this.statusText, this.responseText);
+			if(this.status == 0) {
+				showErrorDialog(true, L__NO_CONNECTION_TO_SERVER, L__PLEASE_CHECK_NETWORK);
+			} else {
+				showErrorDialog(true, L__ERROR+' '+this.status+' '+this.statusText, this.responseText);
+			}
 		}
 	};
 	xhttp.open("GET", url, true);
@@ -232,7 +236,9 @@ function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids
 		params.push({'key':'computer_group_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequest('views/deploy.php?'+paramString, 'explorer-content', function(){ refreshDeployCount() });
+	ajaxRequest('views/deploy.php?'+paramString, 'explorer-content', function(){
+		refreshDeployComputerAndPackages(sltComputerGroup.value, sltPackageGroup.value, computer_ids, package_ids);
+	});
 }
 function refreshContentReport(id='') {
 	ajaxRequest('views/report.php?id='+encodeURIComponent(id), 'explorer-content');
@@ -447,11 +453,31 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 		ajaxRequestPost('views/computer_detail.php', paramString, null, function() { refreshContent() });
 	}
 }
+function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshPackagesGroupId=null, preselectComputerIds=[], preselectPackageIds=[]) {
+	if(refreshComputersGroupId != null) {
+		var params = [];
+		params.push({'key':'get_computer_group_members', 'value':refreshComputersGroupId});
+		preselectComputerIds.forEach(function(entry) {
+			params.push({'key':'computer_id[]', 'value':entry});
+		});
+		ajaxRequest("views/deploy.php?"+urlencodeArray(params), 'sltComputer', function(){ refreshDeployCount() });
+		if(refreshComputersGroupId < 1) sltComputerGroup.value = -1;
+	}
+	if(refreshPackagesGroupId != null) {
+		var params = [];
+		params.push({'key':'get_package_group_members', 'value':refreshPackagesGroupId});
+		preselectPackageIds.forEach(function(entry) {
+			params.push({'key':'package_id[]', 'value':entry});
+		});
+		ajaxRequest("views/deploy.php?"+urlencodeArray(params), 'sltPackage', function(){ refreshDeployCount() });
+		if(refreshPackagesGroupId < 1) sltPackageGroup.value = -1;
+	}
+}
 function refreshDeployCount() {
 	spnSelectedComputers.innerHTML = getSelectValues(sltComputer).length;
-	spnSelectedComputerGroups.innerHTML = getSelectValues(sltComputerGroup).length;
 	spnSelectedPackages.innerHTML = getSelectValues(sltPackage).length;
-	spnSelectedPackageGroups.innerHTML = getSelectValues(sltPackageGroup).length;
+	spnTotalComputers.innerHTML = sltComputer.options.length;
+	spnTotalPackages.innerHTML = sltPackage.options.length;
 }
 
 // computer operations
@@ -595,27 +621,39 @@ function confirmRemoveJobContainer(id) {
 	}
 }
 function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol) {
-	var params = [
-		{'key':'add_jobcontainer', 'value':title},
-		{'key':'date_start', 'value':start},
-		{'key':'date_end', 'value':end},
-		{'key':'use_wol', 'value':useWol ? 1 : 0},
-		{'key':'description', 'value':description}
-	];
+	btnDeploy.disabled = true;
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('add_jobcontainer', title);
+	formData.append('date_start', start);
+	formData.append('date_end', end);
+	formData.append('description', description);
+	formData.append('use_wol', useWol ? 1 : 0);
 	getSelectValues(sltPackage).forEach(function(entry) {
-		params.push({'key':'package_id[]', 'value':entry});
+		formData.append('package_id[]', entry);
 	});
 	getSelectValues(sltPackageGroup).forEach(function(entry) {
-		params.push({'key':'package_group_id[]', 'value':entry});
+		formData.append('package_group_id[]', entry);
 	});
 	getSelectValues(sltComputer).forEach(function(entry) {
-		params.push({'key':'computer_id[]', 'value':entry});
+		formData.append('computer_id[]', entry);
 	});
 	getSelectValues(sltComputerGroup).forEach(function(entry) {
-		params.push({'key':'computer_group_id[]', 'value':entry});
+		formData.append('computer_group_id[]', entry);
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/deploy.php', paramString, null, function(){ refreshContentJobContainer(); refreshSidebar(); });
+	req.open('POST', 'views/deploy.php');
+	req.send(formData);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				refreshContentJobContainer();
+				refreshSidebar();
+			} else {
+				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+				btnDeploy.disabled = false;
+			}
+		}
+	};
 }
 
 // domainuser operations
