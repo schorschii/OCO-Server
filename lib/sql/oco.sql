@@ -65,11 +65,11 @@ CREATE TABLE `computer_command` (
 --
 
 INSERT INTO `computer_command` (`id`, `icon`, `name`, `command`) VALUES
-(1, 'img/screen-access.svg', 'VNC', 'vnc://$$HOSTNAME$$'),
-(2, 'img/screen-access.svg', 'RDP', 'rdp://$$HOSTNAME$$'),
-(3, 'img/screen-access.svg', 'SSH', 'ssh://$$HOSTNAME$$'),
-(4, 'img/ping.svg', 'Ping', 'ping://$$HOSTNAME$$'),
-(5, 'img/portscan.svg', 'Nmap', 'nmap://$$HOSTNAME$$');
+(1, 'img/screen-access.svg', 'VNC', 'vnc://$$TARGET$$'),
+(2, 'img/screen-access.svg', 'RDP', 'rdp://$$TARGET$$'),
+(3, 'img/screen-access.svg', 'SSH', 'ssh://$$TARGET$$'),
+(4, 'img/ping.svg', 'Ping', 'ping://$$TARGET$$'),
+(5, 'img/portscan.svg', 'Nmap', 'nmap://$$TARGET$$');
 
 -- --------------------------------------------------------
 
@@ -135,7 +135,10 @@ CREATE TABLE `computer_partition` (
   `id` int(11) NOT NULL,
   `computer_id` int(11) NOT NULL,
   `device` text NOT NULL,
-  `mountpoint` text NOT NULL
+  `mountpoint` text NOT NULL,
+  `filesystem` text NOT NULL,
+  `size` bigint NOT NULL,
+  `free` bigint NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -147,7 +150,12 @@ CREATE TABLE `computer_partition` (
 CREATE TABLE `computer_printer` (
   `id` int(11) NOT NULL,
   `computer_id` int(11) NOT NULL,
-  `name` text NOT NULL
+  `name` text NOT NULL,
+  `driver` text NOT NULL,
+  `paper` text NOT NULL,
+  `dpi` text NOT NULL,
+  `uri` text NOT NULL,
+  `status` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -407,13 +415,15 @@ ALTER TABLE `computer_package`
 -- Indizes für die Tabelle `computer_partition`
 --
 ALTER TABLE `computer_partition`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_computer_partition_1` (`computer_id`);
 
 --
 -- Indizes für die Tabelle `computer_printer`
 --
 ALTER TABLE `computer_printer`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_computer_printer_1` (`computer_id`);
 
 --
 -- Indizes für die Tabelle `computer_screen`
@@ -691,6 +701,19 @@ ALTER TABLE `job`
 ALTER TABLE `package_group_member`
   ADD CONSTRAINT `fk_package_group_1` FOREIGN KEY (`package_group_id`) REFERENCES `package_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_package_group_2` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
+
+--
+-- Constraints der Tabelle `computer_partition`
+--
+ALTER TABLE `computer_partition`
+  ADD CONSTRAINT `fk_computer_partition_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `computer_printer`
+--
+ALTER TABLE `computer_printer`
+  ADD CONSTRAINT `fk_computer_printer_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
