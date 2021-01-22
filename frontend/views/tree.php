@@ -21,6 +21,11 @@ require_once('../session.php');
 
 <div class='node'>
 	<a href='#' onclick='event.preventDefault();refreshContentSoftware()'><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></a>
+	<div class='subnode'>
+		<a href='#' onclick='event.preventDefault();refreshContentSoftware("","","other")'><img src='img/linux.dyn.svg'><?php echo LANG['linux']; ?></a>
+		<a href='#' onclick='event.preventDefault();refreshContentSoftware("","","macos")'><img src='img/apple.dyn.svg'><?php echo LANG['macos']; ?></a>
+		<a href='#' onclick='event.preventDefault();refreshContentSoftware("","","windows")'><img src='img/windows.dyn.svg'><?php echo LANG['windows']; ?></a>
+	</div>
 </div>
 
 <div class='node'>

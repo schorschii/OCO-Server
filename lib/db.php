@@ -881,7 +881,53 @@ class db {
 	// Software Operations
 	public function getAllSoftware() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT *, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations" FROM software s ORDER BY name ASC'
+			'SELECT s.*, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations"
+			FROM software s ORDER BY name ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
+	}
+	public function getAllSoftwareWindows() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT s.*, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations"
+			FROM software s INNER JOIN computer_software cs2 ON cs2.id = (
+				SELECT cs3.id FROM computer_software AS cs3
+				INNER JOIN computer c ON cs3.computer_id = c.id
+				WHERE cs3.software_id = s.id
+				AND c.os = "Windows"
+				LIMIT 1
+			)
+			ORDER BY name ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
+	}
+	public function getAllSoftwareMacOS() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT s.*, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations"
+			FROM software s INNER JOIN computer_software cs2 ON cs2.id = (
+				SELECT cs3.id FROM computer_software AS cs3
+				INNER JOIN computer c ON cs3.computer_id = c.id
+				WHERE cs3.software_id = s.id
+				AND c.os = "macOS"
+				LIMIT 1
+			)
+			ORDER BY name ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
+	}
+	public function getAllSoftwareOther() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT s.*, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations"
+			FROM software s INNER JOIN computer_software cs2 ON cs2.id = (
+				SELECT cs3.id FROM computer_software AS cs3
+				INNER JOIN computer c ON cs3.computer_id = c.id
+				WHERE cs3.software_id = s.id
+				AND c.os != "Windows" AND c.os != "macOS"
+				LIMIT 1
+			)
+			ORDER BY name ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');

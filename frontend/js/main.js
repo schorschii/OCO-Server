@@ -205,8 +205,8 @@ function refreshContentComputer(id='') {
 function refreshContentComputerDetail(id) {
 	ajaxRequest('views/computer_detail.php?id='+encodeURIComponent(id), 'explorer-content');
 }
-function refreshContentSoftware(id='', version='') {
-	ajaxRequest('views/software.php?id='+encodeURIComponent(id)+'&version='+encodeURIComponent(version), 'explorer-content');
+function refreshContentSoftware(id='', version='', os='') {
+	ajaxRequest('views/software.php?id='+encodeURIComponent(id)+'&version='+encodeURIComponent(version)+'&os='+encodeURIComponent(os), 'explorer-content');
 }
 function refreshContentPackage(id='') {
 	ajaxRequest('views/package.php?id='+encodeURIComponent(id), 'explorer-content');

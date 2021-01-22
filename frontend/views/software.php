@@ -7,7 +7,7 @@ require_once('../session.php');
 <?php
 if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	$software = $db->getSoftware($_GET['id']);
-	if($software === null) die('not found');
+	if($software === null) die(LANG['not_found']);
 ?>
 
 
@@ -40,7 +40,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 <?php
 } elseif(!empty($_GET['id'])) {
 	$software = $db->getSoftware($_GET['id']);
-	if($software === null) die('not found');
+	if($software === null) die(LANG['not_found']);
 ?>
 
 
@@ -54,7 +54,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	</thead>
 	<?php
 	$counter = 0;
-	foreach($db->getComputerBySoftware($_GET['id'], $_GET['version']) as $c) {
+	foreach($db->getComputerBySoftware($_GET['id']) as $c) {
 		$counter ++;
 		echo "<tr>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
@@ -76,6 +76,20 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 
 
 	<h1><?php echo LANG['recognised_software']; ?></h1>
+	<?php $software = [];
+	if(isset($_GET['os']) && $_GET['os'] == 'windows') {
+		echo "<h2>".LANG['windows']."</h2>";
+		$software = $db->getAllSoftwareWindows();
+	} elseif(isset($_GET['os']) && $_GET['os'] == 'macos') {
+		echo "<h2>".LANG['macos']."</h2>";
+		$software = $db->getAllSoftwareMacOS();
+	} elseif(isset($_GET['os']) && $_GET['os'] == 'other') {
+		echo "<h2>".LANG['linux']."</h2>";
+		$software = $db->getAllSoftwareOther();
+	} else {
+		$software = $db->getAllSoftware();
+	}
+	?>
 	<table id='tblSoftwareData' class='list searchable sortable savesort'>
 	<thead>
 		<tr>
@@ -85,7 +99,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	</thead>
 	<?php
 	$counter = 0;
-	foreach($db->getAllSoftware() as $s) {
+	foreach($software as $s) {
 		$counter ++;
 		echo "<tr>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(\"".$s->id."\")'>".htmlspecialchars($s->name)."</a></td>";
