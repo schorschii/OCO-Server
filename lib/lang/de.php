@@ -168,6 +168,16 @@ const LANG = [
 	'macos' => 'macOS',
 	'package_exists_with_version' => 'Es existiert bereits ein Paket mit diesem Namen und dieser Version.',
 	'size' => 'Größe',
+	'type' => 'Typ',
+	'driver' => 'Treiber',
+	'printers' => 'Drucker',
+	'file_systems' => 'Dateisysteme',
+	'file_system' => 'Dateisystem',
+	'device' => 'Gerät',
+	'mountpoint' => 'Mountpoint',
+	'free' => 'Frei',
+	'address' => 'Adresse',
+	'used' => 'Verwendet',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

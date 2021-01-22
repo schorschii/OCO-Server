@@ -28,11 +28,6 @@ function niceSize($value, $useBinary=true, $round=1) {
 	}
 }
 
-function replaceComputerActionUrl($computer, $url) {
-	$url = str_replace('$$HOSTNAME$$', $computer->hostname, $url);
-	return $url;
-}
-
 function randomString($length = 30) {
 	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
 	$charactersLength = strlen($characters);

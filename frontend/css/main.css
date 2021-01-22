@@ -321,7 +321,7 @@ table th, table td {
 #txtNotes {
 	width: 100%;
 }
-table.list, input, select, button, textarea {
+table.list, input, select, button, textarea, .boxshadow {
 	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.08);
 }
 input, select, button, textarea {
@@ -393,6 +393,9 @@ table.list {
 }
 table.list tr th, table.list tr td {
 	border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+table.list tr th.middle > *, table.list tr td.middle > * {
+	vertical-align: middle;
 }
 table.list tr:first-child th,
 table.list tr:first-child td {
@@ -485,6 +488,43 @@ table.fixed {
 	text-align: center;
 }
 
+.addresswithactions {
+	position: relative;
+}
+.addresswithactions > .actions {
+	display: none;
+	position: absolute;
+	top: 0px; left: 0px;
+	padding: 6px;
+	background-color: white;
+	border: 1px solid rgba(0,0,0,0.2);
+	border-radius: 2px;
+}
+.addresswithactions:hover > .actions {
+	display: inline-block;
+}
+.addresswithactions:hover > .actions > button {
+	display: block;
+	width: 100%;
+}
+
+.progressbar {
+	vertical-align: middle;
+	display: inline-block;
+	height: 15px;
+	width: 250px;
+	background-color: #EEEEEE;
+	border-radius: 2px;
+	overflow: hidden;
+	margin-bottom: 2px;
+}
+.progressbar > .progress {
+	display: inline-block;
+	height: 100%;
+	background-color: #0079B8;
+	border-radius: 2px;
+}
+
 #sltComputer, #sltComputerGroup,
 #sltPackage, #sltPackageGroup {
 	resize: vertical;
@@ -536,5 +576,11 @@ table.fixed {
 	}
 	button > select {
 		color: black;
+	}
+	.progressbar {
+		background-color: #324650;
+	}
+	.progressbar > .progress {
+		background-color: #49AFD9;
 	}
 }

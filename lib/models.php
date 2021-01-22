@@ -41,6 +41,25 @@ class ComputerNetwork {
 	public $mac;
 	public $domain;
 }
+class ComputerPrinter {
+	public $id;
+	public $computer_id;
+	public $name;
+	public $driver;
+	public $paper;
+	public $dpi;
+	public $uri;
+	public $status;
+}
+class ComputerPartition {
+	public $id;
+	public $computer_id;
+	public $device;
+	public $mountpoint;
+	public $filesystem;
+	public $size;
+	public $free;
+}
 class ComputerSoftware {
 	public $id;
 	public $computer_id;

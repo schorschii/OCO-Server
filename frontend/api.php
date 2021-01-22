@@ -112,7 +112,8 @@ switch($srcdata['method']) {
 
 			if($computer !== null) {
 				$db->updateComputerPing($computer->id);
-				if(time() - strtotime($computer->last_update) > $db->getSettingByName('agent-update-interval')) {
+				if(time() - strtotime($computer->last_update) > $db->getSettingByName('agent-update-interval')
+				&& !empty($data)) {
 					$db->updateComputer(
 						$computer->id,
 						$params['hostname'],
@@ -130,10 +131,12 @@ switch($srcdata['method']) {
 						$data['bios_version'],
 						$data['boot_type'],
 						$data['secure_boot'],
-						$data['networks'],
-						$data['screens'],
-						$data['software'],
-						$data['logins']
+						$data['networks'] ?? [],
+						$data['screens'] ?? [],
+						$data['printers'] ?? [],
+						$data['partitions'] ?? [],
+						$data['software'] ?? [],
+						$data['logins'] ?? []
 					);
 				}
 			}

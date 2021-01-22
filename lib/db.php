@@ -73,6 +73,20 @@ class db {
 		$this->stmt->execute([':cid' => $cid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerNetwork');
 	}
+	public function getComputerPrinter($cid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_printer WHERE computer_id = :cid'
+		);
+		$this->stmt->execute([':cid' => $cid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPrinter');
+	}
+	public function getComputerPartition($cid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_partition WHERE computer_id = :cid'
+		);
+		$this->stmt->execute([':cid' => $cid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPartition');
+	}
 	public function getComputerSoftware($cid) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cs.id AS "id", s.id AS "software_id", s.name AS "software_name", s.description AS "software_description", cs.version AS "version", cs.installed AS "installed"
@@ -154,7 +168,7 @@ class db {
 		);
 		return $this->stmt->execute([':id' => $id, ':agent_key' => $agent_key]);
 	}
-	public function updateComputer($id, $hostname, $os, $os_version, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $networks, $screens, $software, $logins) {
+	public function updateComputer($id, $hostname, $os, $os_version, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $networks, $screens, $printers, $partitions, $software, $logins) {
 		$this->dbh->beginTransaction();
 
 		// update general info
@@ -186,6 +200,7 @@ class db {
 		);
 		if(!$this->stmt->execute([':id' => $id])) return false;
 		foreach($networks as $index => $network) {
+			if(empty($network['addr'])) continue;
 			$this->stmt = $this->dbh->prepare(
 				'INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, domain)
 				VALUES (:computer_id, :nic_number, :addr, :netmask, :broadcast, :mac, :domain)'
@@ -194,19 +209,29 @@ class db {
 				':computer_id' => $id,
 				':nic_number' => $index,
 				':addr' => $network['addr'],
-				':netmask' => $network['netmask'],
-				':broadcast' => $network['broadcast'],
-				':mac' => $network['mac'],
-				':domain' => $network['domain'],
+				':netmask' => $network['netmask'] ?? '?',
+				':broadcast' => $network['broadcast'] ?? '?',
+				':mac' => $network['mac'] ?? '?',
+				':domain' => $network['domain'] ?? '?',
 			])) return false;
 		}
 
 		// update screens
-		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM computer_screen WHERE computer_id = :id'
-		);
-		if(!$this->stmt->execute([':id' => $id])) return false;
 		foreach($screens as $index => $screen) {
+			if(empty($screen['name'])) continue;
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM computer_screen
+				WHERE computer_id = :computer_id AND name = :name AND manufacturer = :manufacturer AND type = :type AND resolution = :resolution'
+			);
+			if(!$this->stmt->execute([
+				':computer_id' => $id,
+				':name' => $screen['name'],
+				':manufacturer' => $screen['manufacturer'] ?? '?',
+				':type' => $screen['type'] ?? '?',
+				':resolution' => $screen['resolution'] ?? '?',
+			])) return false;
+			if($this->stmt->rowCount() > 0) continue;
+
 			$this->stmt = $this->dbh->prepare(
 				'INSERT INTO computer_screen (computer_id, name, manufacturer, type, resolution)
 				VALUES (:computer_id, :name, :manufacturer, :type, :resolution)'
@@ -214,13 +239,153 @@ class db {
 			if(!$this->stmt->execute([
 				':computer_id' => $id,
 				':name' => $screen['name'],
-				':manufacturer' => $screen['manufacturer'],
-				':type' => $screen['type'],
-				':resolution' => $screen['resolution'],
+				':manufacturer' => $screen['manufacturer'] ?? '?',
+				':type' => $screen['type'] ?? '?',
+				':resolution' => $screen['resolution'] ?? '?',
 			])) return false;
 		}
+		// remove screens, which can not be found in agent output
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_screen WHERE computer_id = :computer_id'
+		);
+		if(!$this->stmt->execute([':computer_id' => $id])) return false;
+		foreach($this->stmt->fetchAll() as $s) {
+			$found = false;
+			foreach($screens as $s2) {
+				if($s['name'] == $s2['name']
+				&& $s['manufacturer'] == $s2['manufacturer']
+				&& $s['type'] == $s2['type']
+				&& $s['resolution'] == $s2['resolution']) {
+					$found = true; break;
+				}
+			}
+			if(!$found) {
+				$this->stmt = $this->dbh->prepare(
+					'DELETE FROM computer_screen WHERE id = :id'
+				);
+				if(!$this->stmt->execute([':id' => $s['id']])) return false;
+			}
+		}
 
-		// insert software
+		// update printers
+		foreach($printers as $index => $printer) {
+			if(empty($printer['name'])) continue;
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM computer_printer
+				WHERE computer_id = :computer_id AND name = :name AND driver = :driver AND paper = :paper AND dpi = :dpi AND uri = :uri AND status = :status'
+			);
+			if(!$this->stmt->execute([
+				':computer_id' => $id,
+				':name' => $printer['name'],
+				':driver' => $printer['driver'] ?? '?',
+				':paper' => $printer['paper'] ?? '?',
+				':dpi' => $printer['dpi'] ?? '?',
+				':uri' => $printer['uri'] ?? '?',
+				':status' => $printer['status'] ?? '?',
+			])) return false;
+			if($this->stmt->rowCount() > 0) continue;
+
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO computer_printer (computer_id, name, driver, paper, dpi, uri, status)
+				VALUES (:computer_id, :name, :driver, :paper, :dpi, :uri, :status)'
+			);
+			if(!$this->stmt->execute([
+				':computer_id' => $id,
+				':name' => $printer['name'],
+				':driver' => $printer['driver'] ?? '?',
+				':paper' => $printer['paper'] ?? '?',
+				':dpi' => $printer['dpi'] ?? '?',
+				':uri' => $printer['uri'] ?? '?',
+				':status' => $printer['status'] ?? '?',
+			])) return false;
+		}
+		// remove printers, which can not be found in agent output
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_printer WHERE computer_id = :computer_id'
+		);
+		if(!$this->stmt->execute([':computer_id' => $id])) return false;
+		foreach($this->stmt->fetchAll() as $p) {
+			$found = false;
+			foreach($printers as $s2) {
+				if($p['name'] == $s2['name']
+				&& $p['driver'] == $s2['driver']
+				&& $p['paper'] == $s2['paper']
+				&& $p['dpi'] == $s2['dpi']
+				&& $p['uri'] == $s2['uri']
+				&& $p['status'] == $s2['status']) {
+					$found = true; break;
+				}
+			}
+			if(!$found) {
+				$this->stmt = $this->dbh->prepare(
+					'DELETE FROM computer_printer WHERE id = :id'
+				);
+				if(!$this->stmt->execute([':id' => $p['id']])) return false;
+			}
+		}
+
+		// update partitions
+		foreach($partitions as $index => $part) {
+			if(empty($part['size'])) continue;
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM computer_partition
+				WHERE computer_id = :computer_id AND device = :device AND mountpoint = :mountpoint AND filesystem = :filesystem'
+			);
+			if(!$this->stmt->execute([
+				':computer_id' => $id,
+				':device' => $part['device'] ?? '?',
+				':mountpoint' => $part['mountpoint'] ?? '?',
+				':filesystem' => $part['filesystem'] ?? '?',
+			])) return false;
+			if($this->stmt->rowCount() > 0) {
+				foreach($this->stmt->fetchAll() as $p) {
+					$this->stmt = $this->dbh->prepare(
+						'UPDATE computer_partition SET size = :size, free = :free WHERE id = :id'
+					);
+					if(!$this->stmt->execute([
+						':id' => $p['id'],
+						':size' => intval($part['size']),
+						':free' => intval($part['free']),
+					])) return false;
+				}
+			} else {
+				$this->stmt = $this->dbh->prepare(
+					'INSERT INTO computer_partition (computer_id, device, mountpoint, filesystem, size, free)
+					VALUES (:computer_id, :device, :mountpoint, :filesystem, :size, :free)'
+				);
+				if(!$this->stmt->execute([
+					':computer_id' => $id,
+					':device' => $part['device'] ?? '?',
+					':mountpoint' => $part['mountpoint'] ?? '?',
+					':filesystem' => $part['filesystem'] ?? '?',
+					':size' => intval($part['size']),
+					':free' => intval($part['free']),
+				])) return false;
+			}
+		}
+		// remove partitions, which can not be found in agent output
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_partition WHERE computer_id = :computer_id'
+		);
+		if(!$this->stmt->execute([':computer_id' => $id])) return false;
+		foreach($this->stmt->fetchAll() as $p) {
+			$found = false;
+			foreach($partitions as $s2) {
+				if($p['device'] == $s2['device']
+				&& $p['mountpoint'] == $s2['mountpoint']
+				&& $p['filesystem'] == $s2['filesystem']) {
+					$found = true; break;
+				}
+			}
+			if(!$found) {
+				$this->stmt = $this->dbh->prepare(
+					'DELETE FROM computer_partition WHERE id = :id'
+				);
+				if(!$this->stmt->execute([':id' => $p['id']])) return false;
+			}
+		}
+
+		// update software
 		foreach($software as $index => $s) {
 			$sid = null;
 			$existingSoftware = $this->getSoftwareByName($s['name']);
@@ -245,9 +410,9 @@ class db {
 		foreach($this->getComputerSoftware($id) as $s) {
 			$found = false;
 			foreach($software as $s2) {
-				if($s->software_name == $s2['name']) {
-					$found = true;
-					break;
+				if($s->software_name == $s2['name']
+				&& $s->version == $s2['version']) {
+					$found = true; break;
 				}
 			}
 			if(!$found) {
@@ -261,8 +426,7 @@ class db {
 			$domainuser = null;
 			foreach($domainusers as $du) {
 				if($du->username == $l['username']) {
-					$domainuser = $du;
-					break;
+					$domainuser = $du; break;
 				}
 			}
 			if($domainuser == null) {

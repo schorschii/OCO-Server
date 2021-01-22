@@ -168,6 +168,16 @@ const LANG = [
 	'macos' => 'macOS',
 	'package_exists_with_version' => 'A package with this name already exists with this version.',
 	'size' => 'Size',
+	'type' => 'Type',
+	'driver' => 'Driver',
+	'printers' => 'Printers',
+	'file_systems' => 'File Systems',
+	'file_system' => 'File System',
+	'device' => 'Device',
+	'mountpoint' => 'Mountpoint',
+	'free' => 'Free',
+	'address' => 'Address',
+	'used' => 'Used',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

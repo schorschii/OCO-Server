@@ -26,11 +26,28 @@ if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninsta
 	die();
 }
 
+function echoCommandButton($c, $target) {
+	$actionUrl = str_replace('$$TARGET$$', $target, $c->command);
+	if($c->new_tab) {
+		echo "<button title='".LANG['client_extension_note']."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
+		if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;";
+		echo htmlspecialchars($c->name);
+		echo "</button>";
+	} else {
+		echo "<button title='".LANG['client_extension_note']."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
+		if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;";
+		echo htmlspecialchars($c->name);
+		echo "</button>";
+	}
+}
+
+// ----- prepare view -----
 $computer = null;
 if(!empty($_GET['id']))
 	$computer = $db->getComputer($_GET['id']);
 
 if($computer === null) die();
+$commands = $db->getAllComputerCommand();
 ?>
 
 <h1><?php echo htmlspecialchars($computer->hostname); ?></h1>
@@ -39,21 +56,11 @@ if($computer === null) die();
 	<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
 	<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	<?php
-	$commands = $db->getAllComputerCommand();
 	if(count($commands) > 0) echo "<span class='vl'></span>";
 	foreach($commands as $c) {
-		$actionUrl = replaceComputerActionUrl($computer, $c->command);
+		echoCommandButton($c, $computer->hostname);
+	}
 	?>
-		<?php if($c->new_tab) { ?>
-			<button title='<?php echo LANG['client_extension_note']; ?>' onclick='window.open("<?php echo htmlspecialchars($actionUrl); ?>")'>
-				<?php if(!empty($c->icon)) { ?><img src='<?php echo $c->icon; ?>'>&nbsp;<?php } ?><?php echo htmlspecialchars($c->name); ?>
-			</button>
-		<?php } else { ?>
-			<button title='<?php echo LANG['client_extension_note']; ?>' onclick='window.location="<?php echo htmlspecialchars($actionUrl); ?>"'>
-				<?php if(!empty($c->icon)) { ?><img src='<?php echo $c->icon; ?>'>&nbsp;<?php } ?><?php echo htmlspecialchars($c->name); ?>
-			</button>
-		<?php } ?>
-	<?php } ?>
 </div>
 
 <h2><?php echo LANG['general']; ?></h2>
@@ -146,8 +153,15 @@ if($computer === null) die();
 </table>
 
 <h2><?php echo LANG['logins']; ?></h2>
-<table class='list'>
-	<tr><th><?php echo LANG['computer']; ?></th><th><?php echo LANG['count']; ?></th><th><?php echo LANG['last_login']; ?></th></tr>
+<table id='tblLoginsData' class='list sortable savesort'>
+	<thead>
+		<tr>
+			<th><?php echo LANG['computer']; ?></th>
+			<th><?php echo LANG['count']; ?></th>
+			<th><?php echo LANG['last_login']; ?></th>
+		</tr>
+	</thead>
+	<tbody>
 	<?php
 	foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
 		echo "<tr>";
@@ -157,15 +171,32 @@ if($computer === null) die();
 		echo "</tr>";
 	}
 	?>
+	</tbody>
 </table>
 
 <h2><?php echo LANG['network']; ?></h2>
-<table class='list'>
-	<tr><th><?php echo LANG['ip_address']; ?></th><th><?php echo LANG['netmask']; ?></th><th><?php echo LANG['broadcast']; ?></th><th><?php echo LANG['mac_address']; ?></th><th><?php echo LANG['domain']; ?></th></tr>
+<table id='tblNetworkData' class='list sortable savesort'>
+	<thead>
+		<tr>
+			<th><?php echo LANG['ip_address']; ?></th>
+			<th><?php echo LANG['netmask']; ?></th>
+			<th><?php echo LANG['broadcast']; ?></th>
+			<th><?php echo LANG['mac_address']; ?></th>
+			<th><?php echo LANG['domain']; ?></th>
+		</tr>
+	</thead>
+	<tbody>
 	<?php
 	foreach($db->getComputerNetwork($computer->id) as $n) {
 		echo '<tr>';
-		echo '<td>'.htmlspecialchars($n->addr).'</td>';
+		echo '<td class="middle">';
+		if(count($commands) > 0) {
+			echo '<span class="addresswithactions boxshadow"><img src="img/ping.svg"><span class="actions">';
+			foreach($commands as $c) { echoCommandButton($c, $n->addr); }
+			echo '</span></span>';
+		}
+		echo  htmlspecialchars($n->addr);
+		echo '</td>';
 		echo '<td>'.htmlspecialchars($n->netmask).'</td>';
 		echo '<td>'.htmlspecialchars($n->broadcast).'</td>';
 		echo '<td>'.htmlspecialchars($n->mac).'</td>';
@@ -173,11 +204,20 @@ if($computer === null) die();
 		echo '</tr>';
 	}
 	?>
+	</tbody>
 </table>
 
 <h2><?php echo LANG['screens']; ?></h2>
-<table class='list'>
-	<tr><th><?php echo LANG['name']; ?></th><th><?php echo LANG['vendor']; ?></th><th>Typ</th><th><?php echo LANG['resolution']; ?></th></tr>
+<table id='tblScreensData' class='list sortable savesort'>
+	<thead>
+		<tr>
+			<th><?php echo LANG['name']; ?></th>
+			<th><?php echo LANG['vendor']; ?></th>
+			<th><?php echo LANG['type']; ?></th>
+			<th><?php echo LANG['resolution']; ?></th>
+		</tr>
+	</thead>
+	<tbody>
 	<?php
 	foreach($db->getComputerScreen($computer->id) as $s) {
 		echo '<tr>';
@@ -188,6 +228,62 @@ if($computer === null) die();
 		echo '</tr>';
 	}
 	?>
+	</tbody>
+</table>
+
+<h2><?php echo LANG['printers']; ?></h2>
+<table id='tblPrinterData' class='list sortable savesort'>
+	<thead>
+		<tr>
+			<th><?php echo LANG['name']; ?></th>
+			<th><?php echo LANG['driver']; ?></th>
+			<th><?php echo LANG['address']; ?></th>
+			<th><?php echo LANG['status']; ?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php
+	foreach($db->getComputerPrinter($computer->id) as $p) {
+		echo '<tr>';
+		echo '<td>'.htmlspecialchars($p->name).'</a></td>';
+		echo '<td>'.htmlspecialchars($p->driver).'</td>';
+		echo '<td>'.htmlspecialchars($p->uri).'</td>';
+		echo '<td>'.htmlspecialchars($p->status).'</td>';
+		echo '</tr>';
+	}
+	?>
+	</tbody>
+</table>
+
+<h2><?php echo LANG['file_systems']; ?></h2>
+<table id='tblFileSystemsData' class='list sortable savesort'>
+	<thead>
+		<tr>
+			<th><?php echo LANG['device']; ?></th>
+			<th><?php echo LANG['mountpoint']; ?></th>
+			<th><?php echo LANG['file_system']; ?></th>
+			<th><?php echo LANG['size']; ?></th>
+			<th><?php echo LANG['free']; ?></th>
+			<th><?php echo LANG['used']; ?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php
+	foreach($db->getComputerPartition($computer->id) as $p) {
+		$percent = 0;
+		if(!empty($p->free) && !empty($p->size))
+			$percent = round(100 - ($p->free / $p->size * 100));
+		echo '<tr>';
+		echo '<td>'.htmlspecialchars($p->device).'</a></td>';
+		echo '<td>'.htmlspecialchars($p->mountpoint).'</td>';
+		echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
+		echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
+		echo '<td sort_key="'.htmlspecialchars($p->free).'">'.htmlspecialchars(niceSize($p->free)).'</td>';
+		echo '<td sort_key="'.htmlspecialchars($percent).'"><span class="progressbar"><span class="progress" style="width:'.$percent.'%"></span></span>&nbsp;'.htmlspecialchars($percent).'%</td>';
+		echo '</tr>';
+	}
+	?>
+	</tbody>
 </table>
 
 <h2><?php echo LANG['installed_packages']; ?></h2>
