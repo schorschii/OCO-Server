@@ -56,7 +56,8 @@ CREATE TABLE `computer_command` (
   `id` int(11) NOT NULL,
   `icon` text NOT NULL,
   `name` text NOT NULL,
-  `command` text NOT NULL
+  `command` text NOT NULL,
+  `new_tab` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --

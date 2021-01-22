@@ -42,8 +42,17 @@ if($computer === null) die();
 	$commands = $db->getAllComputerCommand();
 	if(count($commands) > 0) echo "<span class='vl'></span>";
 	foreach($commands as $c) {
+		$actionUrl = replaceComputerActionUrl($computer, $c->command);
 	?>
-		<button title='<?php echo LANG['client_extension_note']; ?>' onclick='window.location="<?php echo htmlspecialchars(replaceComputerActionUrl($computer, $c->command)); ?>"'><img src='<?php echo $c->icon; ?>'>&nbsp;<?php echo htmlspecialchars($c->name); ?></button>
+		<?php if($c->new_tab) { ?>
+			<button title='<?php echo LANG['client_extension_note']; ?>' onclick='window.open("<?php echo htmlspecialchars($actionUrl); ?>")'>
+				<?php if(!empty($c->icon)) { ?><img src='<?php echo $c->icon; ?>'>&nbsp;<?php } ?><?php echo htmlspecialchars($c->name); ?>
+			</button>
+		<?php } else { ?>
+			<button title='<?php echo LANG['client_extension_note']; ?>' onclick='window.location="<?php echo htmlspecialchars($actionUrl); ?>"'>
+				<?php if(!empty($c->icon)) { ?><img src='<?php echo $c->icon; ?>'>&nbsp;<?php } ?><?php echo htmlspecialchars($c->name); ?>
+			</button>
+		<?php } ?>
 	<?php } ?>
 </div>
 
