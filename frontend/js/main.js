@@ -273,8 +273,15 @@ function createPackage(name, version, author, description, archive, install_proc
 	formData.append('archive', archive);
 	formData.append('install_procedure', install_procedure);
 	formData.append('uninstall_procedure', uninstall_procedure);
-	req.open('POST', 'views/package_new.php');
-	req.send(formData);
+
+	req.upload.onprogress = function(evt) {
+		if(evt.lengthComputable) {
+			var progress = Math.ceil((evt.loaded / evt.total) * 100);
+			btnCreatePackageProgress.innerText = ' (' + progress + '%)';
+		} else {
+			console.warn('form length is not computable');
+		}
+	};
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
 			if(this.status == 200) {
@@ -283,9 +290,13 @@ function createPackage(name, version, author, description, archive, install_proc
 			} else {
 				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
 				btnCreatePackage.disabled = false;
+				btnCreatePackageProgress.innerText = '';
 			}
 		}
 	};
+
+	req.open('POST', 'views/package_new.php');
+	req.send(formData);
 }
 function updatePackage(id, description) {
 	btnEditPackage.disabled = true;

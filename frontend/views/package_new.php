@@ -113,7 +113,7 @@ if(isset($_POST['name'])) {
 	</tr>
 	<tr>
 		<th></th>
-		<td><button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button></td>
+		<td><button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?><span id='btnCreatePackageProgress'></span></button></td>
 </table>
 
 <?php echo LANG['package_creation_notes']; ?>
