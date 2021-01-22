@@ -72,19 +72,19 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 <h2><?php echo LANG['general']; ?></h2>
 <table class='form'>
 	<tr>
-		<th><?php echo LANG['client_registration_enabled']; ?>:</th>
+		<th><?php echo LANG['agent_registration_enabled']; ?>:</th>
 		<td>
 			<input type='checkbox' id='chkAgentRegistrationEnabled' <?php if($db->getSettingByName('agent-registration-enabled')) echo 'checked'; ?>></input>
 		</td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['client_key']; ?>:</th>
+		<th><?php echo LANG['agent_key']; ?>:</th>
 		<td>
 			<input type='text' id='txtAgentKey' value='<?php echo $db->getSettingByName('agent-key'); ?>'></input>
 		</td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['client_update_interval']; ?>:</th>
+		<th><?php echo LANG['agent_update_interval']; ?>:</th>
 		<td>
 			<input type='number' min='1' id='txtAgentUpdateInterval' value='<?php echo $db->getSettingByName('agent-update-interval'); ?>'></input>
 		</td>
