@@ -1,0 +1,45 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\nmap]
+@="URL:NMAP"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\nmap\shell]
+
+[HKEY_CLASSES_ROOT\nmap\shell\open]
+
+[HKEY_CLASSES_ROOT\nmap\shell\open\command]
+@="\"C:\\Program Files\\OCO Client Extension\\oco-client-extension-windows.exe\" %1"
+
+[HKEY_CLASSES_ROOT\ping]
+@="URL:Ping"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\ping\shell]
+
+[HKEY_CLASSES_ROOT\ping\shell\open]
+
+[HKEY_CLASSES_ROOT\ping\shell\open\command]
+@="\"C:\\Program Files\\OCO Client Extension\\oco-client-extension-windows.exe\" %1"
+
+[HKEY_CLASSES_ROOT\rdp]
+@="URL:Remote Desktop Protocol"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\rdp\shell]
+
+[HKEY_CLASSES_ROOT\rdp\shell\open]
+
+[HKEY_CLASSES_ROOT\rdp\shell\open\command]
+@="\"C:\\Program Files\\OCO Client Extension\\oco-client-extension-windows.exe\" %1"
+
+[HKEY_CLASSES_ROOT\vnc]
+@="URL:Virtual Network Computing"
+"URL Protocol"=""
+
+[HKEY_CLASSES_ROOT\vnc\shell]
+
+[HKEY_CLASSES_ROOT\vnc\shell\open]
+
+[HKEY_CLASSES_ROOT\vnc\shell\open\command]
+@="\"C:\\Program Files\\OCO Client Extension\\oco-client-extension-windows.exe\" %1"

@@ -6,7 +6,7 @@ You can customize the web design by creating the file `/frontend/css/custom.css`
 
 Why?
 - to adapt your corporate design
-- to be able to distinguish a test system from the production system
+- to be able to easily distinguish a test system from the production system
 
 Example:
 ```
@@ -20,3 +20,5 @@ Example:
 	background-image: url('custombg.jpg');
 }
 ```
+## Client Commands / Client Extension
+Please refer to Computers.md
