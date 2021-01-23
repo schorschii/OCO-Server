@@ -852,14 +852,14 @@ class db {
 		$container = $this->getJobContainer($id);
 		$jobs = $this->getAllJobByContainer($id);
 		foreach($jobs as $job) {
-			if($job->state == 0 || $job->state == 1) {
+			if($job->state == Job::STATUS_WAITING_FOR_CLIENT || $job->state == Job::STATUS_EXECUTION_STARTED) {
 				if($container->end_time === null || strtotime($container->end_time) > time()) {
 					return 'wait';
 				} else {
 					return 'error';
 				}
 			}
-			if($job->state == -1) {
+			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED) {
 				return 'error';
 			}
 		}

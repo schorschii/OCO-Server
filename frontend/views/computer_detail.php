@@ -191,7 +191,7 @@ $commands = $db->getAllComputerCommand();
 		echo '<tr>';
 		echo '<td class="middle">';
 		if(count($commands) > 0) {
-			echo '<span class="addresswithactions boxshadow"><img src="img/ping.svg"><span class="actions">';
+			echo '<span class="addresswithactions boxshadow">⁝&nbsp;<span class="actions">';
 			foreach($commands as $c) { echoCommandButton($c, $n->addr); }
 			echo '</span></span>';
 		}
@@ -279,7 +279,7 @@ $commands = $db->getAllComputerCommand();
 		echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
 		echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
 		echo '<td sort_key="'.htmlspecialchars($p->free).'">'.htmlspecialchars(niceSize($p->free)).'</td>';
-		echo '<td sort_key="'.htmlspecialchars($percent).'"><span class="progressbar"><span class="progress" style="width:'.$percent.'%"></span></span>&nbsp;'.htmlspecialchars($percent).'%</td>';
+		echo '<td sort_key="'.htmlspecialchars($percent).'">'.progressBar($percent).'</td>';
 		echo '</tr>';
 	}
 	?>

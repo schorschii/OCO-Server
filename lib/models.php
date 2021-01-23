@@ -138,6 +138,25 @@ class Job {
 	public $computer_hostname;
 	// joined package attributes
 	public $package_name;
+	// constants
+	public const STATUS_WAITING_FOR_CLIENT = 0;
+	public const STATUS_FAILED = -1;
+	public const STATUS_EXPIRED = -2;
+	public const STATUS_EXECUTION_STARTED = 1;
+	public const STATUS_SUCCEEDED = 2;
+	// functions
+	function getIcon() {
+		if($this->state == self::STATUS_WAITING_FOR_CLIENT || $this->state == self::STATUS_EXECUTION_STARTED) {
+			return 'wait';
+		}
+		if($this->state == self::STATUS_FAILED || $this->state == self::STATUS_EXPIRED) {
+			return 'error';
+		}
+		if($this->state == self::STATUS_SUCCEEDED) {
+			return 'tick';
+		}
+		return 'unknown';
+	}
 }
 class Domainuser {
 	public $id;

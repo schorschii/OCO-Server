@@ -10,9 +10,6 @@ require_once(__DIR__.'/../session.php');
 		<div class='title'><?php echo LANG['app_name_frontpage']; ?></div>
 		<div class='subtitle'><?php echo LANG['app_subtitle']; ?></div>
 	</p>
-	<p>
-		<div class='subtitle2'><?php echo LANG['version'].' '.APP_VERSION; ?></div>
-	</p>
 
 	<table class='list fullwidth margintop fixed largepadding'>
 		<tr>
@@ -27,14 +24,18 @@ require_once(__DIR__.'/../session.php');
 					preg_match_all('/^processor/m', $cpuinfo, $matches);
 					$ncpu = count($matches[0]);
 				}
-				$percent = round(sys_getloadavg()[2]/$ncpu*100); echo LANG['cpu_usage'];
+				$percent = round(sys_getloadavg()[2]/$ncpu*100);
+				echo LANG['usage'].' '.progressBar($percent);
 				?>
-				<span class="progressbar"><span class="progress" style="width:<?php echo $percent; ?>%"></span></span>&nbsp;<?php echo $percent; ?>%
 			</td>
-			<td></td>
+			<td class='center'>
+				<?php echo LANG['version'].' '.APP_VERSION; ?>
+			</td>
 			<td class='center' colspan='2'>
-				<?php $percent = round(disk_free_space(PACKAGE_PATH)/disk_total_space(PACKAGE_PATH)*100); echo LANG['disk_space']; ?>
-				<span class="progressbar"><span class="progress" style="width:<?php echo $percent; ?>%"></span></span>&nbsp;<?php echo $percent; ?>%
+				<?php
+				$percent = round(disk_free_space(PACKAGE_PATH)/disk_total_space(PACKAGE_PATH)*100);
+				echo LANG['disk_space'].' '.progressBar($percent);
+				?>
 			</td>
 		</tr>
 		<tr>

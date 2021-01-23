@@ -11,11 +11,20 @@ if(!empty($_POST['remove_container_id'])) {
 if(!empty($_GET['id'])) {
 
 	$container = $db->getJobContainer($_GET['id']);
+	if($container === null) die(LANG['not_found']);
 	$jobs = $db->getAllJobByContainer($_GET['id']);
-	if($container === null) die('not found');
+
+	$percent = 0;
+	if(count($jobs) > 0) {
+		$done = 0;
+		foreach($jobs as $job) {
+			if($job->state == 2) $done ++;
+		}
+		$percent = $done/count($jobs)*100;
+	}
 
 	$icon = $db->getJobContainerIcon($container->id);
-	echo "<h1><img src='img/$icon.dyn.svg'>".htmlspecialchars($container->name)."</h1>";
+	echo "<h1><img src='img/".$icon.".dyn.svg'>".htmlspecialchars($container->name)."</h1>";
 
 	echo "<div class='controls'>";
 	echo "<button onclick='confirmRemoveJobContainer(".htmlspecialchars($container->id).")'><img src='img/delete.svg'>&nbsp;".LANG['delete_container']."</button>";
@@ -26,6 +35,7 @@ if(!empty($_GET['id'])) {
 	echo "<tr><th>".LANG['start']."</th><td>".htmlspecialchars($container->start_time)."</td></tr>";
 	echo "<tr><th>".LANG['end']."</th><td>".htmlspecialchars($container->end_time ?? "-")."</td></tr>";
 	echo "<tr><th>".LANG['description']."</th><td>".htmlspecialchars($container->notes)."</td></tr>";
+	echo "<tr><th>".LANG['progress']."</th><td>".progressBar($percent)."</td></tr>";
 	echo "</table>";
 	echo "</p>";
 
@@ -41,9 +51,9 @@ if(!empty($_GET['id'])) {
 		echo "<td>".htmlspecialchars($job->package_procedure)."</td>";
 		echo "<td>".htmlspecialchars($job->sequence)."</td>";
 		if(!empty($job->message)) {
-			echo "<td><a href='#' onclick='event.preventDefault();alert(this.getAttribute(\"message\"))' message='".addslashes(trim($job->message))."'>".getJobStateString($job->state)."</a></td>";
+			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'><a href='#' onclick='event.preventDefault();alert(this.getAttribute(\"message\"))' message='".addslashes(trim($job->message))."'>".getJobStateString($job->state)."</a></td>";
 		} else {
-			echo "<td>".getJobStateString($job->state)."</td>";
+			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'>".getJobStateString($job->state)."</td>";
 		}
 		echo "<td>".htmlspecialchars($job->last_update);
 		echo "</tr>";
@@ -61,16 +71,26 @@ if(!empty($_GET['id'])) {
 
 	echo "<table id='tblJobcontainerData' class='list sortable savesort'>";
 	echo "<thead>";
-	echo "<tr><th></th><th>".LANG['name']."</th><th>".LANG['start']."</th><th>".LANG['end']."</th><th>".LANG['created']."</th></tr>";
+	echo "<tr><th></th><th>".LANG['name']."</th><th>".LANG['start']."</th><th>".LANG['end']."</th><th>".LANG['created']."</th><th>".LANG['progress']."</th></tr>";
 	echo "</thead>";
 	echo "<tbody>";
 	foreach($db->getAllJobContainer() as $jc) {
+		$percent = 0;
+		$jobs = $db->getAllJobByContainer($jc->id);
+		if(count($jobs) > 0) {
+			$done = 0;
+			foreach($jobs as $job) {
+				if($job->state == 2) $done ++;
+			}
+			$percent = $done/count($jobs)*100;
+		}
 		echo "<tr>";
-		echo "<td><img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'></td>";
+		echo "<td class='middle'><img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'></td>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
 		echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 		echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
-		echo "<td>".htmlspecialchars($jc->created);
+		echo "<td>".htmlspecialchars($jc->created)."</td>";
+		echo "<td sort_key='".$percent."'>".progressBar($percent)."</td>";
 		echo "</tr>";
 	}
 	echo "</tbody>";
@@ -79,10 +99,16 @@ if(!empty($_GET['id'])) {
 }
 
 function getJobStateString($state) {
-	if($state == 0) return LANG['waiting_for_client'];
-	elseif($state == -1) return LANG['failed'];
-	elseif($state == 1) return LANG['execution_started'];
-	elseif($state == 2) return LANG['succeeded'];
+	if($state == Job::STATUS_WAITING_FOR_CLIENT)
+		return LANG['waiting_for_client'];
+	elseif($state == Job::STATUS_FAILED)
+		return LANG['failed'];
+	elseif($state == Job::STATUS_EXPIRED)
+		return LANG['expired'];
+	elseif($state == Job::STATUS_EXECUTION_STARTED)
+		return LANG['execution_started'];
+	elseif($state == Job::STATUS_SUCCEEDED)
+		return LANG['succeeded'];
 	else return $state;
 }
 ?>

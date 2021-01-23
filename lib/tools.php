@@ -28,6 +28,11 @@ function niceSize($value, $useBinary=true, $round=1) {
 	}
 }
 
+function progressBar($percent) {
+	$percent = intval($percent);
+	return '<span class="progressbar"><span class="progress" style="width:'.$percent.'%"></span></span>&nbsp;'.$percent.'%';
+}
+
 function randomString($length = 30) {
 	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
 	$charactersLength = strlen($characters);
