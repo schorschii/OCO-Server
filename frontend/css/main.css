@@ -541,6 +541,15 @@ table.fixed {
 	text-decoration: underline;
 }
 
+#btnHidden {
+	position: fixed;
+	bottom: 0px;
+	right: 0px;
+	height: 12px;
+	width: 12px;
+	opacity: 0;
+}
+
 #sltComputer, #sltComputerGroup,
 #sltPackage, #sltPackageGroup {
 	resize: vertical;

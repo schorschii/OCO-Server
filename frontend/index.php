@@ -10,11 +10,10 @@ require_once('session.php');
 	<script src='js/strings.js.php'></script>
 	<script src='js/main.js'></script>
 	<script src='js/table.js'></script>
+	<script src='js/confetti.js'></script>
 	<!--
 		Wir begrüßen Sie an diesem wunderschönen <?php echo date("l"); ?>,
 		<?php echo time(); ?> Sekunden nach dem Unix-Urknall!
-
-		Überdies hinaus begrüße ich Sie in der <?php echo date("G"); ?>. Stunde dieses Tages.
 		PS. Obacht! Heute ist der <?php echo date("N"); ?>. Tag der Woche und die Woche zieht sich schon wieder!!!
 	-->
 </head>
@@ -67,6 +66,8 @@ require_once('session.php');
 		<button onclick='document.execCommand("copy");'><img src='img/copy.svg'>&nbsp;<?php echo LANG['copy']; ?></button>
 		<button onclick='refreshContent()'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['refresh']; ?></button>
 	</div>
+
+	<button id='btnHidden' onclick='toggleEquip()'></button>
 
 	<script>
 	refreshSidebar();
