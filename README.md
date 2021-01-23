@@ -31,7 +31,7 @@ The OCO server provides the API (used to communicate with the OCO agent) and the
 2. Enter your MySQL credentials in `conf.php` (create this file by copying the template `conf.example.php`). Please create a separate user for the database which only has permission to read and write in this specific database. Do not use the root account.
 3. Make sure the defined package path is writeable for the webserver user.
 4. Important: please set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS. It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any software packages to your client!!!
-5. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size (pick a value that fit your needs for the settings `upload_max_filesize` and `post_max_size`).
+5. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size (pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size` and `max_execution_time`).
 6. Use a web browser to open the web frontend. The setup page should appear which guides you through the rest of the installation process.
 7. Set up a cron job executing `lib/housekeeping.php` every 10 minutes as webserver user (`www-data`).
 

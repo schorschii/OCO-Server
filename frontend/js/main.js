@@ -277,9 +277,14 @@ function createPackage(name, version, author, description, archive, install_proc
 	req.upload.onprogress = function(evt) {
 		if(evt.lengthComputable) {
 			var progress = Math.ceil((evt.loaded / evt.total) * 100);
-			btnCreatePackageProgress.innerText = ' (' + progress + '%)';
+			if(progress == 100) {
+				btnCreatePackageProgress.innerText = ' (' + L__IN_PROGRESS + ')';
+			} else {
+				btnCreatePackageProgress.innerText = ' (' + progress + '%)';
+			}
 		} else {
 			console.warn('form length is not computable');
+			btnCreatePackageProgress.innerText = ' (' + L__IN_PROGRESS + ')';
 		}
 	};
 	req.onreadystatechange = function() {
