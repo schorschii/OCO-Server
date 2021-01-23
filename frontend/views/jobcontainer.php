@@ -7,12 +7,36 @@ if(!empty($_POST['remove_container_id'])) {
 	$db->removeJobContainer($_POST['remove_container_id']);
 	die();
 }
+if(!empty($_POST['renew_container_id'])) {
+	$container = $db->getJobContainer($_POST['renew_container_id']);
+	if($container === null) {
+		header('HTTP/1.1 404 Not Found');
+		die(LANG['not_found']);
+	}
+	if($jcid = $db->addJobContainer(
+		'Renew '.date('y-m-d H:i:s'),
+		date('Y-m-d H:i:s'), null,
+		'' /*description*/, 0 /*wol sent*/
+	)) {
+		$count = 0;
+		foreach($db->getAllJobByContainer($container->id) as $job) {
+			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED) {
+				if($db->addJob($jcid, $job->computer_id, $job->package_id, $job->package_procedure, $job->is_uninstall, $job->sequence)) {
+					if($db->removeJob($job->id)) {
+						$count ++;
+					}
+				}
+			}
+		}
+	}
+	die();
+}
 
 if(!empty($_GET['id'])) {
 
 	$container = $db->getJobContainer($_GET['id']);
 	if($container === null) die(LANG['not_found']);
-	$jobs = $db->getAllJobByContainer($_GET['id']);
+	$jobs = $db->getAllJobByContainer($container->id);
 
 	$percent = 0;
 	if(count($jobs) > 0) {
@@ -28,6 +52,7 @@ if(!empty($_GET['id'])) {
 
 	echo "<div class='controls'>";
 	echo "<button onclick='confirmRemoveJobContainer(".htmlspecialchars($container->id).")'><img src='img/delete.svg'>&nbsp;".LANG['delete_container']."</button>";
+	echo "<button onclick='confirmRenewFailedJobsInContainer(".htmlspecialchars($container->id).")'><img src='img/refresh.svg'>&nbsp;".LANG['renew_failed_jobs']."</button>";
 	echo "</div>";
 
 	echo "<p>";

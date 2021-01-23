@@ -184,6 +184,8 @@ const LANG = [
 	'progress' => 'Progress',
 	'expired' => 'Expired',
 	'in_progress' => 'In Progress...',
+	'renew_failed_jobs' => 'Renew Failed Jobs',
+	'confirm_renew_jobs' => 'A new job container with all failed jobs will be created and the failed jobs will be removed from the original job container.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

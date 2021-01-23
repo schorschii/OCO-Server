@@ -737,16 +737,17 @@ class db {
 	}
 
 	// Job Operations
-	public function addJobContainer($name, $start_time, $end_time, $notes) {
+	public function addJobContainer($name, $start_time, $end_time, $notes, $wol_sent) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container (name, start_time, end_time, notes)
-			VALUES (:name, :start_time, :end_time, :notes)'
+			'INSERT INTO job_container (name, start_time, end_time, notes, wol_sent)
+			VALUES (:name, :start_time, :end_time, :notes, :wol_sent)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
 			':start_time' => $start_time,
 			':end_time' => $end_time,
 			':notes' => $notes,
+			':wol_sent' => $wol_sent,
 		]);
 		return $this->dbh->lastInsertId();
 	}
@@ -851,23 +852,29 @@ class db {
 	public function getJobContainerIcon($id) {
 		$container = $this->getJobContainer($id);
 		$jobs = $this->getAllJobByContainer($id);
+		$waitings = 0;
+		$errors = 0;
 		foreach($jobs as $job) {
 			if($job->state == Job::STATUS_WAITING_FOR_CLIENT || $job->state == Job::STATUS_EXECUTION_STARTED) {
-				if($container->end_time === null || strtotime($container->end_time) > time()) {
-					return 'wait';
-				} else {
-					return 'error';
-				}
+				$waitings ++;
 			}
 			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED) {
-				return 'error';
+				$errors ++;
 			}
 		}
-		return 'tick';
+		if($waitings > 0) return JobContainer::STATUS_IN_PROGRESS;
+		elseif($errors > 0) return JobContainer::STATUS_FAILED;
+		else return JobContainer::STATUS_SUCCEEDED;
 	}
 	public function removeJobContainer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM job_container WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
+	}
+	public function removeJob($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM job WHERE id = :id'
 		);
 		return $this->stmt->execute([':id' => $id]);
 	}

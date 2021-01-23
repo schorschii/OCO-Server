@@ -11,11 +11,11 @@
    viewBox="0 0 24 24"
    width="24"
    version="1.1"
-   id="svg4"
+   id="svg6"
    sodipodi:docname="refresh.svg"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
   <metadata
-     id="metadata10">
+     id="metadata12">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -26,7 +26,7 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs8" />
+     id="defs10" />
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -36,20 +36,23 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1439"
-     inkscape:window-height="913"
-     id="namedview6"
+     inkscape:window-width="1560"
+     inkscape:window-height="945"
+     id="namedview8"
      showgrid="false"
-     inkscape:zoom="9.8333333"
-     inkscape:cx="12"
-     inkscape:cy="12"
+     inkscape:zoom="4.9166667"
+     inkscape:cx="-65.666431"
+     inkscape:cy="21.736283"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg4" />
+     inkscape:current-layer="svg6" />
   <path
-     d="M 19.224203,4.7693986 C 17.368562,2.9137576 14.821854,1.7619804 11.993601,1.7619804 6.3370955,1.7619804 1.7683793,6.3434942 1.7683793,12 c 0,5.656506 4.5687162,10.23802 10.2252217,10.23802 4.773478,0 8.753508,-3.263369 9.892487,-7.678514 h -2.661885 c -1.049397,2.981822 -3.890448,5.119009 -7.230602,5.119009 -4.2359803,0 -7.6785143,-3.442534 -7.6785143,-7.678515 0,-4.2359807 3.442534,-7.6785148 7.6785143,-7.6785148 2.124389,0 4.018424,0.8830293 5.400556,2.2779594 l -4.120803,4.1208034 h 8.958267 V 1.7619804 Z"
-     id="path2"
-     inkscape:connector-curvature="0"
-     style="stroke-width:1.27975249" />
+     d="M0 0h24v24H0V0z"
+     fill="none"
+     id="path2" />
+  <path
+     d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+     id="path4"
+     style="fill:#000000;fill-opacity:1" />
 </svg>

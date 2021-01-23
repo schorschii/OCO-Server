@@ -122,6 +122,10 @@ class JobContainer {
 	public $created;
 	// aggregated values
 	public $last_update;
+	// constants (= icon names)
+	public const STATUS_SUCCEEDED = 'tick';
+	public const STATUS_FAILED = 'error';
+	public const STATUS_IN_PROGRESS = 'wait';
 }
 class Job {
 	public $id;

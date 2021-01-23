@@ -636,6 +636,11 @@ function confirmRemoveJobContainer(id) {
 		ajaxRequestPost('views/jobcontainer.php', urlencodeObject({'remove_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
+function confirmRenewFailedJobsInContainer(id) {
+	if(confirm(L__CONFIRM_RENEW_JOBS)) {
+		ajaxRequestPost('views/jobcontainer.php', urlencodeObject({'renew_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
+	}
+}
 function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol) {
 	btnDeploy.disabled = true;
 	let req = new XMLHttpRequest();

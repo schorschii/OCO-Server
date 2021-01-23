@@ -23,3 +23,4 @@ var L__NO_CONNECTION_TO_SERVER = "<?php echo LANG['no_connection_to_server']; ?>
 var L__PLEASE_CHECK_NETWORK = "<?php echo LANG['please_check_network']; ?>";
 var L__PLEASE_CHECK_NETWORK = "<?php echo LANG['please_check_network']; ?>";
 var L__IN_PROGRESS = "<?php echo LANG['in_progress']; ?>";
+var L__CONFIRM_RENEW_JOBS = "<?php echo LANG['confirm_renew_jobs']; ?>";

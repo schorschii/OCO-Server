@@ -86,7 +86,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	}
 
 	// wol handling
-	$wolSent = 0;
+	$wolSent = -1;
 	if($_POST['use_wol']) {
 		if(strtotime($_POST['date_start']) <= time()) {
 			// instant WOL if start time is already in the past
@@ -96,6 +96,8 @@ if(!empty($_POST['add_jobcontainer'])) {
 					wol($cn->mac);
 				}
 			}
+		} else {
+			$wolSent = 0;
 		}
 	}
 
