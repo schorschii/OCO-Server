@@ -33,7 +33,10 @@ require_once(__DIR__.'/../session.php');
 			</td>
 			<td class='center' colspan='2'>
 				<?php
-				$percent = round(disk_free_space(PACKAGE_PATH)/disk_total_space(PACKAGE_PATH)*100);
+				$total = disk_total_space(PACKAGE_PATH);
+				$free = disk_free_space(PACKAGE_PATH);
+				$used = $total - $free;
+				$percent = round($used/$total*100);
 				echo LANG['disk_space'].' '.progressBar($percent);
 				?>
 			</td>
