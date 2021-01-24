@@ -264,6 +264,9 @@ function updatePackageProcedureTemplates() {
 }
 function createPackage(name, version, author, description, archive, install_procedure, uninstall_procedure) {
 	btnCreatePackage.disabled = true;
+	btnCreatePackage.style.display = 'none';
+	prgPackageUploadContainer.style.display = 'inline-block';
+
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('name', name);
@@ -278,13 +281,19 @@ function createPackage(name, version, author, description, archive, install_proc
 		if(evt.lengthComputable) {
 			var progress = Math.ceil((evt.loaded / evt.total) * 100);
 			if(progress == 100) {
-				btnCreatePackageProgress.innerText = ' (' + L__IN_PROGRESS + ')';
+				prgPackageUpload.classList.add('animated');
+				prgPackageUploadText.innerText = L__IN_PROGRESS;
+				prgPackageUpload.style.width = '100%';
 			} else {
-				btnCreatePackageProgress.innerText = ' (' + progress + '%)';
+				prgPackageUpload.classList.remove('animated');
+				prgPackageUploadText.innerText = progress + '%';
+				prgPackageUpload.style.width = progress + '%';
 			}
 		} else {
 			console.warn('form length is not computable');
-			btnCreatePackageProgress.innerText = ' (' + L__IN_PROGRESS + ')';
+			prgPackageUpload.classList.add('animated');
+			prgPackageUploadText.innerText = L__IN_PROGRESS;
+			prgPackageUpload.style.width = '100%';
 		}
 	};
 	req.onreadystatechange = function() {
@@ -295,7 +304,8 @@ function createPackage(name, version, author, description, archive, install_proc
 			} else {
 				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
 				btnCreatePackage.disabled = false;
-				btnCreatePackageProgress.innerText = '';
+				btnCreatePackage.style.display = 'inline-block';
+				prgPackageUploadContainer.style.display = 'none';
 			}
 		}
 	};
