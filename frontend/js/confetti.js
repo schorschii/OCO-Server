@@ -17,15 +17,17 @@ var mX = 0;
 var mY = 0;
 var cEquipped = false;
 document.onmousemove = function(event) {
-	mX = event.pageX/window.innerWidth;
-	mY = event.pageY/window.innerHeight;
+	if(cEquipped) {
+		mX = event.pageX/window.innerWidth;
+		mY = event.pageY/window.innerHeight;
+	}
 };
 document.onclick = function(event) {
 	if(cEquipped) mouseExplosion();
 };
 
 function toggleEquip() {
-	setTimeout(function(){ cEquipped = !cEquipped; }, 800);
+	setTimeout(function(){ cEquipped = !cEquipped; }, 100);
 }
 
 function mouseExplosion() {
