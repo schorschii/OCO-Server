@@ -101,6 +101,8 @@ function validatePassword($userObject, $checkPassword) {
 		</div>
 	</div>
 
+	<button id='btnHidden' onclick='toggleEquip()'></button>
+
 </div>
 
 </body>

@@ -6,5 +6,6 @@
 <?php if(file_exists(__DIR__.'/css/custom.css')) { ?>
 	<link rel='stylesheet' type='text/css' href='css/custom.css'>
 <?php } ?>
+<script src='js/confetti.js'></script>
 <meta name='viewport' content='width=720'>
 <meta name='author' content='Georg Sieber'>

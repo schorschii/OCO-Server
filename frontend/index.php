@@ -10,7 +10,6 @@ require_once('session.php');
 	<script src='js/strings.js.php'></script>
 	<script src='js/main.js'></script>
 	<script src='js/table.js'></script>
-	<script src='js/confetti.js'></script>
 	<!--
 		Wir begrüßen Sie an diesem wunderschönen <?php echo date("l"); ?>,
 		<?php echo time(); ?> Sekunden nach dem Unix-Urknall!
@@ -73,6 +72,9 @@ require_once('session.php');
 	refreshSidebar();
 	<?php if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) == 'views') { ?>
 		ajaxRequest("<?php echo htmlspecialchars($_GET['explorer-content']); ?>", "explorer-content");
+	<?php } ?>
+	<?php if(rand(0,1000) == 42) { ?>
+		topConfettiRain();
 	<?php } ?>
 	</script>
 

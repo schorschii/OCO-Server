@@ -25,11 +25,18 @@ document.onclick = function(event) {
 };
 
 function toggleEquip() {
-	setTimeout(function(){ cEquipped = !cEquipped; }, 1000);
+	setTimeout(function(){ cEquipped = !cEquipped; }, 800);
 }
 
 function mouseExplosion() {
-	var defaults = { startVelocity: 25, spread: 360, ticks: 100, zIndex: 0 };
-	var particleCount = 70;
-	confetti(Object.assign({}, defaults, { particleCount, origin: { x: mX, y: mY } }));
+	confetti({ particleCount: 70, startVelocity: 25, spread: 360, ticks: 100, zIndex: 0, origin: { x: mX, y: mY } });
+}
+function topConfettiRain() {
+	var defaults = { particleCount: 70, angle: 270, spread: 180, particleCount: 100, startVelocity: 15, ticks: 180 };
+	confetti(Object.assign({}, defaults, { origin: { x: 0.0, y: 0 } }));
+	confetti(Object.assign({}, defaults, { origin: { x: 0.2, y: 0 } }));
+	confetti(Object.assign({}, defaults, { origin: { x: 0.4, y: 0 } }));
+	confetti(Object.assign({}, defaults, { origin: { x: 0.6, y: 0 } }));
+	confetti(Object.assign({}, defaults, { origin: { x: 0.8, y: 0 } }));
+	confetti(Object.assign({}, defaults, { origin: { x: 1.0, y: 0 } }));
 }
