@@ -151,8 +151,8 @@ $packageGroups = $db->getAllPackageGroup();
 
 		<th><?php echo LANG['end']; ?>:</th>
 		<td>
-			<input type='date' id='dteEnd' value=''></input>
-			<input type='time' id='tmeEnd' value=''></input>
+			<input type='date' id='dteEnd' value='' onchange='chkDateEndEnabled.checked=true'></input>
+			<input type='time' id='tmeEnd' value='' onchange='chkDateEndEnabled.checked=true'></input>
 		</td>
 	</tr>
 	<tr>
