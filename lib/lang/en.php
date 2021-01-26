@@ -187,6 +187,12 @@ const LANG = [
 	'renew_failed_jobs' => 'Renew Failed Jobs',
 	'confirm_renew_jobs' => 'A new job container with all failed jobs will be created and the failed jobs will be removed from the original job container.',
 	'default_motd' => 'Thank you for using OCO. If you have any questions, professional support can be provided. Please <a href="https://georg-sieber.de/?page=contact" target="_blank">contact me</a>.',
+	'report_secureboot_disabled' => 'SecureBoot Disabled',
+	'report_packages_without_installations' => 'Packages Without Installations',
+	'report_recognized_software_chrome' => 'Recognized Software Chrome',
+	'report_domainusers_multiple_computers' => 'Domainusers With Multiple PCs',
+	'report_expired_jobcontainers' => 'Expired Jobcontainers',
+	'report_preregistered_computers' => 'Pre-Registered Computers',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

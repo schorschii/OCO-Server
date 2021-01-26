@@ -187,6 +187,12 @@ const LANG = [
 	'renew_failed_jobs' => 'Fehlgeschlagene Jobs erneuern',
 	'confirm_renew_jobs' => 'Es wird ein neuer Jobcontainer mit allen fehlgeschlagenen Jobs erstellt. Anschließend werden die fehlgeschlagen Jobs vom ursprünglichen Container entfernt.',
 	'default_motd' => 'Vielen Dank dafür, dass Sie OCO verwenden. Falls Sie Fragen haben können Sie professionellen Support erhalten. Bitte <a href="https://georg-sieber.de/?page=contact" target="_blank">kontaktieren Sie mich</a>.',
+	'report_secureboot_disabled' => 'SecureBoot deaktiviert',
+	'report_packages_without_installations' => 'Pakete ohne Installationen',
+	'report_recognized_software_chrome' => 'Erkannte Software Chrome',
+	'report_domainusers_multiple_computers' => 'Domänenbenutzer mit mehreren PCs',
+	'report_expired_jobcontainers' => 'Abgelaufene Jobcontainer',
+	'report_preregistered_computers' => 'Vorregistrierte Computer',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

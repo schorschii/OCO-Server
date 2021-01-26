@@ -1147,7 +1147,11 @@ class db {
 			'SELECT * FROM report'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
+		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
+		foreach($reports as $report) {
+			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
+		}
+		return $reports;
 	}
 	public function getReport($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1155,6 +1159,7 @@ class db {
 		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report') as $row) {
+			if(!empty(LANG[$row->name])) $row->name = LANG[$row->name];
 			return $row;
 		}
 	}

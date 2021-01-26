@@ -202,5 +202,6 @@ class Software {
 class Report {
 	public $id;
 	public $name;
+	public $notes;
 	public $query;
 }

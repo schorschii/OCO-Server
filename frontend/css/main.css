@@ -260,6 +260,11 @@ div.contextMenu button img {
 	width: 18px;
 }
 
+.quote {
+	border-left: 2px solid rgb(200,200,200);
+	padding: 10px;
+}
+
 .hidden {
 	display: none;
 }
