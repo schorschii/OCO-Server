@@ -333,7 +333,8 @@ INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
 (2, 'agent-update-interval', '7200'),
 (3, 'agent-registration-enabled', '1'),
 (4, 'purge-succeeded-jobs', '7200'),
-(5, 'purge-failed-jobs', '7200');
+(5, 'purge-failed-jobs', '7200'),
+(6, 'motd', 'default_motd');
 
 -- --------------------------------------------------------
 
@@ -629,7 +630,7 @@ ALTER TABLE `report`
 -- AUTO_INCREMENT für Tabelle `setting`
 --
 ALTER TABLE `setting`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `software`

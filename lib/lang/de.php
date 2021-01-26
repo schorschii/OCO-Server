@@ -186,6 +186,7 @@ const LANG = [
 	'in_progress' => 'Wird verarbeitet...',
 	'renew_failed_jobs' => 'Fehlgeschlagene Jobs erneuern',
 	'confirm_renew_jobs' => 'Es wird ein neuer Jobcontainer mit allen fehlgeschlagenen Jobs erstellt. Anschließend werden die fehlgeschlagen Jobs vom ursprünglichen Container entfernt.',
+	'default_motd' => 'Vielen Dank dafür, dass Sie OCO verwenden. Falls Sie Fragen haben können Sie professionellen Support erhalten. Bitte <a href="https://georg-sieber.de/?page=contact" target="_blank">kontaktieren Sie mich</a>.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
