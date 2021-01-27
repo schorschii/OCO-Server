@@ -432,6 +432,7 @@ class db {
 			if($domainuser == null) {
 				$du_id = $this->addDomainuser($l['username']);
 				$domainuser = $this->getDomainuser($du_id);
+				$domainusers = $this->getAllDomainuser();
 			}
 			if($this->getDomainuserLogonByComputerDomainuserConsoleTimestamp($id, $domainuser->id, $l['console'], $l['timestamp']) === null) {
 				$this->stmt = $this->dbh->prepare(
