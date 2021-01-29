@@ -297,6 +297,7 @@ CREATE TABLE `package_group_member` (
 CREATE TABLE `report` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
+  `notes` text NOT NULL,
   `query` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -304,13 +305,13 @@ CREATE TABLE `report` (
 -- Daten für Tabelle `report`
 --
 
-INSERT INTO `report` (`id`, `name`, `query`) VALUES
-(1, 'SecureBoot deaktiviert', 'SELECT id AS computer_id, hostname, os, os_version FROM computer WHERE secure_boot = 0'),
-(2, 'Pakete ohne Installationen', 'SELECT p.id AS package_id, name, count(cp.package_id) AS install_count FROM package p LEFT JOIN computer_package cp ON p.id = cp.package_id GROUP BY p.id HAVING install_count = 0'),
-(3, 'Erkannte Software Chrome', 'SELECT id as software_id, name FROM software WHERE name LIKE \'%chrome%\''),
-(4, 'Domänenbenutzer mit mehreren PCs', 'SELECT du.id AS domainuser_id, username, (SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS \'computer_count\' FROM domainuser du HAVING computer_count > 1'),
-(5, 'Abgelaufene Jobcontainer', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
-(6, 'Vorregistrierte Computer', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update IS NULL OR last_update <= \'2000-01-01 00:00:00\'');
+INSERT INTO `report` (`id`, `name`, `notes`, `query`) VALUES
+(1, 'report_secureboot_disabled', '', 'SELECT id AS computer_id, hostname, os, os_version FROM computer WHERE secure_boot = 0'),
+(2, 'report_packages_without_installations', '', 'SELECT p.id AS package_id, name, count(cp.package_id) AS install_count FROM package p LEFT JOIN computer_package cp ON p.id = cp.package_id GROUP BY p.id HAVING install_count = 0'),
+(3, 'report_recognized_software_chrome', '', 'SELECT id as software_id, name FROM software WHERE name LIKE \'%chrome%\''),
+(4, 'report_domainusers_multiple_computers', '', 'SELECT du.id AS domainuser_id, username, (SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS \'computer_count\' FROM domainuser du HAVING computer_count > 1'),
+(5, 'report_expired_jobcontainers', '', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
+(6, 'report_preregistered_computers', '', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update IS NULL OR last_update <= \'2000-01-01 00:00:00\'');
 
 -- --------------------------------------------------------
 
