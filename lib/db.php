@@ -1145,13 +1145,16 @@ class db {
 	// Report Operations
 	public function getAllReport() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM report'
+			'SELECT * FROM report ORDER BY name'
 		);
 		$this->stmt->execute();
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
 		foreach($reports as $report) {
 			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
 		}
+		usort($reports, function($a, $b) {
+			return strnatcmp($a->name, $b->name);
+		});
 		return $reports;
 	}
 	public function getReport($id) {
