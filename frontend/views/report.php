@@ -29,10 +29,10 @@ if(empty($_GET['id'])) {
 		die('SQL-Error: '.$e->getMessage());
 	}
 	echo "<h1>".htmlspecialchars($report->name)."</h1>";
+	echo "<p><code class='block'>".htmlspecialchars($report->query)."</code></p>";
 	if(!empty($report->notes)) {
 		echo "<p class='quote'>".htmlspecialchars($report->notes)."</p>";
 	}
-	echo "<p><code>".htmlspecialchars($report->query)."</code></p>";
 	if(count($results) == 0) die(LANG['no_results']);
 ?>
 

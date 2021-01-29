@@ -471,6 +471,24 @@ table.fixed {
 	table-layout: fixed;
 }
 
+code {
+	display: inline-block;
+	background-color: rgba(150,150,150,0.2);
+	border-radius: 2px;
+	padding: 1px 4px;
+	margin: 1px 0px;
+}
+code.block {
+	margin: auto;
+	padding: 6px;
+	display: block;
+	line-height: 1.3;
+}
+code.block.hscroll {
+	white-space: pre;
+	overflow-x: auto;
+}
+
 .green {
 	color: green;
 }
@@ -588,7 +606,10 @@ table.fixed {
 	body, a {
 		color: #E9ECEF;
 	}
-	table.list {
+	code.block {
+		border: 1px solid #485764;
+	}
+	table.list, code {
 		background-color: #22343C;
 	}
 	table.list tr th, table.list tr td {

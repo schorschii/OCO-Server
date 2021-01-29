@@ -204,12 +204,14 @@ const LANG = [
 			Beispiel-Prozeduren:
 			<ul>
 				<li>EXE-Setup unter Windows: <code>installer.exe /S</code> (kein Deinstallations-Support)</li>
-				<li>Eigene Batch-Datei unter Windows: <code>myscript.bat</code></li>
 				<li>MSI-Installation unter Windows: <code>msiexec /quiet /i package.msi</code></li>
 				<li>MSI-Deinstallation unter Windows: <code>msiexec /quiet /x package.msi</code> oder <code>{PRODUCT-GUID}</code></li>
 				<li>DEB-Paket unter Linux: <code>gdebi -n package.deb</code></li>
 				<li>DEB-Paket unter Linux deinstallieren: <code>apt remove -y packagename</code></li>
-				<li>Eigenes Shell-Skript unter Linux: <code>myscript.sh</code></li>
+				<li>.app-Verzeichnis für macOS: <code>cp -R program.app /Applications ; chmod -R +x /Applications/program.app</code></li>
+				<li>.app-Verzeichnis für macOS uninstallation: <code>rm -R /Applications/program.app</code></li>
+				<li>.pkg-Paket für macOS: <code>installer -pkg package.pkg -target /</code></li>
+				<li>Eigenes Batch-/Shell-Skript unter Linux: <code>myscript.bat</code> oder <code>myscript.sh</code></li>
 			</ul>
 		</p>
 	',
