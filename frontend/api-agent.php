@@ -20,20 +20,52 @@ $params = $srcdata['params'];
 switch($srcdata['method']) {
 	case 'oco.update_deploy_status':
 		$data = $params['data'];
+
+		// check parameter
+		if(!isset($data['job-id']) || !isset($data['state']) || !isset($data['return-code']) || !isset($data['message'])) {
+			header('HTTP/1.1 400 Parameter Mismatch'); die();
+		}
+
+		// check authorization
 		$computer = $db->getComputerByName($params['hostname']);
 		if($params['agent-key'] !== $computer->agent_key) {
 			header('HTTP/1.1 401 Client Not Authorized'); die();
 		}
 
-		$db->updateJobState($data['job-id'], $data['state'], $data['message']);
-		if($data['state'] === 2) { // 2 = installation successful
-			$job = $db->getJob($data['job-id']);
-			if($job !== null) {
-				if($job->is_uninstall == 0) {
-					$db->addPackageToComputer($job->package_id, $job->computer_id, $job->package_procedure);
-				} elseif($job->is_uninstall == 1) {
-					$db->removeComputerAssignedPackageByIds($job->computer_id, $job->package_id);
+		// get job details
+		$state = $data['state'];
+		$job = $db->getJob($data['job-id']);
+		if($job === null) {
+			header('HTTP/1.1 400 Job Not Found'); die();
+		}
+
+		// if job finished, we need to check the return code
+		if($state == Job::STATUS_SUCCEEDED) {
+			$successCodes = [];
+			foreach(explode(',', $job->success_return_codes) as $successCode) {
+				if(trim($successCode) === '') continue;
+				$successCodes[] = intval(trim($successCode));
+			}
+			// check if return code is a success return code if any valid return code found
+			if(count($successCodes) > 0) {
+				$state = Job::STATUS_FAILED;
+				foreach($successCodes as $successCode) {
+					if(intval($data['return-code']) === intval($successCode)) {
+						$state = Job::STATUS_SUCCEEDED;
+						break;
+					}
 				}
+			}
+		}
+
+		// update job state in database
+		$db->updateJobState($data['job-id'], $state, intval($data['return-code']), $data['message']);
+		// update computer-package assignment if job was successful
+		if($state === Job::STATUS_SUCCEEDED) {
+			if($job->is_uninstall == 0) {
+				$db->addPackageToComputer($job->package_id, $job->computer_id, $job->package_procedure);
+			} elseif($job->is_uninstall == 1) {
+				$db->removeComputerAssignedPackageByIds($job->computer_id, $job->package_id);
 			}
 		}
 		$resdata['error'] = null;
@@ -83,11 +115,25 @@ switch($srcdata['method']) {
 				}
 			}
 
+			// update last seen date
 			$db->updateComputerPing($computer->id);
+
+			// check if agent should update inventory data
 			if(time() - strtotime($computer->last_update) > $db->getSettingByName('agent-update-interval')) {
 				$update = 1;
 			}
-			$jobs = $db->getPendingJobsForComputer($computer->id);
+
+			// get pending jobs
+			$jobs = [];
+			foreach($db->getPendingJobsForComputer($computer->id) as $pj) {
+				$jobs[] = [
+					'id' => $pj['id'],
+					'package-id' => $pj['package_id'],
+					'download' => true,
+					'procedure' => $pj['procedure'],
+				];
+			}
+
 			$success = true;
 		}
 

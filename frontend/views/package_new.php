@@ -28,10 +28,12 @@ if(isset($_POST['name'])) {
 	$insertId = $db->addPackage(
 		$_POST['name'],
 		$_POST['version'],
-		$_POST['author'],
-		$_POST['description'],
+		$_POST['author'] ?? '',
+		$_POST['description'] ?? '',
 		$_POST['install_procedure'],
-		$_POST['uninstall_procedure']
+		$_POST['install_procedure_success_return_codes'] ?? '',
+		$_POST['uninstall_procedure'] ?? '',
+		$_POST['uninstall_procedure_success_return_codes'] ?? ''
 	);
 	if(!$insertId) {
 		header('HTTP/1.1 500 Failed');
@@ -106,15 +108,19 @@ if(isset($_POST['name'])) {
 	<tr>
 		<th><?php echo LANG['install_procedure']; ?></th>
 		<td><input type='text' id='txtInstallProcedure' list='lstInstallProcedures'></td>
+		<th><?php echo LANG['success_return_codes']; ?></th>
+		<td><input type='text' id='txtInstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='0'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
 		<td><input type='text' id='txtUninstallProcedure' list='lstUninstallProcedures'></td>
+		<th><?php echo LANG['success_return_codes']; ?></th>
+		<td><input type='text' id='txtUninstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='0'></td>
 	</tr>
 	<tr>
 		<th></th>
 		<td>
-			<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtUninstallProcedure.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
+			<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
 			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadContainer', 'prgPackageUploadText', 'width:150px;display:none;'); ?>
 		</td>
 </table>

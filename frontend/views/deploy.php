@@ -61,7 +61,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	}
 	if(!empty($_POST['package_id'])) foreach($_POST['package_id'] as $package_id) {
 		$p = $db->getPackage($package_id);
-		if($p !== null) $packages[$p->id] = ['sequence'=>0, 'procedure'=>$p->install_procedure];
+		if($p !== null) $packages[$p->id] = ['sequence'=>0, 'procedure'=>$p->install_procedure, 'success_return_codes'=>$p->install_procedure_success_return_codes];
 	}
 	if(!empty($_POST['package_group_id'])) foreach($_POST['package_group_id'] as $package_group_id) {
 		if($db->getPackageGroup($package_group_id) !== null) $package_group_ids[] = $package_group_id;
@@ -75,7 +75,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	}
 	if(count($package_group_ids) > 1) foreach($package_group_ids as $package_group_id) {
 		foreach($db->getPackageByGroup($package_group_id) as $p) {
-			$packages[$p->id] = ['sequence'=>$p->package_group_member_sequence, 'procedure'=>$p->install_procedure];
+			$packages[$p->id] = ['sequence'=>$p->package_group_member_sequence, 'procedure'=>$p->install_procedure, 'success_return_codes'=>$p->install_procedure_success_return_codes];
 		}
 	}
 
@@ -112,7 +112,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	)) {
 		foreach($computer_ids as $computer_id) {
 			foreach($packages as $pid => $package) {
-				if($db->addJob($jcid, $computer_id, $pid, $package['procedure'], 0, $package['sequence'])) {
+				if($db->addJob($jcid, $computer_id, $pid, $package['procedure'], $package['success_return_codes'], 0, $package['sequence'])) {
 					$count ++;
 				}
 			}

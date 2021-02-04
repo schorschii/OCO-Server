@@ -102,6 +102,7 @@ const LANG = [
 	'new_deployment_job' => 'Neuer Bereitstellungsauftrag',
 	'created' => 'Erstellt',
 	'waiting_for_client' => 'Wartet auf Client',
+	'download_started' => 'Download gestartet',
 	'execution_started' => 'Ausführung gestartet',
 	'failed' => 'Fehlgeschlagen',
 	'succeeded' => 'Erfolgreich',
@@ -193,6 +194,8 @@ const LANG = [
 	'report_domainusers_multiple_computers' => 'Domänenbenutzer mit mehreren PCs',
 	'report_expired_jobcontainers' => 'Abgelaufene Jobcontainer',
 	'report_preregistered_computers' => 'Vorregistrierte Computer',
+	'success_return_codes' => 'Erfolgreiche Return-Codes',
+	'success_return_codes_comma_separated' => 'Mehrere Return-Codes mit Komma trennen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

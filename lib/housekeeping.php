@@ -23,9 +23,9 @@ foreach($db->getAllJobContainer() as $container) {
 	// set job state to expired if job container end date reached
 	if($container->end_time !== null && strtotime($container->end_time) < time()) {
 		foreach($db->getAllJobByContainer($container->id) as $job) {
-			if($job->state == Job::STATUS_WAITING_FOR_CLIENT) {
+			if($job->state == Job::STATUS_WAITING_FOR_CLIENT || $job->state == Job::STATUS_DOWNLOAD_STARTED || $job->state == Job::STATUS_EXECUTION_STARTED) {
 				echo('Set Job #'.$job->id.' (Container #'.$container->id.', '.$container->name.') state to EXPIRED'."\n");
-				$db->updateJobState($job->id, Job::STATUS_EXPIRED, '');
+				$db->updateJobState($job->id, Job::STATUS_EXPIRED, NULL, '');
 			}
 		}
 	}

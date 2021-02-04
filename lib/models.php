@@ -92,7 +92,9 @@ class Package {
 	public $version;
 	public $author;
 	public $install_procedure;
+	public $install_procedure_success_return_codes;
 	public $uninstall_procedure;
+	public $uninstall_procedure_success_return_codes;
 	public $created;
 	// joined package group attributes
 	public $package_group_member_sequence;
@@ -133,6 +135,7 @@ class Job {
 	public $computer_id;
 	public $package_id;
 	public $package_procedure;
+	public $success_return_codes;
 	public $is_uninstall;
 	public $sequence;
 	public $state;
@@ -146,11 +149,12 @@ class Job {
 	public const STATUS_WAITING_FOR_CLIENT = 0;
 	public const STATUS_FAILED = -1;
 	public const STATUS_EXPIRED = -2;
-	public const STATUS_EXECUTION_STARTED = 1;
-	public const STATUS_SUCCEEDED = 2;
+	public const STATUS_DOWNLOAD_STARTED = 1;
+	public const STATUS_EXECUTION_STARTED = 2;
+	public const STATUS_SUCCEEDED = 3;
 	// functions
 	function getIcon() {
-		if($this->state == self::STATUS_WAITING_FOR_CLIENT || $this->state == self::STATUS_EXECUTION_STARTED) {
+		if($this->state == self::STATUS_WAITING_FOR_CLIENT || $this->state == self::STATUS_DOWNLOAD_STARTED || $this->state == self::STATUS_EXECUTION_STARTED) {
 			return 'wait';
 		}
 		if($this->state == self::STATUS_FAILED || $this->state == self::STATUS_EXPIRED) {
@@ -159,7 +163,7 @@ class Job {
 		if($this->state == self::STATUS_SUCCEEDED) {
 			return 'tick';
 		}
-		return 'unknown';
+		return 'warning';
 	}
 }
 class Domainuser {

@@ -21,7 +21,7 @@ if(!empty($_POST['renew_container_id'])) {
 		$count = 0;
 		foreach($db->getAllJobByContainer($container->id) as $job) {
 			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED) {
-				if($db->addJob($jcid, $job->computer_id, $job->package_id, $job->package_procedure, $job->is_uninstall, $job->sequence)) {
+				if($db->addJob($jcid, $job->computer_id, $job->package_id, $job->package_procedure, $job->success_return_codes, $job->is_uninstall, $job->sequence)) {
 					if($db->removeJob($job->id)) {
 						$count ++;
 					}
@@ -42,7 +42,7 @@ if(!empty($_GET['id'])) {
 	$percent = 0;
 	if(count($jobs) > 0) {
 		foreach($jobs as $job) {
-			if($job->state == 2) $done ++;
+			if($job->state == Job::STATUS_SUCCEEDED) $done ++;
 		}
 		$percent = $done/count($jobs)*100;
 	}
@@ -81,9 +81,9 @@ if(!empty($_GET['id'])) {
 		echo "<td>".htmlspecialchars(shorter($job->package_procedure))."</td>";
 		echo "<td>".htmlspecialchars($job->sequence)."</td>";
 		if(!empty($job->message)) {
-			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'><a href='#' onclick='event.preventDefault();alert(this.getAttribute(\"message\"))' message='".addslashes(trim($job->message))."'>".getJobStateString($job->state)."</a></td>";
+			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'><a href='#' onclick='event.preventDefault();alert(this.getAttribute(\"message\"))' message='".addslashes(trim($job->message))."'>".getJobStateString($job->state, $job->return_code)."</a></td>";
 		} else {
-			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'>".getJobStateString($job->state)."</td>";
+			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'>".getJobStateString($job->state, $job->return_code)."</td>";
 		}
 		echo "<td>".htmlspecialchars($job->last_update);
 		echo "</tr>";
@@ -114,7 +114,7 @@ if(!empty($_GET['id'])) {
 		$jobs = $db->getAllJobByContainer($jc->id);
 		if(count($jobs) > 0) {
 			foreach($jobs as $job) {
-				if($job->state == 2) $done ++;
+				if($job->state == Job::STATUS_SUCCEEDED) $done ++;
 			}
 			$percent = $done/count($jobs)*100;
 		}
@@ -134,17 +134,23 @@ if(!empty($_GET['id'])) {
 
 }
 
-function getJobStateString($state) {
+function getJobStateString($state, $returnCode) {
+	$returnCodeString = '';
+	if($returnCode != null) {
+		$returnCodeString = ' ('.htmlspecialchars($returnCode).')';
+	}
 	if($state == Job::STATUS_WAITING_FOR_CLIENT)
 		return LANG['waiting_for_client'];
 	elseif($state == Job::STATUS_FAILED)
-		return LANG['failed'];
+		return LANG['failed'].$returnCodeString;
 	elseif($state == Job::STATUS_EXPIRED)
 		return LANG['expired'];
+	elseif($state == Job::STATUS_DOWNLOAD_STARTED)
+		return LANG['download_started'];
 	elseif($state == Job::STATUS_EXECUTION_STARTED)
 		return LANG['execution_started'];
 	elseif($state == Job::STATUS_SUCCEEDED)
-		return LANG['succeeded'];
+		return LANG['succeeded'].$returnCodeString;
 	else return $state;
 }
 ?>

@@ -555,10 +555,10 @@ class db {
 	}
 
 	// Package Operations
-	public function addPackage($name, $version, $author, $notes, $install_procedure, $uninstall_procedure) {
+	public function addPackage($name, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $uninstall_procedure, $uninstall_procedure_success_return_codes) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (name, version, author, notes, install_procedure, uninstall_procedure)
-			VALUES (:name, :version, :author, :notes, :install_procedure, :uninstall_procedure)'
+			'INSERT INTO package (name, version, author, notes, install_procedure, install_procedure_success_return_codes, uninstall_procedure, uninstall_procedure_success_return_codes)
+			VALUES (:name, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :uninstall_procedure, :uninstall_procedure_success_return_codes)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
@@ -566,7 +566,9 @@ class db {
 			':author' => $author,
 			':notes' => $notes,
 			':install_procedure' => $install_procedure,
+			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
 			':uninstall_procedure' => $uninstall_procedure,
+			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
 		]);
 		return $this->dbh->lastInsertId();
 	}
@@ -755,16 +757,17 @@ class db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $is_uninstall, $sequence) {
+	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $sequence) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, is_uninstall, sequence, message)
-			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :is_uninstall, :sequence, "")'
+			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, sequence, message)
+			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :sequence, "")'
 		);
 		$this->stmt->execute([
 			':job_container_id' => $job_container_id,
 			':computer_id' => $computer_id,
 			':package_id' => $package_id,
 			':package_procedure' => $package_procedure,
+			':success_return_codes' => $success_return_codes,
 			':is_uninstall' => $is_uninstall,
 			':sequence' => $sequence,
 		]);
@@ -825,20 +828,21 @@ class db {
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
-			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
+			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
 			AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
 			ORDER BY j.sequence'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll();
 	}
-	public function updateJobState($id, $state, $message) {
+	public function updateJobState($id, $state, $return_code, $message) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE job SET state = :state, message = :message, last_update = CURRENT_TIMESTAMP WHERE id = :id'
+			'UPDATE job SET state = :state, return_code = :return_code, message = :message, last_update = CURRENT_TIMESTAMP WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
 			':state' => $state,
+			':return_code' => $return_code,
 			':message' => $message,
 		]);
 	}
@@ -861,7 +865,7 @@ class db {
 		$waitings = 0;
 		$errors = 0;
 		foreach($jobs as $job) {
-			if($job->state == Job::STATUS_WAITING_FOR_CLIENT || $job->state == Job::STATUS_EXECUTION_STARTED) {
+			if($job->state == Job::STATUS_WAITING_FOR_CLIENT || $job->state == Job::STATUS_DOWNLOAD_STARTED || $job->state == Job::STATUS_EXECUTION_STARTED) {
 				$waitings ++;
 			}
 			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED) {
