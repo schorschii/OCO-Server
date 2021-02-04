@@ -209,8 +209,8 @@ const LANG = [
 				<li>DEB-Paket unter Linux: <code>gdebi -n package.deb</code></li>
 				<li>DEB-Paket unter Linux deinstallieren: <code>apt remove -y packagename</code></li>
 				<li>.app-Verzeichnis für macOS: <code>cp -R program.app /Applications ; chmod -R +x /Applications/program.app</code></li>
-				<li>.app-Verzeichnis für macOS uninstallation: <code>rm -R /Applications/program.app</code></li>
-				<li>.pkg-Paket für macOS: <code>installer -pkg package.pkg -target /</code></li>
+				<li>.app-Verzeichnis für macOS deinstallieren: <code>rm -R /Applications/program.app</code></li>
+				<li>.pkg-Paket für macOS: <code>installer -pkg package.pkg -target /</code> (kein Deinstallations-Support)</li>
 				<li>Eigenes Batch-/Shell-Skript unter Linux: <code>myscript.bat</code> oder <code>myscript.sh</code></li>
 			</ul>
 		</p>
