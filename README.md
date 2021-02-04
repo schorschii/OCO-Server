@@ -10,11 +10,13 @@ The Open Computer Orchestration (OCO) project enables IT administrators to centr
 The OCO server provides the API (used to communicate with the OCO agent) and the admin web frontend for the OCO project. On the web frontend you can view computer details and configure software deployment jobs. It can be installed on any Linux distribution. Data is stored in a MySQL database.
 
 ![Schematic](.github/oco-schematic.png)
+
+### Screenshots
 ![Computers](.github/1.png)
 ![Deployment Wizard](.github/2.png)
 ![Dark Mode](.github/3.png)
 
-## System Rquirements
+## System Requirements
 ### Server
 - Linux Server
 - MySQL Database Server
