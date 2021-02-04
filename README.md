@@ -9,6 +9,7 @@ The Open Computer Orchestration (OCO) project enables IT administrators to centr
 ## About OCO Server
 The OCO server provides the API (used to communicate with the OCO agent) and the admin web frontend for the OCO project. On the web frontend you can view computer details and configure software deployment jobs. It can be installed on any Linux distribution. Data is stored in a MySQL database.
 
+![Schematic](.github/oco-schematic.png)
 ![Computers](.github/1.png)
 ![Deployment Wizard](.github/2.png)
 ![Dark Mode](.github/3.png)
@@ -23,6 +24,9 @@ The OCO server provides the API (used to communicate with the OCO agent) and the
 - Chromium-based Web Browser (Chrome/Chromium v80 or newer, Opera etc.)
 - Firefox (v80 or newer)
 - (optional) OCO Client Extensions (for opening RDP, VNC, SSH sessions from the web interface)
+
+### Agent
+- please refer to [OCO Agent](https://github.com/schorschii/oco-agent)
 
 ## Installation
 0. Install PHP 7.x and a web sever of your choice.
