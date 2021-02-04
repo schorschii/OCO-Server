@@ -32,7 +32,7 @@ The OCO server provides the API (used to communicate with the OCO agent) and the
 
 ## Installation
 0. Install PHP 7.x and a web sever of your choice.
-1. Copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.
+1. Download the [latest release](https://github.com/schorschii/oco-server/releases), copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.
 1. Import the database schema (`lib/sql/oco.sql`) into an empty database.
 2. Enter your MySQL credentials in `conf.php` (create this file by copying the template `conf.example.php`). Please create a separate user for the database which only has permission to read and write in this specific database. Do not use the root account.
 3. Make sure the defined package path is writeable for the webserver user.
@@ -58,3 +58,6 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
 
 ## More Information
 **Please read the documentation in the `/docs` folder.**
+
+## Specific Adjustments
+You need specific adjustments for your environment? You can hire me to extend OCO to your needs. Please [contact me](https://georg-sieber.de/?page=impressum) if you are interested.
