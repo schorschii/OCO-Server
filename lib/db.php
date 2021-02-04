@@ -821,7 +821,9 @@ class db {
 			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure"
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
-			WHERE j.computer_id = :id AND j.state = 0 AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
+			WHERE j.computer_id = :id
+			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
+			AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
 			ORDER BY j.sequence'
 		);
 		$this->stmt->execute([':id' => $id]);
