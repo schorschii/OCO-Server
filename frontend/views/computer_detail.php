@@ -199,7 +199,7 @@ $commands = $db->getAllComputerCommand();
 					echo '<tr>';
 					echo '<td class="middle">';
 					if(count($commands) > 0) {
-						echo '<span class="addresswithactions"><img src="img/more-vert.svg">&nbsp;<span class="actions">';
+						echo '<span class="addresswithactions"><img src="img/more-vert.dyn.svg">&nbsp;<span class="actions">';
 						foreach($commands as $c) { echoCommandButton($c, $n->addr); }
 						echo '</span></span>';
 					}
