@@ -585,6 +585,8 @@ class db {
 		]);
 	}
 	public function addPackageToComputer($pid, $cid, $procedure) {
+		$this->dbh->beginTransaction();
+		$this->removeComputerAssignedPackageByIds($cid, $pid);
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_package (package_id, computer_id, installed_procedure)
 			VALUES (:package_id, :computer_id, :installed_procedure)'
@@ -594,6 +596,7 @@ class db {
 			':computer_id' => $cid,
 			':installed_procedure' => $procedure,
 		]);
+		$this->dbh->commit();
 		return $this->dbh->lastInsertId();
 	}
 	public function getPackageComputer($pid) {
