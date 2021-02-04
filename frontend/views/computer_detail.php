@@ -63,293 +63,319 @@ $commands = $db->getAllComputerCommand();
 	?>
 </div>
 
-<h2><?php echo LANG['general']; ?></h2>
-<table class='list'>
-	<tr>
-		<th><?php echo LANG['id']; ?></th>
-		<td><?php echo htmlspecialchars($computer->id); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['os']; ?></th>
-		<td><?php echo htmlspecialchars($computer->os); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['version']; ?></th>
-		<td><?php echo htmlspecialchars($computer->os_version); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['kernel_version']; ?></th>
-		<td><?php echo htmlspecialchars($computer->kernel_version); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['architecture']; ?></th>
-		<td><?php echo htmlspecialchars($computer->architecture); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['cpu']; ?></th>
-		<td><?php echo htmlspecialchars($computer->cpu); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['ram']; ?></th>
-		<td><?php echo niceSize($computer->ram, true, 0); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['serial_no']; ?></th>
-		<td><?php echo htmlspecialchars($computer->serial); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['vendor']; ?></th>
-		<td><?php echo htmlspecialchars($computer->manufacturer); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['model']; ?></th>
-		<td><?php echo htmlspecialchars($computer->model); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['bios_version']; ?></th>
-		<td><?php echo htmlspecialchars($computer->bios_version); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['boot_type']; ?></th>
-		<td><?php echo htmlspecialchars($computer->boot_type); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['secure_boot']; ?></th>
-		<td><?php echo htmlspecialchars($computer->secure_boot); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['agent_version']; ?></th>
-		<td><?php echo htmlspecialchars($computer->agent_version); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['last_seen']; ?></th>
-		<td><?php echo htmlspecialchars($computer->last_ping); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['last_updated']; ?></th>
-		<td><?php echo htmlspecialchars($computer->last_update); ?></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['assigned_groups']; ?></th>
-		<td>
-			<?php
-			$res = $db->getGroupByComputer($computer->id);
-			$groups = [];
-			$i = 0;
-			foreach($res as $group) {
-				echo "<a href='#' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
-				if(++$i != count($res)) { echo ", "; }
-			}
-			?>
-		</td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['notes']; ?></th>
-		<td>
-			<textarea id='txtNotes'><?php echo htmlspecialchars($computer->notes); ?></textarea>
-			<br><button onclick='saveComputerNotes(<?php echo $computer->id; ?>, txtNotes.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
-		</td>
-	</tr>
-</table>
+<div class="details-abreast">
+	<div>
+		<h2><?php echo LANG['general']; ?></h2>
+		<table class='list'>
+			<tr>
+				<th><?php echo LANG['id']; ?></th>
+				<td><?php echo htmlspecialchars($computer->id); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['os']; ?></th>
+				<td><?php echo htmlspecialchars($computer->os); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['version']; ?></th>
+				<td><?php echo htmlspecialchars($computer->os_version); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['kernel_version']; ?></th>
+				<td><?php echo htmlspecialchars($computer->kernel_version); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['architecture']; ?></th>
+				<td><?php echo htmlspecialchars($computer->architecture); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['cpu']; ?></th>
+				<td><?php echo htmlspecialchars($computer->cpu); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['ram']; ?></th>
+				<td><?php echo niceSize($computer->ram, true, 0); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['serial_no']; ?></th>
+				<td><?php echo htmlspecialchars($computer->serial); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['vendor']; ?></th>
+				<td><?php echo htmlspecialchars($computer->manufacturer); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['model']; ?></th>
+				<td><?php echo htmlspecialchars($computer->model); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['bios_version']; ?></th>
+				<td><?php echo htmlspecialchars($computer->bios_version); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['boot_type']; ?></th>
+				<td><?php echo htmlspecialchars($computer->boot_type); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['secure_boot']; ?></th>
+				<td><?php echo htmlspecialchars($computer->secure_boot); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['agent_version']; ?></th>
+				<td><?php echo htmlspecialchars($computer->agent_version); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['last_seen']; ?></th>
+				<td><?php echo htmlspecialchars($computer->last_ping); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['last_updated']; ?></th>
+				<td><?php echo htmlspecialchars($computer->last_update); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['assigned_groups']; ?></th>
+				<td>
+					<?php
+					$res = $db->getGroupByComputer($computer->id);
+					$groups = [];
+					$i = 0;
+					foreach($res as $group) {
+						echo "<a href='#' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
+						if(++$i != count($res)) { echo ", "; }
+					}
+					?>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['notes']; ?></th>
+				<td>
+					<textarea id='txtNotes'><?php echo htmlspecialchars($computer->notes); ?></textarea>
+					<br><button onclick='saveComputerNotes(<?php echo $computer->id; ?>, txtNotes.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
+				</td>
+			</tr>
+		</table>
+	</div>
 
-<h2><?php echo LANG['logins']; ?></h2>
-<table id='tblLoginsData' class='list sortable savesort'>
-	<thead>
-		<tr>
-			<th><?php echo LANG['computer']; ?></th>
-			<th><?php echo LANG['count']; ?></th>
-			<th><?php echo LANG['last_login']; ?></th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php
-	foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
-		echo "<tr>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
-		echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
-		echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
-		echo "</tr>";
-	}
-	?>
-	</tbody>
-</table>
-
-<h2><?php echo LANG['network']; ?></h2>
-<table id='tblNetworkData' class='list sortable savesort'>
-	<thead>
-		<tr>
-			<th><?php echo LANG['ip_address']; ?></th>
-			<th><?php echo LANG['netmask']; ?></th>
-			<th><?php echo LANG['broadcast']; ?></th>
-			<th><?php echo LANG['mac_address']; ?></th>
-			<th><?php echo LANG['domain']; ?></th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php
-	foreach($db->getComputerNetwork($computer->id) as $n) {
-		echo '<tr>';
-		echo '<td class="middle">';
-		if(count($commands) > 0) {
-			echo '<span class="addresswithactions boxshadow">⁝&nbsp;<span class="actions">';
-			foreach($commands as $c) { echoCommandButton($c, $n->addr); }
-			echo '</span></span>';
-		}
-		echo  htmlspecialchars($n->addr);
-		echo '</td>';
-		echo '<td>'.htmlspecialchars($n->netmask).'</td>';
-		echo '<td>'.htmlspecialchars($n->broadcast).'</td>';
-		echo '<td>'.htmlspecialchars($n->mac).'</td>';
-		echo '<td>'.htmlspecialchars($n->domain).'</td>';
-		echo '</tr>';
-	}
-	?>
-	</tbody>
-</table>
-
-<h2><?php echo LANG['screens']; ?></h2>
-<table id='tblScreensData' class='list sortable savesort'>
-	<thead>
-		<tr>
-			<th><?php echo LANG['name']; ?></th>
-			<th><?php echo LANG['vendor']; ?></th>
-			<th><?php echo LANG['type']; ?></th>
-			<th><?php echo LANG['resolution']; ?></th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php
-	foreach($db->getComputerScreen($computer->id) as $s) {
-		echo '<tr>';
-		echo '<td>'.htmlspecialchars($s->name).'</a></td>';
-		echo '<td>'.htmlspecialchars($s->manufacturer).'</td>';
-		echo '<td>'.htmlspecialchars($s->type).'</td>';
-		echo '<td>'.htmlspecialchars($s->resolution).'</td>';
-		echo '</tr>';
-	}
-	?>
-	</tbody>
-</table>
-
-<h2><?php echo LANG['printers']; ?></h2>
-<table id='tblPrinterData' class='list sortable savesort'>
-	<thead>
-		<tr>
-			<th><?php echo LANG['name']; ?></th>
-			<th><?php echo LANG['driver']; ?></th>
-			<th><?php echo LANG['address']; ?></th>
-			<th><?php echo LANG['status']; ?></th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php
-	foreach($db->getComputerPrinter($computer->id) as $p) {
-		echo '<tr>';
-		echo '<td>'.htmlspecialchars($p->name).'</a></td>';
-		echo '<td>'.htmlspecialchars($p->driver).'</td>';
-		echo '<td>'.htmlspecialchars($p->uri).'</td>';
-		echo '<td>'.htmlspecialchars($p->status).'</td>';
-		echo '</tr>';
-	}
-	?>
-	</tbody>
-</table>
-
-<h2><?php echo LANG['file_systems']; ?></h2>
-<table id='tblFileSystemsData' class='list sortable savesort'>
-	<thead>
-		<tr>
-			<th><?php echo LANG['device']; ?></th>
-			<th><?php echo LANG['mountpoint']; ?></th>
-			<th><?php echo LANG['file_system']; ?></th>
-			<th><?php echo LANG['size']; ?></th>
-			<th><?php echo LANG['free']; ?></th>
-			<th><?php echo LANG['used']; ?></th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php
-	foreach($db->getComputerPartition($computer->id) as $p) {
-		$percent = 0;
-		if(!empty($p->free) && !empty($p->size))
-			$percent = round(100 - ($p->free / $p->size * 100));
-		echo '<tr>';
-		echo '<td>'.htmlspecialchars($p->device).'</a></td>';
-		echo '<td>'.htmlspecialchars($p->mountpoint).'</td>';
-		echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
-		echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
-		echo '<td sort_key="'.htmlspecialchars($p->free).'">'.htmlspecialchars(niceSize($p->free)).'</td>';
-		echo '<td sort_key="'.htmlspecialchars($percent).'">'.progressBar($percent).'</td>';
-		echo '</tr>';
-	}
-	?>
-	</tbody>
-</table>
-
-<h2><?php echo LANG['installed_packages']; ?></h2>
-<table id='tblInstalledPackageData' class='list searchable sortable savesort'>
-	<thead>
-		<tr>
-			<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblInstalledPackageData, this.checked)'></th>
-			<th class='searchable sortable'><?php echo LANG['package']; ?></th>
-			<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
-			<th class='searchable sortable'><?php echo LANG['installation_date']; ?></th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php
-	$counter = 0;
-	foreach($db->getComputerPackage($computer->id) as $p) {
-		$counter ++;
-		echo '<tr>';
-		echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
-		echo '<td><a href="#" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).'</a></td>';
-		echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
-		echo '<td>'.htmlspecialchars($p->installed).'</td>';
-		echo '</tr>';
-	}
-	?>
-	</tbody>
-	<tfoot>
-		<tr>
-			<td colspan='999'>
-				<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-				<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-			</td>
-		</tr>
-	</tfoot>
-</table>
-<div class='controls'>
-	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-	<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-	<button onclick='confirmUninstallPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+	<div>
+		<h2><?php echo LANG['logins']; ?></h2>
+		<table id='tblLoginsData' class='list sortable savesort'>
+			<thead>
+				<tr>
+					<th><?php echo LANG['computer']; ?></th>
+					<th><?php echo LANG['count']; ?></th>
+					<th><?php echo LANG['last_login']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
+					echo "<tr>";
+					echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
+					echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
+					echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
+					echo "</tr>";
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
 </div>
 
-<h2><?php echo LANG['recognised_software']; ?></h2>
-<table id='tblSoftwareInventoryData' class='list searchable sortable savesort'>
-	<thead>
-		<tr>
-			<th class='searchable sortable'><?php echo LANG['name']; ?></th>
-			<th class='searchable sortable'><?php echo LANG['version']; ?></th>
-			<th class='searchable sortable'><?php echo LANG['description']; ?></th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php
-	$counter = 0;
-	foreach($db->getComputerSoftware($computer->id) as $s) {
-		$counter ++;
-		echo "<tr>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->software_name)."</a></td>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.", \"".htmlspecialchars($s->version)."\")'>".htmlspecialchars($s->version)."</a></td>";
-		echo "<td>".htmlspecialchars($s->software_description)."</td>";
-		echo "</tr>";
-	}
-	?>
-	</tbody>
-	<tfoot>
-		<tr>
-			<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
-		</tr>
-	</tfoot>
-</table>
+<div class="details-abreast">
+	<div>
+		<h2><?php echo LANG['network']; ?></h2>
+		<table id='tblNetworkData' class='list sortable savesort'>
+			<thead>
+				<tr>
+					<th><?php echo LANG['ip_address']; ?></th>
+					<th><?php echo LANG['netmask']; ?></th>
+					<th><?php echo LANG['broadcast']; ?></th>
+					<th><?php echo LANG['mac_address']; ?></th>
+					<th><?php echo LANG['domain']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($db->getComputerNetwork($computer->id) as $n) {
+					echo '<tr>';
+					echo '<td class="middle">';
+					if(count($commands) > 0) {
+						echo '<span class="addresswithactions"><img src="img/more-vert.svg">&nbsp;<span class="actions">';
+						foreach($commands as $c) { echoCommandButton($c, $n->addr); }
+						echo '</span></span>';
+					}
+					echo  htmlspecialchars($n->addr);
+					echo '</td>';
+					echo '<td>'.htmlspecialchars($n->netmask).'</td>';
+					echo '<td>'.htmlspecialchars($n->broadcast).'</td>';
+					echo '<td>'.htmlspecialchars($n->mac).'</td>';
+					echo '<td>'.htmlspecialchars($n->domain).'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
+
+	<div>
+		<h2><?php echo LANG['screens']; ?></h2>
+		<table id='tblScreensData' class='list sortable savesort'>
+			<thead>
+				<tr>
+					<th><?php echo LANG['name']; ?></th>
+					<th><?php echo LANG['vendor']; ?></th>
+					<th><?php echo LANG['type']; ?></th>
+					<th><?php echo LANG['resolution']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($db->getComputerScreen($computer->id) as $s) {
+					echo '<tr>';
+					echo '<td>'.htmlspecialchars($s->name).'</a></td>';
+					echo '<td>'.htmlspecialchars($s->manufacturer).'</td>';
+					echo '<td>'.htmlspecialchars($s->type).'</td>';
+					echo '<td>'.htmlspecialchars($s->resolution).'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="details-abreast">
+	<div>
+		<h2><?php echo LANG['printers']; ?></h2>
+		<table id='tblPrinterData' class='list sortable savesort'>
+			<thead>
+				<tr>
+					<th><?php echo LANG['name']; ?></th>
+					<th><?php echo LANG['driver']; ?></th>
+					<th><?php echo LANG['address']; ?></th>
+					<th><?php echo LANG['status']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($db->getComputerPrinter($computer->id) as $p) {
+					echo '<tr>';
+					echo '<td>'.htmlspecialchars($p->name).'</a></td>';
+					echo '<td>'.htmlspecialchars($p->driver).'</td>';
+					echo '<td>'.htmlspecialchars($p->uri).'</td>';
+					echo '<td>'.htmlspecialchars($p->status).'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
+
+	<div>
+		<h2><?php echo LANG['file_systems']; ?></h2>
+		<table id='tblFileSystemsData' class='list sortable savesort'>
+			<thead>
+				<tr>
+					<th><?php echo LANG['device']; ?></th>
+					<th><?php echo LANG['mountpoint']; ?></th>
+					<th><?php echo LANG['file_system']; ?></th>
+					<th><?php echo LANG['size']; ?></th>
+					<th><?php echo LANG['free']; ?></th>
+					<th><?php echo LANG['used']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($db->getComputerPartition($computer->id) as $p) {
+					$percent = 0;
+					if(!empty($p->free) && !empty($p->size))
+					$percent = round(100 - ($p->free / $p->size * 100));
+					echo '<tr>';
+					echo '<td>'.htmlspecialchars($p->device).'</a></td>';
+					echo '<td>'.htmlspecialchars($p->mountpoint).'</td>';
+					echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
+					echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
+					echo '<td sort_key="'.htmlspecialchars($p->free).'">'.htmlspecialchars(niceSize($p->free)).'</td>';
+					echo '<td sort_key="'.htmlspecialchars($percent).'">'.progressBar($percent, null, null, null, null, true).'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<div class="details-abreast">
+	<div>
+		<h2><?php echo LANG['installed_packages']; ?></h2>
+		<table id='tblInstalledPackageData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblInstalledPackageData, this.checked)'></th>
+					<th class='searchable sortable'><?php echo LANG['package']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['installation_date']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$counter = 0;
+				foreach($db->getComputerPackage($computer->id) as $p) {
+					$counter ++;
+					echo '<tr>';
+					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
+					echo '<td><a href="#" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).'</a></td>';
+					echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
+					echo '<td>'.htmlspecialchars($p->installed).'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<div class='controls'>
+			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+			<button onclick='confirmUninstallPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+		</div>
+	</div>
+</div>
+
+<div class="details-abreast">
+	<div>
+		<h2><?php echo LANG['recognised_software']; ?></h2>
+		<table id='tblSoftwareInventoryData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<th class='searchable sortable'><?php echo LANG['name']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['version']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['description']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$counter = 0;
+				foreach($db->getComputerSoftware($computer->id) as $s) {
+					$counter ++;
+					echo "<tr>";
+					echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->software_name)."</a></td>";
+					echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.", \"".htmlspecialchars($s->version)."\")'>".htmlspecialchars($s->version)."</a></td>";
+					echo "<td>".htmlspecialchars($s->software_description)."</td>";
+					echo "</tr>";
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>

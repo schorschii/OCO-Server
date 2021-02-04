@@ -175,6 +175,9 @@ body {
 	margin-top: 0px;
 	padding-top: 0px;
 }
+#explorer-content h2 {
+	margin: 25px 0px 14px 0px;
+}
 #homepage {
 	text-align: center;
 }
@@ -450,12 +453,15 @@ table.list .sortsymbol::after {
 	width: 1.8em;
 }
 table.list .sortsymbol.sortedasc::after {
+	display: inline;
 	content: "▲▽";
 }
 table.list .sortsymbol.sorteddesc::after {
+	display: inline;
 	content: "△▼";
 }
 table.list .sortsymbol.unsorted::after {
+	display: inline;
 	content: "△▽";
 }
 
@@ -489,6 +495,27 @@ code.block.hscroll {
 	overflow-x: auto;
 }
 
+div.details-abreast {
+	display: flex;
+	align-items: flex-start;
+}
+div.details-abreast > div {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 100%;
+	width: 0px;
+	overflow: auto;
+	/* to preserve table box shadow */
+	padding: 4px;
+	margin: -4px;
+}
+div.details-abreast > div:not(:last-child) {
+	margin-right: 25px;
+}
+div.details-abreast > div > table {
+	width: 100%;
+}
+
 .green {
 	color: green;
 }
@@ -507,6 +534,9 @@ code.block.hscroll {
 .margintop {
 	margin-top: 15px;
 }
+.marginbottom {
+	margin-bottom: 15px;
+}
 .center {
 	text-align: center;
 }
@@ -518,17 +548,19 @@ code.block.hscroll {
 	display: none;
 	position: absolute;
 	top: 0px; left: 0px;
+	width: 200px;
+	overflow: auto;
 	padding: 6px;
 	background-color: white;
 	border: 1px solid rgba(0,0,0,0.2);
 	border-radius: 2px;
 }
 .addresswithactions:hover > .actions {
-	display: inline-block;
+	display: block;
 }
 .addresswithactions:hover > .actions > button {
-	display: block;
-	width: 100%;
+	display: inline-block;
+	height: 100%;
 }
 
 .progressbar-container {
@@ -536,12 +568,22 @@ code.block.hscroll {
 	white-space: nowrap;
 	max-width: 100%;
 }
+.progressbar-container.stretch {
+	width: 100%;
+}
+.progressbar-container.stretch .progressbar {
+	width: calc(100% - 36px);
+}
+.progressbar-container > .progresstext {
+	margin-left: 4px;
+	width: 26px;
+}
 .progressbar {
 	vertical-align: middle;
 	display: inline-block;
-	height: 15px;
+	height: 16px;
+	max-width: calc(100% - 36px);
 	width: 250px;
-	max-width: 100%;
 	background-color: #EEEEEE;
 	border-radius: 2px;
 	overflow: hidden;
@@ -592,6 +634,20 @@ code.block.hscroll {
 #sltPackage, #sltPackageGroup {
 	resize: vertical;
 	min-height: 100px;
+}
+
+@media (max-width: 1050px) {
+	div.details-abreast {
+		display: block;
+	}
+	div.details-abreast > div {
+		width: auto;
+		overflow: visible;
+		padding: 0px;
+	}
+	div.details-abreast > div:not(:last-child) {
+		margin-right: 0px;
+	}
 }
 
 @media (prefers-color-scheme: dark) {

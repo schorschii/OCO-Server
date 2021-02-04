@@ -28,14 +28,14 @@ function niceSize($value, $useBinary=true, $round=1) {
 	}
 }
 
-function progressBar($percent, $id=null, $cid=null, $tid=null, $style='') {
+function progressBar($percent, $id=null, $cid=null, $tid=null, $style=null, $stretch=false) {
 	$percent = intval($percent);
 	return
-		'<span class="progressbar-container" style="'.$style.'" '.($cid==null ? '' : 'id="'.htmlspecialchars($cid).'"').'>'
+		'<span class="progressbar-container '.($stretch ? 'stretch' : '').'" style="'.(empty($style) ? '' : $style).'" '.($cid==null ? '' : 'id="'.htmlspecialchars($cid).'"').'>'
 			.'<span class="progressbar">'
 				.'<span class="progress" style="width:'.$percent.'%" '.($id==null ? '' : 'id="'.htmlspecialchars($id).'"').'></span>'
 			.'</span>'
-			.'&nbsp;<span class="progresstext" '.($tid==null ? '' : 'id="'.htmlspecialchars($tid).'"').'>'.$percent.'%</span>'
+			.'<span class="progresstext" '.($tid==null ? '' : 'id="'.htmlspecialchars($tid).'"').'>'.$percent.'%</span>'
 		.'</span>';
 }
 

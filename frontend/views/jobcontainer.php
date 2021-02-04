@@ -38,9 +38,9 @@ if(!empty($_GET['id'])) {
 	if($container === null) die(LANG['not_found']);
 	$jobs = $db->getAllJobByContainer($container->id);
 
+	$done = 0;
 	$percent = 0;
 	if(count($jobs) > 0) {
-		$done = 0;
 		foreach($jobs as $job) {
 			if($job->state == 2) $done ++;
 		}
@@ -55,15 +55,20 @@ if(!empty($_GET['id'])) {
 	echo "<button onclick='confirmRenewFailedJobsInContainer(".htmlspecialchars($container->id).")'><img src='img/refresh.svg'>&nbsp;".LANG['renew_failed_jobs']."</button>";
 	echo "</div>";
 
-	echo "<p>";
+	echo "<div class='details-abreast margintop marginbottom'>";
+	echo "<div>";
 	echo "<table class='list'>";
 	echo "<tr><th>".LANG['start']."</th><td>".htmlspecialchars($container->start_time)."</td></tr>";
 	echo "<tr><th>".LANG['end']."</th><td>".htmlspecialchars($container->end_time ?? "-")."</td></tr>";
 	echo "<tr><th>".LANG['description']."</th><td>".htmlspecialchars($container->notes)."</td></tr>";
-	echo "<tr><th>".LANG['progress']."</th><td>".progressBar($percent)."</td></tr>";
+	echo "<tr><th>".LANG['progress']."</th><td title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, null, null, true)."</td></tr>";
 	echo "</table>";
-	echo "</p>";
+	echo "</div>";
+	echo "<div></div>";
+	echo "</div>";
 
+	echo "<div class='details-abreast'>";
+	echo "<div>";
 	echo "<table id='tblJobData' class='list sortable savesort'>";
 	echo "<thead>";
 	echo "<tr><th>".LANG['computer']."</th><th>".LANG['package']."</th><th>".LANG['procedure']."</th><th>".LANG['order']."</th><th>".LANG['status']."</th><th>".LANG['last_change']."</th></tr>";
@@ -73,7 +78,7 @@ if(!empty($_GET['id'])) {
 		echo "<tr>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)."</a></td>";
-		echo "<td>".htmlspecialchars($job->package_procedure)."</td>";
+		echo "<td>".htmlspecialchars(shorter($job->package_procedure))."</td>";
 		echo "<td>".htmlspecialchars($job->sequence)."</td>";
 		if(!empty($job->message)) {
 			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'><a href='#' onclick='event.preventDefault();alert(this.getAttribute(\"message\"))' message='".addslashes(trim($job->message))."'>".getJobStateString($job->state)."</a></td>";
@@ -85,6 +90,8 @@ if(!empty($_GET['id'])) {
 	}
 	echo "</tbody>";
 	echo "</table>";
+	echo "</div>";
+	echo "</div>";
 
 } else {
 
@@ -94,6 +101,8 @@ if(!empty($_GET['id'])) {
 	echo "<button onclick='refreshContentDeploy()'><img src='img/add.svg'>&nbsp;".LANG['new_deployment_job']."</button>";
 	echo "</div>";
 
+	echo "<div class='details-abreast'>";
+	echo "<div>";
 	echo "<table id='tblJobcontainerData' class='list sortable savesort'>";
 	echo "<thead>";
 	echo "<tr><th></th><th>".LANG['name']."</th><th>".LANG['start']."</th><th>".LANG['end']."</th><th>".LANG['created']."</th><th>".LANG['progress']."</th></tr>";
@@ -101,9 +110,9 @@ if(!empty($_GET['id'])) {
 	echo "<tbody>";
 	foreach($db->getAllJobContainer() as $jc) {
 		$percent = 0;
+		$done = 0;
 		$jobs = $db->getAllJobByContainer($jc->id);
 		if(count($jobs) > 0) {
-			$done = 0;
 			foreach($jobs as $job) {
 				if($job->state == 2) $done ++;
 			}
@@ -115,11 +124,13 @@ if(!empty($_GET['id'])) {
 		echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 		echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
 		echo "<td>".htmlspecialchars($jc->created)."</td>";
-		echo "<td sort_key='".$percent."'>".progressBar($percent)."</td>";
+		echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, null, null, true)."</td>";
 		echo "</tr>";
 	}
 	echo "</tbody>";
 	echo "</table>";
+	echo "</div>";
+	echo "</div>";
 
 }
 
