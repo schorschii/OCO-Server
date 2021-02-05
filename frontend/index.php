@@ -49,12 +49,12 @@ require_once('session.php');
 	<div id='dialog-container'>
 		<div id='dialog-box'>
 			<h2 id='dialog-title'></h2>
-			<div>
-				<button onclick='showErrorDialog(false);showLoader(false);showLoader2(false);'><?php echo LANG['close']; ?>
-				<button onclick='showErrorDialog(false);refreshContent();'><?php echo LANG['retry']; ?>
-				<button onclick='showErrorDialog(false);refreshContentHomepage();'><?php echo LANG['home_page']; ?>
-			</div>
 			<div id='dialog-text'></div>
+			<div class='spread'>
+				<button id='btnDialogHome' onclick='showErrorDialog(false);refreshContentHomepage();'><img src='img/home.svg'>&nbsp;<?php echo LANG['home_page']; ?></button>
+				<button id='btnDialogReload' onclick='showErrorDialog(false);refreshContent();'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['retry']; ?></button>
+				<button id='btnDialogClose' onclick='showErrorDialog(false);showLoader(false);showLoader2(false);'><img src='img/close.svg'>&nbsp;<?php echo LANG['close']; ?></button>
+			</div>
 		</div>
 	</div>
 

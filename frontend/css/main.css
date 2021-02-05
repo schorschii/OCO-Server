@@ -230,17 +230,23 @@ body.loading2 #loader-container {
 	background-color: rgba(0,0,0,0.3);
 }
 #dialog-container #dialog-box {
+	display: flex;
+	flex-direction: column;
 	width: 75%;
 	height: 75%;
-	padding: 15px;
+	padding: 25px;
 	background-color: white;
 	border-radius: 4px;
-	overflow-y: scroll;
+}
+#dialog-container #dialog-box #dialog-title {
+	margin: 0px;
 }
 #dialog-container #dialog-box #dialog-text {
+	flex-grow: 1;
+	overflow: auto;
 	border-left: 2px solid rgb(200,200,200);
 	padding: 10px;
-	margin-top: 25px;
+	margin: 15px 0px;
 }
 
 div.contextMenu {
@@ -294,6 +300,12 @@ div.contextMenu button img {
 	flex-direction: row;
 	align-items: stretch;
 	margin: 14px 0px;
+}
+.spread {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	justify-content: space-between;
 }
 .controls > * {
 	display: inline-block;

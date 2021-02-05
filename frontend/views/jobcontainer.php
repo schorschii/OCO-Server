@@ -83,7 +83,10 @@ if(!empty($_GET['id'])) {
 		echo "<td>".htmlspecialchars(shorter($job->package_procedure))."</td>";
 		echo "<td>".htmlspecialchars($job->sequence)."</td>";
 		if(!empty($job->message)) {
-			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'><a href='#' onclick='event.preventDefault();alert(this.getAttribute(\"message\"))' message='".addslashes(trim($job->message))."'>".getJobStateString($job->state, $job->return_code)."</a></td>";
+			echo "<td class='middle'>";
+			echo "<img src='img/".$job->getIcon().".dyn.svg'>";
+			echo "<a href='#' onclick='event.preventDefault();showErrorDialog(true,\"".getJobStateString($job->state, $job->return_code)."\",this.getAttribute(\"message\"),false)' message='".htmlspecialchars(trim($job->message),ENT_QUOTES)."'>".getJobStateString($job->state, $job->return_code)."</a>";
+			echo "</td>";
 		} else {
 			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'>".getJobStateString($job->state, $job->return_code)."</td>";
 		}

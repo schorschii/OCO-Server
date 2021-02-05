@@ -51,11 +51,18 @@ function toggleContextMenu(menu) {
 	return false;
 }
 
-function showErrorDialog(active, title='', text='') {
+function showErrorDialog(active, title='', text='', showReload=true) {
 	if(active) {
 		obj('dialog-container').classList.add('active');
 		obj('dialog-title').innerText = title;
 		obj('dialog-text').innerText = text;
+		if(showReload) {
+			btnDialogHome.style.visibility = 'visible';
+			btnDialogReload.style.visibility = 'visible';
+		} else {
+			btnDialogHome.style.visibility = 'collapse';
+			btnDialogReload.style.visibility = 'collapse';
+		}
 	} else {
 		obj('dialog-container').classList.remove('active');
 	}
