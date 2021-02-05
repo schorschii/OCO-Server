@@ -196,6 +196,7 @@ const LANG = [
 	'report_preregistered_computers' => 'Pre-Registered Computers',
 	'success_return_codes' => 'Success Return Codes',
 	'success_return_codes_comma_separated' => 'Separate multiple codes with a comma',
+	'auto_create_uninstall_jobs' => 'Automatically create uninstall jobs if another version is already installed',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

@@ -80,6 +80,7 @@ class ComputerPackage {
 	public $computer_hostname;
 	// joined package attributes
 	public $package_name;
+	public $package_version;
 }
 class ComputerGroup {
 	public $id;
@@ -145,6 +146,7 @@ class Job {
 	public $computer_hostname;
 	// joined package attributes
 	public $package_name;
+	public $package_version;
 	// constants
 	public const STATUS_WAITING_FOR_CLIENT = 0;
 	public const STATUS_FAILED = -1;

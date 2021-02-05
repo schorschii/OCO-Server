@@ -310,6 +310,10 @@ div.contextMenu button img {
 .controls select {
 	max-width: 150px;
 }
+.controls label {
+	display: flex;
+	align-items: center;
+}
 
 h1 img {
 	margin-right: 15px;

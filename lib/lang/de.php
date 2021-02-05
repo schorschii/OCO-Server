@@ -196,6 +196,7 @@ const LANG = [
 	'report_preregistered_computers' => 'Vorregistrierte Computer',
 	'success_return_codes' => 'Erfolgreiche Return-Codes',
 	'success_return_codes_comma_separated' => 'Mehrere Return-Codes mit Komma trennen',
+	'auto_create_uninstall_jobs' => 'Automatisch Deinstallationsjobs erstellen, wenn bereits eine andere Version installiert ist',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

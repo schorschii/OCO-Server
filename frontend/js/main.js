@@ -653,7 +653,7 @@ function confirmRenewFailedJobsInContainer(id) {
 		ajaxRequestPost('views/jobcontainer.php', urlencodeObject({'renew_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
-function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol) {
+function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, autoCreateUninstallJobs) {
 	btnDeploy.disabled = true;
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
@@ -662,6 +662,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	formData.append('date_end', end);
 	formData.append('description', description);
 	formData.append('use_wol', useWol ? 1 : 0);
+	formData.append('auto_create_uninstall_jobs', autoCreateUninstallJobs ? 1 : 0);
 	getSelectValues(sltPackage).forEach(function(entry) {
 		formData.append('package_id[]', entry);
 	});

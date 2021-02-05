@@ -105,7 +105,7 @@ class db {
 	}
 	public function getComputerPackage($cid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", p.id AS "package_id", p.name AS "package_name", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
+			'SELECT cp.id AS "id", p.id AS "package_id", p.name AS "package_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN package p ON p.id = cp.package_id
 			WHERE cp.computer_id = :cid'
@@ -812,7 +812,7 @@ class db {
 	}
 	public function getAllJobByContainer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.*, p.name AS "package_name", c.hostname AS "computer_hostname"
+			'SELECT j.*, p.name AS "package_name", p.version AS "package_version", c.hostname AS "computer_hostname"
 			FROM job j
 			INNER JOIN computer c ON c.id = j.computer_id
 			INNER JOIN package p ON p.id = j.package_id

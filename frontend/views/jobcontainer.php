@@ -77,7 +77,7 @@ if(!empty($_GET['id'])) {
 	foreach($jobs as $job) {
 		echo "<tr>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)."</a></td>";
+		echo "<td><a href='#' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 		echo "<td>".htmlspecialchars(shorter($job->package_procedure))."</td>";
 		echo "<td>".htmlspecialchars($job->sequence)."</td>";
 		if(!empty($job->message)) {

@@ -323,7 +323,7 @@ $commands = $db->getAllComputerCommand();
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
-					echo '<td><a href="#" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).'</a></td>';
+					echo '<td><a href="#" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 					echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
 					echo '</tr>';

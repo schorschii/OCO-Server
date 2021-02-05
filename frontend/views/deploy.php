@@ -61,7 +61,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	}
 	if(!empty($_POST['package_id'])) foreach($_POST['package_id'] as $package_id) {
 		$p = $db->getPackage($package_id);
-		if($p !== null) $packages[$p->id] = ['sequence'=>0, 'procedure'=>$p->install_procedure, 'success_return_codes'=>$p->install_procedure_success_return_codes];
+		if($p !== null) $packages[$p->id] = ['name'=>$p->name, 'sequence'=>0, 'procedure'=>$p->install_procedure, 'success_return_codes'=>$p->install_procedure_success_return_codes];
 	}
 	if(!empty($_POST['package_group_id'])) foreach($_POST['package_group_id'] as $package_group_id) {
 		if($db->getPackageGroup($package_group_id) !== null) $package_group_ids[] = $package_group_id;
@@ -75,7 +75,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	}
 	if(count($package_group_ids) > 1) foreach($package_group_ids as $package_group_id) {
 		foreach($db->getPackageByGroup($package_group_id) as $p) {
-			$packages[$p->id] = ['sequence'=>$p->package_group_member_sequence, 'procedure'=>$p->install_procedure, 'success_return_codes'=>$p->install_procedure_success_return_codes];
+			$packages[$p->id] = ['name'=>$p->name, 'sequence'=>$p->package_group_member_sequence, 'procedure'=>$p->install_procedure, 'success_return_codes'=>$p->install_procedure_success_return_codes];
 		}
 	}
 
@@ -112,6 +112,19 @@ if(!empty($_POST['add_jobcontainer'])) {
 	)) {
 		foreach($computer_ids as $computer_id) {
 			foreach($packages as $pid => $package) {
+
+				// create uninstall jobs
+				if(!empty($_POST['auto_create_uninstall_jobs'])) {
+					foreach($db->getComputerPackage($computer_id) as $cp) {
+						if($cp->package_name === $package['name']) {
+							$cpp = $db->getPackage($cp->package_id);
+							if($cpp == null) continue;
+							$db->addJob($jcid, $computer_id, $cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes, 1, $package['sequence']);
+						}
+					}
+				}
+
+				// create job
 				if($db->addJob($jcid, $computer_id, $pid, $package['procedure'], $package['success_return_codes'], 0, $package['sequence'])) {
 					$count ++;
 				}
@@ -210,5 +223,6 @@ $packageGroups = $db->getAllPackageGroup();
 </div>
 
 <div class='controls'>
-	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<label><input type='checkbox' id='chkAutoCreateUninstallJobs'>&nbsp;<div><?php echo LANG['auto_create_uninstall_jobs']; ?></div></label>
 </div>
