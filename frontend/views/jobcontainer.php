@@ -39,10 +39,12 @@ if(!empty($_GET['id'])) {
 	$jobs = $db->getAllJobByContainer($container->id);
 
 	$done = 0;
+	$failed = 0;
 	$percent = 0;
 	if(count($jobs) > 0) {
 		foreach($jobs as $job) {
 			if($job->state == Job::STATUS_SUCCEEDED) $done ++;
+			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED) $failed ++;
 		}
 		$percent = $done/count($jobs)*100;
 	}
@@ -52,7 +54,7 @@ if(!empty($_GET['id'])) {
 
 	echo "<div class='controls'>";
 	echo "<button onclick='confirmRemoveJobContainer(".htmlspecialchars($container->id).")'><img src='img/delete.svg'>&nbsp;".LANG['delete_container']."</button>";
-	echo "<button onclick='confirmRenewFailedJobsInContainer(".htmlspecialchars($container->id).")'><img src='img/refresh.svg'>&nbsp;".LANG['renew_failed_jobs']."</button>";
+	echo "<button onclick='confirmRenewFailedJobsInContainer(".htmlspecialchars($container->id).")' ".($failed>0 ? '' : 'disabled')."><img src='img/refresh.svg'>&nbsp;".LANG['renew_failed_jobs']."</button>";
 	echo "</div>";
 
 	echo "<div class='details-abreast margintop marginbottom'>";

@@ -356,6 +356,9 @@ button {
 	cursor: pointer;
 	background-color: rgb(238,238,238);
 }
+button:disabled {
+	cursor: not-allowed;
+}
 button > img {
 	vertical-align: middle;
 }
