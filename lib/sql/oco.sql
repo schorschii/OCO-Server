@@ -300,6 +300,7 @@ CREATE TABLE `package_group_member` (
 
 CREATE TABLE `report` (
   `id` int(11) NOT NULL,
+  `parent_report_id` int(11) DEFAULT NULL,
   `name` text NOT NULL,
   `notes` text NOT NULL,
   `query` text NOT NULL
@@ -499,7 +500,8 @@ ALTER TABLE `package_group_member`
 -- Indizes für die Tabelle `report`
 --
 ALTER TABLE `report`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_report_1` (`parent_report_id`);
 
 --
 -- Indizes für die Tabelle `setting`
@@ -720,6 +722,13 @@ ALTER TABLE `computer_partition`
 --
 ALTER TABLE `computer_printer`
   ADD CONSTRAINT `fk_computer_printer_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
+
+--
+-- Constraints der Tabelle `report`
+--
+ALTER TABLE `report`
+  ADD CONSTRAINT `fk_report_1` FOREIGN KEY (`parent_report_id`) REFERENCES `report` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
