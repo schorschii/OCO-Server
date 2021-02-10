@@ -73,6 +73,10 @@ foreach($results as $result) {
 			echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'jobcontainer_id') {
 			echo "<td><a href='#' onclick='event.preventDefault();refreshContentJobContainer(\"".intval($value)."\")'>".$value."</a></td>";
+		} elseif($key == 'report_id') {
+			echo "<td><a href='#' onclick='event.preventDefault();refreshContentReport(\"".intval($value)."\")'>".$value."</a></td>";
+		} elseif($key == 'parent_report_id') {
+			echo "<td><a href='#' onclick='event.preventDefault();refreshContentReport(\"".intval($value)."\")'>".$value."</a></td>";
 		} else {
 			echo "<td>".$value."</td>";
 		}

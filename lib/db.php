@@ -1166,6 +1166,20 @@ class db {
 		});
 		return $reports;
 	}
+	public function getAllReportByParent($parentReportId) {
+		if($parentReportId == null) $sql = 'SELECT * FROM report WHERE parent_report_id IS NULL ORDER BY name';
+		else $sql = 'SELECT * FROM report WHERE parent_report_id = :parent_report_id ORDER BY name';
+		$this->stmt = $this->dbh->prepare($sql);
+		$this->stmt->execute([':parent_report_id' => $parentReportId]);
+		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
+		foreach($reports as $report) {
+			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
+		}
+		usort($reports, function($a, $b) {
+			return strnatcmp($a->name, $b->name);
+		});
+		return $reports;
+	}
 	public function getReport($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM report WHERE id = :id'

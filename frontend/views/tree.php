@@ -52,11 +52,18 @@ require_once('../session.php');
 
 <div class='node'>
 	<a href='#' onclick='event.preventDefault();refreshContentReport()'><img src='img/report.dyn.svg'><?php echo LANG['reports']; ?></a>
-	<div class='subnode'>
-		<?php
-		foreach($db->getAllReport() as $report) {
-			echo "<a href='#' onclick='event.preventDefault();refreshContentReport(".$report->id.")'>".htmlspecialchars($report->name)."</a>";
-		}
-		?>
-	</div>
+	<?php
+	echoReports(null);
+	?>
 </div>
+
+<?php
+function echoReports($parentReportId) {
+	global $db;
+	echo "<div class='subnode'>";
+	foreach($db->getAllReportByParent($parentReportId) as $report) {
+		echo "<a href='#' onclick='event.preventDefault();refreshContentReport(".$report->id.")'>".htmlspecialchars($report->name)."</a>";
+		echoReports($report->id);
+	}
+	echo "</div>";
+}
