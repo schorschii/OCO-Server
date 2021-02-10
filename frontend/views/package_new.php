@@ -28,12 +28,13 @@ if(isset($_POST['name'])) {
 	$insertId = $db->addPackage(
 		$_POST['name'],
 		$_POST['version'],
-		$_POST['author'] ?? '',
+		$_SESSION['um_username'] ?? '',
 		$_POST['description'] ?? '',
 		$_POST['install_procedure'],
 		$_POST['install_procedure_success_return_codes'] ?? '',
 		$_POST['uninstall_procedure'] ?? '',
-		$_POST['uninstall_procedure_success_return_codes'] ?? ''
+		$_POST['uninstall_procedure_success_return_codes'] ?? '',
+		$_POST['download_for_uninstall']
 	);
 	if(!$insertId) {
 		header('HTTP/1.1 500 Failed');
@@ -94,10 +95,6 @@ if(isset($_POST['name'])) {
 		<td><input type='text' id='txtVersion'></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['author']; ?></th>
-		<td><input type='text' id='txtAuthor' value='<?php echo htmlspecialchars($_SESSION['um_username']); ?>'></td>
-	</tr>
-	<tr>
 		<th><?php echo LANG['description']; ?></th>
 		<td><textarea id='txtDescription'></textarea></td>
 	</tr>
@@ -119,9 +116,13 @@ if(isset($_POST['name'])) {
 	</tr>
 	<tr>
 		<th></th>
-		<td>
-			<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtAuthor.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
-			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadContainer', 'prgPackageUploadText', 'width:150px;display:none;'); ?>
+		<td><label><input type='checkbox' id='chkDownloadForUninstall' checked='true'>&nbsp;<?php echo LANG['download_for_uninstall']; ?></label></td>
+	</tr>
+	<tr>
+		<th></th>
+		<td colspan='4'>
+			<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
+			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadContainer', 'prgPackageUploadText', 'width:180px;display:none;'); ?>
 		</td>
 </table>
 

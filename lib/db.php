@@ -555,10 +555,10 @@ class db {
 	}
 
 	// Package Operations
-	public function addPackage($name, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $uninstall_procedure, $uninstall_procedure_success_return_codes) {
+	public function addPackage($name, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (name, version, author, notes, install_procedure, install_procedure_success_return_codes, uninstall_procedure, uninstall_procedure_success_return_codes)
-			VALUES (:name, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :uninstall_procedure, :uninstall_procedure_success_return_codes)'
+			'INSERT INTO package (name, version, author, notes, install_procedure, install_procedure_success_return_codes, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall)
+			VALUES (:name, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
@@ -569,6 +569,7 @@ class db {
 			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
 			':uninstall_procedure' => $uninstall_procedure,
 			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
+			':download_for_uninstall' => $download_for_uninstall,
 		]);
 		return $this->dbh->lastInsertId();
 	}
@@ -757,10 +758,10 @@ class db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $sequence) {
+	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $download, $sequence) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, sequence, message)
-			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :sequence, "")'
+			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, download, sequence, message)
+			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :download, :sequence, "")'
 		);
 		$this->stmt->execute([
 			':job_container_id' => $job_container_id,
@@ -769,6 +770,7 @@ class db {
 			':package_procedure' => $package_procedure,
 			':success_return_codes' => $success_return_codes,
 			':is_uninstall' => $is_uninstall,
+			':download' => $download,
 			':sequence' => $sequence,
 		]);
 		return $this->dbh->lastInsertId();
@@ -824,7 +826,7 @@ class db {
 	}
 	public function getPendingJobsForComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure"
+			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download"
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id

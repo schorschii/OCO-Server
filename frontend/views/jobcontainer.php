@@ -21,7 +21,7 @@ if(!empty($_POST['renew_container_id'])) {
 		$count = 0;
 		foreach($db->getAllJobByContainer($container->id) as $job) {
 			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED) {
-				if($db->addJob($jcid, $job->computer_id, $job->package_id, $job->package_procedure, $job->success_return_codes, $job->is_uninstall, $job->sequence)) {
+				if($db->addJob($jcid, $job->computer_id, $job->package_id, $job->package_procedure, $job->success_return_codes, $job->is_uninstall, $job->download, $job->sequence)) {
 					if($db->removeJob($job->id)) {
 						$count ++;
 					}

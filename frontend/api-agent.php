@@ -129,7 +129,7 @@ switch($srcdata['method']) {
 				$jobs[] = [
 					'id' => $pj['id'],
 					'package-id' => $pj['package_id'],
-					'download' => true,
+					'download' => $pj['download']==0 ? False : True,
 					'procedure' => $pj['procedure'],
 				];
 			}

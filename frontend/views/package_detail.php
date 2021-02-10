@@ -76,6 +76,10 @@ if($package === null) die();
 				<td><?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes); ?></td>
 			</tr>
 			<tr>
+				<th><?php echo LANG['download_for_uninstall']; ?></th>
+				<td><?php if($package->download_for_uninstall) echo LANG['yes']; else echo LANG['no']; ?></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['zip_archive']; ?></th>
 				<td>
 					<?php

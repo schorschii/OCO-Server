@@ -61,7 +61,12 @@ if(!empty($_POST['add_jobcontainer'])) {
 	}
 	if(!empty($_POST['package_id'])) foreach($_POST['package_id'] as $package_id) {
 		$p = $db->getPackage($package_id);
-		if($p !== null) $packages[$p->id] = ['name'=>$p->name, 'sequence'=>0, 'procedure'=>$p->install_procedure, 'success_return_codes'=>$p->install_procedure_success_return_codes];
+		if($p !== null) $packages[$p->id] = [
+			'name' => $p->name,
+			'sequence' => 0,
+			'procedure' => $p->install_procedure,
+			'success_return_codes' => $p->install_procedure_success_return_codes,
+		];
 	}
 	if(!empty($_POST['package_group_id'])) foreach($_POST['package_group_id'] as $package_group_id) {
 		if($db->getPackageGroup($package_group_id) !== null) $package_group_ids[] = $package_group_id;
@@ -75,7 +80,12 @@ if(!empty($_POST['add_jobcontainer'])) {
 	}
 	if(count($package_group_ids) > 1) foreach($package_group_ids as $package_group_id) {
 		foreach($db->getPackageByGroup($package_group_id) as $p) {
-			$packages[$p->id] = ['name'=>$p->name, 'sequence'=>$p->package_group_member_sequence, 'procedure'=>$p->install_procedure, 'success_return_codes'=>$p->install_procedure_success_return_codes];
+			$packages[$p->id] = [
+				'name' => $p->name,
+				'sequence' => $p->package_group_member_sequence,
+				'procedure' => $p->install_procedure,
+				'success_return_codes' => $p->install_procedure_success_return_codes,
+			];
 		}
 	}
 
@@ -119,13 +129,13 @@ if(!empty($_POST['add_jobcontainer'])) {
 						if($cp->package_name === $package['name']) {
 							$cpp = $db->getPackage($cp->package_id);
 							if($cpp == null) continue;
-							$db->addJob($jcid, $computer_id, $cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes, 1, $package['sequence']);
+							$db->addJob($jcid, $computer_id, $cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes, 1/*is_uninstall*/, $cpp->download_for_uninstall, $package['sequence']);
 						}
 					}
 				}
 
 				// create job
-				if($db->addJob($jcid, $computer_id, $pid, $package['procedure'], $package['success_return_codes'], 0, $package['sequence'])) {
+				if($db->addJob($jcid, $computer_id, $pid, $package['procedure'], $package['success_return_codes'], 0/*is_uninstall*/, 1/*download*/, $package['sequence'])) {
 					$count ++;
 				}
 			}

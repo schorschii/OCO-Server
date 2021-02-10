@@ -269,7 +269,7 @@ function updatePackageProcedureTemplates() {
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
 }
-function createPackage(name, version, author, description, archive, install_procedure, install_procedure_success_return_codes, uninstall_procedure, uninstall_procedure_success_return_codes) {
+function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall) {
 	btnCreatePackage.disabled = true;
 	btnCreatePackage.style.display = 'none';
 	prgPackageUploadContainer.style.display = 'inline-block';
@@ -278,13 +278,13 @@ function createPackage(name, version, author, description, archive, install_proc
 	let formData = new FormData();
 	formData.append('name', name);
 	formData.append('version', version);
-	formData.append('author', author);
 	formData.append('description', description);
 	formData.append('archive', archive);
 	formData.append('install_procedure', install_procedure);
 	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
 	formData.append('uninstall_procedure', uninstall_procedure);
 	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
+	formData.append('download_for_uninstall', download_for_uninstall ? '1' : '0');
 
 	req.upload.onprogress = function(evt) {
 		if(evt.lengthComputable) {

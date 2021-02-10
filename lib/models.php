@@ -96,6 +96,7 @@ class Package {
 	public $install_procedure_success_return_codes;
 	public $uninstall_procedure;
 	public $uninstall_procedure_success_return_codes;
+	public $download_for_uninstall;
 	public $created;
 	// joined package group attributes
 	public $package_group_member_sequence;

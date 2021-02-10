@@ -226,6 +226,7 @@ CREATE TABLE `job` (
   `package_procedure` text NOT NULL,
   `success_return_codes` text NOT NULL,
   `is_uninstall` tinyint(4) NOT NULL DEFAULT 0,
+  `download` tinyint NOT NULL DEFAULT 1,
   `sequence` int(11) NOT NULL DEFAULT 0,
   `state` int(11) NOT NULL DEFAULT 0,
   `return_code` int(11) DEFAULT NULL,
@@ -265,6 +266,7 @@ CREATE TABLE `package` (
   `install_procedure_success_return_codes` text NOT NULL,
   `uninstall_procedure` text NOT NULL,
   `uninstall_procedure_success_return_codes` text NOT NULL,
+  `download_for_uninstall` tinyint NOT NULL DEFAULT 0,
   `created` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
