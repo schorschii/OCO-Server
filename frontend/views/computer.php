@@ -122,7 +122,8 @@ foreach($computer as $c) {
 	<tr>
 		<td colspan='999'>
 			<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-			<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+			<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
+			<a href='#' onclick='event.preventDefault();downloadTableCsv("tblComputerData")'><?php echo LANG['csv']; ?></a>
 		</td>
 	</tr>
 </tfoot>

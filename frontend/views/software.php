@@ -30,7 +30,8 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	<tfoot>
 		<tr>
 			<td colspan='999'>
-				<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
+				<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+				<a href='#' onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData1")'><?php echo LANG['csv']; ?></a>
 			</td>
 		</tr>
 	</tfoot>
@@ -65,7 +66,8 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	<tfoot>
 		<tr>
 			<td colspan='999'>
-				<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
+				<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+				<a href='#' onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData2")'><?php echo LANG['csv']; ?></a>
 			</td>
 		</tr>
 	</tfoot>
@@ -110,7 +112,8 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	<tfoot>
 		<tr>
 			<td colspan='999'>
-				<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
+				<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+				<a href='#' onclick='event.preventDefault();downloadTableCsv("tblSoftwareData")'><?php echo LANG['csv']; ?></a>
 			</td>
 		</tr>
 	</tfoot>
