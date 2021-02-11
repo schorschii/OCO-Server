@@ -202,6 +202,13 @@ const LANG = [
 	'no' => 'No',
 	'csv' => 'CSV',
 	'manufactured' => 'Manufactured',
+	'after_completion' => 'After Completion',
+	'no_action' => 'No Action',
+	'restart' => 'Restart',
+	'shutdown' => 'Shutdown',
+	'timeout_for_reboot' => 'Timeout for Reboot',
+	'timeout_for_reboot_description' => 'This allows the user to save his work before the computer restarts or shuts down (only applies to packages with enabled restart/shutdown).',
+	'seconds' => 'Seconds',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

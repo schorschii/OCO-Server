@@ -48,6 +48,12 @@ if(isset($_GET['get_package_group_members'])) {
 
 // ----- create jobs if requested -----
 if(!empty($_POST['add_jobcontainer'])) {
+	// check if there are any computer & packages
+	if(!isset($_POST['restart_timeout'])) {
+		header('HTTP/1.1 400 Missing Information');
+		die(LANG['please_fill_required_fields']);
+	}
+
 	// check if given IDs exist
 	$computer_ids = [];
 	$packages = [];
@@ -66,6 +72,8 @@ if(!empty($_POST['add_jobcontainer'])) {
 			'sequence' => 0,
 			'procedure' => $p->install_procedure,
 			'success_return_codes' => $p->install_procedure_success_return_codes,
+			'install_procedure_restart' => $p->install_procedure_restart,
+			'install_procedure_shutdown' => $p->install_procedure_shutdown,
 		];
 	}
 	if(!empty($_POST['package_group_id'])) foreach($_POST['package_group_id'] as $package_group_id) {
@@ -85,6 +93,8 @@ if(!empty($_POST['add_jobcontainer'])) {
 				'sequence' => $p->package_group_member_sequence,
 				'procedure' => $p->install_procedure,
 				'success_return_codes' => $p->install_procedure_success_return_codes,
+				'install_procedure_restart' => $p->install_procedure_restart,
+				'install_procedure_shutdown' => $p->install_procedure_shutdown,
 			];
 		}
 	}
@@ -129,13 +139,25 @@ if(!empty($_POST['add_jobcontainer'])) {
 						if($cp->package_name === $package['name']) {
 							$cpp = $db->getPackage($cp->package_id);
 							if($cpp == null) continue;
-							$db->addJob($jcid, $computer_id, $cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes, 1/*is_uninstall*/, $cpp->download_for_uninstall, $package['sequence']);
+							$db->addJob($jcid, $computer_id,
+								$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
+								1/*is_uninstall*/, $cpp->download_for_uninstall,
+								$cpp->uninstall_procedure_restart ? $_POST['restart_timeout'] : -1,
+								$cpp->uninstall_procedure_shutdown ? $_POST['restart_timeout'] : -1,
+								$package['sequence']
+							);
 						}
 					}
 				}
 
 				// create job
-				if($db->addJob($jcid, $computer_id, $pid, $package['procedure'], $package['success_return_codes'], 0/*is_uninstall*/, 1/*download*/, $package['sequence'])) {
+				if($db->addJob($jcid, $computer_id,
+					$pid, $package['procedure'], $package['success_return_codes'],
+					0/*is_uninstall*/, 1/*download*/,
+					$package['install_procedure_restart'] ? $_POST['restart_timeout'] : -1,
+					$package['install_procedure_shutdown'] ? $_POST['restart_timeout'] : -1,
+					$package['sequence']
+				)) {
 					$count ++;
 				}
 			}
@@ -154,25 +176,25 @@ $packageGroups = $db->getAllPackageGroup();
 
 <table class='form'>
 	<tr>
-		<th><?php echo LANG['name']; ?>:</th>
+		<th><?php echo LANG['name']; ?></th>
 		<td>
 			<input type='text' id='txtName' value='Job <?php echo date('y-m-d H:i:s'); ?>'></input>
 		</td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['description']; ?>:</th>
+		<th><?php echo LANG['description']; ?></th>
 		<td>
 			<textarea id='txtDescription'></textarea>
 		</td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['start']; ?>:</th>
+		<th><?php echo LANG['start']; ?></th>
 		<td>
 			<input type='date' id='dteStart' value='<?php echo date('Y-m-d'); ?>'></input>
 			<input type='time' id='tmeStart' value='<?php echo date('H:i:s'); ?>'></input>
 		</td>
 
-		<th><?php echo LANG['end']; ?>:</th>
+		<th><?php echo LANG['end']; ?></th>
 		<td>
 			<input type='date' id='dteEnd' value='' onchange='chkDateEndEnabled.checked=true'></input>
 			<input type='time' id='tmeEnd' value='' onchange='chkDateEndEnabled.checked=true'></input>
@@ -183,6 +205,13 @@ $packageGroups = $db->getAllPackageGroup();
 		<td><label><input type='checkbox' id='chkWol'><?php echo LANG['send_wol']; ?></label></td>
 		<th></th>
 		<td><label><input type='checkbox' id='chkDateEndEnabled'><?php echo LANG['set_end']; ?></label></td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['timeout_for_reboot']; ?></th>
+		<td>
+			<input type='number' id='txtRestartTimeout' value='0' min='-1' title='<?php echo LANG['timeout_for_reboot_description']; ?>'></input>
+		</td>
+		<td><?php echo LANG['seconds']; ?></td>
 	</tr>
 </table>
 
@@ -233,6 +262,6 @@ $packageGroups = $db->getAllPackageGroup();
 </div>
 
 <div class='controls'>
-	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked, txtRestartTimeout.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<label><input type='checkbox' id='chkAutoCreateUninstallJobs'>&nbsp;<div><?php echo LANG['auto_create_uninstall_jobs']; ?></div></label>
 </div>

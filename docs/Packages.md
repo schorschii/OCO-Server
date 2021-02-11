@@ -31,3 +31,8 @@ Example Procedures:
 - https://www.masterpackager.com/  
   (use the "Repackager" to create MSIs for software which is shipped as `.exe` only to get uninstall support)
 - https://www.heise.de/download/product/scalable-smart-packager-ce-89948
+
+## Create OCO Agent Update Packages
+Please install the agent package regularily, e.g. with this procedure for Windows: `oco-agent.exe /SILENT`.
+
+The agent installer does not overwrite an existing config file. After agent update installation, a restart is required in order to load the new agent binary.

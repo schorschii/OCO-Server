@@ -68,12 +68,20 @@ if($package === null) die();
 				<td><?php echo htmlspecialchars($package->install_procedure_success_return_codes); ?></td>
 			</tr>
 			<tr>
+				<th><?php echo LANG['after_completion']; ?></th>
+				<td><?php if($package->install_procedure_restart) echo LANG['restart']; elseif($package->install_procedure_shutdown) echo LANG['shutdown']; else echo LANG['no_action']; ?></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['uninstall_procedure']; ?></th>
 				<td><?php echo htmlspecialchars($package->uninstall_procedure); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['success_return_codes']; ?></th>
 				<td><?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['after_completion']; ?></th>
+				<td><?php if($package->uninstall_procedure_restart) echo LANG['restart']; elseif($package->uninstall_procedure_shutdown) echo LANG['shutdown']; else echo LANG['no_action']; ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['download_for_uninstall']; ?></th>

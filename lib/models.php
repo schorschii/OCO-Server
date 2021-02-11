@@ -105,9 +105,13 @@ class Package {
 	public $author;
 	public $install_procedure;
 	public $install_procedure_success_return_codes;
+	public $install_procedure_restart;
+	public $install_procedure_shutdown;
 	public $uninstall_procedure;
 	public $uninstall_procedure_success_return_codes;
 	public $download_for_uninstall;
+	public $uninstall_procedure_restart;
+	public $uninstall_procedure_shutdown;
 	public $created;
 	// joined package group attributes
 	public $package_group_member_sequence;
@@ -150,8 +154,12 @@ class Job {
 	public $package_procedure;
 	public $success_return_codes;
 	public $is_uninstall;
+	public $download;
+	public $restart;
+	public $shutdown;
 	public $sequence;
 	public $state;
+	public $return_code;
 	public $message;
 	public $last_update;
 	// joined computer attributes

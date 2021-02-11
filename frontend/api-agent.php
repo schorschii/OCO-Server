@@ -131,6 +131,8 @@ switch($srcdata['method']) {
 					'package-id' => $pj['package_id'],
 					'download' => $pj['download']==0 ? False : True,
 					'procedure' => $pj['procedure'],
+					'restart' => $pj['restart']==null ? null : intval($pj['restart']),
+					'shutdown' => $pj['shutdown']==null ? null : intval($pj['shutdown']),
 				];
 			}
 

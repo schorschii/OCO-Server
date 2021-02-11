@@ -32,9 +32,13 @@ if(isset($_POST['name'])) {
 		$_POST['description'] ?? '',
 		$_POST['install_procedure'],
 		$_POST['install_procedure_success_return_codes'] ?? '',
+		$_POST['install_procedure_restart'] ?? null,
+		$_POST['install_procedure_shutdown'] ?? null,
 		$_POST['uninstall_procedure'] ?? '',
 		$_POST['uninstall_procedure_success_return_codes'] ?? '',
-		$_POST['download_for_uninstall']
+		$_POST['download_for_uninstall'],
+		$_POST['uninstall_procedure_restart'] ?? null,
+		$_POST['uninstall_procedure_shutdown'] ?? null
 	);
 	if(!$insertId) {
 		header('HTTP/1.1 500 Failed');
@@ -65,12 +69,14 @@ if(isset($_POST['name'])) {
 	<?php } ?>
 </datalist>
 <datalist id='lstInstallProceduresTemplates'>
+	<option>[FILENAME]</option>
 	<option>msiexec /quiet /i</option>
 	<option>gdebi -n</option>
 	<option>msiexec /quiet /i [FILENAME]</option>
 	<option>gdebi -n [FILENAME]</option>
 </datalist>
 <datalist id='lstUninstallProceduresTemplates'>
+	<option>[FILENAME]</option>
 	<option>msiexec /quiet /x</option>
 	<option>apt remove -y</option>
 	<option>msiexec /quiet /x [FILENAME]</option>
@@ -109,10 +115,26 @@ if(isset($_POST['name'])) {
 		<td><input type='text' id='txtInstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='0'></td>
 	</tr>
 	<tr>
+		<th><?php echo LANG['after_completion']; ?></th>
+		<td colspan='3'>
+			<label><input type='radio' name='install_post_action' id='rdoInstallPostActionNone' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label><input type='radio' name='install_post_action' id='rdoInstallPostActionRestart'>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label><input type='radio' name='install_post_action' id='rdoInstallPostActionShutdown'>&nbsp;<?php echo LANG['shutdown']; ?></label>
+		</td>
+	</tr>
+	<tr>
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
 		<td><input type='text' id='txtUninstallProcedure' list='lstUninstallProcedures'></td>
 		<th><?php echo LANG['success_return_codes']; ?></th>
 		<td><input type='text' id='txtUninstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='0'></td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['after_completion']; ?></th>
+		<td colspan='3'>
+			<label><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionNone' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionRestart'>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionShutdown'>&nbsp;<?php echo LANG['shutdown']; ?></label>
+		</td>
 	</tr>
 	<tr>
 		<th></th>
@@ -121,7 +143,7 @@ if(isset($_POST['name'])) {
 	<tr>
 		<th></th>
 		<td colspan='4'>
-			<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
+			<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, rdoInstallPostActionRestart.checked, rdoInstallPostActionShutdown.checked, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, rdoUninstallPostActionRestart.checked, rdoUninstallPostActionShutdown.checked)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
 			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadContainer', 'prgPackageUploadText', 'width:180px;display:none;'); ?>
 		</td>
 </table>

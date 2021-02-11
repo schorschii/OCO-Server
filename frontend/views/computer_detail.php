@@ -21,7 +21,13 @@ if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninsta
 	foreach($_POST['uninstall_package_assignment_id'] as $id) {
 		$ap = $db->getComputerAssignedPackage($id);
 		$p = $db->getPackage($ap->package_id);
-		$db->addJob($jcid, $ap->computer_id, $ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes, 1/*is_uninstall*/, $p->download_for_uninstall, 0/*sequence*/);
+		$db->addJob($jcid, $ap->computer_id,
+			$ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes,
+			1/*is_uninstall*/, $p->download_for_uninstall,
+			$p->uninstall_procedure_restart ? 60 : -1,
+			$p->uninstall_procedure_shutdown ? 60 : -1,
+			0/*sequence*/
+		);
 	}
 	die();
 }

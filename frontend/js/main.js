@@ -269,7 +269,7 @@ function updatePackageProcedureTemplates() {
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
 }
-function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall) {
+function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown) {
 	btnCreatePackage.disabled = true;
 	btnCreatePackage.style.display = 'none';
 	prgPackageUploadContainer.style.display = 'inline-block';
@@ -282,9 +282,13 @@ function createPackage(name, version, description, archive, install_procedure, i
 	formData.append('archive', archive);
 	formData.append('install_procedure', install_procedure);
 	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
+	formData.append('install_procedure_restart', install_procedure_restart ? '1' : '0');
+	formData.append('install_procedure_shutdown', install_procedure_shutdown ? '1' : '0');
 	formData.append('uninstall_procedure', uninstall_procedure);
 	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
 	formData.append('download_for_uninstall', download_for_uninstall ? '1' : '0');
+	formData.append('uninstall_procedure_restart', uninstall_procedure_restart ? '1' : '0');
+	formData.append('uninstall_procedure_shutdown', uninstall_procedure_shutdown ? '1' : '0');
 
 	req.upload.onprogress = function(evt) {
 		if(evt.lengthComputable) {
@@ -660,7 +664,7 @@ function confirmRenewFailedJobsInContainer(id) {
 		ajaxRequestPost('views/jobcontainer.php', urlencodeObject({'renew_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
-function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, autoCreateUninstallJobs) {
+function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, autoCreateUninstallJobs, restartTimeout) {
 	btnDeploy.disabled = true;
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
@@ -670,6 +674,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	formData.append('description', description);
 	formData.append('use_wol', useWol ? 1 : 0);
 	formData.append('auto_create_uninstall_jobs', autoCreateUninstallJobs ? 1 : 0);
+	formData.append('restart_timeout', restartTimeout);
 	getSelectValues(sltPackage).forEach(function(entry) {
 		formData.append('package_id[]', entry);
 	});

@@ -562,10 +562,10 @@ class db {
 	}
 
 	// Package Operations
-	public function addPackage($name, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall) {
+	public function addPackage($name, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (name, version, author, notes, install_procedure, install_procedure_success_return_codes, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall)
-			VALUES (:name, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall)'
+			'INSERT INTO package (name, version, author, notes, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown)
+			VALUES (:name, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_restart, :install_procedure_shutdown, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_restart, :uninstall_procedure_shutdown)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
@@ -574,9 +574,13 @@ class db {
 			':notes' => $notes,
 			':install_procedure' => $install_procedure,
 			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
+			':install_procedure_restart' => $install_procedure_restart,
+			':install_procedure_shutdown' => $install_procedure_shutdown,
 			':uninstall_procedure' => $uninstall_procedure,
 			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
 			':download_for_uninstall' => $download_for_uninstall,
+			':uninstall_procedure_restart' => $uninstall_procedure_restart,
+			':uninstall_procedure_shutdown' => $uninstall_procedure_shutdown,
 		]);
 		return $this->dbh->lastInsertId();
 	}
@@ -765,10 +769,10 @@ class db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $download, $sequence) {
+	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $download, $restart, $shutdown, $sequence) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, download, sequence, message)
-			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :download, :sequence, "")'
+			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, download, restart, shutdown, sequence, message)
+			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :download, :restart, :shutdown, :sequence, "")'
 		);
 		$this->stmt->execute([
 			':job_container_id' => $job_container_id,
@@ -778,6 +782,8 @@ class db {
 			':success_return_codes' => $success_return_codes,
 			':is_uninstall' => $is_uninstall,
 			':download' => $download,
+			':restart' => $restart,
+			':shutdown' => $shutdown,
 			':sequence' => $sequence,
 		]);
 		return $this->dbh->lastInsertId();
@@ -833,7 +839,7 @@ class db {
 	}
 	public function getPendingJobsForComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download"
+			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
