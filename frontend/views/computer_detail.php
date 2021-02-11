@@ -225,6 +225,9 @@ $commands = $db->getAllComputerCommand();
 					<th><?php echo LANG['vendor']; ?></th>
 					<th><?php echo LANG['type']; ?></th>
 					<th><?php echo LANG['resolution']; ?></th>
+					<th><?php echo LANG['size']; ?></th>
+					<th><?php echo LANG['manufactured']; ?></th>
+					<th><?php echo LANG['serial_no']; ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -235,6 +238,9 @@ $commands = $db->getAllComputerCommand();
 					echo '<td>'.htmlspecialchars($s->manufacturer).'</td>';
 					echo '<td>'.htmlspecialchars($s->type).'</td>';
 					echo '<td>'.htmlspecialchars($s->resolution).'</td>';
+					echo '<td>'.htmlspecialchars($s->size).'</td>';
+					echo '<td>'.htmlspecialchars($s->manufactured).'</td>';
+					echo '<td>'.htmlspecialchars($s->serialno).'</td>';
 					echo '</tr>';
 				}
 				?>

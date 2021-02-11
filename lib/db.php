@@ -71,7 +71,7 @@ class db {
 			'SELECT * FROM computer_screen WHERE computer_id = :cid'
 		);
 		$this->stmt->execute([':cid' => $cid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerNetwork');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerScreen');
 	}
 	public function getComputerPrinter($cid) {
 		$this->stmt = $this->dbh->prepare(
@@ -221,7 +221,7 @@ class db {
 			if(empty($screen['name'])) continue;
 			$this->stmt = $this->dbh->prepare(
 				'SELECT * FROM computer_screen
-				WHERE computer_id = :computer_id AND name = :name AND manufacturer = :manufacturer AND type = :type AND resolution = :resolution'
+				WHERE computer_id = :computer_id AND name = :name AND manufacturer = :manufacturer AND type = :type AND resolution = :resolution AND size = :size AND serialno = :serialno'
 			);
 			if(!$this->stmt->execute([
 				':computer_id' => $id,
@@ -229,12 +229,14 @@ class db {
 				':manufacturer' => $screen['manufacturer'] ?? '?',
 				':type' => $screen['type'] ?? '?',
 				':resolution' => $screen['resolution'] ?? '?',
+				':size' => $screen['size'] ?? '?',
+				':serialno' => $screen['serialno'] ?? '?',
 			])) return false;
 			if($this->stmt->rowCount() > 0) continue;
 
 			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO computer_screen (computer_id, name, manufacturer, type, resolution)
-				VALUES (:computer_id, :name, :manufacturer, :type, :resolution)'
+				'INSERT INTO computer_screen (computer_id, name, manufacturer, type, resolution, size, manufactured, serialno)
+				VALUES (:computer_id, :name, :manufacturer, :type, :resolution, :size, :manufactured, :serialno)'
 			);
 			if(!$this->stmt->execute([
 				':computer_id' => $id,
@@ -242,6 +244,9 @@ class db {
 				':manufacturer' => $screen['manufacturer'] ?? '?',
 				':type' => $screen['type'] ?? '?',
 				':resolution' => $screen['resolution'] ?? '?',
+				':size' => $screen['size'] ?? '?',
+				':manufactured' => $screen['manufactured'] ?? '?',
+				':serialno' => $screen['serialno'] ?? '?',
 			])) return false;
 		}
 		// remove screens, which can not be found in agent output
@@ -255,7 +260,9 @@ class db {
 				if($s['name'] == $s2['name']
 				&& $s['manufacturer'] == $s2['manufacturer']
 				&& $s['type'] == $s2['type']
-				&& $s['resolution'] == $s2['resolution']) {
+				&& $s['resolution'] == $s2['resolution']
+				&& $s['size'] == ($s2['size']??'')
+				&& $s['serialno'] == ($s2['serialno']??'')) {
 					$found = true; break;
 				}
 			}

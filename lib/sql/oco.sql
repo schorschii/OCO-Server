@@ -170,7 +170,10 @@ CREATE TABLE `computer_screen` (
   `name` text NOT NULL,
   `manufacturer` text NOT NULL,
   `type` text NOT NULL,
-  `resolution` text NOT NULL
+  `resolution` text NOT NULL,
+  `size` text NOT NULL,
+  `manufactured` text NOT NULL,
+  `serialno` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

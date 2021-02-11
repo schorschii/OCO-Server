@@ -41,6 +41,17 @@ class ComputerNetwork {
 	public $mac;
 	public $domain;
 }
+class ComputerScreen {
+	public $id;
+	public $computer_id;
+	public $name;
+	public $manufacturer;
+	public $type;
+	public $resolution;
+	public $size;
+	public $manufactured;
+	public $serialno;
+}
 class ComputerPrinter {
 	public $id;
 	public $computer_id;
