@@ -211,7 +211,7 @@ $packageGroups = $db->getAllPackageGroup();
 		<td>
 			<input type='number' id='txtRestartTimeout' value='<?php echo htmlspecialchars($db->getSettingByName('default-restart-timeout')); ?>' min='-1' title='<?php echo LANG['timeout_for_reboot_description']; ?>'></input>
 		</td>
-		<td><?php echo LANG['seconds']; ?></td>
+		<td><?php echo LANG['minutes']; ?></td>
 	</tr>
 </table>
 
