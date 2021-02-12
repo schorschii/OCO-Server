@@ -351,7 +351,8 @@ INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
 (3, 'agent-registration-enabled', '1'),
 (4, 'purge-succeeded-jobs', '7200'),
 (5, 'purge-failed-jobs', '7200'),
-(6, 'motd', 'default_motd');
+(6, 'default-restart-timeout', '600'),
+(7, 'motd', 'default_motd');
 
 -- --------------------------------------------------------
 
