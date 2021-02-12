@@ -311,7 +311,7 @@ CREATE TABLE `package_group_member` (
 
 CREATE TABLE `report` (
   `id` int(11) NOT NULL,
-  `parent_report_id` int(11) DEFAULT NULL,
+  `report_group_id` int(11) DEFAULT NULL,
   `name` text NOT NULL,
   `notes` text NOT NULL,
   `query` text NOT NULL
@@ -321,13 +321,31 @@ CREATE TABLE `report` (
 -- Daten für Tabelle `report`
 --
 
-INSERT INTO `report` (`id`, `name`, `notes`, `query`) VALUES
-(1, 'report_secureboot_disabled', '', 'SELECT id AS computer_id, hostname, os, os_version FROM computer WHERE secure_boot = 0'),
-(2, 'report_packages_without_installations', '', 'SELECT p.id AS package_id, name, count(cp.package_id) AS install_count FROM package p LEFT JOIN computer_package cp ON p.id = cp.package_id GROUP BY p.id HAVING install_count = 0'),
-(3, 'report_recognized_software_chrome', '', 'SELECT id as software_id, name FROM software WHERE name LIKE \'%chrome%\''),
-(4, 'report_domainusers_multiple_computers', '', 'SELECT du.id AS domainuser_id, username, (SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS \'computer_count\' FROM domainuser du HAVING computer_count > 1'),
-(5, 'report_expired_jobcontainers', '', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
-(6, 'report_preregistered_computers', '', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update IS NULL OR last_update <= \'2000-01-01 00:00:00\'');
+INSERT INTO `report` (`id`, `report_group_id`, `name`, `notes`, `query`) VALUES
+(1, 1, 'report_secureboot_disabled', '', 'SELECT id AS computer_id, hostname, os, os_version FROM computer WHERE secure_boot = 0'),
+(2, 1, 'report_packages_without_installations', '', 'SELECT p.id AS package_id, name, count(cp.package_id) AS install_count FROM package p LEFT JOIN computer_package cp ON p.id = cp.package_id GROUP BY p.id HAVING install_count = 0'),
+(3, 1, 'report_recognized_software_chrome', '', 'SELECT id as software_id, name FROM software WHERE name LIKE \'%chrome%\''),
+(4, 1, 'report_domainusers_multiple_computers', '', 'SELECT du.id AS domainuser_id, username, count(du.id) AS computer_count FROM domainuser du LEFT JOIN domainuser_logon dul ON du.id = dul.domainuser_id GROUP BY du.id, dul.computer_id HAVING computer_count > 1'),
+(5, 1, 'report_expired_jobcontainers', '', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
+(6, 1, 'report_preregistered_computers', '', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update IS NULL OR last_update <= \'2000-01-01 00:00:00\'');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `report_group`
+--
+
+CREATE TABLE `report_group` (
+  `id` int NOT NULL,
+  `name` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Daten für Tabelle `report_group`
+--
+
+INSERT INTO `report_group` (`id`, `name`) VALUES
+(1, 'report_predefined');
 
 -- --------------------------------------------------------
 
@@ -513,7 +531,13 @@ ALTER TABLE `package_group_member`
 --
 ALTER TABLE `report`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_report_1` (`parent_report_id`);
+  ADD KEY `fk_report_1` (`report_group_id`);
+
+--
+-- Indizes für die Tabelle `report_group`
+--
+ALTER TABLE `report_group`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indizes für die Tabelle `setting`
@@ -646,6 +670,12 @@ ALTER TABLE `report`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT für Tabelle `report_group`
+--
+ALTER TABLE `report_group`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT für Tabelle `setting`
 --
 ALTER TABLE `setting`
@@ -740,7 +770,7 @@ COMMIT;
 -- Constraints der Tabelle `report`
 --
 ALTER TABLE `report`
-  ADD CONSTRAINT `fk_report_1` FOREIGN KEY (`parent_report_id`) REFERENCES `report` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
+  ADD CONSTRAINT `fk_report_1` FOREIGN KEY (`report_group_id`) REFERENCES `report_group` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

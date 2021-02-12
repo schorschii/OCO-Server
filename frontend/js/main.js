@@ -250,6 +250,9 @@ function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids
 function refreshContentReport(id='') {
 	ajaxRequest('views/report.php?id='+encodeURIComponent(id), 'explorer-content');
 }
+function refreshContentReportDetail(id='') {
+	ajaxRequest('views/report_detail.php?id='+encodeURIComponent(id), 'explorer-content');
+}
 
 // package operations
 function updatePackageProcedureTemplates() {

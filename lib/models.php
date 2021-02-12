@@ -231,3 +231,7 @@ class Report {
 	public $notes;
 	public $query;
 }
+class ReportGroup {
+	public $id;
+	public $name;
+}

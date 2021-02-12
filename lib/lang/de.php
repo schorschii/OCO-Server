@@ -210,6 +210,7 @@ const LANG = [
 	'timeout_for_reboot_description' => 'Dies ermöglicht dem Nutzer seine Arbeit zu speichern, bevor der Rechner neu startet oder herunterfährt (wird nur angewendet, wenn Neustart/Herunterfahren im Paket aktiviert ist und mindestens ein Benutzer angemeldet ist).',
 	'seconds' => 'Sekunden',
 	'minutes' => 'Minuten',
+	'report_predefined' => 'Vordefiniert',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

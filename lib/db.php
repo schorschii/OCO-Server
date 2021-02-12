@@ -1167,6 +1167,31 @@ class db {
 	}
 
 	// Report Operations
+	public function getAllReportGroup() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM report_group ORDER BY name'
+		);
+		$this->stmt->execute();
+		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ReportGroup');
+		foreach($reports as $report) {
+			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
+		}
+		usort($reports, function($a, $b) {
+			return strnatcmp($a->name, $b->name);
+		});
+		return $reports;
+	}
+	public function getReportGroup($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM report_group WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'ReportGroup') as $row) {
+			if(!empty(LANG[$row->name])) $row->name = LANG[$row->name];
+			return $row;
+		}
+	}
+
 	public function getAllReport() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM report ORDER BY name'
@@ -1181,11 +1206,11 @@ class db {
 		});
 		return $reports;
 	}
-	public function getAllReportByParent($parentReportId) {
-		if($parentReportId == null) $sql = 'SELECT * FROM report WHERE parent_report_id IS NULL ORDER BY name';
-		else $sql = 'SELECT * FROM report WHERE parent_report_id = :parent_report_id ORDER BY name';
+	public function getAllReportByGroup($groupId) {
+		if($groupId == null) $sql = 'SELECT * FROM report WHERE report_group_id IS NULL ORDER BY name';
+		else $sql = 'SELECT * FROM report WHERE report_group_id = :report_group_id ORDER BY name';
 		$this->stmt = $this->dbh->prepare($sql);
-		$this->stmt->execute([':parent_report_id' => $parentReportId]);
+		$this->stmt->execute([':report_group_id' => $groupId]);
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
 		foreach($reports as $report) {
 			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];

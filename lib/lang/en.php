@@ -210,6 +210,7 @@ const LANG = [
 	'timeout_for_reboot_description' => 'This allows the user to save his work before the computer restarts or shuts down (only applies to packages with enabled restart/shutdown and if at least one user is logged in).',
 	'seconds' => 'Seconds',
 	'minutes' => 'Minutes',
+	'report_predefined' => 'Predefined',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
