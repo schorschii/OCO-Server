@@ -124,7 +124,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	// create jobs
 	$count = 0;
 	if($jcid = $db->addJobContainer(
-		$_POST['add_jobcontainer'],
+		$_POST['add_jobcontainer'], $_SESSION['um_username'],
 		empty($_POST['date_start']) ? date('Y-m-d H:i:s') : $_POST['date_start'],
 		empty($_POST['date_end']) ? null : $_POST['date_end'],
 		$_POST['description'],

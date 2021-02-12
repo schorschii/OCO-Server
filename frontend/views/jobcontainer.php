@@ -14,7 +14,7 @@ if(!empty($_POST['renew_container_id'])) {
 		die(LANG['not_found']);
 	}
 	if($jcid = $db->addJobContainer(
-		'Renew '.date('y-m-d H:i:s'),
+		'Renew '.date('y-m-d H:i:s'), $_SESSION['um_username'],
 		date('Y-m-d H:i:s'), null,
 		'' /*description*/, 0 /*wol sent*/
 	)) {
@@ -68,6 +68,7 @@ if(!empty($_GET['id'])) {
 	echo "<table class='list'>";
 	echo "<tr><th>".LANG['start']."</th><td>".htmlspecialchars($container->start_time)."</td></tr>";
 	echo "<tr><th>".LANG['end']."</th><td>".htmlspecialchars($container->end_time ?? "-")."</td></tr>";
+	echo "<tr><th>".LANG['author']."</th><td>".htmlspecialchars($container->author)."</td></tr>";
 	echo "<tr><th>".LANG['description']."</th><td>".htmlspecialchars($container->notes)."</td></tr>";
 	echo "<tr><th>".LANG['progress']."</th><td title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, null, null, true)."</td></tr>";
 	echo "</table>";
@@ -116,7 +117,7 @@ if(!empty($_GET['id'])) {
 	echo "<div>";
 	echo "<table id='tblJobcontainerData' class='list sortable savesort'>";
 	echo "<thead>";
-	echo "<tr><th></th><th>".LANG['name']."</th><th>".LANG['start']."</th><th>".LANG['end']."</th><th>".LANG['created']."</th><th>".LANG['progress']."</th></tr>";
+	echo "<tr><th></th><th>".LANG['name']."</th><th>".LANG['author']."</th><th>".LANG['start']."</th><th>".LANG['end']."</th><th>".LANG['created']."</th><th>".LANG['progress']."</th></tr>";
 	echo "</thead>";
 	echo "<tbody>";
 	foreach($db->getAllJobContainer() as $jc) {
@@ -132,6 +133,7 @@ if(!empty($_GET['id'])) {
 		echo "<tr>";
 		echo "<td class='middle'><img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'></td>";
 		echo "<td><a href='#' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
+		echo "<td>".htmlspecialchars($jc->author)."</td>";
 		echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 		echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
 		echo "<td>".htmlspecialchars($jc->created)."</td>";

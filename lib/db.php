@@ -755,13 +755,14 @@ class db {
 	}
 
 	// Job Operations
-	public function addJobContainer($name, $start_time, $end_time, $notes, $wol_sent) {
+	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container (name, start_time, end_time, notes, wol_sent)
-			VALUES (:name, :start_time, :end_time, :notes, :wol_sent)'
+			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent)
+			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
+			':author' => $author,
 			':start_time' => $start_time,
 			':end_time' => $end_time,
 			':notes' => $notes,

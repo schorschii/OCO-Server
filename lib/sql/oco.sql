@@ -248,6 +248,7 @@ CREATE TABLE `job` (
 CREATE TABLE `job_container` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
+  `author` text NOT NULL,
   `start_time` datetime NOT NULL DEFAULT current_timestamp(),
   `end_time` datetime DEFAULT NULL,
   `notes` text NOT NULL,
