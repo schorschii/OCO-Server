@@ -7,7 +7,7 @@ An OCO package can therefore contains `.deb` files for Debian-based Linux Distro
 
 In the 'Procedure' fields, you define which commands should be executed when deploying or uninstalling a package. After that, you can enter the exit/return codes which should be considered as success (multiple return codes have to be separated by a comma `,`). If you leave the return code field blank, all return codes are considered as success (this is not recommended - keep `0` if you are unsure, this is normally the return code for success).
 
-Below the procedure you can specify if the computer should be restartet or shut down after the procedure was executed. The restart/shutdown timeout is specified on the deployment assistant. This timeout allows the user to save his work before the computer gets restartet. If no user is logged in on the target computer, it will be restartet immediately, iognoring the timeout value.
+Below the procedure you can specify if the computer should be restartet or shut down after the procedure was executed. The restart/shutdown timeout is specified in the deployment assistant. This timeout allows the user to save his work before the computer gets restartet. If no user is logged in on the target computer, it will be restartet immediately, ignoring the timeout value. If you specify a negative timeout value in the deployment assistant, no restart/shutdown will be executed (in other words, this overrides the package restart/shutdown setting).
 
 When deploying, the `.zip` archive is unpacked into a temporary directory. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (`.bat` or `.sh`) you have written yourself.
 
