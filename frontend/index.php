@@ -37,7 +37,7 @@ require_once('session.php');
 		<div id='explorer-tree' oncontextmenu='return toggleContextMenu(ctmExplorerTree)'>
 
 		</div>
-		<div id='explorer-content' oncontextmenu='return toggleContextMenu(ctmExplorerContent)'>
+		<div id='explorer-content'>
 			<?php require('views/homepage.php'); ?>
 		</div>
 	</div>
@@ -60,10 +60,6 @@ require_once('session.php');
 
 	<div id='ctmExplorerTree' class='contextMenu hidden'>
 		<button onclick='refreshSidebar()'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['refresh']; ?></button>
-	</div>
-	<div id='ctmExplorerContent' class='contextMenu hidden'>
-		<button onclick='document.execCommand("copy");'><img src='img/copy.svg'>&nbsp;<?php echo LANG['copy']; ?></button>
-		<button onclick='refreshContent()'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['refresh']; ?></button>
 	</div>
 
 	<button id='btnHidden' onclick='toggleEquip()'></button>
