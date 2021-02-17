@@ -211,6 +211,7 @@ const LANG = [
 	'seconds' => 'Sekunden',
 	'minutes' => 'Minuten',
 	'report_predefined' => 'Vordefiniert',
+	'rename_group' => 'Gruppe umbenennen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

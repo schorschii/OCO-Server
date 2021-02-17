@@ -422,6 +422,12 @@ function newPackageGroup() {
 		ajaxRequestPost('views/package.php', urlencodeObject({'add_group':newName}), null, refreshSidebar);
 	}
 }
+function renamePackageGroup(id, oldName) {
+	var newName = prompt(L__ENTER_NAME, oldName);
+	if(newName != null && newName != '') {
+		ajaxRequestPost('views/package.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
 function confirmRemovePackageGroup(ids) {
 	var params = [];
 	ids.forEach(function(entry) {
@@ -620,6 +626,12 @@ function newComputerGroup() {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
 		ajaxRequestPost('views/computer.php', urlencodeObject({'add_group':newName}), null, refreshSidebar);
+	}
+}
+function renameComputerGroup(id, oldName) {
+	var newName = prompt(L__ENTER_NAME, oldName);
+	if(newName != null && newName != '') {
+		ajaxRequestPost('views/computer.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function confirmRemoveComputerGroup(ids) {

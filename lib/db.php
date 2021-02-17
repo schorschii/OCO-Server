@@ -541,6 +541,13 @@ class db {
 		$this->stmt->execute([':name' => $name]);
 		return $this->dbh->lastInsertId();
 	}
+	public function renameComputerGroup($id, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_group SET name = :name WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id, ':name' => $name]);
+		return $this->dbh->lastInsertId();
+	}
 	public function removeComputerGroup($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_group WHERE id = :id'
@@ -676,6 +683,13 @@ class db {
 			'INSERT INTO package_group (name) VALUES (:name)'
 		);
 		$this->stmt->execute([':name' => $name]);
+		return $this->dbh->lastInsertId();
+	}
+	public function renamePackageGroup($id, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package_group SET name = :name WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id, ':name' => $name]);
 		return $this->dbh->lastInsertId();
 	}
 	public function getPackageByGroup($id) {

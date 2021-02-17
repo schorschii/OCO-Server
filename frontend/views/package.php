@@ -34,6 +34,10 @@ if(!empty($_POST['add_group'])) {
 	$db->addPackageGroup($_POST['add_group']);
 	die();
 }
+if(!empty($_POST['rename_group']) && !empty($_POST['new_name'])) {
+	$db->renamePackageGroup($_POST['rename_group'], $_POST['new_name']);
+	die();
+}
 if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_group_package_id']) && is_array($_POST['add_to_group_package_id'])) {
 	foreach($_POST['add_to_group_package_id'] as $pid) {
 		$db->addPackageToGroup($pid, $_POST['add_to_group_id']);
@@ -59,6 +63,7 @@ if(empty($_GET['id'])) {
 
 	echo "<div class='controls'><span>Gruppe:&nbsp;</span>";
 	echo "<button onclick='refreshContentDeploy([],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_all']."</button> ";
+	echo "<button onclick='renamePackageGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
 	echo "<button onclick='confirmRemovePackageGroup([".$group->id."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
 	echo "</div>";
 }
