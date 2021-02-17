@@ -16,6 +16,7 @@ if(!isset($_SESSION['um_username'])) {
 		authErrorExit();
 	}
 }
+session_write_close();
 
 // get package and start download
 if(!empty($_GET['id'])) {
