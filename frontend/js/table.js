@@ -219,14 +219,13 @@ function initTableSearch() {
 		let tr = thead.getElementsByTagName("tr")[0];
 		let ths = tr.getElementsByTagName("th");
 		for(var i = 0; i < ths.length; i++) {
-			let currentColumnIndex = i;
 			var thSearch = document.createElement("th");
 			if(ths[i].classList.contains("searchable")) {
 				let txtSearch = document.createElement("input");
 				txtSearch.setAttribute("placeholder", L__SEARCH_PLACEHOLDER);
 				txtSearch.classList.add("tableSearch");
-				txtSearch.addEventListener("input", function(){ tableSearch(table, currentColumnIndex, txtSearch) });
-				txtSearch.addEventListener("paste", function(){ tableSearch(table, currentColumnIndex, txtSearch) });
+				txtSearch.addEventListener("input", function(){ tableSearch(table) });
+				txtSearch.addEventListener("paste", function(){ tableSearch(table) });
 				thSearch.appendChild(txtSearch);
 			}
 			trSearch.appendChild(thSearch);
@@ -235,32 +234,48 @@ function initTableSearch() {
 	}
 }
 
-function tableSearch(table, column, input) {
-	var count = 0, filter, tr, td, txtValue;
+function tableSearch(table) {
+	var count = 0, txtValue, active = false, conditions = [];
 
-	// ignore case
-	filter = input.value.toUpperCase();
+	// get search conditions from table head
+	thead = table.getElementsByTagName("thead");
+	if(!thead || thead.length == 0) return;
+	trs = thead[0].getElementsByTagName("tr");
+	for(var i = 0; i < trs.length; i++) {
+		ths = trs[i].getElementsByTagName("th");
+		for(var n = 0; n < ths.length; n++) {
+			let inputs = ths[n].querySelectorAll("input.tableSearch");
+			for(var m = 0; m < inputs.length; m++) {
+				conditions[n] = inputs[m].value.toUpperCase();
+				if(inputs[m].value != "") active = true;
+			}
+		}
+	}
 
 	// get table body
 	tbody = table.getElementsByTagName("tbody");
 	if(!tbody || tbody.length == 0) return;
 
 	// get all rows in table body
-	tr = tbody[0].getElementsByTagName("tr");
-	for(var i = 0; i < tr.length; i++) {
-		td = tr[i].getElementsByTagName("td")[column];
-		if(td) {
-			txtValue = td.textContent || td.innerText;
-			if(!tr[i].classList.contains('nosearch')) {
-			if(txtValue.toUpperCase().includes(filter)) {
-				tr[i].style.display = "";
-				count = count +1
-				} else {
-					tr[i].style.display = "none";
-				}
+	trs = tbody[0].getElementsByTagName("tr");
+	for(var i = 0; i < trs.length; i++) {
+		var visible = true;
+		tds = trs[i].getElementsByTagName("td");
+		if(!tds || tds.length == 0) continue;
+		for(var n = 0; n < tds.length; n++) {
+			txtValue = tds[n].textContent || tds[n].innerText;
+			if(!active || !(n in conditions) || conditions[n] == ""
+				|| txtValue.toUpperCase().includes(conditions[n])
+			) {
+				trs[i].style.display = "";
 			} else {
-				count = count + 1
+				trs[i].style.display = "none";
+				visible = false;
+				break;
 			}
+		}
+		if(visible) {
+			count = count + 1;
 		}
 	}
 
