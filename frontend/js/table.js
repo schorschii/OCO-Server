@@ -178,7 +178,7 @@ var TableSortUltra = function(tab, startsort) {
 		arr[r][ncols] = tr[r];
 	}
 
-	// execute sort
+	// execute saved/default sort
 	if(startsort && typeof(startsort.sorted)!="undefined" && typeof(startsort.desc)!="undefined") {
 		if(startsort.desc) {
 			startsort_d = startsort.sorted; startsort_u = -1;
@@ -190,6 +190,7 @@ var TableSortUltra = function(tab, startsort) {
 		me.tsort(startsort_u);
 	}
 	if(startsort_d >= 0 && startsort_d < ncols) {
+		firstsort[startsort_d] = "desc";
 		me.tsort(startsort_d);
 	}
 
