@@ -274,10 +274,14 @@ function tableSearch(table, column, input) {
 }
 
 function toggleCheckboxesInTable(table, checked) {
-	let inputs = table.getElementsByTagName("input");
-	for(var i = 0; i < inputs.length; i++) {
-		if(inputs[i].type == "checkbox") {
-			inputs[i].checked = checked;
+	let trs = table.getElementsByTagName("tr");
+	for(var i = 0; i < trs.length; i++) {
+		if(trs[i].style.display == "none") continue;
+		let inputs = trs[i].getElementsByTagName("input");
+		for(var n = 0; n < inputs.length; n++) {
+			if(inputs[n].type == "checkbox") {
+				inputs[n].checked = checked;
+			}
 		}
 	}
 	refreshCheckedCounter(table);
