@@ -123,7 +123,7 @@ $commands = $db->getAllComputerCommand();
 			</tr>
 			<tr>
 				<th><?php echo LANG['secure_boot']; ?></th>
-				<td><?php echo htmlspecialchars($computer->secure_boot); ?></td>
+				<td><?php if($computer->secure_boot) echo LANG['yes']; else echo LANG['no']; ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['agent_version']; ?></th>
