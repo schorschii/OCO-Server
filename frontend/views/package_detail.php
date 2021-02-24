@@ -56,10 +56,6 @@ if($package === null) die();
 				<td><?php echo htmlspecialchars($package->author); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['description']; ?></th>
-				<td><textarea id='txtDescription'><?php echo htmlspecialchars($package->notes); ?></textarea></td>
-			</tr>
-			<tr>
 				<th><?php echo LANG['install_procedure']; ?></th>
 				<td><?php echo htmlspecialchars($package->install_procedure); ?></td>
 			</tr>
@@ -106,8 +102,25 @@ if($package === null) die();
 				<td><?php echo htmlspecialchars($package->created); ?></td>
 			</tr>
 			<tr>
-				<th></th>
-				<td><button id='btnEditPackage' onclick='updatePackage(<?php echo $package->id; ?>, txtDescription.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button></td>
+				<th><?php echo LANG['assigned_groups']; ?></th>
+				<td>
+					<?php
+					$res = $db->getGroupByPackage($package->id);
+					$groups = [];
+					$i = 0;
+					foreach($res as $group) {
+						echo "<a href='#' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
+						if(++$i != count($res)) { echo ", "; }
+					}
+					?>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['description']; ?></th>
+				<td>
+					<textarea id='txtDescription'><?php echo htmlspecialchars($package->notes); ?></textarea>
+					<br><button id='btnEditPackage' onclick='updatePackage(<?php echo $package->id; ?>, txtDescription.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
+				</td>
 			</tr>
 		</table>
 	</div>

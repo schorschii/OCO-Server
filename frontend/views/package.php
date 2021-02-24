@@ -40,7 +40,9 @@ if(!empty($_POST['rename_group']) && !empty($_POST['new_name'])) {
 }
 if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_group_package_id']) && is_array($_POST['add_to_group_package_id'])) {
 	foreach($_POST['add_to_group_package_id'] as $pid) {
-		$db->addPackageToGroup($pid, $_POST['add_to_group_id']);
+		if(count($db->getPackageByPackageAndGroup($pid, $_POST['add_to_group_id'])) == 0) {
+			$db->addPackageToGroup($pid, $_POST['add_to_group_id']);
+		}
 	}
 	die();
 }

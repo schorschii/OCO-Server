@@ -529,7 +529,8 @@ class db {
 			'SELECT cg.id AS "id", cg.name AS "name"
 			FROM computer_group_member cgm
 			INNER JOIN computer_group cg ON cg.id = cgm.computer_group_id
-			WHERE cgm.computer_id = :cid'
+			WHERE cgm.computer_id = :cid
+			ORDER BY cg.name'
 		);
 		$this->stmt->execute([':cid' => $cid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup');
@@ -630,12 +631,32 @@ class db {
 		$this->stmt->execute([':pid' => $pid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPackage');
 	}
+	public function getPackageByPackageAndGroup($pid, $gid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT p.* FROM package_group_member pgm
+			INNER JOIN package p ON p.id = pgm.package_id
+			WHERE pgm.package_id = :pid AND pgm.package_group_id = :gid'
+		);
+		$this->stmt->execute([':pid' => $pid, ':gid' => $gid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+	}
 	public function getAllPackage($distinct=false) {
 		$this->stmt = $this->dbh->prepare(
 			$distinct ? 'SELECT DISTINCT name FROM package' : 'SELECT * FROM package'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+	}
+	public function getGroupByPackage($pid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT pg.id AS "id", pg.name AS "name"
+			FROM package_group_member pgm
+			INNER JOIN package_group pg ON pg.id = pgm.package_group_id
+			WHERE pgm.package_id = :pid
+			ORDER BY pg.name'
+		);
+		$this->stmt->execute([':pid' => $pid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup');
 	}
 	public function getAllPackageGroup() {
 		$this->stmt = $this->dbh->prepare(
