@@ -47,6 +47,7 @@ elseif(isset($_GET['logout'])) {
 
 function validatePassword($userObject, $checkPassword) {
 	if($userObject->ldap) {
+		if(empty($checkPassword)) return false;
 		$ldapconn = ldap_connect(LDAP_SERVER);
 		if(!$ldapconn) return false;
 		ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
