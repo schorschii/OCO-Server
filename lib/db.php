@@ -744,19 +744,18 @@ class db {
 	public function reorderPackageInGroup($package_group_id, $old_seq, $new_seq) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE package_group_member
-			SET sequence = CASE WHEN sequence = :oldpos THEN :newpos
-			WHEN :newpos < :oldpos AND sequence < :oldpos THEN
-			sequence + 1
-			WHEN :newpos > :oldpos AND sequence > :oldpos THEN
-			sequence - 1
+			SET sequence = CASE
+				WHEN sequence = :oldpos THEN :newpos
+				WHEN :newpos < :oldpos AND sequence < :oldpos THEN sequence + 1
+				WHEN :newpos > :oldpos AND sequence > :oldpos THEN sequence - 1
 			END
-			WHERE package_group_id = :package_group_id AND sequence BETWEEN LEAST(:newpos, :oldpos) AND GREATEST(:newpos, :oldpos)'
+			WHERE package_group_id = :package_group_id
+			AND sequence BETWEEN LEAST(:newpos, :oldpos) AND GREATEST(:newpos, :oldpos)'
 		);
-		return $this->stmt->execute([
-			':package_group_id' => $package_group_id,
-			':oldpos' => $old_seq,
-			':newpos' => $new_seq,
-		]);
+		$this->stmt->bindParam(':package_group_id', $package_group_id, PDO::PARAM_INT);
+		$this->stmt->bindParam(':oldpos', intval($old_seq), PDO::PARAM_INT);
+		$this->stmt->bindParam(':newpos', intval($new_seq), PDO::PARAM_INT);
+		return $this->stmt->execute();
 	}
 	public function removePackage($id) {
 		$this->stmt = $this->dbh->prepare(
