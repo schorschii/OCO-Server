@@ -21,9 +21,9 @@ require_once('session.php');
 <div id='container'>
 
 	<div id='header'>
-		<span class='left'><a href='index.php'><?php echo LANG['app_name']; ?></a></span>
+		<span class='left'><a href='index.php' onclick='event.preventDefault();refreshContentHomepage();'><?php echo LANG['app_name']; ?></a></span>
 		<span class='right'>
-			<button onclick='location.href="index.php"' title='<?php echo LANG['home_page']; ?>'><img src='img/home.light.svg'></button>
+			<button onclick='refreshContentHomepage()' title='<?php echo LANG['home_page']; ?>'><img src='img/home.light.svg'></button>
 			<span class='separator'></span>
 			<button onclick='refreshContent();refreshSidebar();' title='<?php echo LANG['refresh']; ?>'><img src='img/refresh.light.svg'></button>
 			<span class='separator'></span>
