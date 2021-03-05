@@ -26,7 +26,7 @@ $package = null;
 if(!empty($_GET['id'])) {
 	$package = $db->getPackage($_GET['id']);
 }
-if($package === null) die();
+if($package === null) die(LANG['not_found']);
 ?>
 
 <h1><?php echo htmlspecialchars($package->name); ?></h1>

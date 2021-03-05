@@ -31,8 +31,8 @@ if(!empty($_POST['remove_from_group_id']) && !empty($_POST['remove_from_group_pa
 	die();
 }
 if(!empty($_POST['add_group'])) {
-	$db->addPackageGroup($_POST['add_group']);
-	die();
+	$insertId = $db->addPackageGroup($_POST['add_group']);
+	die(strval(intval($insertId)));
 }
 if(!empty($_POST['rename_group']) && !empty($_POST['new_name'])) {
 	$db->renamePackageGroup($_POST['rename_group'], $_POST['new_name']);
@@ -60,7 +60,7 @@ if(empty($_GET['id'])) {
 } else {
 	$packages = $db->getPackageByGroup($_GET['id']);
 	$group = $db->getPackageGroup($_GET['id']);
-	if($group === null) die();
+	if($group === null) die(LANG['not_found']);
 	echo "<h1>".htmlspecialchars($group->name)."</h1>";
 
 	echo "<div class='controls'><span>Gruppe:&nbsp;</span>";

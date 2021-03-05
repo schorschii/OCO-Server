@@ -57,7 +57,7 @@ if(isset($_POST['name'])) {
 		header('HTTP/1.1 500 Can Not Move Uploaded File');
 		die();
 	}
-	die();
+	die(strval(intval($insertId)));
 }
 ?>
 

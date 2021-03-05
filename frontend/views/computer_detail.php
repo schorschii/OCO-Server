@@ -52,7 +52,7 @@ $computer = null;
 if(!empty($_GET['id']))
 	$computer = $db->getComputer($_GET['id']);
 
-if($computer === null) die();
+if($computer === null) die(LANG['not_found']);
 $commands = $db->getAllComputerCommand();
 ?>
 

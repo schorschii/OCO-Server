@@ -316,7 +316,7 @@ function createPackage(name, version, description, archive, install_procedure, i
 		if(this.readyState == 4) {
 			if(this.status == 200) {
 				alert(L__PACKAGE_CREATED);
-				refreshContentPackage();
+				refreshContentPackageDetail(parseInt(this.responseText));
 			} else {
 				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
 				btnCreatePackage.disabled = false;
@@ -535,7 +535,20 @@ function saveComputerNotes(id, notes) {
 function newComputer() {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/computer.php', urlencodeObject({'add_computer':newName}), null, refreshContent);
+		let req = new XMLHttpRequest();
+		let formData = new FormData();
+		formData.append('add_computer', newName);
+		req.onreadystatechange = function() {
+			if(this.readyState == 4) {
+				if(this.status == 200) {
+					refreshContentComputerDetail(parseInt(this.responseText));
+				} else {
+					alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+				}
+			}
+		};
+		req.open('POST', 'views/computer.php');
+		req.send(formData);
 	}
 }
 function removeSelectedComputerFromGroup(checkboxName, groupId) {
@@ -707,7 +720,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
 			if(this.status == 200) {
-				refreshContentJobContainer();
+				refreshContentJobContainer(parseInt(this.responseText));
 				refreshSidebar();
 			} else {
 				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);

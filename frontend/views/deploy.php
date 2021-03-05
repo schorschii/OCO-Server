@@ -168,7 +168,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 		}
 	}
 
-	die();
+	die(strval(intval($jcid)));
 }
 
 // ----- prepare view -----

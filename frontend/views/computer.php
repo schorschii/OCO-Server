@@ -15,8 +15,8 @@ if(!empty($_POST['wol_id']) && is_array($_POST['wol_id'])) {
 	die();
 }
 if(!empty($_POST['add_computer'])) {
-	$db->addComputer($_POST['add_computer'], '', [], '');
-	die();
+	$insertId = $db->addComputer($_POST['add_computer'], '', [], '');
+	die(strval(intval($insertId)));
 }
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
@@ -37,8 +37,8 @@ if(!empty($_POST['remove_from_group_id']) && !empty($_POST['remove_from_group_co
 	die();
 }
 if(!empty($_POST['add_group'])) {
-	$db->addComputerGroup($_POST['add_group']);
-	die();
+	$insertId = $db->addComputerGroup($_POST['add_group']);
+	die(strval(intval($insertId)));
 }
 if(!empty($_POST['rename_group']) && !empty($_POST['new_name'])) {
 	$db->renameComputerGroup($_POST['rename_group'], $_POST['new_name']);
@@ -66,7 +66,7 @@ if(empty($_GET['id'])) {
 } else {
 	$computer = $db->getComputerByGroup($_GET['id']);
 	$group = $db->getComputerGroup($_GET['id']);
-	if($group === null) die();
+	if($group === null) die(LANG['not_found']);
 	echo "<h1>".htmlspecialchars($group->name)."</h1>";
 
 	echo "<div class='controls'><span>Gruppe:&nbsp;</span>";
