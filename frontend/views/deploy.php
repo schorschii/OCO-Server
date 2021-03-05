@@ -65,16 +65,19 @@ if(!empty($_POST['add_jobcontainer'])) {
 	if(!empty($_POST['computer_group_id'])) foreach($_POST['computer_group_id'] as $computer_group_id) {
 		if($db->getComputerGroup($computer_group_id) !== null) $computer_group_ids[] = $computer_group_id;
 	}
+
+	$packageSequenceCounter = 1;
 	if(!empty($_POST['package_id'])) foreach($_POST['package_id'] as $package_id) {
 		$p = $db->getPackage($package_id);
 		if($p !== null) $packages[$p->id] = [
 			'name' => $p->name,
-			'sequence' => 0,
+			'sequence' => $packageSequenceCounter,
 			'procedure' => $p->install_procedure,
 			'success_return_codes' => $p->install_procedure_success_return_codes,
 			'install_procedure_restart' => $p->install_procedure_restart,
 			'install_procedure_shutdown' => $p->install_procedure_shutdown,
 		];
+		$packageSequenceCounter ++;
 	}
 	if(!empty($_POST['package_group_id'])) foreach($_POST['package_group_id'] as $package_group_id) {
 		if($db->getPackageGroup($package_group_id) !== null) $package_group_ids[] = $package_group_id;
@@ -90,12 +93,13 @@ if(!empty($_POST['add_jobcontainer'])) {
 		foreach($db->getPackageByGroup($package_group_id) as $p) {
 			$packages[$p->id] = [
 				'name' => $p->name,
-				'sequence' => $p->package_group_member_sequence,
+				'sequence' => $packageSequenceCounter,
 				'procedure' => $p->install_procedure,
 				'success_return_codes' => $p->install_procedure_success_return_codes,
 				'install_procedure_restart' => $p->install_procedure_restart,
 				'install_procedure_shutdown' => $p->install_procedure_shutdown,
 			];
+			$packageSequenceCounter ++;
 		}
 	}
 
