@@ -326,22 +326,33 @@ function refreshCheckedCounter(table) {
 	}
 }
 
-function downloadTableCsv(table_id, separator = ',') {
+function downloadTableCsv(table_id, separator = ';') {
 	// Select rows from table_id
-	var rows = document.querySelectorAll('table#' + table_id + ' tr');
+	var rows = document.querySelectorAll('table#' + table_id + ' thead tr, ' + 'table#' + table_id + ' tbody tr');
 	// Construct csv
+	var ignoreFirstColumn = false;
+	var firstRow = true;
 	var csv = [];
 	for(var i = 0; i < rows.length; i++) {
+		var firstColumn = true;
 		var row = [], cols = rows[i].querySelectorAll('td, th');
 		for(var j = 0; j < cols.length; j++) {
 			// Clean innertext to remove multiple spaces and jumpline (break csv)
 			var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
 			// Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
 			data = data.replace(/"/g, '""');
-			// Push escaped string
-			row.push('"' + data + '"');
+			// check if first column should be ignored (checkbox column)
+			if(firstRow && data == '') {
+				ignoreFirstColumn = true;
+			}
+			if(!(firstColumn && ignoreFirstColumn)) {
+				// Push escaped string
+				row.push('"' + data + '"');
+			}
+			firstColumn = false;
 		}
 		csv.push(row.join(separator));
+		firstRow = false;
 	}
 	var csv_string = csv.join('\n');
 	// Download it
