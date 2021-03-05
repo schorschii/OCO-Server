@@ -32,6 +32,16 @@ if($package === null) die(LANG['not_found']);
 <h1><?php echo htmlspecialchars($package->name); ?></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg'>
+		&nbsp;<?php echo LANG['add_to']; ?>
+		<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
+		<?php
+		foreach($db->getAllPackageGroup() as $g) {
+			echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
+		}
+		?>
+		</select>
+	</button>
 	<button onclick='currentExplorerContentUrl="views/package.php";confirmRemovePackage([<?php echo $package->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 </div>
 
@@ -165,9 +175,9 @@ if($package === null) die(LANG['not_found']);
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 			<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-			<button onclick='addSelectedComputerToGroup("package_id[]", sltNewGroup.value, "computer_id")'><img src='img/folder-insert-into.svg'>
+			<button onclick='addSelectedComputerToGroup("package_id[]", sltNewComputerGroup.value, "computer_id")'><img src='img/folder-insert-into.svg'>
 				&nbsp;<?php echo LANG['add_to']; ?>
-				<select id='sltNewGroup' onclick='event.stopPropagation()'>
+				<select id='sltNewComputerGroup' onclick='event.stopPropagation()'>
 					<?php
 					foreach($db->getAllComputerGroup() as $g) {
 						echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";

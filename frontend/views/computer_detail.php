@@ -60,6 +60,16 @@ $commands = $db->getAllComputerCommand();
 <div class='controls'>
 	<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
+	<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
+		&nbsp;<?php echo LANG['add_to']; ?>
+		<select id='sltNewGroup' onclick='event.stopPropagation()'>
+			<?php
+			foreach($db->getAllComputerGroup() as $g) {
+				echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
+			}
+			?>
+		</select>
+	</button>
 	<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	<?php
 	if(count($commands) > 0) echo "<span class='vl'></span>";
