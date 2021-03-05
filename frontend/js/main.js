@@ -191,7 +191,7 @@ function refreshSidebar() {
 }
 function refreshContent() {
 	if(currentExplorerContentUrl != null) {
-		ajaxRequest(currentExplorerContentUrl, 'explorer-content');
+		ajaxRequest(currentExplorerContentUrl, 'explorer-content', null, false);
 	}
 }
 function refreshContentHomepage() {
