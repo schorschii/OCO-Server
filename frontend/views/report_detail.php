@@ -52,20 +52,20 @@ foreach($results as $result) {
 	foreach($result as $key => $value) {
 		if($key == 'computer_id') {
 			$hasComputerIds = true;
-			echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(\"".intval($value)."\")'>".$value."</a></td>";
+			echo "<td><a href='".explorerLink('views/computer_detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentComputerDetail(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'package_id') {
 			$hasPackageIds = true;
-			echo "<td><a href='#' onclick='event.preventDefault();refreshContentPackageDetail(\"".intval($value)."\")'>".$value."</a></td>";
+			echo "<td><a href='".explorerLink('views/package_detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentPackageDetail(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'software_id') {
-			echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(\"".intval($value)."\")'>".$value."</a></td>";
+			echo "<td><a href='".explorerLink('views/software.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentSoftware(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'domainuser_id') {
-			echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(\"".intval($value)."\")'>".$value."</a></td>";
+			echo "<td><a href='".explorerLink('views/domainuser_detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentDomainuserDetail(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'jobcontainer_id') {
-			echo "<td><a href='#' onclick='event.preventDefault();refreshContentJobContainer(\"".intval($value)."\")'>".$value."</a></td>";
+			echo "<td><a href='".explorerLink('views/jobcontainer.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentJobContainer(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'report_id') {
-			echo "<td><a href='#' onclick='event.preventDefault();refreshContentReport(\"".intval($value)."\")'>".$value."</a></td>";
+			echo "<td><a href='".explorerLink('views/report_detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentReport(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'parent_report_id') {
-			echo "<td><a href='#' onclick='event.preventDefault();refreshContentReport(\"".intval($value)."\")'>".$value."</a></td>";
+			echo "<td><a href='".explorerLink('views/report_detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentReport(\"".intval($value)."\")'>".$value."</a></td>";
 		} else {
 			echo "<td>".$value."</td>";
 		}

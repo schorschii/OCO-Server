@@ -85,8 +85,8 @@ if(!empty($_GET['id'])) {
 	echo "<tbody>";
 	foreach($jobs as $job) {
 		echo "<tr>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
+		echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$job->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
+		echo "<td><a href='".explorerLink('views/package_detail.php?id='.$job->package_id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 		echo "<td>".htmlspecialchars(shorter($job->package_procedure))."</td>";
 		echo "<td>".htmlspecialchars($job->sequence)."</td>";
 		if(!empty($job->message)) {
@@ -132,7 +132,7 @@ if(!empty($_GET['id'])) {
 		}
 		echo "<tr>";
 		echo "<td class='middle'><img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'></td>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
+		echo "<td><a href='".explorerLink('views/jobcontainer.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
 		echo "<td>".htmlspecialchars($jc->author)."</td>";
 		echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 		echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";

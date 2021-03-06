@@ -23,7 +23,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	foreach($db->getComputerBySoftwareVersion($_GET['id'], $_GET['version']) as $c) {
 		$counter ++;
 		echo "<tr>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
+		echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
 		echo "</tr>";
 	}
 	?>
@@ -58,8 +58,8 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	foreach($db->getComputerBySoftware($_GET['id']) as $c) {
 		$counter ++;
 		echo "<tr>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$software->id.", \"".htmlspecialchars($c->software_version)."\")'>".htmlspecialchars($c->software_version)."</a></td>";
+		echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
+		echo "<td><a href='".explorerLink('views/software.php?id='.$software->id.'&version='.$c->software_version)."' onclick='event.preventDefault();refreshContentSoftware(".$software->id.", \"".htmlspecialchars($c->software_version)."\")'>".htmlspecialchars($c->software_version)."</a></td>";
 		echo "</tr>";
 	}
 	?>
@@ -104,7 +104,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	foreach($software as $s) {
 		$counter ++;
 		echo "<tr>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(\"".$s->id."\")'>".htmlspecialchars($s->name)."</a></td>";
+		echo "<td><a href='".explorerLink('views/software.php?id='.$s->id)."' onclick='event.preventDefault();refreshContentSoftware(\"".$s->id."\")'>".htmlspecialchars($s->name)."</a></td>";
 		echo "<td>".$s->installations."</td>";
 		echo "</tr>";
 	}

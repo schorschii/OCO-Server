@@ -119,7 +119,7 @@ if($package === null) die(LANG['not_found']);
 					$groups = [];
 					$i = 0;
 					foreach($res as $group) {
-						echo "<a href='#' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
+						echo "<a href='".explorerLink('views/package.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
 						if(++$i != count($res)) { echo ", "; }
 					}
 					?>
@@ -156,7 +156,7 @@ if($package === null) die(LANG['not_found']);
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
-					echo '<td><a href="#" onclick="event.preventDefault();refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/computer_detail.php?id='.$p->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
 					echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
 					echo '</tr>';

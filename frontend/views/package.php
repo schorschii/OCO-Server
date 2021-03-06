@@ -95,7 +95,7 @@ foreach($packages as $p) {
 	echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)'></td>";
 	echo "<td>"
 		.($p->getFilePath() ? '' : '<img src="img/warning.dyn.svg" title="'.LANG['not_found'].'">')
-		."<a href='#' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")'>".htmlspecialchars($p->name)."</a>"
+		."<a href='".explorerLink('views/package_detail.php?id='.$p->id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")'>".htmlspecialchars($p->name)."</a>"
 		."</td>";
 	echo "<td>".htmlspecialchars($p->version)."</td>";
 	echo "<td>".htmlspecialchars($p->author)."</td>";

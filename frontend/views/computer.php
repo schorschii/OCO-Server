@@ -108,7 +108,7 @@ foreach($computer as $c) {
 	}
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
-	echo "<td><a href='#' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
+	echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
 	echo "<td>".htmlspecialchars($c->os)."</td>";
 	echo "<td>".htmlspecialchars($c->os_version)."</td>";
 	echo "<td>".htmlspecialchars($c->cpu)."</td>";

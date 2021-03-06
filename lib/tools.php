@@ -39,6 +39,10 @@ function progressBar($percent, $id=null, $cid=null, $tid=null, $style=null, $str
 		.'</span>';
 }
 
+function explorerLink($explorerContent) {
+	return 'index.php?explorer-content='.urlencode($explorerContent);
+}
+
 function randomString($length = 30) {
 	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
 	$charactersLength = strlen($characters);

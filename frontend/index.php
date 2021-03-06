@@ -67,7 +67,7 @@ require_once('session.php');
 	<script>
 	refreshSidebar();
 	<?php if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) == 'views') { ?>
-		ajaxRequest("<?php echo htmlspecialchars($_GET['explorer-content']); ?>", "explorer-content");
+		ajaxRequest("<?php echo str_replace(["'",'"'],'',$_GET['explorer-content']); ?>", "explorer-content");
 	<?php } ?>
 	<?php if(rand(0,1000) == 42) { ?>
 		topConfettiRain();

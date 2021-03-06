@@ -155,7 +155,7 @@ $commands = $db->getAllComputerCommand();
 					$groups = [];
 					$i = 0;
 					foreach($res as $group) {
-						echo "<a href='#' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
+						echo "<a href='".explorerLink('views/computer.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
 						if(++$i != count($res)) { echo ", "; }
 					}
 					?>
@@ -185,7 +185,7 @@ $commands = $db->getAllComputerCommand();
 				<?php
 				foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
 					echo "<tr>";
-					echo "<td><a href='#' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
+					echo "<td><a href='".explorerLink('views/domainuser_detail.php?id='.$logon->domainuser_id)."' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
 					echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 					echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 					echo "</tr>";
@@ -345,7 +345,7 @@ $commands = $db->getAllComputerCommand();
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
-					echo '<td><a href="#" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
+					echo '<td><a href="'.explorerLink('views/package_detail.php?id='.$p->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 					echo '<td>'.htmlspecialchars($p->installed_procedure).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
 					echo '</tr>';
@@ -386,8 +386,8 @@ $commands = $db->getAllComputerCommand();
 				foreach($db->getComputerSoftware($computer->id) as $s) {
 					$counter ++;
 					echo "<tr>";
-					echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->software_name)."</a></td>";
-					echo "<td><a href='#' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.", \"".htmlspecialchars($s->version)."\")'>".htmlspecialchars($s->version)."</a></td>";
+					echo "<td><a href='".explorerLink('views/software.php?id='.$s->software_id)."' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->software_name)."</a></td>";
+					echo "<td><a href='".explorerLink('views/software.php?id='.$s->software_id.'&version='.$s->version)."' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.", \"".htmlspecialchars($s->version)."\")'>".htmlspecialchars($s->version)."</a></td>";
 					echo "<td>".htmlspecialchars($s->software_description)."</td>";
 					echo "</tr>";
 				}

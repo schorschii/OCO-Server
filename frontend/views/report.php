@@ -27,7 +27,7 @@ if(empty($_GET['id'])) {
 <tbody>
 	<?php foreach($reports as $r) {
 		echo "<tr>";
-		echo "<td><a href='#' onclick='event.preventDefault();refreshContentReportDetail(".$r->id.")'>".htmlspecialchars($r->name)."</a></td>";
+		echo "<td><a href='".explorerLink('views/report_detail.php?id='.$r->id)."' onclick='event.preventDefault();refreshContentReportDetail(".$r->id.")'>".htmlspecialchars($r->name)."</a></td>";
 		echo "</tr>";
 	} ?>
 </tbody>
