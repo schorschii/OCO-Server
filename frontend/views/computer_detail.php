@@ -176,7 +176,7 @@ $commands = $db->getAllComputerCommand();
 		<table id='tblLoginsData' class='list sortable savesort'>
 			<thead>
 				<tr>
-					<th><?php echo LANG['computer']; ?></th>
+					<th><?php echo LANG['login_name']; ?></th>
 					<th><?php echo LANG['count']; ?></th>
 					<th><?php echo LANG['last_login']; ?></th>
 				</tr>
