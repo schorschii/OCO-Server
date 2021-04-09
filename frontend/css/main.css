@@ -344,6 +344,7 @@ table th, table td {
 
 #txtNotes {
 	width: 100%;
+	resize: vertical;
 }
 table.list, input, select, button, textarea, .boxshadow {
 	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.08);
