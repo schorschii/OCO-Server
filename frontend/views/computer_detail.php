@@ -164,8 +164,8 @@ $commands = $db->getAllComputerCommand();
 			<tr>
 				<th><?php echo LANG['notes']; ?></th>
 				<td>
-					<textarea id='txtNotes'><?php echo htmlspecialchars($computer->notes); ?></textarea>
-					<br><button onclick='saveComputerNotes(<?php echo $computer->id; ?>, txtNotes.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
+					<textarea id='txtDescription'><?php echo htmlspecialchars($computer->notes); ?></textarea>
+					<br><button onclick='saveComputerNotes(<?php echo $computer->id; ?>, txtDescription.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
 				</td>
 			</tr>
 		</table>
