@@ -214,6 +214,7 @@ const LANG = [
 	'minutes' => 'Minutes',
 	'report_predefined' => 'Predefined',
 	'rename_group' => 'Rename Group',
+	'no_mac_addresses_for_wol' => 'No WOL packet could be sent because no MAC address of this computer is known. Please connect a network adapter to the computer and run the agent so that the MAC address is reported to the server.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

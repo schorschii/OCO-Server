@@ -128,6 +128,8 @@ function ajaxRequestPost(url, body, objID, callback) {
 			if(callback != undefined && typeof callback == 'function') {
 				callback(this.responseText);
 			}
+		} else if(this.readyState == 4) {
+			alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
 		}
 	};
 	xhttp.open("POST", url, true);
