@@ -162,6 +162,21 @@ switch($srcdata['method']) {
 				$db->updateComputerPing($computer->id);
 				if(time() - strtotime($computer->last_update) > $db->getSettingByName('agent-update-interval')
 				&& !empty($data)) {
+					// convert login timestamps to local time,
+					// because other timestamps in the database are also in local time
+					$logins = [];
+					if(!empty($data['logins'])) foreach($data['logins'] as $login) {
+						try {
+							$date = new DateTime($login['timestamp'], new DateTimeZone('UTC'));
+							$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+							$logins[] = [
+								'username' => $login['username'],
+								'console' => $login['console'],
+								'timestamp' => $date->format('Y-m-d H:i:s'),
+							];
+						} catch(Exception $e) {}
+					}
+					// update inventory data now
 					$db->updateComputer(
 						$computer->id,
 						$params['hostname'],
@@ -184,7 +199,7 @@ switch($srcdata['method']) {
 						$data['printers'] ?? [],
 						$data['partitions'] ?? [],
 						$data['software'] ?? [],
-						$data['logins'] ?? []
+						$logins
 					);
 				}
 			}
