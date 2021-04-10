@@ -21,7 +21,16 @@ if(!empty($_POST['wol_id']) && is_array($_POST['wol_id'])) {
 	die();
 }
 if(!empty($_POST['add_computer'])) {
-	$insertId = $db->addComputer($_POST['add_computer'], '', [], '');
+	$finalHostname = trim($_POST['add_computer']);
+	if(empty($finalHostname)) {
+		header('HTTP/1.1 400 Invalid Request');
+		die(LANG['hostname_cannot_be_empty']);
+	}
+	if($db->getComputerByName($finalHostname) !== null) {
+		header('HTTP/1.1 400 Invalid Request');
+		die(LANG['hostname_already_exists']);
+	}
+	$insertId = $db->addComputer($finalHostname, '', [], '');
 	die(strval(intval($insertId)));
 }
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
