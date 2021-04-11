@@ -21,14 +21,30 @@ session_write_close();
 // get package and start download
 if(!empty($_GET['id'])) {
 	$package = $db->getPackage($_GET['id']);
+	if($package === null) {
+		header('HTTP/1.1 404 Not Found'); die();
+	}
+
 	$path = PACKAGE_PATH.'/'.intval($package->id).'.zip';
 	if(file_exists($path)) {
-		try {
-			$download = new ResumeDownload($path);
-			$download->process();
-		} catch (Exception $e) {
-			header('HTTP/1.1 404 File Not Found');
-			die('Sorry, an error occured.');
+
+		if(empty($_GET['resumable'])) {
+			// use direct download via readfile() by default because its much faster
+			header('Content-Type: application/octet-stream');
+			header('Content-Transfer-Encoding: Binary');
+			header('Content-disposition: attachment; filename="'.basename($path).'"');
+			ob_clean(); flush();
+			readfile($path);
+		} else {
+			// use resumable download if requested
+			try {
+				$download = new ResumeDownload($path);
+				$download->process();
+			} catch (Exception $e) {
+				header('HTTP/1.1 404 File Not Found');
+				die('Sorry, an error occured.');
+			}
 		}
+
 	}
 }
