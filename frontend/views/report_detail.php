@@ -93,11 +93,7 @@ foreach($results as $result) {
 		<button onclick='addSelectedComputerToGroup("id[]", sltNewComputerGroup.value, "computer_id")'><img src='img/folder-insert-into.svg'>
 			&nbsp;<?php echo LANG['add_to']; ?>
 			<select id='sltNewComputerGroup' onclick='event.stopPropagation()'>
-				<?php
-				foreach($db->getAllComputerGroup() as $g) {
-					echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
-				}
-				?>
+				<?php echoComputerGroupOptions($db); ?>
 			</select>
 		</button>
 		<button onclick='removeSelectedComputer("id[]", "computer_id")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
@@ -111,11 +107,7 @@ foreach($results as $result) {
 		<button onclick='addSelectedPackageToGroup("id[]", sltNewPackageGroup.value, "package_id")'><img src='img/folder-insert-into.svg'>
 			&nbsp;<?php echo LANG['add_to']; ?>
 			<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
-			<?php
-			foreach($db->getAllPackageGroup() as $g) {
-				echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
-			}
-			?>
+				<?php echoPackageGroupOptions($db); ?>
 			</select>
 		</button>
 		<button onclick='removeSelectedPackage("id[]", "package_id")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>

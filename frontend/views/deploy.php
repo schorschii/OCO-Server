@@ -170,10 +170,6 @@ if(!empty($_POST['add_jobcontainer'])) {
 
 	die(strval(intval($jcid)));
 }
-
-// ----- prepare view -----
-$computerGroups = $db->getAllComputerGroup();
-$packageGroups = $db->getAllPackageGroup();
 ?>
 
 <h1><?php echo LANG['deployment_assistant']; ?></h1>
@@ -225,13 +221,7 @@ $packageGroups = $db->getAllPackageGroup();
 		<h3><?php echo LANG['computer_groups']; ?></h3>
 		<select id='sltComputerGroup' size='10' multiple='true' onchange='if(getSelectValues(this).length > 1) { sltComputer.innerHTML="";sltComputer.disabled=true;refreshDeployCount(); }else{ sltComputer.disabled=false;refreshDeployComputerAndPackages(this.value, null); }'>
 			<option value='-1'><?php echo LANG['all_computer']; ?></option>
-			<?php
-			foreach($computerGroups as $cg) {
-				$selected = '';
-				if(in_array($cg->id, $select_computer_group_ids)) $selected = 'selected';
-				echo "<option value='".htmlspecialchars($cg->id)."' ".$selected.">".htmlspecialchars($cg->name)."</option>";
-			}
-			?>
+			<?php echoTargetComputerGroupOptions($db, $select_computer_group_ids); ?>
 		</select>
 	</div>
 	<div>
@@ -248,13 +238,7 @@ $packageGroups = $db->getAllPackageGroup();
 		<h3><?php echo LANG['package_groups']; ?></h3>
 		<select id='sltPackageGroup' size='10' multiple='true' onchange='if(getSelectValues(this).length > 1) { sltPackage.innerHTML="";sltPackage.disabled=true;refreshDeployCount(); }else{ sltPackage.disabled=false;refreshDeployComputerAndPackages(null, this.value) }'>
 			<option value='-1'><?php echo LANG['all_packages']; ?></option>
-			<?php
-			foreach($packageGroups as $group) {
-				$selected = '';
-				if(in_array($group->id, $select_package_group_ids)) $selected = 'selected';
-				echo "<option value='".htmlspecialchars($group->id)."' ".$selected.">".htmlspecialchars($group->name)."</option>";
-			}
-			?>
+			<?php echoTargetPackageGroupOptions($db, $select_package_group_ids); ?>
 		</select>
 	</div>
 	<div>
@@ -269,3 +253,21 @@ $packageGroups = $db->getAllPackageGroup();
 	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked, txtRestartTimeout.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<label><input type='checkbox' id='chkAutoCreateUninstallJobs'>&nbsp;<div><?php echo LANG['auto_create_uninstall_jobs']; ?></div></label>
 </div>
+
+<?php
+function echoTargetComputerGroupOptions($db, $select_computer_group_ids, $parent=null, $indent=0) {
+	foreach($db->getAllComputerGroup($parent) as $cg) {
+		$selected = '';
+		if(in_array($cg->id, $select_computer_group_ids)) $selected = 'selected';
+		echo "<option value='".htmlspecialchars($cg->id)."' ".$selected.">".trim(str_repeat("‒",$indent)." ".htmlspecialchars($cg->name))."</option>";
+		echoTargetComputerGroupOptions($db, $select_computer_group_ids, $cg->id, $indent+1);
+	}
+}
+function echoTargetPackageGroupOptions($db, $select_package_group_ids, $parent=null, $indent=0) {
+	foreach($db->getAllPackageGroup($parent) as $pg) {
+		$selected = '';
+		if(in_array($pg->id, $select_package_group_ids)) $selected = 'selected';
+		echo "<option value='".htmlspecialchars($pg->id)."' ".$selected.">".trim(str_repeat("‒",$indent)." ".htmlspecialchars($pg->name))."</option>";
+		echoTargetPackageGroupOptions($db, $select_package_group_ids, $pg->id, $indent+1);
+	}
+}

@@ -63,11 +63,7 @@ $commands = $db->getAllComputerCommand();
 	<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewGroup' onclick='event.stopPropagation()'>
-			<?php
-			foreach($db->getAllComputerGroup() as $g) {
-				echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
-			}
-			?>
+			<?php echoComputerGroupOptions($db); ?>
 		</select>
 	</button>
 	<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>

@@ -95,3 +95,16 @@ function wol($mac) {
 	}
 	socket_close($s);
 }
+
+function echoComputerGroupOptions($db, $parent=null, $indent=0) {
+	foreach($db->getAllComputerGroup($parent) as $g) {
+		echo "<option value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
+		echoComputerGroupOptions($db, $g->id, $indent+1);
+	}
+}
+function echoPackageGroupOptions($db, $parent=null, $indent=0) {
+	foreach($db->getAllPackageGroup($parent) as $g) {
+		echo "<option value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
+		echoPackageGroupOptions($db, $g->id, $indent+1);
+	}
+}

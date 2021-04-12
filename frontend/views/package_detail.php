@@ -35,11 +35,7 @@ if($package === null) die(LANG['not_found']);
 	<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
-		<?php
-		foreach($db->getAllPackageGroup() as $g) {
-			echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
-		}
-		?>
+			<?php echoPackageGroupOptions($db); ?>
 		</select>
 	</button>
 	<button onclick='currentExplorerContentUrl="views/package.php";confirmRemovePackage([<?php echo $package->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
@@ -178,11 +174,7 @@ if($package === null) die(LANG['not_found']);
 			<button onclick='addSelectedComputerToGroup("package_id[]", sltNewComputerGroup.value, "computer_id")'><img src='img/folder-insert-into.svg'>
 				&nbsp;<?php echo LANG['add_to']; ?>
 				<select id='sltNewComputerGroup' onclick='event.stopPropagation()'>
-					<?php
-					foreach($db->getAllComputerGroup() as $g) {
-						echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
-					}
-					?>
+					<?php echoComputerGroupOptions($db); ?>
 				</select>
 			</button>
 			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>

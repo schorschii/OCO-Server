@@ -476,11 +476,18 @@ class db {
 			return $row;
 		}
 	}
-	public function getAllComputerGroup() {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_group ORDER BY name'
-		);
-		$this->stmt->execute();
+	public function getAllComputerGroup($parent_id=null) {
+		if($parent_id === null) {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM computer_group WHERE parent_computer_group_id IS NULL ORDER BY name'
+			);
+			$this->stmt->execute();
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM computer_group WHERE parent_computer_group_id = :parent_computer_group_id ORDER BY name'
+			);
+			$this->stmt->execute([':parent_computer_group_id' => $parent_id]);
+		}
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup');
 	}
 	public function getComputerBySoftware($sid) {
@@ -535,11 +542,18 @@ class db {
 		$this->stmt->execute([':cid' => $cid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup');
 	}
-	public function addComputerGroup($name) {
-		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_group (name) VALUES (:name)'
-		);
-		$this->stmt->execute([':name' => $name]);
+	public function addComputerGroup($name, $parent_id=null) {
+		if(empty($parent_id) || intval($parent_id) < 0) {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO computer_group (name) VALUES (:name)'
+			);
+			$this->stmt->execute([':name' => $name]);
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO computer_group (name, parent_computer_group_id) VALUES (:name, :parent_computer_group_id)'
+			);
+			$this->stmt->execute([':name' => $name, ':parent_computer_group_id' => $parent_id]);
+		}
 		return $this->dbh->lastInsertId();
 	}
 	public function renameComputerGroup($id, $name) {
@@ -658,11 +672,18 @@ class db {
 		$this->stmt->execute([':pid' => $pid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup');
 	}
-	public function getAllPackageGroup() {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM package_group ORDER BY name'
-		);
-		$this->stmt->execute();
+	public function getAllPackageGroup($parent_id=null) {
+		if($parent_id === null) {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM package_group WHERE parent_package_group_id IS NULL ORDER BY name'
+			);
+			$this->stmt->execute();
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM package_group WHERE parent_package_group_id = :parent_package_group_id ORDER BY name'
+			);
+			$this->stmt->execute([':parent_package_group_id' => $parent_id]);
+		}
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup');
 	}
 	public function getPackage($id) {
@@ -699,11 +720,18 @@ class db {
 			return $row;
 		}
 	}
-	public function addPackageGroup($name) {
-		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package_group (name) VALUES (:name)'
-		);
-		$this->stmt->execute([':name' => $name]);
+	public function addPackageGroup($name, $parent_id=null) {
+		if(empty($parent_id) || intval($parent_id) < 0) {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO package_group (name) VALUES (:name)'
+			);
+			$this->stmt->execute([':name' => $name]);
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO package_group (name, parent_package_group_id) VALUES (:name, :parent_package_group_id)'
+			);
+			$this->stmt->execute([':name' => $name, ':parent_package_group_id' => $parent_id]);
+		}
 		return $this->dbh->lastInsertId();
 	}
 	public function renamePackageGroup($id, $name) {
@@ -1202,11 +1230,18 @@ class db {
 	}
 
 	// Report Operations
-	public function getAllReportGroup() {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM report_group ORDER BY name'
-		);
-		$this->stmt->execute();
+	public function getAllReportGroup($parent_id=null) {
+		if($parent_id === null) {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM report_group WHERE parent_report_group_id IS NULL ORDER BY name'
+			);
+			$this->stmt->execute();
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM report_group WHERE parent_report_group_id = :parent_report_group_id ORDER BY name'
+			);
+			$this->stmt->execute([':parent_report_group_id' => $parent_id]);
+		}
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ReportGroup');
 		foreach($reports as $report) {
 			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];

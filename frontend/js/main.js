@@ -418,10 +418,10 @@ function deploySelectedPackage(checkboxName, attributeName=null) {
 	});
 	refreshContentDeploy(ids);
 }
-function newPackageGroup() {
+function newPackageGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/package.php', urlencodeObject({'add_group':newName}), null, refreshSidebar);
+		ajaxRequestPost('views/package.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
 	}
 }
 function renamePackageGroup(id, oldName) {
@@ -644,10 +644,10 @@ function confirmWolComputer(ids) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__WOL_SENT) });
 }
-function newComputerGroup() {
+function newComputerGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/computer.php', urlencodeObject({'add_group':newName}), null, refreshSidebar);
+		ajaxRequestPost('views/computer.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
 	}
 }
 function renameComputerGroup(id, oldName) {

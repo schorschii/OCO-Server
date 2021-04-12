@@ -52,7 +52,9 @@ if(!empty($_POST['remove_from_group_id']) && !empty($_POST['remove_from_group_co
 	die();
 }
 if(!empty($_POST['add_group'])) {
-	$insertId = $db->addComputerGroup($_POST['add_group']);
+	$insertId = -1;
+	if(empty($_POST['parent_id'])) $insertId = $db->addComputerGroup($_POST['add_group']);
+	else $insertId = $db->addComputerGroup($_POST['add_group'], intval($_POST['parent_id']));
 	die(strval(intval($insertId)));
 }
 if(!empty($_POST['rename_group']) && !empty($_POST['new_name'])) {
@@ -84,7 +86,8 @@ if(empty($_GET['id'])) {
 	if($group === null) die(LANG['not_found']);
 	echo "<h1>".htmlspecialchars($group->name)."</h1>";
 
-	echo "<div class='controls'><span>Gruppe:&nbsp;</span>";
+	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
+	echo "<button onclick='newComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
 	echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_for_all']."</button> ";
 	echo "<button onclick='renameComputerGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
 	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
@@ -156,11 +159,7 @@ foreach($computer as $c) {
 	<button onclick='addSelectedComputerToGroup("computer_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewGroup' onclick='event.stopPropagation()'>
-			<?php
-			foreach($db->getAllComputerGroup() as $g) {
-				echo "<option value='".$g->id."'>".htmlspecialchars($g->name)."</option>";
-			}
-			?>
+			<?php echoComputerGroupOptions($db); ?>
 		</select>
 	</button>
 	<?php if($group !== null) { ?>

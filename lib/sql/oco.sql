@@ -79,6 +79,7 @@ INSERT INTO `computer_command` (`id`, `icon`, `name`, `command`) VALUES
 
 CREATE TABLE `computer_group` (
   `id` int(11) NOT NULL,
+  `parent_computer_group_id` int(11) DEFAULT NULL,
   `name` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -288,6 +289,7 @@ CREATE TABLE `package` (
 
 CREATE TABLE `package_group` (
   `id` int(11) NOT NULL,
+  `parent_package_group_id` int(11) DEFAULT NULL,
   `name` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -339,7 +341,8 @@ INSERT INTO `report` (`id`, `report_group_id`, `name`, `notes`, `query`) VALUES
 --
 
 CREATE TABLE `report_group` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
+  `parent_report_group_id` int(11) DEFAULT NULL,
   `name` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -426,7 +429,8 @@ ALTER TABLE `computer_command`
 -- Indizes für die Tabelle `computer_group`
 --
 ALTER TABLE `computer_group`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_parent_computer_group_id` (`parent_computer_group_id`);
 
 --
 -- Indizes für die Tabelle `computer_group_member`
@@ -519,7 +523,8 @@ ALTER TABLE `package`
 -- Indizes für die Tabelle `package_group`
 --
 ALTER TABLE `package_group`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_parent_package_group_id` (`parent_package_group_id`);
 
 --
 -- Indizes für die Tabelle `package_group_member`
@@ -540,7 +545,8 @@ ALTER TABLE `report`
 -- Indizes für die Tabelle `report_group`
 --
 ALTER TABLE `report_group`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_parent_report_group_id` (`parent_report_group_id`);
 
 --
 -- Indizes für die Tabelle `setting`
@@ -701,6 +707,12 @@ ALTER TABLE `systemuser`
 --
 
 --
+-- Constraints der Tabelle `computer_group`
+--
+ALTER TABLE `computer_group`
+  ADD CONSTRAINT `fk_parent_computer_group_id` FOREIGN KEY (`parent_computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
 -- Constraints der Tabelle `computer_group_member`
 --
 ALTER TABLE `computer_group_member`
@@ -749,6 +761,12 @@ ALTER TABLE `job`
   ADD CONSTRAINT `fk_job_3` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints der Tabelle `package_group`
+--
+ALTER TABLE `package_group`
+  ADD CONSTRAINT `fk_parent_package_group_id` FOREIGN KEY (`parent_package_group_id`) REFERENCES `package_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
 -- Constraints der Tabelle `package_group_member`
 --
 ALTER TABLE `package_group_member`
@@ -774,6 +792,12 @@ COMMIT;
 --
 ALTER TABLE `report`
   ADD CONSTRAINT `fk_report_1` FOREIGN KEY (`report_group_id`) REFERENCES `report_group` (`id`) ON DELETE SET NULL ON UPDATE SET NULL;
+
+--
+-- Constraints der Tabelle `report_group`
+--
+ALTER TABLE `report_group`
+  ADD CONSTRAINT `fk_parent_report_group_id` FOREIGN KEY (`parent_report_group_id`) REFERENCES `report_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -10,13 +10,7 @@ require_once('../session.php');
 
 <div class='node'>
 	<a href='#' onclick='event.preventDefault();refreshContentComputer()'><img src='img/computer.dyn.svg'><?php echo LANG['computer']; ?></a>
-	<div class='subnode'>
-		<?php
-		foreach($db->getAllComputerGroup() as $group) {
-			echo "<a href='#' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
-		}
-		?>
-	</div>
+	<?php echoComputerGroups($db); ?>
 </div>
 
 <div class='node'>
@@ -30,13 +24,7 @@ require_once('../session.php');
 
 <div class='node'>
 	<a href='#' onclick='event.preventDefault();refreshContentPackage()'><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
-	<div class='subnode'>
-		<?php
-		foreach($db->getAllPackageGroup() as $group) {
-			echo "<a href='#' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
-		}
-		?>
-	</div>
+	<?php echoPackageGroups($db); ?>
 </div>
 
 <div class='node'>
@@ -52,11 +40,31 @@ require_once('../session.php');
 
 <div class='node'>
 	<a href='#' onclick='event.preventDefault();refreshContentReport()'><img src='img/report.dyn.svg'><?php echo LANG['reports']; ?></a>
-	<div class='subnode'>
-		<?php
-		foreach($db->getAllReportGroup() as $group) {
-			echo "<a href='#' onclick='event.preventDefault();refreshContentReport(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
-		}
-		?>
-	</div>
+	<?php echoReportGroups($db); ?>
 </div>
+
+<?php
+function echoComputerGroups($db, $parent=null) {
+	echo "<div class='subnode'>";
+	foreach($db->getAllComputerGroup($parent) as $group) {
+		echo "<a href='#' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+		echoComputerGroups($db, $group->id);
+	}
+	echo "</div>";
+}
+function echoPackageGroups($db, $parent=null) {
+	echo "<div class='subnode'>";
+	foreach($db->getAllPackageGroup($parent) as $group) {
+		echo "<a href='#' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+		echoPackageGroups($db, $group->id);
+	}
+	echo "</div>";
+}
+function echoReportGroups($db, $parent=null) {
+	echo "<div class='subnode'>";
+	foreach($db->getAllReportGroup($parent) as $group) {
+		echo "<a href='#' onclick='event.preventDefault();refreshContentReport(".$group->id.")'><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+		echoReportGroups($db, $group->id);
+	}
+	echo "</div>";
+}
