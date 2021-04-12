@@ -20,7 +20,7 @@ try {
 <p><code class='block'><?php echo htmlspecialchars($report->query); ?></code></p>
 
 <?php if(!empty($report->notes)) { ?>
-	<p class='quote'><?php echo htmlspecialchars($report->notes); ?></p>
+	<p class='quote'><?php echo nl2br(htmlspecialchars($report->notes)); ?></p>
 <?php } ?>
 
 <?php if(count($results) == 0) die(LANG['no_results']); ?>
