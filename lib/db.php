@@ -432,11 +432,11 @@ class db {
 		foreach($logins as $index => $l) {
 			$domainuser = null;
 			foreach($domainusers as $du) {
-				if($du->username == $l['username']) {
+				if(strtolower($du->username) === strtolower($l['username'])) {
 					$domainuser = $du; break;
 				}
 			}
-			if($domainuser == null) {
+			if($domainuser === null) {
 				$du_id = $this->addDomainuser($l['username']);
 				$domainuser = $this->getDomainuser($du_id);
 				$domainusers = $this->getAllDomainuser();
