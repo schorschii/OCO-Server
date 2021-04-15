@@ -14,7 +14,7 @@ if(!empty($_POST['renew_container_id'])) {
 		die(LANG['not_found']);
 	}
 	if($jcid = $db->addJobContainer(
-		'Renew '.date('y-m-d H:i:s'), $_SESSION['um_username'],
+		$container->name.' - '.LANG['renew'], $_SESSION['um_username'],
 		date('Y-m-d H:i:s'), null,
 		'' /*description*/, 0 /*wol sent*/
 	)) {
@@ -66,6 +66,7 @@ if(!empty($_GET['id'])) {
 	echo "<div class='details-abreast margintop marginbottom'>";
 	echo "<div>";
 	echo "<table class='list'>";
+	echo "<tr><th>".LANG['created']."</th><td>".htmlspecialchars($container->created)."</td></tr>";
 	echo "<tr><th>".LANG['start']."</th><td>".htmlspecialchars($container->start_time)."</td></tr>";
 	echo "<tr><th>".LANG['end']."</th><td>".htmlspecialchars($container->end_time ?? "-")."</td></tr>";
 	echo "<tr><th>".LANG['author']."</th><td>".htmlspecialchars($container->author)."</td></tr>";
@@ -87,7 +88,11 @@ if(!empty($_GET['id'])) {
 		echo "<tr>";
 		echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$job->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
 		echo "<td><a href='".explorerLink('views/package_detail.php?id='.$job->package_id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
-		echo "<td>".htmlspecialchars(shorter($job->package_procedure))."</td>";
+		echo "<td>";
+		echo htmlspecialchars(shorter($job->package_procedure));
+		if($job->restart > 0) echo ' ('.LANG['restart_after'].' '.intval($job->restart).' '.LANG['minutes'].')';
+		if($job->shutdown > 0) echo ' ('.LANG['shutdown_after'].' '.intval($job->shutdown).' '.LANG['minutes'].')';
+		echo "</td>";
 		echo "<td>".htmlspecialchars($job->sequence)."</td>";
 		if(!empty($job->message)) {
 			echo "<td class='middle'>";

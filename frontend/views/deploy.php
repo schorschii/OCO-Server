@@ -178,7 +178,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	<tr>
 		<th><?php echo LANG['name']; ?></th>
 		<td>
-			<input type='text' id='txtName' value='Job <?php echo date('y-m-d H:i:s'); ?>'></input>
+			<input type='text' id='txtName' value='<?php echo LANG['install'].' '.date('y-m-d H:i:s'); ?>'></input>
 		</td>
 	</tr>
 	<tr>
