@@ -79,9 +79,16 @@ if(!empty($_GET['id'])) {
 
 	echo "<div class='details-abreast'>";
 	echo "<div>";
-	echo "<table id='tblJobData' class='list sortable savesort'>";
+	echo "<table id='tblJobData' class='list searchable sortable savesort'>";
 	echo "<thead>";
-	echo "<tr><th>".LANG['computer']."</th><th>".LANG['package']."</th><th>".LANG['procedure']."</th><th>".LANG['order']."</th><th>".LANG['status']."</th><th>".LANG['last_change']."</th></tr>";
+	echo "<tr>";
+	echo "<th class='searchable sortable'>".LANG['computer']."</th>";
+	echo "<th class='searchable sortable'>".LANG['package']."</th>";
+	echo "<th class='searchable sortable'>".LANG['procedure']."</th>";
+	echo "<th class='searchable sortable'>".LANG['order']."</th>";
+	echo "<th class='searchable sortable'>".LANG['status']."</th>";
+	echo "<th class='searchable sortable'>".LANG['last_change']."</th>";
+	echo "</tr>";
 	echo "</thead>";
 	echo "<tbody>";
 	foreach($jobs as $job) {
@@ -120,9 +127,17 @@ if(!empty($_GET['id'])) {
 
 	echo "<div class='details-abreast'>";
 	echo "<div>";
-	echo "<table id='tblJobcontainerData' class='list sortable savesort'>";
+	echo "<table id='tblJobcontainerData' class='list searchable sortable savesort'>";
 	echo "<thead>";
-	echo "<tr><th></th><th>".LANG['name']."</th><th>".LANG['author']."</th><th>".LANG['start']."</th><th>".LANG['end']."</th><th>".LANG['created']."</th><th>".LANG['progress']."</th></tr>";
+	echo "<tr>";
+	echo "<th></th>";
+	echo "<th class='searchable sortable'>".LANG['name']."</th>";
+	echo "<th class='searchable sortable'>".LANG['author']."</th>";
+	echo "<th class='searchable sortable'>".LANG['start']."</th>";
+	echo "<th class='searchable sortable'>".LANG['end']."</th>";
+	echo "<th class='searchable sortable'>".LANG['created']."</th>";
+	echo "<th class='searchable sortable'>".LANG['progress']."</th>";
+	echo "</tr>";
 	echo "</thead>";
 	echo "<tbody>";
 	foreach($db->getAllJobContainer() as $jc) {
