@@ -4,7 +4,7 @@ require_once('../../lib/loader.php');
 require_once('../session.php');
 
 if(isset($_POST['name'])) {
-	if(empty($_POST['name']) || empty($_POST['install_procedure']) || empty($_FILES['archive'])) {
+	if(empty($_POST['name']) || empty($_POST['install_procedure'])) {
 		header('HTTP/1.1 400 Missing Information');
 		die(LANG['please_fill_required_fields']);
 	}
@@ -12,19 +12,34 @@ if(isset($_POST['name'])) {
 		header('HTTP/1.1 400 Already Exists');
 		die(LANG['package_exists_with_version']);
 	}
-	$tmpName = $_FILES['archive']['tmp_name'];
-	$mimeType = mime_content_type($_FILES['archive']['tmp_name']);
-	if($mimeType != 'application/zip') {
-		// create zip with uploaded file
+	// decide what to do with zip archive
+	if(empty($_FILES['archive'])) {
+		// no file uploaded - create empty zip file
 		$tmpName = '/tmp/ocotmparchive.zip';
 		$zip = new ZipArchive();
 		if(!$zip->open($tmpName, ZipArchive::CREATE)) {
 			header('HTTP/1.1 500 Cannot Create Zip Archive');
 			die(htmlspecialchars($mimeType));
 		}
-		$zip->addFile($_FILES['archive']['tmp_name'], '/'.basename($_FILES['archive']['name']));
+		$zip->addFromString('oco_empty_archive', '');
 		$zip->close();
+	} else {
+		// use file from user upload
+		$tmpName = $_FILES['archive']['tmp_name'];
+		$mimeType = mime_content_type($_FILES['archive']['tmp_name']);
+		if($mimeType != 'application/zip') {
+			// create zip with uploaded file if uploaded file is not a zip file
+			$tmpName = '/tmp/ocotmparchive.zip';
+			$zip = new ZipArchive();
+			if(!$zip->open($tmpName, ZipArchive::CREATE)) {
+				header('HTTP/1.1 500 Cannot Create Zip Archive');
+				die(htmlspecialchars($mimeType));
+			}
+			$zip->addFile($_FILES['archive']['tmp_name'], '/'.basename($_FILES['archive']['name']));
+			$zip->close();
+		}
 	}
+	// insert into database
 	$insertId = $db->addPackage(
 		$_POST['name'],
 		$_POST['version'],
@@ -44,9 +59,10 @@ if(isset($_POST['name'])) {
 		header('HTTP/1.1 500 Failed');
 		die(LANG['database_error']);
 	}
+	// move file to payload dir
 	$filename = intval($insertId).'.zip';
 	$filepath = PACKAGE_PATH.'/'.$filename;
-	if($tmpName == $_FILES['archive']['tmp_name']) {
+	if(!empty($_FILES['archive']) && $tmpName === $_FILES['archive']['tmp_name']) {
 		$result = move_uploaded_file($tmpName, $filepath);
 	} else {
 		$result = rename($tmpName, $filepath);

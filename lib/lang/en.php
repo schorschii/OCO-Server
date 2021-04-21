@@ -229,7 +229,7 @@ const LANG = [
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
 		</p>
 		<p>
-			If you upload a file type other than a ZIP archive, a ZIP archive is automatically created with the uploaded file.
+			If you upload a file type other than a ZIP archive, a ZIP archive is automatically created with the uploaded file. If you do not select a file, an empty archive will be created. This can be useful if you just want to execute a command without payload (e.g. install something using <code>apt</code> under Linux).
 		</p>
 		<p>
 			Example Procedures:

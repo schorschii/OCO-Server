@@ -229,7 +229,7 @@ const LANG = [
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
 		</p>
 		<p>
-			Wenn Sie einen anderen Dateityp als ein ZIP-Archiv hochladen wird automatisch ein ZIP-Archiv mit der hochgeladenen Datei erstellt.
+			Wenn Sie einen anderen Dateityp als ein ZIP-Archiv hochladen wird automatisch ein ZIP-Archiv mit der hochgeladenen Datei erstellt. Wenn Sie keine Datei auswählen wird ein leeres Acrhiv erstellt. Das kann nützlich sein, wenn Sie nur einen Befehl ohne bestimmte Dateien ausführen möchten (z.B. um etwas via <code>apt</code> unter Linux zu installieren).
 		</p>
 		<p>
 			Beispiel-Prozeduren:
