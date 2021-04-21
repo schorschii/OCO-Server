@@ -133,9 +133,9 @@ if(isset($_POST['name'])) {
 	<tr>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td colspan='3'>
-			<label><input type='radio' name='install_post_action' id='rdoInstallPostActionNone' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label><input type='radio' name='install_post_action' id='rdoInstallPostActionRestart'>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label><input type='radio' name='install_post_action' id='rdoInstallPostActionShutdown'>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionNone' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionRestart'>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionShutdown'>&nbsp;<?php echo LANG['shutdown']; ?></label>
 		</td>
 	</tr>
 	<tr>
@@ -147,14 +147,14 @@ if(isset($_POST['name'])) {
 	<tr>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td colspan='3'>
-			<label><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionNone' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionRestart'>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionShutdown'>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionNone' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionRestart'>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionShutdown'>&nbsp;<?php echo LANG['shutdown']; ?></label>
 		</td>
 	</tr>
 	<tr>
 		<th></th>
-		<td><label><input type='checkbox' id='chkDownloadForUninstall' checked='true'>&nbsp;<?php echo LANG['download_for_uninstall']; ?></label></td>
+		<td><label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' checked='true'>&nbsp;<?php echo LANG['download_for_uninstall']; ?></label></td>
 	</tr>
 	<tr>
 		<th></th>

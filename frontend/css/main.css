@@ -326,6 +326,9 @@ div.contextMenu button img {
 	display: flex;
 	align-items: center;
 }
+.inlineblock {
+	display: inline-block;
+}
 
 h1 img {
 	margin-right: 15px;
