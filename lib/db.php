@@ -924,6 +924,36 @@ class db {
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll();
 	}
+	public function getPendingJobsForComputerDetailPage($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name",
+			j.package_id AS "package_id", p.name AS "package_name", p.name AS "package_version",
+			j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
+			FROM job j
+			INNER JOIN package p ON j.package_id = p.id
+			INNER JOIN job_container jc ON j.job_container_id = jc.id
+			WHERE j.computer_id = :id
+			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
+			ORDER BY j.sequence'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
+	}
+	public function getPendingJobsForPackageDetailPage($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name",
+			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
+			j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
+			FROM job j
+			INNER JOIN computer c ON j.computer_id = c.id
+			INNER JOIN job_container jc ON j.job_container_id = jc.id
+			WHERE j.package_id = :id
+			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
+			ORDER BY j.sequence'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
+	}
 	public function updateJobState($id, $state, $return_code, $message) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job SET state = :state, return_code = :return_code, message = :message, last_update = CURRENT_TIMESTAMP WHERE id = :id'

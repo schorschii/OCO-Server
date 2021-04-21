@@ -104,10 +104,10 @@ if(!empty($_GET['id'])) {
 		if(!empty($job->message)) {
 			echo "<td class='middle'>";
 			echo "<img src='img/".$job->getIcon().".dyn.svg'>";
-			echo "<a href='#' onclick='event.preventDefault();showErrorDialog(true,\"".getJobStateString($job->state, $job->return_code)."\",this.getAttribute(\"message\"),false)' message='".htmlspecialchars(trim($job->message),ENT_QUOTES)."'>".getJobStateString($job->state, $job->return_code)."</a>";
+			echo "<a href='#' onclick='event.preventDefault();showErrorDialog(true,\"".$job->getJobStateString()."\",this.getAttribute(\"message\"),false)' message='".htmlspecialchars(trim($job->message),ENT_QUOTES)."'>".$job->getJobStateString()."</a>";
 			echo "</td>";
 		} else {
-			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'>".getJobStateString($job->state, $job->return_code)."</td>";
+			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'>".$job->getJobStateString()."</td>";
 		}
 		echo "<td>".htmlspecialchars($job->last_update);
 		echo "</tr>";
@@ -152,7 +152,7 @@ if(!empty($_GET['id'])) {
 		}
 		echo "<tr>";
 		echo "<td class='middle'><img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'></td>";
-		echo "<td><a href='".explorerLink('views/jobcontainer.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
+		echo "<td><a href='".explorerLink('views/job_container.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
 		echo "<td>".htmlspecialchars($jc->author)."</td>";
 		echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 		echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
@@ -165,25 +165,5 @@ if(!empty($_GET['id'])) {
 	echo "</div>";
 	echo "</div>";
 
-}
-
-function getJobStateString($state, $returnCode) {
-	$returnCodeString = '';
-	if($returnCode != null) {
-		$returnCodeString = ' ('.htmlspecialchars($returnCode).')';
-	}
-	if($state == Job::STATUS_WAITING_FOR_CLIENT)
-		return LANG['waiting_for_client'];
-	elseif($state == Job::STATUS_FAILED)
-		return LANG['failed'].$returnCodeString;
-	elseif($state == Job::STATUS_EXPIRED)
-		return LANG['expired'];
-	elseif($state == Job::STATUS_DOWNLOAD_STARTED)
-		return LANG['download_started'];
-	elseif($state == Job::STATUS_EXECUTION_STARTED)
-		return LANG['execution_started'];
-	elseif($state == Job::STATUS_SUCCEEDED)
-		return LANG['succeeded'].$returnCodeString;
-	else return $state;
 }
 ?>

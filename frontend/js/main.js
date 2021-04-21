@@ -228,7 +228,7 @@ function refreshContentPackageDetail(id) {
 	}
 }
 function refreshContentJobContainer(id='') {
-	ajaxRequest('views/jobcontainer.php?id='+encodeURIComponent(id), 'explorer-content');
+	ajaxRequest('views/job_container.php?id='+encodeURIComponent(id), 'explorer-content');
 }
 function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids=[], computer_group_ids=[]) {
 	var params = [];
@@ -709,12 +709,12 @@ function addComputerToGroup(computerId, groupId) {
 // job operations
 function confirmRemoveJobContainer(id) {
 	if(confirm(L__CONFIRM_DELETE_JOBCONTAINER)) {
-		ajaxRequestPost('views/jobcontainer.php', urlencodeObject({'remove_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
+		ajaxRequestPost('views/job_container.php', urlencodeObject({'remove_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
 function confirmRenewFailedJobsInContainer(id) {
 	if(confirm(L__CONFIRM_RENEW_JOBS)) {
-		ajaxRequestPost('views/jobcontainer.php', urlencodeObject({'renew_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
+		ajaxRequestPost('views/job_container.php', urlencodeObject({'renew_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
 function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, autoCreateUninstallJobs, restartTimeout) {

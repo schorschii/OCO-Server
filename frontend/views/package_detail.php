@@ -154,7 +154,41 @@ if($package === null) die(LANG['not_found']);
 			</tr>
 		</table>
 	</div>
-	<div></div>
+
+	<div>
+		<h2><?php echo LANG['pending_jobs']; ?></h2>
+		<table id='tblPendingPackageJobsData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<!--<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPendingPackageJobsData, this.checked)'></th>-->
+					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['job_container']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['status']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$counter = 0;
+				foreach($db->getPendingJobsForPackageDetailPage($package->id) as $j) {
+					$counter ++;
+					echo '<tr>';
+					//echo '<td><input type="checkbox" name="job_id[]" value="'.$j->id.'" onchange="refreshCheckedCounter(tblPendingPackageJobsData)"></td>';
+					echo '<td><a href="'.explorerLink('views/computer_detail.php?id='.$j->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$j->computer_id.')">'.htmlspecialchars($j->computer_hostname).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/job_container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
+					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">'.$j->getJobStateString().'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
 </div>
 
 <div class="details-abreast">

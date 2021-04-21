@@ -224,6 +224,8 @@ const LANG = [
 	'no_mac_addresses_for_wol' => 'Es konnte kein WOL-Paket gesendet werden, da keine MAC-Adresse dieses Rechners bekannt ist. Bitte schließen Sie einen Netzwerkadapter an den Rechner an und führen Sie den Agenten aus, damit die MAC-Adresse an den Server gemeldet wird.',
 	'hostname_cannot_be_empty' => 'Der Hostname darf nicht leer sein.',
 	'hostname_already_exists' => 'Der angegebene Hostname existiert bereits.',
+	'pending_jobs' => 'Ausstehende Jobs',
+	'remove_job' => 'Job entfernen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

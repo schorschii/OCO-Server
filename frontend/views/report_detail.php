@@ -61,7 +61,7 @@ foreach($results as $result) {
 		} elseif($key == 'domainuser_id') {
 			echo "<td><a href='".explorerLink('views/domainuser_detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentDomainuserDetail(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'jobcontainer_id') {
-			echo "<td><a href='".explorerLink('views/jobcontainer.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentJobContainer(\"".intval($value)."\")'>".$value."</a></td>";
+			echo "<td><a href='".explorerLink('views/job_container.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentJobContainer(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'report_id') {
 			echo "<td><a href='".explorerLink('views/report_detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentReport(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'parent_report_id') {

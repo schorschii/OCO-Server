@@ -113,6 +113,7 @@ class Package {
 	public $uninstall_procedure_restart;
 	public $uninstall_procedure_shutdown;
 	public $created;
+	public $last_update;
 	// joined package group attributes
 	public $package_group_member_sequence;
 
@@ -186,6 +187,25 @@ class Job {
 			return 'tick';
 		}
 		return 'warning';
+	}
+	function getJobStateString() {
+		$returnCodeString = '';
+		if($this->return_code != null) {
+			$returnCodeString = ' ('.htmlspecialchars($this->return_code).')';
+		}
+		if($this->state == self::STATUS_WAITING_FOR_CLIENT)
+			return LANG['waiting_for_client'];
+		elseif($this->state == self::STATUS_FAILED)
+			return LANG['failed'].$returnCodeString;
+		elseif($this->state == self::STATUS_EXPIRED)
+			return LANG['expired'];
+		elseif($this->state == self::STATUS_DOWNLOAD_STARTED)
+			return LANG['download_started'];
+		elseif($this->state == self::STATUS_EXECUTION_STARTED)
+			return LANG['execution_started'];
+		elseif($this->state == self::STATUS_SUCCEEDED)
+			return LANG['succeeded'].$returnCodeString;
+		else return $this->state;
 	}
 }
 class Domainuser {
