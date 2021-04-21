@@ -66,18 +66,15 @@ if(!empty($_POST['add_jobcontainer'])) {
 		if($db->getComputerGroup($computer_group_id) !== null) $computer_group_ids[] = $computer_group_id;
 	}
 
-	$packageSequenceCounter = 1;
 	if(!empty($_POST['package_id'])) foreach($_POST['package_id'] as $package_id) {
 		$p = $db->getPackage($package_id);
 		if($p !== null) $packages[$p->id] = [
 			'name' => $p->name,
-			'sequence' => $packageSequenceCounter,
 			'procedure' => $p->install_procedure,
 			'success_return_codes' => $p->install_procedure_success_return_codes,
 			'install_procedure_restart' => $p->install_procedure_restart,
 			'install_procedure_shutdown' => $p->install_procedure_shutdown,
 		];
-		$packageSequenceCounter ++;
 	}
 	if(!empty($_POST['package_group_id'])) foreach($_POST['package_group_id'] as $package_group_id) {
 		if($db->getPackageGroup($package_group_id) !== null) $package_group_ids[] = $package_group_id;
@@ -93,13 +90,11 @@ if(!empty($_POST['add_jobcontainer'])) {
 		foreach($db->getPackageByGroup($package_group_id) as $p) {
 			$packages[$p->id] = [
 				'name' => $p->name,
-				'sequence' => $packageSequenceCounter,
 				'procedure' => $p->install_procedure,
 				'success_return_codes' => $p->install_procedure_success_return_codes,
 				'install_procedure_restart' => $p->install_procedure_restart,
 				'install_procedure_shutdown' => $p->install_procedure_shutdown,
 			];
-			$packageSequenceCounter ++;
 		}
 	}
 
@@ -135,6 +130,8 @@ if(!empty($_POST['add_jobcontainer'])) {
 		$wolSent
 	)) {
 		foreach($computer_ids as $computer_id) {
+			$sequence = 1;
+
 			foreach($packages as $pid => $package) {
 
 				// create uninstall jobs
@@ -148,8 +145,9 @@ if(!empty($_POST['add_jobcontainer'])) {
 								1/*is_uninstall*/, $cpp->download_for_uninstall,
 								$cpp->uninstall_procedure_restart ? $_POST['restart_timeout'] : -1,
 								$cpp->uninstall_procedure_shutdown ? $_POST['restart_timeout'] : -1,
-								$package['sequence']
+								$sequence
 							);
+							$sequence ++;
 						}
 					}
 				}
@@ -160,9 +158,10 @@ if(!empty($_POST['add_jobcontainer'])) {
 					0/*is_uninstall*/, 1/*download*/,
 					$package['install_procedure_restart'] ? $_POST['restart_timeout'] : -1,
 					$package['install_procedure_shutdown'] ? $_POST['restart_timeout'] : -1,
-					$package['sequence']
+					$sequence
 				)) {
 					$count ++;
+					$sequence ++;
 				}
 			}
 		}
