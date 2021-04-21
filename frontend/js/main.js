@@ -331,12 +331,21 @@ function createPackage(name, version, description, archive, install_procedure, i
 	req.open('POST', 'views/package_new.php');
 	req.send(formData);
 }
-function updatePackage(id, description) {
+function updatePackage(id, description, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown) {
 	btnEditPackage.disabled = true;
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('edit_id', id);
 	formData.append('description', description);
+	formData.append('install_procedure', install_procedure);
+	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
+	formData.append('install_procedure_restart', install_procedure_restart ? '1' : '0');
+	formData.append('install_procedure_shutdown', install_procedure_shutdown ? '1' : '0');
+	formData.append('uninstall_procedure', uninstall_procedure);
+	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
+	formData.append('download_for_uninstall', download_for_uninstall ? '1' : '0');
+	formData.append('uninstall_procedure_restart', uninstall_procedure_restart ? '1' : '0');
+	formData.append('uninstall_procedure_shutdown', uninstall_procedure_shutdown ? '1' : '0');
 	req.open('POST', 'views/package_detail.php');
 	req.send(formData);
 	req.onreadystatechange = function() {

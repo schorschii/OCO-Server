@@ -16,8 +16,15 @@ if(!empty($_POST['edit_id'])) {
 		$package->version,
 		$package->author,
 		$_POST['description'],
-		$package->install_procedure,
-		$package->uninstall_procedure
+		$_POST['install_procedure'],
+		$_POST['install_procedure_success_return_codes'],
+		$_POST['install_procedure_restart'],
+		$_POST['install_procedure_shutdown'],
+		$_POST['uninstall_procedure'],
+		$_POST['uninstall_procedure_success_return_codes'],
+		$_POST['download_for_uninstall'],
+		$_POST['uninstall_procedure_restart'],
+		$_POST['uninstall_procedure_shutdown']
 	);
 	die();
 }
@@ -63,31 +70,41 @@ if($package === null) die(LANG['not_found']);
 			</tr>
 			<tr>
 				<th><?php echo LANG['install_procedure']; ?></th>
-				<td><?php echo htmlspecialchars($package->install_procedure); ?></td>
+				<td><input type='text' id='txtInstallProcedure' value='<?php echo htmlspecialchars($package->install_procedure); ?>'></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['success_return_codes']; ?></th>
-				<td><?php echo htmlspecialchars($package->install_procedure_success_return_codes); ?></td>
+				<td><input type='text' id='txtInstallProcedureSucessReturnCodes' value='<?php echo htmlspecialchars($package->install_procedure_success_return_codes); ?>'></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['after_completion']; ?></th>
-				<td><?php if($package->install_procedure_restart) echo LANG['restart']; elseif($package->install_procedure_shutdown) echo LANG['shutdown']; else echo LANG['no_action']; ?></td>
+				<td>
+					<label><input type='radio' name='install_post_action' id='rdoInstallPostActionNone' <?php if(!$package->install_procedure_restart && !$package->install_procedure_shutdown) echo 'checked'; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
+					<label><input type='radio' name='install_post_action' id='rdoInstallPostActionRestart' <?php if($package->install_procedure_restart) echo 'checked'; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
+					<label><input type='radio' name='install_post_action' id='rdoInstallPostActionShutdown' <?php if($package->install_procedure_shutdown) echo 'checked'; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['uninstall_procedure']; ?></th>
-				<td><?php echo htmlspecialchars($package->uninstall_procedure); ?></td>
+				<td><input type='text' id='txtUninstallProcedure' value='<?php echo htmlspecialchars($package->uninstall_procedure); ?>'></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['success_return_codes']; ?></th>
-				<td><?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes); ?></td>
+				<td><input type='text' id='txtUninstallProcedureSuccessReturnCodes' value='<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes); ?>'></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['after_completion']; ?></th>
-				<td><?php if($package->uninstall_procedure_restart) echo LANG['restart']; elseif($package->uninstall_procedure_shutdown) echo LANG['shutdown']; else echo LANG['no_action']; ?></td>
+				<td>
+					<label><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionNone' <?php if(!$package->uninstall_procedure_restart && !$package->uninstall_procedure_shutdown) echo 'checked'; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
+					<label><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionRestart' <?php if($package->uninstall_procedure_restart) echo 'checked'; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
+					<label><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionShutdown' <?php if($package->uninstall_procedure_shutdown) echo 'checked'; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['download_for_uninstall']; ?></th>
-				<td><?php if($package->download_for_uninstall) echo LANG['yes']; else echo LANG['no']; ?></td>
+				<td>
+					<label><input type='checkbox' id='chkDownloadForUninstall' <?php if($package->download_for_uninstall) echo 'checked'; ?>>&nbsp;<?php echo LANG['yes']; ?></label>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['zip_archive']; ?></th>
@@ -108,6 +125,10 @@ if($package === null) die(LANG['not_found']);
 				<td><?php echo htmlspecialchars($package->created); ?></td>
 			</tr>
 			<tr>
+				<th><?php echo LANG['last_updated']; ?></th>
+				<td><?php echo htmlspecialchars($package->last_update); ?></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['assigned_groups']; ?></th>
 				<td>
 					<?php
@@ -125,8 +146,11 @@ if($package === null) die(LANG['not_found']);
 				<th><?php echo LANG['description']; ?></th>
 				<td>
 					<textarea id='txtDescription'><?php echo htmlspecialchars($package->notes); ?></textarea>
-					<br><button id='btnEditPackage' onclick='updatePackage(<?php echo $package->id; ?>, txtDescription.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
 				</td>
+			</tr>
+			<tr>
+				<th></th>
+				<td><button id='btnEditPackage' onclick='updatePackage(<?php echo $package->id; ?>, txtDescription.value, txtInstallProcedure.value, txtInstallProcedureSucessReturnCodes.value, rdoInstallPostActionRestart.checked, rdoInstallPostActionShutdown.checked, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, rdoUninstallPostActionRestart.checked, rdoUninstallPostActionShutdown.checked)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button></td>
 			</tr>
 		</table>
 	</div>

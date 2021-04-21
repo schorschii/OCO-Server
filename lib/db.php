@@ -606,9 +606,13 @@ class db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $name, $version, $author, $notes, $install_procedure, $uninstall_procedure) {
+	public function updatePackage($id, $name, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET name = :name, version = :version, author = :author, notes = :notes, install_procedure = :install_procedure, uninstall_procedure = :uninstall_procedure WHERE id = :id'
+			'UPDATE package
+			SET name = :name, version = :version, author = :author, notes = :notes, last_update = CURRENT_TIMESTAMP,
+			install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_restart = :install_procedure_restart, install_procedure_shutdown = :install_procedure_shutdown,
+			uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, download_for_uninstall = :download_for_uninstall, uninstall_procedure_restart = :uninstall_procedure_restart, uninstall_procedure_shutdown = :uninstall_procedure_shutdown
+			WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
@@ -617,7 +621,14 @@ class db {
 			':author' => $author,
 			':notes' => $notes,
 			':install_procedure' => $install_procedure,
+			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
+			':install_procedure_restart' => $install_procedure_restart,
+			':install_procedure_shutdown' => $install_procedure_shutdown,
 			':uninstall_procedure' => $uninstall_procedure,
+			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
+			':download_for_uninstall' => $download_for_uninstall,
+			':uninstall_procedure_restart' => $uninstall_procedure_restart,
+			':uninstall_procedure_shutdown' => $uninstall_procedure_shutdown,
 		]);
 	}
 	public function addPackageToComputer($pid, $cid, $procedure) {

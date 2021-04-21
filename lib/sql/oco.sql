@@ -278,7 +278,8 @@ CREATE TABLE `package` (
   `download_for_uninstall` tinyint(4) NOT NULL DEFAULT 0,
   `uninstall_procedure_restart` tinyint(4) NOT NULL DEFAULT 0,
   `uninstall_procedure_shutdown` tinyint(4) NOT NULL DEFAULT 0,
-  `created` timestamp NOT NULL DEFAULT current_timestamp()
+  `created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `last_update` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
