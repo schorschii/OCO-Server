@@ -3,6 +3,7 @@ class ComputerCommand {
 	public $id;
 	public $icon;
 	public $name;
+	public $description;
 	public $command;
 }
 class Computer {

@@ -58,6 +58,7 @@ CREATE TABLE `computer_command` (
   `id` int(11) NOT NULL,
   `icon` text NOT NULL,
   `name` text NOT NULL,
+  `description` text NOT NULL,
   `command` text NOT NULL,
   `new_tab` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -66,12 +67,12 @@ CREATE TABLE `computer_command` (
 -- Daten für Tabelle `computer_command`
 --
 
-INSERT INTO `computer_command` (`id`, `icon`, `name`, `command`) VALUES
-(1, 'img/screen-access.svg', 'VNC', 'vnc://$$TARGET$$'),
-(2, 'img/screen-access.svg', 'RDP', 'rdp://$$TARGET$$'),
-(3, 'img/screen-access.svg', 'SSH', 'ssh://$$TARGET$$'),
-(4, 'img/ping.svg', 'Ping', 'ping://$$TARGET$$'),
-(5, 'img/portscan.svg', 'Nmap', 'nmap://$$TARGET$$');
+INSERT INTO `computer_command` (`id`, `icon`, `name`, `description`, `command`) VALUES
+(1, 'img/screen-access.svg', 'VNC', 'client_extension_note', 'vnc://$$TARGET$$'),
+(2, 'img/screen-access.svg', 'RDP', 'client_extension_note', 'rdp://$$TARGET$$'),
+(3, 'img/screen-access.svg', 'SSH', 'client_extension_note', 'ssh://$$TARGET$$'),
+(4, 'img/ping.svg', 'Ping', 'client_extension_note', 'ping://$$TARGET$$'),
+(5, 'img/portscan.svg', 'Nmap', 'client_extension_note', 'nmap://$$TARGET$$');
 
 -- --------------------------------------------------------
 

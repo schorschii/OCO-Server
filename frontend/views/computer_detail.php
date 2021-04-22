@@ -34,13 +34,15 @@ if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninsta
 
 function echoCommandButton($c, $target) {
 	$actionUrl = str_replace('$$TARGET$$', $target, $c->command);
+	$description = $c->description;
+	if(array_key_exists($c->description, LANG)) $description = LANG[$c->description];
 	if($c->new_tab) {
-		echo "<button title='".LANG['client_extension_note']."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
+		echo "<button title='".htmlspecialchars($description)."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
 		if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;";
 		echo htmlspecialchars($c->name);
 		echo "</button>";
 	} else {
-		echo "<button title='".LANG['client_extension_note']."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
+		echo "<button title='".htmlspecialchars($description)."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
 		if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;";
 		echo htmlspecialchars($c->name);
 		echo "</button>";
