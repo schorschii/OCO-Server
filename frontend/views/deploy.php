@@ -250,7 +250,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 
 <div class='controls'>
 	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked, txtRestartTimeout.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-	<label><input type='checkbox' id='chkAutoCreateUninstallJobs'>&nbsp;<div><?php echo LANG['auto_create_uninstall_jobs']; ?></div></label>
+	<label><input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty($db->getSettingByName('default-auto-create-uninstall-jobs'))) echo 'checked'; ?>>&nbsp;<div><?php echo LANG['auto_create_uninstall_jobs']; ?></div></label>
 </div>
 
 <?php

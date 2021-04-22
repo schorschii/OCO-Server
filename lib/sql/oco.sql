@@ -380,7 +380,8 @@ INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
 (4, 'purge-succeeded-jobs', '7200'),
 (5, 'purge-failed-jobs', '7200'),
 (6, 'default-restart-timeout', '20'),
-(7, 'motd', 'default_motd');
+(7, 'default-auto-create-uninstall-jobs', '1'),
+(8, 'motd', 'default_motd');
 
 -- --------------------------------------------------------
 
