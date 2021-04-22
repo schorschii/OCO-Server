@@ -477,7 +477,7 @@ function addPackageToGroup(packageId, groupId) {
 	params.push({'key':'add_to_group_id', 'value':groupId});
 	params.push({'key':'add_to_group_package_id[]', 'value':packageId});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package.php', paramString, null, function() { alert(L__PACKAGES_ADDED) });
+	ajaxRequestPost('views/package.php', paramString, null, function() { alert(L__PACKAGES_ADDED); refreshContent(); });
 }
 function confirmUninstallPackage(checkboxName) {
 	var ids = [];
@@ -703,7 +703,7 @@ function addComputerToGroup(computerId, groupId) {
 	params.push({'key':'add_to_group_id', 'value':groupId});
 	params.push({'key':'add_to_group_computer_id[]', 'value':computerId});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__COMPUTER_ADDED) });
+	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__COMPUTER_ADDED); refreshContent(); });
 }
 
 // job operations
