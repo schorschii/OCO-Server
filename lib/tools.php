@@ -108,3 +108,17 @@ function echoPackageGroupOptions($db, $parent=null, $indent=0) {
 		echoPackageGroupOptions($db, $g->id, $indent+1);
 	}
 }
+
+function getLocaleNameByLcid($lcid) {
+	if(empty($lcid) || $lcid == '-' || $lcid == '?') return $lcid;
+	$lcidDec = intval(hexdec($lcid));
+	if(($handle = fopen(__DIR__.'/lcid.csv', 'r')) !== false) {
+		while(($data = fgetcsv($handle, 1000, ',')) !== false) {
+			if(intval($data[3]) == $lcidDec) {
+				return $data[0];
+			}
+		}
+		fclose($handle);
+	}
+	return $lcid;
+}

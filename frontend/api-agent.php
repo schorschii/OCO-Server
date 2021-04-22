@@ -182,6 +182,8 @@ switch($srcdata['method']) {
 						$params['hostname'],
 						$data['os'],
 						$data['os_version'],
+						$data['os_license'] ?? '-',
+						$data['os_language'] ?? '-',
 						$data['kernel_version'],
 						$data['architecture'],
 						$data['cpu'],

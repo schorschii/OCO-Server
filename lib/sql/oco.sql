@@ -28,6 +28,8 @@ CREATE TABLE `computer` (
   `hostname` text NOT NULL,
   `os` text NOT NULL,
   `os_version` text NOT NULL,
+  `os_license` text NOT NULL,
+  `os_locale` text NOT NULL,
   `kernel_version` text NOT NULL,
   `architecture` text NOT NULL,
   `cpu` text NOT NULL,

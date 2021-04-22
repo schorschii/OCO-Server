@@ -92,6 +92,14 @@ $commands = $db->getAllComputerCommand();
 				<td><?php echo htmlspecialchars($computer->os_version); ?></td>
 			</tr>
 			<tr>
+				<th><?php echo LANG['license']; ?></th>
+				<td><?php if($computer->os_license=='1') echo LANG['activated']; elseif($computer->os_license=='0') echo LANG['not_activated']; else echo htmlspecialchars($computer->os_license); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['locale']; ?></th>
+				<td><?php echo htmlspecialchars(getLocaleNameByLcid($computer->os_locale)); ?></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['kernel_version']; ?></th>
 				<td><?php echo htmlspecialchars($computer->kernel_version); ?></td>
 			</tr>
