@@ -275,6 +275,12 @@ function updatePackageProcedureTemplates() {
 	}
 }
 function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown) {
+	if(typeof archive === 'undefined') {
+		if(!confirm(L__CONFIRM_CREATE_EMPTY_PACKAGE)) {
+			return;
+		}
+	}
+
 	btnCreatePackage.disabled = true;
 	btnCreatePackage.style.display = 'none';
 	prgPackageUploadContainer.style.display = 'inline-block';
