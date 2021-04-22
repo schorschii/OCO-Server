@@ -122,7 +122,7 @@ class db {
 	}
 	public function addComputer($hostname, $agent_version, $networks, $agent_key) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, oc_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, notes, agent_key)
+			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, os_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, notes, agent_key)
 			VALUES (:hostname, :agent_version, CURRENT_TIMESTAMP, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :agent_key)'
 		);
 		$this->stmt->execute([
