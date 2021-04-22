@@ -392,7 +392,7 @@ $commands = $db->getAllComputerCommand();
 					//echo '<td><input type="checkbox" name="job_id[]" value="'.$j->id.'" onchange="refreshCheckedCounter(tblPendingComputerJobsData)"></td>';
 					echo '<td><a href="'.explorerLink('views/package_detail.php?id='.$j->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$j->package_id.')">'.htmlspecialchars($j->package_name).' ('.htmlspecialchars($j->package_version).')</a></td>';
 					echo '<td><a href="'.explorerLink('views/job_container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
-					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">'.$j->getJobStateString().'</td>';
+					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">'.$j->getStateString().'</td>';
 					echo '</tr>';
 				}
 				?>

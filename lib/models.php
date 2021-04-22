@@ -188,7 +188,7 @@ class Job {
 		}
 		return 'warning';
 	}
-	function getJobStateString() {
+	function getStateString() {
 		$returnCodeString = '';
 		if($this->return_code != null) {
 			$returnCodeString = ' ('.htmlspecialchars($this->return_code).')';

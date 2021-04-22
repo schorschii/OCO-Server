@@ -929,8 +929,8 @@ class db {
 	public function getPendingJobsForComputerDetailPage($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name",
-			j.package_id AS "package_id", p.name AS "package_name", p.name AS "package_version",
-			j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
+			j.package_id AS "package_id", p.name AS "package_name", p.version AS "package_version",
+			j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
 			FROM job j
 			INNER JOIN package p ON j.package_id = p.id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
@@ -945,7 +945,7 @@ class db {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name",
 			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
-			j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
+			j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
 			FROM job j
 			INNER JOIN computer c ON j.computer_id = c.id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
