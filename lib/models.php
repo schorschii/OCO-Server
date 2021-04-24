@@ -98,11 +98,16 @@ class ComputerGroup {
 	public $id;
 	public $name;
 }
-class Package {
+class PackageFamily {
 	public $id;
 	public $name;
 	public $notes;
+}
+class Package {
+	public $id;
+	public $package_family_id;
 	public $version;
+	public $notes;
 	public $author;
 	public $install_procedure;
 	public $install_procedure_success_return_codes;

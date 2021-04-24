@@ -105,9 +105,10 @@ class db {
 	}
 	public function getComputerPackage($cid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", p.id AS "package_id", p.name AS "package_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
+			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN package p ON p.id = cp.package_id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE cp.computer_id = :cid'
 		);
 		$this->stmt->execute([':cid' => $cid]);
@@ -586,13 +587,21 @@ class db {
 	}
 
 	// Package Operations
-	public function addPackage($name, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown) {
-		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (name, version, author, notes, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown)
-			VALUES (:name, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_restart, :install_procedure_shutdown, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_restart, :uninstall_procedure_shutdown)'
-		);
+	public function addPackageFamily($name, $notes) {
+		$this->stmt = $this->dbh->prepare('INSERT INTO package_family (name, notes) VALUES (:name, :notes)');
 		$this->stmt->execute([
 			':name' => $name,
+			':notes' => $notes,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function addPackage($package_family_id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO package (package_family_id, version, author, notes, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown)
+			VALUES (:package_family_id, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_restart, :install_procedure_shutdown, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_restart, :uninstall_procedure_shutdown)'
+		);
+		$this->stmt->execute([
+			':package_family_id' => $package_family_id,
 			':version' => $version,
 			':author' => $author,
 			':notes' => $notes,
@@ -608,17 +617,16 @@ class db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $name, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown) {
+	public function updatePackage($id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE package
-			SET name = :name, version = :version, author = :author, notes = :notes, last_update = CURRENT_TIMESTAMP,
+			SET version = :version, author = :author, notes = :notes, last_update = CURRENT_TIMESTAMP,
 			install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_restart = :install_procedure_restart, install_procedure_shutdown = :install_procedure_shutdown,
 			uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, download_for_uninstall = :download_for_uninstall, uninstall_procedure_restart = :uninstall_procedure_restart, uninstall_procedure_shutdown = :uninstall_procedure_shutdown
 			WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
-			':name' => $name,
 			':version' => $version,
 			':author' => $author,
 			':notes' => $notes,
@@ -660,19 +668,33 @@ class db {
 	}
 	public function getPackageByPackageAndGroup($pid, $gid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.* FROM package_group_member pgm
+			'SELECT p.*, pf.name AS "name" FROM package_group_member pgm
 			INNER JOIN package p ON p.id = pgm.package_id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pgm.package_id = :pid AND pgm.package_group_id = :gid'
 		);
 		$this->stmt->execute([':pid' => $pid, ':gid' => $gid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
-	public function getAllPackage($distinct=false) {
+	public function getAllPackage() {
 		$this->stmt = $this->dbh->prepare(
-			$distinct ? 'SELECT DISTINCT name FROM package' : 'SELECT * FROM package'
+			'SELECT p.*, pf.name AS "name" FROM package p
+			INNER JOIN package_family pf ON pf.id = p.package_family_id'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+	}
+	public function getAllPackageFamily() {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family');
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily');
+	}
+	public function getPackageFamilyByName($name) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE name = :name');
+		$this->stmt->execute([':name' => $name]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily') as $row) {
+			return $row;
+		}
 	}
 	public function getGroupByPackage($pid) {
 		$this->stmt = $this->dbh->prepare(
@@ -701,7 +723,9 @@ class db {
 	}
 	public function getPackage($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM package WHERE id = :id'
+			'SELECT p.*, pf.name AS "name" FROM package p
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			WHERE p.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package') as $row) {
@@ -710,7 +734,9 @@ class db {
 	}
 	public function getPackageByNameVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM package WHERE name = :name AND version = :version'
+			'SELECT p.*, pf.name AS "name" FROM package p
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			WHERE pf.name = :name AND p.version = :version'
 		);
 		$this->stmt->execute([':name' => $name, ':version' => $version]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
@@ -756,8 +782,10 @@ class db {
 	}
 	public function getPackageByGroup($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pgm.sequence AS "package_group_member_sequence" FROM package p
+			'SELECT p.*, pf.name AS "name", pgm.sequence AS "package_group_member_sequence"
+			FROM package p
 			INNER JOIN package_group_member pgm ON p.id = pgm.package_id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pgm.package_group_id = :id
 			ORDER BY pgm.sequence'
 		);
@@ -903,10 +931,11 @@ class db {
 	}
 	public function getAllJobByContainer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.*, p.name AS "package_name", p.version AS "package_version", c.hostname AS "computer_hostname"
+			'SELECT j.*, pf.name AS "package_name", p.version AS "package_version", c.hostname AS "computer_hostname"
 			FROM job j
 			INNER JOIN computer c ON c.id = j.computer_id
 			INNER JOIN package p ON p.id = j.package_id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE j.job_container_id = :id
 			ORDER BY j.computer_id, j.sequence'
 		);
@@ -929,10 +958,11 @@ class db {
 	public function getPendingJobsForComputerDetailPage($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name",
-			j.package_id AS "package_id", p.name AS "package_name", p.version AS "package_version",
+			j.package_id AS "package_id", pf.name AS "package_name", p.version AS "package_version",
 			j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
 			FROM job j
 			INNER JOIN package p ON j.package_id = p.id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')

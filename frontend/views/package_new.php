@@ -31,8 +31,16 @@ if(isset($_POST['name'])) {
 		}
 	}
 	// insert into database
+	$packageFamilyId = null;
+	$existingPackageFamily = $db->getPackageFamilyByName($_POST['name']);
+	if($existingPackageFamily === null) $packageFamilyId = $db->addPackageFamily($_POST['name'], '');
+	else $packageFamilyId = $existingPackageFamily->id;
+	if(!$packageFamilyId) {
+		header('HTTP/1.1 500 Failed');
+		die(LANG['database_error']);
+	}
 	$insertId = $db->addPackage(
-		$_POST['name'],
+		$packageFamilyId,
 		$_POST['version'],
 		$_SESSION['um_username'] ?? '',
 		$_POST['description'] ?? '',
@@ -73,7 +81,7 @@ if(isset($_POST['name'])) {
 <h1><?php echo LANG['new_package']; ?></h1>
 
 <datalist id='lstPackageNames'>
-	<?php foreach($db->getAllPackage(true) as $p) { ?>
+	<?php foreach($db->getAllPackageFamily() as $p) { ?>
 		<option><?php echo htmlspecialchars($p->name); ?></option>
 	<?php } ?>
 </datalist>

@@ -270,9 +270,9 @@ CREATE TABLE `job_container` (
 
 CREATE TABLE `package` (
   `id` int(11) NOT NULL,
-  `name` text NOT NULL,
-  `notes` text NOT NULL,
+  `package_family_id` int(11) NOT NULL,
   `version` text NOT NULL,
+  `notes` text NOT NULL,
   `author` text NOT NULL,
   `install_procedure` text NOT NULL,
   `install_procedure_success_return_codes` text NOT NULL,
@@ -285,6 +285,18 @@ CREATE TABLE `package` (
   `uninstall_procedure_shutdown` tinyint(4) NOT NULL DEFAULT 0,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_update` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `package_family`
+--
+
+CREATE TABLE `package_family` (
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `notes` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -524,6 +536,13 @@ ALTER TABLE `job_container`
 -- Indizes für die Tabelle `package`
 --
 ALTER TABLE `package`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_package_family_id` (`package_family_id`);
+
+--
+-- Indizes für die Tabelle `package_family`
+--
+ALTER TABLE `package_family`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -668,6 +687,12 @@ ALTER TABLE `package`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT für Tabelle `package_family`
+--
+ALTER TABLE `package_family`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT für Tabelle `package_group`
 --
 ALTER TABLE `package_group`
@@ -778,6 +803,12 @@ ALTER TABLE `job`
   ADD CONSTRAINT `fk_job_1` FOREIGN KEY (`job_container_id`) REFERENCES `job_container` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_job_2` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_job_3` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `package`
+--
+ALTER TABLE `package`
+  ADD CONSTRAINT `fk_package_family_id` FOREIGN KEY (`package_family_id`) REFERENCES `package_family` (`id`);
 
 --
 -- Constraints der Tabelle `package_group`

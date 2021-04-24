@@ -69,7 +69,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	if(!empty($_POST['package_id'])) foreach($_POST['package_id'] as $package_id) {
 		$p = $db->getPackage($package_id);
 		if($p !== null) $packages[$p->id] = [
-			'name' => $p->name,
+			'package_family_id' => $p->package_family_id,
 			'procedure' => $p->install_procedure,
 			'success_return_codes' => $p->install_procedure_success_return_codes,
 			'install_procedure_restart' => $p->install_procedure_restart,
@@ -90,7 +90,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	if(count($package_group_ids) > 1) foreach($package_group_ids as $package_group_id) {
 		foreach($db->getPackageByGroup($package_group_id) as $p) {
 			$packages[$p->id] = [
-				'name' => $p->name,
+				'package_family_id' => $p->package_family_id,
 				'procedure' => $p->install_procedure,
 				'success_return_codes' => $p->install_procedure_success_return_codes,
 				'install_procedure_restart' => $p->install_procedure_restart,
@@ -123,7 +123,6 @@ if(!empty($_POST['add_jobcontainer'])) {
 	}
 
 	// create jobs
-	$count = 0;
 	if($jcid = $db->addJobContainer(
 		$_POST['add_jobcontainer'], $_SESSION['um_username'],
 		empty($_POST['date_start']) ? date('Y-m-d H:i:s') : $_POST['date_start'],
@@ -139,7 +138,8 @@ if(!empty($_POST['add_jobcontainer'])) {
 				// create uninstall jobs
 				if(!empty($_POST['auto_create_uninstall_jobs'])) {
 					foreach($db->getComputerPackage($computer_id) as $cp) {
-						if($cp->package_name === $package['name']) {
+						// uninstall it, if it is from the same package family
+						if($cp->package_family_id === $package['package_family_id']) {
 							$cpp = $db->getPackage($cp->package_id);
 							if($cpp == null) continue;
 							$db->addJob($jcid, $computer_id,
@@ -162,7 +162,6 @@ if(!empty($_POST['add_jobcontainer'])) {
 					$package['install_procedure_shutdown'] ? $_POST['restart_timeout'] : -1,
 					$sequence
 				)) {
-					$count ++;
 					$sequence ++;
 				}
 			}
