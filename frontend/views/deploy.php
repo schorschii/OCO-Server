@@ -74,6 +74,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 			'success_return_codes' => $p->install_procedure_success_return_codes,
 			'install_procedure_restart' => $p->install_procedure_restart,
 			'install_procedure_shutdown' => $p->install_procedure_shutdown,
+			'download' => $p->getFilePath() ? true : false,
 		];
 	}
 	if(!empty($_POST['package_group_id'])) foreach($_POST['package_group_id'] as $package_group_id) {
@@ -94,6 +95,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 				'success_return_codes' => $p->install_procedure_success_return_codes,
 				'install_procedure_restart' => $p->install_procedure_restart,
 				'install_procedure_shutdown' => $p->install_procedure_shutdown,
+				'download' => $p->getFilePath() ? true : false,
 			];
 		}
 	}
@@ -155,7 +157,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 				// create job
 				if($db->addJob($jcid, $computer_id,
 					$pid, $package['procedure'], $package['success_return_codes'],
-					0/*is_uninstall*/, 1/*download*/,
+					0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 					$package['install_procedure_restart'] ? $_POST['restart_timeout'] : -1,
 					$package['install_procedure_shutdown'] ? $_POST['restart_timeout'] : -1,
 					$sequence

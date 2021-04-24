@@ -13,17 +13,8 @@ if(isset($_POST['name'])) {
 		die(LANG['package_exists_with_version']);
 	}
 	// decide what to do with zip archive
-	if(empty($_FILES['archive'])) {
-		// no file uploaded - create empty zip file
-		$tmpName = '/tmp/ocotmparchive.zip';
-		$zip = new ZipArchive();
-		if(!$zip->open($tmpName, ZipArchive::CREATE)) {
-			header('HTTP/1.1 500 Cannot Create Zip Archive');
-			die(htmlspecialchars($mimeType));
-		}
-		$zip->addFromString('oco_empty_archive', '');
-		$zip->close();
-	} else {
+	$tmpName = null;
+	if(!empty($_FILES['archive'])) {
 		// use file from user upload
 		$tmpName = $_FILES['archive']['tmp_name'];
 		$mimeType = mime_content_type($_FILES['archive']['tmp_name']);
@@ -60,18 +51,20 @@ if(isset($_POST['name'])) {
 		die(LANG['database_error']);
 	}
 	// move file to payload dir
-	$filename = intval($insertId).'.zip';
-	$filepath = PACKAGE_PATH.'/'.$filename;
-	if(!empty($_FILES['archive']) && $tmpName === $_FILES['archive']['tmp_name']) {
-		$result = move_uploaded_file($tmpName, $filepath);
-	} else {
-		$result = rename($tmpName, $filepath);
-	}
-	if(!$result) {
-		error_log('Can not move uploaded file to: '.$filepath);
-		$db->removePackage($insertId);
-		header('HTTP/1.1 500 Can Not Move Uploaded File');
-		die();
+	if($tmpName !== null) {
+		$filename = intval($insertId).'.zip';
+		$filepath = PACKAGE_PATH.'/'.$filename;
+		if(!empty($_FILES['archive']) && $tmpName === $_FILES['archive']['tmp_name']) {
+			$result = move_uploaded_file($tmpName, $filepath);
+		} else {
+			$result = rename($tmpName, $filepath);
+		}
+		if(!$result) {
+			error_log('Can not move uploaded file to: '.$filepath);
+			$db->removePackage($insertId);
+			header('HTTP/1.1 500 Can Not Move Uploaded File');
+			die();
+		}
 	}
 	die(strval(intval($insertId)));
 }

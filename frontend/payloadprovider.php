@@ -26,7 +26,11 @@ if(!empty($_GET['id'])) {
 	}
 
 	$path = PACKAGE_PATH.'/'.intval($package->id).'.zip';
-	if(file_exists($path)) {
+	if(!file_exists($path)) {
+
+		header('HTTP/1.1 404 Not Found'); die();
+
+	} else {
 
 		if(empty($_GET['resumable'])) {
 			// use direct download via readfile() by default because its much faster
@@ -40,7 +44,7 @@ if(!empty($_GET['id'])) {
 			try {
 				$download = new ResumeDownload($path);
 				$download->process();
-			} catch (Exception $e) {
+			} catch(Exception $e) {
 				header('HTTP/1.1 404 File Not Found');
 				die('Sorry, an error occured.');
 			}
