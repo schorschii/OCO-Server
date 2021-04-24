@@ -1,9 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.5deb2
+-- version 5.0.4
 -- https://www.phpmyadmin.net/
+--
+-- Server-Version: 10.3.25-MariaDB-0+deb10u1
+-- PHP-Version: 7.3.19-1~deb10u1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -60,19 +62,19 @@ CREATE TABLE `computer_command` (
   `name` text NOT NULL,
   `description` text NOT NULL,
   `command` text NOT NULL,
-  `new_tab` int(11) NOT NULL DEFAULT '0'
+  `new_tab` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Daten für Tabelle `computer_command`
 --
 
-INSERT INTO `computer_command` (`id`, `icon`, `name`, `description`, `command`) VALUES
-(1, 'img/screen-access.svg', 'VNC', 'client_extension_note', 'vnc://$$TARGET$$'),
-(2, 'img/screen-access.svg', 'RDP', 'client_extension_note', 'rdp://$$TARGET$$'),
-(3, 'img/screen-access.svg', 'SSH', 'client_extension_note', 'ssh://$$TARGET$$'),
-(4, 'img/ping.svg', 'Ping', 'client_extension_note', 'ping://$$TARGET$$'),
-(5, 'img/portscan.svg', 'Nmap', 'client_extension_note', 'nmap://$$TARGET$$');
+INSERT INTO `computer_command` (`id`, `icon`, `name`, `description`, `command`, `new_tab`) VALUES
+(1, 'img/screen-access.svg', 'VNC', 'client_extension_note', 'vnc://$$TARGET$$', 0),
+(2, 'img/screen-access.svg', 'RDP', 'client_extension_note', 'rdp://$$TARGET$$', 0),
+(3, 'img/screen-access.svg', 'SSH', 'client_extension_note', 'ssh://$$TARGET$$', 0),
+(4, 'img/ping.svg', 'Ping', 'client_extension_note', 'ping://$$TARGET$$', 0),
+(5, 'img/portscan.svg', 'Nmap', 'client_extension_note', 'nmap://$$TARGET$$', 0);
 
 -- --------------------------------------------------------
 
@@ -127,7 +129,7 @@ CREATE TABLE `computer_package` (
   `package_id` int(11) NOT NULL,
   `installed_procedure` text NOT NULL,
   `installed` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
@@ -141,8 +143,8 @@ CREATE TABLE `computer_partition` (
   `device` text NOT NULL,
   `mountpoint` text NOT NULL,
   `filesystem` text NOT NULL,
-  `size` bigint NOT NULL,
-  `free` bigint NOT NULL
+  `size` bigint(20) NOT NULL,
+  `free` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -348,14 +350,14 @@ CREATE TABLE `report_group` (
   `id` int(11) NOT NULL,
   `parent_report_group_id` int(11) DEFAULT NULL,
   `name` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Daten für Tabelle `report_group`
 --
 
-INSERT INTO `report_group` (`id`, `name`) VALUES
-(1, 'report_predefined');
+INSERT INTO `report_group` (`id`, `parent_report_group_id`, `name`) VALUES
+(1, NULL, 'report_predefined');
 
 -- --------------------------------------------------------
 
@@ -374,12 +376,12 @@ CREATE TABLE `setting` (
 --
 
 INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
-(1, 'agent-key', '123'),
-(2, 'agent-update-interval', '7200'),
-(3, 'agent-registration-enabled', '1'),
-(4, 'purge-succeeded-jobs', '7200'),
-(5, 'purge-failed-jobs', '7200'),
-(6, 'default-restart-timeout', '20'),
+(1, 'agent-key', 'ernesto'),
+(2, 'agent-update-interval', '3000'),
+(3, 'agent-registration-enabled', '0'),
+(4, 'purge-succeeded-jobs', '14400'),
+(5, 'purge-failed-jobs', '172800'),
+(6, 'default-restart-timeout', '5'),
 (7, 'default-auto-create-uninstall-jobs', '1'),
 (8, 'motd', 'default_motd');
 
@@ -435,7 +437,7 @@ ALTER TABLE `computer_command`
 --
 ALTER TABLE `computer_group`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_parent_computer_group_id` (`parent_computer_group_id`);
+  ADD KEY `parent_computer_group_id` (`parent_computer_group_id`);
 
 --
 -- Indizes für die Tabelle `computer_group_member`
@@ -529,7 +531,7 @@ ALTER TABLE `package`
 --
 ALTER TABLE `package_group`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_parent_package_group_id` (`parent_package_group_id`);
+  ADD KEY `parent_package_group_id` (`parent_package_group_id`);
 
 --
 -- Indizes für die Tabelle `package_group_member`
@@ -551,7 +553,7 @@ ALTER TABLE `report`
 --
 ALTER TABLE `report_group`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_parent_report_group_id` (`parent_report_group_id`);
+  ADD KEY `parent_report_group_id` (`parent_report_group_id`);
 
 --
 -- Indizes für die Tabelle `setting`
@@ -715,7 +717,7 @@ ALTER TABLE `systemuser`
 -- Constraints der Tabelle `computer_group`
 --
 ALTER TABLE `computer_group`
-  ADD CONSTRAINT `fk_parent_computer_group_id` FOREIGN KEY (`parent_computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `fk_parent_computer_group_id` FOREIGN KEY (`parent_computer_group_id`) REFERENCES `computer_group` (`id`);
 
 --
 -- Constraints der Tabelle `computer_group_member`
@@ -736,6 +738,18 @@ ALTER TABLE `computer_network`
 ALTER TABLE `computer_package`
   ADD CONSTRAINT `fk_computer_package_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_computer_package_2` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `computer_partition`
+--
+ALTER TABLE `computer_partition`
+  ADD CONSTRAINT `fk_computer_partition_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints der Tabelle `computer_printer`
+--
+ALTER TABLE `computer_printer`
+  ADD CONSTRAINT `fk_computer_printer_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `computer_screen`
@@ -769,7 +783,7 @@ ALTER TABLE `job`
 -- Constraints der Tabelle `package_group`
 --
 ALTER TABLE `package_group`
-  ADD CONSTRAINT `fk_parent_package_group_id` FOREIGN KEY (`parent_package_group_id`) REFERENCES `package_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `fk_parent_package_group_id` FOREIGN KEY (`parent_package_group_id`) REFERENCES `package_group` (`id`);
 
 --
 -- Constraints der Tabelle `package_group_member`
@@ -777,20 +791,6 @@ ALTER TABLE `package_group`
 ALTER TABLE `package_group_member`
   ADD CONSTRAINT `fk_package_group_1` FOREIGN KEY (`package_group_id`) REFERENCES `package_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_package_group_2` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-COMMIT;
-
---
--- Constraints der Tabelle `computer_partition`
---
-ALTER TABLE `computer_partition`
-  ADD CONSTRAINT `fk_computer_partition_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints der Tabelle `computer_printer`
---
-ALTER TABLE `computer_printer`
-  ADD CONSTRAINT `fk_computer_printer_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-COMMIT;
 
 --
 -- Constraints der Tabelle `report`
@@ -802,7 +802,7 @@ ALTER TABLE `report`
 -- Constraints der Tabelle `report_group`
 --
 ALTER TABLE `report_group`
-  ADD CONSTRAINT `fk_parent_report_group_id` FOREIGN KEY (`parent_report_group_id`) REFERENCES `report_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+  ADD CONSTRAINT `fk_parent_report_group_id` FOREIGN KEY (`parent_report_group_id`) REFERENCES `report_group` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
