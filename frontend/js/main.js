@@ -269,7 +269,9 @@ function updatePackageProcedureTemplates() {
 		var newOptions2 = '';
 		var i, L = lstUninstallProceduresTemplates.options.length - 1;
 		for(i = L; i >= 0; i--) {
-			newOptions2 += '<option>'+lstUninstallProceduresTemplates.options[i].innerText.replace('[FILENAME]',fleArchive.files[0].name)+'</option>';
+			var fileName = fleArchive.files[0].name;
+			if(fileName.endsWith('.deb')) fileName = fileName.replace('.deb', '');
+			newOptions2 += '<option>'+lstUninstallProceduresTemplates.options[i].innerText.replace('[FILENAME]',fileName)+'</option>';
 		}
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
