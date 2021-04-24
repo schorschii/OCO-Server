@@ -676,6 +676,15 @@ class db {
 		$this->stmt->execute([':pid' => $pid, ':gid' => $gid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
+	public function getPackageByFamily($fid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT p.*, pf.name AS "name" FROM package p
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			WHERE p.package_family_id = :package_family_id'
+		);
+		$this->stmt->execute([':package_family_id' => $fid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+	}
 	public function getAllPackage() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "name" FROM package p

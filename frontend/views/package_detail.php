@@ -156,26 +156,25 @@ if($package === null) die(LANG['not_found']);
 	</div>
 
 	<div>
-		<h2><?php echo LANG['pending_jobs']; ?></h2>
-		<table id='tblPendingPackageJobsData' class='list searchable sortable savesort'>
+		<h2><?php echo LANG['other_packages_from_this_family']; ?></h2>
+		<table id='tblOtherPackagesData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<!--<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPendingPackageJobsData, this.checked)'></th>-->
-					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['job_container']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['status']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['version']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['size']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['created']; ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php
 				$counter = 0;
-				foreach($db->getPendingJobsForPackageDetailPage($package->id) as $j) {
+				foreach($db->getPackageByFamily($package->package_family_id) as $p) {
+					if($p->id === $package->id) continue; // do not show this package
 					$counter ++;
 					echo '<tr>';
-					//echo '<td><input type="checkbox" name="job_id[]" value="'.$j->id.'" onchange="refreshCheckedCounter(tblPendingPackageJobsData)"></td>';
-					echo '<td><a href="'.explorerLink('views/computer_detail.php?id='.$j->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$j->computer_id.')">'.htmlspecialchars($j->computer_hostname).'</a></td>';
-					echo '<td><a href="'.explorerLink('views/job_container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
-					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">'.$j->getStateString().'</td>';
+					echo '<td><a href="'.explorerLink('views/package_detail.php?id='.$p->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->id.')">'.htmlspecialchars($p->version).'</a></td>';
+					echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
+					echo '<td>'.$p->created.'</td>';
 					echo '</tr>';
 				}
 				?>
@@ -238,5 +237,40 @@ if($package === null) die(LANG['not_found']);
 			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 			<button onclick='confirmUninstallPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 		</div>
+	</div>
+
+	<div>
+		<h2><?php echo LANG['pending_jobs']; ?></h2>
+		<table id='tblPendingPackageJobsData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<!--<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPendingPackageJobsData, this.checked)'></th>-->
+					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['job_container']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['status']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$counter = 0;
+				foreach($db->getPendingJobsForPackageDetailPage($package->id) as $j) {
+					$counter ++;
+					echo '<tr>';
+					//echo '<td><input type="checkbox" name="job_id[]" value="'.$j->id.'" onchange="refreshCheckedCounter(tblPendingPackageJobsData)"></td>';
+					echo '<td><a href="'.explorerLink('views/computer_detail.php?id='.$j->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$j->computer_id.')">'.htmlspecialchars($j->computer_hostname).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/job_container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
+					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">'.$j->getStateString().'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
 	</div>
 </div>

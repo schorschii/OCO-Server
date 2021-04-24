@@ -231,6 +231,7 @@ const LANG = [
 	'not_activated' => 'Not Activated',
 	'locale' => 'Locale',
 	'confirm_create_empty_package' => 'No file selected. Do you want to create an empty package?',
+	'other_packages_from_this_family' => 'Other Packages From This Family',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
