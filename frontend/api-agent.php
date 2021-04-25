@@ -29,7 +29,7 @@ switch($srcdata['method']) {
 		// check authorization
 		$computer = $db->getComputerByName($params['hostname']);
 		if($params['agent-key'] !== $computer->agent_key) {
-			header('HTTP/1.1 401 Client Not Authorized'); die();
+			authErrorExit();
 		}
 
 		// get job details
@@ -82,7 +82,7 @@ switch($srcdata['method']) {
 
 		if($computer == null) {
 			if($params['agent-key'] !== $db->getSettingByName('agent-key')) {
-				header('HTTP/1.1 401 Client Not Authorized'); die();
+				authErrorExit();
 			}
 
 			if($db->getSettingByName('agent-registration-enabled') == '1') {
@@ -103,7 +103,7 @@ switch($srcdata['method']) {
 			if(empty($computer->agent_key)) {
 				// computer was pre-registered in the web frontend: check global key and generate individual key
 				if($params['agent-key'] !== $db->getSettingByName('agent-key')) {
-					header('HTTP/1.1 401 Client Not Authorized'); die();
+					authErrorExit();
 				} else {
 					$agent_key = randomString();
 					$db->updateComputerAgentkey($computer->id, $agent_key);
@@ -111,7 +111,7 @@ switch($srcdata['method']) {
 			} else {
 				// check individual agent key
 				if($params['agent-key'] !== $computer->agent_key) {
-					header('HTTP/1.1 401 Client Not Authorized'); die();
+					authErrorExit();
 				}
 			}
 
@@ -155,7 +155,7 @@ switch($srcdata['method']) {
 			$data = $params['data'];
 			$computer = $db->getComputerByName($params['hostname']);
 			if($params['agent-key'] !== $computer->agent_key) {
-				header('HTTP/1.1 401 Client Not Authorized'); die();
+				authErrorExit();
 			}
 
 			if($computer !== null) {
@@ -222,3 +222,10 @@ switch($srcdata['method']) {
 // return response
 header('Content-Type: application/json');
 echo json_encode($resdata);
+
+
+function authErrorExit() {
+	header('HTTP/1.1 401 Client Not Authorized');
+	error_log('api-agent: authentication failure');
+	die();
+}

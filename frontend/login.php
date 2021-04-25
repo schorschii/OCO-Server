@@ -20,7 +20,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		$infoclass = "red";
 	} else {
 		if(!$user->locked) {
-			if(validatePassword($user, $_POST['password'])) {
+			if(checkPassword($user, $_POST['password'])) {
 				$_SESSION['um_username'] = $user->username;
 				$_SESSION['um_userid'] = $user->id;
 				header('Location: index.php');
@@ -54,6 +54,13 @@ if(!empty($_SESSION['um_username'])) {
 	die();
 }
 
+function checkPassword($userObject, $checkPassword) {
+	$result = validatePassword($userObject, $checkPassword);
+	if(!$result) {
+		error_log('user '.$userObject->username.': authentication failure');
+	}
+	return $result;
+}
 function validatePassword($userObject, $checkPassword) {
 	if($userObject->ldap) {
 		if(empty($checkPassword)) return false;
