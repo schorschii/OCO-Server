@@ -95,7 +95,8 @@ if(!empty($_GET['id'])) {
 		echo "<tr>";
 		echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$job->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
 		echo "<td><a href='".explorerLink('views/package_detail.php?id='.$job->package_id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
-		echo "<td>";
+		echo "<td class='middle'>";
+		if($job->is_uninstall > 0) echo "<img src='img/delete.svg' title='".LANG['uninstall']."'>&nbsp;";
 		echo htmlspecialchars(shorter($job->package_procedure));
 		if($job->restart > 0) echo ' ('.LANG['restart_after'].' '.intval($job->restart).' '.LANG['minutes'].')';
 		if($job->shutdown > 0) echo ' ('.LANG['shutdown_after'].' '.intval($job->shutdown).' '.LANG['minutes'].')';
