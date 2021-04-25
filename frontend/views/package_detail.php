@@ -12,7 +12,6 @@ if(!empty($_POST['edit_id'])) {
 	}
 	$db->updatePackage(
 		$package->id,
-		$package->name,
 		$package->version,
 		$package->author,
 		$_POST['description'],
