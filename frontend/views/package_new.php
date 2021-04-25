@@ -4,7 +4,7 @@ require_once('../../lib/loader.php');
 require_once('../session.php');
 
 if(isset($_POST['name'])) {
-	if(empty($_POST['name']) || empty($_POST['install_procedure'])) {
+	if(empty($_POST['name']) || empty($_POST['install_procedure']) || empty($_POST['version'])) {
 		header('HTTP/1.1 400 Missing Information');
 		die(LANG['please_fill_required_fields']);
 	}
