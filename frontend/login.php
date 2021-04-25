@@ -37,12 +37,21 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		}
 	}
 }
+
+// execute logout if requested
 elseif(isset($_GET['logout'])) {
 	if(isset($_SESSION['um_username'])) {
+		session_unset();
 		session_destroy();
 		$info = LANG['log_out_successful'];
 		$infoclass = "green";
 	}
+}
+
+// redirect to index.php if already logged in
+if(!empty($_SESSION['um_username'])) {
+	header('Location: index.php');
+	die();
 }
 
 function validatePassword($userObject, $checkPassword) {
