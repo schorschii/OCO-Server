@@ -183,15 +183,12 @@ class Job {
 	public const STATUS_SUCCEEDED = 3;
 	// functions
 	function getIcon() {
-		if($this->state == self::STATUS_WAITING_FOR_CLIENT || $this->state == self::STATUS_DOWNLOAD_STARTED || $this->state == self::STATUS_EXECUTION_STARTED) {
-			return 'wait';
-		}
-		if($this->state == self::STATUS_FAILED || $this->state == self::STATUS_EXPIRED) {
-			return 'error';
-		}
-		if($this->state == self::STATUS_SUCCEEDED) {
-			return 'tick';
-		}
+		if($this->state == self::STATUS_WAITING_FOR_CLIENT) return 'wait';
+		if($this->state == self::STATUS_DOWNLOAD_STARTED) return 'downloading';
+		if($this->state == self::STATUS_EXECUTION_STARTED) return 'pending';
+		if($this->state == self::STATUS_FAILED) return 'error';
+		if($this->state == self::STATUS_EXPIRED) return 'timeout';
+		if($this->state == self::STATUS_SUCCEEDED) return 'tick';
 		return 'warning';
 	}
 	function getStateString() {
