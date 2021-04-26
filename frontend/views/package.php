@@ -63,7 +63,7 @@ if(empty($_GET['id'])) {
 	$packages = $db->getPackageByGroup($_GET['id']);
 	$group = $db->getPackageGroup($_GET['id']);
 	if($group === null) die(LANG['not_found']);
-	echo "<h1>".htmlspecialchars($group->name)."</h1>";
+	echo "<h1>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id))."</h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
 	echo "<button onclick='newPackageGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";

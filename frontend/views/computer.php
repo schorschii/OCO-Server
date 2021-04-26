@@ -84,7 +84,7 @@ if(empty($_GET['id'])) {
 	$computer = $db->getComputerByGroup($_GET['id']);
 	$group = $db->getComputerGroup($_GET['id']);
 	if($group === null) die(LANG['not_found']);
-	echo "<h1>".htmlspecialchars($group->name)."</h1>";
+	echo "<h1>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
 	echo "<button onclick='newComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";

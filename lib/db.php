@@ -470,6 +470,21 @@ class db {
 		])) return false;
 	}
 
+	public function getComputerGroupBreadcrumbString($id) {
+		$currentGroupId = $id;
+		$groupStrings = [];
+		while(true) {
+			$currentGroup = $this->getComputerGroup($currentGroupId);
+			$groupStrings[] = $currentGroup->name;
+			if($currentGroup->parent_computer_group_id === null) {
+				break;
+			} else {
+				$currentGroupId = $currentGroup->parent_computer_group_id;
+			}
+		}
+		$groupStrings = array_reverse($groupStrings);
+		return implode($groupStrings, ' » ');
+	}
 	public function getComputerGroup($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_group WHERE id = :id'
@@ -758,6 +773,21 @@ class db {
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPackage') as $row) {
 			return $row;
 		}
+	}
+	public function getPackageGroupBreadcrumbString($id) {
+		$currentGroupId = $id;
+		$groupStrings = [];
+		while(true) {
+			$currentGroup = $this->getPackageGroup($currentGroupId);
+			$groupStrings[] = $currentGroup->name;
+			if($currentGroup->parent_package_group_id === null) {
+				break;
+			} else {
+				$currentGroupId = $currentGroup->parent_package_group_id;
+			}
+		}
+		$groupStrings = array_reverse($groupStrings);
+		return implode($groupStrings, ' » ');
 	}
 	public function getPackageGroup($id) {
 		$this->stmt = $this->dbh->prepare(
