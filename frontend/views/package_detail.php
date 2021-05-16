@@ -132,11 +132,12 @@ if($package === null) die(LANG['not_found']);
 				<td>
 					<?php
 					$res = $db->getGroupByPackage($package->id);
-					$groups = [];
 					$i = 0;
 					foreach($res as $group) {
-						echo "<a href='".explorerLink('views/package.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
-						if(++$i != count($res)) { echo ", "; }
+						echo "<a class='subbuttons' href='".explorerLink('views/package.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id));
+						echo "<button onclick='event.stopPropagation();removePackageFromGroup([".$package->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.svg' title='".LANG['remove_from_group']."'></button>";
+						echo "</a>";
+						if(++$i != count($res)) { echo "<br>"; }
 					}
 					?>
 				</td>

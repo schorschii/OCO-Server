@@ -158,11 +158,12 @@ $commands = $db->getAllComputerCommand();
 				<td>
 					<?php
 					$res = $db->getGroupByComputer($computer->id);
-					$groups = [];
 					$i = 0;
 					foreach($res as $group) {
-						echo "<a href='".explorerLink('views/computer.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".htmlspecialchars($group->name)."</a>";
-						if(++$i != count($res)) { echo ", "; }
+						echo "<a class='subbuttons' href='".explorerLink('views/computer.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id));
+						echo "<button onclick='event.stopPropagation();removeComputerFromGroup([".$computer->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.svg' title='".LANG['remove_from_group']."'></button>";
+						echo "</a>";
+						if(++$i != count($res)) { echo "<br>"; }
 					}
 					?>
 				</td>

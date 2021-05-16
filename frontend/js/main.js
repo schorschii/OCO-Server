@@ -414,6 +414,9 @@ function removeSelectedPackageFromGroup(checkboxName, groupId) {
 		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
+	removePackageFromGroup(ids, groupId);
+}
+function removePackageFromGroup(ids, groupId) {
 	var params = [];
 	params.push({'key':'remove_from_group_id', 'value':groupId});
 	ids.forEach(function(entry) {
@@ -588,6 +591,9 @@ function removeSelectedComputerFromGroup(checkboxName, groupId) {
 		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
+	removeComputerFromGroup(ids, groupId);
+}
+function removeComputerFromGroup(ids, groupId) {
 	var params = [];
 	params.push({'key':'remove_from_group_id', 'value':groupId});
 	ids.forEach(function(entry) {

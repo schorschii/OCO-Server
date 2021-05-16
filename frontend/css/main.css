@@ -488,9 +488,12 @@ table.list .sortsymbol.unsorted::after {
 	content: "△▽";
 }
 
+img.small,
 table tr th > img,
 table tr td > img {
 	height: 18px;
+	vertical-align: middle;
+	margin-bottom: 2px;
 }
 table tr td button > img {
 	height: 24px;
@@ -498,6 +501,21 @@ table tr td button > img {
 
 table.fixed {
 	table-layout: fixed;
+}
+
+a.subbuttons > button {
+	opacity: 0;
+	transition: opacity 0.2s ease;
+	vertical-align: middle;
+	margin: 0px 0px 1px 4px;
+	padding: 0px;
+	border: none;
+	background: transparent;
+	background-color: transparent;
+	box-shadow: none;
+}
+a.subbuttons:hover > button {
+	opacity: 1;
 }
 
 code {
