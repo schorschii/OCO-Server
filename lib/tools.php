@@ -70,6 +70,9 @@ function wol($macs) {
 
 	$escapedMacs = [];
 	foreach($macs as $mac) {
+		// check validity
+		if(!filter_var($mac, FILTER_VALIDATE_MAC)) continue;
+
 		// create magic packet
 		$mac = str_replace('-', '', $mac);
 		$escapedMacs[] = escapeshellarg($mac);
@@ -113,6 +116,7 @@ function wol($macs) {
 		}
 		$cmd = 'wakeonlan '.implode(' ', $escapedMacs);
 		$stdio_stream = ssh2_exec($c, $cmd);
+		echo "Satellite WOL ".$server['USER']."@".$server['ADDRESS'].": ".$cmd."\n";
 		stream_set_blocking($stdio_stream, true);
 		$cmd_output = stream_get_contents($stdio_stream);
 	}
