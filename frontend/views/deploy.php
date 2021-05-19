@@ -112,11 +112,13 @@ if(!empty($_POST['add_jobcontainer'])) {
 		if(strtotime($_POST['date_start']) <= time()) {
 			// instant WOL if start time is already in the past
 			$wolSent = 1;
+			$wolMacAdresses = [];
 			foreach($computer_ids as $cid) {
 				foreach($db->getComputerNetwork($cid) as $cn) {
-					wol($cn->mac);
+					$wolMacAdresses[] = $cn->mac;
 				}
 			}
+			wol($wolMacAdresses);
 		} else {
 			$wolSent = 0;
 		}

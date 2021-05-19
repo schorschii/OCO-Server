@@ -63,22 +63,25 @@ function shorter($text, $charsLimit=40, $dots=true) {
 	}
 }
 
-function wol($mac) {
-	// create magic packet
-	$mac = str_replace('-', '', $mac);
-	$addr_byte = explode(':', $mac);
-	$hw_addr = '';
-	for($a=0; $a < 6; $a++) $hw_addr .= chr(hexdec($addr_byte[$a]));
-	$msg = str_repeat(chr(0xff), 6).str_repeat($hw_addr, 16);
-
+function wol($macs) {
+	// create socket for sending local WOL packets
 	$s = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-	if(!$s) {
-		echo "Error creating socket! '".socket_last_error($s)."' - " . socket_strerror(socket_last_error($s));
-	} else {
+	if(!$s) throw new Exception("Error creating socket! '".socket_last_error($s)."' - " . socket_strerror(socket_last_error($s)));
+
+	$escapedMacs = [];
+	foreach($macs as $mac) {
+		// create magic packet
+		$mac = str_replace('-', '', $mac);
+		$escapedMacs[] = escapeshellarg($mac);
+		$addr_byte = explode(':', $mac);
+		$hw_addr = '';
+		for($a=0; $a < 6; $a++) $hw_addr .= chr(hexdec($addr_byte[$a]));
+		$packetPayload = str_repeat(chr(0xff), 6).str_repeat($hw_addr, 16);
+
 		// setting a broadcast option to socket
 		$opt_ret = socket_set_option($s, 1, 6, TRUE);
 		if($opt_ret < 0) {
-			echo "setsockopt() failed, error: " . strerror($opt_ret) . "\n";
+			throw new Exception("setsockopt() failed, error: " . strerror($opt_ret) . "\n");
 		}
 		// send magic packet to broadcast on all interfaces
 		$interfaceAddresses = ['0.0.0.0']; // fallback address - sends packet on first interface
@@ -89,10 +92,31 @@ function wol($mac) {
 			if($fields[0] == 'brd') $interfaceAddresses[] = $fields[1];
 		}
 		foreach($interfaceAddresses as $addr) {
-			$e = socket_sendto($s, $msg, strlen($msg), 0, $addr, 9);
+			$e = socket_sendto($s, $packetPayload, strlen($packetPayload), 0, $addr, 9);
 			echo "WOL Magic Packet sent (".$e."), IP=".$addr.", MAC=".$mac."\n";
 		}
 	}
+
+	foreach(SATELLITE_WOL_SERVER as $server) {
+		$originalConnectionTimeout = ini_get('default_socket_timeout');
+		ini_set('default_socket_timeout', 4);
+		$c = @ssh2_connect($server['ADDRESS'], $server['PORT']);
+		ini_set('default_socket_timeout', $originalConnectionTimeout);
+		if(!$c) {
+			error_log('SSH Connection to '.$server['ADDRESS'].' failed');
+			continue;
+		}
+		$a = @ssh2_auth_pubkey_file($c, $server['USER'], $server['PUBKEY'], $server['PRIVKEY']);
+		if(!$a) {
+			error_log('SSH Authentication with '.$server['USER'].'@'.$server['ADDRESS'].' failed');
+			continue;
+		}
+		$cmd = 'wakeonlan '.implode(' ', $escapedMacs);
+		$stdio_stream = ssh2_exec($c, $cmd);
+		stream_set_blocking($stdio_stream, true);
+		$cmd_output = stream_get_contents($stdio_stream);
+	}
+
 	socket_close($s);
 }
 

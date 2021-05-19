@@ -4,19 +4,20 @@ require_once('../../lib/loader.php');
 require_once('../session.php');
 
 if(!empty($_POST['wol_id']) && is_array($_POST['wol_id'])) {
-	$wolPacketsSent = 0;
+	$wolMacAdresses = [];
 	foreach($_POST['wol_id'] as $id) {
 		$c = $db->getComputer($id);
 		if($c != null) {
 			foreach($db->getComputerNetwork($c->id) as $n) {
-				wol($n->mac);
-				$wolPacketsSent ++;
+				$wolMacAdresses[] = $n->mac;
 			}
 		}
 	}
-	if($wolPacketsSent == 0) {
+	if(count($wolMacAdresses) == 0) {
 		header('HTTP/1.1 400 Unable To Perform Requested Action');
 		die(LANG['no_mac_addresses_for_wol']);
+	} else {
+		wol($wolMacAdresses);
 	}
 	die();
 }

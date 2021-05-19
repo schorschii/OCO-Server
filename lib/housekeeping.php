@@ -35,11 +35,13 @@ foreach($db->getAllJobContainer() as $container) {
 foreach($db->getAllJobContainer() as $container) {
 	if($container->wol_sent == 0) {
 		if(strtotime($container->start_time) <= time()) {
+			$wolMacAddresses = [];
 			echo('Execute WOL for Job Container #'.$container->id.' ('.$container->name.')'."\n");
 			foreach($db->getComputerMacByContainer($container->id) as $c) {
 				echo('   Send WOL Magic Packet to '.$c->computer_network_mac."\n");
-				wol($c->computer_network_mac);
+				$wolMacAddresses[] = $c->computer_network_mac;
 			}
+			wol($wolMacAddresses);
 			$db->updateJobContainer(
 				$container->id,
 				$container->name,

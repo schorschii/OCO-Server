@@ -30,8 +30,28 @@ const LDAP_DOMAIN     = '';
 // Example: 'OU=Benutzer,DC=sieber,DC=systems'
 const LDAP_QUERY_ROOT = '';
 
-// Example: 'CN=MasterplanUsers,OU=Benutzer,DC=sieber,DC=systems' or null
+// Example: 'CN=OcoUsers,OU=Benutzer,DC=sieber,DC=systems' or null
 const LDAP_SYNC_GROUP = null;
+
+///// SATELLITE WOL CONFIGURATION (optional) /////
+/*
+ If you want to use Wake On Lan (WOL) on foreign networks (networks, in which your OCO server
+ does not have a network card) you can configure the satellite WOL technology.
+
+ With satellite WOL, the OCO server will contact another server in the target network via SSH executing the "wakeonlan" command.
+
+ Please make sure that the remote server can be accessed with the defined SSH key and that "wakeonlan" ist installed.
+*/
+const SATELLITE_WOL_SERVER = [
+	#[
+	#	'ADDRESS' => 'remoteserver01',
+	#	'PORT' => 22,
+	#	'USER' => 'root',
+	#	'PRIVKEY' => '/path/to/id_rsa',
+	#	'PUBKEY' => '/path/to/id_rsa.pub',
+	#],
+	// more server here...
+];
 
 ///// GENERAL CONFIGURATION /////
 const PACKAGE_PATH = '/var/www/oco/payload';

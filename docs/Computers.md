@@ -21,7 +21,9 @@ It is recommended to **not** make the OCO server available on the internet to pr
 The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in the server settings.
 
 ## Wake On Lan (WOL)
-OCO supports sending WOL magic packets. This only works if the server is in the same subnet as the target computer, because WOL packets are UDP broadcast packets. If you have multiple subnets, you can simply add a new network card to the server for each subnet. Please note that WOL only works via Ethernet (not via WiFi!).
+OCO supports sending WOL magic packets. By default, this only works if the server is in the same subnet as the target computer, because WOL packets are UDP broadcast packets. If you have multiple subnets, you can add a new network card to the server for each subnet or configure "Satellite WOL". When using the satellite WOL technology, the OCO server connects via SSH to another server which is located in the foreign network and then executes the "wakeonlan" command. Please make sure that the remote server can be accessed with the defined SSH key and that "wakeonlan" ist installed. Please read the instructions in the `conf.example.php` file how to setup satellite WOL.
+
+Please note that WOL only works via Ethernet (not via WiFi!).
 
 ## Client Commands
 OCO has a feature called "Client Commands" which allows you to seamlessly open VNC, RDP, SSH sessions with one click on the computer details page. Client Commands can be defined by yourself by editing the records in the table `computer_command`.
