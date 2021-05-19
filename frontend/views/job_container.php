@@ -3,8 +3,10 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
-if(!empty($_POST['remove_container_id'])) {
-	$db->removeJobContainer($_POST['remove_container_id']);
+if(!empty($_POST['remove_container_id']) && is_array($_POST['remove_container_id'])) {
+	foreach($_POST['remove_container_id'] as $id) {
+		$db->removeJobContainer($id);
+	}
 	die();
 }
 if(!empty($_POST['renew_container_id'])) {
@@ -56,116 +58,145 @@ if(!empty($_GET['id'])) {
 	}
 
 	$icon = $db->getJobContainerIcon($container->id);
-	echo "<h1><img src='img/".$icon.".dyn.svg'>".htmlspecialchars($container->name)."</h1>";
-
-	echo "<div class='controls'>";
-	echo "<button onclick='confirmRemoveJobContainer(".htmlspecialchars($container->id).")'><img src='img/delete.svg'>&nbsp;".LANG['delete_container']."</button>";
-	echo "<button onclick='confirmRenewFailedJobsInContainer(".htmlspecialchars($container->id).")' ".($failed>0 ? '' : 'disabled')."><img src='img/refresh.svg'>&nbsp;".LANG['renew_failed_jobs']."</button>";
-	echo "</div>";
-
-	echo "<div class='details-abreast margintop marginbottom'>";
-	echo "<div>";
-	echo "<table class='list'>";
-	echo "<tr><th>".LANG['created']."</th><td>".htmlspecialchars($container->created)."</td></tr>";
-	echo "<tr><th>".LANG['start']."</th><td>".htmlspecialchars($container->start_time)."</td></tr>";
-	echo "<tr><th>".LANG['end']."</th><td>".htmlspecialchars($container->end_time ?? "-")."</td></tr>";
-	echo "<tr><th>".LANG['author']."</th><td>".htmlspecialchars($container->author)."</td></tr>";
-	echo "<tr><th>".LANG['description']."</th><td>".htmlspecialchars($container->notes)."</td></tr>";
-	echo "<tr><th>".LANG['progress']."</th><td title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, null, null, true)."</td></tr>";
-	echo "</table>";
-	echo "</div>";
-	echo "<div></div>";
-	echo "</div>";
-
-	echo "<div class='details-abreast'>";
-	echo "<div>";
-	echo "<table id='tblJobData' class='list searchable sortable savesort'>";
-	echo "<thead>";
-	echo "<tr>";
-	echo "<th class='searchable sortable'>".LANG['computer']."</th>";
-	echo "<th class='searchable sortable'>".LANG['package']."</th>";
-	echo "<th class='searchable sortable'>".LANG['procedure']."</th>";
-	echo "<th class='searchable sortable'>".LANG['order']."</th>";
-	echo "<th class='searchable sortable'>".LANG['status']."</th>";
-	echo "<th class='searchable sortable'>".LANG['last_change']."</th>";
-	echo "</tr>";
-	echo "</thead>";
-	echo "<tbody>";
-	foreach($jobs as $job) {
-		echo "<tr>";
-		echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$job->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
-		echo "<td><a href='".explorerLink('views/package_detail.php?id='.$job->package_id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
-		echo "<td class='middle'>";
-		if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
-		else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
-		echo htmlspecialchars(shorter($job->package_procedure));
-		if($job->restart > 0) echo ' ('.LANG['restart_after'].' '.intval($job->restart).' '.LANG['minutes'].')';
-		if($job->shutdown > 0) echo ' ('.LANG['shutdown_after'].' '.intval($job->shutdown).' '.LANG['minutes'].')';
-		echo "</td>";
-		echo "<td>".htmlspecialchars($job->sequence)."</td>";
-		if(!empty($job->message)) {
-			echo "<td class='middle'>";
-			echo "<img src='img/".$job->getIcon().".dyn.svg'>&nbsp;";
-			echo "<a href='#' onclick='event.preventDefault();showErrorDialog(true,\"".$job->getStateString()."\",this.getAttribute(\"message\"),false)' message='".htmlspecialchars(str_replace(chr(0x00),'',trim($job->message)),ENT_QUOTES)."'>".$job->getStateString()."</a>";
-			echo "</td>";
-		} else {
-			echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'>&nbsp;".$job->getStateString()."</td>";
-		}
-		echo "<td>".htmlspecialchars($job->last_update);
-		echo "</tr>";
-	}
-	echo "</tbody>";
-	echo "</table>";
-	echo "</div>";
-	echo "</div>";
-
-} else {
-
-	echo "<h1>".LANG['job_container']."</h1>";
-
-	echo "<div class='controls'>";
-	echo "<button onclick='refreshContentDeploy()'><img src='img/add.svg'>&nbsp;".LANG['new_deployment_job']."</button>";
-	echo "</div>";
-
-	echo "<div class='details-abreast'>";
-	echo "<div>";
-	echo "<table id='tblJobcontainerData' class='list searchable sortable savesort'>";
-	echo "<thead>";
-	echo "<tr>";
-	echo "<th></th>";
-	echo "<th class='searchable sortable'>".LANG['name']."</th>";
-	echo "<th class='searchable sortable'>".LANG['author']."</th>";
-	echo "<th class='searchable sortable'>".LANG['start']."</th>";
-	echo "<th class='searchable sortable'>".LANG['end']."</th>";
-	echo "<th class='searchable sortable'>".LANG['created']."</th>";
-	echo "<th class='searchable sortable'>".LANG['progress']."</th>";
-	echo "</tr>";
-	echo "</thead>";
-	echo "<tbody>";
-	foreach($db->getAllJobContainer() as $jc) {
-		$percent = 0;
-		$done = 0;
-		$jobs = $db->getAllJobByContainer($jc->id);
-		if(count($jobs) > 0) {
-			foreach($jobs as $job) {
-				if($job->state == Job::STATUS_SUCCEEDED) $done ++;
-			}
-			$percent = $done/count($jobs)*100;
-		}
-		echo "<tr>";
-		echo "<td class='middle'><img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'></td>";
-		echo "<td><a href='".explorerLink('views/job_container.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a></td>";
-		echo "<td>".htmlspecialchars($jc->author)."</td>";
-		echo "<td>".htmlspecialchars($jc->start_time)."</td>";
-		echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
-		echo "<td>".htmlspecialchars($jc->created)."</td>";
-		echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, null, null, true)."</td>";
-		echo "</tr>";
-	}
-	echo "</tbody>";
-	echo "</table>";
-	echo "</div>";
-	echo "</div>";
-
-}
 ?>
+
+	<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><?php echo htmlspecialchars($container->name); ?></h1>
+
+	<div class='controls'>
+		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_container']; ?></button>
+		<button onclick='confirmRenewFailedJobsInContainer(<?php echo $container->id; ?>)' <?php echo ($failed>0 ? '' : 'disabled'); ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
+	</div>
+
+	<div class='details-abreast margintop marginbottom'>
+	<div>
+		<table class='list'>
+			<tr><th><?php echo LANG['created']; ?></th><td><?php echo htmlspecialchars($container->created); ?></td></tr>
+			<tr><th><?php echo LANG['start']; ?></th><td><?php echo htmlspecialchars($container->start_time); ?></td></tr>
+			<tr><th><?php echo LANG['end']; ?></th><td><?php echo htmlspecialchars($container->end_time ?? "-"); ?></td></tr>
+			<tr><th><?php echo LANG['author']; ?></th><td><?php echo htmlspecialchars($container->author); ?></td></tr>
+			<tr><th><?php echo LANG['description']; ?></th><td><?php echo htmlspecialchars($container->notes); ?></td></tr>
+			<tr><th><?php echo LANG['progress']; ?></th><td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, null, null, true); ?></td></tr>
+		</table>
+	</div>
+	<div></div>
+	</div>
+
+	<div class='details-abreast'>
+	<div>
+		<table id='tblJobData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['package']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['order']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['status']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['last_change']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php $counter = 0;
+			foreach($jobs as $job) {
+				$counter ++;
+				echo "<tr>";
+				echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$job->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
+				echo "<td><a href='".explorerLink('views/package_detail.php?id='.$job->package_id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
+				echo "<td class='middle'>";
+				if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
+				else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
+				echo htmlspecialchars(shorter($job->package_procedure));
+				if($job->restart > 0) echo ' ('.LANG['restart_after'].' '.intval($job->restart).' '.LANG['minutes'].')';
+				if($job->shutdown > 0) echo ' ('.LANG['shutdown_after'].' '.intval($job->shutdown).' '.LANG['minutes'].')';
+				echo "</td>";
+				echo "<td>".htmlspecialchars($job->sequence)."</td>";
+				if(!empty($job->message)) {
+					echo "<td class='middle'>";
+					echo "<img src='img/".$job->getIcon().".dyn.svg'>&nbsp;";
+					echo "<a href='#' onclick='event.preventDefault();showErrorDialog(true,\"".$job->getStateString()."\",this.getAttribute(\"message\"),false)' message='".htmlspecialchars(str_replace(chr(0x00),'',trim($job->message)),ENT_QUOTES)."'>".$job->getStateString()."</a>";
+					echo "</td>";
+				} else {
+					echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'>&nbsp;".$job->getStateString()."</td>";
+				}
+				echo "<td>".htmlspecialchars($job->last_update);
+				echo "</tr>";
+			} ?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblJobData")'><?php echo LANG['csv']; ?></a>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+	</div>
+
+<?php } else { ?>
+
+	<h1><?php echo LANG['job_container']; ?></h1>
+
+	<div class='controls'>
+		<button onclick='refreshContentDeploy()'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_deployment_job']; ?></button>
+	</div>
+
+	<div class='details-abreast'>
+	<div>
+		<table id='tblJobcontainerData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobcontainerData, this.checked)'></th>
+					<th class='searchable sortable'><?php echo LANG['name']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['author']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['start']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['end']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['created']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['progress']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php $counter = 0;
+			foreach($db->getAllJobContainer() as $jc) {
+				$counter ++;
+				$percent = 0;
+				$done = 0;
+				$jobs = $db->getAllJobByContainer($jc->id);
+				if(count($jobs) > 0) {
+					foreach($jobs as $job) {
+						if($job->state == Job::STATUS_SUCCEEDED) $done ++;
+					}
+					$percent = $done/count($jobs)*100;
+				}
+				echo "<tr>";
+				echo "<td><input type='checkbox' name='job_container_id[]' value='".$jc->id."' onchange='refreshCheckedCounter(tblJobcontainerData)'></td>";
+				echo "<td class='middle'>";
+				echo  "<img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'>&nbsp;";
+				echo  "<a href='".explorerLink('views/job_container.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a>";
+				echo "</td>";
+				echo "<td>".htmlspecialchars($jc->author)."</td>";
+				echo "<td>".htmlspecialchars($jc->start_time)."</td>";
+				echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
+				echo "<td>".htmlspecialchars($jc->created)."</td>";
+				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, null, null, true)."</td>";
+				echo "</tr>";
+			} ?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
+						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblJobcontainerData")'><?php echo LANG['csv']; ?></a>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<div class='controls'>
+			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+			<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		</div>
+	</div>
+	</div>
+
+<?php } ?>

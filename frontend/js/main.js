@@ -721,9 +721,31 @@ function addComputerToGroup(computerId, groupId) {
 }
 
 // job operations
-function confirmRemoveJobContainer(id) {
+function removeSelectedJobContainer(checkboxName, attributeName=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	confirmRemoveJobContainer(ids);
+}
+function confirmRemoveJobContainer(ids) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_container_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_JOBCONTAINER)) {
-		ajaxRequestPost('views/job_container.php', urlencodeObject({'remove_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
+		ajaxRequestPost('views/job_container.php', paramString, null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
 function confirmRenewFailedJobsInContainer(id) {
