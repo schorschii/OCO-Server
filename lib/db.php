@@ -863,7 +863,25 @@ class db {
 		$this->stmt->bindParam(':package_group_id', $package_group_id, PDO::PARAM_INT);
 		$this->stmt->bindParam(':oldpos', intval($old_seq), PDO::PARAM_INT);
 		$this->stmt->bindParam(':newpos', intval($new_seq), PDO::PARAM_INT);
-		return $this->stmt->execute();
+		if(!$this->stmt->execute()) return false;
+		return $this->refactorPackageGroupOrder($package_group_id);
+	}
+	public function refactorPackageGroupOrder($gid) {
+		$seq = 1;
+		$this->dbh->beginTransaction();
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM package_group_member WHERE package_group_id = :package_group_id ORDER BY sequence'
+		);
+		$this->stmt->execute([':package_group_id' => $gid]);
+		foreach($this->stmt->fetchAll() as $row) {
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE package_group_member SET sequence = :sequence WHERE id = :id'
+			);
+			if(!$this->stmt->execute([':id' => $row['id'], ':sequence' => $seq])) return false;
+			$seq ++;
+		}
+		$this->dbh->commit();
+		return true;
 	}
 	public function removePackage($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -881,7 +899,8 @@ class db {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM package_group_member WHERE package_id = :package_id AND package_group_id = :package_group_id'
 		);
-		return $this->stmt->execute([':package_id' => $pid, ':package_group_id' => $gid]);
+		if(!$this->stmt->execute([':package_id' => $pid, ':package_group_id' => $gid])) return false;
+		return $this->refactorPackageGroupOrder($gid);
 	}
 	public function removeComputerAssignedPackage($id) {
 		$this->stmt = $this->dbh->prepare(
