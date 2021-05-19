@@ -121,15 +121,16 @@ class db {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
 	}
-	public function addComputer($hostname, $agent_version, $networks, $agent_key) {
+	public function addComputer($hostname, $agent_version, $networks, $agent_key, $server_key) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, os_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, notes, agent_key)
-			VALUES (:hostname, :agent_version, CURRENT_TIMESTAMP, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :agent_key)'
+			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, os_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, notes, agent_key, server_key)
+			VALUES (:hostname, :agent_version, CURRENT_TIMESTAMP, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :agent_key, :server_key)'
 		);
 		$this->stmt->execute([
 			':hostname' => $hostname,
 			':agent_version' => $agent_version,
 			':agent_key' => $agent_key,
+			':server_key' => $server_key,
 		]);
 		$cid = $this->dbh->lastInsertId();
 
@@ -168,6 +169,12 @@ class db {
 			'UPDATE computer SET agent_key = :agent_key WHERE id = :id'
 		);
 		return $this->stmt->execute([':id' => $id, ':agent_key' => $agent_key]);
+	}
+	public function updateComputerServerkey($id, $server_key) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer SET server_key = :server_key WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':server_key' => $server_key]);
 	}
 	public function updateComputer($id, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $networks, $screens, $printers, $partitions, $software, $logins) {
 		$this->dbh->beginTransaction();

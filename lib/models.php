@@ -27,6 +27,7 @@ class Computer {
 	public $last_update;
 	public $notes;
 	public $agent_key;
+	public $server_key;
 	// joined software attributes
 	public $software_version;
 	// joined network attributes

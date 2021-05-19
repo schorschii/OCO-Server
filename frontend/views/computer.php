@@ -31,7 +31,7 @@ if(!empty($_POST['add_computer'])) {
 		header('HTTP/1.1 400 Invalid Request');
 		die(LANG['hostname_already_exists']);
 	}
-	$insertId = $db->addComputer($finalHostname, '', [], '');
+	$insertId = $db->addComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, ''/*Agent Key*/, ''/*Server Key*/);
 	die(strval(intval($insertId)));
 }
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {

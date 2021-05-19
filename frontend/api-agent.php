@@ -71,14 +71,16 @@ switch($srcdata['method']) {
 		$resdata['error'] = null;
 		$resdata['result'] = [
 			'success' => true,
-			'params' => []
+			'params' => [
+				'server-key' => $computer->server_key,
+			]
 		];
 		break;
 
 	case 'oco.agent_hello':
 		$data = $params['data'];
 		$computer = $db->getComputerByName($params['hostname']);
-		$jobs = []; $update = 0; $agent_key = null; $success = false;
+		$jobs = []; $update = 0; $server_key = null; $agent_key = null; $success = false;
 
 		if($computer == null) {
 			if($params['agent-key'] !== $db->getSettingByName('agent-key')) {
@@ -86,13 +88,15 @@ switch($srcdata['method']) {
 			}
 
 			if($db->getSettingByName('agent-registration-enabled') == '1') {
+				$server_key = randomString();
 				$agent_key = randomString();
 				$update = 1;
 				if($db->addComputer(
 					$params['hostname'],
 					$data['agent_version'],
 					$data['networks'],
-					$agent_key
+					$agent_key,
+					$server_key
 				)) {
 					$success = true;
 				}
@@ -115,6 +119,15 @@ switch($srcdata['method']) {
 				}
 			}
 
+			if(empty($computer->server_key)) {
+				// generate a server key if empty
+				$server_key = randomString();
+				$db->updateComputerServerkey($computer->id, $server_key);
+			} else {
+				// get the current server key for the agent
+				$server_key = $computer->server_key;
+			}
+
 			// update last seen date
 			$db->updateComputerPing($computer->id);
 
@@ -124,7 +137,6 @@ switch($srcdata['method']) {
 			}
 
 			// get pending jobs
-			$jobs = [];
 			foreach($db->getPendingJobsForComputer($computer->id) as $pj) {
 				$jobs[] = [
 					'id' => $pj['id'],
@@ -143,9 +155,10 @@ switch($srcdata['method']) {
 		$resdata['result'] = [
 			'success' => $success,
 			'params' => [
-				'agent-key' => $agent_key,
-				'update' => $update,
-				'software-jobs' => $jobs,
+				'server-key' => $server_key, // tell the agent our server key, so it can validate the server
+				'agent-key' => $agent_key,   // tell the agent that it should save a new agent key for further requests
+				'update' => $update,         // tell the agent that it should update the inventory data
+				'software-jobs' => $jobs,    // tell the agent all pending software jobs
 			]
 		];
 
@@ -158,7 +171,9 @@ switch($srcdata['method']) {
 				authErrorExit();
 			}
 
+			$success = false;
 			if($computer !== null) {
+				$success = true;
 				$db->updateComputerPing($computer->id);
 				if(time() - strtotime($computer->last_update) > $db->getSettingByName('agent-update-interval')
 				&& !empty($data)) {
@@ -208,8 +223,10 @@ switch($srcdata['method']) {
 
 			$resdata['error'] = null;
 			$resdata['result'] = [
-				'success' => true,
-				'params' => []
+				'success' => $success,
+				'params' => [
+					'server-key' => $computer->server_key,
+				]
 			];
 
 			break;
