@@ -47,7 +47,8 @@ CREATE TABLE `computer` (
   `last_ping` datetime NOT NULL DEFAULT current_timestamp(),
   `last_update` datetime DEFAULT current_timestamp(),
   `notes` text NOT NULL,
-  `agent_key` text NOT NULL
+  `agent_key` text NOT NULL,
+  `server_key` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -241,7 +242,7 @@ CREATE TABLE `job` (
   `sequence` int(11) NOT NULL DEFAULT 0,
   `state` int(11) NOT NULL DEFAULT 0,
   `return_code` int(11) DEFAULT NULL,
-  `message` text NOT NULL,
+  `message` longtext NOT NULL,
   `last_update` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
