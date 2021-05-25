@@ -1014,6 +1014,7 @@ class db {
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
+			AND (jc.start_time IS NULL OR jc.start_time < CURRENT_TIMESTAMP)
 			AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
 			ORDER BY j.sequence'
 		);
