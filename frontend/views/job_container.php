@@ -71,7 +71,7 @@ if(!empty($_GET['id'])) {
 	<div>
 		<table class='list'>
 			<tr><th><?php echo LANG['created']; ?></th><td><?php echo htmlspecialchars($container->created); ?></td></tr>
-			<tr><th><?php echo LANG['start']; ?></th><td><?php echo htmlspecialchars($container->start_time); ?></td></tr>
+			<tr><th><?php echo LANG['start']; ?></th><td><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; ?></td></tr>
 			<tr><th><?php echo LANG['end']; ?></th><td><?php echo htmlspecialchars($container->end_time ?? "-"); ?></td></tr>
 			<tr><th><?php echo LANG['author']; ?></th><td><?php echo htmlspecialchars($container->author); ?></td></tr>
 			<tr><th><?php echo LANG['description']; ?></th><td><?php echo htmlspecialchars($container->notes); ?></td></tr>
