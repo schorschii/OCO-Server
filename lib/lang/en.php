@@ -220,6 +220,7 @@ const LANG = [
 	'minutes' => 'Minutes',
 	'report_predefined' => 'Predefined',
 	'rename_group' => 'Rename Group',
+	'rename_container' => 'Rename Container',
 	'group' => 'Group',
 	'no_mac_addresses_for_wol' => 'No WOL packet could be sent because no MAC address of this computer is known. Please connect a network adapter to the computer and run the agent so that the MAC address is reported to the server.',
 	'hostname_cannot_be_empty' => 'The host name cannot be empty.',

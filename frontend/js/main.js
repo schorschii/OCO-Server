@@ -753,6 +753,12 @@ function confirmRenewFailedJobsInContainer(id) {
 		ajaxRequestPost('views/job_container.php', urlencodeObject({'renew_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
+function renameJobContainer(id, oldName) {
+	var newName = prompt(L__ENTER_NAME, oldName);
+	if(newName != null && newName != '') {
+		ajaxRequestPost('views/job_container.php', urlencodeObject({'rename_container_id':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
 function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, autoCreateUninstallJobs, restartTimeout) {
 	btnDeploy.disabled = true;
 	let req = new XMLHttpRequest();

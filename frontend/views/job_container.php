@@ -3,6 +3,10 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['rename_container_id']) && !empty($_POST['new_name'])) {
+	$db->renameJobContainer($_POST['rename_container_id'], $_POST['new_name']);
+	die();
+}
 if(!empty($_POST['remove_container_id']) && is_array($_POST['remove_container_id'])) {
 	foreach($_POST['remove_container_id'] as $id) {
 		$db->removeJobContainer($id);
@@ -63,8 +67,9 @@ if(!empty($_GET['id'])) {
 	<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><?php echo htmlspecialchars($container->name); ?></h1>
 
 	<div class='controls'>
-		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_container']; ?></button>
+		<button onclick='renameJobContainer(<?php echo $container->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($container->name,ENT_QUOTES); ?>'><img src='img/delete.svg'>&nbsp;<?php echo LANG['rename_container']; ?></button>
 		<button onclick='confirmRenewFailedJobsInContainer(<?php echo $container->id; ?>)' <?php echo ($failed>0 ? '' : 'disabled'); ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
+		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_container']; ?></button>
 	</div>
 
 	<div class='details-abreast margintop marginbottom'>

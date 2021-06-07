@@ -983,6 +983,13 @@ class db {
 			return $row;
 		}
 	}
+	public function renameJobContainer($id, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job_container SET name = :name WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id, ':name' => $name]);
+		return $this->dbh->lastInsertId();
+	}
 	public function getComputerMacByContainer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "id", c.hostname AS "hostname", cn.mac AS "computer_network_mac"
