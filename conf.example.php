@@ -1,11 +1,14 @@
 <?php
 
+///// GENERAL CONFIGURATION /////
+const PACKAGE_PATH = '/var/www/oco/payload';
+
 ///// MySQL CONFIGURATION /////
 const DB_TYPE = 'mysql';
 const DB_PORT = '3306';
 const DB_HOST = 'localhost';
-const DB_NAME = 'ocm';
-const DB_USER = 'ocm';
+const DB_NAME = 'oco';
+const DB_USER = 'oco';
 const DB_PASS = 'PASSWORD';
 
 ///// LDAP CONFIGURATION (optional) /////
@@ -13,7 +16,7 @@ const DB_PASS = 'PASSWORD';
  If you want to use LDAP user sync and login, please fill the following config lines.
  Otherwise, please set LDAP_SERVER to »null«.
 
- To sync LDAP users with the MASTERPLAN database, please execute "php lib/ldapsync.php" (via Cron)
+ To sync LDAP users with the OCO system user database, please execute "php lib/ldapsync.php" (via Cron)
 
  Set LDAP_SYNC_GROUP to »null« if you want to sync all users inside LDAP_QUERY_ROOT.
  Otherwise, insert the LDAP path of the group.
@@ -53,8 +56,7 @@ const SATELLITE_WOL_SERVER = [
 	// more server here...
 ];
 
-///// GENERAL CONFIGURATION /////
-const PACKAGE_PATH = '/var/www/oco/payload';
+///// ADDITIONAL CONFIGURATION /////
 const MOTD = [
 	"Have you tried turning it off and on again?",
 	"The fact that ACPI was designed by a group of monkeys high on LSD, and is some of the worst designs in the industry obviously makes running it at any point pretty damn ugly. ~ Torvalds, Linus",

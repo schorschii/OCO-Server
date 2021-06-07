@@ -650,8 +650,8 @@ div.details-abreast > div > table {
 
 .footer {
 	position: absolute;
-	bottom: 1px; left: 1px; right: 1px;
-	font-size: 80%;
+	bottom: 2px; left: 2px; right: 2px;
+	font-size: 90%;
 	opacity: 0.4;
 }
 .footer a {
