@@ -1454,10 +1454,19 @@ class db {
 	}
 	public function getAllReportByName($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM report WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+			'SELECT * FROM report'
 		);
-		$this->stmt->execute([':name' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
+		$this->stmt->execute();
+		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
+		foreach($reports as $key => $report) {
+			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
+			if(strpos(strtoupper($report->name), strtoupper($name)) === false) unset($reports[$key]);
+		}
+		usort($reports, function($a, $b) {
+			return strnatcmp($a->name, $b->name);
+		});
+		if($limit == null) return $reports;
+		else return array_slice($reports, 0, intval($limit));
 	}
 	public function getAllReportByGroup($groupId) {
 		if($groupId == null) $sql = 'SELECT * FROM report WHERE report_group_id IS NULL ORDER BY name';
