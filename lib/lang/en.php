@@ -233,7 +233,7 @@ const LANG = [
 	'locale' => 'Locale',
 	'confirm_create_empty_package' => 'No file selected. Do you want to create an empty package?',
 	'other_packages_from_this_family' => 'Other Packages From This Family',
-	'search_computer_packages_job_container' => 'Search Computers, Packages and Job Containers...',
+	'search_computer_packages_job_container' => 'Search Computers, Packages, Job Containers, Domain Users, Reports...',
 	'no_search_results' => 'No Search Results',
 	'package_creation_notes' => '
 		<p>

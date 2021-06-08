@@ -1158,6 +1158,13 @@ class db {
 		$this->stmt->execute([]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Domainuser');
 	}
+	public function getAllDomainuserByName($name, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM domainuser WHERE username LIKE :username ORDER BY username ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':username' => '%'.$name.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Domainuser');
+	}
 	public function getDomainuser($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT *, (SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
@@ -1444,6 +1451,13 @@ class db {
 			return strnatcmp($a->name, $b->name);
 		});
 		return $reports;
+	}
+	public function getAllReportByName($name, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM report WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':name' => '%'.$name.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
 	}
 	public function getAllReportByGroup($groupId) {
 		if($groupId == null) $sql = 'SELECT * FROM report WHERE report_group_id IS NULL ORDER BY name';
