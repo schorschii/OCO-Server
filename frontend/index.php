@@ -40,7 +40,7 @@ require_once('session.php');
 			<span class='separator'></span>
 			<button onclick='refreshContentSettings()' title='<?php echo LANG['settings']; ?>'><img src='img/settings.light.svg'></button>
 			<span class='separator'></span>
-			<button onclick='window.location.href="login.php?logout"' title='<?php echo LANG['log_out']; ?>'><?php echo htmlspecialchars($_SESSION['um_username']); ?>&nbsp;<img src='img/exit.light.svg'></button>
+			<button onclick='window.location.href="login.php?logout"' title='<?php echo LANG['log_out']; ?>'><span><?php echo htmlspecialchars($_SESSION['um_username']); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
 		</span>
 	</div>
 

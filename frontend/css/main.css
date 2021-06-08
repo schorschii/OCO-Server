@@ -52,7 +52,8 @@ body {
 	box-shadow: none;
 	color: #B3B9BE;
 }
-#header button > img {
+#header button > span {
+	display: inline-block;
 	margin-bottom: 2px;
 }
 #header span.separator {
@@ -61,10 +62,9 @@ body {
 	width: 1px;
 	background-color: #B3B9BE;
 	opacity: 0.2;
-	margin-bottom: 2px;
 }
 #header span.separator.space {
-	margin-left: 5px;
+	margin-left: 15px;
 	margin-right: 5px;
 	margin-bottom: 0px;
 }
