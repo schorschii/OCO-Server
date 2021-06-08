@@ -262,10 +262,12 @@ function doSearch(query) {
 	openSearchResults();
 }
 function closeSearchResults() {
-	document.getElementById('search-results').style.display = 'none';
+	obj('search-results').style.display = 'none';
+	obj('search-glass').classList.remove('focus');
 }
 function openSearchResults() {
-	document.getElementById('search-results').style.display = 'block';
+	obj('search-results').style.display = 'block';
+	obj('search-glass').classList.add('focus');
 }
 
 // package operations

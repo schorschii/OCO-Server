@@ -26,7 +26,8 @@ require_once('session.php');
 			<span class='separator space'></span>
 		</span>
 		<span class='search'>
-			<input type='text' autocomplete='new-password' placeholder='<?php echo LANG['search_computer_packages_job_container']; ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults();} else {doSearch(this.value);}' onpaste='doSearch(this.value)'>
+			<input type='text' autocomplete='new-password' placeholder='<?php echo LANG['search_computer_packages_job_container']; ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults();} else {doSearch(this.value);}' onpaste='doSearch(this.value)'></input>
+			<div id='search-glass'></div>
 			<div id='search-results' style='display:none'>
 				<div class='search-result'>
 					<?php echo LANG['no_search_results']; ?>

@@ -70,6 +70,7 @@ body {
 }
 #header input {
 	padding: 8px 10px;
+	padding-left: 32px; /* for glass icon */
 	color: #B3B9BE;
 	background-color: transparent;
 	box-shadow: none;
@@ -77,9 +78,29 @@ body {
 	border-radius: 4px;
 	width: calc(100% - 10px);
 }
+#header input::placeholder {
+	color: #B3B9BE;
+}
 #header input:focus {
 	color: black;
 	background-color: white;
+}
+#header input:focus::placeholder {
+	color: gray;
+}
+#header #search-glass {
+	background-color: #B3B9BE;
+	-webkit-mask: url('../img/search.svg') no-repeat center;
+	mask: url('../img/search.svg') no-repeat center;
+	width: 24px;
+	height: 24px;
+	position: absolute;
+	top: 6px;
+	left: 4px;
+	pointer-events: none;
+}
+#header #search-glass.focus {
+	background-color: gray;
 }
 #header #search-results {
 	position: absolute;
