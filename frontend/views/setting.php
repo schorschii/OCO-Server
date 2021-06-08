@@ -80,25 +80,25 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 	<tr>
 		<th><?php echo LANG['agent_key']; ?>:</th>
 		<td>
-			<input type='text' id='txtAgentKey' value='<?php echo $db->getSettingByName('agent-key'); ?>'></input>
+			<input type='text' autocomplete='new-password' id='txtAgentKey' value='<?php echo $db->getSettingByName('agent-key'); ?>'></input>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['agent_update_interval']; ?>:</th>
 		<td>
-			<input type='number' min='1' id='txtAgentUpdateInterval' value='<?php echo $db->getSettingByName('agent-update-interval'); ?>'></input>
+			<input type='number' autocomplete='new-password' min='1' id='txtAgentUpdateInterval' value='<?php echo $db->getSettingByName('agent-update-interval'); ?>'></input>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['purge_succeeded_jobs_after']; ?>:</th>
 		<td>
-			<input type='number' min='1' id='txtPurgeSucceededJobsAfter' value='<?php echo $db->getSettingByName('purge-succeeded-jobs'); ?>'></input>
+			<input type='number' autocomplete='new-password' min='1' id='txtPurgeSucceededJobsAfter' value='<?php echo $db->getSettingByName('purge-succeeded-jobs'); ?>'></input>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['purge_failed_jobs_after']; ?>:</th>
 		<td>
-			<input type='number' min='1' id='txtPurgeFailedJobsAfter' value='<?php echo $db->getSettingByName('purge-failed-jobs'); ?>'></input>
+			<input type='number' autocomplete='new-password' min='1' id='txtPurgeFailedJobsAfter' value='<?php echo $db->getSettingByName('purge-failed-jobs'); ?>'></input>
 		</td>
 	</tr>
 </table>
@@ -108,9 +108,9 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 
 <h2><?php echo LANG['system_users']; ?></h2>
 <div class='controls'>
-	<input type='text' id='txtUsername' placeholder='<?php echo LANG['username']; ?>'></input>
-	<input type='text' id='txtFullname' placeholder='<?php echo LANG['full_name']; ?>'></input>
-	<input type='password' id='txtPassword' placeholder='<?php echo LANG['password']; ?>'></input>
+	<input type='text' autocomplete='new-password' id='txtUsername' placeholder='<?php echo LANG['username']; ?>'></input>
+	<input type='text' autocomplete='new-password' id='txtFullname' placeholder='<?php echo LANG['full_name']; ?>'></input>
+	<input type='password' autocomplete='new-password' id='txtPassword' placeholder='<?php echo LANG['password']; ?>'></input>
 	<button id='btnCreateUser' onclick='createSystemuser(txtUsername.value, txtFullname.value, txtPassword.value)'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 </div>
 <table id='tblSystemuserData' class='list searchable sortable savesort'>
@@ -152,8 +152,8 @@ foreach($db->getAllSystemuser() as $u) {
 	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 	<button id='btnChangePassword' onclick='changeSelectedSystemuserPassword("systemuser_id[]", txtNewPassword1.value, txtNewPassword2.value)'>
 		<img src='img/edit.svg'>&nbsp;<?php echo LANG['change']; ?>
-		<input type='password' onclick='event.stopPropagation()' placeholder='<?php echo LANG['new_password']; ?>' id='txtNewPassword1'>
-		<input type='password' onclick='event.stopPropagation()' placeholder='<?php echo LANG['confirm_password']; ?>' id='txtNewPassword2'>
+		<input type='password' autocomplete='new-password' onclick='event.stopPropagation()' placeholder='<?php echo LANG['new_password']; ?>' id='txtNewPassword1'>
+		<input type='password' autocomplete='new-password' onclick='event.stopPropagation()' placeholder='<?php echo LANG['confirm_password']; ?>' id='txtNewPassword2'>
 	</button>
 	<button onclick='lockSelectedSystemuser("systemuser_id[]")'><img src='img/lock.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
 	<button onclick='unlockSelectedSystemuser("systemuser_id[]")'><img src='img/unlock.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
