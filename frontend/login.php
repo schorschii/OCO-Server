@@ -87,7 +87,9 @@ function validatePassword($userObject, $checkPassword) {
 <div id='container'>
 
 	<div id='header'>
-		<span class='left'><?php echo LANG['app_name']; ?></span>
+		<span class='left'>
+			<a href='#' class='title'><?php echo LANG['app_name']; ?></a>
+		</span>
 		<span class='right'>
 		</span>
 	</div>
