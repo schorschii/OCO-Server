@@ -193,7 +193,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 		<th><?php echo LANG['start']; ?></th>
 		<td>
 			<input type='date' id='dteStart' value='<?php echo date('Y-m-d'); ?>'></input>
-			<input type='time' id='tmeStart' value='<?php echo date('H:i:s'); ?>'></input>
+			<input type='time' id='tmeStart' value='<?php echo date('H:i'); ?>'></input>
 		</td>
 
 		<th><?php echo LANG['end']; ?></th>
