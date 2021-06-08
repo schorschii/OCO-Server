@@ -114,11 +114,14 @@ function wol($macs) {
 			error_log('SSH Authentication with '.$server['USER'].'@'.$server['ADDRESS'].' failed');
 			continue;
 		}
-		$cmd = 'wakeonlan '.implode(' ', $escapedMacs);
-		$stdio_stream = ssh2_exec($c, $cmd);
+		$program = 'wakeonlan';
+		if(!empty($server['COMMAND'])) $program = $server['COMMAND'];
+		$cmd = $program.' '.implode(' ', $escapedMacs);
+		$stdioStream = ssh2_exec($c, $cmd);
 		echo "Satellite WOL ".$server['USER']."@".$server['ADDRESS'].": ".$cmd."\n";
-		stream_set_blocking($stdio_stream, true);
-		$cmd_output = stream_get_contents($stdio_stream);
+		stream_set_blocking($stdioStream, true);
+		$cmdOutput = stream_get_contents($stdioStream);
+		echo "-> ".$cmdOutput."\n";
 	}
 
 	socket_close($s);

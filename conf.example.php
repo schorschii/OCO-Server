@@ -52,6 +52,7 @@ const SATELLITE_WOL_SERVER = [
 	#	'USER' => 'root',
 	#	'PRIVKEY' => '/path/to/id_rsa',
 	#	'PUBKEY' => '/path/to/id_rsa.pub',
+	#	'COMMAND' => null, // if »null« OCO uses the default command "wakeonlan"
 	#],
 	// more server here...
 ];
