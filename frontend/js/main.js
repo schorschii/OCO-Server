@@ -175,7 +175,7 @@ function getSelectValues(select) {
 	var result = [];
 	var options = select && select.options;
 	var opt;
-	for (var i=0, iLen=options.length; i<iLen; i++) {
+	for(var i=0, iLen=options.length; i<iLen; i++) {
 		opt = options[i];
 		if(opt.selected) {
 			result.push(opt.value || opt.text);
@@ -254,6 +254,18 @@ function refreshContentReport(id='') {
 }
 function refreshContentReportDetail(id='') {
 	ajaxRequest('views/report_detail.php?id='+encodeURIComponent(id), 'explorer-content');
+}
+
+// search operation
+function doSearch(query) {
+	ajaxRequest('views/search.php?query='+encodeURIComponent(query), 'search-results');
+	openSearchResults();
+}
+function closeSearchResults() {
+	document.getElementById('search-results').style.display = 'none';
+}
+function openSearchResults() {
+	document.getElementById('search-results').style.display = 'block';
 }
 
 // package operations

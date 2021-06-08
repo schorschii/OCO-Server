@@ -21,7 +21,18 @@ require_once('session.php');
 <div id='container'>
 
 	<div id='header'>
-		<span class='left'><a href='index.php' onclick='event.preventDefault();refreshContentHomepage();'><?php echo LANG['app_name']; ?></a></span>
+		<span class='left'>
+			<a href='index.php' onclick='event.preventDefault();refreshContentHomepage();' class='title'><?php echo LANG['app_name']; ?></a>
+			<span class='separator space'></span>
+		</span>
+		<span class='search'>
+			<input type='text' id='txtMainSearchBar' placeholder='<?php echo LANG['search_computer_packages_job_container']; ?>' onfocus='openSearchResults()' onchange='doSearch(this.value)' onkeyup='if(event.keyCode==27) {closeSearchResults();} else {doSearch(this.value);}' onpaste='doSearch(this.value)'>
+			<div id='search-results' style='display:none'>
+				<div class='search-result'>
+					<?php echo LANG['no_search_results']; ?>
+				</div>
+			</div>
+		</span>
 		<span class='right'>
 			<button onclick='refreshContentHomepage()' title='<?php echo LANG['home_page']; ?>'><img src='img/home.light.svg'></button>
 			<span class='separator'></span>
@@ -34,10 +45,10 @@ require_once('session.php');
 	</div>
 
 	<div id='explorer'>
-		<div id='explorer-tree' oncontextmenu='return toggleContextMenu(ctmExplorerTree)'>
+		<div id='explorer-tree' oncontextmenu='return toggleContextMenu(ctmExplorerTree)' onclick='closeSearchResults()'>
 
 		</div>
-		<div id='explorer-content'>
+		<div id='explorer-content' onclick='closeSearchResults()'>
 			<?php require('views/homepage.php'); ?>
 		</div>
 	</div>

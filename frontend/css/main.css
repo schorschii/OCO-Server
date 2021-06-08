@@ -29,11 +29,17 @@ body {
 	color: white;
 	box-sizing: border-box;
 	padding: 5px 15px;
-	font-size: 20px;
 	font-weight: 100;
 }
 #header * {
 	vertical-align: middle;
+}
+#header .title {
+	font-size: 20px;
+}
+#header > .search {
+	flex-grow: 1;
+	position: relative;
 }
 #header a {
 	color: inherit;
@@ -45,7 +51,6 @@ body {
 	border: none;
 	box-shadow: none;
 	color: #B3B9BE;
-	font-size: 14px;
 }
 #header button > img {
 	margin-bottom: 2px;
@@ -57,6 +62,36 @@ body {
 	background-color: #B3B9BE;
 	opacity: 0.2;
 	margin-bottom: 2px;
+}
+#header span.separator.space {
+	margin-left: 5px;
+	margin-right: 5px;
+	margin-bottom: 0px;
+}
+#header input {
+	padding: 8px 10px;
+	color: #B3B9BE;
+	background-color: transparent;
+	box-shadow: none;
+	border: none;
+	border-radius: 4px;
+	width: calc(100% - 10px);
+}
+#header input:focus {
+	color: black;
+	background-color: white;
+}
+#header #search-results {
+	position: absolute;
+	top: 40px;
+	left: 0px;
+	right: 10px;
+	padding: 10px;
+	color: black;
+	background-color: white;
+	box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+	border-radius: 4px;
+	z-index: 999;
 }
 
 #login {
@@ -141,7 +176,8 @@ body {
 	box-sizing: border-box;
 	white-space: nowrap;
 }
-#explorer-tree a {
+#explorer-tree a,
+#header #search-results a {
 	display: block;
 	text-decoration: none;
 	color: inherit;
@@ -150,10 +186,14 @@ body {
 }
 #explorer-tree a:focus,
 #explorer-tree a:hover,
-#explorer-tree a:active {
+#explorer-tree a:active,
+#header #search-results a:focus,
+#header #search-results a:hover,
+#header #search-results a:active {
 	background-color: #eeeeee;
 }
-#explorer-tree a img {
+#explorer-tree a img,
+#header #search-results a img {
 	width: 15px;
 	margin-right: 5px;
 	margin-bottom: 2px;
@@ -713,15 +753,19 @@ div.details-abreast > div > table {
 }
 
 @media (prefers-color-scheme: dark) {
-	html, #explorer-tree, #explorer-content, #login-form, #dialog-container #dialog-box {
+	html, #explorer-tree, #explorer-content, #login-form,
+	#dialog-container #dialog-box, #header #search-results {
 		background-color: #1B2A32;
 	}
 	#explorer-tree a:focus,
 	#explorer-tree a:hover,
-	#explorer-tree a:active {
+	#explorer-tree a:active,
+	#header #search-results a:focus,
+	#header #search-results a:hover,
+	#header #search-results a:active {
 		background-color: #324F61;
 	}
-	body, a {
+	body, a, #header #search-results {
 		color: #E9ECEF;
 	}
 	code.block {

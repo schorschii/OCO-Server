@@ -41,6 +41,13 @@ class db {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerCommand');
 	}
+	public function getAllComputerByName($hostname, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer WHERE hostname LIKE :hostname ORDER BY hostname ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':hostname' => '%'.$hostname.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
+	}
 	public function getComputerByName($hostname) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer WHERE hostname = :hostname'
@@ -763,6 +770,15 @@ class db {
 			return $row;
 		}
 	}
+	public function getAllPackageByName($name, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT p.*, pf.name AS "name"
+			FROM package p INNER JOIN package_family pf ON pf.id = p.package_family_id
+			WHERE pf.name LIKE :name ORDER BY p.created DESC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':name' => '%'.$name.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+	}
 	public function getPackageByNameVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "name" FROM package p
@@ -965,6 +981,13 @@ class db {
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'JobContainer') as $row) {
 			return $row;
 		}
+	}
+	public function getAllJobContainerByName($name, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM job_container WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':name' => '%'.$name.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'JobContainer');
 	}
 	public function getAllJobContainer() {
 		$this->stmt = $this->dbh->prepare(

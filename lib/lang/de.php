@@ -233,6 +233,8 @@ const LANG = [
 	'locale' => 'Sprache',
 	'confirm_create_empty_package' => 'Keine Datei ausgewählt. Möchten Sie ein leeres Paket erstellen?',
 	'other_packages_from_this_family' => 'Weitere Pakete dieser Familie',
+	'search_computer_packages_job_container' => 'Suche Computer, Pakete, Jobcontainer...',
+	'no_search_results' => 'Keine Suchergebnisse',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
