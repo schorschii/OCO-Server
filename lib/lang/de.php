@@ -245,7 +245,9 @@ const LANG = [
 		<p>
 			Beispiel-Prozeduren:
 			<ul>
-				<li>EXE-Setup unter Windows: <code>installer.exe /S</code> (kein Deinstallations-Support)</li>
+				<li>EXE-Setup unter Windows: <code>installer.exe /S</code>
+				<li>EXE-Deinstallation unter Windows: <code>C:\Program Files\MyProgram\unins000.exe /S</code>
+				<br>Das Deinstallations-Kommando ist von Software zu Software unterschiedlich, bitte ziehen Sie in Betracht EXE-Setups als MSI-Paket neu zu packen.</li>
 				<li>MSI-Installation unter Windows: <code>msiexec /quiet /i package.msi</code></li>
 				<li>MSI-Deinstallation unter Windows: <code>msiexec /quiet /x package.msi</code> oder <code>{PRODUCT-GUID}</code></li>
 				<li>DEB-Paket unter Linux: <code>gdebi -n package.deb</code></li>

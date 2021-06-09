@@ -8,6 +8,8 @@ An OCO package can therefore contains `.deb` files for Debian-based Linux Distro
 ### Procedure And Return Codes
 In the 'Procedure' fields, you define which commands should be executed when deploying or uninstalling a package. After that, you can enter the exit/return codes which should be considered as success (multiple return codes have to be separated by a comma `,`). If you leave the return code field blank, all return codes are considered as success (this is not recommended - keep `0` if you are unsure, this is normally the return code for success).
 
+For example, MSI packages can also return `3010` if the installation succeeded but a reboot is required (see [list of MSI return codes](https://docs.microsoft.com/de-de/windows/win32/msi/error-codes)).
+
 ### Action After Procedure
 Below the procedure you can specify if the computer should be restartet or shut down after the procedure was executed. The restart/shutdown timeout is specified in the deployment assistant. This timeout allows the user to save his work before the computer gets restartet. If no user is logged in on the target computer, it will be restartet immediately, ignoring the timeout value. If you specify a negative timeout value in the deployment assistant, no restart/shutdown will be executed (in other words, this overrides the package restart/shutdown setting).
 
@@ -15,9 +17,12 @@ Below the procedure you can specify if the computer should be restartet or shut 
 When deploying, the `.zip` archive is unpacked into a temporary directory. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (`.bat` or `.sh`) you have written yourself.
 
 ### General Example Procedures
-- EXE setup for Windows: `installer.exe /S`
-  - It depends on the programm which parameters are available. Most `.exe` setups do **not** have uninstallation support. Please check which parameters are available by checking `installer.exe /?` output or consult the software manufacturer for more information.
+- EXE setup for Windows: `installer.exe /SILENT`
+  - It depends on the programm which parameters are available. Please check which parameters are available by executing `installer.exe /?` or consult the software manufacturer for more information.
+- EXE uninstallation for Windows: `C:\Program Files\MyProgram\unins000.exe /SILENT`
+  - The uninstallation command depends on the specific software, please consider repacking EXE setups as MSI package, which can be uninstalled by the standardized command `msiexec /x` (see below).
 - Own Batch file for Windows: `myscript.bat`
+  - You can run own scripts which may contain multiple commands or more complex logic.
 - MSI setup for Windows: `msiexec /quiet /i package.msi`
 - MSI uninstallation for Windows: `msiexec /quiet /x package.msi` or `{PRODUCT-GUID}`
   - It is easier to uninstall `.msi` packages using the original installation file - but this means that the package must be downloaded again for uninstallation. That's why, for bigger packages, you should use the GUID in the uninstallation command. You can find it out by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup).
@@ -44,7 +49,7 @@ It is also possible to update your Windows-Installation to a newer build using a
 ### Creating Own DEB Packages For Linux
 - http://dbalakirev.github.io/2015/08/21/deb-pkg/
 
-### Crating Own PKG Packages For MacOS
+### Creating Own PKG Packages For MacOS
 - https://medium.com/swlh/the-easiest-way-to-build-macos-installer-for-your-application-34a11dd08744
 
 ### Creating Own MSI Packages For Windows
