@@ -45,6 +45,9 @@ It is also possible to update your Windows-Installation to a newer build using a
 2. Choose the following command line as installation procedure: `setup.exe /auto upgrade /showoobe None /noreboot`
 3. Choose `Reboot` as action after package installation.
 
+### Example: Java Installation
+Oracle provides an EXE setup for installing Java. This EXE contains a MSI file, which is automatically extracted into `C:\Users\%username%\AppData\LocalLow\Oracle\Java\` when starting the EXE file. You should use this MSI file for creating a package in OCO because of the easy uninstallation with `msiexec /x`.
+
 ## How To Create OS Specific Packages
 ### Creating Own DEB Packages For Linux
 - http://dbalakirev.github.io/2015/08/21/deb-pkg/
