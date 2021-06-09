@@ -714,10 +714,11 @@ class db {
 		$this->stmt->execute([':package_family_id' => $fid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
-	public function getAllPackage() {
+	public function getAllPackage($orderByCreated=false) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "name" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id'
+			.($orderByCreated ? ' ORDER BY p.created DESC' : ' ORDER BY pf.name ASC')
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');

@@ -36,7 +36,7 @@ if(isset($_GET['get_computer_group_members'])) {
 if(isset($_GET['get_package_group_members'])) {
 	$group = $db->getPackageGroup($_GET['get_package_group_members']);
 	$packages = [];
-	if(empty($group)) $packages = $db->getAllPackage();
+	if(empty($group)) $packages = $db->getAllPackage(true);
 	else $packages = $db->getPackageByGroup($group->id);
 	foreach($packages as $p) {
 		$selected = '';
