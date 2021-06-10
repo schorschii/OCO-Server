@@ -1000,7 +1000,9 @@ class db {
 	}
 	public function getJob($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM job WHERE id = :id'
+			'SELECT j.*, jc.start_time AS "job_container_start_time" FROM job j
+			INNER JOIN job_container jc ON jc.id = j.job_container_id
+			WHERE j.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job') as $row) {
@@ -1027,11 +1029,12 @@ class db {
 	}
 	public function getAllJobByContainer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.*, pf.name AS "package_name", p.version AS "package_version", c.hostname AS "computer_hostname"
+			'SELECT j.*, pf.name AS "package_name", p.version AS "package_version", c.hostname AS "computer_hostname", jc.start_time AS "job_container_start_time"
 			FROM job j
 			INNER JOIN computer c ON c.id = j.computer_id
 			INNER JOIN package p ON p.id = j.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			INNER JOIN job_container jc ON jc.id = j.job_container_id
 			WHERE j.job_container_id = :id
 			ORDER BY j.computer_id, j.sequence'
 		);
@@ -1054,7 +1057,7 @@ class db {
 	}
 	public function getPendingJobsForComputerDetailPage($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name",
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time",
 			j.package_id AS "package_id", pf.name AS "package_name", p.version AS "package_version",
 			j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
 			FROM job j
@@ -1070,7 +1073,7 @@ class db {
 	}
 	public function getPendingJobsForPackageDetailPage($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name",
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time",
 			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
 			j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
 			FROM job j
@@ -1120,7 +1123,12 @@ class db {
 				$errors ++;
 			}
 		}
-		if($waitings > 0) return JobContainer::STATUS_IN_PROGRESS;
+		if($waitings > 0) {
+			$startTimeParsed = strtotime($container->start_time);
+			if($startTimeParsed !== false && $startTimeParsed > time())
+				return JobContainer::STATUS_WAITING_FOR_START;
+			else return JobContainer::STATUS_IN_PROGRESS;
+		}
 		elseif($errors > 0) return JobContainer::STATUS_FAILED;
 		else return JobContainer::STATUS_SUCCEEDED;
 	}

@@ -236,6 +236,7 @@ const LANG = [
 	'search_computer_packages_job_container' => 'Search Computers, Packages, Job Containers, Domain Users, Reports...',
 	'no_search_results' => 'No Search Results',
 	'end_time_before_start_time' => 'The end time cannot be before the start time.',
+	'waiting_for_start' => 'Waiting for Start',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

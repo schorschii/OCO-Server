@@ -153,6 +153,7 @@ class JobContainer {
 	public const STATUS_SUCCEEDED = 'tick';
 	public const STATUS_FAILED = 'error';
 	public const STATUS_IN_PROGRESS = 'wait';
+	public const STATUS_WAITING_FOR_START = 'schedule';
 }
 class Job {
 	public $id;
@@ -175,6 +176,8 @@ class Job {
 	// joined package attributes
 	public $package_name;
 	public $package_version;
+	// joined job container attributes
+	public $job_container_start_time = 0;
 	// constants
 	public const STATUS_WAITING_FOR_CLIENT = 0;
 	public const STATUS_FAILED = -1;
@@ -184,7 +187,11 @@ class Job {
 	public const STATUS_SUCCEEDED = 3;
 	// functions
 	function getIcon() {
-		if($this->state == self::STATUS_WAITING_FOR_CLIENT) return 'wait';
+		if($this->state == self::STATUS_WAITING_FOR_CLIENT) {
+			$startTimeParsed = strtotime($this->job_container_start_time);
+			if($startTimeParsed !== false && $startTimeParsed > time()) return 'schedule';
+			else return 'wait';
+		}
 		if($this->state == self::STATUS_DOWNLOAD_STARTED) return 'downloading';
 		if($this->state == self::STATUS_EXECUTION_STARTED) return 'pending';
 		if($this->state == self::STATUS_FAILED) return 'error';
@@ -197,8 +204,11 @@ class Job {
 		if($this->return_code != null) {
 			$returnCodeString = ' ('.htmlspecialchars($this->return_code).')';
 		}
-		if($this->state == self::STATUS_WAITING_FOR_CLIENT)
+		if($this->state == self::STATUS_WAITING_FOR_CLIENT) {
+			$startTimeParsed = strtotime($this->job_container_start_time);
+			if($startTimeParsed !== false && $startTimeParsed > time()) return LANG['waiting_for_start'];
 			return LANG['waiting_for_client'];
+		}
 		elseif($this->state == self::STATUS_FAILED)
 			return LANG['failed'].$returnCodeString;
 		elseif($this->state == self::STATUS_EXPIRED)
