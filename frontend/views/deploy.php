@@ -48,10 +48,16 @@ if(isset($_GET['get_package_group_members'])) {
 
 // ----- create jobs if requested -----
 if(!empty($_POST['add_jobcontainer'])) {
-	// check if there are any computer & packages
-	if(!isset($_POST['restart_timeout'])) {
+	// check user input
+	if(empty($_POST['restart_timeout']) || empty($_POST['date_start']) || strtotime($_POST['date_start']) === false) {
 		header('HTTP/1.1 400 Missing Information');
 		die(LANG['please_fill_required_fields']);
+	}
+	if(!empty($_POST['date_end']) // check date_end if not empty
+	&& (strtotime($_POST['date_end']) === false || strtotime($_POST['date_start']) >= strtotime($_POST['date_end']))
+	) {
+		header('HTTP/1.1 400 Invalid Request');
+		die(LANG['end_time_before_start_time']);
 	}
 
 	// check if given IDs exist
