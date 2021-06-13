@@ -75,7 +75,7 @@ $group = null;
 $computer = [];
 if(empty($_GET['id'])) {
 	$computer = $db->getAllComputer();
-	echo "<h1>".LANG['all_computer']."</h1>";
+	echo "<h1><img src='img/computer.dyn.svg'>".LANG['all_computer']."</h1>";
 
 	echo "<div class='controls'>";
 	echo "<button onclick='newComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button> ";
@@ -85,7 +85,7 @@ if(empty($_GET['id'])) {
 	$computer = $db->getComputerByGroup($_GET['id']);
 	$group = $db->getComputerGroup($_GET['id']);
 	if($group === null) die(LANG['not_found']);
-	echo "<h1>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</h1>";
+	echo "<h1><img src='img/folder.dyn.svg'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
 	echo "<button onclick='newComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
@@ -103,13 +103,13 @@ if(empty($_GET['id'])) {
 		<th class='searchable sortable'><?php echo LANG['hostname']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['os']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['version']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['cpu']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['ram']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['ip_addresses']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['mac_addresses']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['model']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['serial_no']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['notes']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['agent']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['notes']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['last_seen']; ?></th>
 	</tr>
 </thead>
@@ -127,17 +127,20 @@ foreach($computer as $c) {
 	}
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
-	echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
+	echo "<td>";
+	echo  "<img src='img/".$c->getIcon().".dyn.svg' class='".(time()-strtotime($c->last_ping)<125 ? 'online' : 'offline')."' title='".LANG['last_seen'].' '.htmlspecialchars($c->last_ping)."'>&nbsp;";
+	echo  "<a href='".explorerLink('views/computer_detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a>";
+	echo "</td>";
 	echo "<td>".htmlspecialchars($c->os)."</td>";
 	echo "<td>".htmlspecialchars($c->os_version)."</td>";
-	echo "<td>".htmlspecialchars($c->cpu)."</td>";
 	echo "<td sort_key='".htmlspecialchars($c->ram)."'>".htmlspecialchars(niceSize($c->ram, true, 0))."</td>";
 	echo "<td>".htmlspecialchars(implode($ip_addresses,', '))."</td>";
 	echo "<td>".htmlspecialchars(implode($mac_addresses,', '))."</td>";
+	echo "<td>".htmlspecialchars($c->manufacturer.' '.$c->model)."</td>";
 	echo "<td>".htmlspecialchars($c->serial)."</td>";
-	echo "<td>".htmlspecialchars(shorter($c->notes))."</td>";
 	echo "<td>".htmlspecialchars($c->agent_version)."</td>";
-	echo "<td>".htmlspecialchars($c->last_ping);
+	echo "<td>".htmlspecialchars(shorter($c->notes))."</td>";
+	echo "<td>".htmlspecialchars(shorter($c->last_ping))."</td>";
 	echo "</tr>";
 }
 ?>

@@ -13,9 +13,9 @@ if(empty($_GET['id'])) {
 ?>
 
 <?php if(empty($_GET['id'])) { ?>
-	<h1><?php echo LANG['reports']; ?></h1>
+	<h1><img src='img/report.dyn.svg'><?php echo LANG['reports']; ?></h1>
 <?php } else { ?>
-	<h1><?php echo htmlspecialchars($reportGroup->name); ?></h1>
+	<h1><img src='img/folder.dyn.svg'><?php echo htmlspecialchars($reportGroup->name); ?></h1>
 <?php } ?>
 
 <p><?php echo LANG['report_creation_notes']; ?></p>

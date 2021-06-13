@@ -15,7 +15,7 @@ try {
 }
 ?>
 
-<h1><?php echo htmlspecialchars($report->name); ?></h1>
+<h1><img src='img/report.dyn.svg'><?php echo htmlspecialchars($report->name); ?></h1>
 
 <p><code class='block'><?php echo htmlspecialchars($report->query); ?></code></p>
 

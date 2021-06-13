@@ -140,7 +140,7 @@ if(!empty($_GET['id'])) {
 
 <?php } else { ?>
 
-	<h1><?php echo LANG['job_container']; ?></h1>
+	<h1><img src='img/job.dyn.svg'><?php echo LANG['job_container']; ?></h1>
 
 	<div class='controls'>
 		<button onclick='refreshContentDeploy()'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_deployment_job']; ?></button>

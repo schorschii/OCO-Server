@@ -10,7 +10,7 @@ if(!empty($_GET['id']))
 if($domainuser === null) die();
 ?>
 
-<h1><?php echo htmlspecialchars($domainuser->username); ?></h1>
+<h1><img src='img/user.dyn.svg'><?php echo htmlspecialchars($domainuser->username); ?></h1>
 
 <h2><?php echo LANG['logins']; ?></h2>
 <table id='tblDomainuserDetailData' class='list searchable sortable savesort'>

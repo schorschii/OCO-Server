@@ -11,7 +11,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 ?>
 
 
-	<h1><?php echo htmlspecialchars($software->name) . ' ' . htmlspecialchars($_GET['version']); ?></h1>
+	<h1><img src='img/software.dyn.svg'><?php echo htmlspecialchars($software->name) . ' ' . htmlspecialchars($_GET['version']); ?></h1>
 	<table id='tblSoftwareComputerData1' class='list searchable sortable savesort'>
 	<thead>
 		<tr>
@@ -45,7 +45,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 ?>
 
 
-	<h1><?php echo htmlspecialchars($software->name); ?></h1>
+	<h1><img src='img/software.dyn.svg'><?php echo htmlspecialchars($software->name); ?></h1>
 	<table id='tblSoftwareComputerData2' class='list searchable sortable savesort'>
 	<thead>
 		<tr>
@@ -77,7 +77,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 <?php } else { ?>
 
 
-	<h1><?php echo LANG['recognised_software']; ?></h1>
+	<h1><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></h1>
 	<?php $software = [];
 	if(isset($_GET['os']) && $_GET['os'] == 'windows') {
 		echo "<h2>".LANG['windows']."</h2>";

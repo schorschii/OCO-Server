@@ -13,7 +13,7 @@ if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 $domainuser = $db->getAllDomainuser();
 ?>
 
-<h1><?php echo LANG['all_domain_user']; ?></h1>
+<h1><img src='img/users.dyn.svg'><?php echo LANG['all_domain_user']; ?></h1>
 
 
 <table id='tblDomainuserData' class='list searchable sortable savesort'>

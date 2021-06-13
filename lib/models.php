@@ -32,6 +32,13 @@ class Computer {
 	public $software_version;
 	// joined network attributes
 	public $computer_network_mac;
+	// functions
+	function getIcon() {
+		if(empty(trim($this->os))) return 'computer';
+		elseif(strpos($this->os, 'Windows') !== false) return 'windows';
+		elseif(strpos($this->os, 'macOS') !== false) return 'apple';
+		else return 'linux';
+	}
 }
 class ComputerNetwork {
 	public $id;
@@ -123,7 +130,10 @@ class Package {
 	public $last_update;
 	// joined package group attributes
 	public $package_group_member_sequence;
-
+	// functions
+	function getIcon() {
+		return 'package';
+	}
 	public function getFilePath() {
 		$path = PACKAGE_PATH.'/'.intval($this->id).'.zip';
 		if(!file_exists($path)) return false;

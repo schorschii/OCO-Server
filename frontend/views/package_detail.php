@@ -35,7 +35,7 @@ if(!empty($_GET['id'])) {
 if($package === null) die(LANG['not_found']);
 ?>
 
-<h1><?php echo htmlspecialchars($package->name); ?></h1>
+<h1><img src='img/<?php echo $package->getIcon(); ?>.dyn.svg'><?php echo htmlspecialchars($package->name); ?></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg'>

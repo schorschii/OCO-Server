@@ -620,6 +620,10 @@ div.details-abreast > div > table {
 	width: 100%;
 }
 
+.offline {
+	opacity: 0.4;
+}
+
 .green {
 	color: green;
 }

@@ -58,7 +58,7 @@ if($computer === null) die(LANG['not_found']);
 $commands = $db->getAllComputerCommand();
 ?>
 
-<h1><?php echo htmlspecialchars($computer->hostname); ?></h1>
+<h1><img src='img/<?php echo $computer->getIcon(); ?>.dyn.svg'><?php echo htmlspecialchars($computer->hostname); ?></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>

@@ -53,7 +53,7 @@ $group = null;
 $packages = [];
 if(empty($_GET['id'])) {
 	$packages = $db->getAllPackage();
-	echo "<h1>".LANG['complete_package_library']."</h1>";
+	echo "<h1><img src='img/package.dyn.svg'>".LANG['complete_package_library']."</h1>";
 
 	echo "<div class='controls'>";
 	echo "<button onclick='refreshContentPackageDetail()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
@@ -63,7 +63,7 @@ if(empty($_GET['id'])) {
 	$packages = $db->getPackageByGroup($_GET['id']);
 	$group = $db->getPackageGroup($_GET['id']);
 	if($group === null) die(LANG['not_found']);
-	echo "<h1>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id))."</h1>";
+	echo "<h1><img src='img/folder.dyn.svg'>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id))."</h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
 	echo "<button onclick='newPackageGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
