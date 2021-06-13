@@ -60,4 +60,4 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
 **Please read the documentation in the `/docs` folder.**
 
 ## Specific Adjustments
-You need specific adjustments for your environment? You can hire me to extend OCO to your needs. Please [contact me](https://georg-sieber.de/?page=impressum) if you are interested.
+You need specific adjustments for your environment? You can hire me to extend OCO to your needs or to write custom reports etc. Please [contact me](https://georg-sieber.de/?page=impressum) if you are interested.
