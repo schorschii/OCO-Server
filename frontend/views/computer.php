@@ -140,7 +140,7 @@ foreach($computer as $c) {
 	echo "<td>".htmlspecialchars($c->serial)."</td>";
 	echo "<td>".htmlspecialchars($c->agent_version)."</td>";
 	echo "<td>".htmlspecialchars(shorter($c->notes))."</td>";
-	echo "<td>".htmlspecialchars(shorter($c->last_ping))."</td>";
+	echo "<td>".htmlspecialchars($c->last_ping)."</td>";
 	echo "</tr>";
 }
 ?>
