@@ -89,6 +89,7 @@ if(empty($_GET['id'])) {
 	</tr>
 </thead>
 
+<tbody>
 <?php
 $counter = 0;
 foreach($packages as $p) {
@@ -112,6 +113,7 @@ foreach($packages as $p) {
 	echo "</tr>";
 }
 ?>
+</tbody>
 
 <tfoot>
 	<tr>

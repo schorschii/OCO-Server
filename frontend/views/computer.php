@@ -114,6 +114,7 @@ if(empty($_GET['id'])) {
 	</tr>
 </thead>
 
+<tbody>
 <?php
 $counter = 0;
 foreach($computer as $c) {
@@ -144,6 +145,7 @@ foreach($computer as $c) {
 	echo "</tr>";
 }
 ?>
+</tbody>
 
 <tfoot>
 	<tr>

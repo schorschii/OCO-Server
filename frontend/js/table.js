@@ -9,16 +9,19 @@ var TableSortUltra = function(tab, startsort) {
 	}
 	if(tr_in_thead) var tabletitel = tr_in_thead[0].cells;
 	if( !(tabletitel && tabletitel.length > 0) ) {
-		console.warn("Table has no <TH>"); return null;
+		console.warn("Table has no <TH>");
+		return null;
 	}
 	var tbdy = tab.tBodies;
 	if( !tbdy || tbdy.length == 0 ) {
-		console.warn("Table has no <TBODY>"); return null;
+		console.warn("Table has no <TBODY>");
+		return null;
 	}
 	tbdy = tbdy[0];
 	var tr = tbdy.rows;
 	if( tr.length == 0 ) {
-		console.warn("Table has no rows in <TBODY>"); return null;
+		//console.warn("Table has no rows in <TBODY>");
+		return null;
 	}
 	var nrows = tr.length;
 	var ncols = tr[0].cells.length;
