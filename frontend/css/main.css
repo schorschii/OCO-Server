@@ -777,6 +777,13 @@ div.details-abreast > div > table {
 	div.details-abreast > div:not(:last-child) {
 		margin-right: 0px;
 	}
+	.controls {
+		flex-wrap: wrap;
+	}
+	.controls > * {
+		margin-top: 4px;
+		margin-bottom: 4px;
+	}
 }
 
 @media (prefers-color-scheme: dark) {
