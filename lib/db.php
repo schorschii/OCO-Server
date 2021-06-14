@@ -171,6 +171,12 @@ class db {
 		);
 		return $this->stmt->execute([':id' => $id, ':notes' => $notes]);
 	}
+	public function updateComputerHostname($id, $hostname) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer SET hostname = :hostname WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname]);
+	}
 	public function updateComputerAgentkey($id, $agent_key) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET agent_key = :agent_key WHERE id = :id'

@@ -3,6 +3,10 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['rename_computer_id']) && !empty($_POST['new_name'])) {
+	$db->updateComputerHostname($_POST['rename_computer_id'], $_POST['new_name']);
+	die();
+}
 if(!empty($_POST['update_note_computer_id']) && isset($_POST['update_note'])) {
 	$db->updateComputerNote($_POST['update_note_computer_id'], $_POST['update_note']);
 	die();
@@ -62,6 +66,7 @@ $commands = $db->getAllComputerCommand();
 <div class='controls'>
 	<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
+	<button onclick='renameComputer(<?php echo $computer->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($computer->hostname,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
 	<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewGroup' onclick='event.stopPropagation()'>

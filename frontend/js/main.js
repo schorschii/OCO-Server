@@ -673,6 +673,12 @@ function wolSelectedComputer(checkboxName, attributeName=null) {
 	}
 	confirmWolComputer(ids);
 }
+function renameComputer(id, oldName) {
+	var newName = prompt(L__ENTER_NEW_HOSTNAME, oldName);
+	if(newName != null && newName != '') {
+		ajaxRequestPost('views/computer_detail.php', urlencodeObject({'rename_computer_id':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
 function confirmWolComputer(ids) {
 	var params = [];
 	ids.forEach(function(entry) {
