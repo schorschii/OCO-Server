@@ -124,7 +124,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 					$wolMacAdresses[] = $cn->mac;
 				}
 			}
-			wol($wolMacAdresses);
+			wol($wolMacAdresses, false);
 		} else {
 			$wolSent = 0;
 		}

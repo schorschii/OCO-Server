@@ -63,7 +63,7 @@ function shorter($text, $charsLimit=40, $dots=true) {
 	}
 }
 
-function wol($macs) {
+function wol($macs, $debugOutput=true) {
 	// create socket for sending local WOL packets
 	$s = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 	if(!$s) throw new Exception("Error creating socket! '".socket_last_error($s)."' - " . socket_strerror(socket_last_error($s)));
@@ -96,7 +96,7 @@ function wol($macs) {
 		}
 		foreach($interfaceAddresses as $addr) {
 			$e = socket_sendto($s, $packetPayload, strlen($packetPayload), 0, $addr, 9);
-			echo "WOL Magic Packet sent (".$e."), IP=".$addr.", MAC=".$mac."\n";
+			if($debugOutput) echo "WOL Magic Packet sent (".$e."), IP=".$addr.", MAC=".$mac."\n";
 		}
 	}
 
@@ -118,10 +118,10 @@ function wol($macs) {
 		if(!empty($server['COMMAND'])) $program = $server['COMMAND'];
 		$cmd = $program.' '.implode(' ', $escapedMacs);
 		$stdioStream = ssh2_exec($c, $cmd);
-		echo "Satellite WOL ".$server['USER']."@".$server['ADDRESS'].": ".$cmd."\n";
+		if($debugOutput) echo "Satellite WOL ".$server['USER']."@".$server['ADDRESS'].": ".$cmd."\n";
 		stream_set_blocking($stdioStream, true);
 		$cmdOutput = stream_get_contents($stdioStream);
-		echo "-> ".$cmdOutput."\n";
+		if($debugOutput) echo "-> ".$cmdOutput."\n";
 	}
 
 	socket_close($s);

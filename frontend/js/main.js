@@ -807,7 +807,6 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
 			if(this.status == 200) {
-				console.log('Create Job Container Response: "'+this.responseText+'"');
 				refreshContentJobContainer(parseInt(this.responseText));
 				refreshSidebar();
 			} else {
