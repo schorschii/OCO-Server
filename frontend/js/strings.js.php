@@ -12,6 +12,7 @@ var L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT = "<?php echo LANG['confirm_remove_pack
 var L__CONFIRM_DELETE = "<?php echo LANG['confirm_delete']; ?>";
 var L__CONFIRM_DELETE_PACKAGE = "<?php echo LANG['confirm_delete_package']; ?>";
 var L__CONFIRM_DELETE_GROUP = "<?php echo LANG['confirm_delete_group']; ?>";
+var L__CONFIRM_DELETE_JOB = "<?php echo LANG['confirm_delete_job']; ?>";
 var L__CONFIRM_DELETE_JOBCONTAINER = "<?php echo LANG['confirm_delete_jobcontainer']; ?>";
 var L__COMPUTER_ADDED = "<?php echo LANG['computer_added']; ?>";
 var L__PACKAGES_ADDED = "<?php echo LANG['packages_added']; ?>";

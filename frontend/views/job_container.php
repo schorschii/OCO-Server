@@ -3,6 +3,12 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['remove_job_id']) && is_array($_POST['remove_job_id'])) {
+	foreach($_POST['remove_job_id'] as $id) {
+		$db->removeJob($id);
+	}
+	die();
+}
 if(!empty($_POST['rename_container_id']) && !empty($_POST['new_name'])) {
 	$db->renameJobContainer($_POST['rename_container_id'], $_POST['new_name']);
 	die();
@@ -91,6 +97,7 @@ if(!empty($_GET['id'])) {
 		<table id='tblJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
+					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobData, this.checked)'></th>
 					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['package']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
@@ -104,6 +111,7 @@ if(!empty($_GET['id'])) {
 			foreach($jobs as $job) {
 				$counter ++;
 				echo "<tr>";
+				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."' onchange='refreshCheckedCounter(tblJobData)'></td>";
 				echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$job->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
 				echo "<td><a href='".explorerLink('views/package_detail.php?id='.$job->package_id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle' title='".htmlspecialchars($job->package_procedure, ENT_QUOTES)."'>";
@@ -130,11 +138,16 @@ if(!empty($_GET['id'])) {
 				<tr>
 					<td colspan='999'>
 						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
 						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblJobData")'><?php echo LANG['csv']; ?></a>
 					</td>
 				</tr>
 			</tfoot>
 		</table>
+		<div class='controls'>
+			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+			<button onclick='removeSelectedJob("job_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		</div>
 	</div>
 	</div>
 
