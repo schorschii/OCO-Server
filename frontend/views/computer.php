@@ -126,10 +126,11 @@ foreach($computer as $c) {
 		$ip_addresses[] = $n->addr;
 		$mac_addresses[] = $n->mac;
 	}
+	$online = false; if(time()-strtotime($c->last_ping)<125) $online = true;
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
 	echo "<td>";
-	echo  "<img src='img/".$c->getIcon().".dyn.svg' class='".(time()-strtotime($c->last_ping)<125 ? 'online' : 'offline')."' title='".LANG['last_seen'].' '.htmlspecialchars($c->last_ping)."'>&nbsp;";
+	echo  "<img src='img/".$c->getIcon().".dyn.svg' class='".($online ? 'online' : 'offline')."' title='".($online ? LANG['online'] : LANG['offline'])."'>&nbsp;";
 	echo  "<a href='".explorerLink('views/computer_detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a>";
 	echo "</td>";
 	echo "<td>".htmlspecialchars($c->os)."</td>";
