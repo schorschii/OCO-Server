@@ -31,7 +31,7 @@ if(!empty($_POST['remove_container_id']) && is_array($_POST['remove_container_id
 	}
 	die();
 }
-if(!empty($_POST['renew_container_id'])) {
+if(!empty($_POST['renew_container_id']) && !empty($_POST['renew_start_time'])) {
 	$container = $db->getJobContainer($_POST['renew_container_id']);
 	if($container === null) {
 		header('HTTP/1.1 404 Not Found');
@@ -39,7 +39,7 @@ if(!empty($_POST['renew_container_id'])) {
 	}
 	if($jcid = $db->addJobContainer(
 		$container->name.' - '.LANG['renew'], $_SESSION['um_username'],
-		date('Y-m-d H:i:s'), null,
+		$_POST['renew_start_time'], null /*end time*/,
 		'' /*description*/, 0 /*wol sent*/
 	)) {
 		$count = 0;
@@ -86,7 +86,7 @@ if(!empty($_GET['id'])) {
 
 	<div class='controls'>
 		<button onclick='renameJobContainer(<?php echo $container->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($container->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-		<button onclick='confirmRenewFailedJobsInContainer(<?php echo $container->id; ?>)' <?php echo ($failed>0 ? '' : 'disabled'); ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
+		<button onclick='confirmRenewFailedJobsInContainer(<?php echo $container->id; ?>, "<?php echo date('Y-m-d H:i:s'); ?>")' <?php echo ($failed>0 ? '' : 'disabled'); ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
 		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 

@@ -811,10 +811,11 @@ function confirmRemoveJob(ids) {
 		ajaxRequestPost('views/job_container.php', paramString, null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
-function confirmRenewFailedJobsInContainer(id) {
-	if(confirm(L__CONFIRM_RENEW_JOBS)) {
-		ajaxRequestPost('views/job_container.php', urlencodeObject({'renew_container_id':id}), null, function(){ refreshContentJobContainer(); refreshSidebar(); });
-	}
+function confirmRenewFailedJobsInContainer(id, defaultStartTime) {
+	if(!confirm(L__CONFIRM_RENEW_JOBS)) { return; }
+	var startTime = prompt(L__ENTER_START_TIME, defaultStartTime);
+	if(startTime == null || startTime == '') { return; }
+	ajaxRequestPost('views/job_container.php', urlencodeObject({'renew_container_id':id, 'renew_start_time':startTime}), null, function(){ refreshContent(); refreshSidebar(); });
 }
 function renameJobContainer(id, oldName) {
 	var newName = prompt(L__ENTER_NAME, oldName);
