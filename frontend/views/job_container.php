@@ -99,11 +99,17 @@ if(!empty($_GET['id'])) {
 			</tr>
 			<tr>
 				<th><?php echo LANG['start']; ?></th>
-				<td class='subbuttons'><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; ?><button onclick='event.stopPropagation();editJobContainerStart(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->start_time,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button></td>
+				<td class='subbuttons'>
+					<span><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; ?></span><!--
+					--><button onclick='event.stopPropagation();editJobContainerStart(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->start_time,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['end']; ?></th>
-				<td class='subbuttons'><?php echo htmlspecialchars($container->end_time ?? "-"); ?><button onclick='event.stopPropagation();editJobContainerEnd(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->end_time,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button></td>
+				<td class='subbuttons'>
+					<span><?php echo htmlspecialchars($container->end_time ?? "-"); ?></span><!--
+					--><button onclick='event.stopPropagation();editJobContainerEnd(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->end_time,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['author']; ?></th>
@@ -111,7 +117,10 @@ if(!empty($_GET['id'])) {
 			</tr>
 			<tr>
 				<th><?php echo LANG['description']; ?></th>
-				<td class='subbuttons'><?php echo htmlspecialchars($container->notes); ?><button onclick='event.stopPropagation();editJobContainerNotes(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button></td>
+				<td class='subbuttons'>
+					<?php echo wrapInSpanIfNotEmpty($container->notes); ?><!--
+					--><button onclick='event.stopPropagation();editJobContainerNotes(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['progress']; ?></th>

@@ -580,6 +580,9 @@ table.fixed {
 	background-color: transparent;
 	box-shadow: none;
 }
+.subbuttons > button:first-child {
+	margin-left: 0px;
+}
 .subbuttons > button > img {
 	display: block;
 	margin: 0px;

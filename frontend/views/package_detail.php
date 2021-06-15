@@ -64,8 +64,8 @@ if($package === null) die(LANG['not_found']);
 			<tr>
 				<th><?php echo LANG['version']; ?></th>
 				<td class='subbuttons'>
-					<?php echo htmlspecialchars($package->version); ?>
-					<button onclick='event.stopPropagation();editPackageVersion(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->version,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php echo wrapInSpanIfNotEmpty($package->version); ?><!--
+					--><button onclick='event.stopPropagation();editPackageVersion(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->version,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
@@ -75,15 +75,15 @@ if($package === null) die(LANG['not_found']);
 			<tr>
 				<th><?php echo LANG['install_procedure']; ?></th>
 				<td class='subbuttons'>
-					<?php echo htmlspecialchars($package->install_procedure); ?>
-					<button onclick='event.stopPropagation();editPackageInstallProcedure(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->install_procedure,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php echo wrapInSpanIfNotEmpty($package->install_procedure); ?><!--
+					--><button onclick='event.stopPropagation();editPackageInstallProcedure(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->install_procedure,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['success_return_codes']; ?></th>
 				<td class='subbuttons'>
-					<?php echo htmlspecialchars($package->install_procedure_success_return_codes); ?>
-					<button onclick='event.stopPropagation();editPackageInstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->install_procedure_success_return_codes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php echo wrapInSpanIfNotEmpty($package->install_procedure_success_return_codes); ?><!--
+					--><button onclick='event.stopPropagation();editPackageInstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->install_procedure_success_return_codes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
@@ -97,15 +97,15 @@ if($package === null) die(LANG['not_found']);
 			<tr>
 				<th><?php echo LANG['uninstall_procedure']; ?></th>
 				<td class='subbuttons'>
-					<?php echo htmlspecialchars($package->uninstall_procedure); ?>
-					<button onclick='event.stopPropagation();editPackageUninstallProcedure(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->uninstall_procedure,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php echo wrapInSpanIfNotEmpty($package->uninstall_procedure); ?><!--
+					--><button onclick='event.stopPropagation();editPackageUninstallProcedure(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->uninstall_procedure,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['success_return_codes']; ?></th>
 				<td class='subbuttons'>
-					<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes); ?>
-					<button onclick='event.stopPropagation();editPackageUninstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php echo wrapInSpanIfNotEmpty($package->uninstall_procedure_success_return_codes); ?><!--
+					--><button onclick='event.stopPropagation();editPackageUninstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
@@ -151,7 +151,7 @@ if($package === null) die(LANG['not_found']);
 					$res = $db->getGroupByPackage($package->id);
 					$i = 0;
 					foreach($res as $group) {
-						echo "<a class='subbuttons' href='".explorerLink('views/package.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id));
+						echo "<a class='subbuttons' href='".explorerLink('views/package.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'>".wrapInSpanIfNotEmpty($db->getPackageGroupBreadcrumbString($group->id));
 						echo "<button onclick='event.stopPropagation();removePackageFromGroup([".$package->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.svg' title='".LANG['remove_from_group']."'></button>";
 						echo "</a>";
 						if(++$i != count($res)) { echo "<br>"; }
@@ -162,8 +162,8 @@ if($package === null) die(LANG['not_found']);
 			<tr>
 				<th><?php echo LANG['description']; ?></th>
 				<td class='subbuttons'>
-					<?php echo htmlspecialchars($package->notes); ?>
-					<button onclick='event.stopPropagation();editPackageNotes(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php echo wrapInSpanIfNotEmpty($package->notes); ?><!--
+					--><button onclick='event.stopPropagation();editPackageNotes(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 		</table>

@@ -165,7 +165,7 @@ $commands = $db->getAllComputerCommand();
 					$res = $db->getGroupByComputer($computer->id);
 					$i = 0;
 					foreach($res as $group) {
-						echo "<a class='subbuttons' href='".explorerLink('views/computer.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id));
+						echo "<a class='subbuttons' href='".explorerLink('views/computer.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".wrapInSpanIfNotEmpty($db->getComputerGroupBreadcrumbString($group->id));
 						echo "<button onclick='event.stopPropagation();removeComputerFromGroup([".$computer->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.svg' title='".LANG['remove_from_group']."'></button>";
 						echo "</a>";
 						if(++$i != count($res)) { echo "<br>"; }
@@ -176,8 +176,8 @@ $commands = $db->getAllComputerCommand();
 			<tr>
 				<th><?php echo LANG['notes']; ?></th>
 				<td class='subbuttons'>
-					<?php echo htmlspecialchars($computer->notes); ?>
-					<button onclick='event.stopPropagation();editComputerNotes(<?php echo $computer->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($computer->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php echo wrapInSpanIfNotEmpty($computer->notes); ?><!--
+					--><button onclick='event.stopPropagation();editComputerNotes(<?php echo $computer->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($computer->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 		</table>

@@ -28,6 +28,11 @@ function niceSize($value, $useBinary=true, $round=1) {
 	}
 }
 
+function wrapInSpanIfNotEmpty($text) {
+	if($text == null || $text == '') return '';
+	return '<span>'.htmlspecialchars($text).'</span>';
+}
+
 function progressBar($percent, $id=null, $cid=null, $tid=null, $style=null, $stretch=false) {
 	$percent = intval($percent);
 	return
