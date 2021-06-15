@@ -4,27 +4,32 @@ require_once('../../lib/loader.php');
 require_once('../session.php');
 
 
-if(!empty($_POST['edit_id'])) {
-	$package = $db->getPackage($_POST['edit_id']);
-	if(empty($package)) {
-		header('HTTP/1.1 404 Not Found');
-		die(LANG['not_found']);
-	}
-	$db->updatePackage(
-		$package->id,
-		$package->version,
-		$package->author,
-		$_POST['description'],
-		$_POST['install_procedure'],
-		$_POST['install_procedure_success_return_codes'],
-		$_POST['install_procedure_restart'],
-		$_POST['install_procedure_shutdown'],
-		$_POST['uninstall_procedure'],
-		$_POST['uninstall_procedure_success_return_codes'],
-		$_POST['download_for_uninstall'],
-		$_POST['uninstall_procedure_restart'],
-		$_POST['uninstall_procedure_shutdown']
-	);
+if(!empty($_POST['update_package_family_id']) && !empty($_POST['update_name'])) {
+	$db->updatePackageFamilyName($_POST['update_package_family_id'], $_POST['update_name']);
+	die();
+}
+if(!empty($_POST['update_package_id']) && !empty($_POST['update_version'])) {
+	$db->updatePackageVersion($_POST['update_package_id'], $_POST['update_version']);
+	die();
+}
+if(!empty($_POST['update_package_id']) && isset($_POST['update_note'])) {
+	$db->updatePackageNote($_POST['update_package_id'], $_POST['update_note']);
+	die();
+}
+if(!empty($_POST['update_package_id']) && isset($_POST['update_install_procedure'])) {
+	$db->updatePackageInstallProcedure($_POST['update_package_id'], $_POST['update_install_procedure']);
+	die();
+}
+if(!empty($_POST['update_package_id']) && isset($_POST['update_install_procedure_success_return_codes'])) {
+	$db->updatePackageInstallProcedureSuccessReturnCodes($_POST['update_package_id'], $_POST['update_install_procedure_success_return_codes']);
+	die();
+}
+if(!empty($_POST['update_package_id']) && isset($_POST['update_uninstall_procedure'])) {
+	$db->updatePackageUninstallProcedure($_POST['update_package_id'], $_POST['update_uninstall_procedure']);
+	die();
+}
+if(!empty($_POST['update_package_id']) && isset($_POST['update_uninstall_procedure_success_return_codes'])) {
+	$db->updatePackageUninstallProcedureSuccessReturnCodes($_POST['update_package_id'], $_POST['update_uninstall_procedure_success_return_codes']);
 	die();
 }
 
@@ -38,6 +43,7 @@ if($package === null) die(LANG['not_found']);
 <h1><img src='img/<?php echo $package->getIcon(); ?>.dyn.svg'><?php echo htmlspecialchars($package->name); ?></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button onclick='renamePackageFamily(<?php echo $package->package_family_id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($package->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
 	<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
@@ -50,18 +56,17 @@ if($package === null) die(LANG['not_found']);
 <div class="details-abreast">
 	<div>
 		<h2><?php echo LANG['general']; ?></h2>
-		<table class='list form'>
+		<table class='list metadata'>
 			<tr>
 				<th><?php echo LANG['id']; ?></th>
 				<td><?php echo htmlspecialchars($package->id); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['name']; ?></th>
-				<td><?php echo htmlspecialchars($package->name); ?></td>
-			</tr>
-			<tr>
 				<th><?php echo LANG['version']; ?></th>
-				<td><?php echo htmlspecialchars($package->version); ?></td>
+				<td class='subbuttons'>
+					<?php echo htmlspecialchars($package->version); ?>
+					<button onclick='event.stopPropagation();editPackageVersion(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->version,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['author']; ?></th>
@@ -69,40 +74,52 @@ if($package === null) die(LANG['not_found']);
 			</tr>
 			<tr>
 				<th><?php echo LANG['install_procedure']; ?></th>
-				<td><input type='text' id='txtInstallProcedure' value='<?php echo htmlspecialchars($package->install_procedure); ?>'></td>
+				<td class='subbuttons'>
+					<?php echo htmlspecialchars($package->install_procedure); ?>
+					<button onclick='event.stopPropagation();editPackageInstallProcedure(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->install_procedure,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['success_return_codes']; ?></th>
-				<td><input type='text' id='txtInstallProcedureSucessReturnCodes' value='<?php echo htmlspecialchars($package->install_procedure_success_return_codes); ?>'></td>
+				<td class='subbuttons'>
+					<?php echo htmlspecialchars($package->install_procedure_success_return_codes); ?>
+					<button onclick='event.stopPropagation();editPackageInstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->install_procedure_success_return_codes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['after_completion']; ?></th>
 				<td>
-					<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionNone' <?php if(!$package->install_procedure_restart && !$package->install_procedure_shutdown) echo 'checked'; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
-					<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionRestart' <?php if($package->install_procedure_restart) echo 'checked'; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
-					<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionShutdown' <?php if($package->install_procedure_shutdown) echo 'checked'; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
+					<?php if(!$package->install_procedure_restart && !$package->install_procedure_shutdown) echo LANG['no_action']; ?>
+					<?php if($package->install_procedure_restart) echo LANG['restart']; ?>
+					<?php if($package->install_procedure_shutdown) echo LANG['shutdown']; ?>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['uninstall_procedure']; ?></th>
-				<td><input type='text' id='txtUninstallProcedure' value='<?php echo htmlspecialchars($package->uninstall_procedure); ?>'></td>
+				<td class='subbuttons'>
+					<?php echo htmlspecialchars($package->uninstall_procedure); ?>
+					<button onclick='event.stopPropagation();editPackageUninstallProcedure(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->uninstall_procedure,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['success_return_codes']; ?></th>
-				<td><input type='text' id='txtUninstallProcedureSuccessReturnCodes' value='<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes); ?>'></td>
+				<td class='subbuttons'>
+					<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes); ?>
+					<button onclick='event.stopPropagation();editPackageUninstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['after_completion']; ?></th>
 				<td>
-					<label class='inlineblock'><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionNone' <?php if(!$package->uninstall_procedure_restart && !$package->uninstall_procedure_shutdown) echo 'checked'; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
-					<label class='inlineblock'><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionRestart' <?php if($package->uninstall_procedure_restart) echo 'checked'; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
-					<label class='inlineblock'><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionShutdown' <?php if($package->uninstall_procedure_shutdown) echo 'checked'; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
+					<?php if(!$package->uninstall_procedure_restart && !$package->uninstall_procedure_shutdown) echo LANG['no_action']; ?>
+					<?php if($package->uninstall_procedure_restart) echo LANG['restart']; ?>
+					<?php if($package->uninstall_procedure_shutdown) echo LANG['shutdown']; ?>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['download_for_uninstall']; ?></th>
 				<td>
-					<label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' <?php if($package->download_for_uninstall) echo 'checked'; ?>>&nbsp;<?php echo LANG['yes']; ?></label>
+					<?php if($package->download_for_uninstall) echo LANG['yes']; else echo LANG['no']; ?>
 				</td>
 			</tr>
 			<tr>
@@ -144,13 +161,10 @@ if($package === null) die(LANG['not_found']);
 			</tr>
 			<tr>
 				<th><?php echo LANG['description']; ?></th>
-				<td>
-					<textarea id='txtDescription'><?php echo htmlspecialchars($package->notes); ?></textarea>
+				<td class='subbuttons'>
+					<?php echo htmlspecialchars($package->notes); ?>
+					<button onclick='event.stopPropagation();editPackageNotes(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
-			</tr>
-			<tr>
-				<th></th>
-				<td><button id='btnEditPackage' onclick='updatePackage(<?php echo $package->id; ?>, txtDescription.value, txtInstallProcedure.value, txtInstallProcedureSucessReturnCodes.value, rdoInstallPostActionRestart.checked, rdoInstallPostActionShutdown.checked, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, rdoUninstallPostActionRestart.checked, rdoUninstallPostActionShutdown.checked)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button></td>
 			</tr>
 		</table>
 	</div>

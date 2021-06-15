@@ -215,7 +215,7 @@ body {
 }
 #explorer-tree a img,
 #header #search-results a img {
-	width: 15px;
+	width: 16px;
 	margin-right: 5px;
 	margin-bottom: 2px;
 	vertical-align: middle;
@@ -519,6 +519,9 @@ table.list tr:last-child th:last-child,
 table.list tr:last-child td:last-child {
 	border-bottom-right-radius: 2px;
 }
+table.metadata tr th:first-child {
+	width: 40%;
+}
 
 table.list .sortbutton {
 	width:100%;
@@ -554,7 +557,7 @@ table.list .sortsymbol.unsorted::after {
 img.small,
 table tr th > img,
 table tr td > img {
-	height: 18px;
+	height: 16px;
 	vertical-align: middle;
 	margin-bottom: 2px;
 }
@@ -566,18 +569,22 @@ table.fixed {
 	table-layout: fixed;
 }
 
-a.subbuttons > button {
+.subbuttons > button {
 	opacity: 0;
 	transition: opacity 0.2s ease;
 	vertical-align: middle;
-	margin: 0px 0px 1px 4px;
+	margin: -2px 0px 0px 4px;
 	padding: 0px;
 	border: none;
 	background: transparent;
 	background-color: transparent;
 	box-shadow: none;
 }
-a.subbuttons:hover > button {
+.subbuttons > button > img {
+	display: block;
+	margin: 0px;
+}
+.subbuttons:hover > button {
 	opacity: 1;
 }
 

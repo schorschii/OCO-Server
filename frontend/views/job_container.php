@@ -9,8 +9,20 @@ if(!empty($_POST['remove_job_id']) && is_array($_POST['remove_job_id'])) {
 	}
 	die();
 }
-if(!empty($_POST['rename_container_id']) && !empty($_POST['new_name'])) {
-	$db->renameJobContainer($_POST['rename_container_id'], $_POST['new_name']);
+if(!empty($_POST['edit_container_id']) && !empty($_POST['new_name'])) {
+	$db->renameJobContainer($_POST['edit_container_id'], $_POST['new_name']);
+	die();
+}
+if(!empty($_POST['edit_container_id']) && !empty($_POST['new_start'])) {
+	$db->editJobContainerStart($_POST['edit_container_id'], $_POST['new_start']);
+	die();
+}
+if(!empty($_POST['edit_container_id']) && isset($_POST['new_end'])) {
+	$db->editJobContainerEnd($_POST['edit_container_id'], $_POST['new_end']);
+	die();
+}
+if(!empty($_POST['edit_container_id']) && isset($_POST['new_notes'])) {
+	$db->editJobContainerNotes($_POST['edit_container_id'], $_POST['new_notes']);
 	die();
 }
 if(!empty($_POST['remove_container_id']) && is_array($_POST['remove_container_id'])) {
@@ -81,12 +93,30 @@ if(!empty($_GET['id'])) {
 	<div class='details-abreast margintop marginbottom'>
 	<div>
 		<table class='list'>
-			<tr><th><?php echo LANG['created']; ?></th><td><?php echo htmlspecialchars($container->created); ?></td></tr>
-			<tr><th><?php echo LANG['start']; ?></th><td><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; ?></td></tr>
-			<tr><th><?php echo LANG['end']; ?></th><td><?php echo htmlspecialchars($container->end_time ?? "-"); ?></td></tr>
-			<tr><th><?php echo LANG['author']; ?></th><td><?php echo htmlspecialchars($container->author); ?></td></tr>
-			<tr><th><?php echo LANG['description']; ?></th><td><?php echo htmlspecialchars($container->notes); ?></td></tr>
-			<tr><th><?php echo LANG['progress']; ?></th><td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, null, null, true); ?></td></tr>
+			<tr>
+				<th><?php echo LANG['created']; ?></th>
+				<td><?php echo htmlspecialchars($container->created); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['start']; ?></th>
+				<td class='subbuttons'><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; ?><button onclick='event.stopPropagation();editJobContainerStart(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->start_time,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['end']; ?></th>
+				<td class='subbuttons'><?php echo htmlspecialchars($container->end_time ?? "-"); ?><button onclick='event.stopPropagation();editJobContainerEnd(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->end_time,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['author']; ?></th>
+				<td><?php echo htmlspecialchars($container->author); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['description']; ?></th>
+				<td class='subbuttons'><?php echo htmlspecialchars($container->notes); ?><button onclick='event.stopPropagation();editJobContainerNotes(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['progress']; ?></th>
+				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, null, null, true); ?></td>
+			</tr>
 		</table>
 	</div>
 	<div></div>

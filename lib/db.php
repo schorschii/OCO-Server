@@ -652,29 +652,47 @@ class db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown) {
+	public function updatePackageFamilyName($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package
-			SET version = :version, author = :author, notes = :notes, last_update = CURRENT_TIMESTAMP,
-			install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_restart = :install_procedure_restart, install_procedure_shutdown = :install_procedure_shutdown,
-			uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, download_for_uninstall = :download_for_uninstall, uninstall_procedure_restart = :uninstall_procedure_restart, uninstall_procedure_shutdown = :uninstall_procedure_shutdown
-			WHERE id = :id'
+			'UPDATE package_family SET name = :name WHERE id = :id'
 		);
-		return $this->stmt->execute([
-			':id' => $id,
-			':version' => $version,
-			':author' => $author,
-			':notes' => $notes,
-			':install_procedure' => $install_procedure,
-			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
-			':install_procedure_restart' => $install_procedure_restart,
-			':install_procedure_shutdown' => $install_procedure_shutdown,
-			':uninstall_procedure' => $uninstall_procedure,
-			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
-			':download_for_uninstall' => $download_for_uninstall,
-			':uninstall_procedure_restart' => $uninstall_procedure_restart,
-			':uninstall_procedure_shutdown' => $uninstall_procedure_shutdown,
-		]);
+		return $this->stmt->execute([':id' => $id, ':name' => $newValue]);
+	}
+	public function updatePackageVersion($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, version = :version WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':version' => $newValue]);
+	}
+	public function updatePackageNote($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, notes = :notes WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':notes' => $newValue]);
+	}
+	public function updatePackageInstallProcedure($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure = :install_procedure WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':install_procedure' => $newValue]);
+	}
+	public function updatePackageInstallProcedureSuccessReturnCodes($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_success_return_codes = :install_procedure_success_return_codes WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':install_procedure_success_return_codes' => $newValue]);
+	}
+	public function updatePackageUninstallProcedure($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure = :uninstall_procedure WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':uninstall_procedure' => $newValue]);
+	}
+	public function updatePackageUninstallProcedureSuccessReturnCodes($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_success_return_codes' => $newValue]);
 	}
 	public function addPackageToComputer($pid, $cid, $procedure) {
 		$this->dbh->beginTransaction();
@@ -1019,8 +1037,28 @@ class db {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container SET name = :name WHERE id = :id'
 		);
-		$this->stmt->execute([':id' => $id, ':name' => $name]);
-		return $this->dbh->lastInsertId();
+		return $this->stmt->execute([':id' => $id, ':name' => $name]);
+	}
+	public function editJobContainerStart($id, $value) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job_container SET start_time = :start_time WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':start_time' => $value]);
+	}
+	public function editJobContainerEnd($id, $value) {
+		if(empty($value)) $value = null;
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job_container SET end_time = :end_time WHERE id = :id'
+		);
+		$this->stmt->bindValue(':id', $id);
+		$this->stmt->bindValue(':end_time', $value);
+		return $this->stmt->execute();
+	}
+	public function editJobContainerNotes($id, $value) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job_container SET notes = :notes WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':notes' => $value]);
 	}
 	public function getComputerMacByContainer($id) {
 		$this->stmt = $this->dbh->prepare(

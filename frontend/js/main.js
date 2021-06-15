@@ -353,34 +353,47 @@ function createPackage(name, version, description, archive, install_procedure, i
 	req.open('POST', 'views/package_new.php');
 	req.send(formData);
 }
-function updatePackage(id, description, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown) {
-	btnEditPackage.disabled = true;
-	let req = new XMLHttpRequest();
-	let formData = new FormData();
-	formData.append('edit_id', id);
-	formData.append('description', description);
-	formData.append('install_procedure', install_procedure);
-	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
-	formData.append('install_procedure_restart', install_procedure_restart ? '1' : '0');
-	formData.append('install_procedure_shutdown', install_procedure_shutdown ? '1' : '0');
-	formData.append('uninstall_procedure', uninstall_procedure);
-	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
-	formData.append('download_for_uninstall', download_for_uninstall ? '1' : '0');
-	formData.append('uninstall_procedure_restart', uninstall_procedure_restart ? '1' : '0');
-	formData.append('uninstall_procedure_shutdown', uninstall_procedure_shutdown ? '1' : '0');
-	req.open('POST', 'views/package_detail.php');
-	req.send(formData);
-	req.onreadystatechange = function() {
-		if(this.readyState == 4) {
-			if(this.status == 200) {
-				alert(L__SAVED);
-				refreshContent();
-			} else {
-				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
-				btnEditPackage.disabled = false;
-			}
-		}
-	};
+function renamePackageFamily(id, oldValue) {
+	var newValue = prompt(L__ENTER_NAME, oldValue);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_family_id':id, 'update_name':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editPackageVersion(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_version':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editPackageInstallProcedure(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_install_procedure':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editPackageInstallProcedureSuccessReturnCodes(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_success_return_codes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editPackageUninstallProcedure(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editPackageUninstallProcedureSuccessReturnCodes(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_success_return_codes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editPackageNotes(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_note':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
 }
 function reorderPackageInGroup(groupId, oldPos, newPos) {
 	var params = [];
@@ -572,8 +585,11 @@ function refreshDeployCount() {
 }
 
 // computer operations
-function saveComputerNotes(id, notes) {
-	ajaxRequestPost('views/computer_detail.php', urlencodeObject({'update_note_computer_id':id, 'update_note':notes}), null, function(){ alert(L__SAVED); });
+function editComputerNotes(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/computer_detail.php', urlencodeObject({'update_note_computer_id':id, 'update_note':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
 }
 function newComputer() {
 	var newName = prompt(L__ENTER_NAME);
@@ -803,7 +819,25 @@ function confirmRenewFailedJobsInContainer(id) {
 function renameJobContainer(id, oldName) {
 	var newName = prompt(L__ENTER_NAME, oldName);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/job_container.php', urlencodeObject({'rename_container_id':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job_container.php', urlencodeObject({'edit_container_id':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editJobContainerStart(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/job_container.php', urlencodeObject({'edit_container_id':id, 'new_start':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editJobContainerEnd(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/job_container.php', urlencodeObject({'edit_container_id':id, 'new_end':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editJobContainerNotes(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/job_container.php', urlencodeObject({'edit_container_id':id, 'new_notes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, autoCreateUninstallJobs, restartTimeout) {

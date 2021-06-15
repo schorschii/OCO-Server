@@ -85,7 +85,7 @@ $commands = $db->getAllComputerCommand();
 <div class="details-abreast">
 	<div>
 		<h2><?php echo LANG['general']; ?></h2>
-		<table class='list'>
+		<table class='list metadata'>
 			<tr>
 				<th><?php echo LANG['id']; ?></th>
 				<td><?php echo htmlspecialchars($computer->id); ?></td>
@@ -175,9 +175,9 @@ $commands = $db->getAllComputerCommand();
 			</tr>
 			<tr>
 				<th><?php echo LANG['notes']; ?></th>
-				<td>
-					<textarea id='txtDescription'><?php echo htmlspecialchars($computer->notes); ?></textarea>
-					<br><button onclick='saveComputerNotes(<?php echo $computer->id; ?>, txtDescription.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
+				<td class='subbuttons'>
+					<?php echo htmlspecialchars($computer->notes); ?>
+					<button onclick='event.stopPropagation();editComputerNotes(<?php echo $computer->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($computer->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 		</table>

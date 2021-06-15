@@ -27,3 +27,4 @@ var L__PLEASE_CHECK_NETWORK = "<?php echo LANG['please_check_network']; ?>";
 var L__IN_PROGRESS = "<?php echo LANG['in_progress']; ?>";
 var L__CONFIRM_RENEW_JOBS = "<?php echo LANG['confirm_renew_jobs']; ?>";
 var L__CONFIRM_CREATE_EMPTY_PACKAGE = "<?php echo LANG['confirm_create_empty_package']; ?>";
+var L__ENTER_NEW_VALUE = "<?php echo LANG['enter_new_value']; ?>";
