@@ -243,6 +243,7 @@ const LANG = [
 	'edit' => 'Bearbeiten',
 	'enter_new_value' => 'Bitte geben Sie einen neuen Wert ein',
 	'enter_start_time' => 'Bitte geben Sie eine Startzeit ein',
+	'date_parse_error' => 'Parsen des Datums fehlgeschlagen. Bitte geben Sie ein Datum in folgendem Format ein: YYYY-MM-DD HH:MM:SS',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

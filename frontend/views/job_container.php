@@ -14,10 +14,18 @@ if(!empty($_POST['edit_container_id']) && !empty($_POST['new_name'])) {
 	die();
 }
 if(!empty($_POST['edit_container_id']) && !empty($_POST['new_start'])) {
+	if(DateTime::createFromFormat('Y-m-d H:i:s', $_POST['new_start']) === false) {
+		header('HTTP/1.1 400 Invalid Date');
+		die(LANG['date_parse_error']);
+	}
 	$db->editJobContainerStart($_POST['edit_container_id'], $_POST['new_start']);
 	die();
 }
 if(!empty($_POST['edit_container_id']) && isset($_POST['new_end'])) {
+	if(!empty($_POST['new_end']) && DateTime::createFromFormat('Y-m-d H:i:s', $_POST['new_end']) === false) {
+		header('HTTP/1.1 400 Invalid Date');
+		die(LANG['date_parse_error']);
+	}
 	$db->editJobContainerEnd($_POST['edit_container_id'], $_POST['new_end']);
 	die();
 }
@@ -32,6 +40,10 @@ if(!empty($_POST['remove_container_id']) && is_array($_POST['remove_container_id
 	die();
 }
 if(!empty($_POST['renew_container_id']) && !empty($_POST['renew_start_time'])) {
+	if(DateTime::createFromFormat('Y-m-d H:i:s', $_POST['renew_start_time']) === false) {
+		header('HTTP/1.1 400 Invalid Date');
+		die(LANG['date_parse_error']);
+	}
 	$container = $db->getJobContainer($_POST['renew_container_id']);
 	if($container === null) {
 		header('HTTP/1.1 404 Not Found');
