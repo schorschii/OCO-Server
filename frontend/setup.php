@@ -12,7 +12,13 @@ if($db->existsSchema() && count($db->getAllSystemuser()) > 0) {
 
 // create initial admin user
 if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2'])) {
-	if($_POST['password'] !== $_POST['password2']) {
+	if(empty(trim($_POST['username']))) {
+		$info = LANG['username_cannot_be_empty'];
+		$infoclass = 'error';
+	} elseif(empty(trim($_POST['password']))) {
+		$info = LANG['password_cannot_be_empty'];
+		$infoclass = 'error';
+	} elseif($_POST['password'] !== $_POST['password2']) {
 		$info = LANG['passwords_do_not_match'];
 		$infoclass = 'error';
 	} else {
