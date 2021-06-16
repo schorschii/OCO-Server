@@ -14,7 +14,7 @@ if($db->existsSchema() && count($db->getAllSystemuser()) > 0) {
 if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2'])) {
 	if($_POST['password'] !== $_POST['password2']) {
 		$info = LANG['passwords_do_not_match'];
-		$infoclass = "red";
+		$infoclass = 'error';
 	} else {
 		if(
 			$db->addSystemuser(
@@ -27,7 +27,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 			die();
 		} else {
 			$info = LANG['database_error'];
-			$infoclass = "red";
+			$infoclass = 'error';
 		}
 	}
 }
@@ -53,7 +53,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 			<form method='POST' action='setup.php' onsubmit='btnFinish.disabled = true'>
 				<h1><?php echo LANG['setup']; ?></h1>
 				<?php if($info !== null) { ?>
-					<h3 class='<?php echo $infoclass; ?>'><?php echo $info; ?></h3>
+					<div class='alert bold <?php echo $infoclass; ?>'><?php echo $info; ?></div>
 				<?php } ?>
 				<input type='text' name='username' placeholder='Admin-Benutzername wählen...' autofocus='true'>
 				<input type='password' name='password' placeholder='Kennwort wählen...'>

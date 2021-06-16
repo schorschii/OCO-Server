@@ -634,13 +634,6 @@ div.details-abreast > div > table {
 	opacity: 0.4;
 }
 
-.green {
-	color: green;
-}
-.red {
-	color: red;
-}
-
 .vl {
 	display: inline-block;
 	width: 2px;
@@ -773,6 +766,37 @@ div.details-abreast > div > table {
 #sltPackage, #sltPackageGroup {
 	resize: vertical;
 	min-height: 100px;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.alert {
+	border-radius: 2px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 8px !important;
+}
+.alert.info {
+	background: #e1f1f6;
+	color: #565656;
+	border: 1px solid #49afd9
+}
+.alert.success {
+	background: #dff0d0;
+	color: #565656;
+	border: 1px solid #60b515
+}
+.alert.warning {
+	background: #feecb5;
+	color: #565656;
+	border: 1px solid #ffdc0b
+}
+.alert.error {
+	background: #f5dbd9;
+	color: #565656;
+	border: 1px solid #ebafa6
 }
 
 @media (max-width: 1050px) {

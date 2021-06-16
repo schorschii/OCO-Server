@@ -17,7 +17,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 	if($user === null) {
 		sleep(2);
 		$info = LANG['user_does_not_exist'];
-		$infoclass = "red";
+		$infoclass = 'error';
 	} else {
 		if(!$user->locked) {
 			if(checkPassword($user, $_POST['password'])) {
@@ -28,12 +28,12 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 			} else {
 				sleep(2);
 				$info = LANG['login_failed'];
-				$infoclass = "red";
+				$infoclass = 'error';
 			}
 		} else {
 			sleep(1);
 			$info = LANG['user_locked'];
-			$infoclass = "red";
+			$infoclass = 'error';
 		}
 	}
 }
@@ -44,7 +44,7 @@ elseif(isset($_GET['logout'])) {
 		session_unset();
 		session_destroy();
 		$info = LANG['log_out_successful'];
-		$infoclass = "green";
+		$infoclass = 'success';
 	}
 }
 
@@ -102,7 +102,7 @@ function validatePassword($userObject, $checkPassword) {
 				<form method='POST' action='login.php' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
 					<h1><?php echo LANG['login']; ?></h1>
 					<?php if($info !== null) { ?>
-						<h3 class='<?php echo $infoclass; ?>'><?php echo $info; ?></h3>
+						<div class='alert bold <?php echo $infoclass; ?>'><?php echo $info; ?></div>
 					<?php } ?>
 					<input id='txtUsername' type='text' name='username' placeholder='<?php echo LANG['username']; ?>' autofocus='true'>
 					<input id='txtPassword' type='password' name='password' placeholder='<?php echo LANG['password']; ?>'>
