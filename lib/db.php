@@ -682,6 +682,18 @@ class db {
 		);
 		return $this->stmt->execute([':id' => $id, ':install_procedure_success_return_codes' => $newValue]);
 	}
+	public function updatePackageInstallProcedureRestart($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_restart = :install_procedure_restart WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':install_procedure_restart' => $newValue]);
+	}
+	public function updatePackageInstallProcedureShutdown($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_shutdown = :install_procedure_shutdown WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':install_procedure_shutdown' => $newValue]);
+	}
 	public function updatePackageUninstallProcedure($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure = :uninstall_procedure WHERE id = :id'
@@ -693,6 +705,18 @@ class db {
 			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes WHERE id = :id'
 		);
 		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_success_return_codes' => $newValue]);
+	}
+	public function updatePackageUninstallProcedureRestart($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure_restart = :uninstall_procedure_restart WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_restart' => $newValue]);
+	}
+	public function updatePackageUninstallProcedureShutdown($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure_shutdown = :uninstall_procedure_shutdown WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_shutdown' => $newValue]);
 	}
 	public function addPackageToComputer($pid, $cid, $procedure) {
 		$this->dbh->beginTransaction();

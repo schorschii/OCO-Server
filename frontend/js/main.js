@@ -377,6 +377,12 @@ function editPackageInstallProcedureSuccessReturnCodes(id, oldValue) {
 		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_success_return_codes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
+function editPackageInstallProcedureAction(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_PROCEDURE_POST_ACTION, oldValue);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_action':newValue}), null, function(){ refreshContent(); });
+	}
+}
 function editPackageUninstallProcedure(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
@@ -387,6 +393,12 @@ function editPackageUninstallProcedureSuccessReturnCodes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
 		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_success_return_codes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editPackageUninstallProcedureAction(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_PROCEDURE_POST_ACTION, oldValue);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/package_detail.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_action':newValue}), null, function(){ refreshContent(); });
 	}
 }
 function editPackageNotes(id, oldValue) {

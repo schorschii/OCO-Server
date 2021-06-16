@@ -29,3 +29,4 @@ var L__CONFIRM_RENEW_JOBS = "<?php echo LANG['confirm_renew_jobs']; ?>";
 var L__CONFIRM_CREATE_EMPTY_PACKAGE = "<?php echo LANG['confirm_create_empty_package']; ?>";
 var L__ENTER_NEW_VALUE = "<?php echo LANG['enter_new_value']; ?>";
 var L__ENTER_START_TIME = "<?php echo LANG['enter_start_time']; ?>";
+var L__ENTER_NEW_PROCEDURE_POST_ACTION = "<?php echo LANG['enter_new_procedure_post_action']; ?>";

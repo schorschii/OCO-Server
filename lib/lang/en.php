@@ -244,6 +244,7 @@ const LANG = [
 	'enter_new_value' => 'Please enter a new value',
 	'enter_start_time' => 'Please enter a start time',
 	'date_parse_error' => 'Date parse error. Please enter a date in the format: YYYY-MM-DD HH:MM:SS',
+	'enter_new_procedure_post_action' => 'Please enter a new procedure post action:\n0 - No Action\n1 - Restart\n2 - Shutdown',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
