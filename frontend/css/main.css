@@ -880,4 +880,24 @@ div.details-abreast > div > table {
 	.progressbar > .progress {
 		background-color: #49AFD9;
 	}
+	.alert.info {
+		background: #0f6082;
+	  color: #e9ecef;
+	  border: 1px solid transparent
+	}
+	.alert.success {
+		background: #62a420;
+	  color: #fff;
+	  border: none
+	}
+	.alert.warning {
+		background: #7f6509;
+	  color: #e9ecef;
+	  border: 1px solid transparent
+	}
+	.alert.error {
+		background: #882d31;
+	  color: #e9ecef;
+	  border: 1px solid transparent
+	}
 }
