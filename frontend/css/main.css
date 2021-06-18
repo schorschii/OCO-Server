@@ -378,17 +378,18 @@ div.contextMenu button img {
 .controls > *:last-child {
 	margin-right: 0px;
 }
-.controls > span {
+.controls > span,
+.controls label {
 	display: flex;
 	align-items: center;
 }
 .controls select {
 	max-width: 150px;
 }
-.controls label {
-	display: flex;
-	align-items: center;
+.fillwidth {
+	flex-grow: 1;
 }
+
 .inlineblock {
 	display: inline-block;
 }

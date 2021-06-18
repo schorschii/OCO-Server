@@ -80,6 +80,8 @@ if(empty($_GET['id'])) {
 	echo "<div class='controls'>";
 	echo "<button onclick='newComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button> ";
 	echo "<button onclick='newComputerGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
+	echo "<span class='fillwidth'></span> ";
+	echo "<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='".LANG['agent_download_description']."'>".LANG['agent_download']."</a></span> ";
 	echo "</div>";
 } else {
 	$computer = $db->getComputerByGroup($_GET['id']);

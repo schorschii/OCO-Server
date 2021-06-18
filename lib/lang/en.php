@@ -247,6 +247,8 @@ const LANG = [
 	'enter_start_time' => 'Please enter a start time',
 	'date_parse_error' => 'Date parse error. Please enter a date in the format: YYYY-MM-DD HH:MM:SS',
 	'enter_new_procedure_post_action' => 'Please enter a new procedure post action:\n0 - No Action\n1 - Restart\n2 - Shutdown',
+	'agent_download' => 'Agent Download',
+	'agent_download_description' => 'You need to install the agent on your client computers in order to manage them with OCO server.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
@@ -267,7 +269,7 @@ const LANG = [
 				<li>.app directory for macOS: <code>cp -R program.app /Applications ; chmod -R +x /Applications/program.app</code></li>
 				<li>.app directory for macOS uninstallation: <code>rm -R /Applications/program.app</code></li>
 				<li>.pkg package for macOS: <code>installer -pkg package.pkg -target /</code> (no uninstallation support)</li>
-				<li>Own Batch/Shell script for Linux: <code>myscript.bat</code> or <code>myscript.sh</code></li>
+				<li>Own Batch/Shell script: <code>myscript.bat</code> or <code>myscript.sh</code></li>
 			</ul>
 		</p>
 	',
