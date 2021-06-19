@@ -913,6 +913,107 @@ function confirmRemoveSelectedDomainuser(checkboxName) {
 	}
 }
 
+// report operations
+function newReportGroup(parent_id=null) {
+	var newName = prompt(L__ENTER_NAME);
+	if(newName != null && newName != '') {
+		ajaxRequestPost('views/report.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
+	}
+}
+function renameReportGroup(id, oldName) {
+	var newName = prompt(L__ENTER_NAME, oldName);
+	if(newName != null && newName != '') {
+		ajaxRequestPost('views/report.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function confirmRemoveReportGroup(ids) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_group_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(L__CONFIRM_DELETE_GROUP)) {
+		ajaxRequestPost('views/report.php', paramString, null, function(){ refreshContentReport(); refreshSidebar(); });
+	}
+}
+function newReport(group_id=0) {
+	var newName = prompt(L__ENTER_NAME);
+	if(newName != null && newName != '') {
+		var newQuery = prompt(L__ENTER_QUERY);
+		if(newQuery != null && newQuery != '') {
+			ajaxRequestPost('views/report.php', urlencodeObject({'add_report':newName, 'query':newQuery, 'group_id':group_id}), null, refreshContent);
+		}
+	}
+}
+function renameReport(id, oldValue) {
+	var newValue = prompt(L__ENTER_NAME, oldValue);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/report_detail.php', urlencodeObject({'update_report_id':id, 'update_name':newValue}), null, refreshContent);
+	}
+}
+function editReportNote(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/report_detail.php', urlencodeObject({'update_report_id':id, 'update_note':newValue}), null, refreshContent);
+	}
+}
+function editReportQuery(id, oldValue) {
+	var newValue = prompt(L__ENTER_QUERY, oldValue);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/report_detail.php', urlencodeObject({'update_report_id':id, 'update_query':newValue}), null, refreshContent);
+	}
+}
+function removeSelectedReport(checkboxName, attributeName=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	confirmRemoveReport(ids);
+}
+function confirmRemoveReport(ids) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(L__CONFIRM_DELETE)) {
+		ajaxRequestPost('views/report.php', paramString, null, refreshContent);
+	}
+}
+function moveSelectedReportToGroup(checkboxName, groupId, attributeName=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	var params = [];
+	params.push({'key':'move_to_group_id', 'value':groupId});
+	ids.forEach(function(entry) {
+		params.push({'key':'move_to_group_report_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('views/report.php', paramString, null, function() { refreshContent(); alert(L__SAVED); });
+}
+
 // systemuser operations
 function confirmRemoveSelectedSystemuser(checkboxName) {
 	var ids = [];

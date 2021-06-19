@@ -1483,6 +1483,32 @@ class db {
 	}
 
 	// Report Operations
+	public function addReportGroup($name, $parent_id) {
+		if(empty($parent_id) || intval($parent_id) < 0) {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO report_group (name) VALUES (:name)'
+			);
+			$this->stmt->execute([':name' => $name]);
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO report_group (name, parent_report_group_id) VALUES (:name, :parent_report_group_id)'
+			);
+			$this->stmt->execute([':name' => $name, ':parent_report_group_id' => $parent_id]);
+		}
+		return $this->dbh->lastInsertId();
+	}
+	public function renameReportGroup($id, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE report_group SET name = :name WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':name' => $name]);
+	}
+	public function removeReportGroup($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM report_group WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
+	}
 	public function getAllReportGroup($parent_id=null) {
 		if($parent_id === null) {
 			$this->stmt = $this->dbh->prepare(
@@ -1514,11 +1540,78 @@ class db {
 			return $row;
 		}
 	}
+	public function getReportGroupBreadcrumbString($id) {
+		$currentGroupId = $id;
+		$groupStrings = [];
+		while(true) {
+			$currentGroup = $this->getReportGroup($currentGroupId);
+			$groupStrings[] = $currentGroup->name;
+			if($currentGroup->parent_report_group_id === null) {
+				break;
+			} else {
+				$currentGroupId = $currentGroup->parent_report_group_id;
+			}
+		}
+		$groupStrings = array_reverse($groupStrings);
+		return implode($groupStrings, ' » ');
+	}
 
-	public function getAllReport() {
+	public function addReport($report_group_id, $name, $notes, $query) {
+		if(empty($report_group_id) || intval($report_group_id) < 0) {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO report (report_group_id, name, notes, query) VALUES (NULL, :name, :notes, :query)'
+			);
+			$this->stmt->execute([
+				':name' => $name,
+				':notes' => $notes,
+				':query' => $query,
+			]);
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO report (report_group_id, name, notes, query) VALUES (:report_group_id, :name, :notes, :query)'
+			);
+			$this->stmt->execute([
+				':report_group_id' => $report_group_id,
+				':name' => $name,
+				':notes' => $notes,
+				':query' => $query,
+			]);
+		}
+		return $this->dbh->lastInsertId();
+	}
+	public function updateReport($id, $report_group_id, $name, $notes, $query) {
+		if(empty($report_group_id) || intval($report_group_id) < 0) {
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE report SET report_group_id = NULL, name = :name, notes = :notes, query = :query WHERE id = :id'
+			);
+			$this->stmt->execute([
+				':id' => $id,
+				':name' => $name,
+				':notes' => $notes,
+				':query' => $query,
+			]);
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE report SET report_group_id = :report_group_id, name = :name, notes = :notes, query = :query WHERE id = :id'
+			);
+			$this->stmt->execute([
+				':id' => $id,
+				':report_group_id' => $report_group_id,
+				':name' => $name,
+				':notes' => $notes,
+				':query' => $query,
+			]);
+		}
+		return $this->dbh->lastInsertId();
+	}
+	public function removeReport($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM report ORDER BY name'
+			'DELETE FROM report WHERE id = :id'
 		);
+		return $this->stmt->execute([':id' => $id]);
+	}
+	public function getAllReport() {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM report ORDER BY name');
 		$this->stmt->execute();
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
 		foreach($reports as $report) {
@@ -1530,9 +1623,7 @@ class db {
 		return $reports;
 	}
 	public function getAllReportByName($name, $limit=null) {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM report'
-		);
+		$this->stmt = $this->dbh->prepare('SELECT * FROM report');
 		$this->stmt->execute();
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
 		foreach($reports as $key => $report) {
@@ -1572,9 +1663,12 @@ class db {
 	public function executeReport($id) {
 		$report = $this->getReport($id);
 		if(!$report) return false;
+		$this->dbh->beginTransaction();
 		$this->stmt = $this->dbh->prepare($report->query);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+		$result = $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+		$this->dbh->rollBack();
+		return $result;
 	}
 
 }

@@ -3,19 +3,54 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+if(!empty($_POST['update_report_id']) && !empty($_POST['update_name'])) {
+	$report = $db->getReport($_POST['update_report_id']);
+	if($report == null || empty(trim($_POST['update_name']))) {
+		header('HTTP/1.1 400 Invalid Request');
+		die(LANG['name_cannot_be_empty']);
+	}
+	$db->updateReport($report->id, $report->report_group_id, $_POST['update_name'], $report->notes, $report->query);
+	die();
+}
+if(!empty($_POST['update_report_id']) && isset($_POST['update_note'])) {
+	$report = $db->getReport($_POST['update_report_id']);
+	if($report == null) {
+		header('HTTP/1.1 400 Invalid Request');
+		die(LANG['name_cannot_be_empty']);
+	}
+	$db->updateReport($report->id, $report->report_group_id, $report->name, $_POST['update_note'], $report->query);
+	die();
+}
+if(!empty($_POST['update_report_id']) && !empty($_POST['update_query'])) {
+	$report = $db->getReport($_POST['update_report_id']);
+	if($report == null || empty(trim($_POST['update_query']))) {
+		header('HTTP/1.1 400 Invalid Request');
+		die(LANG['name_cannot_be_empty']);
+	}
+	$db->updateReport($report->id, $report->report_group_id, $report->name, $report->notes, $_POST['update_query']);
+	die();
+}
+
 if(empty($_GET['id'])) die(LANG['not_found']);
 $report = $db->getReport($_GET['id']);
 if($report === null) die(LANG['not_found']);
 
+$results = [];
+$error = null;
 try {
 	$results = $db->executeReport($report->id);
 } catch (Exception $e) {
-	header('HTTP/1.1 500 Query Failed');
-	die('SQL-Error: '.$e->getMessage());
+	$error = 'SQL-Error: '.$e->getMessage();
 }
 ?>
 
 <h1><img src='img/report.dyn.svg'><?php echo htmlspecialchars($report->name); ?></h1>
+<div class='controls'>
+	<button onclick='renameReport(<?php echo $report->id; ?>, this.getAttribute("oldValue"))' oldValue='<?php echo htmlspecialchars($report->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+	<button onclick='editReportNote(<?php echo $report->id; ?>, this.getAttribute("oldValue"))' oldValue='<?php echo htmlspecialchars($report->notes,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit_description']; ?></button>
+	<button onclick='editReportQuery(<?php echo $report->id; ?>, this.getAttribute("oldValue"))' oldValue='<?php echo htmlspecialchars($report->query,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit_query']; ?></button>
+	<button onclick='currentExplorerContentUrl="views/report.php";confirmRemoveReport([<?php echo $report->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+</div>
 
 <p><code class='block'><?php echo htmlspecialchars($report->query); ?></code></p>
 
@@ -23,12 +58,16 @@ try {
 	<p class='quote'><?php echo nl2br(htmlspecialchars($report->notes)); ?></p>
 <?php } ?>
 
+<?php if($error !== null) { ?>
+	<div class='alert error'><?php echo htmlspecialchars($error); ?></div>
+<?php } ?>
+
 <?php if(count($results) == 0) die(LANG['no_results']); ?>
 
-<table id='tblReportData' class='list searchable sortable'>
+<table id='tblReportDetailData' class='list searchable sortable'>
 <thead>
 	<tr>
-		<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblReportData, this.checked)'></th>
+		<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblReportDetailData, this.checked)'></th>
 		<?php foreach($results[0] as $key => $value) { ?>
 		<th class='searchable sortable'><?php echo htmlspecialchars($key); ?></th>
 		<?php } ?>
@@ -46,7 +85,7 @@ foreach($results as $result) {
 	// checkbox
 	$computerId = -1; if(!empty($result['computer_id'])) $computerId = intval($result['computer_id']);
 	$packageId = -1; if(!empty($result['package_id'])) $packageId = intval($result['package_id']);
-	echo "<td><input type='checkbox' name='id[]' computer_id='".$computerId."' package_id='".$packageId."' onchange='refreshCheckedCounter(tblReportData)'></td>";
+	echo "<td><input type='checkbox' name='id[]' computer_id='".$computerId."' package_id='".$packageId."' onchange='refreshCheckedCounter(tblReportDetailData)'></td>";
 
 	// attributes
 	foreach($result as $key => $value) {
@@ -79,7 +118,7 @@ foreach($results as $result) {
 		<td colspan='999'>
 			<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 			<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
-			<a href='#' onclick='event.preventDefault();downloadTableCsv("tblReportData")'><?php echo LANG['csv']; ?></a>
+			<a href='#' onclick='event.preventDefault();downloadTableCsv("tblReportDetailData")'><?php echo LANG['csv']; ?></a>
 		</td>
 	</tr>
 </tfoot>

@@ -144,6 +144,12 @@ function echoPackageGroupOptions($db, $parent=null, $indent=0) {
 		echoPackageGroupOptions($db, $g->id, $indent+1);
 	}
 }
+function echoReportGroupOptions($db, $parent=null, $indent=0) {
+	foreach($db->getAllReportGroup($parent) as $g) {
+		echo "<option value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
+		echoReportGroupOptions($db, $g->id, $indent+1);
+	}
+}
 
 function getLocaleNameByLcid($lcid) {
 	if(empty($lcid) || $lcid == '-' || $lcid == '?') return $lcid;
