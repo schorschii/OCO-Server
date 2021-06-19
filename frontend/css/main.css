@@ -834,6 +834,16 @@ div.details-abreast > div > table {
 	#header #search-results a:active {
 		background-color: #324F61;
 	}
+	#header input:focus {
+		color: white;
+		background-color: #1B2A32;
+	}
+	#header input:focus::placeholder {
+		color: gray;
+	}
+	#header #search-glass.focus {
+		background-color: white;
+	}
 	body, a, #header #search-results {
 		color: #E9ECEF;
 	}
@@ -882,22 +892,22 @@ div.details-abreast > div > table {
 	}
 	.alert.info {
 		background: #0f6082;
-	  color: #e9ecef;
-	  border: 1px solid transparent
+		color: #e9ecef;
+		border: 1px solid transparent
 	}
 	.alert.success {
 		background: #62a420;
-	  color: #fff;
-	  border: none
+		color: #fff;
+		border: none
 	}
 	.alert.warning {
 		background: #7f6509;
-	  color: #e9ecef;
-	  border: 1px solid transparent
+		color: #e9ecef;
+		border: 1px solid transparent
 	}
 	.alert.error {
 		background: #882d31;
-	  color: #e9ecef;
-	  border: 1px solid transparent
+		color: #e9ecef;
+		border: 1px solid transparent
 	}
 }
