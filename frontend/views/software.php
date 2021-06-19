@@ -7,7 +7,7 @@ require_once('../session.php');
 <?php
 if(!empty($_GET['id']) && !empty($_GET['version'])) {
 	$software = $db->getSoftware($_GET['id']);
-	if($software === null) die(LANG['not_found']);
+	if($software === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 ?>
 
 
@@ -41,7 +41,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 <?php
 } elseif(!empty($_GET['id'])) {
 	$software = $db->getSoftware($_GET['id']);
-	if($software === null) die(LANG['not_found']);
+	if($software === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 ?>
 
 

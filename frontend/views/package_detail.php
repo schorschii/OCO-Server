@@ -67,7 +67,7 @@ $package = null;
 if(!empty($_GET['id'])) {
 	$package = $db->getPackage($_GET['id']);
 }
-if($package === null) die(LANG['not_found']);
+if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 ?>
 
 <h1><img src='img/<?php echo $package->getIcon(); ?>.dyn.svg'><?php echo htmlspecialchars($package->name); ?></h1>

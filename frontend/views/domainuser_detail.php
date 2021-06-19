@@ -7,7 +7,7 @@ $domainuser = null;
 if(!empty($_GET['id']))
 	$domainuser = $db->getDomainuser($_GET['id']);
 
-if($domainuser === null) die();
+if($domainuser === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 ?>
 
 <h1><img src='img/user.dyn.svg'><?php echo htmlspecialchars($domainuser->username); ?></h1>

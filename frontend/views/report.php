@@ -46,7 +46,7 @@ if(empty($_GET['id'])) {
 	$reports = $db->getAllReport();
 } else {
 	$reportGroup = $db->getReportGroup($_GET['id']);
-	if(empty($reportGroup)) die(LANG['not_found']);
+	if(empty($reportGroup)) die("<div class='alert warning'>".LANG['not_found']."</div>");
 	$reports = $db->getAllReportByGroup($reportGroup->id);
 }
 ?>

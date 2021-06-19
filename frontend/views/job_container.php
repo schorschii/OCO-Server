@@ -77,7 +77,7 @@ if(!empty($_POST['renew_container_id']) && !empty($_POST['renew_start_time'])) {
 if(!empty($_GET['id'])) {
 
 	$container = $db->getJobContainer($_GET['id']);
-	if($container === null) die(LANG['not_found']);
+	if($container === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 	$jobs = $db->getAllJobByContainer($container->id);
 
 	$done = 0;

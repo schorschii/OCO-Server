@@ -86,7 +86,7 @@ if(empty($_GET['id'])) {
 } else {
 	$computer = $db->getComputerByGroup($_GET['id']);
 	$group = $db->getComputerGroup($_GET['id']);
-	if($group === null) die(LANG['not_found']);
+	if($group === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 	echo "<h1><img src='img/folder.dyn.svg'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";

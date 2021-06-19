@@ -62,7 +62,7 @@ if(empty($_GET['id'])) {
 } else {
 	$packages = $db->getPackageByGroup($_GET['id']);
 	$group = $db->getPackageGroup($_GET['id']);
-	if($group === null) die(LANG['not_found']);
+	if($group === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 	echo "<h1><img src='img/folder.dyn.svg'>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id))."</h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";

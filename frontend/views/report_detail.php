@@ -31,9 +31,8 @@ if(!empty($_POST['update_report_id']) && !empty($_POST['update_query'])) {
 	die();
 }
 
-if(empty($_GET['id'])) die(LANG['not_found']);
-$report = $db->getReport($_GET['id']);
-if($report === null) die(LANG['not_found']);
+$report = $db->getReport($_GET['id'] ?? -1);
+if($report === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 
 $results = [];
 $error = null;
@@ -62,7 +61,7 @@ try {
 	<div class='alert error'><?php echo htmlspecialchars($error); ?></div>
 <?php } ?>
 
-<?php if(count($results) == 0) die(LANG['no_results']); ?>
+<?php if(count($results) == 0) die("<div class='alert info'>".LANG['no_results']."</div>"); ?>
 
 <table id='tblReportDetailData' class='list searchable sortable'>
 <thead>

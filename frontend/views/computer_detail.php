@@ -58,7 +58,7 @@ $computer = null;
 if(!empty($_GET['id']))
 	$computer = $db->getComputer($_GET['id']);
 
-if($computer === null) die(LANG['not_found']);
+if($computer === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 $commands = $db->getAllComputerCommand();
 ?>
 
