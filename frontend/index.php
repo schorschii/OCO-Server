@@ -1,6 +1,12 @@
 <?php
+/* KEEP IT SIMPLE */
+
 require_once('../lib/loader.php');
 require_once('session.php');
+
+$initialExplorerContentAjaxRequest = null;
+if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) == 'views')
+	$initialExplorerContentAjaxRequest = $_GET['explorer-content'];
 ?>
 <!DOCTYPE html>
 <html>
@@ -50,7 +56,7 @@ require_once('session.php');
 
 		</div>
 		<div id='explorer-content' onclick='closeSearchResults()'>
-			<?php require('views/homepage.php'); ?>
+			<?php if($initialExplorerContentAjaxRequest == null) require('views/homepage.php'); ?>
 		</div>
 	</div>
 
@@ -78,8 +84,8 @@ require_once('session.php');
 
 	<script>
 	refreshSidebar();
-	<?php if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) == 'views') { ?>
-		ajaxRequest("<?php echo str_replace(["'",'"'],'',$_GET['explorer-content']); ?>", "explorer-content");
+	<?php if($initialExplorerContentAjaxRequest != null) { ?>
+		ajaxRequest("<?php echo str_replace(["'",'"'],'',$initialExplorerContentAjaxRequest); ?>", "explorer-content");
 	<?php } ?>
 	<?php if(rand(0,1000) == 42) { ?>
 		topConfettiRain();
