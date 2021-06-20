@@ -125,8 +125,8 @@ foreach($computer as $c) {
 	$mac_addresses = [];
 	$cnetwork = $db->getComputerNetwork($c->id);
 	foreach($cnetwork as $n) {
-		$ip_addresses[] = $n->addr;
-		$mac_addresses[] = $n->mac;
+		if(!(empty($n->addr) || $n->addr == '-' || $n->addr == '?')) $ip_addresses[] = $n->addr;
+		if(!(empty($n->mac) || $n->mac == '-' || $n->mac == '?')) $mac_addresses[] = $n->mac;
 	}
 	$online = false; if(time()-strtotime($c->last_ping)<COMPUTER_OFFLINE_SECONDS) $online = true;
 	echo "<tr>";
