@@ -128,7 +128,7 @@ foreach($computer as $c) {
 		$ip_addresses[] = $n->addr;
 		$mac_addresses[] = $n->mac;
 	}
-	$online = false; if(time()-strtotime($c->last_ping)<125) $online = true;
+	$online = false; if(time()-strtotime($c->last_ping)<COMPUTER_OFFLINE_SECONDS) $online = true;
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
 	echo "<td>";

@@ -2,6 +2,7 @@
 
 ///// GENERAL CONFIGURATION /////
 const PACKAGE_PATH = '/var/www/oco/payload';
+const COMPUTER_OFFLINE_SECONDS = 125;
 
 ///// MySQL CONFIGURATION /////
 const DB_TYPE = 'mysql';

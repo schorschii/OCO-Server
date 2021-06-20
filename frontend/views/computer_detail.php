@@ -60,9 +60,11 @@ if(!empty($_GET['id']))
 
 if($computer === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 $commands = $db->getAllComputerCommand();
+
+$online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECONDS) $online = true;
 ?>
 
-<h1><img src='img/<?php echo $computer->getIcon(); ?>.dyn.svg'><?php echo htmlspecialchars($computer->hostname); ?></h1>
+<h1><img src='img/<?php echo $computer->getIcon(); ?>.dyn.svg' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><?php echo htmlspecialchars($computer->hostname); ?></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
