@@ -36,20 +36,30 @@ if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninsta
 	die();
 }
 
-function echoCommandButton($c, $target) {
+function echoCommandButton($c, $target, $link=false) {
 	$actionUrl = str_replace('$$TARGET$$', $target, $c->command);
 	$description = $c->description;
 	if(array_key_exists($c->description, LANG)) $description = LANG[$c->description];
 	if($c->new_tab) {
-		echo "<button title='".htmlspecialchars($description)."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
-		if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;";
-		echo htmlspecialchars($c->name);
-		echo "</button>";
+		if($link) {
+			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."' target='_blank'>";
+			echo htmlspecialchars($c->name);
+			echo "</a>";
+		} else {
+			echo "<button title='".htmlspecialchars($description)."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
+			if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;"; echo htmlspecialchars($c->name);
+			echo "</button>";
+		}
 	} else {
-		echo "<button title='".htmlspecialchars($description)."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
-		if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;";
-		echo htmlspecialchars($c->name);
-		echo "</button>";
+		if($link) {
+			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."'>";
+			echo htmlspecialchars($c->name);
+			echo "</a>";
+		} else {
+			echo "<button title='".htmlspecialchars($description)."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
+			if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;"; echo htmlspecialchars($c->name);
+			echo "</button>";
+		}
 	}
 }
 
@@ -227,13 +237,13 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 				<?php
 				foreach($db->getComputerNetwork($computer->id) as $n) {
 					echo '<tr>';
-					echo '<td class="middle">';
-					if(count($commands) > 0) {
-						echo '<span class="addresswithactions"><img src="img/more-vert.dyn.svg">&nbsp;<span class="actions">';
-						foreach($commands as $c) { echoCommandButton($c, $n->addr); }
-						echo '</span></span>';
-					}
+					echo '<td class="subbuttons">';
 					echo  htmlspecialchars($n->addr);
+					if(count($commands) > 0) {
+						echo '<div class="subbutton small">';
+						foreach($commands as $c) { echoCommandButton($c, $n->addr, true); echo ' '; }
+						echo '</div>';
+					}
 					echo '</td>';
 					echo '<td>'.htmlspecialchars($n->netmask).'</td>';
 					echo '<td>'.htmlspecialchars($n->broadcast).'</td>';

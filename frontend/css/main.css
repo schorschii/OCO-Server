@@ -581,6 +581,10 @@ table.fixed {
 	background-color: transparent;
 	box-shadow: none;
 }
+.subbuttons .subbutton {
+	opacity: 0;
+	display: none;
+}
 .subbuttons > button:first-child {
 	margin-left: 0px;
 }
@@ -588,8 +592,14 @@ table.fixed {
 	display: block;
 	margin: 0px;
 }
-.subbuttons:hover > button {
+.subbuttons:hover > button,
+.subbuttons:hover .subbutton {
 	opacity: 1;
+	display: inline-block;
+}
+
+.small {
+	font-size: 90%;
 }
 
 code {
@@ -651,28 +661,6 @@ div.details-abreast > div > table {
 }
 .center {
 	text-align: center;
-}
-
-.addresswithactions {
-	position: relative;
-}
-.addresswithactions > .actions {
-	display: none;
-	position: absolute;
-	top: 0px; left: 0px;
-	width: 200px;
-	overflow: auto;
-	padding: 6px;
-	background-color: white;
-	border: 1px solid rgba(0,0,0,0.2);
-	border-radius: 2px;
-}
-.addresswithactions:hover > .actions {
-	display: block;
-}
-.addresswithactions:hover > .actions > button {
-	display: inline-block;
-	height: 100%;
 }
 
 .progressbar-container {
