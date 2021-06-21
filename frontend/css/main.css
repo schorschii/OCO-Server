@@ -595,7 +595,9 @@ table.fixed {
 .subbuttons:hover > button,
 .subbuttons:hover .subbutton {
 	opacity: 1;
-	display: inline-block;
+}
+.subbuttons:hover .subbutton {
+	display: block;
 }
 
 .small {
