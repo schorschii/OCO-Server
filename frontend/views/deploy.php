@@ -3,21 +3,55 @@ $SUBVIEW = 1;
 require_once('../../lib/loader.php');
 require_once('../session.php');
 
+$default_job_container_name = '';
 $select_computer_ids = [];
 $select_computer_group_ids = [];
 $select_package_ids = [];
 $select_package_group_ids = [];
 if(!empty($_GET['computer_id']) && is_array($_GET['computer_id'])) {
 	$select_computer_ids = $_GET['computer_id'];
+	// compile job name
+	foreach($select_computer_ids as $id) {
+		$c = $db->getComputer($id);
+		if($c == null) continue;
+		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$c->hostname;
+		else $default_job_container_name .= ', '.$c->hostname;
+	}
 }
 if(!empty($_GET['computer_group_id']) && is_array($_GET['computer_group_id'])) {
 	$select_computer_group_ids = $_GET['computer_group_id'];
+	// compile job name
+	foreach($select_computer_group_ids as $id) {
+		$cg = $db->getComputerGroup($id);
+		if($cg == null) continue;
+		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$cg->name;
+		else $default_job_container_name .= ', '.$cg->name;
+	}
 }
 if(!empty($_GET['package_id']) && is_array($_GET['package_id'])) {
 	$select_package_ids = $_GET['package_id'];
+	// compile job name
+	foreach($select_package_ids as $id) {
+		$p = $db->getPackage($id);
+		if($p == null) continue;
+		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$p->name;
+		else $default_job_container_name .= ', '.$p->name;
+	}
 }
 if(!empty($_GET['package_group_id']) && is_array($_GET['package_group_id'])) {
 	$select_package_group_ids = $_GET['package_group_id'];
+	// compile job name
+	foreach($select_package_group_ids as $id) {
+		$pg = $db->getPackageGroup($id);
+		if($pg == null) continue;
+		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$pg->name;
+		else $default_job_container_name .= ', '.$pg->name;
+	}
+}
+
+// compile job name
+if(empty($default_job_container_name)) {
+	$default_job_container_name = LANG['install'].' '.date('y-m-d H:i:s');
 }
 
 // ----- refresh list content if requested -----
@@ -186,7 +220,7 @@ if(!empty($_POST['add_jobcontainer'])) {
 	<tr>
 		<th><?php echo LANG['name']; ?></th>
 		<td>
-			<input type='text' id='txtName' value='<?php echo LANG['install'].' '.date('y-m-d H:i:s'); ?>'></input>
+			<input type='text' id='txtName' value='<?php echo htmlspecialchars($default_job_container_name); ?>'></input>
 		</td>
 	</tr>
 	<tr>
