@@ -1118,7 +1118,7 @@ class db {
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
 			AND (jc.start_time IS NULL OR jc.start_time < CURRENT_TIMESTAMP)
 			AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
-			ORDER BY j.sequence'
+			ORDER BY jc.created, j.sequence'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll();
@@ -1127,14 +1127,14 @@ class db {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time",
 			j.package_id AS "package_id", pf.name AS "package_name", p.version AS "package_version",
-			j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
 			FROM job j
 			INNER JOIN package p ON j.package_id = p.id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
-			ORDER BY j.sequence'
+			ORDER BY jc.created, j.sequence'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
@@ -1143,13 +1143,13 @@ class db {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time",
 			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
-			j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
 			FROM job j
 			INNER JOIN computer c ON j.computer_id = c.id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.package_id = :id
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
-			ORDER BY j.sequence'
+			ORDER BY jc.created, j.sequence'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');

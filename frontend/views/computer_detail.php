@@ -410,7 +410,11 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 					$counter ++;
 					echo '<tr>';
 					//echo '<td><input type="checkbox" name="job_id[]" value="'.$j->id.'" onchange="refreshCheckedCounter(tblPendingComputerJobsData)"></td>';
-					echo '<td><a href="'.explorerLink('views/package_detail.php?id='.$j->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$j->package_id.')">'.htmlspecialchars($j->package_name).' ('.htmlspecialchars($j->package_version).')</a></td>';
+					echo '<td>';
+					if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
+					else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
+					echo  '<a href="'.explorerLink('views/package_detail.php?id='.$j->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$j->package_id.')">'.htmlspecialchars($j->package_name).' ('.htmlspecialchars($j->package_version).')</a>';
+					echo '</td>';
 					echo '<td><a href="'.explorerLink('views/job_container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
 					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">&nbsp;'.$j->getStateString().'</td>';
 					echo '</tr>';
