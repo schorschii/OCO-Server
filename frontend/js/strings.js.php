@@ -1,5 +1,5 @@
 <?php
-require_once('../../lib/lang.php');
+require_once('../../lib/Lang.php');
 header('Content-Type: text/javascript');
 ?>
 

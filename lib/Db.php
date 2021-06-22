@@ -1,6 +1,6 @@
 <?php
 
-class db {
+class Db {
 	private $dbh;
 	private $stmt;
 
