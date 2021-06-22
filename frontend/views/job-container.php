@@ -163,8 +163,8 @@ if(!empty($_GET['id'])) {
 				$counter ++;
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."' onchange='refreshCheckedCounter(tblJobData)'></td>";
-				echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$job->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
-				echo "<td><a href='".explorerLink('views/package_detail.php?id='.$job->package_id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
+				echo "<td><a href='".explorerLink('views/computer-detail.php?id='.$job->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
+				echo "<td><a href='".explorerLink('views/package-detail.php?id='.$job->package_id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle' title='".htmlspecialchars($job->package_procedure, ENT_QUOTES)."'>";
 				if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
 				else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
@@ -241,7 +241,7 @@ if(!empty($_GET['id'])) {
 				echo "<td><input type='checkbox' name='job_container_id[]' value='".$jc->id."' onchange='refreshCheckedCounter(tblJobcontainerData)'></td>";
 				echo "<td class='middle'>";
 				echo  "<img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'>&nbsp;";
-				echo  "<a href='".explorerLink('views/job_container.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a>";
+				echo  "<a href='".explorerLink('views/job-container.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a>";
 				echo "</td>";
 				echo "<td>".htmlspecialchars($jc->author)."</td>";
 				echo "<td>".htmlspecialchars($jc->start_time)."</td>";

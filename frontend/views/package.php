@@ -97,7 +97,7 @@ foreach($packages as $p) {
 	$size = $p->getSize();
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)'></td>";
-	echo "<td><a href='".explorerLink('views/package_detail.php?id='.$p->id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")'>".htmlspecialchars($p->name)."</a></td>";
+	echo "<td><a href='".explorerLink('views/package-detail.php?id='.$p->id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")'>".htmlspecialchars($p->name)."</a></td>";
 	echo "<td>".htmlspecialchars($p->version)."</td>";
 	echo "<td>".htmlspecialchars($p->author)."</td>";
 	echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";

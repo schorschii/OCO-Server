@@ -222,7 +222,7 @@ if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div
 					if($p->id === $package->id) continue; // do not show this package
 					$counter ++;
 					echo '<tr>';
-					echo '<td><a href="'.explorerLink('views/package_detail.php?id='.$p->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->id.')">'.htmlspecialchars($p->version).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$p->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->id.')">'.htmlspecialchars($p->version).'</a></td>';
 					echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
 					echo '<td>'.$p->created.'</td>';
 					echo '</tr>';
@@ -259,7 +259,7 @@ if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
-					echo '<td><a href="'.explorerLink('views/computer_detail.php?id='.$p->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/computer-detail.php?id='.$p->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
 					echo '<td title="'.htmlspecialchars($p->installed_procedure, ENT_QUOTES).'">'.htmlspecialchars(shorter($p->installed_procedure)).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
 					echo '</tr>';
@@ -310,9 +310,9 @@ if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div
 					echo '<td>';
 					if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
 					else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
-					echo  '<a href="'.explorerLink('views/computer_detail.php?id='.$j->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$j->computer_id.')">'.htmlspecialchars($j->computer_hostname).'</a>';
+					echo  '<a href="'.explorerLink('views/computer-detail.php?id='.$j->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$j->computer_id.')">'.htmlspecialchars($j->computer_hostname).'</a>';
 					echo '</td>';
-					echo '<td><a href="'.explorerLink('views/job_container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/job-container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
 					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">&nbsp;'.$j->getStateString().'</td>';
 					echo '</tr>';
 				}

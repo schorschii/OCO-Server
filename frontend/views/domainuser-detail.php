@@ -28,7 +28,7 @@ if($domainuser === null) die("<div class='alert warning'>".LANG['not_found']."</
 	foreach($db->getDomainuserLogonByDomainuser($domainuser->id) as $logon) {
 		$counter ++;
 		echo "<tr>";
-		echo "<td><a href='".explorerLink('views/computer_detail.php?id='.$logon->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$logon->computer_id.")'>".htmlspecialchars($logon->computer_hostname)."</a></td>";
+		echo "<td><a href='".explorerLink('views/computer-detail.php?id='.$logon->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$logon->computer_id.")'>".htmlspecialchars($logon->computer_hostname)."</a></td>";
 		echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 		echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 		echo "</tr>";

@@ -209,7 +209,7 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 				<?php
 				foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
 					echo "<tr>";
-					echo "<td><a href='".explorerLink('views/domainuser_detail.php?id='.$logon->domainuser_id)."' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
+					echo "<td><a href='".explorerLink('views/domainuser-detail.php?id='.$logon->domainuser_id)."' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
 					echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 					echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 					echo "</tr>";
@@ -369,7 +369,7 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
-					echo '<td><a href="'.explorerLink('views/package_detail.php?id='.$p->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
+					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$p->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 					echo '<td title="'.htmlspecialchars($p->installed_procedure, ENT_QUOTES).'">'.htmlspecialchars(shorter($p->installed_procedure)).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
 					echo '</tr>';
@@ -413,9 +413,9 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 					echo '<td>';
 					if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
 					else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
-					echo  '<a href="'.explorerLink('views/package_detail.php?id='.$j->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$j->package_id.')">'.htmlspecialchars($j->package_name).' ('.htmlspecialchars($j->package_version).')</a>';
+					echo  '<a href="'.explorerLink('views/package-detail.php?id='.$j->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$j->package_id.')">'.htmlspecialchars($j->package_name).' ('.htmlspecialchars($j->package_version).')</a>';
 					echo '</td>';
-					echo '<td><a href="'.explorerLink('views/job_container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/job-container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
 					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">&nbsp;'.$j->getStateString().'</td>';
 					echo '</tr>';
 				}

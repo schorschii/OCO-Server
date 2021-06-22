@@ -79,7 +79,7 @@ if(empty($_GET['id'])) {
 	<?php foreach($reports as $r) {
 		echo "<tr>";
 		echo "<td><input type='checkbox' name='report_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblReportData)'></td>";
-		echo "<td><a href='".explorerLink('views/report_detail.php?id='.$r->id)."' onclick='event.preventDefault();refreshContentReportDetail(".$r->id.")'>".htmlspecialchars($r->name)."</a></td>";
+		echo "<td><a href='".explorerLink('views/report-detail.php?id='.$r->id)."' onclick='event.preventDefault();refreshContentReportDetail(".$r->id.")'>".htmlspecialchars($r->name)."</a></td>";
 		echo "</tr>";
 	} ?>
 </tbody>
