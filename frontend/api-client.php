@@ -53,6 +53,32 @@ switch($srcdata['method']) {
 			];
 		}
 		break;
+	case 'oco.computer.get':
+		try {
+			$computer = $db->getComputer($data['id'] ?? 0);
+			if($computer == null) throw new Exception(LANG['not_found']);
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true,
+				'data' => [
+					'general' => $computer,
+					'logins' => $db->getDomainuserLogonByComputer($computer->id),
+					'networks' => $db->getComputerNetwork($computer->id),
+					'screens' => $db->getComputerScreen($computer->id),
+					'printers' => $db->getComputerPrinter($computer->id),
+					'filesystems' => $db->getComputerPartition($computer->id),
+					'recognised_software' => $db->getComputerSoftware($computer->id),
+					'installed_packages' => $db->getComputerPackage($computer->id),
+					'pending_jobs' => $db->getPendingJobsForComputerDetailPage($computer->id),
+				]
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
 	case 'oco.computer.create':
 		try {
 			$insertId = $cl->createComputer($data['hostname'] ?? '', $data['notes'] ?? '');

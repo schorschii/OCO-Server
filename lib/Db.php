@@ -1,6 +1,14 @@
 <?php
 
 class Db {
+
+	/*
+		 Class Db
+		 Database Abstraction Layer
+
+		 Handles direct database access.
+	*/
+
 	private $dbh;
 	private $stmt;
 

@@ -1,6 +1,15 @@
 <?php
 
 class CoreLogic {
+
+	/*
+		 Class CoreLogic
+		 Database Abstraction Layer Wrapper
+
+		 Adds additional checks & logic before the database is accessed and sanitizes user input.
+		 It's public functions are used by the web frontend and the client API.
+	*/
+
 	private $db;
 
 	function __construct($db) {
