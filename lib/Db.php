@@ -777,6 +777,13 @@ class Db {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily');
 	}
+	public function getPackageFamily($id) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE id = :id');
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily') as $row) {
+			return $row;
+		}
+	}
 	public function getPackageFamilyByName($name) {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE name = :name');
 		$this->stmt->execute([':name' => $name]);

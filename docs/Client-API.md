@@ -288,5 +288,182 @@ no parameters
 }
 ```
 
+## `oco.package_family.list` - List All Package Families
+### Parameters
+no parameters
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.package_family.list",
+	"params": {}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": [
+			{
+				"id": "3",
+				"name": "CDBurnerXP",
+				"notes": ""
+			}
+		]
+	}
+}
+```
+
+## `oco.package.list` - List All Packages Of A Package Family
+### Parameters
+- `ìd` - package family ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.package.list",
+	"params": {
+		"id": 3
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": [
+			{
+				"id": "108",
+				"package_family_id": "3",
+				"version": "4.5.8.7128",
+				"notes": "",
+				"author": "root",
+				"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.8.7128.msi",
+				"install_procedure_success_return_codes": "0",
+				"install_procedure_restart": "0",
+				"install_procedure_shutdown": "0",
+				"uninstall_procedure": "msiexec /quiet /x cdbxp_setup_x64_4.5.8.7128.msi",
+				"uninstall_procedure_success_return_codes": "1",
+				"download_for_uninstall": "1",
+				"uninstall_procedure_restart": "0",
+				"uninstall_procedure_shutdown": "0",
+				"created": "2021-04-24 18:13:12",
+				"last_update": "2021-06-15 23:44:02",
+				"package_group_member_sequence": null,
+				"name": "CDBurnerXP"
+			},
+			{
+				"id": "109",
+				"package_family_id": "3",
+				"version": "4.5.0.3661",
+				"notes": "",
+				"author": "root",
+				"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.0.3661.msi",
+				"install_procedure_success_return_codes": "0",
+				"install_procedure_restart": "0",
+				"install_procedure_shutdown": "0",
+				"uninstall_procedure": "msiexec /quiet /x cdbxp_setup_x64_4.5.0.3661.msi",
+				"uninstall_procedure_success_return_codes": "0",
+				"download_for_uninstall": "1",
+				"uninstall_procedure_restart": "0",
+				"uninstall_procedure_shutdown": "0",
+				"created": "2021-04-24 18:15:51",
+				"last_update": "2021-04-24 18:15:51",
+				"package_group_member_sequence": null,
+				"name": "CDBurnerXP"
+			}
+		]
+	}
+}
+```
+
+## `oco.job_container.list` - List All Job Containers
+### Parameters
+no parameters
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.job_container.list",
+	"params": {}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": [
+			{
+				"id": "203",
+				"name": "Installieren VM002",
+				"start_time": "2021-06-22 21:27:00",
+				"end_time": null,
+				"notes": "",
+				"wol_sent": "-1",
+				"created": "2021-06-22 21:27:35",
+				"last_update": "2021-06-22 21:27:36",
+				"author": "admin"
+			}
+		]
+	}
+}
+```
+
+## `oco.job.list` - List All Jobs Of A Job Container
+### Parameters
+- `ìd` - job container ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.job.list",
+	"params": {
+		"id": 203
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": [
+			{
+				"id": "988",
+				"job_container_id": "203",
+				"computer_id": "116",
+				"package_id": "113",
+				"package_procedure": "msiexec /quiet /i test.msi",
+				"success_return_codes": "0",
+				"is_uninstall": "0",
+				"download": "0",
+				"restart": "-1",
+				"shutdown": "-1",
+				"sequence": "1",
+				"state": "0",
+				"return_code": null,
+				"message": "",
+				"last_update": "2021-06-22 21:27:36",
+				"computer_hostname": "VM002",
+				"package_name": "Test Package",
+				"package_version": "1.0",
+				"job_container_start_time": "2021-06-22 21:27:00"
+			}
+		]
+	}
+}
+```
+
 # Data Format
 - Date String: `2020-01-01 18:00:00`

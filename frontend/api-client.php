@@ -122,6 +122,68 @@ switch($srcdata['method']) {
 		}
 		break;
 
+	case 'oco.package_family.list':
+		try {
+			$result = $db->getAllPackageFamily();
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => $result
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+	case 'oco.package.list':
+		try {
+			$pf = $db->getPackageFamily($data['id'] ?? 0);
+			if($pf == null) throw new Exception(LANG['not_found']);
+			$result = $db->getPackageByFamily($data['id'] ?? 0);
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => $result
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+
+	case 'oco.job_container.list':
+		try {
+			$result = $db->getAllJobContainer();
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => $result
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+	case 'oco.job.list':
+		try {
+			$jc = $db->getJobContainer($data['id'] ?? 0);
+			if($jc == null) throw new Exception(LANG['not_found']);
+			$result = $db->getAllJobByContainer($data['id'] ?? 0);
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => $result
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+
 	default:
 		$resdata['error'] = 'Unknown Method';
 		$resdata['result'] = [
