@@ -101,7 +101,7 @@ HTTP Basic Authentication is used for client authentication. Please provide the 
 }
 ```
 
-## `oco.computer.create` - Try To Start Computer Via Network (Wake On Lan)
+## `oco.computer.wol` - Try To Start Computer Via Network (Wake On Lan)
 ### Parameters
 - `id` - computer ID
 ### Example
