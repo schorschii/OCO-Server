@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once(__DIR__.'/../../lib/loader.php');
+require_once(__DIR__.'/../../lib/Loader.php');
 require_once(__DIR__.'/../session.php');
 
 // ----- prepare view -----

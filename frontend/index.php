@@ -1,7 +1,7 @@
 <?php
 /* KEEP IT SIMPLE */
 
-require_once('../lib/loader.php');
+require_once('../lib/Loader.php');
 require_once('session.php');
 
 $initialExplorerContentAjaxRequest = null;

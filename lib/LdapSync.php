@@ -1,6 +1,6 @@
 <?php
 
-require_once(__DIR__.'/loader.php');
+require_once(__DIR__.'/Loader.php');
 
 
 if(LDAP_SERVER == null) {

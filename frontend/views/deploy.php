@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/loader.php');
+require_once('../../lib/Loader.php');
 require_once('../session.php');
 
 $default_job_container_name = '';

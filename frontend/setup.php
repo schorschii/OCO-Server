@@ -1,5 +1,5 @@
 <?php
-require_once('../lib/loader.php');
+require_once('../lib/Loader.php');
 
 $info = null;
 $infoclass = null;

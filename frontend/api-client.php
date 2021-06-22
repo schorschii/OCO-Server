@@ -1,5 +1,5 @@
 <?php
-require_once('../lib/loader.php');
+require_once('../lib/Loader.php');
 
 // check API enabled
 if(!CLIENT_API_ENABLED) {

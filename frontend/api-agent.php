@@ -1,5 +1,5 @@
 <?php
-require_once('../lib/loader.php');
+require_once('../lib/Loader.php');
 
 // check content type
 if(!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] != 'application/json') {

@@ -1,5 +1,5 @@
 <?php
-require_once('loader.php');
+require_once('Loader.php');
 
 // this script is intended to be called periodically every 10 minutes via cron
 

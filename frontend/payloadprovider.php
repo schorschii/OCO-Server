@@ -1,5 +1,5 @@
 <?php
-require_once('../lib/loader.php');
+require_once('../lib/Loader.php');
 session_start();
 
 function authErrorExit() {
