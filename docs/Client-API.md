@@ -11,6 +11,8 @@ A valid JSON-RPC request is sent via HTTP(S) with the HTTP header `Content-Type:
 
 HTTP Basic Authentication is used for client authentication. Please provide the HTTP header `Authorization: Basic <Base64-Auth-String>` with all API requests.
 
+Localized error messages are available if you set the HTTP header `Accept-Language: de`.
+
 Please have a look at the following API method documentation for JSON-RPC examples.
 
 # Methods
@@ -66,7 +68,7 @@ no parameters
 }
 ```
 
-## `oco.computer.get` - List All Computers
+## `oco.computer.get` - Get Computer Details
 ### Parameters
 - `id` - computer ID
 ### Example
