@@ -34,13 +34,6 @@ class db {
 	}
 
 	// Computer Operations
-	public function getAllComputerCommand() {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_command'
-		);
-		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerCommand');
-	}
 	public function getAllComputerByName($hostname, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer WHERE hostname LIKE :hostname ORDER BY hostname ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))

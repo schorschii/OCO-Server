@@ -37,27 +37,28 @@ if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninsta
 }
 
 function echoCommandButton($c, $target, $link=false) {
-	$actionUrl = str_replace('$$TARGET$$', $target, $c->command);
-	$description = $c->description;
-	if(array_key_exists($c->description, LANG)) $description = LANG[$c->description];
-	if($c->new_tab) {
+	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
+	$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);
+	$description = $c['description'];
+	if(array_key_exists($c['description'], LANG)) $description = LANG[$c['description']];
+	if($c['new_tab']) {
 		if($link) {
 			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."' target='_blank'>";
-			echo htmlspecialchars($c->name);
+			echo htmlspecialchars($c['name']);
 			echo "</a>";
 		} else {
 			echo "<button title='".htmlspecialchars($description)."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
-			if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;"; echo htmlspecialchars($c->name);
+			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
 			echo "</button>";
 		}
 	} else {
 		if($link) {
 			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."'>";
-			echo htmlspecialchars($c->name);
+			echo htmlspecialchars($c['name']);
 			echo "</a>";
 		} else {
 			echo "<button title='".htmlspecialchars($description)."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
-			if(!empty($c->icon)) echo "<img src='".$c->icon."'>&nbsp;"; echo htmlspecialchars($c->name);
+			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
 			echo "</button>";
 		}
 	}
@@ -69,7 +70,6 @@ if(!empty($_GET['id']))
 	$computer = $db->getComputer($_GET['id']);
 
 if($computer === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-$commands = $db->getAllComputerCommand();
 
 $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECONDS) $online = true;
 ?>
@@ -87,8 +87,8 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 	</button>
 	<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	<?php
-	if(count($commands) > 0) echo "<span class='vl'></span>";
-	foreach($commands as $c) {
+	if(count(COMPUTER_COMMANDS) > 0) echo "<span class='vl'></span>";
+	foreach(COMPUTER_COMMANDS as $c) {
 		echoCommandButton($c, $computer->hostname);
 	}
 	?>
@@ -239,9 +239,9 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 					echo '<tr>';
 					echo '<td class="subbuttons">';
 					echo  htmlspecialchars($n->addr);
-					if(count($commands) > 0) {
+					if(count(COMPUTER_COMMANDS) > 0) {
 						echo '<div class="subbutton small">';
-						foreach($commands as $c) { echoCommandButton($c, $n->addr, true); echo ' '; }
+						foreach(COMPUTER_COMMANDS as $c) { echoCommandButton($c, $n->addr, true); echo ' '; }
 						echo '</div>';
 					}
 					echo '</td>';

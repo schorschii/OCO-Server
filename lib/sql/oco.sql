@@ -54,32 +54,6 @@ CREATE TABLE `computer` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `computer_command`
---
-
-CREATE TABLE `computer_command` (
-  `id` int(11) NOT NULL,
-  `icon` text NOT NULL,
-  `name` text NOT NULL,
-  `description` text NOT NULL,
-  `command` text NOT NULL,
-  `new_tab` int(11) NOT NULL DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Daten für Tabelle `computer_command`
---
-
-INSERT INTO `computer_command` (`id`, `icon`, `name`, `description`, `command`, `new_tab`) VALUES
-(1, 'img/screen-access.svg', 'VNC', 'client_extension_note', 'vnc://$$TARGET$$', 0),
-(2, 'img/screen-access.svg', 'RDP', 'client_extension_note', 'rdp://$$TARGET$$', 0),
-(3, 'img/screen-access.svg', 'SSH', 'client_extension_note', 'ssh://$$TARGET$$', 0),
-(4, 'img/ping.svg', 'Ping', 'client_extension_note', 'ping://$$TARGET$$', 0),
-(5, 'img/portscan.svg', 'Nmap', 'client_extension_note', 'nmap://$$TARGET$$', 0);
-
--- --------------------------------------------------------
-
---
 -- Tabellenstruktur für Tabelle `computer_group`
 --
 
@@ -440,12 +414,6 @@ ALTER TABLE `computer`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indizes für die Tabelle `computer_command`
---
-ALTER TABLE `computer_command`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indizes für die Tabelle `computer_group`
 --
 ALTER TABLE `computer_group`
@@ -601,12 +569,6 @@ ALTER TABLE `systemuser`
 -- AUTO_INCREMENT für Tabelle `computer`
 --
 ALTER TABLE `computer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `computer_command`
---
-ALTER TABLE `computer_command`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
