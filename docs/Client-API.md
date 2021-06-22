@@ -7,18 +7,11 @@ const CLIENT_API_ENABLED = true; # this is false by default
 ```
 
 # The JSON-RPC Package
-A valid JSON-RPC request is sent via HTTP with the HTTP header `Content-Type: application/json` and looks like the following example.  
-```
-{
-	"version": "2.0",
-	"method": "oco.computer.get",
-	"params": {
-		...................
-	},
-	"id": 1
-}
-```
+A valid JSON-RPC request is sent via HTTP(S) with the HTTP header `Content-Type: application/json` to the API endpoint `api-client.php`.
+
 HTTP Basic Authentication is used for client authentication. Please provide the HTTP header `Authorization: Basic <Base64-Auth-String>` with all API requests.
+
+Please have a look at the following API method documentation for JSON-RPC examples.
 
 # Methods
 ## `oco.computer.list` - List All Computers
