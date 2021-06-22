@@ -154,13 +154,8 @@ function echoReportGroupOptions($db, $parent=null, $indent=0) {
 function getLocaleNameByLcid($lcid) {
 	if(empty($lcid) || $lcid == '-' || $lcid == '?') return $lcid;
 	$lcidDec = intval(hexdec($lcid));
-	if(($handle = fopen(__DIR__.'/lcid.csv', 'r')) !== false) {
-		while(($data = fgetcsv($handle, 1000, ',')) !== false) {
-			if(intval($data[3]) == $lcidDec) {
-				return $data[0];
-			}
-		}
-		fclose($handle);
+	if(array_key_exists($lcidDec, LCIDS)) {
+		return LCIDS[$lcidDec][0].' '.(LCIDS[$lcidDec][2] ?? '');
 	}
 	return $lcid;
 }
