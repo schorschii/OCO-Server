@@ -95,6 +95,7 @@ switch($srcdata['method']) {
 					$params['hostname'],
 					$data['agent_version'],
 					$data['networks'],
+					LANG['self_registration'].' '.date('Y-m-d H:i:s'),
 					$agent_key,
 					$server_key
 				)) {

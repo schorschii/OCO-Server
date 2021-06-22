@@ -4,39 +4,30 @@ require_once('../../lib/loader.php');
 require_once('../session.php');
 
 if(!empty($_POST['wol_id']) && is_array($_POST['wol_id'])) {
-	$wolMacAdresses = [];
-	foreach($_POST['wol_id'] as $id) {
-		$c = $db->getComputer($id);
-		if($c != null) {
-			foreach($db->getComputerNetwork($c->id) as $n) {
-				$wolMacAdresses[] = $n->mac;
-			}
-		}
-	}
-	if(count($wolMacAdresses) == 0) {
+	try {
+		$cl->wolComputers($_POST['wol_id']);
+	} catch(Exception $e) {
 		header('HTTP/1.1 400 Unable To Perform Requested Action');
-		die(LANG['no_mac_addresses_for_wol']);
-	} else {
-		wol($wolMacAdresses);
+		die($e->getMessage());
 	}
 	die();
 }
 if(!empty($_POST['add_computer'])) {
-	$finalHostname = trim($_POST['add_computer']);
-	if(empty($finalHostname)) {
+	try {
+		die(strval(intval( $cl->createComputer($_POST['add_computer']) )));
+	} catch(Exception $e) {
 		header('HTTP/1.1 400 Invalid Request');
-		die(LANG['hostname_cannot_be_empty']);
+		die($e->getMessage());
 	}
-	if($db->getComputerByName($finalHostname) !== null) {
-		header('HTTP/1.1 400 Invalid Request');
-		die(LANG['hostname_already_exists']);
-	}
-	$insertId = $db->addComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, ''/*Agent Key*/, ''/*Server Key*/);
-	die(strval(intval($insertId)));
 }
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
-		$db->removeComputer($id);
+		try {
+			$cl->removeComputer($id);
+		} catch(Exception $e) {
+			header('HTTP/1.1 400 Invalid Request');
+			die($e->getMessage());
+		}
 	}
 	die();
 }

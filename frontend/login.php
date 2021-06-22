@@ -13,28 +13,17 @@ if(!$db->existsSchema() || count($db->getAllSystemuser()) == 0) {
 // execute login if requested
 session_start();
 if(isset($_POST['username']) && isset($_POST['password'])) {
-	$user = $db->getSystemuserByLogin($_POST['username']);
-	if($user === null) {
-		sleep(2);
-		$info = LANG['user_does_not_exist'];
+	try {
+		$user = $cl->login($_POST['username'], $_POST['password']);
+		if(empty($user)) throw new Exception(LANG['unknown_error']);
+		// login successful
+		$_SESSION['um_username'] = $user->username;
+		$_SESSION['um_userid'] = $user->id;
+		header('Location: index.php');
+		die();
+	} catch(Exception $e) {
+		$info = $e->getMessage();
 		$infoclass = 'error';
-	} else {
-		if(!$user->locked) {
-			if(checkPassword($user, $_POST['password'])) {
-				$_SESSION['um_username'] = $user->username;
-				$_SESSION['um_userid'] = $user->id;
-				header('Location: index.php');
-				die();
-			} else {
-				sleep(2);
-				$info = LANG['login_failed'];
-				$infoclass = 'error';
-			}
-		} else {
-			sleep(1);
-			$info = LANG['user_locked'];
-			$infoclass = 'error';
-		}
 	}
 }
 
@@ -52,28 +41,6 @@ elseif(isset($_GET['logout'])) {
 if(!empty($_SESSION['um_username'])) {
 	header('Location: index.php');
 	die();
-}
-
-function checkPassword($userObject, $checkPassword) {
-	$result = validatePassword($userObject, $checkPassword);
-	if(!$result) {
-		error_log('user '.$userObject->username.': authentication failure');
-	}
-	return $result;
-}
-function validatePassword($userObject, $checkPassword) {
-	if($userObject->ldap) {
-		if(empty($checkPassword)) return false;
-		$ldapconn = ldap_connect(LDAP_SERVER);
-		if(!$ldapconn) return false;
-		ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
-		ldap_set_option($ldapconn, LDAP_OPT_NETWORK_TIMEOUT, 3);
-		$ldapbind = @ldap_bind($ldapconn, $userObject->username.'@'.LDAP_DOMAIN, $checkPassword);
-		if(!$ldapbind) return false;
-		return true;
-	} else {
-		return password_verify($checkPassword, $userObject->password);
-	}
 }
 ?>
 <!DOCTYPE html>

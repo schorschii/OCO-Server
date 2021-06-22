@@ -128,14 +128,15 @@ class db {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
 	}
-	public function addComputer($hostname, $agent_version, $networks, $agent_key, $server_key) {
+	public function addComputer($hostname, $agent_version, $networks, $notes, $agent_key, $server_key) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, os_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, notes, agent_key, server_key)
-			VALUES (:hostname, :agent_version, CURRENT_TIMESTAMP, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :agent_key, :server_key)'
+			VALUES (:hostname, :agent_version, CURRENT_TIMESTAMP, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :notes, :agent_key, :server_key)'
 		);
 		$this->stmt->execute([
 			':hostname' => $hostname,
 			':agent_version' => $agent_version,
+			':notes' => $notes,
 			':agent_key' => $agent_key,
 			':server_key' => $server_key,
 		]);
@@ -485,9 +486,8 @@ class db {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer WHERE id = :computer_id'
 		);
-		if(!$this->stmt->execute([
-			':computer_id' => $id,
-		])) return false;
+		$this->stmt->execute([ ':computer_id' => $id ]);
+		return ($this->stmt->rowCount() == 1);
 	}
 
 	public function getComputerGroupBreadcrumbString($id) {

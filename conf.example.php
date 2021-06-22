@@ -1,8 +1,9 @@
 <?php
 
 ///// GENERAL CONFIGURATION /////
-const PACKAGE_PATH = '/var/www/oco/payload';
+const PACKAGE_PATH             = '/var/www/oco/payload';
 const COMPUTER_OFFLINE_SECONDS = 125;
+const CLIENT_API_ENABLED       = false;
 
 ///// MySQL CONFIGURATION /////
 const DB_TYPE = 'mysql';
