@@ -5,7 +5,12 @@ require_once('../session.php');
 
 if(!empty($_POST['remove_job_id']) && is_array($_POST['remove_job_id'])) {
 	foreach($_POST['remove_job_id'] as $id) {
-		$db->removeJob($id);
+		try {
+			$cl->removeJob($id);
+		} catch(Exception $e) {
+			header('HTTP/1.1 400 Invalid Request');
+			die($e->getMessage());
+		}
 	}
 	die();
 }
@@ -44,7 +49,12 @@ if(!empty($_POST['edit_container_id']) && isset($_POST['new_notes'])) {
 }
 if(!empty($_POST['remove_container_id']) && is_array($_POST['remove_container_id'])) {
 	foreach($_POST['remove_container_id'] as $id) {
-		$db->removeJobContainer($id);
+		try {
+			$cl->removeJobContainer($id);
+		} catch(Exception $e) {
+			header('HTTP/1.1 400 Invalid Request');
+			die($e->getMessage());
+		}
 	}
 	die();
 }

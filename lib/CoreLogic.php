@@ -91,6 +91,17 @@ class CoreLogic {
 	}
 	public function removeComputer($id) {
 		$result = $this->db->removeComputer($id);
+		if(!$result) throw new Exception(LANG['not_found']);
+		return $result;
+	}
+
+	/*** Package Operations ***/
+	public function removePackage($id) {
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new Exception(LANG['not_found']);
+		$path = $package->getFilePath();
+		if(!empty($path)) unlink($path);
+		$result = $this->db->removePackage($package->id);
 		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
@@ -226,6 +237,84 @@ class CoreLogic {
 		}
 
 		return $jcid;
+	}
+	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $restartTimeout) {
+		// check user input
+		if(empty($name)) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		if(empty($restartTimeout) || empty($dateStart) || strtotime($dateStart) === false) {
+			throw new Exception(LANG['please_fill_required_fields']);
+		}
+		if(!empty($dateEnd) // check end date if not empty
+		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
+		) {
+			throw new Exception(LANG['end_time_before_start_time']);
+		}
+
+		// wol handling
+		$computer_ids = [];
+		foreach($installationIds as $id) {
+			$ap = $this->db->getComputerAssignedPackage($id);
+			if(empty($ap)) continue;
+			$computer_ids[] = $ap->computer_id;
+		}
+		$wolSent = -1;
+		if($useWol) {
+			if(strtotime($dateStart) <= time()) {
+				// instant WOL if start time is already in the past
+				$wolSent = 1;
+				$wolMacAdresses = [];
+				foreach($computer_ids as $cid) {
+					foreach($this->db->getComputerNetwork($cid) as $cn) {
+						$wolMacAdresses[] = $cn->mac;
+					}
+				}
+				wol($wolMacAdresses, false);
+			} else {
+				$wolSent = 0;
+			}
+		}
+
+		// check if there are any computer & packages
+		if(count($computer_ids) == 0) {
+			throw new Exception(LANG['no_jobs_created']);
+		}
+
+		// create jobs
+		$jcid = $this->db->addJobContainer(
+			$name, $author,
+			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
+			empty($dateEnd) ? null : $dateEnd,
+			$description, $wolSent
+		);
+		foreach($installationIds as $id) {
+			$ap = $this->db->getComputerAssignedPackage($id);
+			if(empty($ap)) continue;
+			$p = $this->db->getPackage($ap->package_id);
+			$this->db->addJob($jcid, $ap->computer_id,
+				$ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes,
+				1/*is_uninstall*/, $p->download_for_uninstall,
+				$p->uninstall_procedure_restart ? $restartTimeout : -1,
+				$p->uninstall_procedure_shutdown ? $restartTimeout : -1,
+				0/*sequence*/
+			);
+		}
+	}
+	public function removeComputerAssignedPackage($id) {
+		$result = $this->db->removeComputerAssignedPackage($id);
+		if(!$result) throw new Exception(LANG['not_found']);
+		return $result;
+	}
+	public function removeJobContainer($id) {
+		$result = $this->db->removeJobContainer($id);
+		if(!$result) throw new Exception(LANG['not_found']);
+		return $result;
+	}
+	public function removeJob($id) {
+		$result = $this->db->removeJob($id);
+		if(!$result) throw new Exception(LANG['not_found']);
+		return $result;
 	}
 
 }

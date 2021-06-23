@@ -13,25 +13,31 @@ if(!empty($_POST['update_note_computer_id']) && isset($_POST['update_note'])) {
 }
 if(!empty($_POST['remove_package_assignment_id']) && is_array($_POST['remove_package_assignment_id'])) {
 	foreach($_POST['remove_package_assignment_id'] as $id) {
-		$db->removeComputerAssignedPackage($id);
+		try {
+			$cl->removeComputerAssignedPackage($id);
+		} catch(Exception $e) {
+			header('HTTP/1.1 400 Invalid Request');
+			die($e->getMessage());
+		}
 	}
 	die();
 }
 if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninstall_package_assignment_id'])) {
-	$jcid = $db->addJobContainer(
-		LANG['uninstall'].' '.date('y-m-d H:i:s'), $_SESSION['um_username'],
-		date('Y-m-d H:i:s'), null, '', 0
-	);
-	foreach($_POST['uninstall_package_assignment_id'] as $id) {
-		$ap = $db->getComputerAssignedPackage($id);
-		$p = $db->getPackage($ap->package_id);
-		$db->addJob($jcid, $ap->computer_id,
-			$ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes,
-			1/*is_uninstall*/, $p->download_for_uninstall,
-			$p->uninstall_procedure_restart ? 60 : -1,
-			$p->uninstall_procedure_shutdown ? 60 : -1,
-			0/*sequence*/
-		);
+	try {
+		// compile name
+		$name = '';
+		foreach($_POST['uninstall_package_assignment_id'] as $id) {
+			$ap = $db->getComputerAssignedPackage($id);
+			if(empty($ap)) continue;
+			$c = $db->getComputer($ap->computer_id);
+			if(empty($name)) $name = LANG['uninstall'].' '.$c->hostname;
+			else $name .= ', '.$c->hostname;
+		}
+		if(empty($name)) $name = LANG['uninstall'];
+		$cl->uninstall($name, '', $_SESSION['um_username'], $_POST['uninstall_package_assignment_id'], date('Y-m-d H:i:s'), null, 1, 5);
+	} catch(Exception $e) {
+		header('HTTP/1.1 400 Invalid Request');
+		die($e->getMessage());
 	}
 	die();
 }

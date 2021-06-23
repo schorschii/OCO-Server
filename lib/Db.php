@@ -967,7 +967,8 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM package WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function removePackageGroup($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -986,7 +987,8 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_package WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function removeComputerAssignedPackageByIds($cid, $pid) {
 		$this->stmt = $this->dbh->prepare(
@@ -1212,13 +1214,15 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM job_container WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function removeJob($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM job WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 
 	// Domainuser Operations

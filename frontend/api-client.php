@@ -171,6 +171,20 @@ switch($srcdata['method']) {
 			];
 		}
 		break;
+	case 'oco.package.remove':
+		try {
+			$cl->removePackage(intval($data['id'] ?? 0));
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => []
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
 
 	case 'oco.job_container.list':
 		try {
@@ -212,6 +226,83 @@ switch($srcdata['method']) {
 			$resdata['error'] = null;
 			$resdata['result'] = [
 				'success' => true, 'data' => [ 'id' => $insertId ]
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+	case 'oco.uninstall':
+		try {
+			$insertId = $cl->uninstall(
+				$data['name'], $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+				$data['installation_ids'] ?? [],
+				$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null, $data['use_wol'] ?? 1, $data['restart_timeout'] ?? 5
+			);
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => [ 'id' => $insertId ]
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+	case 'oco.remove_installation_assignment':
+		try {
+			$cl->removeComputerAssignedPackage(intval($data['id'] ?? 0));
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => []
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+	case 'oco.job_container.remove':
+		try {
+			$cl->removeJobContainer(intval($data['id'] ?? 0));
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => []
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+	case 'oco.job.remove':
+		try {
+			$cl->removeJob(intval($data['id'] ?? 0));
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => []
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+
+	case 'oco.report.execute':
+		try {
+			$report = $db->getReport(intval($data['id'] ?? 0));
+			if(empty($report)) throw new Exception(LANG['not_found']);
+			$result = $db->executeReport($report->id);
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => $result
 			];
 		} catch(Exception $e) {
 			$resdata['error'] = $e->getMessage();

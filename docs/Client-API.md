@@ -460,6 +460,32 @@ no parameters
 }
 ```
 
+## `oco.package.remove` - Remove Package
+This will also delete the package payload (ZIP file) from the server.
+### Parameters
+- `id` - package ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.package.remove",
+	"params": {
+		"id": 123
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": []
+	}
+}
+```
+
 ## `oco.job_container.list` - List All Job Containers
 ### Parameters
 no parameters
@@ -585,6 +611,157 @@ no parameters
 		"data": {
 			"id": "1056"
 		}
+	}
+}
+```
+
+## `oco.uninstall` - Create Uninstall Jobs
+### Parameters
+- `name` - name for the new job container
+- `description` (optional) - name for the new job container
+- `installation_ids` - IDs of the package installation assignment records (you can get them by executing `oco.computer.get` or `oco.package.get` from the section `installed_packages`)
+- `date_start` - deployment start date
+- `date_end` (null) - deployment end date (unfinished jobs will set to "expired"), null means jobs do not expire
+- `use_wol` - enable or disable WOL
+- `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.uninstall",
+	"params": {
+		"name": "API-Test",
+		"description": "Uninstalling a package.",
+		"installation_ids": [1,2,3],
+		"date_start": "2020-01-01 18:00:00",
+		"date_end": null,
+		"use_wol": 1,
+		"restart_timeout": 5
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": {
+			"id": "1057"
+		}
+	}
+}
+```
+
+## `oco.remove_installation_assignment` - Remove Package-Computer Installation Assignment
+Manually removes an Package-Computer assignment. Normally, this assigment ist automatically removed when the uninstallation finished successfully. In some cases it is necessary to manually remove this assignment, e.g. because the package was uninstalled manually on the computer (without using OCO).
+### Parameters
+- `id` - ID of the package installation assignment record (you can get them by executing `oco.computer.get` or `oco.package.get` from the section `installed_packages`)
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.remove_installation_assignment",
+	"params": {
+		"id": 23
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": {}
+	}
+}
+```
+
+## `oco.job_container.remove` - Remove Job Container
+This will delete all jobs in the container and the container itself. Pending jobs are no longer executed.
+### Parameters
+- `id` - job container ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.job_container.remove",
+	"params": {
+		"id": 123
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": []
+	}
+}
+```
+
+## `oco.job.remove` - Remove Job
+This removes a single job from a job container.
+### Parameters
+- `id` - job ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.job.remove",
+	"params": {
+		"id": 123
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": []
+	}
+}
+```
+
+## `oco.report.execute` - Execute A Report And Return The Result
+Please note that the `data` output of the JSON response depends on the columns of your report.
+### Parameters
+- `id` - report ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.report.execute",
+	"params": {
+		"id": 123
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": [
+			{
+				"computer_id": "107",
+				"hostname": "PC001",
+				"os": "Windows 10 Enterprise 2016 LTSB",
+				"os_version": "10.0.14393",
+				"agent_version": "0.7.0"
+			}
+		]
 	}
 }
 ```
