@@ -16,6 +16,7 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 	<script src='js/strings.js.php'></script>
 	<script src='js/main.js'></script>
 	<script src='js/table.js'></script>
+	<script src='js/notification.js'></script>
 	<!--
 		Wir begrüßen Sie an diesem wunderschönen <?php echo date("l"); ?>,
 		<?php echo time(); ?> Sekunden nach dem Unix-Urknall!

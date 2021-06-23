@@ -258,6 +258,12 @@ const LANG = [
 	'edit_description' => 'Edit Description',
 	'unknown_error' => 'Unknown Error',
 	'self_registration' => 'Self Registration',
+	'desktop_notifications_not_supported' => 'Desktop notifications are not supported by your browser.',
+	'desktop_notifications_denied' => 'You denied desktop notifications in your browser settings.',
+	'desktop_notifications_already_permitted' => 'Desktop notifications already permitted.',
+	'job_container_status_changed' => 'Job container status changed.',
+	'user_settings' => 'User Settings',
+	'enable_notifications' => 'Enable Notifications',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

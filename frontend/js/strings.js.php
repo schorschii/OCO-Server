@@ -31,3 +31,8 @@ var L__ENTER_NEW_VALUE = "<?php echo LANG['enter_new_value']; ?>";
 var L__ENTER_START_TIME = "<?php echo LANG['enter_start_time']; ?>";
 var L__ENTER_NEW_PROCEDURE_POST_ACTION = "<?php echo LANG['enter_new_procedure_post_action']; ?>";
 var L__ENTER_QUERY = "<?php echo LANG['enter_query']; ?>";
+
+var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
+var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";
+var L__DESKTOP_NOTIFICATIONS_ALREADY_PERMITTED = "<?php echo LANG['desktop_notifications_already_permitted']; ?>";
+var L__JOB_CONTAINER_STATUS_CHANGED = "<?php echo LANG['job_container_status_changed']; ?>";

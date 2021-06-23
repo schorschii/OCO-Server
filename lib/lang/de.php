@@ -258,6 +258,12 @@ const LANG = [
 	'edit_description' => 'Beschreibung bearbeiten',
 	'unknown_error' => 'Unbekannter Fehler',
 	'self_registration' => 'Selbstregistrierung',
+	'desktop_notifications_not_supported' => 'Desktopbenachrichtigungen werden von Ihrem Browser nicht unterstützt.',
+	'desktop_notifications_denied' => 'Sie haben die Desktopbenachrichtigungen in Ihrem Browser deaktiviert.',
+	'desktop_notifications_already_permitted' => 'Desktopbenachrichtigungen wurden bereits aktiviert.',
+	'job_container_status_changed' => 'Jobcontainer-Status hat sich geändert.',
+	'user_settings' => 'Benutzereinstellungen',
+	'enable_notifications' => 'Benachrichtigungen aktivieren',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
