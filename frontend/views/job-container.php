@@ -26,6 +26,15 @@ if(!empty($_POST['edit_container_id']) && isset($_POST['new_end'])) {
 		header('HTTP/1.1 400 Invalid Date');
 		die(LANG['date_parse_error']);
 	}
+	$container = $db->getJobContainer($_POST['edit_container_id']);
+	if($container == null) {
+		header('HTTP/1.1 404 Not Found');
+		die(LANG['not_found']);
+	}
+	if(strtotime($container->start_time) > strtotime($_POST['new_end'])) {
+		header('HTTP/1.1 400 Invalid Request');
+		die(LANG['end_time_before_start_time']);
+	}
 	$db->editJobContainerEnd($_POST['edit_container_id'], $_POST['new_end']);
 	die();
 }
