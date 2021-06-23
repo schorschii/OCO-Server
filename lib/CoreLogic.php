@@ -209,7 +209,7 @@ class CoreLogic {
 							// uninstall it, if it is from the same package family
 							if($cp->package_family_id === $package['package_family_id']) {
 								$cpp = $this->db->getPackage($cp->package_id);
-								if($cpp == null || empty($cpp->uninstall_procedure)) continue;
+								if($cpp == null) continue;
 								$this->db->addJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
 									1/*is_uninstall*/, $cpp->download_for_uninstall,
