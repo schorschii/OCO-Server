@@ -285,7 +285,7 @@ if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div
 				</select>
 			</button>
 			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-			<button onclick='confirmUninstallPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+			<button onclick='confirmUninstallPackage("package_id[]", "<?php echo date('Y-m-d H:i:s'); ?>")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 		</div>
 	</div>
 

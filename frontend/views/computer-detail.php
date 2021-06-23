@@ -34,7 +34,7 @@ if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninsta
 			else $name .= ', '.$c->hostname;
 		}
 		if(empty($name)) $name = LANG['uninstall'];
-		$cl->uninstall($name, '', $_SESSION['um_username'], $_POST['uninstall_package_assignment_id'], date('Y-m-d H:i:s'), null, 1, 5);
+		$cl->uninstall($name, '', $_SESSION['um_username'], $_POST['uninstall_package_assignment_id'], $_POST['start_time'] ?? date('Y-m-d H:i:s'), null, 1, 5);
 	} catch(Exception $e) {
 		header('HTTP/1.1 400 Invalid Request');
 		die($e->getMessage());
@@ -394,7 +394,7 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-			<button onclick='confirmUninstallPackage("package_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+			<button onclick='confirmUninstallPackage("package_id[]", "<?php echo date('Y-m-d H:i:s'); ?>")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 		</div>
 	</div>
 

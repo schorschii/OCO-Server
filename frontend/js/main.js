@@ -529,7 +529,7 @@ function addPackageToGroup(packageId, groupId) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/package.php', paramString, null, function() { alert(L__PACKAGES_ADDED); refreshContent(); });
 }
-function confirmUninstallPackage(checkboxName) {
+function confirmUninstallPackage(checkboxName, defaultStartTime) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -544,9 +544,11 @@ function confirmUninstallPackage(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'uninstall_package_assignment_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	if(confirm(L__CONFIRM_UNINSTALL_PACKAGE)) {
-		ajaxRequestPost('views/computer-detail.php', paramString, null, function() { refreshSidebar() });
+	var startTime = prompt(L__CONFIRM_UNINSTALL_PACKAGE, defaultStartTime);
+	if(startTime != null && startTime != '') {
+		params.push({'key':'start_time', 'value':startTime});
+		var paramString = urlencodeArray(params);
+		ajaxRequestPost('views/computer-detail.php', paramString, null, function() { refreshSidebar(); refreshContent(); });
 	}
 }
 function confirmRemovePackageComputerAssignment(checkboxName) {
