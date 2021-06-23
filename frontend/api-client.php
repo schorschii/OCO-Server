@@ -152,6 +152,25 @@ switch($srcdata['method']) {
 			];
 		}
 		break;
+	case 'oco.package.get':
+		try {
+			$package = $db->getPackage($data['id'] ?? 0);
+			if($package == null) throw new Exception(LANG['not_found']);
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => [
+					'general' => $package,
+					'installations' => $db->getPackageComputer($package->id),
+					'pending_jobs' => $db->getPendingJobsForPackageDetailPage($package->id),
+				]
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
 
 	case 'oco.job_container.list':
 		try {
@@ -175,6 +194,24 @@ switch($srcdata['method']) {
 			$resdata['error'] = null;
 			$resdata['result'] = [
 				'success' => true, 'data' => $result
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
+	case 'oco.deploy':
+		try {
+			$insertId = $cl->deploy(
+				$data['name'], $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+				$data['computer_ids'] ?? [], $data['computer_group_ids'] ?? [], $data['package_ids'] ?? [], $data['package_group_ids'] ?? [],
+				$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null, $data['use_wol'] ?? 1, $data['restart_timeout'] ?? 5, $data['auto_create_uninstall_jobs'] ?? 1
+			);
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => [ 'id' => $insertId ]
 			];
 		} catch(Exception $e) {
 			$resdata['error'] = $e->getMessage();

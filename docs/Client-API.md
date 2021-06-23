@@ -383,6 +383,83 @@ no parameters
 }
 ```
 
+## `oco.package.get` - Get Package Details
+### Parameters
+- `ìd` - package ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.package.get",
+	"params": {
+		"id": 4
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": {
+			"general": {
+				"id": "117",
+				"package_family_id": "64",
+				"version": "89",
+				"notes": "",
+				"author": "hanswurst",
+				"install_procedure": "gdebi -n google-chrome-stable_current_amd64.deb",
+				"install_procedure_success_return_codes": "0",
+				"install_procedure_restart": "0",
+				"install_procedure_shutdown": "0",
+				"uninstall_procedure": "apt remove -y google-chrome",
+				"uninstall_procedure_success_return_codes": "0",
+				"download_for_uninstall": "0",
+				"uninstall_procedure_restart": "0",
+				"uninstall_procedure_shutdown": "0",
+				"created": "2021-03-03 15:52:22",
+				"last_update": "2021-04-21 13:55:14",
+				"name": "Linux_Chrome"
+			},
+			"installations": [
+				{
+					"id": "289",
+					"computer_id": "696",
+					"installed_procedure": "gdebi -n google-chrome-stable_current_amd64.deb",
+					"installed": "2021-03-22 10:13:56",
+					"computer_hostname": "PC001",
+					"package_name": null,
+					"package_version": null
+				}
+			],
+			"pending_jobs": [
+				{
+					"id": "3423",
+					"job_container_id": "1049",
+					"computer_id": "114",
+					"success_return_codes": null,
+					"is_uninstall": "0",
+					"download": "1",
+					"restart": "-1",
+					"shutdown": "-1",
+					"sequence": null,
+					"state": "0",
+					"return_code": null,
+					"message": null,
+					"last_update": null,
+					"computer_hostname": "PC002",
+					"job_container_start_time": "2021-06-24 10:36:00",
+					"job_container_name": "Installieren L_Chrome",
+					"procedure": "gdebi -n google-chrome-stable_current_amd64.deb"
+				}
+			]
+		}
+	}
+}
+```
+
 ## `oco.job_container.list` - List All Job Containers
 ### Parameters
 no parameters
@@ -461,6 +538,53 @@ no parameters
 				"job_container_start_time": "2021-06-22 21:27:00"
 			}
 		]
+	}
+}
+```
+
+## `oco.deploy` - Create Deployment Jobs
+### Parameters
+- `name` - name for the new job container
+- `description` (optional) - name for the new job container
+- `computer_ids` (int array) - IDs of the computers to deploy
+- `computer_group_ids` (int array) - IDs of the computer groups to deploy
+- `package_ids` (int array) - IDs of the packages to deploy
+- `package_group_ids` (int array) - IDs of the package groups to deploy
+- `date_start` - deployment start date
+- `date_end` (null) - deployment end date (unfinished jobs will set to "expired"), null means jobs do not expire
+- `use_wol` - enable or disable WOL
+- `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
+- `auto_create_uninstall_jobs` - enable or disable automatic uninstall job creation
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.deploy",
+	"params": {
+		"name": "API-Test",
+		"description": "Deploying a new package version.",
+		"computer_ids": [1,2,3],
+		"computer_group_ids": [],
+		"package_ids": [],
+		"package_group_ids": [4],
+		"date_start": "2020-01-01 18:00:00",
+		"date_end": null,
+		"use_wol": 1,
+		"restart_timeout": 5,
+		"auto_create_uninstall_jobs": 1
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": {
+			"id": "1056"
+		}
 	}
 }
 ```

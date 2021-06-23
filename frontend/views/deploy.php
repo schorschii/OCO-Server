@@ -81,136 +81,18 @@ if(isset($_GET['get_package_group_members'])) {
 }
 
 // ----- create jobs if requested -----
-if(!empty($_POST['add_jobcontainer'])) {
-	// check user input
-	if(empty($_POST['restart_timeout']) || empty($_POST['date_start']) || strtotime($_POST['date_start']) === false) {
-		header('HTTP/1.1 400 Missing Information');
-		die(LANG['please_fill_required_fields']);
-	}
-	if(!empty($_POST['date_end']) // check date_end if not empty
-	&& (strtotime($_POST['date_end']) === false || strtotime($_POST['date_start']) >= strtotime($_POST['date_end']))
-	) {
+if(isset($_POST['add_jobcontainer'])) {
+	try {
+		$jcid = $cl->deploy(
+			$_POST['add_jobcontainer'], $_POST['description'], $_SESSION['um_username'],
+			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [],
+			$_POST['date_start'], $_POST['date_end'] ?? null, $_POST['use_wol'] ?? 1, $_POST['restart_timeout'] ?? 5, $_POST['auto_create_uninstall_jobs'] ?? 1
+		);
+		die(strval(intval($jcid)));
+	} catch(Exception $e) {
 		header('HTTP/1.1 400 Invalid Request');
-		die(LANG['end_time_before_start_time']);
+		die($e->getMessage());
 	}
-
-	// check if given IDs exist
-	$computer_ids = [];
-	$packages = [];
-	$computer_group_ids = [];
-	$package_group_ids = [];
-	if(!empty($_POST['computer_id'])) foreach($_POST['computer_id'] as $computer_id) {
-		if($db->getComputer($computer_id) !== null) $computer_ids[$computer_id] = $computer_id;
-	}
-	if(!empty($_POST['computer_group_id'])) foreach($_POST['computer_group_id'] as $computer_group_id) {
-		if($db->getComputerGroup($computer_group_id) !== null) $computer_group_ids[] = $computer_group_id;
-	}
-
-	if(!empty($_POST['package_id'])) foreach($_POST['package_id'] as $package_id) {
-		$p = $db->getPackage($package_id);
-		if($p !== null) $packages[$p->id] = [
-			'package_family_id' => $p->package_family_id,
-			'procedure' => $p->install_procedure,
-			'success_return_codes' => $p->install_procedure_success_return_codes,
-			'install_procedure_restart' => $p->install_procedure_restart,
-			'install_procedure_shutdown' => $p->install_procedure_shutdown,
-			'download' => $p->getFilePath() ? true : false,
-		];
-	}
-	if(!empty($_POST['package_group_id'])) foreach($_POST['package_group_id'] as $package_group_id) {
-		if($db->getPackageGroup($package_group_id) !== null) $package_group_ids[] = $package_group_id;
-	}
-
-	// if multiple groups selected: add all group members
-	if(count($computer_group_ids) > 1) foreach($computer_group_ids as $computer_group_id) {
-		foreach($db->getComputerByGroup($computer_group_id) as $c) {
-			$computer_ids[$c->id] = $c->id;
-		}
-	}
-	if(count($package_group_ids) > 1) foreach($package_group_ids as $package_group_id) {
-		foreach($db->getPackageByGroup($package_group_id) as $p) {
-			$packages[$p->id] = [
-				'package_family_id' => $p->package_family_id,
-				'procedure' => $p->install_procedure,
-				'success_return_codes' => $p->install_procedure_success_return_codes,
-				'install_procedure_restart' => $p->install_procedure_restart,
-				'install_procedure_shutdown' => $p->install_procedure_shutdown,
-				'download' => $p->getFilePath() ? true : false,
-			];
-		}
-	}
-
-	// check if there are any computer & packages
-	if(count($computer_ids) == 0 || count($packages) == 0) {
-		header('HTTP/1.1 400 No Jobs Created');
-		die(LANG['no_jobs_created']);
-	}
-
-	// wol handling
-	$wolSent = -1;
-	if($_POST['use_wol']) {
-		if(strtotime($_POST['date_start']) <= time()) {
-			// instant WOL if start time is already in the past
-			$wolSent = 1;
-			$wolMacAdresses = [];
-			foreach($computer_ids as $cid) {
-				foreach($db->getComputerNetwork($cid) as $cn) {
-					$wolMacAdresses[] = $cn->mac;
-				}
-			}
-			wol($wolMacAdresses, false);
-		} else {
-			$wolSent = 0;
-		}
-	}
-
-	// create jobs
-	if($jcid = $db->addJobContainer(
-		$_POST['add_jobcontainer'], $_SESSION['um_username'],
-		empty($_POST['date_start']) ? date('Y-m-d H:i:s') : $_POST['date_start'],
-		empty($_POST['date_end']) ? null : $_POST['date_end'],
-		$_POST['description'],
-		$wolSent
-	)) {
-		foreach($computer_ids as $computer_id) {
-			$sequence = 1;
-
-			foreach($packages as $pid => $package) {
-
-				// create uninstall jobs
-				if(!empty($_POST['auto_create_uninstall_jobs'])) {
-					foreach($db->getComputerPackage($computer_id) as $cp) {
-						// uninstall it, if it is from the same package family
-						if($cp->package_family_id === $package['package_family_id']) {
-							$cpp = $db->getPackage($cp->package_id);
-							if($cpp == null || empty($cpp->uninstall_procedure)) continue;
-							$db->addJob($jcid, $computer_id,
-								$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
-								1/*is_uninstall*/, $cpp->download_for_uninstall,
-								$cpp->uninstall_procedure_restart ? $_POST['restart_timeout'] : -1,
-								$cpp->uninstall_procedure_shutdown ? $_POST['restart_timeout'] : -1,
-								$sequence
-							);
-							$sequence ++;
-						}
-					}
-				}
-
-				// create job
-				if($db->addJob($jcid, $computer_id,
-					$pid, $package['procedure'], $package['success_return_codes'],
-					0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
-					$package['install_procedure_restart'] ? $_POST['restart_timeout'] : -1,
-					$package['install_procedure_shutdown'] ? $_POST['restart_timeout'] : -1,
-					$sequence
-				)) {
-					$sequence ++;
-				}
-			}
-		}
-	}
-
-	die(strval(intval($jcid)));
 }
 ?>
 
