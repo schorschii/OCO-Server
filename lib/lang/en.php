@@ -191,7 +191,7 @@ const LANG = [
 	'renew_failed_jobs' => 'Renew Failed Jobs',
 	'confirm_renew_jobs' => 'A new job container with all failed jobs will be created and the failed jobs will be removed from the original job container.',
 	'renew' => 'Renew',
-	'default_motd' => 'Thank you for using OCO. If you have any questions you can get professional support. Please <a href="https://georg-sieber.de/?page=contact" target="_blank">contact me</a>.',
+	'default_motd' => 'Thank you for using OCO. If you have any questions you can <a href="https://georg-sieber.de/?page=impressum" target="_blank">get professional support</a>.<br><br>Please have a look at the new <a href="https://github.com/schorschii/oco-server/blob/master/docs/Client-API.md" target="_blank">JSON-RPC-API</a> too.',
 	'report_secureboot_disabled' => 'SecureBoot Disabled',
 	'report_packages_without_installations' => 'Packages Without Installations',
 	'report_recognized_software_chrome' => 'Recognized Software Chrome',
