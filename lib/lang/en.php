@@ -235,6 +235,7 @@ const LANG = [
 	'not_activated' => 'Not Activated',
 	'locale' => 'Locale',
 	'confirm_create_empty_package' => 'No file selected. Do you want to create an empty package?',
+	'package_family' => 'Name (Package Family)',
 	'other_packages_from_this_family' => 'Other Packages From This Family',
 	'search_computer_packages_job_container' => 'Search Computers, Packages, Job Containers, Domain Users, Reports...',
 	'no_search_results' => 'No Search Results',
@@ -264,6 +265,11 @@ const LANG = [
 	'job_container_status_changed' => 'Job container status changed.',
 	'user_settings' => 'User Settings',
 	'enable_notifications' => 'Enable Notifications',
+	'compatible_os' => 'Compatible OS',
+	'compatible_os_version' => 'Compatible OS Version',
+	'incompatible' => 'Incompatible',
+	'package_conflict' => 'Package Conflict',
+	'optional_hint' => '(optional)',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

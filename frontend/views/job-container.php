@@ -75,7 +75,7 @@ if(!empty($_POST['renew_container_id']) && !empty($_POST['renew_start_time'])) {
 	)) {
 		$count = 0;
 		foreach($db->getAllJobByContainer($container->id) as $job) {
-			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED) {
+			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED || $job->state == Job::STATUS_OS_INCOMPATIBLE || $job->state == Job::STATUS_PACKAGE_CONFLICT) {
 				if($db->addJob($jcid, $job->computer_id,
 					$job->package_id, $job->package_procedure, $job->success_return_codes,
 					$job->is_uninstall, $job->download,
@@ -105,7 +105,7 @@ if(!empty($_GET['id'])) {
 	if(count($jobs) > 0) {
 		foreach($jobs as $job) {
 			if($job->state == Job::STATUS_SUCCEEDED) $done ++;
-			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED) $failed ++;
+			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED || $job->state == Job::STATUS_OS_INCOMPATIBLE || $job->state == Job::STATUS_PACKAGE_CONFLICT) $failed ++;
 		}
 		$percent = $done/count($jobs)*100;
 	}

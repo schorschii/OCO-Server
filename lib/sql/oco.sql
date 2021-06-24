@@ -2,8 +2,8 @@
 -- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
--- Server-Version: 10.3.25-MariaDB-0+deb10u1
--- PHP-Version: 7.3.19-1~deb10u1
+-- Server-Version: 10.3.27-MariaDB-0+deb10u1
+-- PHP-Version: 7.3.27-1~deb10u1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -45,10 +45,11 @@ CREATE TABLE `computer` (
   `boot_type` text NOT NULL,
   `secure_boot` text NOT NULL,
   `last_ping` datetime NOT NULL DEFAULT current_timestamp(),
-  `last_update` datetime DEFAULT current_timestamp(),
+  `last_update` datetime DEFAULT NULL,
   `notes` text NOT NULL,
   `agent_key` text NOT NULL,
-  `server_key` text NOT NULL
+  `server_key` text NOT NULL,
+  `created` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -258,8 +259,35 @@ CREATE TABLE `package` (
   `download_for_uninstall` tinyint(4) NOT NULL DEFAULT 0,
   `uninstall_procedure_restart` tinyint(4) NOT NULL DEFAULT 0,
   `uninstall_procedure_shutdown` tinyint(4) NOT NULL DEFAULT 0,
+  `compatible_os` text DEFAULT NULL,
+  `compatible_os_version` text DEFAULT NULL,
+  `self_service_enabled` tinyint(4) NOT NULL DEFAULT 0,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_update` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `package_conflicts`
+--
+
+CREATE TABLE `package_conflicts` (
+  `id` int(11) NOT NULL,
+  `package_id` int(11) NOT NULL,
+  `conflict_package_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `package_dependency`
+--
+
+CREATE TABLE `package_dependency` (
+  `id` int(11) NOT NULL,
+  `package_id` int(11) NOT NULL,
+  `dependent_package_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -509,6 +537,22 @@ ALTER TABLE `package`
   ADD KEY `fk_package_family_id` (`package_family_id`);
 
 --
+-- Indizes für die Tabelle `package_conflicts`
+--
+ALTER TABLE `package_conflicts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_package_id_2` (`package_id`),
+  ADD KEY `fk_conflict_package_id` (`conflict_package_id`);
+
+--
+-- Indizes für die Tabelle `package_dependency`
+--
+ALTER TABLE `package_dependency`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_package_id` (`package_id`),
+  ADD KEY `fk_dependend_package_id` (`dependent_package_id`);
+
+--
 -- Indizes für die Tabelle `package_family`
 --
 ALTER TABLE `package_family`
@@ -650,6 +694,18 @@ ALTER TABLE `package`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT für Tabelle `package_conflicts`
+--
+ALTER TABLE `package_conflicts`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `package_dependency`
+--
+ALTER TABLE `package_dependency`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT für Tabelle `package_family`
 --
 ALTER TABLE `package_family`
@@ -772,6 +828,20 @@ ALTER TABLE `job`
 --
 ALTER TABLE `package`
   ADD CONSTRAINT `fk_package_family_id` FOREIGN KEY (`package_family_id`) REFERENCES `package_family` (`id`);
+
+--
+-- Constraints der Tabelle `package_conflicts`
+--
+ALTER TABLE `package_conflicts`
+  ADD CONSTRAINT `fk_conflict_package_id` FOREIGN KEY (`conflict_package_id`) REFERENCES `package` (`id`),
+  ADD CONSTRAINT `fk_package_id_2` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`);
+
+--
+-- Constraints der Tabelle `package_dependency`
+--
+ALTER TABLE `package_dependency`
+  ADD CONSTRAINT `fk_dependend_package_id` FOREIGN KEY (`dependent_package_id`) REFERENCES `package` (`id`),
+  ADD CONSTRAINT `fk_package_id` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`);
 
 --
 -- Constraints der Tabelle `package_group`

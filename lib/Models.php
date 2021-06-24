@@ -126,6 +126,8 @@ class Package {
 	public $download_for_uninstall;
 	public $uninstall_procedure_restart;
 	public $uninstall_procedure_shutdown;
+	public $compatible_os;
+	public $compatible_os_version;
 	public $created;
 	public $last_update;
 	// joined package group attributes
@@ -192,6 +194,8 @@ class Job {
 	public const STATUS_WAITING_FOR_CLIENT = 0;
 	public const STATUS_FAILED = -1;
 	public const STATUS_EXPIRED = -2;
+	public const STATUS_OS_INCOMPATIBLE = -3;
+	public const STATUS_PACKAGE_CONFLICT = -4;
 	public const STATUS_DOWNLOAD_STARTED = 1;
 	public const STATUS_EXECUTION_STARTED = 2;
 	public const STATUS_SUCCEEDED = 3;
@@ -206,6 +210,8 @@ class Job {
 		if($this->state == self::STATUS_EXECUTION_STARTED) return 'pending';
 		if($this->state == self::STATUS_FAILED) return 'error';
 		if($this->state == self::STATUS_EXPIRED) return 'timeout';
+		if($this->state == self::STATUS_OS_INCOMPATIBLE) return 'error';
+		if($this->state == self::STATUS_PACKAGE_CONFLICT) return 'error';
 		if($this->state == self::STATUS_SUCCEEDED) return 'tick';
 		return 'warning';
 	}
@@ -223,6 +229,10 @@ class Job {
 			return LANG['failed'].$returnCodeString;
 		elseif($this->state == self::STATUS_EXPIRED)
 			return LANG['expired'];
+		elseif($this->state == self::STATUS_OS_INCOMPATIBLE)
+			return LANG['incompatible'];
+		elseif($this->state == self::STATUS_PACKAGE_CONFLICT)
+			return LANG['package_conflict'];
 		elseif($this->state == self::STATUS_DOWNLOAD_STARTED)
 			return LANG['download_started'];
 		elseif($this->state == self::STATUS_EXECUTION_STARTED)

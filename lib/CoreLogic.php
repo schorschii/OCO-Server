@@ -141,6 +141,8 @@ class CoreLogic {
 				'success_return_codes' => $p->install_procedure_success_return_codes,
 				'install_procedure_restart' => $p->install_procedure_restart,
 				'install_procedure_shutdown' => $p->install_procedure_shutdown,
+				'compatible_os' => $p->compatible_os,
+				'compatible_os_version' => $p->compatible_os_version,
 				'download' => $p->getFilePath() ? true : false,
 			];
 		}
@@ -162,6 +164,8 @@ class CoreLogic {
 					'success_return_codes' => $p->install_procedure_success_return_codes,
 					'install_procedure_restart' => $p->install_procedure_restart,
 					'install_procedure_shutdown' => $p->install_procedure_shutdown,
+					'compatible_os' => $p->compatible_os,
+					'compatible_os_version' => $p->compatible_os_version,
 					'download' => $p->getFilePath() ? true : false,
 				];
 			}
@@ -202,6 +206,34 @@ class CoreLogic {
 				$sequence = 1;
 
 				foreach($packages as $pid => $package) {
+
+					// check OS compatibility
+					if(!empty($package['compatible_os']) && $package['compatible_os'] != $this->db->getComputer($computer_id)->os) {
+						// create failed job
+						if($this->db->addJob($jcid, $computer_id,
+							$pid, $package['procedure'], $package['success_return_codes'],
+							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
+							$package['install_procedure_restart'] ? $restartTimeout : -1,
+							$package['install_procedure_shutdown'] ? $restartTimeout : -1,
+							$sequence, Job::STATUS_OS_INCOMPATIBLE
+						)) {
+							$sequence ++;
+						}
+						continue;
+					}
+					if(!empty($package['compatible_os_version']) && $package['compatible_os_version'] != $this->db->getComputer($computer_id)->os_version) {
+						// create failed job
+						if($this->db->addJob($jcid, $computer_id,
+							$pid, $package['procedure'], $package['success_return_codes'],
+							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
+							$package['install_procedure_restart'] ? $restartTimeout : -1,
+							$package['install_procedure_shutdown'] ? $restartTimeout : -1,
+							$sequence, Job::STATUS_OS_INCOMPATIBLE
+						)) {
+							$sequence ++;
+						}
+						continue;
+					}
 
 					// create uninstall jobs
 					if(!empty($autoCreateUninstallJobs)) {

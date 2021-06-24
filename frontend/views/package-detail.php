@@ -62,6 +62,14 @@ if(!empty($_POST['update_package_id']) && isset($_POST['update_uninstall_procedu
 	}
 	die();
 }
+if(!empty($_POST['update_package_id']) && isset($_POST['update_compatible_os'])) {
+	$db->updatePackageCompatibleOs($_POST['update_package_id'], $_POST['update_compatible_os']);
+	die();
+}
+if(!empty($_POST['update_package_id']) && isset($_POST['update_compatible_os_version'])) {
+	$db->updatePackageCompatibleOsVersion($_POST['update_package_id'], $_POST['update_compatible_os_version']);
+	die();
+}
 
 $package = null;
 if(!empty($_GET['id'])) {
@@ -156,6 +164,20 @@ if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div
 				<th><?php echo LANG['download_for_uninstall']; ?></th>
 				<td>
 					<?php if($package->download_for_uninstall) echo LANG['yes']; else echo LANG['no']; ?>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['compatible_os']; ?></th>
+				<td class='subbuttons'>
+					<?php echo wrapInSpanIfNotEmpty($package->compatible_os); ?><!--
+					--><button onclick='event.stopPropagation();editPackageCompatibleOs(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->compatible_os,ENT_QUOTES); ?>'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['compatible_os_version']; ?></th>
+				<td class='subbuttons'>
+					<?php echo wrapInSpanIfNotEmpty($package->compatible_os_version); ?><!--
+					--><button onclick='event.stopPropagation();editPackageCompatibleOsVersion(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($package->compatible_os_version,ENT_QUOTES); ?>'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>

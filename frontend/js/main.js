@@ -290,7 +290,7 @@ function updatePackageProcedureTemplates() {
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
 }
-function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown) {
+function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown, compatible_os, compatible_os_version) {
 	if(typeof archive === 'undefined') {
 		if(!confirm(L__CONFIRM_CREATE_EMPTY_PACKAGE)) {
 			return;
@@ -316,6 +316,8 @@ function createPackage(name, version, description, archive, install_procedure, i
 	formData.append('download_for_uninstall', download_for_uninstall ? '1' : '0');
 	formData.append('uninstall_procedure_restart', uninstall_procedure_restart ? '1' : '0');
 	formData.append('uninstall_procedure_shutdown', uninstall_procedure_shutdown ? '1' : '0');
+	formData.append('compatible_os', compatible_os);
+	formData.append('compatible_os_version', compatible_os_version);
 
 	req.upload.onprogress = function(evt) {
 		if(evt.lengthComputable) {
@@ -398,13 +400,25 @@ function editPackageUninstallProcedureSuccessReturnCodes(id, oldValue) {
 function editPackageUninstallProcedureAction(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_PROCEDURE_POST_ACTION, oldValue);
 	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_action':newValue}), null, function(){ refreshContent(); });
+		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_action':newValue}), null, refreshContent);
 	}
 }
 function editPackageNotes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
 		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_id':id, 'update_note':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editPackageCompatibleOs(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_id':id, 'update_compatible_os':newValue}), null, refreshContent);
+	}
+}
+function editPackageCompatibleOsVersion(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_id':id, 'update_compatible_os_version':newValue}), null, refreshContent);
 	}
 }
 function reorderPackageInGroup(groupId, oldPos, newPos) {
