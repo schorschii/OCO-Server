@@ -109,6 +109,26 @@ if(isset($_POST['name'])) {
 	<option>msiexec /quiet /x</option>
 	<option>apt remove -y</option>
 </datalist>
+<datalist id='lstOs'>
+	<?php
+	$mentioned = [];
+	foreach($db->getAllComputer() as $c) {
+		if(in_array($c->os, $mentioned)) continue;
+		$mentioned[] = $c->os;
+	?>
+		<option><?php echo htmlspecialchars($c->os); ?></option>
+	<?php } ?>
+</datalist>
+<datalist id='lstOsVersion'>
+	<?php
+	$mentioned = [];
+	foreach($db->getAllComputer() as $c) {
+		if(in_array($c->os_version, $mentioned)) continue;
+		$mentioned[] = $c->os_version;
+	?>
+		<option><?php echo htmlspecialchars($c->os_version); ?></option>
+	<?php } ?>
+</datalist>
 
 <table class='form'>
 	<tr>
