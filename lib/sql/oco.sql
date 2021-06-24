@@ -269,10 +269,10 @@ CREATE TABLE `package` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `package_conflicts`
+-- Tabellenstruktur für Tabelle `package_conflict`
 --
 
-CREATE TABLE `package_conflicts` (
+CREATE TABLE `package_conflict` (
   `id` int(11) NOT NULL,
   `package_id` int(11) NOT NULL,
   `conflict_package_id` int(11) NOT NULL
@@ -537,20 +537,20 @@ ALTER TABLE `package`
   ADD KEY `fk_package_family_id` (`package_family_id`);
 
 --
--- Indizes für die Tabelle `package_conflicts`
+-- Indizes für die Tabelle `package_conflict`
 --
-ALTER TABLE `package_conflicts`
+ALTER TABLE `package_conflict`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_package_id_2` (`package_id`),
-  ADD KEY `fk_conflict_package_id` (`conflict_package_id`);
+  ADD KEY `fk_conflict_package_id` (`conflict_package_id`),
+  ADD KEY `fk_package_id_2` (`package_id`);
 
 --
 -- Indizes für die Tabelle `package_dependency`
 --
 ALTER TABLE `package_dependency`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_package_id` (`package_id`),
-  ADD KEY `fk_dependend_package_id` (`dependent_package_id`);
+  ADD KEY `fk_dependend_package_id` (`dependent_package_id`),
+  ADD KEY `fk_package_id` (`package_id`);
 
 --
 -- Indizes für die Tabelle `package_family`
@@ -694,9 +694,9 @@ ALTER TABLE `package`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `package_conflicts`
+-- AUTO_INCREMENT für Tabelle `package_conflict`
 --
-ALTER TABLE `package_conflicts`
+ALTER TABLE `package_conflict`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -830,18 +830,18 @@ ALTER TABLE `package`
   ADD CONSTRAINT `fk_package_family_id` FOREIGN KEY (`package_family_id`) REFERENCES `package_family` (`id`);
 
 --
--- Constraints der Tabelle `package_conflicts`
+-- Constraints der Tabelle `package_conflict`
 --
-ALTER TABLE `package_conflicts`
-  ADD CONSTRAINT `fk_conflict_package_id` FOREIGN KEY (`conflict_package_id`) REFERENCES `package` (`id`),
-  ADD CONSTRAINT `fk_package_id_2` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`);
+ALTER TABLE `package_conflict`
+  ADD CONSTRAINT `fk_conflict_package_id` FOREIGN KEY (`conflict_package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_package_id_2` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `package_dependency`
 --
 ALTER TABLE `package_dependency`
-  ADD CONSTRAINT `fk_dependend_package_id` FOREIGN KEY (`dependent_package_id`) REFERENCES `package` (`id`),
-  ADD CONSTRAINT `fk_package_id` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`);
+  ADD CONSTRAINT `fk_dependend_package_id` FOREIGN KEY (`dependent_package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_package_id` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `package_group`
