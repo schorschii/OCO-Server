@@ -169,6 +169,10 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 				<td><?php echo htmlspecialchars($computer->agent_version); ?></td>
 			</tr>
 			<tr>
+				<th><?php echo LANG['created']; ?></th>
+				<td><?php echo htmlspecialchars($computer->created); ?></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['last_seen']; ?></th>
 				<td><?php echo htmlspecialchars($computer->last_ping); ?></td>
 			</tr>
