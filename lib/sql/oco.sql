@@ -299,7 +299,8 @@ CREATE TABLE `package_dependency` (
 CREATE TABLE `package_family` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
-  `notes` text NOT NULL
+  `notes` text NOT NULL,
+  `icon` mediumblob DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

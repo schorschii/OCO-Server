@@ -111,6 +111,7 @@ class PackageFamily {
 	public $id;
 	public $name;
 	public $notes;
+	public $icon;
 }
 class Package {
 	public $id;

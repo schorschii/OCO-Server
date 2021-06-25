@@ -76,9 +76,15 @@ if(!empty($_GET['id'])) {
 	$package = $db->getPackage($_GET['id']);
 }
 if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
+
+$packageFamily = $db->getPackageFamily($package->package_family_id);
+$icon = 'img/'.$package->getIcon().'.dyn.svg';
+if(!empty($packageFamily->icon)) {
+	$icon = 'data:image/png;base64,'.base64_encode($packageFamily->icon);
+}
 ?>
 
-<h1><img src='img/<?php echo $package->getIcon(); ?>.dyn.svg'><?php echo htmlspecialchars($package->name); ?></h1>
+<h1><img src='<?php echo htmlspecialchars($icon); ?>'><?php echo htmlspecialchars($package->name); ?></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='renamePackageFamily(<?php echo $package->package_family_id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($package->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
