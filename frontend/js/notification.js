@@ -42,7 +42,7 @@ function checkNotification(newNotificationInfo) {
 		newNotificationInfo['job_container'].forEach(function(item1) {
 			notificationInfo['job_container'].forEach(function(item2) {
 				if(item1.id == item2.id && item1.state != item2.state) {
-					notify(item1.name+': '+item1.state_description, L__JOB_CONTAINER_STATUS_CHANGED, 'img/job.dyn.svg',
+					notify('['+item1.state_description+'] '+item1.name, L__JOB_CONTAINER_STATUS_CHANGED, 'img/job.dyn.svg',
 						'index.php?explorer-content='+encodeURIComponent('views/job-container.php?id='+item1.id),
 						'job#'+item1.id+'#'+item1.state
 					);
@@ -55,7 +55,6 @@ function checkNotification(newNotificationInfo) {
 
 function notify(title, body, icon, link, tag) {
 	if(Notification.permission !== 'granted') return;
-	console.log(title);
 	var notification = new Notification(title, {
 		icon: icon, body: body, tag: tag
 	});
