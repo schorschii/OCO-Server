@@ -62,6 +62,7 @@ if(empty($_GET['id'])) {
 <?php } else { ?>
 	<h1><img src='img/folder.dyn.svg'><?php echo htmlspecialchars($db->getReportGroupBreadcrumbString($reportGroup->id)); ?></h1>
 	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
+		<button onclick='newReport(<?php echo $reportGroup->id; ?>)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
 		<button onclick='newReportGroup(<?php echo $reportGroup->id; ?>)'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
 		<button onclick='renameReportGroup(<?php echo $reportGroup->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($reportGroup->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
 		<button onclick='confirmRemoveReportGroup([<?php echo $reportGroup->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
