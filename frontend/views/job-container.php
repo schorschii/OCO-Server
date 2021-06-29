@@ -237,9 +237,9 @@ if(!empty($_GET['id'])) {
 					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobcontainerData, this.checked)'></th>
 					<th class='searchable sortable'><?php echo LANG['name']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['author']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['created']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['start']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['end']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['created']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['progress']; ?></th>
 				</tr>
 			</thead>
@@ -263,9 +263,9 @@ if(!empty($_GET['id'])) {
 				echo  "<a href='".explorerLink('views/job-container.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a>";
 				echo "</td>";
 				echo "<td>".htmlspecialchars($jc->author)."</td>";
+				echo "<td>".htmlspecialchars($jc->created)."</td>";
 				echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 				echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
-				echo "<td>".htmlspecialchars($jc->created)."</td>";
 				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, null, null, true)."</td>";
 				echo "</tr>";
 			} ?>
