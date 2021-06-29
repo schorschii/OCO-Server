@@ -4,79 +4,26 @@ require_once('../../lib/Loader.php');
 require_once('../session.php');
 
 if(isset($_POST['name'])) {
-	if(empty($_POST['name']) || empty($_POST['install_procedure']) || empty($_POST['version'])) {
-		header('HTTP/1.1 400 Missing Information');
-		die(LANG['please_fill_required_fields']);
-	}
-	if(!empty($db->getPackageByNameVersion($_POST['name'], $_POST['version']))) {
-		header('HTTP/1.1 400 Already Exists');
-		die(LANG['package_exists_with_version']);
-	}
-	// decide what to do with zip archive
-	$tmpName = null;
-	if(!empty($_FILES['archive'])) {
-		// use file from user upload
-		$tmpName = $_FILES['archive']['tmp_name'];
-		$mimeType = mime_content_type($_FILES['archive']['tmp_name']);
-		if($mimeType != 'application/zip') {
-			// create zip with uploaded file if uploaded file is not a zip file
-			$tmpName = '/tmp/ocotmparchive.zip';
-			$zip = new ZipArchive();
-			if(!$zip->open($tmpName, ZipArchive::CREATE)) {
-				header('HTTP/1.1 500 Cannot Create Zip Archive');
-				die(htmlspecialchars($mimeType));
-			}
-			$zip->addFile($_FILES['archive']['tmp_name'], '/'.basename($_FILES['archive']['name']));
-			$zip->close();
+	try {
+		// no payload by default
+		$tmpFilePath = null;
+		$tmpFileName = null;
+		if(!empty($_FILES['archive'])) {
+			// use file from user upload
+			$tmpFilePath = $_FILES['archive']['tmp_name'];
+			$tmpFileName = $_FILES['archive']['name'];
 		}
+		// create package
+		$insertId = $cl->createPackage($_POST['name'], $_POST['version'], $_POST['description'] ?? '', $_SESSION['um_username'] ?? '',
+			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_restart'] ?? null, $_POST['install_procedure_shutdown'] ?? null,
+			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'], $_POST['uninstall_procedure_restart'] ?? null, $_POST['uninstall_procedure_shutdown'] ?? null,
+			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $tmpFilePath, $tmpFileName
+		);
+		die(strval(intval($insertId)));
+	} catch(Exception $e) {
+		header('HTTP/1.1 400 Unable To Perform Requested Action');
+		die($e->getMessage());
 	}
-	// insert into database
-	$packageFamilyId = null;
-	$existingPackageFamily = $db->getPackageFamilyByName($_POST['name']);
-	if($existingPackageFamily === null) $packageFamilyId = $db->addPackageFamily($_POST['name'], '');
-	else $packageFamilyId = $existingPackageFamily->id;
-	if(!$packageFamilyId) {
-		header('HTTP/1.1 500 Failed');
-		die(LANG['database_error']);
-	}
-	$insertId = $db->addPackage(
-		$packageFamilyId,
-		$_POST['version'],
-		$_SESSION['um_username'] ?? '',
-		$_POST['description'] ?? '',
-		$_POST['install_procedure'],
-		$_POST['install_procedure_success_return_codes'] ?? '',
-		$_POST['install_procedure_restart'] ?? null,
-		$_POST['install_procedure_shutdown'] ?? null,
-		$_POST['uninstall_procedure'] ?? '',
-		$_POST['uninstall_procedure_success_return_codes'] ?? '',
-		$_POST['download_for_uninstall'],
-		$_POST['uninstall_procedure_restart'] ?? null,
-		$_POST['uninstall_procedure_shutdown'] ?? null,
-		$_POST['compatible_os'] ?? null,
-		$_POST['compatible_os_version'] ?? null
-	);
-	if(!$insertId) {
-		header('HTTP/1.1 500 Failed');
-		die(LANG['database_error']);
-	}
-	// move file to payload dir
-	if($tmpName !== null) {
-		$filename = intval($insertId).'.zip';
-		$filepath = PACKAGE_PATH.'/'.$filename;
-		if(!empty($_FILES['archive']) && $tmpName === $_FILES['archive']['tmp_name']) {
-			$result = move_uploaded_file($tmpName, $filepath);
-		} else {
-			$result = rename($tmpName, $filepath);
-		}
-		if(!$result) {
-			error_log('Can not move uploaded file to: '.$filepath);
-			$db->removePackage($insertId);
-			header('HTTP/1.1 500 Can Not Move Uploaded File');
-			die();
-		}
-	}
-	die(strval(intval($insertId)));
 }
 ?>
 

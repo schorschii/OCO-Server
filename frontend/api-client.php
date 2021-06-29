@@ -171,6 +171,35 @@ switch($srcdata['method']) {
 			];
 		}
 		break;
+	case 'oco.package.create':
+		try {
+			// prepare file (extract content from base64 encoded JSON)
+			$tmpFilePath = '/tmp/ocotmp';
+			if(empty($data['file'])) {
+				throw new Exception(LANG['please_fill_required_fields']);
+			}
+			$fileContent = base64_decode($data['file'], true);
+			if(!$fileContent) {
+				throw new Exception(LANG['payload_corrupt']);
+			}
+			file_put_contents($tmpFilePath, $fileContent);
+			// insert into database
+			$insertId = $cl->createPackage($data['name'] ?? '', $data['version'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+				$data['install_procedure'] ?? '', $data['install_procedure_success_return_codes'] ?? '0', $data['install_procedure_restart'] ?? 0, $data['install_procedure_shutdown'] ?? 0,
+				$data['uninstall_procedure'] ?? '', $data['uninstall_procedure_success_return_codes'] ?? '0', $data['download_for_uninstall'] ?? 0, $data['uninstall_procedure_restart'] ?? 0, $data['uninstall_procedure_shutdown'] ?? 0,
+				$data['compatible_os'] ?? '', $data['compatible_os_version'] ?? '', $tmpFilePath
+			);
+			$resdata['error'] = null;
+			$resdata['result'] = [
+				'success' => true, 'data' => [ 'id' => $insertId ]
+			];
+		} catch(Exception $e) {
+			$resdata['error'] = $e->getMessage();
+			$resdata['result'] = [
+				'success' => false, 'data' => []
+			];
+		}
+		break;
 	case 'oco.package.remove':
 		try {
 			$cl->removePackage(intval($data['id'] ?? 0));

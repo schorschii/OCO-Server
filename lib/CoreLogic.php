@@ -96,6 +96,72 @@ class CoreLogic {
 	}
 
 	/*** Package Operations ***/
+	public function createPackage($name, $version, $description, $author,
+		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedureRestart, $installProcedureShutdown,
+		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedureRestart, $uninstallProcedureShutdown,
+		$compatibleOs, $compatibleOsVersion, $tmpFilePath, $fileName=null) {
+		if($fileName == null && $tmpFilePath != null) {
+			$fileName = basename($tmpFilePath);
+		}
+		if(empty($name) || empty($installProcedure) || empty($version)) {
+			throw new Exception(LANG['please_fill_required_fields']);
+		}
+		if(!empty($this->db->getPackageByNameVersion($name, $version))) {
+			throw new Exception(LANG['package_exists_with_version']);
+		}
+		// decide what to do with uploaded file
+		if($tmpFilePath != null && file_exists($tmpFilePath)) {
+			$mimeType = mime_content_type($tmpFilePath);
+			if($mimeType != 'application/zip') {
+				// create zip with uploaded file if uploaded file is not a zip file
+				$newTmpFilePath = '/tmp/ocotmparchive.zip';
+				$zip = new ZipArchive();
+				if(!$zip->open($newTmpFilePath, ZipArchive::CREATE)) {
+					throw new Exception(LANG['cannot_create_zip_file']);
+				}
+				$zip->addFile($tmpFilePath, '/'.basename($fileName));
+				$zip->close();
+				$tmpFilePath = $newTmpFilePath;
+			}
+		}
+		// insert into database
+		$packageFamilyId = null;
+		$existingPackageFamily = $this->db->getPackageFamilyByName($name);
+		if($existingPackageFamily === null) $packageFamilyId = $this->db->addPackageFamily($name, '');
+		else $packageFamilyId = $existingPackageFamily->id;
+		if(!$packageFamilyId) {
+			throw new Exception(LANG['database_error']);
+		}
+		$insertId = $this->db->addPackage(
+			$packageFamilyId, $version,
+			$author, $description,
+			$installProcedure,
+			$installProcedureSuccessReturnCodes,
+			$installProcedureRestart,
+			$installProcedureShutdown,
+			$uninstallProcedure,
+			$uninstallProcedureSuccessReturnCodes,
+			$downloadForUninstall,
+			$uninstallProcedureRestart,
+			$uninstallProcedureShutdown,
+			$compatibleOs, $compatibleOsVersion
+		);
+		if(!$insertId) {
+			throw new Exception(LANG['database_error']);
+		}
+		// move file to payload dir
+		if($tmpFilePath != null && file_exists($tmpFilePath)) {
+			$finalFileName = intval($insertId).'.zip';
+			$finalFilePath = PACKAGE_PATH.'/'.$finalFileName;
+			$result = rename($tmpFilePath, $finalFilePath);
+			if(!$result) {
+				error_log('Can not move uploaded file to: '.$finalFilePath);
+				$this->db->removePackage($insertId);
+				throw new Exception(LANG['cannot_move_uploaded_file']);
+			}
+		}
+		return $insertId;
+	}
 	public function removePackage($id) {
 		$package = $this->db->getPackage($id);
 		if(empty($package)) throw new Exception(LANG['not_found']);
@@ -106,7 +172,7 @@ class CoreLogic {
 		return $result;
 	}
 
-	/*** Deploy Operations ***/
+	/*** Deployment Operations ***/
 	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs) {
 		// check user input
 		if(empty($name)) {

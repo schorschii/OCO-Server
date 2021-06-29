@@ -460,6 +460,61 @@ no parameters
 }
 ```
 
+## `oco.package.create` - Create New Package
+### Parameters
+- `name` - package family name (will be created if not exists)
+- `version` - package version
+- `description` - package description (optional)
+- `install_procedure` - install procedure (install command)
+- `install_procedure_success_return_codes` - install procedure success return codes (comma separated, leave empty to disable return code check)
+- `install_procedure_restart` - enable/disable restart after installation (0 or 1)
+- `install_procedure_shutdown` - enable/disable shutdown after installation (0 or 1)
+- `uninstall_procedure` - uninstall procedure (uninstall command) (optional)
+- `uninstall_procedure_success_return_codes` - uninstall procedure success return codes (comma separated, leave empty to disable return code check)
+- `download_for_uninstall` - enable/disable download for uninstallation (0 or 1)
+- `uninstall_procedure_restart` - enable/disable restart after uninstallation (0 or 1)
+- `uninstall_procedure_shutdown` - enable/disable shutdown after uninstallation (0 or 1)
+- `compatible_os` - compatible operating system name (optional)
+- `compatible_os_version` - compatible operating systen version (optional)
+- `file` - package payload: base64 encoded ZIP file content
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.package.create",
+	"params": {
+		"name": "My Test App",
+		"version": "1.1",
+		"description": "For internal tests only",
+		"install_procedure": "msiexec /quiet /i test.msi",
+		"install_procedure_success_return_codes": "0,1,2",
+		"install_procedure_restart": 1,
+		"install_procedure_shutdown": 0,
+		"uninstall_procedure": "msiexec /quiet /x test.msi",
+		"uninstall_procedure_success_return_codes": "0",
+		"download_for_uninstall": 1,
+		"uninstall_procedure_restart": 0,
+		"uninstall_procedure_shutdown": 1,
+		"compatible_os": "Windows 10 Home",
+		"compatible_os_version": "10.0.18363",
+		"file":"base64 string ....."
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": {
+			"id": 123
+		}
+	}
+}
+```
+
 ## `oco.package.remove` - Remove Package
 This will also delete the package payload (ZIP file) from the server.
 ### Parameters
