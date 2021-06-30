@@ -274,7 +274,8 @@ class CoreLogic {
 				foreach($packages as $pid => $package) {
 
 					// check OS compatibility
-					if(!empty($package['compatible_os']) && $package['compatible_os'] != $this->db->getComputer($computer_id)->os) {
+					if(!empty($package['compatible_os']) && !empty($this->db->getComputer($computer_id)->os)
+					&& $package['compatible_os'] != $this->db->getComputer($computer_id)->os) {
 						// create failed job
 						if($this->db->addJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
@@ -287,7 +288,8 @@ class CoreLogic {
 						}
 						continue;
 					}
-					if(!empty($package['compatible_os_version']) && $package['compatible_os_version'] != $this->db->getComputer($computer_id)->os_version) {
+					if(!empty($package['compatible_os_version']) && !empty($this->db->getComputer($computer_id)->os_version)
+					&& $package['compatible_os_version'] != $this->db->getComputer($computer_id)->os_version) {
 						// create failed job
 						if($this->db->addJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
