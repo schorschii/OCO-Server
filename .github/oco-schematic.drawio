@@ -1,57 +1,57 @@
-<mxfile host="Chrome" modified="2021-02-04T17:59:34.025Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.96 Safari/537.36" etag="su03mfVped8xA2f85Wy-" compressed="false" version="14.2.9" type="device">
+<mxfile host="Chrome" modified="2021-06-30T18:22:15.317Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36" etag="DHWtNl4tO3pPIjrL6Yi-" compressed="false" version="14.7.7" type="device">
   <diagram id="L87FYiakqSn3nDc2YnYG" name="Seite-1">
-    <mxGraphModel dx="526" dy="593" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="786" dy="750" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="EbMSTE7M3k82zRTxyqx0-23" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;arcSize=2;" parent="1" vertex="1">
-          <mxGeometry x="119" y="90" width="210" height="130" as="geometry" />
+          <mxGeometry x="121" y="161" width="210" height="130" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-1" value="&lt;b&gt;Managed Noteboo&lt;/b&gt;k&lt;br&gt;with OCO Agent&lt;br&gt;e.g. macOS" style="image;html=1;image=img/lib/clip_art/computers/Laptop_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="139" y="310" width="80" height="80" as="geometry" />
+          <mxGeometry x="141" y="381" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-4" value="&lt;b&gt;Managed Desktop&lt;/b&gt;&lt;br&gt;with OCO Agent&lt;br&gt;e.g. Linux" style="image;html=1;image=img/lib/clip_art/computers/Monitor_Tower_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="339" y="310" width="80" height="80" as="geometry" />
+          <mxGeometry x="341" y="381" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-5" value="&lt;b&gt;Management PC&lt;/b&gt;&lt;br&gt;using OCO Client&lt;br&gt;(Web Interface)" style="image;html=1;image=img/lib/clip_art/computers/Workstation_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="539" y="110" width="80" height="80" as="geometry" />
+          <mxGeometry x="541" y="181" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-6" value="&lt;b&gt;Managed VM&lt;/b&gt;&lt;br&gt;with OCO Agent&lt;br&gt;e.g. Windows" style="image;html=1;image=img/lib/clip_art/computers/Virtual_Machine_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="539" y="310" width="80" height="80" as="geometry" />
+          <mxGeometry x="541" y="381" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-7" value="&lt;b&gt;OCO Server&lt;/b&gt;" style="image;html=1;image=img/lib/clip_art/computers/Server_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="339" y="110" width="80" height="80" as="geometry" />
+          <mxGeometry x="341" y="181" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="EbMSTE7M3k82zRTxyqx0-8" value="" style="endArrow=classic;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="EbMSTE7M3k82zRTxyqx0-5" target="EbMSTE7M3k82zRTxyqx0-7" edge="1">
+        <mxCell id="EbMSTE7M3k82zRTxyqx0-8" value="" style="endArrow=classic;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endFill=1;" parent="1" source="EbMSTE7M3k82zRTxyqx0-5" target="EbMSTE7M3k82zRTxyqx0-7" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="239" y="220" as="sourcePoint" />
-            <mxPoint x="289" y="170" as="targetPoint" />
+            <mxPoint x="241" y="291" as="sourcePoint" />
+            <mxPoint x="291" y="241" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-12" value="" style="endArrow=classic;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;exitX=0.5;exitY=0;exitDx=0;exitDy=0;startArrow=classic;startFill=1;" parent="1" source="EbMSTE7M3k82zRTxyqx0-1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="589" y="320" as="sourcePoint" />
-            <mxPoint x="379" y="210" as="targetPoint" />
+            <mxPoint x="591" y="391" as="sourcePoint" />
+            <mxPoint x="381" y="281" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="179" y="280" />
-              <mxPoint x="379" y="280" />
+              <mxPoint x="181" y="351" />
+              <mxPoint x="381" y="351" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-14" value="" style="endArrow=classic;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;exitX=0.5;exitY=0;exitDx=0;exitDy=0;startArrow=classic;startFill=1;" parent="1" source="EbMSTE7M3k82zRTxyqx0-4" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="599" y="330" as="sourcePoint" />
-            <mxPoint x="379" y="210" as="targetPoint" />
+            <mxPoint x="601" y="401" as="sourcePoint" />
+            <mxPoint x="381" y="281" as="targetPoint" />
             <Array as="points" />
           </mxGeometry>
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-10" value="" style="endArrow=classic;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;exitX=0.5;exitY=0;exitDx=0;exitDy=0;startArrow=classic;startFill=1;" parent="1" source="EbMSTE7M3k82zRTxyqx0-6" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="589" y="160" as="sourcePoint" />
-            <mxPoint x="379" y="210" as="targetPoint" />
+            <mxPoint x="591" y="231" as="sourcePoint" />
+            <mxPoint x="381" y="281" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="579" y="280" />
-              <mxPoint x="379" y="280" />
+              <mxPoint x="581" y="351" />
+              <mxPoint x="381" y="351" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -61,49 +61,67 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-16" value="&lt;i&gt;Administrator&lt;/i&gt;" style="image;html=1;image=img/lib/clip_art/people/Farmer_Woman_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="649" y="120" width="60" height="60" as="geometry" />
+          <mxGeometry x="651" y="191" width="60" height="60" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-17" value="&lt;i&gt;User&lt;/i&gt;" style="image;html=1;image=img/lib/clip_art/people/Nurse_Man_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="149" y="450" width="60" height="65" as="geometry" />
+          <mxGeometry x="151" y="521" width="60" height="65" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-18" value="&lt;i&gt;User&lt;/i&gt;" style="image;html=1;image=img/lib/clip_art/people/Pilot_Man_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="349" y="450" width="60" height="65" as="geometry" />
+          <mxGeometry x="351" y="521" width="60" height="65" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-19" value="&lt;i&gt;User&lt;/i&gt;" style="image;html=1;image=img/lib/clip_art/people/Construction_Worker_Man_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="549" y="450" width="60" height="65" as="geometry" />
+          <mxGeometry x="551" y="521" width="60" height="65" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-20" value="HTTPS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="429" y="130" width="110" height="20" as="geometry" />
+          <mxGeometry x="431" y="201" width="110" height="20" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-21" value="Web Frontend" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="429" y="150" width="110" height="20" as="geometry" />
+          <mxGeometry x="431" y="221" width="110" height="20" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-22" value="&lt;b&gt;LDAP Server&lt;/b&gt;" style="image;html=1;image=img/lib/clip_art/computers/Server_128x128.png;labelBackgroundColor=none;" parent="1" vertex="1">
-          <mxGeometry x="139" y="110" width="80" height="80" as="geometry" />
+          <mxGeometry x="141" y="181" width="80" height="80" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-24" value="" style="endArrow=classic;html=1;strokeWidth=2;fillColor=#ffe6cc;strokeColor=#d79b00;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="EbMSTE7M3k82zRTxyqx0-7" target="EbMSTE7M3k82zRTxyqx0-22" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="339" y="150" as="sourcePoint" />
-            <mxPoint x="229" y="150" as="targetPoint" />
+            <mxPoint x="341" y="221" as="sourcePoint" />
+            <mxPoint x="231" y="221" as="targetPoint" />
           </mxGeometry>
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-25" value="LDAP(S)" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="229" y="130" width="110" height="20" as="geometry" />
+          <mxGeometry x="231" y="201" width="110" height="20" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-27" value="optional admin&lt;br&gt;authentication&lt;br&gt;via LDAP(S)" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#666666;" parent="1" vertex="1">
-          <mxGeometry x="232" y="170" width="90" height="43" as="geometry" />
+          <mxGeometry x="234" y="241" width="90" height="43" as="geometry" />
         </mxCell>
         <mxCell id="WlS1DUhGfTOTPNGKI5CN-1" value="" style="aspect=fixed;perimeter=ellipsePerimeter;html=1;align=center;shadow=0;dashed=0;spacingTop=3;image;image=img/lib/active_directory/cd_dvd.svg;labelBackgroundColor=#ffffff;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;" parent="1" vertex="1">
-          <mxGeometry x="430" y="256" width="22" height="22" as="geometry" />
+          <mxGeometry x="432" y="327" width="22" height="22" as="geometry" />
         </mxCell>
         <mxCell id="WlS1DUhGfTOTPNGKI5CN-3" value="Software Installation" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="454" y="256" width="131" height="20" as="geometry" />
+          <mxGeometry x="456" y="327" width="131" height="20" as="geometry" />
         </mxCell>
         <mxCell id="WlS1DUhGfTOTPNGKI5CN-4" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Info_2.svg;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="309" y="257" width="20" height="20" as="geometry" />
+          <mxGeometry x="311" y="328" width="20" height="20" as="geometry" />
         </mxCell>
         <mxCell id="WlS1DUhGfTOTPNGKI5CN-5" value="Inventory Information" style="text;html=1;strokeColor=none;fillColor=none;align=right;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
-          <mxGeometry x="175" y="256" width="131" height="20" as="geometry" />
+          <mxGeometry x="177" y="327" width="131" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="0ckBjjSDWqoFEBFjUUXl-1" value="" style="endArrow=classic;html=1;strokeWidth=2;fillColor=#f8cecc;strokeColor=#b85450;endFill=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1" source="0ckBjjSDWqoFEBFjUUXl-4">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="540" y="119" as="sourcePoint" />
+            <mxPoint x="380" y="179" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="380" y="81" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="0ckBjjSDWqoFEBFjUUXl-2" value="HTTPS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=#ffffff;" vertex="1" parent="1">
+          <mxGeometry x="395.5" y="60" width="110" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="0ckBjjSDWqoFEBFjUUXl-3" value="optional Client API&lt;br&gt;&lt;font style=&quot;font-size: 10px&quot;&gt;e.g. for Continuous Delivery/Deployment&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=none;" vertex="1" parent="1">
+          <mxGeometry x="381" y="83" width="139" height="39" as="geometry" />
+        </mxCell>
+        <mxCell id="0ckBjjSDWqoFEBFjUUXl-4" value="&lt;b&gt;e.g. Continuous Integration Server&lt;/b&gt;&lt;br&gt;automatically creating OCO packages" style="image;html=1;image=img/lib/clip_art/computers/Server_128x128.png" vertex="1" parent="1">
+          <mxGeometry x="541" y="41" width="80" height="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
