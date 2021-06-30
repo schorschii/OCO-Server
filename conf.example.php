@@ -4,6 +4,7 @@
 const PACKAGE_PATH             = '/var/www/oco/payload';
 const COMPUTER_OFFLINE_SECONDS = 125;
 const CLIENT_API_ENABLED       = false;
+const CLIENT_API_KEY           = 'Ungah2oo';
 
 ///// MySQL CONFIGURATION /////
 const DB_TYPE = 'mysql';

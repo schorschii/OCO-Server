@@ -1,9 +1,10 @@
 # General
 This document describes the JSON-REST-API provided by the OCO server. By implementing this protocol you can automate your workflows and integrate OCO into your environment to make it more convenient.
 
-You first need to activate the API in the OCO config file:
+You first need to activate the API and set an individual API key in the OCO config file:
 ```
 const CLIENT_API_ENABLED = true; # this is false by default
+const CLIENT_API_KEY     = 'your custom key here...';
 ```
 
 # The JSON-RPC Package
@@ -13,7 +14,9 @@ HTTP Basic Authentication is used for client authentication. Please provide the 
 
 Localized error messages are available if you set the HTTP header `Accept-Language: de`.
 
-Please have a look at the following API method documentation for JSON-RPC examples.
+Within the `params` object, please send the correct `api_key` value and all required additional parameters for the method you are calling inside a `data` object.
+
+Please have a look at the following API method documentation for JSON-RPC request/response examples.
 
 # Methods
 ## `oco.computer.list` - List All Computers
@@ -25,7 +28,9 @@ no parameters
 	"jsonrpc": "2.0",
 	"id": 1,
 	"method": "oco.computer.list",
-	"params": {}
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩"
+	}
 }
 ```
 ```
@@ -78,7 +83,10 @@ no parameters
 	"id": 1,
 	"method": "oco.computer.get",
 	"params": {
-		"id": 123
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -222,8 +230,11 @@ no parameters
 	"id": 1,
 	"method": "oco.computer.create",
 	"params": {
-		"hostname": "PC01",
-		"notes": "My new computer."
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"hostname": "PC01",
+			"notes": "My new computer."
+		}
 	}
 }
 ```
@@ -248,7 +259,10 @@ no parameters
 	"id": 1,
 	"method": "oco.computer.wol",
 	"params": {
-		"id": 123
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -273,7 +287,10 @@ no parameters
 	"id": 1,
 	"method": "oco.computer.remove",
 	"params": {
-		"id": 123
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -297,7 +314,9 @@ no parameters
 	"jsonrpc": "2.0",
 	"id": 1,
 	"method": "oco.package_family.list",
-	"params": {}
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩"
+	}
 }
 ```
 ```
@@ -327,7 +346,10 @@ no parameters
 	"id": 1,
 	"method": "oco.package.list",
 	"params": {
-		"id": 3
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -393,7 +415,10 @@ no parameters
 	"id": 1,
 	"method": "oco.package.get",
 	"params": {
-		"id": 4
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -484,21 +509,24 @@ no parameters
 	"id": 1,
 	"method": "oco.package.create",
 	"params": {
-		"name": "My Test App",
-		"version": "1.1",
-		"description": "For internal tests only",
-		"install_procedure": "msiexec /quiet /i test.msi",
-		"install_procedure_success_return_codes": "0,1,2",
-		"install_procedure_restart": 1,
-		"install_procedure_shutdown": 0,
-		"uninstall_procedure": "msiexec /quiet /x test.msi",
-		"uninstall_procedure_success_return_codes": "0",
-		"download_for_uninstall": 1,
-		"uninstall_procedure_restart": 0,
-		"uninstall_procedure_shutdown": 1,
-		"compatible_os": "Windows 10 Home",
-		"compatible_os_version": "10.0.18363",
-		"file":"base64 string ....."
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"name": "My Test App",
+			"version": "1.1",
+			"description": "For internal tests only",
+			"install_procedure": "msiexec /quiet /i test.msi",
+			"install_procedure_success_return_codes": "0,1,2",
+			"install_procedure_restart": 1,
+			"install_procedure_shutdown": 0,
+			"uninstall_procedure": "msiexec /quiet /x test.msi",
+			"uninstall_procedure_success_return_codes": "0",
+			"download_for_uninstall": 1,
+			"uninstall_procedure_restart": 0,
+			"uninstall_procedure_shutdown": 1,
+			"compatible_os": "Windows 10 Home",
+			"compatible_os_version": "10.0.18363",
+			"file":"base64 string ....."
+		}
 	}
 }
 ```
@@ -526,7 +554,10 @@ This will also delete the package payload (ZIP file) from the server.
 	"id": 1,
 	"method": "oco.package.remove",
 	"params": {
-		"id": 123
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -550,7 +581,9 @@ no parameters
 	"jsonrpc": "2.0",
 	"id": 1,
 	"method": "oco.job_container.list",
-	"params": {}
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩"
+	}
 }
 ```
 ```
@@ -586,7 +619,10 @@ no parameters
 	"id": 1,
 	"method": "oco.job.list",
 	"params": {
-		"id": 203
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -643,17 +679,20 @@ no parameters
 	"id": 1,
 	"method": "oco.deploy",
 	"params": {
-		"name": "API-Test",
-		"description": "Deploying a new package version.",
-		"computer_ids": [1,2,3],
-		"computer_group_ids": [],
-		"package_ids": [],
-		"package_group_ids": [4],
-		"date_start": "2020-01-01 18:00:00",
-		"date_end": null,
-		"use_wol": 1,
-		"restart_timeout": 5,
-		"auto_create_uninstall_jobs": 1
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"name": "API-Test",
+			"description": "Deploying a new package version.",
+			"computer_ids": [1,2,3],
+			"computer_group_ids": [],
+			"package_ids": [],
+			"package_group_ids": [4],
+			"date_start": "2020-01-01 18:00:00",
+			"date_end": null,
+			"use_wol": 1,
+			"restart_timeout": 5,
+			"auto_create_uninstall_jobs": 1
+		}
 	}
 }
 ```
@@ -686,13 +725,16 @@ no parameters
 	"id": 1,
 	"method": "oco.uninstall",
 	"params": {
-		"name": "API-Test",
-		"description": "Uninstalling a package.",
-		"installation_ids": [1,2,3],
-		"date_start": "2020-01-01 18:00:00",
-		"date_end": null,
-		"use_wol": 1,
-		"restart_timeout": 5
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"name": "API-Test",
+			"description": "Uninstalling a package.",
+			"installation_ids": [1,2,3],
+			"date_start": "2020-01-01 18:00:00",
+			"date_end": null,
+			"use_wol": 1,
+			"restart_timeout": 5
+		}
 	}
 }
 ```
@@ -720,7 +762,10 @@ Manually removes an Package-Computer assignment. Normally, this assigment ist au
 	"id": 1,
 	"method": "oco.remove_installation_assignment",
 	"params": {
-		"id": 23
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -746,7 +791,10 @@ This will delete all jobs in the container and the container itself. Pending job
 	"id": 1,
 	"method": "oco.job_container.remove",
 	"params": {
-		"id": 123
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -772,7 +820,10 @@ This removes a single job from a job container.
 	"id": 1,
 	"method": "oco.job.remove",
 	"params": {
-		"id": 123
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```
@@ -798,7 +849,10 @@ Please note that the `data` output of the JSON response depends on the columns o
 	"id": 1,
 	"method": "oco.report.execute",
 	"params": {
-		"id": 123
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
 	}
 }
 ```

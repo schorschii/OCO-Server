@@ -38,6 +38,17 @@ try {
 $resdata = ['id' => $srcdata['id']];
 $params = $srcdata['params'] ?? [];
 $data = $params['data'] ?? [];
+
+// check API key
+if(!empty(CLIENT_API_KEY) && CLIENT_API_KEY !== ($params['api_key'] ?? '')) {
+	header('Content-Type: application/json');
+	$resdata['error'] = LANG['invalid_api_key'];
+	$resdata['result'] = [ 'success' => false, 'data' => [] ];
+	echo json_encode($resdata);
+	die();
+}
+
+// handle method
 switch($srcdata['method']) {
 	case 'oco.computer.list':
 		try {
