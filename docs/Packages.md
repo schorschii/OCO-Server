@@ -48,6 +48,10 @@ It is also possible to update your Windows-Installation to a newer build using a
 ### Example: Java Installation
 Oracle provides an EXE setup for installing Java. This EXE contains a MSI file, which is automatically extracted into `C:\Users\%username%\AppData\LocalLow\Oracle\Java\` when starting the EXE file. You should use this MSI file for creating a package in OCO because of the easy uninstallation with `msiexec /x`.
 
+## FAQ
+### Windows: Job Fails With Message `'charmap' codec can't decode byte 0x81 in position 48: character maps to <undefined>`
+Change the codepage to UTF-8 first so that special chars of the program output can be decoded. Example procedure: `chcp 65001 && msiexec /quiet /i test.msi`.
+
 ## How To Create OS Specific Packages
 ### Creating Own DEB Packages For Linux
 - http://dbalakirev.github.io/2015/08/21/deb-pkg/
