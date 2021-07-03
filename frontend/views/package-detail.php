@@ -8,6 +8,18 @@ if(!empty($_POST['update_package_family_id']) && !empty($_POST['update_name'])) 
 	$db->updatePackageFamilyName($_POST['update_package_family_id'], $_POST['update_name']);
 	die();
 }
+if(!empty($_POST['update_package_family_id']) && !empty($_FILES['update_icon']['tmp_name'])) {
+	if(!exif_imagetype($_FILES['update_icon']['tmp_name'])) {
+		header('HTTP/1.1 400 Invalid Value');
+		die();
+	}
+	$db->updatePackageFamilyIcon($_POST['update_package_family_id'], file_get_contents($_FILES['update_icon']['tmp_name']));
+	die();
+}
+if(!empty($_POST['update_package_family_id']) && !empty($_POST['remove_icon'])) {
+	$db->updatePackageFamilyIcon($_POST['update_package_family_id'], null);
+	die();
+}
 if(!empty($_POST['update_package_id']) && !empty($_POST['update_version'])) {
 	$db->updatePackageVersion($_POST['update_package_id'], $_POST['update_version']);
 	die();
@@ -98,6 +110,8 @@ if(!empty($packageFamily->icon)) {
 <div class='controls'>
 	<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='renamePackageFamily(<?php echo $package->package_family_id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($package->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+	<button onclick='fleIcon.click()'><img src='img/edit.svg'>&nbsp;<?php echo LANG['change_icon']; ?></button>
+	<button onclick='removePackageFamilyIcon(<?php echo $package->package_family_id; ?>)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
 	<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
@@ -106,6 +120,7 @@ if(!empty($packageFamily->icon)) {
 	</button>
 	<button onclick='currentExplorerContentUrl="views/package.php";confirmRemovePackage([<?php echo $package->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 </div>
+<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $package->package_family_id; ?>, this.files[0])'></input>
 
 <div class="details-abreast">
 	<div>

@@ -361,6 +361,34 @@ function renamePackageFamily(id, oldValue) {
 		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_family_id':id, 'update_name':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
+function removePackageFamilyIcon(id) {
+	ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_family_id':id, 'remove_icon':1}), null, refreshContent);
+}
+function editPackageFamilyIcon(id, file) {
+	if(file.size/1024/1024 > 2/*MiB*/) {
+		alert(L__FILE_TOO_BIG);
+		return;
+	}
+
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('update_package_family_id', id);
+	formData.append('update_icon', file);
+
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				alert(L__SAVED);
+				refreshContent();
+			} else {
+				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+			}
+		}
+	};
+
+	req.open('POST', 'views/package-detail.php');
+	req.send(formData);
+}
 function editPackageVersion(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null && newValue != '') {

@@ -275,6 +275,9 @@ const LANG = [
 	'cannot_move_uploaded_file' => 'Cannot move uploaded file',
 	'cannot_create_zip_file' => 'Cannot create ZIP file',
 	'invalid_api_key' => 'Invalid API Key',
+	'file_too_big' => 'File too big!',
+	'change_icon' => 'Change Icon',
+	'remove_icon' => 'Remove Icon',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

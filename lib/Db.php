@@ -661,6 +661,14 @@ class Db {
 		);
 		return $this->stmt->execute([':id' => $id, ':name' => $newValue]);
 	}
+	public function updatePackageFamilyIcon($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package_family SET icon = :icon WHERE id = :id'
+		);
+		$this->stmt->bindParam(':id', $id, PDO::PARAM_INT);
+		$this->stmt->bindParam(':icon', $newValue, PDO::PARAM_LOB);
+		return $this->stmt->execute();
+	}
 	public function updatePackageVersion($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE package SET last_update = CURRENT_TIMESTAMP, version = :version WHERE id = :id'
