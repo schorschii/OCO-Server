@@ -49,6 +49,12 @@ It is also possible to update your Windows-Installation to a newer build using a
 Oracle provides an EXE setup for installing Java. This EXE contains a MSI file, which is automatically extracted into `C:\Users\%username%\AppData\LocalLow\Oracle\Java\` when starting the EXE file. You should use this MSI file for creating a package in OCO because of the easy uninstallation with `msiexec /x`.
 
 ## FAQ
+### Job Fails With Status Code `-9999`
+The status code `-9999` indicates an agent error - this is not a real return code from your installation command. Possible reasons are:
+- package download aborted beacause the network connection was lost
+- unable to execute installation command
+- Windows: unable to decode program output, see below
+
 ### Windows: Job Fails With Message `'charmap' codec can't decode byte 0x81 in position 48: character maps to <undefined>`
 Change the codepage to UTF-8 first so that special chars of the program output can be decoded. Example procedure: `chcp 65001 && msiexec /quiet /i test.msi`.
 
