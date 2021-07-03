@@ -403,10 +403,16 @@ function editPackageUninstallProcedureAction(id, oldValue) {
 		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_action':newValue}), null, refreshContent);
 	}
 }
+function editPackageDownloadForUninstall(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_DOWNLOAD_FOR_UNINSTALL_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_id':id, 'update_download_for_uninstall':newValue}), null, refreshContent);
+	}
+}
 function editPackageNotes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_id':id, 'update_note':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_id':id, 'update_note':newValue}), null, refreshContent);
 	}
 }
 function editPackageCompatibleOs(id, oldValue) {

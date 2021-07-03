@@ -721,6 +721,12 @@ class Db {
 		);
 		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_shutdown' => $newValue]);
 	}
+	public function updatePackageDownloadForUninstall($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, download_for_uninstall = :download_for_uninstall WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':download_for_uninstall' => $newValue]);
+	}
 	public function updatePackageCompatibleOs($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE package SET last_update = CURRENT_TIMESTAMP, compatible_os = :compatible_os WHERE id = :id'

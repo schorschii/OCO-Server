@@ -30,6 +30,7 @@ var L__CONFIRM_CREATE_EMPTY_PACKAGE = "<?php echo LANG['confirm_create_empty_pac
 var L__ENTER_NEW_VALUE = "<?php echo LANG['enter_new_value']; ?>";
 var L__ENTER_START_TIME = "<?php echo LANG['enter_start_time']; ?>";
 var L__ENTER_NEW_PROCEDURE_POST_ACTION = "<?php echo LANG['enter_new_procedure_post_action']; ?>";
+var L__ENTER_NEW_DOWNLOAD_FOR_UNINSTALL_VALUE = "<?php echo LANG['enter_new_download_for_uninstall_action']; ?>";
 var L__ENTER_QUERY = "<?php echo LANG['enter_query']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";

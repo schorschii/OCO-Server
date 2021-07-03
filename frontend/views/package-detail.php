@@ -62,6 +62,16 @@ if(!empty($_POST['update_package_id']) && isset($_POST['update_uninstall_procedu
 	}
 	die();
 }
+if(!empty($_POST['update_package_id']) && isset($_POST['update_download_for_uninstall'])) {
+	if($_POST['update_download_for_uninstall'] == '0') {
+		$db->updatePackageDownloadForUninstall($_POST['update_package_id'], 0);
+	} elseif($_POST['update_download_for_uninstall'] == '1') {
+		$db->updatePackageDownloadForUninstall($_POST['update_package_id'], 1);
+	} else {
+		header('HTTP/1.1 400 Invalid Value');
+	}
+	die();
+}
 if(!empty($_POST['update_package_id']) && isset($_POST['update_compatible_os'])) {
 	$db->updatePackageCompatibleOs($_POST['update_package_id'], $_POST['update_compatible_os']);
 	die();
@@ -133,10 +143,11 @@ if(!empty($packageFamily->icon)) {
 			<tr>
 				<th><?php echo LANG['after_completion']; ?></th>
 				<td class='subbuttons'>
-					<?php
-					if(!$package->install_procedure_restart && !$package->install_procedure_shutdown) echo LANG['no_action'];
-					if($package->install_procedure_restart) echo LANG['restart'];
-					if($package->install_procedure_shutdown) echo LANG['shutdown'];
+					<?php $info = '';
+					if(!$package->install_procedure_restart && !$package->install_procedure_shutdown) $info = LANG['no_action'];
+					if($package->install_procedure_restart) $info = LANG['restart'];
+					if($package->install_procedure_shutdown) $info = LANG['shutdown'];
+					echo wrapInSpanIfNotEmpty($info);
 					?><!--
 					--><button onclick='event.stopPropagation();editPackageInstallProcedureAction(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='0'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
@@ -158,18 +169,20 @@ if(!empty($packageFamily->icon)) {
 			<tr>
 				<th><?php echo LANG['after_completion']; ?></th>
 				<td class='subbuttons'>
-					<?php
-					if(!$package->uninstall_procedure_restart && !$package->uninstall_procedure_shutdown) echo LANG['no_action'];
-					if($package->uninstall_procedure_restart) echo LANG['restart'];
-					if($package->uninstall_procedure_shutdown) echo LANG['shutdown'];
+					<?php $info = '';
+					if(!$package->uninstall_procedure_restart && !$package->uninstall_procedure_shutdown) $info = LANG['no_action'];
+					if($package->uninstall_procedure_restart) $info = LANG['restart'];
+					if($package->uninstall_procedure_shutdown) $info = LANG['shutdown'];
+					echo wrapInSpanIfNotEmpty($info);
 					?><!--
 					--><button onclick='event.stopPropagation();editPackageUninstallProcedureAction(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='0'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['download_for_uninstall']; ?></th>
-				<td>
-					<?php if($package->download_for_uninstall) echo LANG['yes']; else echo LANG['no']; ?>
+				<td class='subbuttons'>
+					<?php $info = ''; if($package->download_for_uninstall) $info = LANG['yes']; else $info = LANG['no']; echo wrapInSpanIfNotEmpty($info); ?><!--
+					--><button onclick='event.stopPropagation();editPackageDownloadForUninstall(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php if($package->download_for_uninstall) echo '1'; else echo '0'; ?>'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
