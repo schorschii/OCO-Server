@@ -375,6 +375,9 @@ div.contextMenu button img {
 	vertical-align: middle;
 	margin-right: 4px;
 }
+.controls > *.nomarginright {
+	margin-right: 0px;
+}
 .controls > *:last-child {
 	margin-right: 0px;
 }

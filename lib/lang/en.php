@@ -278,6 +278,7 @@ const LANG = [
 	'file_too_big' => 'File too big!',
 	'change_icon' => 'Change Icon',
 	'remove_icon' => 'Remove Icon',
+	'are_you_sure' => 'Are you sure?',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

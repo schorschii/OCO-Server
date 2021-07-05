@@ -110,8 +110,8 @@ if(!empty($packageFamily->icon)) {
 <div class='controls'>
 	<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='renamePackageFamily(<?php echo $package->package_family_id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($package->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-	<button onclick='fleIcon.click()'><img src='img/edit.svg'>&nbsp;<?php echo LANG['change_icon']; ?></button>
-	<button onclick='removePackageFamilyIcon(<?php echo $package->package_family_id; ?>)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
+	<button onclick='fleIcon.click()' class='nomarginright'><img src='img/image-add.svg'>&nbsp;<?php echo LANG['change_icon']; ?></button>
+	<button onclick='removePackageFamilyIcon(<?php echo $package->package_family_id; ?>)'><img src='img/image-remove.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
 	<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>

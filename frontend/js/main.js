@@ -362,6 +362,9 @@ function renamePackageFamily(id, oldValue) {
 	}
 }
 function removePackageFamilyIcon(id) {
+	if(!confirm(L__ARE_YOU_SURE)) {
+		return;
+	}
 	ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_family_id':id, 'remove_icon':1}), null, refreshContent);
 }
 function editPackageFamilyIcon(id, file) {
