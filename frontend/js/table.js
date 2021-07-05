@@ -350,7 +350,7 @@ function downloadTableCsv(table_id, separator = ';') {
 			}
 			if(!(firstColumn && ignoreFirstColumn)) {
 				// Push escaped string
-				row.push('"' + data + '"');
+				row.push('"' + data.trim() + '"');
 			}
 			firstColumn = false;
 		}
