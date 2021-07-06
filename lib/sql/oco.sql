@@ -429,8 +429,21 @@ CREATE TABLE `systemuser` (
   `phone` text DEFAULT NULL,
   `mobile` text DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `locked` tinyint(4) NOT NULL DEFAULT 0
+  `locked` tinyint(4) NOT NULL DEFAULT 0,
+  `systemuser_role_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `systemuser_role`
+--
+
+CREATE TABLE `systemuser_role` (
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `rights` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
+) ;
 
 --
 -- Indizes der exportierten Tabellen
@@ -604,6 +617,13 @@ ALTER TABLE `software`
 -- Indizes für die Tabelle `systemuser`
 --
 ALTER TABLE `systemuser`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_systemuser_role_id` (`systemuser_role_id`);
+
+--
+-- Indizes für die Tabelle `systemuser_role`
+--
+ALTER TABLE `systemuser_role`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -755,6 +775,12 @@ ALTER TABLE `systemuser`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT für Tabelle `systemuser_role`
+--
+ALTER TABLE `systemuser_role`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Constraints der exportierten Tabellen
 --
 
@@ -868,6 +894,18 @@ ALTER TABLE `report`
 --
 ALTER TABLE `report_group`
   ADD CONSTRAINT `fk_parent_report_group_id` FOREIGN KEY (`parent_report_group_id`) REFERENCES `report_group` (`id`);
+
+--
+-- Constraints der Tabelle `systemuser`
+--
+ALTER TABLE `systemuser`
+  ADD CONSTRAINT `fk_systemuser_role_id` FOREIGN KEY (`systemuser_role_id`) REFERENCES `systemuser_role` (`id`);
+
+--
+-- Constraints der Tabelle `systemuser`
+--
+ALTER TABLE `systemuser_role`
+  ADD CONSTRAINT `check_json_role` CHECK(JSON_VALID(rights));
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
