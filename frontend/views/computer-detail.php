@@ -379,7 +379,7 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
-					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$p->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
+					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$p->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 					echo '<td title="'.htmlspecialchars($p->installed_procedure, ENT_QUOTES).'">'.htmlspecialchars(shorter($p->installed_procedure)).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
 					echo '</tr>';
