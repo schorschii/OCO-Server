@@ -131,6 +131,7 @@ body {
 	justify-content: space-around;
 	background-color: #FAFAFA;
 	min-width: 350px;
+	max-width: 500px;
 	width: 30%;
 	border-right: 2px solid #DDDDDD;
 	overflow: auto;
