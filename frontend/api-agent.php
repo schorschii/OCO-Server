@@ -146,6 +146,7 @@ switch($srcdata['method']) {
 					'procedure' => $pj['procedure'],
 					'restart' => $pj['restart']==null ? null : intval($pj['restart']),
 					'shutdown' => $pj['shutdown']==null ? null : intval($pj['shutdown']),
+					'exit' => $pj['exit_agent']==null ? null : intval($pj['exit_agent']),
 				];
 			}
 

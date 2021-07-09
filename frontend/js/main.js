@@ -290,7 +290,7 @@ function updatePackageProcedureTemplates() {
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
 }
-function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown, compatible_os, compatible_os_version) {
+function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, install_procedure_exit, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown, compatible_os, compatible_os_version) {
 	if(typeof archive === 'undefined') {
 		if(!confirm(L__CONFIRM_CREATE_EMPTY_PACKAGE)) {
 			return;
@@ -311,6 +311,7 @@ function createPackage(name, version, description, archive, install_procedure, i
 	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
 	formData.append('install_procedure_restart', install_procedure_restart ? '1' : '0');
 	formData.append('install_procedure_shutdown', install_procedure_shutdown ? '1' : '0');
+	formData.append('install_procedure_exit', install_procedure_exit ? '1' : '0');
 	formData.append('uninstall_procedure', uninstall_procedure);
 	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
 	formData.append('download_for_uninstall', download_for_uninstall ? '1' : '0');

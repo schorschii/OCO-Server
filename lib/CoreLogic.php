@@ -97,7 +97,7 @@ class CoreLogic {
 
 	/*** Package Operations ***/
 	public function createPackage($name, $version, $description, $author,
-		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedureRestart, $installProcedureShutdown,
+		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedureRestart, $installProcedureShutdown, $installProcedureExit,
 		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedureRestart, $uninstallProcedureShutdown,
 		$compatibleOs, $compatibleOsVersion, $tmpFilePath, $fileName=null) {
 		if($fileName == null && $tmpFilePath != null) {
@@ -139,6 +139,7 @@ class CoreLogic {
 			$installProcedureSuccessReturnCodes,
 			$installProcedureRestart,
 			$installProcedureShutdown,
+			$installProcedureExit,
 			$uninstallProcedure,
 			$uninstallProcedureSuccessReturnCodes,
 			$downloadForUninstall,
@@ -207,6 +208,7 @@ class CoreLogic {
 				'success_return_codes' => $p->install_procedure_success_return_codes,
 				'install_procedure_restart' => $p->install_procedure_restart,
 				'install_procedure_shutdown' => $p->install_procedure_shutdown,
+				'install_procedure_exit' => $p->install_procedure_exit,
 				'compatible_os' => $p->compatible_os,
 				'compatible_os_version' => $p->compatible_os_version,
 				'download' => $p->getFilePath() ? true : false,
@@ -230,6 +232,7 @@ class CoreLogic {
 					'success_return_codes' => $p->install_procedure_success_return_codes,
 					'install_procedure_restart' => $p->install_procedure_restart,
 					'install_procedure_shutdown' => $p->install_procedure_shutdown,
+					'install_procedure_exit' => $p->install_procedure_exit,
 					'compatible_os' => $p->compatible_os,
 					'compatible_os_version' => $p->compatible_os_version,
 					'download' => $p->getFilePath() ? true : false,
@@ -283,6 +286,7 @@ class CoreLogic {
 							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 							$package['install_procedure_restart'] ? $restartTimeout : -1,
 							$package['install_procedure_shutdown'] ? $restartTimeout : -1,
+							$package['install_procedure_exit'] ? 1 : -1,
 							$sequence, Job::STATUS_OS_INCOMPATIBLE
 						)) {
 							$sequence ++;
@@ -297,6 +301,7 @@ class CoreLogic {
 							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 							$package['install_procedure_restart'] ? $restartTimeout : -1,
 							$package['install_procedure_shutdown'] ? $restartTimeout : -1,
+							$package['install_procedure_exit'] ? 1 : -1,
 							$sequence, Job::STATUS_OS_INCOMPATIBLE
 						)) {
 							$sequence ++;
@@ -316,7 +321,7 @@ class CoreLogic {
 									1/*is_uninstall*/, $cpp->download_for_uninstall,
 									$cpp->uninstall_procedure_restart ? $restartTimeout : -1,
 									$cpp->uninstall_procedure_shutdown ? $restartTimeout : -1,
-									$sequence
+									-1/*exit*/, $sequence
 								);
 								$sequence ++;
 							}
@@ -329,6 +334,7 @@ class CoreLogic {
 						0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 						$package['install_procedure_restart'] ? $restartTimeout : -1,
 						$package['install_procedure_shutdown'] ? $restartTimeout : -1,
+						$package['install_procedure_exit'] ? 1 : -1,
 						$sequence
 					)) {
 						$sequence ++;
@@ -398,7 +404,7 @@ class CoreLogic {
 				1/*is_uninstall*/, $p->download_for_uninstall,
 				$p->uninstall_procedure_restart ? $restartTimeout : -1,
 				$p->uninstall_procedure_shutdown ? $restartTimeout : -1,
-				0/*sequence*/
+				-1/*exit*/, 0/*sequence*/
 			);
 		}
 	}

@@ -123,6 +123,7 @@ class Package {
 	public $install_procedure_success_return_codes;
 	public $install_procedure_restart;
 	public $install_procedure_shutdown;
+	public $install_procedure_exit;
 	public $uninstall_procedure;
 	public $uninstall_procedure_success_return_codes;
 	public $download_for_uninstall;
@@ -180,6 +181,7 @@ class Job {
 	public $download;
 	public $restart;
 	public $shutdown;
+	public $exit_agent;
 	public $sequence;
 	public $state;
 	public $return_code;

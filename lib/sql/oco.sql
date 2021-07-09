@@ -214,6 +214,7 @@ CREATE TABLE `job` (
   `download` tinyint(4) NOT NULL DEFAULT 1,
   `restart` int(11) DEFAULT NULL,
   `shutdown` int(11) DEFAULT NULL,
+  `exit_agent` int(11) DEFAULT NULL,
   `sequence` int(11) NOT NULL DEFAULT 0,
   `state` int(11) NOT NULL DEFAULT 0,
   `return_code` int(11) DEFAULT NULL,
@@ -254,6 +255,7 @@ CREATE TABLE `package` (
   `install_procedure_success_return_codes` text NOT NULL,
   `install_procedure_restart` tinyint(4) NOT NULL DEFAULT 0,
   `install_procedure_shutdown` tinyint(4) NOT NULL DEFAULT 0,
+  `install_procedure_exit` tinyint(4) NOT NULL DEFAULT 0,
   `uninstall_procedure` text NOT NULL,
   `uninstall_procedure_success_return_codes` text NOT NULL,
   `download_for_uninstall` tinyint(4) NOT NULL DEFAULT 0,
@@ -902,7 +904,7 @@ ALTER TABLE `systemuser`
   ADD CONSTRAINT `fk_systemuser_role_id` FOREIGN KEY (`systemuser_role_id`) REFERENCES `systemuser_role` (`id`);
 
 --
--- Constraints der Tabelle `systemuser`
+-- Constraints der Tabelle `systemuser_role`
 --
 ALTER TABLE `systemuser_role`
   ADD CONSTRAINT `check_json_role` CHECK(JSON_VALID(rights));

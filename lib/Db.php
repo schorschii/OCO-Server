@@ -631,10 +631,10 @@ class Db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addPackage($package_family_id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown, $compatible_os, $compatible_os_version) {
+	public function addPackage($package_family_id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $install_procedure_exit, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown, $compatible_os, $compatible_os_version) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (package_family_id, version, author, notes, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown, compatible_os, compatible_os_version)
-			VALUES (:package_family_id, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_restart, :install_procedure_shutdown, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_restart, :uninstall_procedure_shutdown, :compatible_os, :compatible_os_version)'
+			'INSERT INTO package (package_family_id, version, author, notes, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, install_procedure_exit, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown, compatible_os, compatible_os_version)
+			VALUES (:package_family_id, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_restart, :install_procedure_shutdown, :install_procedure_exit, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_restart, :uninstall_procedure_shutdown, :compatible_os, :compatible_os_version)'
 		);
 		$this->stmt->execute([
 			':package_family_id' => $package_family_id,
@@ -645,6 +645,7 @@ class Db {
 			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
 			':install_procedure_restart' => $install_procedure_restart,
 			':install_procedure_shutdown' => $install_procedure_shutdown,
+			':install_procedure_exit' => $install_procedure_exit,
 			':uninstall_procedure' => $uninstall_procedure,
 			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
 			':download_for_uninstall' => $download_for_uninstall,
@@ -704,6 +705,12 @@ class Db {
 			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_shutdown = :install_procedure_shutdown WHERE id = :id'
 		);
 		return $this->stmt->execute([':id' => $id, ':install_procedure_shutdown' => $newValue]);
+	}
+	public function updatePackageInstallProcedureExit($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_exit = :install_procedure_exit WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':install_procedure_exit' => $newValue]);
 	}
 	public function updatePackageUninstallProcedure($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
@@ -1041,10 +1048,10 @@ class Db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $download, $restart, $shutdown, $sequence, $state=0) {
+	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $download, $restart, $shutdown, $exit, $sequence, $state=0) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, download, restart, shutdown, sequence, state, message)
-			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :download, :restart, :shutdown, :sequence, :state, "")'
+			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, download, restart, shutdown, exit_agent, sequence, state, message)
+			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :download, :restart, :shutdown, :exit_agent, :sequence, :state, "")'
 		);
 		$this->stmt->execute([
 			':job_container_id' => $job_container_id,
@@ -1056,6 +1063,7 @@ class Db {
 			':download' => $download,
 			':restart' => $restart,
 			':shutdown' => $shutdown,
+			':exit_agent' => $exit,
 			':sequence' => $sequence,
 			':state' => $state,
 		]);
@@ -1150,7 +1158,7 @@ class Db {
 	}
 	public function getPendingJobsForComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
+			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown", j.exit_agent AS "exit_agent"
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id

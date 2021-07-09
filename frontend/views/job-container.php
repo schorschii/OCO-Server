@@ -81,6 +81,7 @@ if(!empty($_POST['renew_container_id']) && !empty($_POST['renew_start_time'])) {
 					$job->is_uninstall, $job->download,
 					$job->restart,
 					$job->shutdown,
+					$job->exit_agent,
 					$job->sequence
 				)) {
 					if($db->removeJob($job->id)) {

@@ -40,12 +40,19 @@ if(!empty($_POST['update_package_id']) && isset($_POST['update_install_procedure
 	if($_POST['update_install_procedure_action'] == '0') {
 		$db->updatePackageInstallProcedureRestart($_POST['update_package_id'], 0);
 		$db->updatePackageInstallProcedureShutdown($_POST['update_package_id'], 0);
+		$db->updatePackageInstallProcedureExit($_POST['update_package_id'], 0);
 	} elseif($_POST['update_install_procedure_action'] == '1') {
 		$db->updatePackageInstallProcedureRestart($_POST['update_package_id'], 1);
 		$db->updatePackageInstallProcedureShutdown($_POST['update_package_id'], 0);
+		$db->updatePackageInstallProcedureExit($_POST['update_package_id'], 0);
 	} elseif($_POST['update_install_procedure_action'] == '2') {
 		$db->updatePackageInstallProcedureRestart($_POST['update_package_id'], 0);
 		$db->updatePackageInstallProcedureShutdown($_POST['update_package_id'], 1);
+		$db->updatePackageInstallProcedureExit($_POST['update_package_id'], 0);
+	} elseif($_POST['update_install_procedure_action'] == '3') {
+		$db->updatePackageInstallProcedureRestart($_POST['update_package_id'], 0);
+		$db->updatePackageInstallProcedureShutdown($_POST['update_package_id'], 0);
+		$db->updatePackageInstallProcedureExit($_POST['update_package_id'], 1);
 	} else {
 		header('HTTP/1.1 400 Invalid Value');
 	}
@@ -162,6 +169,7 @@ if(!empty($packageFamily->icon)) {
 					if(!$package->install_procedure_restart && !$package->install_procedure_shutdown) $info = LANG['no_action'];
 					if($package->install_procedure_restart) $info = LANG['restart'];
 					if($package->install_procedure_shutdown) $info = LANG['shutdown'];
+					if($package->install_procedure_exit) $info = LANG['restart_agent'];
 					echo wrapInSpanIfNotEmpty($info);
 					?><!--
 					--><button onclick='event.stopPropagation();editPackageInstallProcedureAction(<?php echo $package->id; ?>, this.getAttribute("oldValue"));return false' oldValue='0'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
