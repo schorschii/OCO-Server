@@ -70,7 +70,7 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 
 
 <h2><?php echo LANG['user_settings']; ?></h2>
-<button onclick='askNotificationPermission()'><?php echo LANG['enable_notifications']; ?></button>
+<button onclick='askNotificationPermission()'><img src='img/notification.svg'>&nbsp;<?php echo LANG['enable_notifications']; ?></button>
 
 <h2><?php echo LANG['general']; ?></h2>
 <table class='form'>

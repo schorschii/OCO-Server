@@ -171,13 +171,13 @@ function showLoader2(state) {
 	}
 }
 
-function getSelectValues(select) {
+function getSelectValues(select, except=null) {
 	var result = [];
 	var options = select && select.options;
 	var opt;
 	for(var i=0, iLen=options.length; i<iLen; i++) {
 		opt = options[i];
-		if(opt.selected) {
+		if(opt.selected && opt.value != except) {
 			result.push(opt.value || opt.text);
 		}
 	}
@@ -647,6 +647,20 @@ function refreshDeployCount() {
 	spnSelectedPackages.innerHTML = getSelectValues(sltPackage).length;
 	spnTotalComputers.innerHTML = sltComputer.options.length;
 	spnTotalPackages.innerHTML = sltPackage.options.length;
+
+	let computerGroupCount = getSelectValues(sltComputerGroup, -1).length;
+	let packageGroupCount = getSelectValues(sltPackageGroup, -1).length;
+
+	// computer ids have priority - if only one group is selected, we evaluate the selected computers instead of the whole group
+	if(computerGroupCount == 1) spnSelectedComputerGroups.innerHTML = '0';
+	else spnSelectedComputerGroups.innerHTML = computerGroupCount;
+
+	// package ids have priority - if only one group is selected, we evaluate the selected packages instead of the whole group
+	if(packageGroupCount == 1) spnSelectedPackageGroups.innerHTML = '0';
+	else spnSelectedPackageGroups.innerHTML = packageGroupCount;
+
+	spnTotalComputerGroups.innerHTML = sltComputerGroup.options.length;
+	spnTotalPackageGroups.innerHTML = sltPackageGroup.options.length;
 }
 
 // computer operations

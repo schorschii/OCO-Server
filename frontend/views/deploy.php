@@ -96,7 +96,7 @@ if(isset($_POST['add_jobcontainer'])) {
 }
 ?>
 
-<h1><?php echo LANG['deployment_assistant']; ?></h1>
+<h1><img src='img/deploy.dyn.svg'><?php echo LANG['deployment_assistant']; ?></h1>
 
 <table class='form'>
 	<tr>
@@ -139,10 +139,10 @@ if(isset($_POST['add_jobcontainer'])) {
 	</tr>
 </table>
 
-<h2><?php echo LANG['target_computer']; ?></h2>
+<h2><img src='img/computer.dyn.svg'><?php echo LANG['target_computer']; ?></h2>
 <div class='gallery'>
 	<div>
-		<h3><?php echo LANG['computer_groups']; ?></h3>
+		<h3><?php echo LANG['computer_groups']; ?> (<span id='spnSelectedComputerGroups'>0</span>/<span id='spnTotalComputerGroups'>0</span>)</h3>
 		<select id='sltComputerGroup' size='10' multiple='true' onchange='if(getSelectValues(this).length > 1) { sltComputer.innerHTML="";sltComputer.disabled=true;refreshDeployCount(); }else{ sltComputer.disabled=false;refreshDeployComputerAndPackages(this.value, null); }'>
 			<option value='-1'><?php echo LANG['all_computer']; ?></option>
 			<?php echoTargetComputerGroupOptions($db, $select_computer_group_ids); ?>
@@ -156,10 +156,10 @@ if(isset($_POST['add_jobcontainer'])) {
 	</div>
 </div>
 
-<h2><?php echo LANG['packages_to_deploy']; ?></h2>
+<h2><img src='img/package.dyn.svg'><?php echo LANG['packages_to_deploy']; ?></h2>
 <div class='gallery'>
 	<div>
-		<h3><?php echo LANG['package_groups']; ?></h3>
+		<h3><?php echo LANG['package_groups']; ?> (<span id='spnSelectedPackageGroups'>0</span>/<span id='spnTotalPackageGroups'>0</span>)</h3>
 		<select id='sltPackageGroup' size='10' multiple='true' onchange='if(getSelectValues(this).length > 1) { sltPackage.innerHTML="";sltPackage.disabled=true;refreshDeployCount(); }else{ sltPackage.disabled=false;refreshDeployComputerAndPackages(null, this.value) }'>
 			<option value='-1'><?php echo LANG['all_packages']; ?></option>
 			<?php echoTargetPackageGroupOptions($db, $select_package_group_ids); ?>
