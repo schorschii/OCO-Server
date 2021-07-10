@@ -22,6 +22,7 @@ class Computer {
 	public $model;
 	public $bios_version;
 	public $boot_type;
+	public $domain;
 	public $secure_boot;
 	public $last_ping;
 	public $last_update;
@@ -49,7 +50,7 @@ class ComputerNetwork {
 	public $netmask;
 	public $broadcast;
 	public $mac;
-	public $domain;
+	public $interface;
 }
 class ComputerScreen {
 	public $id;
@@ -121,20 +122,22 @@ class Package {
 	public $author;
 	public $install_procedure;
 	public $install_procedure_success_return_codes;
-	public $install_procedure_restart;
-	public $install_procedure_shutdown;
-	public $install_procedure_exit;
+	public $install_procedure_post_action;
 	public $uninstall_procedure;
 	public $uninstall_procedure_success_return_codes;
 	public $download_for_uninstall;
-	public $uninstall_procedure_restart;
-	public $uninstall_procedure_shutdown;
+	public $uninstall_procedure_post_action;
 	public $compatible_os;
 	public $compatible_os_version;
 	public $created;
 	public $last_update;
 	// joined package group attributes
 	public $package_group_member_sequence;
+	// constants
+	public const POST_ACTION_NONE = 0;
+	public const POST_ACTION_RESTART = 1;
+	public const POST_ACTION_SHUTDOWN = 2;
+	public const POST_ACTION_EXIT = 3;
 	// functions
 	function getIcon() {
 		return 'package';
@@ -179,9 +182,8 @@ class Job {
 	public $success_return_codes;
 	public $is_uninstall;
 	public $download;
-	public $restart;
-	public $shutdown;
-	public $exit_agent;
+	public $post_action;
+	public $post_action_timeout;
 	public $sequence;
 	public $state;
 	public $return_code;

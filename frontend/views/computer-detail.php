@@ -165,6 +165,10 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 				<td><?php if($computer->secure_boot=='1') echo LANG['yes']; elseif($computer->secure_boot=='0') echo LANG['no']; else echo htmlspecialchars($computer->secure_boot); ?></td>
 			</tr>
 			<tr>
+				<th><?php echo LANG['domain']; ?></th>
+				<td><?php echo htmlspecialchars($computer->domain); ?></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['agent_version']; ?></th>
 				<td><?php echo htmlspecialchars($computer->agent_version); ?></td>
 			</tr>
@@ -240,7 +244,7 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 					<th><?php echo LANG['netmask']; ?></th>
 					<th><?php echo LANG['broadcast']; ?></th>
 					<th><?php echo LANG['mac_address']; ?></th>
-					<th><?php echo LANG['domain']; ?></th>
+					<th><?php echo LANG['interface']; ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -258,7 +262,7 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 					echo '<td>'.htmlspecialchars($n->netmask).'</td>';
 					echo '<td>'.htmlspecialchars($n->broadcast).'</td>';
 					echo '<td>'.htmlspecialchars($n->mac).'</td>';
-					echo '<td>'.htmlspecialchars($n->domain).'</td>';
+					echo '<td>'.htmlspecialchars($n->interface).'</td>';
 					echo '</tr>';
 				}
 				?>

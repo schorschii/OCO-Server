@@ -15,8 +15,8 @@ if(isset($_POST['name'])) {
 		}
 		// create package
 		$insertId = $cl->createPackage($_POST['name'], $_POST['version'], $_POST['description'] ?? '', $_SESSION['um_username'] ?? '',
-			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_restart'] ?? null, $_POST['install_procedure_shutdown'] ?? null, $_POST['install_procedure_exit'] ?? null,
-			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'], $_POST['uninstall_procedure_restart'] ?? null, $_POST['uninstall_procedure_shutdown'] ?? null,
+			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_post_action'] ?? null,
+			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'], $_POST['uninstall_procedure_post_action'] ?? null,
 			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $tmpFilePath, $tmpFileName
 		);
 		die(strval(intval($insertId)));
@@ -77,6 +77,7 @@ if(isset($_POST['name'])) {
 	<?php } ?>
 </datalist>
 
+<form id='frmNewPackage'>
 <table class='form'>
 	<tr>
 		<th><?php echo LANG['package_family']; ?></th>
@@ -103,10 +104,10 @@ if(isset($_POST['name'])) {
 	<tr>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td colspan='3'>
-			<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionNone' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionRestart'>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionShutdown'>&nbsp;<?php echo LANG['shutdown']; ?></label>
-			<label class='inlineblock'><input type='radio' name='install_post_action' id='rdoInstallPostActionExit'>&nbsp;<?php echo LANG['restart_agent']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>'>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>'>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_EXIT; ?>'>&nbsp;<?php echo LANG['restart_agent']; ?></label>
 		</td>
 	</tr>
 	<tr>
@@ -118,9 +119,9 @@ if(isset($_POST['name'])) {
 	<tr>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td colspan='3'>
-			<label class='inlineblock'><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionNone' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label class='inlineblock'><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionRestart'>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label class='inlineblock'><input type='radio' name='uninstall_post_action' id='rdoUninstallPostActionShutdown'>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>'>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>'>&nbsp;<?php echo LANG['shutdown']; ?></label>
 		</td>
 	</tr>
 	<tr>
@@ -136,9 +137,10 @@ if(isset($_POST['name'])) {
 	<tr>
 		<th></th>
 		<td colspan='4'>
-			<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, rdoInstallPostActionRestart.checked, rdoInstallPostActionShutdown.checked, rdoInstallPostActionExit.checked, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, rdoUninstallPostActionRestart.checked, rdoUninstallPostActionShutdown.checked, txtCompatibleOs.value, txtCompatibleOsVersion.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
+			<button id='btnCreatePackage' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, frmNewPackage.elements.install_post_action.value, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, frmNewPackage.elements.uninstall_post_action.value, txtCompatibleOs.value, txtCompatibleOsVersion.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
 			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadContainer', 'prgPackageUploadText', 'width:180px;display:none;'); ?>
 		</td>
 </table>
+</form>
 
 <?php echo LANG['package_creation_notes']; ?>

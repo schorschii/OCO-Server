@@ -139,14 +139,21 @@ switch($srcdata['method']) {
 
 			// get pending jobs
 			foreach($db->getPendingJobsForComputer($computer->id) as $pj) {
+				$restart = null; $shutdown = null; $exit = null;
+				if($pj['post_action'] == Package::POST_ACTION_RESTART)
+					$restart = intval($pj['post_action_timeout'] ?? 1);
+				if($pj['post_action'] == Package::POST_ACTION_SHUTDOWN)
+					$shutdown = intval($pj['post_action_timeout'] ?? 1);
+				if($pj['post_action'] == Package::POST_ACTION_EXIT)
+					$exit = intval($pj['post_action_timeout'] ?? 1);
 				$jobs[] = [
 					'id' => $pj['id'],
 					'package-id' => $pj['package_id'],
 					'download' => $pj['download']==0 ? False : True,
 					'procedure' => $pj['procedure'],
-					'restart' => $pj['restart']==null ? null : intval($pj['restart']),
-					'shutdown' => $pj['shutdown']==null ? null : intval($pj['shutdown']),
-					'exit' => $pj['exit_agent']==null ? null : intval($pj['exit_agent']),
+					'restart' => $restart,
+					'shutdown' => $shutdown,
+					'exit' => $exit,
 				];
 			}
 
@@ -213,6 +220,7 @@ switch($srcdata['method']) {
 						$data['bios_version'],
 						$data['boot_type'],
 						$data['secure_boot'],
+						$data['domain'] ?? '',
 						$data['networks'] ?? [],
 						$data['screens'] ?? [],
 						$data['printers'] ?? [],

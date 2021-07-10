@@ -97,8 +97,8 @@ class CoreLogic {
 
 	/*** Package Operations ***/
 	public function createPackage($name, $version, $description, $author,
-		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedureRestart, $installProcedureShutdown, $installProcedureExit,
-		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedureRestart, $uninstallProcedureShutdown,
+		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction,
+		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction,
 		$compatibleOs, $compatibleOsVersion, $tmpFilePath, $fileName=null) {
 		if($fileName == null && $tmpFilePath != null) {
 			$fileName = basename($tmpFilePath);
@@ -137,14 +137,11 @@ class CoreLogic {
 			$author, $description,
 			$installProcedure,
 			$installProcedureSuccessReturnCodes,
-			$installProcedureRestart,
-			$installProcedureShutdown,
-			$installProcedureExit,
+			$installProcedurePostAction,
 			$uninstallProcedure,
 			$uninstallProcedureSuccessReturnCodes,
 			$downloadForUninstall,
-			$uninstallProcedureRestart,
-			$uninstallProcedureShutdown,
+			$uninstallProcedurePostAction,
 			$compatibleOs, $compatibleOsVersion
 		);
 		if(!$insertId) {
@@ -206,9 +203,7 @@ class CoreLogic {
 				'package_family_id' => $p->package_family_id,
 				'procedure' => $p->install_procedure,
 				'success_return_codes' => $p->install_procedure_success_return_codes,
-				'install_procedure_restart' => $p->install_procedure_restart,
-				'install_procedure_shutdown' => $p->install_procedure_shutdown,
-				'install_procedure_exit' => $p->install_procedure_exit,
+				'install_procedure_post_action' => $p->install_procedure_post_action,
 				'compatible_os' => $p->compatible_os,
 				'compatible_os_version' => $p->compatible_os_version,
 				'download' => $p->getFilePath() ? true : false,
@@ -230,9 +225,7 @@ class CoreLogic {
 					'package_family_id' => $p->package_family_id,
 					'procedure' => $p->install_procedure,
 					'success_return_codes' => $p->install_procedure_success_return_codes,
-					'install_procedure_restart' => $p->install_procedure_restart,
-					'install_procedure_shutdown' => $p->install_procedure_shutdown,
-					'install_procedure_exit' => $p->install_procedure_exit,
+					'install_procedure_post_action' => $p->install_procedure_post_action,
 					'compatible_os' => $p->compatible_os,
 					'compatible_os_version' => $p->compatible_os_version,
 					'download' => $p->getFilePath() ? true : false,
@@ -284,9 +277,7 @@ class CoreLogic {
 						if($this->db->addJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
 							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
-							$package['install_procedure_restart'] ? $restartTimeout : -1,
-							$package['install_procedure_shutdown'] ? $restartTimeout : -1,
-							$package['install_procedure_exit'] ? 1 : -1,
+							$package['install_procedure_post_action'], $restartTimeout,
 							$sequence, Job::STATUS_OS_INCOMPATIBLE
 						)) {
 							$sequence ++;
@@ -299,9 +290,7 @@ class CoreLogic {
 						if($this->db->addJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
 							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
-							$package['install_procedure_restart'] ? $restartTimeout : -1,
-							$package['install_procedure_shutdown'] ? $restartTimeout : -1,
-							$package['install_procedure_exit'] ? 1 : -1,
+							$package['install_procedure_post_action'], $restartTimeout,
 							$sequence, Job::STATUS_OS_INCOMPATIBLE
 						)) {
 							$sequence ++;
@@ -319,9 +308,8 @@ class CoreLogic {
 								$this->db->addJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
 									1/*is_uninstall*/, $cpp->download_for_uninstall,
-									$cpp->uninstall_procedure_restart ? $restartTimeout : -1,
-									$cpp->uninstall_procedure_shutdown ? $restartTimeout : -1,
-									-1/*exit*/, $sequence
+									$cpp->uninstall_procedure_post_action, $restartTimeout,
+									$sequence
 								);
 								$sequence ++;
 							}
@@ -332,9 +320,7 @@ class CoreLogic {
 					if($this->db->addJob($jcid, $computer_id,
 						$pid, $package['procedure'], $package['success_return_codes'],
 						0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
-						$package['install_procedure_restart'] ? $restartTimeout : -1,
-						$package['install_procedure_shutdown'] ? $restartTimeout : -1,
-						$package['install_procedure_exit'] ? 1 : -1,
+						$package['install_procedure_post_action'], $restartTimeout,
 						$sequence
 					)) {
 						$sequence ++;
@@ -402,9 +388,8 @@ class CoreLogic {
 			$this->db->addJob($jcid, $ap->computer_id,
 				$ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes,
 				1/*is_uninstall*/, $p->download_for_uninstall,
-				$p->uninstall_procedure_restart ? $restartTimeout : -1,
-				$p->uninstall_procedure_shutdown ? $restartTimeout : -1,
-				-1/*exit*/, 0/*sequence*/
+				$p->uninstall_procedure_post_action, $restartTimeout,
+				0/*sequence*/
 			);
 		}
 	}

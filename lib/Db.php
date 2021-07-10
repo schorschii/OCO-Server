@@ -145,8 +145,8 @@ class Db {
 
 		foreach($networks as $index => $network) {
 			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, domain)
-				VALUES (:computer_id, :nic_number, :addr, :netmask, :broadcast, :mac, :domain)'
+				'INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, interface)
+				VALUES (:computer_id, :nic_number, :addr, :netmask, :broadcast, :mac, :interface)'
 			);
 			$this->stmt->execute([
 				':computer_id' => $cid,
@@ -155,7 +155,7 @@ class Db {
 				':netmask' => $network['netmask'],
 				':broadcast' => $network['broadcast'],
 				':mac' => $network['mac'],
-				':domain' => $network['domain'],
+				':interface' => $network['interface'],
 			]);
 		}
 
@@ -191,12 +191,12 @@ class Db {
 		);
 		return $this->stmt->execute([':id' => $id, ':server_key' => $server_key]);
 	}
-	public function updateComputer($id, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $networks, $screens, $printers, $partitions, $software, $logins) {
+	public function updateComputer($id, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins) {
 		$this->dbh->beginTransaction();
 
 		// update general info
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer SET hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, boot_type = :boot_type, secure_boot = :secure_boot, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP WHERE id = :id'
+			'UPDATE computer SET hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, boot_type = :boot_type, secure_boot = :secure_boot, domain = :domain, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP WHERE id = :id'
 		);
 		if(!$this->stmt->execute([
 			':id' => $id,
@@ -217,6 +217,7 @@ class Db {
 			':bios_version' => $bios_version,
 			':boot_type' => $boot_type,
 			':secure_boot' => $secure_boot,
+			':domain' => $domain,
 		])) return false;
 
 		// update networks
@@ -227,8 +228,8 @@ class Db {
 		foreach($networks as $index => $network) {
 			if(empty($network['addr'])) continue;
 			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, domain)
-				VALUES (:computer_id, :nic_number, :addr, :netmask, :broadcast, :mac, :domain)'
+				'INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, interface)
+				VALUES (:computer_id, :nic_number, :addr, :netmask, :broadcast, :mac, :interface)'
 			);
 			if(!$this->stmt->execute([
 				':computer_id' => $id,
@@ -237,7 +238,7 @@ class Db {
 				':netmask' => $network['netmask'] ?? '?',
 				':broadcast' => $network['broadcast'] ?? '?',
 				':mac' => $network['mac'] ?? '?',
-				':domain' => $network['domain'] ?? '?',
+				':interface' => $network['interface'] ?? '?',
 			])) return false;
 		}
 
@@ -631,10 +632,10 @@ class Db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addPackage($package_family_id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_restart, $install_procedure_shutdown, $install_procedure_exit, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_restart, $uninstall_procedure_shutdown, $compatible_os, $compatible_os_version) {
+	public function addPackage($package_family_id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (package_family_id, version, author, notes, install_procedure, install_procedure_success_return_codes, install_procedure_restart, install_procedure_shutdown, install_procedure_exit, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_restart, uninstall_procedure_shutdown, compatible_os, compatible_os_version)
-			VALUES (:package_family_id, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_restart, :install_procedure_shutdown, :install_procedure_exit, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_restart, :uninstall_procedure_shutdown, :compatible_os, :compatible_os_version)'
+			'INSERT INTO package (package_family_id, version, author, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version)
+			VALUES (:package_family_id, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :compatible_os, :compatible_os_version)'
 		);
 		$this->stmt->execute([
 			':package_family_id' => $package_family_id,
@@ -643,14 +644,11 @@ class Db {
 			':notes' => $notes,
 			':install_procedure' => $install_procedure,
 			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
-			':install_procedure_restart' => $install_procedure_restart,
-			':install_procedure_shutdown' => $install_procedure_shutdown,
-			':install_procedure_exit' => $install_procedure_exit,
+			':install_procedure_post_action' => $install_procedure_post_action,
 			':uninstall_procedure' => $uninstall_procedure,
 			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
 			':download_for_uninstall' => $download_for_uninstall,
-			':uninstall_procedure_restart' => $uninstall_procedure_restart,
-			':uninstall_procedure_shutdown' => $uninstall_procedure_shutdown,
+			':uninstall_procedure_post_action' => $uninstall_procedure_post_action,
 			':compatible_os' => $compatible_os,
 			':compatible_os_version' => $compatible_os_version,
 		]);
@@ -694,23 +692,11 @@ class Db {
 		);
 		return $this->stmt->execute([':id' => $id, ':install_procedure_success_return_codes' => $newValue]);
 	}
-	public function updatePackageInstallProcedureRestart($id, $newValue) {
+	public function updatePackageInstallProcedurePostAction($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_restart = :install_procedure_restart WHERE id = :id'
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_post_action = :install_procedure_post_action WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id, ':install_procedure_restart' => $newValue]);
-	}
-	public function updatePackageInstallProcedureShutdown($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_shutdown = :install_procedure_shutdown WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':install_procedure_shutdown' => $newValue]);
-	}
-	public function updatePackageInstallProcedureExit($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_exit = :install_procedure_exit WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':install_procedure_exit' => $newValue]);
+		return $this->stmt->execute([':id' => $id, ':install_procedure_post_action' => $newValue]);
 	}
 	public function updatePackageUninstallProcedure($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
@@ -724,17 +710,11 @@ class Db {
 		);
 		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_success_return_codes' => $newValue]);
 	}
-	public function updatePackageUninstallProcedureRestart($id, $newValue) {
+	public function updatePackageUninstallProcedurePostAction($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure_restart = :uninstall_procedure_restart WHERE id = :id'
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure_post_action = :uninstall_procedure_post_action WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_restart' => $newValue]);
-	}
-	public function updatePackageUninstallProcedureShutdown($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure_shutdown = :uninstall_procedure_shutdown WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_shutdown' => $newValue]);
+		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_post_action' => $newValue]);
 	}
 	public function updatePackageDownloadForUninstall($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
@@ -1048,10 +1028,10 @@ class Db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $download, $restart, $shutdown, $exit, $sequence, $state=0) {
+	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $download, $post_action, $post_action_timeout, $sequence, $state=0) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, download, restart, shutdown, exit_agent, sequence, state, message)
-			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :download, :restart, :shutdown, :exit_agent, :sequence, :state, "")'
+			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, message)
+			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, "")'
 		);
 		$this->stmt->execute([
 			':job_container_id' => $job_container_id,
@@ -1061,9 +1041,8 @@ class Db {
 			':success_return_codes' => $success_return_codes,
 			':is_uninstall' => $is_uninstall,
 			':download' => $download,
-			':restart' => $restart,
-			':shutdown' => $shutdown,
-			':exit_agent' => $exit,
+			':post_action' => $post_action,
+			':post_action_timeout' => $post_action_timeout,
 			':sequence' => $sequence,
 			':state' => $state,
 		]);
@@ -1158,7 +1137,7 @@ class Db {
 	}
 	public function getPendingJobsForComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown", j.exit_agent AS "exit_agent"
+			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
@@ -1174,7 +1153,7 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time",
 			j.package_id AS "package_id", pf.name AS "package_name", p.version AS "package_version",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
 			FROM job j
 			INNER JOIN package p ON j.package_id = p.id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
@@ -1190,7 +1169,7 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time",
 			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.restart AS "restart", j.shutdown AS "shutdown"
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
 			FROM job j
 			INNER JOIN computer c ON j.computer_id = c.id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id

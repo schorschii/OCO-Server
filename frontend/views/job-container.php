@@ -79,9 +79,8 @@ if(!empty($_POST['renew_container_id']) && !empty($_POST['renew_start_time'])) {
 				if($db->addJob($jcid, $job->computer_id,
 					$job->package_id, $job->package_procedure, $job->success_return_codes,
 					$job->is_uninstall, $job->download,
-					$job->restart,
-					$job->shutdown,
-					$job->exit_agent,
+					$job->post_action,
+					$job->post_action_timeout,
 					$job->sequence
 				)) {
 					if($db->removeJob($job->id)) {
@@ -189,8 +188,9 @@ if(!empty($_GET['id'])) {
 				if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
 				else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
 				echo htmlspecialchars(shorter($job->package_procedure));
-				if($job->restart > 0) echo ' ('.LANG['restart_after'].' '.intval($job->restart).' '.LANG['minutes'].')';
-				if($job->shutdown > 0) echo ' ('.LANG['shutdown_after'].' '.intval($job->shutdown).' '.LANG['minutes'].')';
+				if($job->post_action == Package::POST_ACTION_RESTART) echo ' ('.LANG['restart_after'].' '.intval($job->post_action_timeout).' '.LANG['minutes'].')';
+				if($job->post_action == Package::POST_ACTION_SHUTDOWN) echo ' ('.LANG['shutdown_after'].' '.intval($job->post_action_timeout).' '.LANG['minutes'].')';
+				if($job->post_action == Package::POST_ACTION_EXIT) echo ' ('.LANG['restart_agent'].')';
 				echo "</td>";
 				echo "<td>".htmlspecialchars($job->sequence)."</td>";
 				if(!empty($job->message)) {

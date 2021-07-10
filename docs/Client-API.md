@@ -120,7 +120,8 @@ no parameters
 				"agent_key": "abc123",
 				"server_key": "123abc",
 				"os_license": "0",
-				"os_locale": "0407"
+				"os_locale": "0407",
+				"domain": "vm2-PC"
 			},
 			"logins": [
 				{
@@ -141,7 +142,7 @@ no parameters
 					"netmask": "255.255.255.0",
 					"broadcast": "10.0.2.255",
 					"mac": "08:00:27:31:5b:c4",
-					"domain": "vm2-PC"
+					"interface": "Ethernet0"
 				}
 			],
 			"screens": [],
@@ -368,13 +369,11 @@ no parameters
 				"author": "root",
 				"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.8.7128.msi",
 				"install_procedure_success_return_codes": "0",
-				"install_procedure_restart": "0",
-				"install_procedure_shutdown": "0",
+				"install_procedure_post_action": "0",
 				"uninstall_procedure": "msiexec /quiet /x cdbxp_setup_x64_4.5.8.7128.msi",
 				"uninstall_procedure_success_return_codes": "1",
 				"download_for_uninstall": "1",
-				"uninstall_procedure_restart": "0",
-				"uninstall_procedure_shutdown": "0",
+				"uninstall_procedure_post_action": "0",
 				"created": "2021-04-24 18:13:12",
 				"last_update": "2021-06-15 23:44:02",
 				"package_group_member_sequence": null,
@@ -388,13 +387,11 @@ no parameters
 				"author": "root",
 				"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.0.3661.msi",
 				"install_procedure_success_return_codes": "0",
-				"install_procedure_restart": "0",
-				"install_procedure_shutdown": "0",
+				"install_procedure_post_action": "0",
 				"uninstall_procedure": "msiexec /quiet /x cdbxp_setup_x64_4.5.0.3661.msi",
 				"uninstall_procedure_success_return_codes": "0",
 				"download_for_uninstall": "1",
-				"uninstall_procedure_restart": "0",
-				"uninstall_procedure_shutdown": "0",
+				"uninstall_procedure_post_action": "0",
 				"created": "2021-04-24 18:15:51",
 				"last_update": "2021-04-24 18:15:51",
 				"package_group_member_sequence": null,
@@ -437,13 +434,11 @@ no parameters
 				"author": "hanswurst",
 				"install_procedure": "gdebi -n google-chrome-stable_current_amd64.deb",
 				"install_procedure_success_return_codes": "0",
-				"install_procedure_restart": "0",
-				"install_procedure_shutdown": "0",
+				"install_procedure_post_action": "0",
 				"uninstall_procedure": "apt remove -y google-chrome",
 				"uninstall_procedure_success_return_codes": "0",
 				"download_for_uninstall": "0",
-				"uninstall_procedure_restart": "0",
-				"uninstall_procedure_shutdown": "0",
+				"uninstall_procedure_post_action": "0",
 				"created": "2021-03-03 15:52:22",
 				"last_update": "2021-04-21 13:55:14",
 				"name": "Linux_Chrome"
@@ -492,13 +487,11 @@ no parameters
 - `description` - package description (optional)
 - `install_procedure` - install procedure (install command)
 - `install_procedure_success_return_codes` - install procedure success return codes (comma separated, leave empty to disable return code check)
-- `install_procedure_restart` - enable/disable restart after installation (0 or 1)
-- `install_procedure_shutdown` - enable/disable shutdown after installation (0 or 1)
+- `install_procedure_post_action` - enable/disable restart, shutdown or agent restart after installation (0, 1, 2 or 3)
 - `uninstall_procedure` - uninstall procedure (uninstall command) (optional)
 - `uninstall_procedure_success_return_codes` - uninstall procedure success return codes (comma separated, leave empty to disable return code check)
 - `download_for_uninstall` - enable/disable download for uninstallation (0 or 1)
-- `uninstall_procedure_restart` - enable/disable restart after uninstallation (0 or 1)
-- `uninstall_procedure_shutdown` - enable/disable shutdown after uninstallation (0 or 1)
+- `uninstall_procedure_post_action` - enable/disable restart or shutdown after uninstallation (0, 1 or 2)
 - `compatible_os` - compatible operating system name (optional)
 - `compatible_os_version` - compatible operating systen version (optional)
 - `file` - package payload: base64 encoded ZIP file content (optional - leave empty to create a package without payload)
@@ -517,13 +510,11 @@ no parameters
 			"description": "For internal tests only",
 			"install_procedure": "msiexec /quiet /i test.msi",
 			"install_procedure_success_return_codes": "0,1,2",
-			"install_procedure_restart": 1,
-			"install_procedure_shutdown": 0,
+			"install_procedure_post_action": 1,
 			"uninstall_procedure": "msiexec /quiet /x test.msi",
 			"uninstall_procedure_success_return_codes": "0",
 			"download_for_uninstall": 1,
-			"uninstall_procedure_restart": 0,
-			"uninstall_procedure_shutdown": 1,
+			"uninstall_procedure_post_action": 0,
 			"compatible_os": "Windows 10 Home",
 			"compatible_os_version": "10.0.18363",
 			"file":"base64 string .....",
