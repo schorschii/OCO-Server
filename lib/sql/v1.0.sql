@@ -44,6 +44,7 @@ CREATE TABLE `computer` (
   `bios_version` text NOT NULL,
   `boot_type` text NOT NULL,
   `secure_boot` text NOT NULL,
+  `domain` text NOT NULL,
   `last_ping` datetime NOT NULL DEFAULT current_timestamp(),
   `last_update` datetime DEFAULT NULL,
   `notes` text NOT NULL,
@@ -90,7 +91,7 @@ CREATE TABLE `computer_network` (
   `netmask` text NOT NULL,
   `broadcast` text DEFAULT NULL,
   `mac` text DEFAULT NULL,
-  `domain` text DEFAULT NULL
+  `interface` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -212,9 +213,8 @@ CREATE TABLE `job` (
   `success_return_codes` text NOT NULL,
   `is_uninstall` tinyint(4) NOT NULL DEFAULT 0,
   `download` tinyint(4) NOT NULL DEFAULT 1,
-  `restart` int(11) DEFAULT NULL,
-  `shutdown` int(11) DEFAULT NULL,
-  `exit_agent` int(11) DEFAULT NULL,
+  `post_action` int(11) DEFAULT NULL,
+  `post_action_timeout` int(11) DEFAULT NULL,
   `sequence` int(11) NOT NULL DEFAULT 0,
   `state` int(11) NOT NULL DEFAULT 0,
   `return_code` int(11) DEFAULT NULL,
@@ -253,14 +253,11 @@ CREATE TABLE `package` (
   `author` text NOT NULL,
   `install_procedure` text NOT NULL,
   `install_procedure_success_return_codes` text NOT NULL,
-  `install_procedure_restart` tinyint(4) NOT NULL DEFAULT 0,
-  `install_procedure_shutdown` tinyint(4) NOT NULL DEFAULT 0,
-  `install_procedure_exit` tinyint(4) NOT NULL DEFAULT 0,
+  `install_procedure_post_action` tinyint(4) NOT NULL DEFAULT 0,
   `uninstall_procedure` text NOT NULL,
   `uninstall_procedure_success_return_codes` text NOT NULL,
   `download_for_uninstall` tinyint(4) NOT NULL DEFAULT 0,
-  `uninstall_procedure_restart` tinyint(4) NOT NULL DEFAULT 0,
-  `uninstall_procedure_shutdown` tinyint(4) NOT NULL DEFAULT 0,
+  `uninstall_procedure_post_action` tinyint(4) NOT NULL DEFAULT 0,
   `compatible_os` text DEFAULT NULL,
   `compatible_os_version` text DEFAULT NULL,
   `self_service_enabled` tinyint(4) NOT NULL DEFAULT 0,
