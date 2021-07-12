@@ -33,7 +33,7 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
 ## Installation
 0. Install PHP 7.x and a web sever of your choice.
 1. Download the [latest release](https://github.com/schorschii/oco-server/releases), copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.
-1. Import the database schema (`lib/sql/oco.sql`) into an empty database.
+1. Import the database schema (use the newest version, e.g. `lib/sql/v1.0.sql`) into an empty database.
 2. Enter your MySQL credentials in `conf.php` (create this file by copying the template `conf.example.php`). Please create a separate user for the database which only has permission to read and write in this specific database. Do not use the root account.
 3. Make sure the defined package path is writeable for the webserver user.
 4. Important: please set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS. It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any software packages to your client!!!
@@ -44,6 +44,14 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
 ```
 */10 *  * * *  www-data  cd /var/www/oco/lib && php HouseKeeping.php
 ```
+
+### Upgrade To A Newer Version
+0. Shut down your web server and backup your data using `mysqldump`.
+1. Upgrade the database schema (if necessary) using the corresponding SQL upgrade script (e.g. `lib/sql/v1.1_upgrade.sql`).
+   Please also have a look at the comments inside the upgrade script. Maybe some additional steps are required to migrate your data.
+2. Update all files, e.g. by using `git pull`.
+3. Clear your browser cache.
+4. Start your webserver. Have a look at the error logs to check if everything is OK (`/var/log/apache2/error.log`).
 
 ### LDAP Sync & Authentication
 If you want to use LDAP to authenticate admin users on the web frontend, please follow this steps.
