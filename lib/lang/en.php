@@ -25,7 +25,6 @@ const LANG = [
 	'login_failes' => 'Login failed',
 	'log_out_successful' => 'Logout successful',
 	'log_out' => 'Logout',
-	'home_page' => 'Homepage',
 	'passwords_do_not_match' => 'Passwords do not match',
 	'database_error' => 'Database error. Please check logfiles.',
 	'error' => 'Error',

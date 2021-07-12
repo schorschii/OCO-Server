@@ -25,7 +25,6 @@ const LANG = [
 	'login_failes' => 'Anmeldung fehlgeschlagen',
 	'log_out_successful' => 'Abmeldung erfolgreich',
 	'log_out' => 'Abmelden',
-	'home_page' => 'Startseite',
 	'passwords_do_not_match' => 'Passwörter stimmen nicht überein',
 	'database_error' => 'Datenbankfehler. Bitte Logdateien prüfen.',
 	'error' => 'Fehler',
