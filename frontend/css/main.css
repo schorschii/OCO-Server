@@ -252,7 +252,10 @@ h3 {
 #explorer-content h1,
 #explorer-content h2,
 #explorer-content h3,
-#login-form h1 {
+#login-form h1,
+#dialog-container h1,
+#dialog-container h2,
+#dialog-container h3 {
 	text-transform: uppercase;
 	font-weight: 200;
 }
@@ -335,6 +338,7 @@ body.loading2 #loader-container {
 	border-left: 2px solid rgb(200,200,200);
 	padding: 10px;
 	margin: 15px 0px;
+	font-family: monospace;
 }
 
 div.contextMenu {
