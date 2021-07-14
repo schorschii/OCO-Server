@@ -8,7 +8,16 @@ function handleRefresh(e) {
 		refreshContent();
 		refreshSidebar();
 	}
-};
+}
+
+function getCheckedRadioValue(name) {
+	var rates = document.getElementsByName(name);
+	for(var i = 0; i < rates.length; i++){
+		if(rates[i].checked){
+			return rates[i].value;
+		}
+	}
+}
 
 function rewriteUrlContentParameter(value) {
 	key = encodeURIComponent('explorer-content');

@@ -77,7 +77,6 @@ if(isset($_POST['name'])) {
 	<?php } ?>
 </datalist>
 
-<form id='frmNewPackage'>
 <table class='form'>
 	<tr>
 		<th><?php echo LANG['package_family']; ?></th>
@@ -137,10 +136,9 @@ if(isset($_POST['name'])) {
 	<tr>
 		<th></th>
 		<td colspan='4'>
-			<button id='btnCreatePackage' type='button' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, frmNewPackage.elements.install_post_action.value, txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, frmNewPackage.elements.uninstall_post_action.value, txtCompatibleOs.value, txtCompatibleOsVersion.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
+			<button id='btnCreatePackage' type='button' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, getCheckedRadioValue("install_post_action"), txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, getCheckedRadioValue("uninstall_post_action"), txtCompatibleOs.value, txtCompatibleOsVersion.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['send']; ?></button>
 			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadContainer', 'prgPackageUploadText', 'width:180px;display:none;'); ?>
 		</td>
 </table>
-</form>
 
 <?php echo LANG['package_creation_notes']; ?>
