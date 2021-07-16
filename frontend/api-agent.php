@@ -73,6 +73,7 @@ switch($srcdata['method']) {
 			'success' => true,
 			'params' => [
 				'server-key' => $computer->server_key,
+				'job-succeeded' => ($state == Job::STATUS_SUCCEEDED),
 			]
 		];
 		break;
@@ -151,6 +152,7 @@ switch($srcdata['method']) {
 					'package-id' => $pj['package_id'],
 					'download' => $pj['download']==0 ? False : True,
 					'procedure' => $pj['procedure'],
+					'sequence-mode' => intval($pj['sequence_mode']),
 					'restart' => $restart,
 					'shutdown' => $shutdown,
 					'exit' => $exit,

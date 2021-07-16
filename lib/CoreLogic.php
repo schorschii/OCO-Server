@@ -171,7 +171,7 @@ class CoreLogic {
 	}
 
 	/*** Deployment Operations ***/
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs) {
+	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs, $sequenceMode) {
 		// check user input
 		if(empty($name)) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -183,6 +183,10 @@ class CoreLogic {
 		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
 		) {
 			throw new Exception(LANG['end_time_before_start_time']);
+		}
+		if($sequenceMode != JobContainer::SEQUENCE_MODE_IGNORE_FAILED
+		&& $sequenceMode != JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+			throw new Exception(LANG['invalid_input']);
 		}
 
 		// check if given IDs exists and add them to a consolidated array
@@ -262,7 +266,8 @@ class CoreLogic {
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
 			$description,
-			$wolSent
+			$wolSent,
+			$sequenceMode
 		)) {
 			foreach($computer_ids as $computer_id) {
 				$sequence = 1;

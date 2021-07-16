@@ -664,7 +664,8 @@ no parameters
 - `date_end` (null) - deployment end date (unfinished jobs will set to "expired"), null means jobs do not expire
 - `use_wol` - enable or disable WOL
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
-- `auto_create_uninstall_jobs` - enable or disable automatic uninstall job creation
+- `auto_create_uninstall_jobs` - (optional - default 1) enable or disable automatic uninstall job creation
+- `sequence_mode` - (optional - default 0) sequence mode: 0 - ignore failed jobs, 1 - abort after failed job
 ### Example
 ```
 {
@@ -684,7 +685,8 @@ no parameters
 			"date_end": null,
 			"use_wol": 1,
 			"restart_timeout": 5,
-			"auto_create_uninstall_jobs": 1
+			"auto_create_uninstall_jobs": 1,
+			"sequence_mode": 0
 		}
 	}
 }

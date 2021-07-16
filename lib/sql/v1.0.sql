@@ -236,6 +236,7 @@ CREATE TABLE `job_container` (
   `end_time` datetime DEFAULT NULL,
   `notes` text NOT NULL,
   `wol_sent` tinyint(4) NOT NULL DEFAULT 0,
+  `sequence_mode` tinyint(4) NOT NULL DEFAULT 0,
   `created` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

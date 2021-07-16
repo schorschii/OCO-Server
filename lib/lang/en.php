@@ -280,6 +280,11 @@ const LANG = [
 	'are_you_sure' => 'Are you sure?',
 	'restart_agent' => 'Restart Agent',
 	'interface' => 'Interface',
+	'invalid_input' => 'Invalid Value. Please check your input.',
+	'abort_after_failed' => 'Abort after failed job',
+	'aborted_after_failed' => 'Aborted after failed job',
+	'ignore_failed' => 'Ignore failed jobs',
+	'sequence_mode' => 'Sequence Mode',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

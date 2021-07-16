@@ -164,6 +164,7 @@ class JobContainer {
 	public $end_time;
 	public $notes;
 	public $wol_sent;
+	public $sequence_mode;
 	public $created;
 	// aggregated values
 	public $last_update;
@@ -172,6 +173,9 @@ class JobContainer {
 	public const STATUS_FAILED = 'error';
 	public const STATUS_IN_PROGRESS = 'wait';
 	public const STATUS_WAITING_FOR_START = 'schedule';
+	public const SEQUENCE_MODE_IGNORE_FAILED = 0;
+	public const SEQUENCE_MODE_ABORT_AFTER_FAILED = 1;
+	public const RETURN_CODE_ABORT_AFTER_FAILED = 8888;
 }
 class Job {
 	public $id;

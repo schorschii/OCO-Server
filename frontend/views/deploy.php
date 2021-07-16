@@ -86,7 +86,8 @@ if(isset($_POST['add_jobcontainer'])) {
 		$jcid = $cl->deploy(
 			$_POST['add_jobcontainer'], $_POST['description'], $_SESSION['um_username'],
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [],
-			$_POST['date_start'], $_POST['date_end'] ?? null, $_POST['use_wol'] ?? 1, $_POST['restart_timeout'] ?? 5, $_POST['auto_create_uninstall_jobs'] ?? 1
+			$_POST['date_start'], $_POST['date_end'] ?? null,
+			$_POST['use_wol'] ?? 1, $_POST['restart_timeout'] ?? 5, $_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['sequence_mode'] ?? 0
 		);
 		die(strval(intval($jcid)));
 	} catch(Exception $e) {
@@ -137,6 +138,13 @@ if(isset($_POST['add_jobcontainer'])) {
 		</td>
 		<td><?php echo LANG['minutes']; ?></td>
 	</tr>
+	<tr>
+		<th><?php echo LANG['sequence_mode']; ?></th>
+		<td colspan='3'>
+			<label><input type='radio' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_IGNORE_FAILED; ?>' checked='true'>&nbsp;<?php echo LANG['ignore_failed']; ?></label><br>
+			<label><input type='radio' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>'>&nbsp;<?php echo LANG['abort_after_failed']; ?></label>
+		</td>
+	</tr>
 </table>
 
 <h2><img src='img/computer.dyn.svg'><?php echo LANG['target_computer']; ?></h2>
@@ -174,7 +182,7 @@ if(isset($_POST['add_jobcontainer'])) {
 </div>
 
 <div class='controls'>
-	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked, txtRestartTimeout.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"))'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<label><input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty($db->getSettingByName('default-auto-create-uninstall-jobs'))) echo 'checked'; ?>>&nbsp;<div><?php echo LANG['auto_create_uninstall_jobs']; ?></div></label>
 </div>
 

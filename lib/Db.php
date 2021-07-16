@@ -1013,10 +1013,10 @@ class Db {
 	}
 
 	// Job Operations
-	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent) {
+	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $sequence_mode) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent)
-			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent)'
+			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, sequence_mode)
+			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :sequence_mode)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
@@ -1025,6 +1025,7 @@ class Db {
 			':end_time' => $end_time,
 			':notes' => $notes,
 			':wol_sent' => $wol_sent,
+			':sequence_mode' => $sequence_mode,
 		]);
 		return $this->dbh->lastInsertId();
 	}
@@ -1137,7 +1138,7 @@ class Db {
 	}
 	public function getPendingJobsForComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", jc.sequence_mode AS "sequence_mode"
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
@@ -1184,12 +1185,39 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job SET state = :state, return_code = :return_code, message = :message, last_update = CURRENT_TIMESTAMP WHERE id = :id'
 		);
-		return $this->stmt->execute([
+		if(!$this->stmt->execute([
 			':id' => $id,
 			':state' => $state,
 			':return_code' => $return_code,
 			':message' => $message,
-		]);
+		])) return false;
+		// set all pending jobs to failed if sequence_mode is 'abort after failed'
+		if($state == Job::STATUS_FAILED) {
+			$job_container_id = -1;
+			$sequence_mode = JobContainer::SEQUENCE_MODE_IGNORE_FAILED;
+			$this->stmt = $this->dbh->prepare(
+				'SELECT jc.id AS "job_container_id", jc.sequence_mode FROM job j INNER JOIN job_container jc ON j.job_container_id = jc.id WHERE j.id = :id'
+			);
+			$this->stmt->execute([':id' => $id]);
+			foreach($this->stmt->fetchAll() as $row) {
+				$job_container_id = $row['job_container_id'];
+				$sequence_mode = $row['sequence_mode'];
+			}
+			if($sequence_mode == JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+				$this->stmt = $this->dbh->prepare(
+					'UPDATE job SET state = :state, return_code = :return_code, message = :message, last_update = CURRENT_TIMESTAMP
+					WHERE job_container_id = :job_container_id AND state = :old_state'
+				);
+				return $this->stmt->execute([
+					':job_container_id' => $job_container_id,
+					':old_state' => Job::STATUS_WAITING_FOR_CLIENT,
+					':state' => Job::STATUS_FAILED,
+					':return_code' => JobContainer::RETURN_CODE_ABORT_AFTER_FAILED,
+					':message' => LANG['aborted_after_failed'],
+				]);
+			}
+		}
+		return true;
 	}
 	public function updateJobContainer($id, $name, $start_time, $end_time, $notes, $wol_sent) {
 		$this->stmt = $this->dbh->prepare(

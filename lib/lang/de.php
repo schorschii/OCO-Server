@@ -280,6 +280,11 @@ const LANG = [
 	'are_you_sure' => 'Sind Sie sicher?',
 	'restart_agent' => 'Agent neu starten',
 	'interface' => 'Schnittstelle',
+	'invalid_input' => 'Ungültiger Wert. Bitte prüfen Sie Ihre Eingaben.',
+	'abort_after_failed' => 'Nach Fehler abbrechen',
+	'aborted_after_failed' => 'Nach Fehler abgebrochen',
+	'ignore_failed' => 'Fehler ignorieren',
+	'sequence_mode' => 'Abarbeitungsstrategie',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

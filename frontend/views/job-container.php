@@ -123,7 +123,7 @@ if(!empty($_GET['id'])) {
 
 	<div class='details-abreast margintop marginbottom'>
 	<div>
-		<table class='list'>
+		<table class='list metadata'>
 			<tr>
 				<th><?php echo LANG['created']; ?></th>
 				<td><?php echo htmlspecialchars($container->created); ?></td>
@@ -145,6 +145,16 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG['author']; ?></th>
 				<td><?php echo htmlspecialchars($container->author); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['sequence_mode']; ?></th>
+				<td class='subbuttons'>
+					<?php switch($container->sequence_mode) {
+						case(JobContainer::SEQUENCE_MODE_IGNORE_FAILED): echo LANG['ignore_failed']; break;
+						case(JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED): echo LANG['abort_after_failed']; break;
+						default: echo htmlspecialchars($container->sequence_mode);
+					} ?>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['description']; ?></th>
