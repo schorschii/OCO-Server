@@ -47,6 +47,7 @@ CREATE TABLE `computer` (
   `domain` text NOT NULL,
   `last_ping` datetime NOT NULL DEFAULT current_timestamp(),
   `last_update` datetime DEFAULT NULL,
+  `force_update` tinyint(4) NOT NULL DEFAULT 0,
   `notes` text NOT NULL,
   `agent_key` text NOT NULL,
   `server_key` text NOT NULL,
@@ -237,6 +238,7 @@ CREATE TABLE `job_container` (
   `notes` text NOT NULL,
   `wol_sent` tinyint(4) NOT NULL DEFAULT 0,
   `sequence_mode` tinyint(4) NOT NULL DEFAULT 0,
+  `priority` tinyint(4) NOT NULL DEFAULT 0,
   `created` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

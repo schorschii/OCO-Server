@@ -26,6 +26,7 @@ class Computer {
 	public $secure_boot;
 	public $last_ping;
 	public $last_update;
+	public $force_update;
 	public $notes;
 	public $agent_key;
 	public $server_key;
@@ -165,6 +166,7 @@ class JobContainer {
 	public $notes;
 	public $wol_sent;
 	public $sequence_mode;
+	public $priority;
 	public $created;
 	// aggregated values
 	public $last_update;

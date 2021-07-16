@@ -196,7 +196,7 @@ class Db {
 
 		// update general info
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer SET hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, boot_type = :boot_type, secure_boot = :secure_boot, domain = :domain, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP WHERE id = :id'
+			'UPDATE computer SET hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, boot_type = :boot_type, secure_boot = :secure_boot, domain = :domain, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP, force_update = 0 WHERE id = :id'
 		);
 		if(!$this->stmt->execute([
 			':id' => $id,
@@ -1165,7 +1165,7 @@ class Db {
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
 			AND (jc.start_time IS NULL OR jc.start_time < CURRENT_TIMESTAMP)
 			AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
-			ORDER BY jc.created, j.sequence'
+			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll();
@@ -1181,7 +1181,7 @@ class Db {
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
-			ORDER BY jc.created, j.sequence'
+			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
@@ -1196,7 +1196,7 @@ class Db {
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.package_id = :id
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
-			ORDER BY jc.created, j.sequence'
+			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
