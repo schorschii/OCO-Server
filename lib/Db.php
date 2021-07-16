@@ -778,6 +778,26 @@ class Db {
 		$this->stmt->execute([':package_family_id' => $fid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
+	public function getDependentPackages($pid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT p.*, pf.name AS "name" FROM package_dependency pd
+			INNER JOIN package p ON p.id = pd.dependent_package_id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			WHERE pd.package_id = :package_id'
+		);
+		$this->stmt->execute([':package_id' => $pid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+	}
+	public function getConflictPackages($pid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT p.*, pf.name AS "name" FROM package_conflict pc
+			INNER JOIN package p ON p.id = pc.conflict_package_id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			WHERE pc.package_id = :package_id'
+		);
+		$this->stmt->execute([':package_id' => $pid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+	}
 	public function getAllPackage($orderByCreated=false) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "name" FROM package p

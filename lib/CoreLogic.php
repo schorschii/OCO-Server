@@ -202,16 +202,7 @@ class CoreLogic {
 		}
 
 		if(!empty($packageIds)) foreach($packageIds as $package_id) {
-			$p = $this->db->getPackage($package_id);
-			if($p !== null) $packages[$p->id] = [
-				'package_family_id' => $p->package_family_id,
-				'procedure' => $p->install_procedure,
-				'success_return_codes' => $p->install_procedure_success_return_codes,
-				'install_procedure_post_action' => $p->install_procedure_post_action,
-				'compatible_os' => $p->compatible_os,
-				'compatible_os_version' => $p->compatible_os_version,
-				'download' => $p->getFilePath() ? true : false,
-			];
+			$packages = $packages + $this->compileDeployPackageArray($package_id);
 		}
 		if(!empty($packageGroupIds)) foreach($packageGroupIds as $package_group_id) {
 			if($this->db->getPackageGroup($package_group_id) !== null) $package_group_ids[] = $package_group_id;
@@ -225,15 +216,7 @@ class CoreLogic {
 		}
 		if(count($package_group_ids) > 1) foreach($package_group_ids as $package_group_id) {
 			foreach($this->db->getPackageByGroup($package_group_id) as $p) {
-				$packages[$p->id] = [
-					'package_family_id' => $p->package_family_id,
-					'procedure' => $p->install_procedure,
-					'success_return_codes' => $p->install_procedure_success_return_codes,
-					'install_procedure_post_action' => $p->install_procedure_post_action,
-					'compatible_os' => $p->compatible_os,
-					'compatible_os_version' => $p->compatible_os_version,
-					'download' => $p->getFilePath() ? true : false,
-				];
+				$packages = $packages + $this->compileDeployPackageArray($p->id);
 			}
 		}
 
@@ -303,13 +286,18 @@ class CoreLogic {
 						continue;
 					}
 
-					// create uninstall jobs
+					// if requested, automagically create uninstall jobs
 					if(!empty($autoCreateUninstallJobs)) {
 						foreach($this->db->getComputerPackage($computer_id) as $cp) {
 							// uninstall it, if it is from the same package family
 							if($cp->package_family_id === $package['package_family_id']) {
 								$cpp = $this->db->getPackage($cp->package_id);
 								if($cpp == null) continue;
+
+								// ignore if it is an automatically added dependency package and version is the same as already installed
+								if($package['is_dependency'] && $pid == $cp->package_id) continue;
+
+								// create uninstallation job
 								$this->db->addJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
 									1/*is_uninstall*/, $cpp->download_for_uninstall,
@@ -321,7 +309,7 @@ class CoreLogic {
 						}
 					}
 
-					// create job
+					// create installation job
 					if($this->db->addJob($jcid, $computer_id,
 						$pid, $package['procedure'], $package['success_return_codes'],
 						0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
@@ -336,7 +324,33 @@ class CoreLogic {
 
 		return $jcid;
 	}
-	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $restartTimeout) {
+	private function compileDeployPackageArray($packageId, $isDependency=false) {
+		$packages = [];
+
+		// check if id exists
+		$p = $this->db->getPackage($packageId);
+		if($p == null) return [];
+
+		// recursive dependency resolver
+		foreach($this->db->getDependentPackages($p->id) as $p2) {
+			$packages = $packages + $this->compileDeployPackageArray($p2->id, true);
+		}
+
+		// add package after dependencies
+		$packages[$p->id] = [
+			'package_family_id' => $p->package_family_id,
+			'procedure' => $p->install_procedure,
+			'success_return_codes' => $p->install_procedure_success_return_codes,
+			'install_procedure_post_action' => $p->install_procedure_post_action,
+			'compatible_os' => $p->compatible_os,
+			'compatible_os_version' => $p->compatible_os_version,
+			'download' => $p->getFilePath() ? true : false,
+			'is_dependency' => $isDependency,
+		];
+
+		return $packages;
+	}
+	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $sequenceMode=0) {
 		// check user input
 		if(empty($name)) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -348,6 +362,10 @@ class CoreLogic {
 		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
 		) {
 			throw new Exception(LANG['end_time_before_start_time']);
+		}
+		if($sequenceMode != JobContainer::SEQUENCE_MODE_IGNORE_FAILED
+		&& $sequenceMode != JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+			throw new Exception(LANG['invalid_input']);
 		}
 
 		// wol handling
@@ -384,7 +402,7 @@ class CoreLogic {
 			$name, $author,
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
-			$description, $wolSent
+			$description, $wolSent, $sequenceMode
 		);
 		foreach($installationIds as $id) {
 			$ap = $this->db->getComputerAssignedPackage($id);
