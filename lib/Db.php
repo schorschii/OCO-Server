@@ -1158,7 +1158,7 @@ class Db {
 	}
 	public function getPendingJobsForComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", jc.sequence_mode AS "sequence_mode"
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", jc.sequence_mode AS "sequence_mode"
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id

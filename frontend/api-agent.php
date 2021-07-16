@@ -149,6 +149,7 @@ switch($srcdata['method']) {
 					$exit = intval($pj['post_action_timeout'] ?? 1);
 				$jobs[] = [
 					'id' => $pj['id'],
+					'container-id' => $pj['job_container_id'],
 					'package-id' => $pj['package_id'],
 					'download' => $pj['download']==0 ? False : True,
 					'procedure' => $pj['procedure'],
