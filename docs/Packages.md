@@ -55,6 +55,9 @@ The status code `-9999` indicates an agent error - this is not a real return cod
 - unable to execute installation command
 - Windows: unable to decode program output, see below
 
+### Job Fails With Status Code `-8888`
+The status code `-8888` indicates that a previous job failed and the 'sequence mode' is set to 'abort after failed job'. Then, all pending jobs are automatically set to `Failed (-8888)`. You can set the 'sequence mode' to 'ignore failed jobs' if you want to continue executing pending jobs after a failed job.
+
 ### Windows: Job Fails With Message `'charmap' codec can't decode byte 0x81 in position 48: character maps to <undefined>`
 Change the codepage to UTF-8 first so that special chars of the program output can be decoded. Example procedure: `chcp 65001 && msiexec /quiet /i test.msi`.
 

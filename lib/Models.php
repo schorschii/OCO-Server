@@ -175,7 +175,7 @@ class JobContainer {
 	public const STATUS_WAITING_FOR_START = 'schedule';
 	public const SEQUENCE_MODE_IGNORE_FAILED = 0;
 	public const SEQUENCE_MODE_ABORT_AFTER_FAILED = 1;
-	public const RETURN_CODE_ABORT_AFTER_FAILED = 8888;
+	public const RETURN_CODE_ABORT_AFTER_FAILED = -8888;
 }
 class Job {
 	public $id;
