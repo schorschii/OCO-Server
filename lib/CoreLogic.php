@@ -286,17 +286,16 @@ class CoreLogic {
 						continue;
 					}
 
-					// if requested, automagically create uninstall jobs
-					if(!empty($autoCreateUninstallJobs)) {
-						foreach($this->db->getComputerPackage($computer_id) as $cp) {
+					foreach($this->db->getComputerPackage($computer_id) as $cp) {
+						// ignore if it is an automatically added dependency package and version is the same as already installed
+						if($package['is_dependency'] && $pid == $cp->package_id) continue 2;
+
+						// if requested, automagically create uninstall jobs
+						if(!empty($autoCreateUninstallJobs)) {
 							// uninstall it, if it is from the same package family
 							if($cp->package_family_id === $package['package_family_id']) {
 								$cpp = $this->db->getPackage($cp->package_id);
 								if($cpp == null) continue;
-
-								// ignore if it is an automatically added dependency package and version is the same as already installed
-								if($package['is_dependency'] && $pid == $cp->package_id) continue;
-
 								// create uninstallation job
 								$this->db->addJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
