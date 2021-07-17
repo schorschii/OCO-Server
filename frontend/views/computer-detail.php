@@ -7,8 +7,12 @@ if(!empty($_POST['rename_computer_id']) && !empty($_POST['new_name'])) {
 	$db->updateComputerHostname($_POST['rename_computer_id'], $_POST['new_name']);
 	die();
 }
-if(!empty($_POST['update_note_computer_id']) && isset($_POST['update_note'])) {
-	$db->updateComputerNote($_POST['update_note_computer_id'], $_POST['update_note']);
+if(!empty($_POST['update_computer_id']) && isset($_POST['update_note'])) {
+	$db->updateComputerNote($_POST['update_computer_id'], $_POST['update_note']);
+	die();
+}
+if(!empty($_POST['update_computer_id']) && isset($_POST['update_force_update'])) {
+	$db->updateComputerForceUpdate($_POST['update_computer_id'], $_POST['update_force_update']);
 	die();
 }
 if(!empty($_POST['remove_package_assignment_id']) && is_array($_POST['remove_package_assignment_id'])) {
@@ -182,7 +186,10 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 			</tr>
 			<tr>
 				<th><?php echo LANG['last_updated']; ?></th>
-				<td><?php echo htmlspecialchars($computer->last_update); ?></td>
+				<td class='subbuttons'>
+					<?php echo wrapInSpanIfNotEmpty($computer->last_update.($computer->force_update ? ' ('.LANG['force_update'].')' : '')); ?><!--
+					--><button onclick='event.stopPropagation();setComputerForceUpdate(<?php echo $computer->id; ?>, 1);return false'><img class='small' src='img/force-update.dyn.svg' title='<?php echo LANG['force_update']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['assigned_groups']; ?></th>

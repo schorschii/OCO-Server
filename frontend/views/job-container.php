@@ -71,7 +71,7 @@ if(!empty($_POST['renew_container_id']) && !empty($_POST['renew_start_time'])) {
 	if($jcid = $db->addJobContainer(
 		$container->name.' - '.LANG['renew'], $_SESSION['um_username'],
 		$_POST['renew_start_time'], null /*end time*/,
-		'' /*description*/, 0 /*wol sent*/, $container->sequence_mode
+		'' /*description*/, 0 /*wol sent*/, $container->sequence_mode, $container->priority
 	)) {
 		$count = 0;
 		foreach($db->getAllJobByContainer($container->id) as $job) {

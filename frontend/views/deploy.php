@@ -87,7 +87,7 @@ if(isset($_POST['add_jobcontainer'])) {
 			$_POST['add_jobcontainer'], $_POST['description'], $_SESSION['um_username'],
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
-			$_POST['use_wol'] ?? 1, $_POST['restart_timeout'] ?? 5, $_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['sequence_mode'] ?? 0
+			$_POST['use_wol'] ?? 1, $_POST['restart_timeout'] ?? 5, $_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0
 		);
 		die(strval(intval($jcid)));
 	} catch(Exception $e) {
@@ -132,17 +132,26 @@ if(isset($_POST['add_jobcontainer'])) {
 		<td><label><input type='checkbox' id='chkDateEndEnabled'><?php echo LANG['set_end']; ?></label></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['timeout_for_reboot']; ?></th>
-		<td>
-			<input type='number' id='txtRestartTimeout' value='<?php echo htmlspecialchars($db->getSettingByName('default-restart-timeout')); ?>' min='-1' title='<?php echo LANG['timeout_for_reboot_description']; ?>'></input>
-		</td>
-		<td><?php echo LANG['minutes']; ?></td>
-	</tr>
-	<tr>
 		<th><?php echo LANG['sequence_mode']; ?></th>
-		<td colspan='3'>
+		<td>
 			<label><input type='radio' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_IGNORE_FAILED; ?>' checked='true'>&nbsp;<?php echo LANG['ignore_failed']; ?></label><br>
 			<label><input type='radio' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>'>&nbsp;<?php echo LANG['abort_after_failed']; ?></label>
+		</td>
+		<th><?php echo LANG['priority']; ?></th>
+		<td>
+			<div class='inputWithLabel' title='<?php echo LANG['priority_description']; ?>'>
+				<input id='sldPriority' type='range' min='-10' max='10' value='0' oninput='lblPriorityPreview.innerText=this.value' onchange='lblPriorityPreview.innerText=this.value'>
+				<div id='lblPriorityPreview'>0</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['timeout_for_reboot']; ?></th>
+		<td>
+			<div class='inputWithLabel' title='<?php echo LANG['timeout_for_reboot_description']; ?>'>
+				<input type='number' id='txtRestartTimeout' value='<?php echo htmlspecialchars($db->getSettingByName('default-restart-timeout')); ?>' min='-1'></input>
+				<div><?php echo LANG['minutes']; ?></div>
+			</div>
 		</td>
 	</tr>
 </table>
@@ -182,7 +191,7 @@ if(isset($_POST['add_jobcontainer'])) {
 </div>
 
 <div class='controls'>
-	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"))'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<label><input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty($db->getSettingByName('default-auto-create-uninstall-jobs'))) echo 'checked'; ?>>&nbsp;<div><?php echo LANG['auto_create_uninstall_jobs']; ?></div></label>
 </div>
 

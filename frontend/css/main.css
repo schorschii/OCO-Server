@@ -444,7 +444,8 @@ table th, table td {
 	width: 100%;
 	resize: vertical;
 }
-table.list, input, select, button, textarea, .boxshadow {
+table.list, .boxshadow,
+input:not([type=range]):not([type=radio]):not([type=checkbox]), select, button, textarea {
 	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.08);
 }
 input, select, button, textarea {
@@ -492,14 +493,14 @@ table.form textarea {
 	width: 100%;
 }
 button:focus, button:hover,
-input:focus, input:hover,
+input:not([type=range]):not([type=radio]):not([type=checkbox]):focus, input:not([type=range]):not([type=radio]):not([type=checkbox]):hover,
 textarea:focus, textarea:hover,
 select:focus, select:hover {
 	outline: none;
 	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15);
 }
 button:active,
-input:active,
+input:not([type=range]):not([type=radio]):not([type=checkbox]):active,
 textarea:active,
 select:active {
 	outline: none;
@@ -507,6 +508,21 @@ select:active {
 }
 .updown {
 	white-space: nowrap;
+}
+
+.inputWithLabel {
+	display: flex;
+	align-items: center;
+	vertical-align: middle;
+}
+.inputWithLabel > *:not(:last-child) {
+	margin-right: 5px;
+	width: auto !important;
+	flex-grow: 1;
+}
+.inputWithLabel > div {
+	text-align: right;
+	min-width: 25px;
 }
 
 table.largepadding td,
@@ -895,7 +911,7 @@ div.details-abreast > div > table {
 	table.list tr td:last-child {
 		border-right: 1px solid #485764;
 	}
-	input, select, textarea {
+	input:not([type=range]):not([type=radio]):not([type=checkbox]), select, textarea {
 		color: white;
 		background-color: transparent;
 		border: none;
@@ -908,13 +924,13 @@ div.details-abreast > div > table {
 		background-color: rgb(240, 240, 240, 0.1);
 		background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(240, 240, 240, 0.1) 10px, rgb(240, 240, 240, 0.1) 20px);
 	}
-	input:focus, input:hover,
+	input:not([type=range]):not([type=radio]):not([type=checkbox]):focus, input:not([type=range]):not([type=radio]):not([type=checkbox]):hover,
 	textarea:focus, textarea:hover,
 	select:focus, select:hover {
 		border-bottom: 1px solid rgba(255,255,255,0.5);
 		box-shadow: none;
 	}
-	input:active,
+	input:not([type=range]):not([type=radio]):not([type=checkbox]):active,
 	textarea:active,
 	select:active {
 		border-bottom: 1px solid rgba(255,255,255,0.6);

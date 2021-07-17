@@ -674,8 +674,11 @@ function refreshDeployCount() {
 function editComputerNotes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/computer-detail.php', urlencodeObject({'update_note_computer_id':id, 'update_note':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/computer-detail.php', urlencodeObject({'update_computer_id':id, 'update_note':newValue}), null, refreshContent);
 	}
+}
+function setComputerForceUpdate(id, value) {
+	ajaxRequestPost('views/computer-detail.php', urlencodeObject({'update_computer_id':id, 'update_force_update':value}), null, refreshContent);
 }
 function newComputer() {
 	var newName = prompt(L__ENTER_NAME);
@@ -927,7 +930,7 @@ function editJobContainerNotes(id, oldValue) {
 		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_notes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
-function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, autoCreateUninstallJobs, restartTimeout, sequenceMode) {
+function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, autoCreateUninstallJobs, restartTimeout, sequenceMode, priority) {
 	btnDeploy.disabled = true;
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
@@ -939,6 +942,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	formData.append('auto_create_uninstall_jobs', autoCreateUninstallJobs ? 1 : 0);
 	formData.append('restart_timeout', restartTimeout);
 	formData.append('sequence_mode', sequenceMode);
+	formData.append('priority', priority);
 	getSelectValues(sltPackage).forEach(function(entry) {
 		formData.append('package_id[]', entry);
 	});

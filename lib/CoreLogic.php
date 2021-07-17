@@ -171,7 +171,7 @@ class CoreLogic {
 	}
 
 	/*** Deployment Operations ***/
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs, $sequenceMode) {
+	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs, $sequenceMode, $priority) {
 		// check user input
 		if(empty($name)) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -186,6 +186,9 @@ class CoreLogic {
 		}
 		if($sequenceMode != JobContainer::SEQUENCE_MODE_IGNORE_FAILED
 		&& $sequenceMode != JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+			throw new Exception(LANG['invalid_input']);
+		}
+		if($priority < -100 || $priority > 100) {
 			throw new Exception(LANG['invalid_input']);
 		}
 
@@ -250,7 +253,8 @@ class CoreLogic {
 			empty($dateEnd) ? null : $dateEnd,
 			$description,
 			$wolSent,
-			$sequenceMode
+			$sequenceMode,
+			$priority
 		)) {
 			foreach($computer_ids as $computer_id) {
 				$sequence = 1;
@@ -349,7 +353,7 @@ class CoreLogic {
 
 		return $packages;
 	}
-	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $sequenceMode=0) {
+	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $sequenceMode=0, $priority=0) {
 		// check user input
 		if(empty($name)) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -364,6 +368,9 @@ class CoreLogic {
 		}
 		if($sequenceMode != JobContainer::SEQUENCE_MODE_IGNORE_FAILED
 		&& $sequenceMode != JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+			throw new Exception(LANG['invalid_input']);
+		}
+		if($priority < -100 || $priority > 100) {
 			throw new Exception(LANG['invalid_input']);
 		}
 
@@ -401,7 +408,7 @@ class CoreLogic {
 			$name, $author,
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
-			$description, $wolSent, $sequenceMode
+			$description, $wolSent, $sequenceMode, $priority
 		);
 		foreach($installationIds as $id) {
 			$ap = $this->db->getComputerAssignedPackage($id);

@@ -285,6 +285,9 @@ const LANG = [
 	'aborted_after_failed' => 'Aborted after failed job',
 	'ignore_failed' => 'Ignore failed jobs',
 	'sequence_mode' => 'Sequence Mode',
+	'priority' => 'Priority',
+	'priority_description' => 'Job Container with higher priority will be executed first.',
+	'force_update' => 'Force Update',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

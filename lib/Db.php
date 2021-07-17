@@ -173,6 +173,12 @@ class Db {
 		);
 		return $this->stmt->execute([':id' => $id, ':notes' => $notes]);
 	}
+	public function updateComputerForceUpdate($id, $force_update) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer SET force_update = :force_update WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':force_update' => $force_update]);
+	}
 	public function updateComputerHostname($id, $hostname) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET hostname = :hostname WHERE id = :id'
@@ -1033,10 +1039,10 @@ class Db {
 	}
 
 	// Job Operations
-	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $sequence_mode) {
+	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $sequence_mode, $priority) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, sequence_mode)
-			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :sequence_mode)'
+			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, sequence_mode, priority)
+			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :sequence_mode, :priority)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
@@ -1046,6 +1052,7 @@ class Db {
 			':notes' => $notes,
 			':wol_sent' => $wol_sent,
 			':sequence_mode' => $sequence_mode,
+			':priority' => $priority,
 		]);
 		return $this->dbh->lastInsertId();
 	}
