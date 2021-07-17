@@ -3,19 +3,6 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-const GENERAL_SETTING_KEYS = [
-	'agent-key',
-	'agent-update-interval',
-	'agent-registration-enabled',
-	'purge-succeeded-jobs',
-	'purge-failed-jobs'
-];
-foreach(GENERAL_SETTING_KEYS as $key) {
-	if(isset($_POST[$key])) {
-		$db->updateSetting($key, $_POST[$key]);
-	}
-}
-
 if(!empty($_POST['add_systemuser_username'])) {
 	$db->addSystemuser(
 		$_POST['add_systemuser_username'],
@@ -73,41 +60,31 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 <button onclick='askNotificationPermission()'><img src='img/notification.svg'>&nbsp;<?php echo LANG['enable_notifications']; ?></button>
 
 <h2><?php echo LANG['general']; ?></h2>
-<table class='form'>
+<p>
+	<?php echo LANG['change_settings_in_config_file']; ?>
+</p>
+<table class='list metadata'>
 	<tr>
 		<th><?php echo LANG['agent_registration_enabled']; ?>:</th>
-		<td>
-			<input type='checkbox' id='chkAgentRegistrationEnabled' <?php if($db->getSettingByName('agent-registration-enabled')) echo 'checked'; ?>></input>
-		</td>
+		<td><?php if(AGENT_SELF_REGISTRATION_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['agent_key']; ?>:</th>
-		<td>
-			<input type='text' autocomplete='new-password' id='txtAgentKey' value='<?php echo $db->getSettingByName('agent-key'); ?>'></input>
-		</td>
+		<td><?php echo htmlspecialchars(AGENT_REGISTRATION_KEY); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['agent_update_interval']; ?>:</th>
-		<td>
-			<input type='number' autocomplete='new-password' min='1' id='txtAgentUpdateInterval' value='<?php echo $db->getSettingByName('agent-update-interval'); ?>'></input>
-		</td>
+		<td><?php echo htmlspecialchars(AGENT_UPDATE_INTERVAL); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['purge_succeeded_jobs_after']; ?>:</th>
-		<td>
-			<input type='number' autocomplete='new-password' min='1' id='txtPurgeSucceededJobsAfter' value='<?php echo $db->getSettingByName('purge-succeeded-jobs'); ?>'></input>
-		</td>
+		<td><?php echo htmlspecialchars(PURGE_SUCCEEDED_JOBS_AFTER); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['purge_failed_jobs_after']; ?>:</th>
-		<td>
-			<input type='number' autocomplete='new-password' min='1' id='txtPurgeFailedJobsAfter' value='<?php echo $db->getSettingByName('purge-failed-jobs'); ?>'></input>
-		</td>
+		<td><?php echo htmlspecialchars(PURGE_FAILED_JOBS_AFTER); ?></td>
 	</tr>
 </table>
-<div class='controls'>
-	<button id='btnSaveGeneralSettings' onclick='saveGeneralSettings()'><img src='img/send.svg'>&nbsp;<?php echo LANG['save']; ?></button>
-</div>
 
 <h2><?php echo LANG['system_users']; ?></h2>
 <div class='controls'>

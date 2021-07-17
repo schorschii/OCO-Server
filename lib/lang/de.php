@@ -288,6 +288,7 @@ const LANG = [
 	'priority' => 'Priorität',
 	'priority_description' => 'Jobcontainer mit höherer Priorität werden zuerst ausgeführt.',
 	'force_update' => 'Update erzwingen',
+	'change_settings_in_config_file' => 'Sie können die Einstellungen in der OCO-Konfigurationsdatei (conf.php) ändern.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

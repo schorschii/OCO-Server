@@ -288,6 +288,7 @@ const LANG = [
 	'priority' => 'Priority',
 	'priority_description' => 'Job Container with higher priority will be executed first.',
 	'force_update' => 'Force Update',
+	'change_settings_in_config_file' => 'You can change the settings in the OCO config file (conf.php).',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

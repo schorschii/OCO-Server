@@ -1186,16 +1186,3 @@ function changeSelectedSystemuserPassword(checkboxName, password, password2) {
 		}
 	};
 }
-
-// setting operations
-function saveGeneralSettings() {
-	btnSaveGeneralSettings.disabled = true;
-	var values = {
-		"agent-registration-enabled": chkAgentRegistrationEnabled.checked ? 1 : 0,
-		"agent-key": txtAgentKey.value,
-		"agent-update-interval": txtAgentUpdateInterval.value,
-		"purge-succeeded-jobs": txtPurgeSucceededJobsAfter.value,
-		"purge-failed-jobs": txtPurgeFailedJobsAfter.value
-	};
-	ajaxRequestPost('views/setting.php', urlencodeObject(values), null, function(){ alert(L__SAVED); refreshContent(); });
-}

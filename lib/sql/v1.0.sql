@@ -394,11 +394,6 @@ CREATE TABLE `setting` (
 --
 
 INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
-(1, 'agent-key', 'ernesto'),
-(2, 'agent-update-interval', '3000'),
-(3, 'agent-registration-enabled', '0'),
-(4, 'purge-succeeded-jobs', '14400'),
-(5, 'purge-failed-jobs', '172800'),
 (6, 'default-restart-timeout', '5'),
 (7, 'default-auto-create-uninstall-jobs', '1'),
 (8, 'motd', 'default_motd');

@@ -84,11 +84,11 @@ switch($srcdata['method']) {
 		$jobs = []; $update = 0; $server_key = null; $agent_key = null; $success = false;
 
 		if($computer == null) {
-			if($params['agent-key'] !== $db->getSettingByName('agent-key')) {
+			if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
 				authErrorExit();
 			}
 
-			if($db->getSettingByName('agent-registration-enabled') == '1') {
+			if(AGENT_SELF_REGISTRATION_ENABLED) {
 				$server_key = randomString();
 				$agent_key = randomString();
 				$update = 1;
@@ -108,7 +108,7 @@ switch($srcdata['method']) {
 		} else {
 			if(empty($computer->agent_key)) {
 				// computer was pre-registered in the web frontend: check global key and generate individual key
-				if($params['agent-key'] !== $db->getSettingByName('agent-key')) {
+				if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
 					authErrorExit();
 				} else {
 					$agent_key = randomString();
@@ -134,7 +134,7 @@ switch($srcdata['method']) {
 			$db->updateComputerPing($computer->id);
 
 			// check if agent should update inventory data
-			if(time() - strtotime($computer->last_update) > $db->getSettingByName('agent-update-interval')
+			if(time() - strtotime($computer->last_update) > AGENT_UPDATE_INTERVAL
 			|| !empty($computer->force_update)) {
 				$update = 1;
 			}
@@ -188,7 +188,7 @@ switch($srcdata['method']) {
 			if($computer !== null) {
 				$success = true;
 				$db->updateComputerPing($computer->id);
-				if((time() - strtotime($computer->last_update) > $db->getSettingByName('agent-update-interval') || !empty($computer->force_update))
+				if((time() - strtotime($computer->last_update) > AGENT_UPDATE_INTERVAL || !empty($computer->force_update))
 				&& !empty($data)) {
 					// convert login timestamps to local time,
 					// because other timestamps in the database are also in local time

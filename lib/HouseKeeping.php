@@ -8,13 +8,13 @@ foreach($db->getAllJobContainer() as $container) {
 	// purge old jobs
 	$icon = $db->getJobContainerIcon($container->id);
 	if($icon == JobContainer::STATUS_SUCCEEDED) {
-		if(time() - strtotime($container->last_update) > $db->getSettingByName('purge-succeeded-jobs')) {
+		if(time() - strtotime($container->last_update) > PURGE_SUCCEEDED_JOBS_AFTER) {
 			echo('Remove Succeeded Job Container #'.$container->id.' ('.$container->name.')'."\n");
 			$db->removeJobContainer($container->id);
 		}
 	}
 	elseif($icon == JobContainer::STATUS_FAILED) {
-		if(time() - strtotime($container->last_update) > $db->getSettingByName('purge-failed-jobs')) {
+		if(time() - strtotime($container->last_update) > PURGE_FAILED_JOBS_AFTER) {
 			echo('Remove Failed Job Container #'.$container->id.' ('.$container->name.')'."\n");
 			$db->removeJobContainer($container->id);
 		}

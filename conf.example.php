@@ -3,8 +3,16 @@
 ///// GENERAL CONFIGURATION /////
 const PACKAGE_PATH             = '/var/www/oco/payload';
 const COMPUTER_OFFLINE_SECONDS = 125;
+
 const CLIENT_API_ENABLED       = false;
 const CLIENT_API_KEY           = 'Ungah2oo';
+
+const AGENT_SELF_REGISTRATION_ENABLED = true;
+const AGENT_REGISTRATION_KEY          = 'ernesto';
+const AGENT_UPDATE_INTERVAL           = 3600;
+
+const PURGE_SUCCEEDED_JOBS_AFTER = 14400;
+const PURGE_FAILED_JOBS_AFTER    = 172800;
 
 ///// MySQL CONFIGURATION /////
 const DB_TYPE = 'mysql';
