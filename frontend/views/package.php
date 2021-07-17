@@ -81,9 +81,9 @@ if(empty($_GET['id'])) {
 		<th class='searchable sortable'><?php echo LANG['name']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['version']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['author']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['description']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['size']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['order']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['description']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['created']; ?></th>
 		<th><?php echo LANG['action']; ?></th>
 	</tr>
@@ -100,9 +100,9 @@ foreach($packages as $p) {
 	echo "<td><a href='".explorerLink('views/package-detail.php?id='.$p->id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")'>".htmlspecialchars($p->name)."</a></td>";
 	echo "<td>".htmlspecialchars($p->version)."</td>";
 	echo "<td>".htmlspecialchars($p->author)."</td>";
-	echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 	echo "<td sort_key='".htmlspecialchars($size)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG['not_found'])."</td>";
 	echo "<td>".htmlspecialchars($p->package_group_member_sequence ?? '-')."</td>";
+	echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 	echo "<td>".htmlspecialchars($p->created)."</td>";
 	echo "<td class='updown'>";
 	if($group !== null) {

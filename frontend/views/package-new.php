@@ -78,11 +78,11 @@ if(isset($_POST['name'])) {
 </datalist>
 
 <table class='form'>
-	<tr>
+	<tr class='nospace'>
 		<th><?php echo LANG['package_family']; ?></th>
 		<td><input type='text' id='txtName' list='lstPackageNames'></td>
 	</tr>
-	<tr>
+	<tr class='nospace'>
 		<th><?php echo LANG['version']; ?></th>
 		<td><input type='text' id='txtVersion'></td>
 	</tr>
@@ -94,7 +94,7 @@ if(isset($_POST['name'])) {
 		<th><?php echo LANG['zip_archive']; ?></th>
 		<td><input type='file' id='fleArchive' onchange='updatePackageProcedureTemplates()'></td>
 	</tr>
-	<tr>
+	<tr class='nospace'>
 		<th><?php echo LANG['install_procedure']; ?></th>
 		<td><input type='text' id='txtInstallProcedure' list='lstInstallProcedures'></td>
 		<th><?php echo LANG['success_return_codes']; ?></th>
@@ -109,13 +109,13 @@ if(isset($_POST['name'])) {
 			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_EXIT; ?>'>&nbsp;<?php echo LANG['restart_agent']; ?></label>
 		</td>
 	</tr>
-	<tr>
+	<tr class='nospace'>
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
 		<td><input type='text' id='txtUninstallProcedure' list='lstUninstallProcedures' placeholder='<?php echo LANG['optional_hint']; ?>'></td>
 		<th><?php echo LANG['success_return_codes']; ?></th>
 		<td><input type='text' id='txtUninstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='0'></td>
 	</tr>
-	<tr>
+	<tr class='nospace'>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td colspan='3'>
 			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>

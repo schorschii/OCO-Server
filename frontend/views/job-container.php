@@ -125,6 +125,10 @@ if(!empty($_GET['id'])) {
 	<div>
 		<table class='list metadata'>
 			<tr>
+				<th><?php echo LANG['id']; ?></th>
+				<td><?php echo htmlspecialchars($container->id); ?></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['created']; ?></th>
 				<td><?php echo htmlspecialchars($container->created); ?></td>
 			</tr>
@@ -155,6 +159,10 @@ if(!empty($_GET['id'])) {
 						default: echo htmlspecialchars($container->sequence_mode);
 					} ?>
 				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['priority']; ?></th>
+				<td><?php echo htmlspecialchars($container->priority); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['description']; ?></th>
@@ -251,6 +259,8 @@ if(!empty($_GET['id'])) {
 					<th class='searchable sortable'><?php echo LANG['created']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['start']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['end']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['priority']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['description']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['progress']; ?></th>
 				</tr>
 			</thead>
@@ -277,6 +287,8 @@ if(!empty($_GET['id'])) {
 				echo "<td>".htmlspecialchars($jc->created)."</td>";
 				echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 				echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
+				echo "<td>".htmlspecialchars($jc->priority)."</td>";
+				echo "<td>".htmlspecialchars(shorter($jc->notes))."</td>";
 				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, null, null, true)."</td>";
 				echo "</tr>";
 			} ?>

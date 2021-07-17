@@ -492,6 +492,12 @@ table.form select,
 table.form textarea {
 	width: 100%;
 }
+table.form th:not(:first-child) {
+	padding-left: 25px;
+}
+table.form tr:not(.nospace) th, table.form tr:not(.nospace) td {
+	padding-bottom: 10px;
+}
 button:focus, button:hover,
 input:not([type=range]):not([type=radio]):not([type=checkbox]):focus, input:not([type=range]):not([type=radio]):not([type=checkbox]):hover,
 textarea:focus, textarea:hover,

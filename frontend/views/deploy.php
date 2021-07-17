@@ -106,13 +106,7 @@ if(isset($_POST['add_jobcontainer'])) {
 			<input type='text' id='txtName' value='<?php echo htmlspecialchars($default_job_container_name); ?>'></input>
 		</td>
 	</tr>
-	<tr>
-		<th><?php echo LANG['description']; ?></th>
-		<td>
-			<textarea id='txtDescription'></textarea>
-		</td>
-	</tr>
-	<tr>
+	<tr class='nospace'>
 		<th><?php echo LANG['start']; ?></th>
 		<td>
 			<input type='date' id='dteStart' value='<?php echo date('Y-m-d'); ?>'></input>
@@ -132,11 +126,17 @@ if(isset($_POST['add_jobcontainer'])) {
 		<td><label><input type='checkbox' id='chkDateEndEnabled'><?php echo LANG['set_end']; ?></label></td>
 	</tr>
 	<tr>
+		<th><?php echo LANG['description']; ?></th>
+		<td>
+			<textarea id='txtDescription'></textarea>
+		</td>
 		<th><?php echo LANG['sequence_mode']; ?></th>
 		<td>
 			<label><input type='radio' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_IGNORE_FAILED; ?>' checked='true'>&nbsp;<?php echo LANG['ignore_failed']; ?></label><br>
 			<label><input type='radio' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>'>&nbsp;<?php echo LANG['abort_after_failed']; ?></label>
 		</td>
+	</tr>
+	<tr>
 		<th><?php echo LANG['priority']; ?></th>
 		<td>
 			<div class='inputWithLabel' title='<?php echo LANG['priority_description']; ?>'>
@@ -144,8 +144,6 @@ if(isset($_POST['add_jobcontainer'])) {
 				<div id='lblPriorityPreview'>0</div>
 			</div>
 		</td>
-	</tr>
-	<tr>
 		<th><?php echo LANG['timeout_for_reboot']; ?></th>
 		<td>
 			<div class='inputWithLabel' title='<?php echo LANG['timeout_for_reboot_description']; ?>'>
