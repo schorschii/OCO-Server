@@ -12,11 +12,27 @@ function handleRefresh(e) {
 
 function getCheckedRadioValue(name) {
 	var rates = document.getElementsByName(name);
-	for(var i = 0; i < rates.length; i++){
-		if(rates[i].checked){
+	for(var i = 0; i < rates.length; i++) {
+		if(rates[i].checked) {
 			return rates[i].value;
 		}
 	}
+}
+
+function handleSearchResultNavigation() {
+	if(event.keyCode==40) focusNextSearchResult();
+	else if(event.keyCode==38) focusNextSearchResult(-1);
+}
+function focusNextSearchResult(step=1) {
+	var links = document.querySelectorAll('#search-results a');
+	for(let i=0; i<links.length; i++) {
+		if(links[i] === document.activeElement) {
+			var next = links[i + step] || links[0];
+			next.focus();
+			return;
+		}
+	}
+	links[0].focus();
 }
 
 function rewriteUrlContentParameter(value) {
