@@ -11,7 +11,9 @@ In the 'Procedure' fields, you define which commands should be executed when dep
 For example, MSI packages can also return `3010` if the installation succeeded but a reboot is required (see [list of MSI return codes](https://docs.microsoft.com/de-de/windows/win32/msi/error-codes)).
 
 ### Action After Procedure
-Below the procedure you can specify if the computer should be restartet or shut down after the procedure was executed. The restart/shutdown timeout is specified in the deployment assistant. This timeout allows the user to save his work before the computer gets restartet. If no user is logged in on the target computer, it will be restartet immediately, ignoring the timeout value. If you specify a negative timeout value in the deployment assistant, no restart/shutdown will be executed (in other words, this overrides the package restart/shutdown setting).
+Below the procedure you can specify if the computer should be restartet or shut down after the procedure was executed. If your new package is an OCO agent update package, you can select 'restart agent' to instantly exit the old version and start the new agent.
+
+The restart/shutdown timeout is specified later in the deployment assistant. This timeout allows the user to save his work before the computer gets restartet. If no user is logged in on the target computer, it will be restartet immediately, ignoring the timeout value. If you specify a negative timeout value in the deployment assistant, no restart/shutdown will be executed (in other words, this overrides the package restart/shutdown setting).
 
 ### Deployment Process
 When deploying, the `.zip` archive is unpacked into a temporary directory. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (`.bat` or `.sh`) you have written yourself.
