@@ -19,7 +19,7 @@ function askNotificationPermission() {
 }
 
 // reset previous notification state
-localStorage.clear();
+localStorage.setItem('presentedNotifications', null);
 // permission already granted
 // automatically start watching for notifications
 if(Notification && Notification.permission === 'granted') {

@@ -516,6 +516,7 @@ select:active {
 }
 .updown {
 	text-align: center;
+	cursor: move;
 }
 .updown img {
 	pointer-events: none;

@@ -158,8 +158,6 @@ const LANG = [
 	'notes' => 'Notes',
 	'wol' => 'WOL',
 	'wol_packet_sent' => 'WOL packet(s) sent',
-	'move_up' => 'Move Up',
-	'move_down' => 'Move Down',
 	'client_extension_note' => 'This feature requires the OCO client extension installed on your computer.',
 	'logons' => 'Logons',
 	'computers' => 'Computers',
@@ -292,6 +290,8 @@ const LANG = [
 	'change_settings_in_config_file' => 'You can change the settings in the OCO config file (conf.php).',
 	'client_api_enabled' => 'API enabled',
 	'reorder_drag_drop_description' => 'Change sequence via Drag & Drop'."\n".'(only available if table is sorted by sequence)',
+	'enter_new_sequence_number' => 'Please enter the new position number, to which the object should be moved to.',
+	'move' => 'Verschieben',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

@@ -36,6 +36,7 @@ var L__FILE_TOO_BIG = "<?php echo LANG['file_too_big']; ?>";
 var L__CHANGE_ICON = "<?php echo LANG['change_icon']; ?>";
 var L__REMOVE_ICON = "<?php echo LANG['remove_icon']; ?>";
 var L__ARE_YOU_SURE = "<?php echo LANG['are_you_sure']; ?>";
+var L__ENTER_NEW_SEQUENCE_NUMBER = "<?php echo LANG['enter_new_sequence_number']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";

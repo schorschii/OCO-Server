@@ -158,8 +158,6 @@ const LANG = [
 	'notes' => 'Notizen',
 	'wol' => 'WOL',
 	'wol_packet_sent' => 'WOL-Paket(e) gesendet',
-	'move_up' => 'Nach oben schieben',
-	'move_down' => 'Nach unten schieben',
 	'client_extension_note' => 'Für diese Funktion muss die OCO-Client-Extension auf Ihrem Computer installiert sein.',
 	'logons' => 'Anmeldungen',
 	'computers' => 'Computer',
@@ -292,6 +290,8 @@ const LANG = [
 	'change_settings_in_config_file' => 'Sie können die Einstellungen in der OCO-Konfigurationsdatei (conf.php) ändern.',
 	'client_api_enabled' => 'API aktiviert',
 	'reorder_drag_drop_description' => 'Reihenfolge via Drag & Drop ändern'."\n".'(nur verfügbar, wenn die Tabelle nach Reihenfolge sortiert ist)',
+	'enter_new_sequence_number' => 'Bitte geben Sie die neue Positions-Nummer ein, an die das Objekt geschoben werden soll.',
+	'move' => 'Verschieben',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

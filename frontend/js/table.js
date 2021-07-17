@@ -209,13 +209,13 @@ var TableSortUltra = function(tab, startsort) {
 function initTableSort() {
 	// find all tables which should be sortable
 	var tables = document.querySelectorAll("table.sortable");
-	for(var i = 0, store; i < tables.length; i++) {
-		store = null;
+	for(var i = 0, storage; i < tables.length; i++) {
+		storage = null;
 		if(localStorage && tables[i].id && tables[i].classList.contains("savesort") && tables[i].id.length) {
-			store = localStorage.getItem(tables[i].id);
-			if(store) store = JSON.parse(store);
+			let tmpStore = localStorage.getItem(tables[i].id);
+			if(tmpStore) storage = JSON.parse(tmpStore);
 		}
-		new TableSortUltra(tables[i], store);
+		new TableSortUltra(tables[i], storage);
 	}
 }
 
@@ -386,6 +386,7 @@ function dragStartPackageTable(e) {
 	if(!packageDragAndDropEnabled) return false;
 	draggedPackageTableElement = e.target;
 	draggedPackageTableElementBeginIndex = getChildIndex(e.target);
+	return true;
 }
 function dragOverPackageTable(e) {
 	if(!packageDragAndDropEnabled) return false;
@@ -395,12 +396,28 @@ function dragOverPackageTable(e) {
 	} else {
 		e.target.parentNode.before(draggedPackageTableElement);
 	}
+	return true;
 }
 function dragEndPackageTable(e, gid) {
 	if(!packageDragAndDropEnabled) return false;
 	reorderPackageInGroup(gid, draggedPackageTableElementBeginIndex, getChildIndex(draggedPackageTableElement));
+	return true;
 }
 function handlePackageReorderByKeyboard(e, gid, sequence) {
-	if(e.keyCode==40) reorderPackageInGroup(gid, sequence, sequence+1);
-	else if(e.keyCode==38) reorderPackageInGroup(gid, sequence, sequence-1);
+	// move relative to current position
+	if(e.keyCode == 8) {
+		var newValue = prompt(L__ENTER_NEW_SEQUENCE_NUMBER);
+		if(newValue == null || newValue == '') return;
+		var newValueInt = parseInt(newValue);
+		if(isNaN(newValueInt)) return;
+		reorderPackageInGroup(gid, sequence, sequence+newValueInt);
+	}
+	// move to absolute position
+	if(e.keyCode == 13) {
+		var newValue = prompt(L__ENTER_NEW_SEQUENCE_NUMBER);
+		if(newValue == null || newValue == '') return;
+		var newValueInt = parseInt(newValue);
+		if(isNaN(newValueInt)) return;
+		reorderPackageInGroup(gid, sequence, newValueInt);
+	}
 }
