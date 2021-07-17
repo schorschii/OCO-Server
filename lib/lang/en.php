@@ -146,11 +146,12 @@ const LANG = [
 	'lock' => 'Lock',
 	'unlock' => 'Unlock',
 	'installations' => 'Installations',
-	'agent_registration_enabled' => 'Enable Agent Self-Registration',
+	'agent_registration_enabled' => 'Agent self registration enabled',
 	'agent_key' => 'Agent Key',
-	'agent_update_interval' => 'Agent Update Interval (Seconds)',
-	'purge_succeeded_jobs_after' => 'Purge Succeded Jobs after (Seconds)',
-	'purge_failed_jobs_after' => 'Purge Failed Jobs after (Seconds)',
+	'agent_update_interval' => 'Agent update interval (seconds)',
+	'purge_succeeded_jobs_after' => 'Purge succeded job containers after (seconds)',
+	'purge_failed_jobs_after' => 'Purge failed job containers after (seconds)',
+	'assume_computer_offline_after' => 'Assume that computers are offline after (seconds)',
 	'save' => 'Save',
 	'saved' => 'Saved',
 	'add' => 'Add',
@@ -289,6 +290,7 @@ const LANG = [
 	'priority_description' => 'Job Container with higher priority will be executed first.',
 	'force_update' => 'Force Update',
 	'change_settings_in_config_file' => 'You can change the settings in the OCO config file (conf.php).',
+	'client_api_enabled' => 'API enabled',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

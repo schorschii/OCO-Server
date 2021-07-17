@@ -65,12 +65,12 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 </p>
 <table class='list metadata'>
 	<tr>
-		<th><?php echo LANG['agent_registration_enabled']; ?>:</th>
-		<td><?php if(AGENT_SELF_REGISTRATION_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
+		<th><?php echo LANG['client_api_enabled']; ?>:</th>
+		<td><?php if(CLIENT_API_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['agent_key']; ?>:</th>
-		<td><?php echo htmlspecialchars(AGENT_REGISTRATION_KEY); ?></td>
+		<th><?php echo LANG['agent_registration_enabled']; ?>:</th>
+		<td><?php if(AGENT_SELF_REGISTRATION_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['agent_update_interval']; ?>:</th>
@@ -83,6 +83,10 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 	<tr>
 		<th><?php echo LANG['purge_failed_jobs_after']; ?>:</th>
 		<td><?php echo htmlspecialchars(PURGE_FAILED_JOBS_AFTER); ?></td>
+	</tr>
+	<tr>
+		<th><?php echo LANG['assume_computer_offline_after']; ?>:</th>
+		<td><?php echo htmlspecialchars(COMPUTER_OFFLINE_SECONDS); ?></td>
 	</tr>
 </table>
 
