@@ -82,9 +82,9 @@ if(empty($_GET['id'])) {
 		<th class='searchable sortable'><?php echo LANG['version']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['author']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['size']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['order']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['description']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['created']; ?></th>
+		<th class='searchable sortable'><?php echo LANG['order']; ?></th>
 		<th><?php echo LANG['action']; ?></th>
 	</tr>
 </thead>
@@ -95,19 +95,18 @@ $counter = 0;
 foreach($packages as $p) {
 	$counter ++;
 	$size = $p->getSize();
-	echo "<tr>";
-	echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)'></td>";
-	echo "<td><a href='".explorerLink('views/package-detail.php?id='.$p->id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")'>".htmlspecialchars($p->name)."</a></td>";
+	if($group !== null) echo "<tr draggable='true' ondragstart='return dragStartPackageTable(event)' ondragover='dragOverPackageTable(event)' ondragend='dragEndPackageTable(event, ".$group->id.")'>"; else echo "<tr>";
+	echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)' onkeyup='handlePackageReorderByKeyboard(event, ".$group->id.", ".$p->package_group_member_sequence.")'></td>";
+	echo "<td><a href='".explorerLink('views/package-detail.php?id='.$p->id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")' ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
 	echo "<td>".htmlspecialchars($p->version)."</td>";
 	echo "<td>".htmlspecialchars($p->author)."</td>";
 	echo "<td sort_key='".htmlspecialchars($size)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG['not_found'])."</td>";
-	echo "<td>".htmlspecialchars($p->package_group_member_sequence ?? '-')."</td>";
 	echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 	echo "<td>".htmlspecialchars($p->created)."</td>";
-	echo "<td class='updown'>";
+	echo "<td>".htmlspecialchars($p->package_group_member_sequence ?? '-')."</td>";
+	echo "<td class='updown' title='".LANG['reorder_drag_drop_description']."'>";
 	if($group !== null) {
-		echo "<button title='".LANG['move_up']."' class='updown' onclick='reorderPackageInGroup(".$group->id.", ".$p->package_group_member_sequence.", ".($p->package_group_member_sequence-1).")'><img src='img/up.svg'></button>";
-		echo "<button title='".LANG['move_down']."' class='updown' onclick='reorderPackageInGroup(".$group->id.", ".$p->package_group_member_sequence.", ".($p->package_group_member_sequence+1).")'><img src='img/down.svg'></button>";
+		echo "<img src='img/reorder.dyn.svg'>";
 	}
 	echo "</td>";
 	echo "</tr>";

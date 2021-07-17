@@ -291,6 +291,7 @@ const LANG = [
 	'force_update' => 'Force Update',
 	'change_settings_in_config_file' => 'You can change the settings in the OCO config file (conf.php).',
 	'client_api_enabled' => 'API enabled',
+	'reorder_drag_drop_description' => 'Change sequence via Drag & Drop'."\n".'(only available if table is sorted by sequence)',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

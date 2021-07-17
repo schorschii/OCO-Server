@@ -515,7 +515,10 @@ select:active {
 	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15) inset;
 }
 .updown {
-	white-space: nowrap;
+	text-align: center;
+}
+.updown img {
+	pointer-events: none;
 }
 
 .inputWithLabel {

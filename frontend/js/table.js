@@ -1,3 +1,4 @@
+var packageDragAndDropEnabled = false;
 var TableSortUltra = function(tab, startsort) {
 	var me = this;
 
@@ -139,8 +140,7 @@ var TableSortUltra = function(tab, startsort) {
 			if(firstsort[col] == "desc") {
 				arr.reverse();
 				sortsymbols[col].classList.add("sorteddesc");
-			}
-			else {
+			} else {
 				sortsymbols[col].classList.add("sortedasc");
 			}
 		}
@@ -154,6 +154,13 @@ var TableSortUltra = function(tab, startsort) {
 		if(savesort) {
 			var store = { sorted: sorted, desc: sortsymbols[sorted].classList.contains("sorteddesc") };
 			localStorage.setItem(tab.id, JSON.stringify(store));
+		}
+
+		// enable drag and drop only if package list is sorted by sequence ascending
+		if(tab.id == "tblPackageData" && col == 7 && sortsymbols[col].classList.contains("sortedasc")) {
+			packageDragAndDropEnabled = true;
+		} else {
+			packageDragAndDropEnabled = false;
 		}
 	}
 
@@ -368,4 +375,32 @@ function downloadTableCsv(table_id, separator = ';') {
 	document.body.appendChild(link);
 	link.click();
 	document.body.removeChild(link);
+}
+
+function getChildIndex(node) {
+	return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
+}
+var draggedPackageTableElement;
+var draggedPackageTableElementBeginIndex = 0;
+function dragStartPackageTable(e) {
+	if(!packageDragAndDropEnabled) return false;
+	draggedPackageTableElement = e.target;
+	draggedPackageTableElementBeginIndex = getChildIndex(e.target);
+}
+function dragOverPackageTable(e) {
+	if(!packageDragAndDropEnabled) return false;
+	let children = Array.from(e.target.parentNode.parentNode.children);
+	if(children.indexOf(e.target.parentNode) > children.indexOf(draggedPackageTableElement)) {
+		e.target.parentNode.after(draggedPackageTableElement);
+	} else {
+		e.target.parentNode.before(draggedPackageTableElement);
+	}
+}
+function dragEndPackageTable(e, gid) {
+	if(!packageDragAndDropEnabled) return false;
+	reorderPackageInGroup(gid, draggedPackageTableElementBeginIndex, getChildIndex(draggedPackageTableElement));
+}
+function handlePackageReorderByKeyboard(e, gid, sequence) {
+	if(e.keyCode==40) reorderPackageInGroup(gid, sequence, sequence+1);
+	else if(e.keyCode==38) reorderPackageInGroup(gid, sequence, sequence-1);
 }
