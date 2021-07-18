@@ -157,11 +157,8 @@ var TableSortUltra = function(tab, startsort) {
 		}
 
 		// enable drag and drop only if package list is sorted by sequence ascending
-		if(tab.id == "tblPackageData" && col == 7 && sortsymbols[col].classList.contains("sortedasc")) {
-			packageDragAndDropEnabled = true;
-		} else {
-			packageDragAndDropEnabled = false;
-		}
+		packageDragAndDropEnabled = (tab.id == "tblPackageData" && col == 7 && sortsymbols[col].classList.contains("sortedasc"));
+		togglePackageDragAndDrop("tblPackageData", packageDragAndDropEnabled);
 	}
 
 	// check if there is a 'sortable' class in thead
@@ -377,6 +374,17 @@ function downloadTableCsv(table_id, separator = ';') {
 	document.body.removeChild(link);
 }
 
+function togglePackageDragAndDrop(table_id, state) {
+	var rows = document.querySelectorAll('table#' + table_id + ' tr.draggable');
+	for(var i = 0; i < rows.length; i++) {
+		rows[i].draggable = state;
+		if(state) {
+			rows[i].classList.remove('nodrag');
+		} else {
+			rows[i].classList.add('nodrag');
+		}
+	}
+}
 function getChildIndex(node) {
 	return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
 }
@@ -404,20 +412,21 @@ function dragEndPackageTable(e, gid) {
 	return true;
 }
 function handlePackageReorderByKeyboard(e, gid, sequence) {
-	// move relative to current position
-	if(e.keyCode == 8) {
-		var newValue = prompt(L__ENTER_NEW_SEQUENCE_NUMBER);
-		if(newValue == null || newValue == '') return;
-		var newValueInt = parseInt(newValue);
-		if(isNaN(newValueInt)) return;
-		reorderPackageInGroup(gid, sequence, sequence+newValueInt);
-	}
-	// move to absolute position
 	if(e.keyCode == 13) {
-		var newValue = prompt(L__ENTER_NEW_SEQUENCE_NUMBER);
-		if(newValue == null || newValue == '') return;
-		var newValueInt = parseInt(newValue);
-		if(isNaN(newValueInt)) return;
-		reorderPackageInGroup(gid, sequence, newValueInt);
+		if(e.shiftKey) {
+			// move relative to current position
+			var newValue = prompt(L__ENTER_NEW_SEQUENCE_NUMBER);
+			if(newValue == null || newValue == '') return;
+			var newValueInt = parseInt(newValue);
+			if(isNaN(newValueInt)) return;
+			reorderPackageInGroup(gid, sequence, sequence+newValueInt);
+		} else {
+			// move to absolute position
+			var newValue = prompt(L__ENTER_NEW_SEQUENCE_NUMBER);
+			if(newValue == null || newValue == '') return;
+			var newValueInt = parseInt(newValue);
+			if(isNaN(newValueInt)) return;
+			reorderPackageInGroup(gid, sequence, newValueInt);
+		}
 	}
 }

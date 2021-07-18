@@ -514,12 +514,18 @@ select:active {
 	outline: none;
 	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15) inset;
 }
-.updown {
+.drag {
 	text-align: center;
 	cursor: move;
 }
-.updown img {
+.draggable.nodrag .drag {
+	cursor: not-allowed;
+}
+.drag img {
 	pointer-events: none;
+}
+.draggable.nodrag .drag img {
+	opacity: 0.4;
 }
 
 .inputWithLabel {

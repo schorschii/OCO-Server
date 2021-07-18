@@ -97,7 +97,7 @@ $counter = 0;
 foreach($packages as $p) {
 	$counter ++;
 	$size = $p->getSize();
-	if($group !== null) echo "<tr draggable='true' ondragstart='return dragStartPackageTable(event)' ondragover='dragOverPackageTable(event)' ondragend='return dragEndPackageTable(event, ".$group->id.")'>"; else echo "<tr>";
+	if($group !== null) echo "<tr class='draggable nodrag' ondragstart='return dragStartPackageTable(event)' ondragover='dragOverPackageTable(event)' ondragend='return dragEndPackageTable(event, ".$group->id.")'>"; else echo "<tr>";
 
 	if($group !== null) echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)' onkeyup='handlePackageReorderByKeyboard(event, ".$group->id.", ".$p->package_group_member_sequence.")'></td>";
 	else echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)'></td>";
@@ -111,7 +111,7 @@ foreach($packages as $p) {
 
 	if($group !== null) {
 		echo "<td>".htmlspecialchars($p->package_group_member_sequence ?? '-')."</td>";
-		echo "<td class='updown' title='".LANG['reorder_drag_drop_description']."'><img src='img/reorder.dyn.svg'></td>";
+		echo "<td class='drag' title='".LANG['reorder_drag_drop_description']."'><img src='img/reorder.dyn.svg'></td>";
 	}
 	echo "</tr>";
 }
