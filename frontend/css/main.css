@@ -336,26 +336,6 @@ body.loading2 #loader-container {
 	font-family: monospace;
 }
 
-div.contextMenu {
-	position: fixed;
-	background-color: #FAFAFA;
-	border-radius: 4px;
-	box-shadow: 0px 0px 4px black;
-	padding: 4px;
-}
-div.contextMenu button {
-	display: block;
-	width: 100%;
-	border-width: 1px;
-	border-radius: 2px;
-	padding: 4px;
-	box-sizing: border-box;
-	text-align: left;
-}
-div.contextMenu button img {
-	width: 18px;
-}
-
 .quote {
 	border-left: 2px solid rgb(200,200,200);
 	padding: 10px;

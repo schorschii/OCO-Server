@@ -23,7 +23,7 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 		PS. Obacht! Heute ist der <?php echo date("N"); ?>. Tag der Woche und die Woche zieht sich schon wieder!!!
 	-->
 </head>
-<body onclick='toggleContextMenu(null)' onkeydown='handleRefresh(event)'>
+<body onkeydown='handleRefresh(event)'>
 
 <div id='container'>
 
@@ -33,7 +33,7 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 			<span class='separator space'></span>
 		</span>
 		<span class='search'>
-			<input type='text' autocomplete='new-password' placeholder='<?php echo LANG['search_computer_packages_job_container']; ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults();} else if(event.keyCode==40) {focusNextSearchResult()} else {doSearch(this.value);}' onpaste='doSearch(this.value)'></input>
+			<input type='text' autocomplete='new-password' placeholder='<?php echo LANG['search_computer_packages_job_container']; ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults()} else if(event.keyCode==40) {focusNextSearchResult()} else {doSearch(this.value)}' onpaste='doSearch(this.value)'></input>
 			<div id='search-glass'></div>
 			<div id='search-results' style='display:none'>
 				<div class='search-result'>
@@ -53,8 +53,7 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 	</div>
 
 	<div id='explorer'>
-		<div id='explorer-tree' oncontextmenu='return toggleContextMenu(ctmExplorerTree)' onclick='closeSearchResults()'>
-
+		<div id='explorer-tree' onclick='closeSearchResults()'>
 		</div>
 		<div id='explorer-content' onclick='closeSearchResults()'>
 			<?php if($initialExplorerContentAjaxRequest == null) require('views/homepage.php'); ?>
@@ -75,10 +74,6 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 				<button id='btnDialogClose' onclick='showErrorDialog(false);showLoader(false);showLoader2(false);'><img src='img/close.svg'>&nbsp;<?php echo LANG['close']; ?></button>
 			</div>
 		</div>
-	</div>
-
-	<div id='ctmExplorerTree' class='contextMenu hidden'>
-		<button onclick='refreshSidebar()'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['refresh']; ?></button>
 	</div>
 
 	<button id='btnHidden' onclick='toggleEquip()'></button>

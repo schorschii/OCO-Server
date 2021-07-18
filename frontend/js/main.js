@@ -62,20 +62,6 @@ window.onpopstate = function (event) {
 	}
 };
 
-var currentOpenContextMenu = null;
-function toggleContextMenu(menu) {
-	if(currentOpenContextMenu != null) {
-		currentOpenContextMenu.classList.add('hidden');
-	}
-	if(menu != null) {
-		menu.classList.remove('hidden')
-		menu.style.top = event.clientY+'px';
-		menu.style.left = event.clientX+'px';
-	}
-	currentOpenContextMenu = menu;
-	return false;
-}
-
 function showErrorDialog(active, title='', text='', showReload=true) {
 	if(active) {
 		obj('dialog-container').classList.add('active');
