@@ -1496,7 +1496,7 @@ class Db {
 				SELECT cs3.id FROM computer_software AS cs3
 				INNER JOIN computer c ON cs3.computer_id = c.id
 				WHERE cs3.software_id = s.id
-				AND c.os = "Windows"
+				AND c.os LIKE "%Windows%"
 				LIMIT 1
 			)
 			ORDER BY name ASC'
@@ -1511,7 +1511,7 @@ class Db {
 				SELECT cs3.id FROM computer_software AS cs3
 				INNER JOIN computer c ON cs3.computer_id = c.id
 				WHERE cs3.software_id = s.id
-				AND c.os = "macOS"
+				AND c.os LIKE "%macOS%"
 				LIMIT 1
 			)
 			ORDER BY name ASC'
@@ -1526,7 +1526,7 @@ class Db {
 				SELECT cs3.id FROM computer_software AS cs3
 				INNER JOIN computer c ON cs3.computer_id = c.id
 				WHERE cs3.software_id = s.id
-				AND c.os != "Windows" AND c.os != "macOS"
+				AND c.os NOT LIKE "%Windows%" AND c.os NOT LIKE "%macOS%"
 				LIMIT 1
 			)
 			ORDER BY name ASC'
