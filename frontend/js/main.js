@@ -228,8 +228,11 @@ function refreshContentComputerDetail(id) {
 function refreshContentSoftware(id='', version='', os='') {
 	ajaxRequest('views/software.php?id='+encodeURIComponent(id)+'&version='+encodeURIComponent(version)+'&os='+encodeURIComponent(os), 'explorer-content');
 }
-function refreshContentPackage(id='') {
-	ajaxRequest('views/package.php?id='+encodeURIComponent(id), 'explorer-content');
+function refreshContentPackage(id='', package_family_id='') {
+	ajaxRequest('views/package.php?id='+encodeURIComponent(id)+'&package_family_id='+encodeURIComponent(package_family_id), 'explorer-content');
+}
+function refreshContentPackageFamily() {
+	ajaxRequest('views/package-family.php', 'explorer-content');
 }
 function refreshContentPackageDetail(id) {
 	if(id == null) {
@@ -523,6 +526,33 @@ function removePackageFromGroup(ids, groupId) {
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/package.php', paramString, null, refreshContent);
+}
+function removeSelectedPackageFamily(checkboxName, attributeName=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	confirmRemovePackageFamily(ids);
+}
+function confirmRemovePackageFamily(ids) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(L__CONFIRM_DELETE)) {
+		ajaxRequestPost('views/package-family.php', paramString, null, refreshContent);
+	}
 }
 function deploySelectedPackage(checkboxName, attributeName=null) {
 	var ids = [];

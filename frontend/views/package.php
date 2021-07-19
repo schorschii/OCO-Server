@@ -51,15 +51,7 @@ if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_group_package_id']
 
 $group = null;
 $packages = [];
-if(empty($_GET['id'])) {
-	$packages = $db->getAllPackage();
-	echo "<h1><img src='img/package.dyn.svg'>".LANG['complete_package_library']."</h1>";
-
-	echo "<div class='controls'>";
-	echo "<button onclick='refreshContentPackageDetail()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
-	echo "<button onclick='newPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
-	echo "</div>";
-} else {
+if(!empty($_GET['id'])) {
 	$packages = $db->getPackageByGroup($_GET['id']);
 	$group = $db->getPackageGroup($_GET['id']);
 	if($group === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
@@ -70,6 +62,25 @@ if(empty($_GET['id'])) {
 	echo "<button onclick='refreshContentDeploy([],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_all']."</button> ";
 	echo "<button onclick='renamePackageGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
 	echo "<button onclick='confirmRemovePackageGroup([".$group->id."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
+	echo "</div>";
+} elseif(!empty($_GET['package_family_id'])) {
+	$packages = $db->getPackageByFamily($_GET['package_family_id']);
+	$family = $db->getPackageFamily($_GET['package_family_id']);
+	if($family === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
+	echo "<h1><img src='img/package.dyn.svg'>".htmlspecialchars($family->name)."</h1>";
+
+	echo "<div class='controls'>";
+	echo "<button onclick='refreshContentPackageDetail()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
+	echo "<span><a href='".explorerLink('views/package-family.php')."' onclick='event.preventDefault();refreshContentPackageFamily()'>".LANG['package_families']."</a></span>";
+	echo "</div>";
+} else {
+	$packages = $db->getAllPackage();
+	echo "<h1><img src='img/package.dyn.svg'>".LANG['complete_package_library']."</h1>";
+
+	echo "<div class='controls'>";
+	echo "<button onclick='refreshContentPackageDetail()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
+	echo "<button onclick='newPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
+	echo "<span><a href='".explorerLink('views/package-family.php')."' onclick='event.preventDefault();refreshContentPackageFamily()'>".LANG['package_families']."</a></span>";
 	echo "</div>";
 }
 ?>

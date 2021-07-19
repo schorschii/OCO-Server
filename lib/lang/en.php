@@ -292,6 +292,7 @@ const LANG = [
 	'reorder_drag_drop_description' => 'Change sequence via Drag & Drop'."\n".'(only available if table is sorted by sequence)',
 	'enter_new_sequence_number' => 'Please enter the new position number, to which the object should be moved to.',
 	'move' => 'Verschieben',
+	'package_families' => 'Package Families',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

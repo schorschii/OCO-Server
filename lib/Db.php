@@ -814,7 +814,7 @@ class Db {
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
 	public function getAllPackageFamily() {
-		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family');
+		$this->stmt = $this->dbh->prepare('SELECT pf.*, (SELECT COUNT(id) FROM package p WHERE p.package_family_id = pf.id) AS "package_count" FROM package_family pf');
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily');
 	}
@@ -1007,6 +1007,13 @@ class Db {
 	public function removePackage($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM package WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
+	}
+	public function removePackageFamily($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM package_family WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);

@@ -292,6 +292,7 @@ const LANG = [
 	'reorder_drag_drop_description' => 'Reihenfolge via Drag & Drop ändern'."\n".'(nur verfügbar, wenn die Tabelle nach Reihenfolge sortiert ist)',
 	'enter_new_sequence_number' => 'Bitte geben Sie die neue Positions-Nummer ein, an die das Objekt geschoben werden soll.',
 	'move' => 'Verschieben',
+	'package_families' => 'Paketfamilien',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

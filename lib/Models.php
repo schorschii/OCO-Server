@@ -114,6 +114,8 @@ class PackageFamily {
 	public $name;
 	public $notes;
 	public $icon;
+	// aggregated values
+	public $package_count;
 }
 class Package {
 	public $id;
