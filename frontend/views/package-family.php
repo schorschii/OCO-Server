@@ -6,7 +6,7 @@ require_once('../session.php');
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		try {
-			$db->removePackageFamily($id);
+			$cl->removePackageFamily($id);
 		} catch(Exception $e) {
 			header('HTTP/1.1 400 Invalid Request');
 			die($e->getMessage());

@@ -185,6 +185,14 @@ class CoreLogic {
 		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
+	public function removePackageFamily($id) {
+		$packages = $this->db->getPackageByFamily($id);
+		if(count($packages) > 0) throw new Exception(LANG['remove_failed_package_family_contains_packages']);
+
+		$result = $this->db->removePackageFamily($id);
+		if(!$result) throw new Exception(LANG['not_found']);
+		return $result;
+	}
 	public function removePackageGroup($id) {
 		$subgroups = $this->db->getAllPackageGroup($id);
 		if(count($subgroups) > 0) throw new Exception(LANG['remove_failed_subgroups']);
