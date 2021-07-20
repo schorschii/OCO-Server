@@ -293,6 +293,8 @@ const LANG = [
 	'enter_new_sequence_number' => 'Please enter the new position number, to which the object should be moved to.',
 	'move' => 'Verschieben',
 	'package_families' => 'Package Families',
+	'remove_failed_active_jobs' => 'The object could not be removed because there are still active jobs referencing this object. Please remove the corresponding jobs first, then try to remove this object again.',
+	'remove_failed_subgroups' => 'The group could not be removed because it still has subgroups. Please remove the subgroups first and try again.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

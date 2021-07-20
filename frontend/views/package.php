@@ -20,7 +20,12 @@ if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 }
 if(!empty($_POST['remove_group_id']) && is_array($_POST['remove_group_id'])) {
 	foreach($_POST['remove_group_id'] as $id) {
-		$db->removePackageGroup($id);
+		try {
+			$cl->removePackageGroup($id);
+		} catch(Exception $e) {
+			header('HTTP/1.1 400 Invalid Request');
+			die($e->getMessage());
+		}
 	}
 	die();
 }

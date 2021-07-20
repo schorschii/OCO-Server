@@ -613,7 +613,8 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_group WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function addComputerToGroup($cid, $gid) {
 		$this->stmt = $this->dbh->prepare(
@@ -1022,7 +1023,8 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM package_group WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function removePackageFromGroup($pid, $gid) {
 		$this->stmt = $this->dbh->prepare(
