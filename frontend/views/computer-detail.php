@@ -95,7 +95,7 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 			<?php echoComputerGroupOptions($db); ?>
 		</select>
 	</button>
-	<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+	<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	<?php
 	if(count(COMPUTER_COMMANDS) > 0) echo "<span class='vl'></span>";
 	foreach(COMPUTER_COMMANDS as $c) {

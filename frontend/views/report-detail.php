@@ -134,7 +134,7 @@ foreach($results as $result) {
 				<?php echoComputerGroupOptions($db); ?>
 			</select>
 		</button>
-		<button onclick='removeSelectedComputer("id[]", "computer_id")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='removeSelectedComputer("id[]", "computer_id", event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 <?php } ?>
 
@@ -148,6 +148,6 @@ foreach($results as $result) {
 				<?php echoPackageGroupOptions($db); ?>
 			</select>
 		</button>
-		<button onclick='removeSelectedPackage("id[]", "package_id")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='removeSelectedPackage("id[]", "package_id", event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 <?php } ?>

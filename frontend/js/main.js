@@ -478,7 +478,7 @@ function reorderPackageInGroup(groupId, oldPos, newPos) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/package.php', paramString, null, refreshContent);
 }
-function removeSelectedPackage(checkboxName, attributeName=null) {
+function removeSelectedPackage(checkboxName, attributeName=null, event=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -493,13 +493,16 @@ function removeSelectedPackage(checkboxName, attributeName=null) {
 		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
-	confirmRemovePackage(ids);
+	confirmRemovePackage(ids, event);
 }
-function confirmRemovePackage(ids) {
+function confirmRemovePackage(ids, event=null) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_PACKAGE)) {
 		ajaxRequestPost('views/package.php', paramString, null, refreshContent);
@@ -579,11 +582,14 @@ function renamePackageGroup(id, oldName) {
 		ajaxRequestPost('views/package.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
-function confirmRemovePackageGroup(ids) {
+function confirmRemovePackageGroup(ids, event=null) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_group_id[]', 'value':entry});
 	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
 		ajaxRequestPost('views/package.php', paramString, null, function(){ refreshContentPackage(); refreshSidebar(); });
@@ -753,7 +759,7 @@ function removeComputerFromGroup(ids, groupId) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/computer.php', paramString, null, refreshContent);
 }
-function removeSelectedComputer(checkboxName, attributeName=null) {
+function removeSelectedComputer(checkboxName, attributeName=null, event=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -768,13 +774,16 @@ function removeSelectedComputer(checkboxName, attributeName=null) {
 		alert(L__NO_ELEMENTS_SELECTED);
 		return;
 	}
-	confirmRemoveComputer(ids);
+	confirmRemoveComputer(ids, event);
 }
-function confirmRemoveComputer(ids) {
+function confirmRemoveComputer(ids, event=null) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
 		ajaxRequestPost('views/computer.php', paramString, null, refreshContent);
@@ -836,11 +845,14 @@ function renameComputerGroup(id, oldName) {
 		ajaxRequestPost('views/computer.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
-function confirmRemoveComputerGroup(ids) {
+function confirmRemoveComputerGroup(ids, event=null) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_group_id[]', 'value':entry});
 	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
 		ajaxRequestPost('views/computer.php', paramString, null, function(){ refreshContentComputer(); refreshSidebar(); });

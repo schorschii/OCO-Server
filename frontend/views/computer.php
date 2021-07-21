@@ -23,7 +23,7 @@ if(!empty($_POST['add_computer'])) {
 if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	foreach($_POST['remove_id'] as $id) {
 		try {
-			$cl->removeComputer($id);
+			$cl->removeComputer($id, !empty($_POST['force']));
 		} catch(Exception $e) {
 			header('HTTP/1.1 400 Invalid Request');
 			die($e->getMessage());
@@ -34,7 +34,7 @@ if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 if(!empty($_POST['remove_group_id']) && is_array($_POST['remove_group_id'])) {
 	foreach($_POST['remove_group_id'] as $id) {
 		try {
-			$cl->removeComputerGroup($id);
+			$cl->removeComputerGroup($id, !empty($_POST['force']));
 		} catch(Exception $e) {
 			header('HTTP/1.1 400 Invalid Request');
 			die($e->getMessage());
@@ -89,7 +89,7 @@ if(empty($_GET['id'])) {
 	echo "<button onclick='newComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
 	echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_for_all']."</button> ";
 	echo "<button onclick='renameComputerGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
-	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
+	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."], event)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
 	echo "</div>";
 }
 ?>
@@ -170,5 +170,5 @@ foreach($computer as $c) {
 	<?php if($group !== null) { ?>
 		<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
 	<?php } ?>
-	<button onclick='removeSelectedComputer("computer_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+	<button onclick='removeSelectedComputer("computer_id[]", null, event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 </div>

@@ -104,7 +104,7 @@ if(!empty($packageFamily->icon)) {
 			<?php echoPackageGroupOptions($db); ?>
 		</select>
 	</button>
-	<button onclick='currentExplorerContentUrl="views/package.php";confirmRemovePackage([<?php echo $package->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+	<button onclick='currentExplorerContentUrl="views/package.php";confirmRemovePackage([<?php echo $package->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 </div>
 <input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $package->package_family_id; ?>, this.files[0])'></input>
 

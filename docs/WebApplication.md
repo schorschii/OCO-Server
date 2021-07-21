@@ -1,6 +1,11 @@
 # OCO: Web Application
 The OCO web frontend allows you to manage computers & packages and view their details and relationships.
 
+## Force Remove
+When you try to remove a computer/package group with subgroups or a computer/package with pending jobs, the web frontend will abort the action and tell you that you first need to remove the subgroups/pending jobs.
+
+You can force the deletion of the object by holding the shift key pressed when clicking on the "Remove" button. This will automatically delete all subgroups/pending jobs.
+
 ## Message Of The Day (MOTD)
 The message of the day is displayed on the OCO homepage and can be modified in the `setting` table (setting entry with name `motd`).
 

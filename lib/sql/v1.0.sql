@@ -785,7 +785,7 @@ ALTER TABLE `systemuser_role`
 -- Constraints der Tabelle `computer_group`
 --
 ALTER TABLE `computer_group`
-  ADD CONSTRAINT `fk_parent_computer_group_id` FOREIGN KEY (`parent_computer_group_id`) REFERENCES `computer_group` (`id`);
+  ADD CONSTRAINT `fk_parent_computer_group_id` FOREIGN KEY (`parent_computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `computer_group_member`
@@ -844,8 +844,8 @@ ALTER TABLE `domainuser_logon`
 --
 ALTER TABLE `job`
   ADD CONSTRAINT `fk_job_1` FOREIGN KEY (`job_container_id`) REFERENCES `job_container` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_job_2` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`),
-  ADD CONSTRAINT `fk_job_3` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`);
+  ADD CONSTRAINT `fk_job_2` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_job_3` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `package`
@@ -871,7 +871,7 @@ ALTER TABLE `package_dependency`
 -- Constraints der Tabelle `package_group`
 --
 ALTER TABLE `package_group`
-  ADD CONSTRAINT `fk_parent_package_group_id` FOREIGN KEY (`parent_package_group_id`) REFERENCES `package_group` (`id`);
+  ADD CONSTRAINT `fk_parent_package_group_id` FOREIGN KEY (`parent_package_group_id`) REFERENCES `package_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `package_group_member`

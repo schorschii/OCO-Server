@@ -89,17 +89,21 @@ class CoreLogic {
 		wol($wolMacAdresses, $debugOutput);
 		return true;
 	}
-	public function removeComputer($id) {
-		$jobs = $this->db->getPendingJobsForComputerDetailPage($id);
-		if(count($jobs) > 0) throw new Exception(LANG['remove_failed_active_jobs']);
+	public function removeComputer($id, $force=false) {
+		if(!$force) {
+			$jobs = $this->db->getPendingJobsForComputerDetailPage($id);
+			if(count($jobs) > 0) throw new Exception(LANG['remove_failed_active_jobs']);
+		}
 
 		$result = $this->db->removeComputer($id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
-	public function removeComputerGroup($id) {
-		$subgroups = $this->db->getAllComputerGroup($id);
-		if(count($subgroups) > 0) throw new Exception(LANG['remove_failed_subgroups']);
+	public function removeComputerGroup($id, $force=false) {
+		if(!$force) {
+			$subgroups = $this->db->getAllComputerGroup($id);
+			if(count($subgroups) > 0) throw new Exception(LANG['remove_failed_subgroups']);
+		}
 
 		$result = $this->db->removeComputerGroup($id);
 		if(!$result) throw new Exception(LANG['not_found']);
@@ -171,12 +175,14 @@ class CoreLogic {
 		}
 		return $insertId;
 	}
-	public function removePackage($id) {
+	public function removePackage($id, $force=false) {
 		$package = $this->db->getPackage($id);
 		if(empty($package)) throw new Exception(LANG['not_found']);
 
-		$jobs = $this->db->getPendingJobsForPackageDetailPage($id);
-		if(count($jobs) > 0) throw new Exception(LANG['remove_failed_active_jobs']);
+		if(!$force) {
+			$jobs = $this->db->getPendingJobsForPackageDetailPage($id);
+			if(count($jobs) > 0) throw new Exception(LANG['remove_failed_active_jobs']);
+		}
 
 		$path = $package->getFilePath();
 		if(!empty($path)) unlink($path);
@@ -193,9 +199,11 @@ class CoreLogic {
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
-	public function removePackageGroup($id) {
-		$subgroups = $this->db->getAllPackageGroup($id);
-		if(count($subgroups) > 0) throw new Exception(LANG['remove_failed_subgroups']);
+	public function removePackageGroup($id, $force=false) {
+		if(!$force) {
+			$subgroups = $this->db->getAllPackageGroup($id);
+			if(count($subgroups) > 0) throw new Exception(LANG['remove_failed_subgroups']);
+		}
 
 		$result = $this->db->removePackageGroup($id);
 		if(!$result) throw new Exception(LANG['not_found']);
