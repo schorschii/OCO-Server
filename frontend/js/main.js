@@ -19,9 +19,9 @@ function getCheckedRadioValue(name) {
 	}
 }
 
-function handleSearchResultNavigation() {
-	if(event.keyCode==40) focusNextSearchResult();
-	else if(event.keyCode==38) focusNextSearchResult(-1);
+function handleSearchResultNavigation(event) {
+	if(event.code == 'ArrowDown') focusNextSearchResult();
+	else if(event.code == 'ArrowUp') focusNextSearchResult(-1);
 }
 function focusNextSearchResult(step=1) {
 	var links = document.querySelectorAll('#search-results a');
