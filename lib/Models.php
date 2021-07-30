@@ -303,3 +303,15 @@ class ReportGroup {
 	public $id;
 	public $name;
 }
+class Log {
+	public $id;
+	public $level;
+	public $user;
+	public $realm;
+	public $message;
+	// constants
+	public const LEVEL_DEBUG   = 0;
+	public const LEVEL_INFO    = 1;
+	public const LEVEL_WARNING = 2;
+	public const LEVEL_ERROR   = 3;
+}

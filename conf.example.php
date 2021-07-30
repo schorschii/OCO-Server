@@ -14,6 +14,14 @@ const AGENT_UPDATE_INTERVAL           = 3600;
 const PURGE_SUCCEEDED_JOBS_AFTER = 14400;
 const PURGE_FAILED_JOBS_AFTER    = 172800;
 
+const DELETE_LOGS_AFTER = 172800;
+const LOG_LEVEL         = 2;
+// 0 -> DEBUG
+// 1 -> INFO
+// 2 -> WARNING
+// 3 -> ERROR
+// 4 -> NO LOGGING
+
 ///// MySQL CONFIGURATION /////
 const DB_TYPE = 'mysql';
 const DB_PORT = '3306';

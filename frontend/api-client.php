@@ -15,6 +15,9 @@ if(!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] != 'application/
 $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
 
+// log complete request
+$db->addLogEntry(Log::LEVEL_DEBUG, '', 'oco.clientapi.rawrequest', $body);
+
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
 	header('HTTP/1.1 400 Payload Corrupt'); die();
@@ -28,7 +31,10 @@ try {
 	if(empty($cl->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']))) {
 		throw new Exception(LANG['unknown_error']);
 	}
+	$db->addLogEntry(Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], 'oco.clientapi.authentication', 'Authentication Successful');
 } catch(Exception $e) {
+	$db->addLogEntry(Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'], 'oco.clientapi.authentication', 'Authentication Failed');
+
 	header('HTTP/1.1 401 Client Not Authorized');
 	error_log('api-agent: authentication failure');
 	die('HTTP Basic Auth: '.$e->getMessage());

@@ -17,11 +17,14 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		$user = $cl->login($_POST['username'], $_POST['password']);
 		if(empty($user)) throw new Exception(LANG['unknown_error']);
 		// login successful
+		$db->addLogEntry(Log::LEVEL_INFO, $user->username, 'oco.webfrontend.authentication', 'Login Successful');
 		$_SESSION['um_username'] = $user->username;
 		$_SESSION['um_userid'] = $user->id;
 		header('Location: index.php');
 		die();
 	} catch(Exception $e) {
+		$db->addLogEntry(Log::LEVEL_WARNING, $_POST['username'], 'oco.webfrontend.authentication', 'Login Failed');
+
 		$info = $e->getMessage();
 		$infoclass = 'error';
 	}
@@ -30,6 +33,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 // execute logout if requested
 elseif(isset($_GET['logout'])) {
 	if(isset($_SESSION['um_username'])) {
+		$db->addLogEntry(Log::LEVEL_INFO, $_SESSION['um_username'], 'oco.webfrontend.authentication', 'Logout Successful');
 		session_unset();
 		session_destroy();
 		$info = LANG['log_out_successful'];

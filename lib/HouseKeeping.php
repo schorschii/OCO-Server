@@ -53,3 +53,10 @@ foreach($db->getAllJobContainer() as $container) {
 		}
 	}
 }
+
+// log housekeeping
+$result = $db->removeLogEntryOlderThan(DELETE_LOGS_AFTER);
+echo('Purged '.intval($result).' Log Entries older than '.intval(DELETE_LOGS_AFTER).' seconds'."\n");
+
+
+echo('Housekeeping Done.'."\n");

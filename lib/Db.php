@@ -1792,4 +1792,28 @@ class Db {
 		return $result;
 	}
 
+	// Log Operations
+	public function addLogEntry($level, $user, $realm, $message) {
+		if($level < LOG_LEVEL) return;
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO log (level, host, user, realm, message) VALUES (:level, :host, :user, :realm, :message)'
+		);
+		$this->stmt->execute([
+			':level' => $level,
+			':host' => $_SERVER['REMOTE_ADDR'] ?? 'local',
+			':user' => $user,
+			':realm' => $realm,
+			':message' => $message,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function removeLogEntryOlderThan($seconds) {
+		if(intval($seconds) < 1) return;
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM log WHERE timestamp < NOW() - INTERVAL '.intval($seconds).' SECOND'
+		);
+		if(!$this->stmt->execute()) return false;
+		return $this->stmt->rowCount();
+	}
+
 }

@@ -10,6 +10,9 @@ if(!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] != 'application/
 $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
 
+// log complete request
+$db->addLogEntry(Log::LEVEL_DEBUG, '', 'oco.agentapi.rawrequest', $body);
+
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
 	header('HTTP/1.1 400 Payload Corrupt'); die();
