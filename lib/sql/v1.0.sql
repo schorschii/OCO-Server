@@ -245,6 +245,22 @@ CREATE TABLE `job_container` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `log`
+--
+
+CREATE TABLE `log` (
+  `id` int(11) NOT NULL,
+  `timestamp` datetime NOT NULL DEFAULT current_timestamp(),
+  `level` tinyint(4) NOT NULL,
+  `host` text NOT NULL,
+  `user` text DEFAULT NULL,
+  `realm` text NOT NULL,
+  `message` longtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `package`
 --
 
@@ -541,6 +557,12 @@ ALTER TABLE `job_container`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indizes für die Tabelle `log`
+--
+ALTER TABLE `log`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indizes für die Tabelle `package`
 --
 ALTER TABLE `package`
@@ -703,6 +725,12 @@ ALTER TABLE `job`
 -- AUTO_INCREMENT für Tabelle `job_container`
 --
 ALTER TABLE `job_container`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `log`
+--
+ALTER TABLE `log`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
