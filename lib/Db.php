@@ -795,6 +795,16 @@ class Db {
 		$this->stmt->execute([':package_id' => $pid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
+	public function getDependentForPackages($pid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT p.*, pf.name AS "name" FROM package_dependency pd
+			INNER JOIN package p ON p.id = pd.package_id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			WHERE pd.dependent_package_id = :package_id'
+		);
+		$this->stmt->execute([':package_id' => $pid]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+	}
 	public function getConflictPackages($pid) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "name" FROM package_conflict pc
@@ -1004,6 +1014,25 @@ class Db {
 		}
 		$this->dbh->commit();
 		return true;
+	}
+	public function addPackageDependency($pid, $dpid) {
+		$this->dbh->beginTransaction();
+		$this->removePackageDependency($pid, $dpid);
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO package_dependency (package_id, dependent_package_id)
+			VALUES (:package_id, :dependent_package_id)'
+		);
+		$this->stmt->execute([':package_id' => $pid, ':dependent_package_id' => $dpid]);
+		$this->dbh->commit();
+		return $this->dbh->lastInsertId();
+	}
+	public function removePackageDependency($pid, $dpid) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM package_dependency
+			WHERE package_id = :package_id AND dependent_package_id = :dependent_package_id'
+		);
+		$this->stmt->execute([':package_id' => $pid, ':dependent_package_id' => $dpid]);
+		return $this->dbh->lastInsertId();
 	}
 	public function removePackage($id) {
 		$this->stmt = $this->dbh->prepare(

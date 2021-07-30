@@ -625,6 +625,57 @@ function addPackageToGroup(packageId, groupId) {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('views/package.php', paramString, null, function() { alert(L__PACKAGES_ADDED); refreshContent(); });
 }
+function addPackageDependency(packageId, dependencyPackageId) {
+	var params = [];
+	params.push({'key':'update_package_id', 'value':packageId});
+	params.push({'key':'add_dependency_package_id', 'value':dependencyPackageId});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('views/package-detail.php', paramString, null, refreshContent);
+}
+function removeSelectedPackageDependency(checkboxName, packageId) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	removePackageDependency(ids, packageId);
+}
+function removePackageDependency(ids, packageId) {
+	var params = [];
+	params.push({'key':'update_package_id', 'value':packageId});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_dependency_package_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('views/package-detail.php', paramString, null, refreshContent);
+}
+function removeSelectedDependentPackages(checkboxName, packageId) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		alert(L__NO_ELEMENTS_SELECTED);
+		return;
+	}
+	removeDependentPackages(ids, packageId);
+}
+function removeDependentPackages(ids, packageId) {
+	var params = [];
+	params.push({'key':'update_package_id', 'value':packageId});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_dependent_package_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('views/package-detail.php', paramString, null, refreshContent);
+}
 function confirmUninstallPackage(checkboxName, defaultStartTime) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {

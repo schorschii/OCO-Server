@@ -296,6 +296,9 @@ const LANG = [
 	'remove_failed_active_jobs' => 'Das Objekt konnte nicht entfernt werden, da noch aktive Jobs vorhanden sind, die auf dieses Objekt verweisen. Bitte entfernen Sie zuerst die entsprechenden Jobs und versuchen Sie dann erneut, dieses Objekt zu entfernen.',
 	'remove_failed_subgroups' => 'Die Gruppe konnte nicht entfernt werden, das sie noch Untergruppen besitzt. Bitte entfernen Sie zuerst die Untergruppen und versuchen Sie es erneut.',
 	'remove_failed_package_family_contains_packages' => 'Die Paketfamilie konnte nicht entfernt werden, da sie noch mindestens ein Paket enthält. Bitte entfernen Sie zuerst alle Pakete dieser Familie und versuchen Sie es erneut.',
+	'depends_on' => 'Hängt ab von',
+	'dependent_packages' => 'Von diesem Paket abhängige Pakete',
+	'remove_dependency' => 'Abhängigkeit entfernen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

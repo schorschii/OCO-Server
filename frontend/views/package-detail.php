@@ -20,6 +20,22 @@ if(!empty($_POST['update_package_family_id']) && !empty($_POST['remove_icon'])) 
 	$db->updatePackageFamilyIcon($_POST['update_package_family_id'], null);
 	die();
 }
+if(!empty($_POST['update_package_id']) && !empty($_POST['add_dependency_package_id'])) {
+	$db->addPackageDependency($_POST['update_package_id'], $_POST['add_dependency_package_id']);
+	die();
+}
+if(!empty($_POST['update_package_id']) && !empty($_POST['remove_dependency_package_id']) && is_array($_POST['remove_dependency_package_id'])) {
+	foreach($_POST['remove_dependency_package_id'] as $dpid) {
+		$db->removePackageDependency($_POST['update_package_id'], $dpid);
+	}
+	die();
+}
+if(!empty($_POST['update_package_id']) && !empty($_POST['remove_dependent_package_id']) && is_array($_POST['remove_dependent_package_id'])) {
+	foreach($_POST['remove_dependent_package_id'] as $dpid) {
+		$db->removePackageDependency($dpid, $_POST['update_package_id']);
+	}
+	die();
+}
 if(!empty($_POST['update_package_id']) && !empty($_POST['update_version'])) {
 	$db->updatePackageVersion($_POST['update_package_id'], $_POST['update_version']);
 	die();
@@ -284,6 +300,104 @@ if(!empty($packageFamily->icon)) {
 				</tr>
 			</tfoot>
 		</table>
+	</div>
+</div>
+
+<div class="details-abreast">
+	<div>
+		<h2><?php echo LANG['depends_on']; ?></h2>
+		<div class='controls'>
+			<button class='fullwidth' onclick='addPackageDependency(<?php echo $package->id; ?>, sltNewPackageDependency.value)'><img src='img/add.svg'>
+				&nbsp;<?php echo LANG['add']; ?>
+				<select id='sltNewPackageDependency' onclick='event.stopPropagation()'>
+					<?php foreach($db->getAllPackage() as $p) { ?>
+						<option value='<?php echo $p->id; ?>'><?php echo htmlspecialchars($p->name.' ('.$p->version.')'); ?></option>
+					<?php } ?>
+				</select>
+			</button>
+		</div>
+		<table id='tblDependencyPackageData' class='list sortable savesort'>
+			<thead>
+				<tr>
+					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDependencyPackageData, this.checked)'></th>
+					<th class='sortable'><?php echo LANG['name']; ?></th>
+					<th class='sortable'><?php echo LANG['version']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$counter = 0;
+				foreach($db->getDependentPackages($package->id) as $dp) {
+					$counter ++;
+					echo '<tr>';
+					echo '<td><input type="checkbox" name="dependency_package_id[]" value="'.$dp->id.'" onchange="refreshCheckedCounter(tblDependencyPackageData)"></td>';
+					echo '<td><a href="'.explorerLink('views/package.php?package_family_id='.$dp->package_family_id).'" onclick="event.preventDefault();refreshContentPackage(\'\', '.$dp->package_family_id.')">'.htmlspecialchars($dp->name).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$dp->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$dp->id.')">'.htmlspecialchars($dp->version).'</a></td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<div class='controls'>
+			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+			<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+		</div>
+	</div>
+
+	<div>
+		<h2><?php echo LANG['dependent_packages']; ?></h2>
+		<div class='controls'>
+			<button class='fullwidth' onclick='addPackageDependency(sltNewDependentPackage.value, <?php echo $package->id; ?>)'><img src='img/add.svg'>
+				&nbsp;<?php echo LANG['add']; ?>
+				<select id='sltNewDependentPackage' onclick='event.stopPropagation()'>
+				<?php foreach($db->getAllPackage() as $p) { ?>
+						<option value='<?php echo $p->id; ?>'><?php echo htmlspecialchars($p->name.' ('.$p->version.')'); ?></option>
+					<?php } ?>
+				</select>
+			</button>
+		</div>
+		<table id='tblDependentPackageData' class='list sortable savesort'>
+			<thead>
+				<tr>
+					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDependentPackageData, this.checked)'></th>
+					<th class='sortable'><?php echo LANG['name']; ?></th>
+					<th class='sortable'><?php echo LANG['version']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$counter = 0;
+				foreach($db->getDependentForPackages($package->id) as $dp) {
+					$counter ++;
+					echo '<tr>';
+					echo '<td><input type="checkbox" name="dependent_package_id[]" value="'.$dp->id.'" onchange="refreshCheckedCounter(tblDependentPackageData)"></td>';
+					echo '<td><a href="'.explorerLink('views/package.php?package_family_id='.$dp->package_family_id).'" onclick="event.preventDefault();refreshContentPackage(\'\', '.$dp->package_family_id.')">'.htmlspecialchars($dp->name).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$dp->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$dp->id.')">'.htmlspecialchars($dp->version).'</a></td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<div class='controls'>
+			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+			<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+		</div>
 	</div>
 </div>
 

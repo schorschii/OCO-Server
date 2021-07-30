@@ -296,6 +296,9 @@ const LANG = [
 	'remove_failed_active_jobs' => 'The object could not be removed because there are still active jobs referencing this object. Please remove the corresponding jobs first, then try to remove this object again.',
 	'remove_failed_subgroups' => 'The group could not be removed because it still has subgroups. Please remove the subgroups first and try again.',
 	'remove_failed_package_family_contains_packages' => 'The package family could not be removed because it still contains at least one package. Please remove all packages this family first and try again.',
+	'depends_on' => 'Depends On',
+	'dependent_packages' => 'Packages dependent on this package',
+	'remove_dependency' => 'Remove Dependency',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
