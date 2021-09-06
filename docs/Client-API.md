@@ -283,6 +283,7 @@ no parameters
 ## `oco.computer.remove` - Remove Computer
 ### Parameters
 - `id` - computer ID
+- `force` - (optional - default true) do not abort if there are pending jobs
 ### Example
 ```
 {
@@ -542,6 +543,7 @@ no parameters
 This will also delete the package payload (ZIP file) from the server.
 ### Parameters
 - `id` - package ID
+- `force` - (optional - default true) do not abort if there are pending jobs
 ### Example
 ```
 {

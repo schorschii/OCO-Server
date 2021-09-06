@@ -126,7 +126,7 @@ switch($srcdata['method']) {
 		break;
 	case 'oco.computer.remove':
 		try {
-			$cl->removeComputer(intval($data['id'] ?? 0));
+			$cl->removeComputer(intval($data['id'] ?? 0), boolval($data['force'] ?? 1));
 			$resdata['error'] = null;
 			$resdata['result'] = [
 				'success' => true, 'data' => []
@@ -219,7 +219,7 @@ switch($srcdata['method']) {
 		break;
 	case 'oco.package.remove':
 		try {
-			$cl->removePackage(intval($data['id'] ?? 0));
+			$cl->removePackage(intval($data['id'] ?? 0), boolval($data['force'] ?? 1));
 			$resdata['error'] = null;
 			$resdata['result'] = [
 				'success' => true, 'data' => []
