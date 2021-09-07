@@ -3,7 +3,7 @@
 The OCO web frontend can be extended with own scripts. The add on technique is intentionally kept very simple.
 
 ## Files
-You need the follwing files for an own add on.
+You need the following files for an own add on.
 
 ### Tree-Hook
 All PHP files inside `frontend/views/tree.d` will be included in the tree view on the left side in the web frontend. Example file:
@@ -14,7 +14,7 @@ All PHP files inside `frontend/views/tree.d` will be included in the tree view o
 ```
 
 ### Add-On View
-The main view of the add on (as shown in explorer content window) should be placed inside `frontend/views/views.d` (can be multiple files which are linked among themselves). Example file:
+The main view of the add on (as shown in explorer content window) should be placed inside `frontend/views/views.d` (can be multiple files which are linked among themselves).
 
-## Images / Icons
+### Images / Icons
 Place your custom images here, which are used by your add ons.
