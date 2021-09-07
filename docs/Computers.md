@@ -9,9 +9,6 @@ This feature must be activated first on the settings page in the web frontend. T
 ### 2. Manual (Pre-)Registration
 For this method, a new computer object must be created first in the web frontend. The name which you have enter on the dialog must exactly match the new computers hostname. Then, the computer is able update its inventory values using the global agent key (defined on the settings page in the web frontend). During the first communication with the server, a unique agent key will be set for the new computer.
 
-## Agent <-> Server Communication
-The agent contacts the server periodically as defined in the agent configuration. It was intentionally decided that the client initiates the connection because this means that no port has to be constantly open on the client machine. This is considered as a security advantage as these client devices (especially notebooks) are often used on different public places/networks where attackers may try to attack the agent when they discover devices with such open ports.
-
 ## Server Hardening
 While it is technically possible, **never** let the agent commuicate in plaintext HTTP with the server! Attackers can do a man-in-the-middle attack to send any malicious software package to your agent. **Always** configure your (Apache) web server to use HTTPS with a valid certificate. Redirect **all** HTTP requests to HTTPS using appropriate rewrite rules. It is also possible to use a self-signed certificate if necessary. Then, you have to import your own CA certificate into the trust store of your agent's operating system.
 
