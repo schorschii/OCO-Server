@@ -207,6 +207,9 @@ function refreshContent() {
 		ajaxRequest(currentExplorerContentUrl, 'explorer-content', null, false);
 	}
 }
+function refreshContentExplorer(url) {
+	ajaxRequest(url, 'explorer-content');
+}
 function refreshContentHomepage() {
 	ajaxRequest('views/homepage.php', 'explorer-content');
 }

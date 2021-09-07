@@ -44,6 +44,13 @@ require_once('../session.php');
 </div>
 
 <?php
+// include add-ons
+foreach(glob(__DIR__.'/tree.d/*.php') as $filename) {
+    require_once($filename);
+}
+?>
+
+<?php
 function echoComputerGroups($db, $parent=null) {
 	echo "<div class='subnode'>";
 	foreach($db->getAllComputerGroup($parent) as $group) {
