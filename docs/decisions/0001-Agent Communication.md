@@ -1,8 +1,8 @@
 # Agent-Server Communication Method
-Architecture Decision Record
-Lang: en
-Encoding: utf-8
-Date: 2021-09-07
+Architecture Decision Record  
+Lang: en  
+Encoding: utf-8  
+Date: 2021-09-07  
 Author: Georg Sieber
 
 ## Decision
