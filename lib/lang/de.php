@@ -299,6 +299,7 @@ const LANG = [
 	'depends_on' => 'Hängt ab von',
 	'dependent_packages' => 'Von diesem Paket abhängige Pakete',
 	'remove_dependency' => 'Abhängigkeit entfernen',
+	'please_select_placeholder' => '=== Bitte auswählen ===',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

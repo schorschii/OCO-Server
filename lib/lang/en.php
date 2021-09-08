@@ -299,6 +299,7 @@ const LANG = [
 	'depends_on' => 'Depends On',
 	'dependent_packages' => 'Packages dependent on this package',
 	'remove_dependency' => 'Remove Dependency',
+	'please_select_placeholder' => '=== Please Select ===',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

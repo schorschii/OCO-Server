@@ -391,7 +391,7 @@ body.loading2 #loader-container {
 	align-items: center;
 }
 .controls select {
-	max-width: 150px;
+	max-width: 200px;
 }
 .fillwidth {
 	flex-grow: 1;

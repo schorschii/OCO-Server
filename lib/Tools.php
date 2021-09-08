@@ -133,18 +133,21 @@ function wol($macs, $debugOutput=true) {
 }
 
 function echoComputerGroupOptions($db, $parent=null, $indent=0) {
+	if($parent == null) echo "<option value='' disabled='true' selected='true'>".LANG['please_select_placeholder']."</option>";
 	foreach($db->getAllComputerGroup($parent) as $g) {
 		echo "<option value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
 		echoComputerGroupOptions($db, $g->id, $indent+1);
 	}
 }
 function echoPackageGroupOptions($db, $parent=null, $indent=0) {
+	if($parent == null) echo "<option value='' disabled='true' selected='true'>".LANG['please_select_placeholder']."</option>";
 	foreach($db->getAllPackageGroup($parent) as $g) {
 		echo "<option value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
 		echoPackageGroupOptions($db, $g->id, $indent+1);
 	}
 }
 function echoReportGroupOptions($db, $parent=null, $indent=0) {
+	if($parent == null) echo "<option value='' disabled='true' selected='true'>".LANG['please_select_placeholder']."</option>";
 	foreach($db->getAllReportGroup($parent) as $g) {
 		echo "<option value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
 		echoReportGroupOptions($db, $g->id, $indent+1);
