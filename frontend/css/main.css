@@ -334,6 +334,7 @@ body.loading2 #loader-container {
 	padding: 10px;
 	margin: 15px 0px;
 	font-family: monospace;
+	white-space: pre-wrap;
 }
 
 .quote {
