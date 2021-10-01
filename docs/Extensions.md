@@ -34,3 +34,6 @@ Place your extensions custom images inside `frontend/img/img.d`.
 
 ### Libraries (optional)
 Place your libraries inside `lib/lib.d`.
+
+## Examples
+Complete examples can be found in the official [OCO Server Extensions](https://github.com/schorschii/oco-server-extensions) repository.
