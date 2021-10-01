@@ -13,10 +13,6 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 <head>
 	<title><?php echo LANG['app_name']; ?></title>
 	<?php require_once('head.inc.php'); ?>
-	<script src='js/strings.js.php'></script>
-	<script src='js/main.js'></script>
-	<script src='js/table.js'></script>
-	<script src='js/notification.js'></script>
 	<!--
 		Wir begrüßen Sie an diesem wunderschönen <?php echo date("l"); ?>,
 		<?php echo time(); ?> Sekunden nach dem Unix-Urknall!

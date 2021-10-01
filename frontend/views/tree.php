@@ -46,7 +46,7 @@ require_once('../session.php');
 <?php
 // include add-ons
 foreach(glob(__DIR__.'/tree.d/*.php') as $filename) {
-    require_once($filename);
+	require_once($filename);
 }
 ?>
 

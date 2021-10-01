@@ -4,6 +4,7 @@
 The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines using a comfortable web interface. Additionally, it provides software deployment features and a user logon overview. It focuses on easy usability (GUI) and simplicity.
 
 - [OCO Server](https://github.com/schorschii/oco-server)
+- [OCO Server Extensions](https://github.com/schorschii/oco-server-extensions)
 - [OCO Agent](https://github.com/schorschii/oco-agent)
 
 ## About OCO Server

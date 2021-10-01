@@ -26,7 +26,7 @@ WARNING: This device may contain Internet
 ```
 
 ## Customization
-You can customize the web design by creating the file `/frontend/css/custom.css` with your desired CSS rules inside. This ensures that your custom CSS is not overwritten with an update.
+You can customize the web design by creating a `*.css` file inside `/frontend/css/css.d` with your desired CSS rules. This ensures that your custom CSS is not overwritten with an update.
 
 Why?
 - to adapt your corporate design
