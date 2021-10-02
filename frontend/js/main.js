@@ -202,9 +202,9 @@ setInterval(refreshSidebar, 10000);
 function refreshSidebar() {
 	ajaxRequest('views/tree.php', 'explorer-tree');
 }
-function refreshContent() {
+function refreshContent(callback=null) {
 	if(currentExplorerContentUrl != null) {
-		ajaxRequest(currentExplorerContentUrl, 'explorer-content', null, false);
+		ajaxRequest(currentExplorerContentUrl, 'explorer-content', callback, false);
 	}
 }
 function refreshContentExplorer(url) {
