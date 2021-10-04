@@ -53,7 +53,8 @@ if(!empty($_POST['update_package_id']) && isset($_POST['update_install_procedure
 	die();
 }
 if(!empty($_POST['update_package_id']) && isset($_POST['update_install_procedure_action'])) {
-	if(in_array($_POST['update_install_procedure_action'], [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN, Package::POST_ACTION_EXIT])) {
+	if(is_numeric($_POST['update_install_procedure_action'])
+	&& in_array($_POST['update_install_procedure_action'], [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN, Package::POST_ACTION_EXIT])) {
 		$db->updatePackageInstallProcedurePostAction($_POST['update_package_id'], $_POST['update_install_procedure_action']);
 	} else {
 		header('HTTP/1.1 400 Invalid Value');
@@ -69,7 +70,8 @@ if(!empty($_POST['update_package_id']) && isset($_POST['update_uninstall_procedu
 	die();
 }
 if(!empty($_POST['update_package_id']) && isset($_POST['update_uninstall_procedure_action'])) {
-	if(in_array($_POST['update_uninstall_procedure_action'], [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN])) {
+	if(is_numeric($_POST['update_uninstall_procedure_action'])
+	&& in_array($_POST['update_uninstall_procedure_action'], [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN])) {
 		$db->updatePackageUninstallProcedurePostAction($_POST['update_package_id'], $_POST['update_uninstall_procedure_action']);
 	} else {
 		header('HTTP/1.1 400 Invalid Value');
