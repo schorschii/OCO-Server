@@ -125,7 +125,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true) {
 	xhttp.open("GET", url, true);
 	xhttp.send();
 }
-function ajaxRequestPost(url, body, objID, callback) {
+function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
@@ -140,7 +140,11 @@ function ajaxRequestPost(url, body, objID, callback) {
 				callback(this.responseText);
 			}
 		} else if(this.readyState == 4) {
-			alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+			if(errorCallback != undefined && typeof errorCallback == 'function') {
+				errorCallback(this.status, this.statusText, this.responseText);
+			} else {
+				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+			}
 		}
 	};
 	xhttp.open("POST", url, true);
