@@ -371,8 +371,12 @@ INSERT INTO `report` (`id`, `report_group_id`, `name`, `notes`, `query`) VALUES
 (4, 1, 'report_domainusers_multiple_computers', '', 'SELECT du.id AS domainuser_id, username, (SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS \'computer_count\' FROM domainuser du HAVING computer_count > 1'),
 (5, 1, 'report_expired_jobcontainers', '', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
 (6, 1, 'report_preregistered_computers', '', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update IS NULL OR last_update <= \'2000-01-01 00:00:00\''),
-(7, 1, 'report_all_monitors', '', 'SELECT c.hostname, cs.* FROM computer_screen cs INNER JOIN computer c ON c.id = cs.computer_id WHERE cs.serialno != ""'),
-(8, 1, 'report_7_days_no_agent', '', 'SELECT id AS \'computer_id\', hostname, os, os_version, last_ping FROM computer WHERE last_ping IS NULL OR last_ping < NOW() - INTERVAL 7 DAY');
+(7, 1, 'report_all_monitors', '', 'SELECT c.hostname, cs.* FROM computer_screen cs INNER JOIN computer c ON c.id = cs.computer_id WHERE cs.serialno != \"\"'),
+(8, 1, 'report_7_days_no_agent', '', 'SELECT id AS \'computer_id\', hostname, os, os_version, last_ping FROM computer WHERE last_ping IS NULL OR last_ping < NOW() - INTERVAL 7 DAY'),
+(9, 1, 'report_total_disk_space', '', 'SELECT ROUND(SUM(free)/1024/1024/1024/1024, 2) AS \'Free Space (TiB)\', ROUND(SUM(size)/1024/1024/1024/1024, 2) AS \'Total Space (TiB)\' FROM computer_partition'),
+(10, 1, 'report_total_ram_space', '', 'SELECT ROUND(SUM(ram)/1024/1024/1024, 2) AS \'Total RAM (GiB)\' FROM computer'),
+(11, 1, 'report_all_19_monitors', '', 'SELECT c.hostname, cs.*, ROUND(SQRT(POW(SUBSTRING_INDEX(cs.size, \" x \", 1),2) + POW(SUBSTRING_INDEX(cs.size, \" x \", -1),2)) * 0.393701) AS \'Size (inches)\' FROM `computer_screen` cs INNER JOIN `computer` c ON c.id = cs.computer_id WHERE cs.serialno != \"\" HAVING `Size (inches)` <= 19 AND `Size (inches)` > 0'),
+(12, 1, 'report_less_than_20gib_on_drive_c', '', 'SELECT c.id AS \'computer_id\', c.hostname, ROUND((SELECT cp.free FROM computer_partition cp WHERE cp.computer_id = c.id AND cp.mountpoint LIKE \'C:\')/1024/1024/1024) AS \'Free Space (GiB)\' FROM computer c HAVING `Free Space (GiB)` < 20');
 
 -- --------------------------------------------------------
 
