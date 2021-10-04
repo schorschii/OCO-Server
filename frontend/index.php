@@ -13,6 +13,10 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 <head>
 	<title><?php echo LANG['app_name']; ?></title>
 	<?php require_once('head.inc.php'); ?>
+	<script>
+		// auto refresh sidebar
+		setInterval(refreshSidebar, 10000);
+	</script>
 	<!--
 		Wir begrüßen Sie an diesem wunderschönen <?php echo date("l"); ?>,
 		<?php echo time(); ?> Sekunden nach dem Unix-Urknall!

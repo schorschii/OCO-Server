@@ -195,9 +195,6 @@ function getSelectValues(select, except=null) {
 	return result;
 }
 
-// auto refresh content
-setInterval(refreshSidebar, 10000);
-
 // content refresh functions
 function refreshSidebar() {
 	ajaxRequest('views/tree.php', 'explorer-tree');
