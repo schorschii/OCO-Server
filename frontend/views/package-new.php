@@ -80,15 +80,15 @@ if(isset($_POST['name'])) {
 <table class='form'>
 	<tr class='nospace'>
 		<th><?php echo LANG['package_family']; ?></th>
-		<td><input type='text' id='txtName' list='lstPackageNames'></td>
+		<td><input type='text' id='txtName' list='lstPackageNames' value='<?php echo htmlspecialchars($_GET['name']??'',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['version']; ?></th>
-		<td><input type='text' id='txtVersion'></td>
+		<td><input type='text' id='txtVersion' value='<?php echo htmlspecialchars($_GET['version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['description']; ?></th>
-		<td><textarea id='txtDescription'></textarea></td>
+		<td><textarea id='txtDescription' placeholder='<?php echo LANG['optional_hint']; ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['zip_archive']; ?></th>
@@ -96,42 +96,42 @@ if(isset($_POST['name'])) {
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['install_procedure']; ?></th>
-		<td><input type='text' id='txtInstallProcedure' list='lstInstallProcedures'></td>
+		<td><input type='text' id='txtInstallProcedure' list='lstInstallProcedures' value='<?php echo htmlspecialchars($_GET['install_procedure']??'',ENT_QUOTES); ?>'></td>
 		<th><?php echo LANG['success_return_codes']; ?></th>
-		<td><input type='text' id='txtInstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='0'></td>
+		<td><input type='text' id='txtInstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='<?php echo htmlspecialchars($_GET['install_procedure_success_return_codes']??'0',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td colspan='3'>
-			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>'>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>'>&nbsp;<?php echo LANG['shutdown']; ?></label>
-			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_EXIT; ?>'>&nbsp;<?php echo LANG['restart_agent']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 0) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 1) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 2) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_EXIT; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 3) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart_agent']; ?></label>
 		</td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
-		<td><input type='text' id='txtUninstallProcedure' list='lstUninstallProcedures' placeholder='<?php echo LANG['optional_hint']; ?>'></td>
+		<td><input type='text' id='txtUninstallProcedure' list='lstUninstallProcedures' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['uninstall_procedure']??'',ENT_QUOTES); ?>'></td>
 		<th><?php echo LANG['success_return_codes']; ?></th>
-		<td><input type='text' id='txtUninstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='0'></td>
+		<td><input type='text' id='txtUninstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='<?php echo htmlspecialchars($_GET['uninstall_procedure_success_return_codes']??'0',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td colspan='3'>
-			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>' checked='true'>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>'>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>'>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>' <?php if(($_GET['uninstall_procedure_post_action']??0) == 0) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>' <?php if(($_GET['uninstall_procedure_post_action']??0) == 1) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>' <?php if(($_GET['uninstall_procedure_post_action']??0) == 2) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
 		</td>
 	</tr>
 	<tr>
 		<th></th>
-		<td><label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' checked='true'>&nbsp;<?php echo LANG['download_for_uninstall']; ?></label></td>
+		<td><label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' <?php if($_GET['download_for_uninstall']??true) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['download_for_uninstall']; ?></label></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['compatible_os']; ?></th>
-		<td><input type='text' id='txtCompatibleOs' list='lstOs' placeholder='<?php echo LANG['optional_hint']; ?>'></td>
+		<td><input type='text' id='txtCompatibleOs' list='lstOs' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['compatible_os']??'',ENT_QUOTES); ?>'></td>
 		<th><?php echo LANG['compatible_os_version']; ?></th>
-		<td><input type='text' id='txtCompatibleOsVersion' list='lstOsVersion' placeholder='<?php echo LANG['optional_hint']; ?>'></td>
+		<td><input type='text' id='txtCompatibleOsVersion' list='lstOsVersion' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['compatible_os_version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr>
 		<th></th>

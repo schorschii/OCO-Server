@@ -123,6 +123,8 @@ if(!empty($packageFamily->icon)) {
 		</select>
 	</button>
 	<button onclick='currentExplorerContentUrl="views/package.php";confirmRemovePackage([<?php echo $package->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+	<span class='vl'></span>
+	<button onclick='refreshContentPackageNew("<?php echo htmlspecialchars($package->name,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->version,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->notes,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->install_procedure,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->install_procedure_success_return_codes,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->install_procedure_post_action,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->uninstall_procedure,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->uninstall_procedure_post_action,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->download_for_uninstall,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->compatible_os,ENT_QUOTES); ?>", "<?php echo htmlspecialchars($package->compatible_os_version,ENT_QUOTES); ?>")'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
 </div>
 <input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $package->package_family_id; ?>, this.files[0])'></input>
 
