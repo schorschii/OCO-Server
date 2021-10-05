@@ -620,7 +620,7 @@ table.fixed {
 	opacity: 0;
 	transition: opacity 0.2s ease;
 	vertical-align: middle;
-	margin: -2px 0px 0px 4px;
+	margin: -2px 0px 0px 0px;
 	padding: 0px;
 	border: none;
 	background: transparent;
@@ -630,6 +630,9 @@ table.fixed {
 .subbuttons .subbutton {
 	opacity: 0;
 	display: none;
+}
+a.subbuttons > button {
+	margin-left: 4px;
 }
 .subbuttons > button:first-child {
 	margin-left: 0px;
@@ -648,6 +651,10 @@ table.fixed {
 
 .small {
 	font-size: 90%;
+}
+
+.rawvalue {
+	display: none;
 }
 
 code {

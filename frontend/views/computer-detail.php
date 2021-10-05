@@ -187,8 +187,8 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 			<tr>
 				<th><?php echo LANG['last_updated']; ?></th>
 				<td class='subbuttons'>
-					<?php echo wrapInSpanIfNotEmpty($computer->last_update.($computer->force_update ? ' ('.LANG['force_update'].')' : '')); ?><!--
-					--><button onclick='event.stopPropagation();setComputerForceUpdate(<?php echo $computer->id; ?>, 1);return false'><img class='small' src='img/force-update.dyn.svg' title='<?php echo LANG['force_update']; ?>'></button>
+					<?php echo htmlspecialchars($computer->last_update.($computer->force_update ? ' ('.LANG['force_update'].')' : '')); ?>
+					<button onclick='event.stopPropagation();setComputerForceUpdate(<?php echo $computer->id; ?>, 1);return false'><img class='small' src='img/force-update.dyn.svg' title='<?php echo LANG['force_update']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
@@ -209,8 +209,8 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 			<tr>
 				<th><?php echo LANG['notes']; ?></th>
 				<td class='subbuttons'>
-					<?php echo wrapInSpanIfNotEmpty($computer->notes); ?><!--
-					--><button onclick='event.stopPropagation();editComputerNotes(<?php echo $computer->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($computer->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php echo htmlspecialchars($computer->notes); ?>
+					<button onclick='event.stopPropagation();editComputerNotes(<?php echo $computer->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($computer->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 		</table>
