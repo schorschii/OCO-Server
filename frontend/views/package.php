@@ -75,7 +75,7 @@ if(!empty($_GET['id'])) {
 	echo "<h1><img src='img/package.dyn.svg'>".htmlspecialchars($family->name)."</h1>";
 
 	echo "<div class='controls'>";
-	echo "<button onclick='refreshContentPackageNew(\"".htmlspecialchars($family->name,ENT_QUOTES)."\")'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
+	echo "<button onclick='refreshContentPackageNew(\"".htmlspecialchars($family->name,ENT_QUOTES)."\")'><img src='img/add.svg'>&nbsp;".LANG['new_version']."</button> ";
 	echo "<span><a href='".explorerLink('views/package-family.php')."' onclick='event.preventDefault();refreshContentPackageFamily()'>".LANG['package_families']."</a></span>";
 	echo "</div>";
 } else {
