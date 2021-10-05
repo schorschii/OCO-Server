@@ -1036,6 +1036,18 @@ function editJobContainerEnd(id, oldValue) {
 		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_end':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
+function editJobContainerSequenceMode(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_sequence_mode':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
+function editJobContainerPriority(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_priority':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+	}
+}
 function editJobContainerNotes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {

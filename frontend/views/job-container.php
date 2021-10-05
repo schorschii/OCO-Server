@@ -43,6 +43,22 @@ if(!empty($_POST['edit_container_id']) && isset($_POST['new_end'])) {
 	$db->editJobContainerEnd($_POST['edit_container_id'], $_POST['new_end']);
 	die();
 }
+if(!empty($_POST['edit_container_id']) && isset($_POST['new_sequence_mode'])) {
+	if(is_numeric($_POST['new_sequence_mode']) && in_array($_POST['new_sequence_mode'], [JobContainer::SEQUENCE_MODE_IGNORE_FAILED, JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
+		$db->editJobContainerSequenceMode($_POST['edit_container_id'], $_POST['new_sequence_mode']);
+	} else {
+		header('HTTP/1.1 400 Invalid Request');
+	}
+	die();
+}
+if(!empty($_POST['edit_container_id']) && isset($_POST['new_priority'])) {
+	if(is_numeric($_POST['new_priority']) && intval($_POST['new_priority']) > -100 && intval($_POST['new_priority']) < 100) {
+		$db->editJobContainerPriority($_POST['edit_container_id'], $_POST['new_priority']);
+	} else {
+		header('HTTP/1.1 400 Invalid Request');
+	}
+	die();
+}
 if(!empty($_POST['edit_container_id']) && isset($_POST['new_notes'])) {
 	$db->editJobContainerNotes($_POST['edit_container_id'], $_POST['new_notes']);
 	die();
@@ -135,15 +151,15 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG['start']; ?></th>
 				<td class='subbuttons'>
-					<span><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; ?></span>
-					<button onclick='event.stopPropagation();editJobContainerStart(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->start_time,ENT_QUOTES); ?>'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<span id='spnJobContainerStartTime'><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; ?></span>
+					<button onclick='event.stopPropagation();editJobContainerStart(<?php echo $container->id; ?>, spnJobContainerStartTime.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['end']; ?></th>
 				<td class='subbuttons'>
-					<span><?php echo htmlspecialchars($container->end_time ?? "-"); ?></span>
-					<button onclick='event.stopPropagation();editJobContainerEnd(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->end_time,ENT_QUOTES); ?>'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<span id='spnJobContainerEndTime'><?php echo htmlspecialchars($container->end_time ?? "-"); ?></span>
+					<button onclick='event.stopPropagation();editJobContainerEnd(<?php echo $container->id; ?>, spnJobContainerEndTime.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
@@ -153,22 +169,27 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG['sequence_mode']; ?></th>
 				<td class='subbuttons'>
+					<span id='spnJobContainerSequenceMode' class='rawvalue'><?php echo htmlspecialchars($container->sequence_mode); ?></span>
 					<?php switch($container->sequence_mode) {
 						case(JobContainer::SEQUENCE_MODE_IGNORE_FAILED): echo LANG['ignore_failed']; break;
 						case(JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED): echo LANG['abort_after_failed']; break;
 						default: echo htmlspecialchars($container->sequence_mode);
 					} ?>
+					<button onclick='event.stopPropagation();editJobContainerSequenceMode(<?php echo $container->id; ?>, spnJobContainerSequenceMode.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['priority']; ?></th>
-				<td><?php echo htmlspecialchars($container->priority); ?></td>
+				<td class='subbuttons'>
+					<span id='spnJobContainerPriority'><?php echo htmlspecialchars($container->priority); ?></span>
+					<button onclick='event.stopPropagation();editJobContainerPriority(<?php echo $container->id; ?>, spnJobContainerPriority.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['description']; ?></th>
 				<td class='subbuttons'>
-					<?php echo htmlspecialchars($container->notes); ?>
-					<button onclick='event.stopPropagation();editJobContainerNotes(<?php echo $container->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($container->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<span id='spnJobContainerDescription'><?php echo htmlspecialchars($container->notes); ?></span>
+					<button onclick='event.stopPropagation();editJobContainerNotes(<?php echo $container->id; ?>, spnJobContainerDescription.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>

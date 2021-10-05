@@ -1175,6 +1175,18 @@ class Db {
 		$this->stmt->bindValue(':end_time', $value);
 		return $this->stmt->execute();
 	}
+	public function editJobContainerSequenceMode($id, $value) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job_container SET sequence_mode = :sequence_mode WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':sequence_mode' => $value]);
+	}
+	public function editJobContainerPriority($id, $value) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job_container SET priority = :priority WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':priority' => $value]);
+	}
 	public function editJobContainerNotes($id, $value) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container SET notes = :notes WHERE id = :id'
