@@ -122,7 +122,7 @@ if(!empty($packageFamily->icon)) {
 			<?php echoPackageGroupOptions($db); ?>
 		</select>
 	</button>
-	<button onclick='currentExplorerContentUrl="views/package.php";confirmRemovePackage([<?php echo $package->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+	<button onclick='currentExplorerContentUrl="views/package.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	<span class='vl'></span>
 	<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
 </div>
