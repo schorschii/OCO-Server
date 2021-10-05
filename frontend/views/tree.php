@@ -23,7 +23,7 @@ require_once('../session.php');
 </div>
 
 <div class='node'>
-	<a href='<?php echo explorerLink('views/package.php'); ?>' onclick='event.preventDefault();refreshContentPackage()'><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
+	<a href='<?php echo explorerLink('views/package-family.php'); ?>' onclick='event.preventDefault();refreshContentPackageFamily()'><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
 	<?php echoPackageGroups($db); ?>
 </div>
 

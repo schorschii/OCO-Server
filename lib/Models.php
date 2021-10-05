@@ -116,6 +116,8 @@ class PackageFamily {
 	public $icon;
 	// aggregated values
 	public $package_count;
+	public $newest_package_created;
+	public $oldest_package_created;
 }
 class Package {
 	public $id;

@@ -825,7 +825,12 @@ class Db {
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
 	public function getAllPackageFamily() {
-		$this->stmt = $this->dbh->prepare('SELECT pf.*, (SELECT COUNT(id) FROM package p WHERE p.package_family_id = pf.id) AS "package_count" FROM package_family pf');
+		$this->stmt = $this->dbh->prepare(
+			'SELECT pf.*, (SELECT COUNT(id) FROM package p WHERE p.package_family_id = pf.id) AS "package_count",
+				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created DESC LIMIT 1) AS "newest_package_created",
+				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created ASC LIMIT 1) AS "oldest_package_created"
+			FROM package_family pf ORDER BY newest_package_created DESC'
+		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily');
 	}
