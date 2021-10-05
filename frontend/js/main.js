@@ -609,7 +609,7 @@ function confirmRemovePackageGroup(ids, event=null) {
 	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
-		ajaxRequestPost('views/package.php', paramString, null, function(){ refreshContentPackage(); refreshSidebar(); });
+		ajaxRequestPost('views/package.php', paramString, null, function(){ refreshContentPackageFamily(); refreshSidebar(); });
 	}
 }
 function addSelectedPackageToGroup(checkboxName, groupId, attributeName=null) {

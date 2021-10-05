@@ -20,6 +20,7 @@ echo "<h1><img src='img/package.dyn.svg'>".LANG['package_families']."</h1>";
 
 echo "<div class='controls'>";
 echo "<button onclick='refreshContentPackageNew()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
+echo "<button onclick='newPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
 echo "<span><a href='".explorerLink('views/package.php')."' onclick='event.preventDefault();refreshContentPackage()'>".LANG['all_packages']."</a></span>";
 echo "</div>";
 ?>
