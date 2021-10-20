@@ -84,7 +84,7 @@ if($computer === null) die("<div class='alert warning'>".LANG['not_found']."</di
 $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECONDS) $online = true;
 ?>
 
-<h1><img src='img/<?php echo $computer->getIcon(); ?>.dyn.svg' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><?php echo htmlspecialchars($computer->hostname); ?></h1>
+<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><?php echo htmlspecialchars($computer->hostname); ?></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
@@ -437,7 +437,7 @@ $online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECO
 					echo  '<a href="'.explorerLink('views/package-detail.php?id='.$j->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$j->package_id.')">'.htmlspecialchars($j->package_name).' ('.htmlspecialchars($j->package_version).')</a>';
 					echo '</td>';
 					echo '<td><a href="'.explorerLink('views/job-container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
-					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">&nbsp;'.$j->getStateString().'</td>';
+					echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 					echo '</tr>';
 				}
 				?>

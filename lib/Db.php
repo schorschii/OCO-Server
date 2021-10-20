@@ -667,6 +667,12 @@ class Db {
 		);
 		return $this->stmt->execute([':id' => $id, ':name' => $newValue]);
 	}
+	public function updatePackageFamilyNotes($id, $newValue) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package_family SET notes = :notes WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':notes' => $newValue]);
+	}
 	public function updatePackageFamilyIcon($id, $newValue) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE package_family SET icon = :icon WHERE id = :id'
@@ -875,7 +881,7 @@ class Db {
 	}
 	public function getPackage($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name" FROM package p
+			'SELECT p.*, pf.name AS "name", pf.icon AS "package_family_icon" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE p.id = :id'
 		);

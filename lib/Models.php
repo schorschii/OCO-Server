@@ -37,10 +37,10 @@ class Computer {
 	public $computer_network_mac;
 	// functions
 	function getIcon() {
-		if(empty(trim($this->os))) return 'computer';
-		elseif(strpos($this->os, 'Windows') !== false) return 'windows';
-		elseif(strpos($this->os, 'macOS') !== false) return 'apple';
-		else return 'linux';
+		if(empty(trim($this->os))) return 'img/computer.dyn.svg';
+		elseif(strpos($this->os, 'Windows') !== false) return 'img/windows.dyn.svg';
+		elseif(strpos($this->os, 'macOS') !== false) return 'img/apple.dyn.svg';
+		else return 'img/linux.dyn.svg';
 	}
 }
 class ComputerNetwork {
@@ -118,10 +118,16 @@ class PackageFamily {
 	public $package_count;
 	public $newest_package_created;
 	public $oldest_package_created;
+	// functions
+	function getIcon() {
+		if(!empty($this->icon)) {
+			return 'data:image/png;base64,'.base64_encode($this->icon);
+		}
+		return 'img/package.dyn.svg';
+	}
 }
 class Package {
 	public $id;
-	public $package_family_id;
 	public $version;
 	public $notes;
 	public $author;
@@ -138,6 +144,9 @@ class Package {
 	public $last_update;
 	// joined package group attributes
 	public $package_group_member_sequence;
+	// joined package family attributes
+	public $package_family_id;
+	public $package_family_icon;
 	// constants
 	public const POST_ACTION_NONE = 0;
 	public const POST_ACTION_RESTART = 1;
@@ -145,7 +154,10 @@ class Package {
 	public const POST_ACTION_EXIT = 3;
 	// functions
 	function getIcon() {
-		return 'package';
+		if(!empty($this->package_family_icon)) {
+			return 'data:image/png;base64,'.base64_encode($this->package_family_icon);
+		}
+		return 'img/package.dyn.svg';
 	}
 	public function getFilePath() {
 		$path = PACKAGE_PATH.'/'.intval($this->id).'.zip';
@@ -219,16 +231,16 @@ class Job {
 	function getIcon() {
 		if($this->state == self::STATUS_WAITING_FOR_CLIENT) {
 			$startTimeParsed = strtotime($this->job_container_start_time);
-			if($startTimeParsed !== false && $startTimeParsed > time()) return 'schedule';
-			else return 'wait';
+			if($startTimeParsed !== false && $startTimeParsed > time()) return 'img/schedule.dyn.svg';
+			else return 'img/wait.dyn.svg';
 		}
-		if($this->state == self::STATUS_DOWNLOAD_STARTED) return 'downloading';
-		if($this->state == self::STATUS_EXECUTION_STARTED) return 'pending';
-		if($this->state == self::STATUS_FAILED) return 'error';
-		if($this->state == self::STATUS_EXPIRED) return 'timeout';
-		if($this->state == self::STATUS_OS_INCOMPATIBLE) return 'error';
-		if($this->state == self::STATUS_PACKAGE_CONFLICT) return 'error';
-		if($this->state == self::STATUS_SUCCEEDED) return 'tick';
+		if($this->state == self::STATUS_DOWNLOAD_STARTED) return 'img/downloading.dyn.svg';
+		if($this->state == self::STATUS_EXECUTION_STARTED) return 'img/pending.dyn.svg';
+		if($this->state == self::STATUS_FAILED) return 'img/error.dyn.svg';
+		if($this->state == self::STATUS_EXPIRED) return 'img/timeout.dyn.svg';
+		if($this->state == self::STATUS_OS_INCOMPATIBLE) return 'img/error.dyn.svg';
+		if($this->state == self::STATUS_PACKAGE_CONFLICT) return 'img/error.dyn.svg';
+		if($this->state == self::STATUS_SUCCEEDED) return 'img/tick.dyn.svg';
 		return 'warning';
 	}
 	function getStateString() {

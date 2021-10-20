@@ -8,6 +8,10 @@ if(!empty($_POST['update_package_family_id']) && !empty($_POST['update_name'])) 
 	$db->updatePackageFamilyName($_POST['update_package_family_id'], $_POST['update_name']);
 	die();
 }
+if(!empty($_POST['update_package_family_id']) && !empty($_POST['update_notes'])) {
+	$db->updatePackageFamilyNotes($_POST['update_package_family_id'], $_POST['update_notes']);
+	die();
+}
 if(!empty($_POST['update_package_family_id']) && !empty($_FILES['update_icon']['tmp_name'])) {
 	if(!exif_imagetype($_FILES['update_icon']['tmp_name'])) {
 		header('HTTP/1.1 400 Invalid Value');
@@ -104,18 +108,12 @@ if(!empty($_GET['id'])) {
 if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 
 $packageFamily = $db->getPackageFamily($package->package_family_id);
-$icon = 'img/'.$package->getIcon().'.dyn.svg';
-if(!empty($packageFamily->icon)) {
-	$icon = 'data:image/png;base64,'.base64_encode($packageFamily->icon);
-}
 ?>
 
-<h1><img src='<?php echo htmlspecialchars($icon); ?>'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($package->name); ?></span></h1>
+<h1><img src='<?php echo $package->getIcon(); ?>'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($package->name); ?></span></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-	<button onclick='renamePackageFamily(<?php echo $package->package_family_id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($package->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-	<button onclick='fleIcon.click()' class='nomarginright'><img src='img/image-add.svg'>&nbsp;<?php echo LANG['change_icon']; ?></button>
-	<button onclick='removePackageFamilyIcon(<?php echo $package->package_family_id; ?>)'><img src='img/image-remove.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
+	<button onclick='window.open("payloadprovider.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize()) echo "disabled"; ?>><img src='img/download.svg'>&nbsp;<?php echo LANG['download']; ?></button>
 	<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg'>
 		&nbsp;<?php echo LANG['add_to']; ?>
 		<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
@@ -123,8 +121,6 @@ if(!empty($packageFamily->icon)) {
 		</select>
 	</button>
 	<button onclick='currentExplorerContentUrl="views/package.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-	<span class='vl'></span>
-	<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
 </div>
 <input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $package->package_family_id; ?>, this.files[0])'></input>
 
@@ -233,13 +229,9 @@ if(!empty($packageFamily->icon)) {
 				<td>
 					<?php
 					$size = $package->getSize();
-					if($size) {
-						?>
-						<a href='payloadprovider.php?id=<?php echo intval($package->id) ?>' target='_blank'><?php echo LANG['download']; ?></a>
-						(<?php echo niceSize($size, true).', '.niceSize($size, false); ?>)
-					<?php } else { ?>
-						<?php echo LANG['not_found']; ?>
-					<?php } ?>
+					if($size) echo niceSize($size, true).', '.niceSize($size, false);
+					else echo LANG['not_found'];
+					?>
 				</td>
 			</tr>
 			<tr>
@@ -277,6 +269,12 @@ if(!empty($packageFamily->icon)) {
 
 	<div>
 		<h2><?php echo LANG['other_packages_from_this_family']; ?></h2>
+		<div class='controls'>
+		<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
+			<button onclick='renamePackageFamily(<?php echo $package->package_family_id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($package->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+			<button onclick='fleIcon.click()' class='nomarginright'><img src='img/image-add.svg'>&nbsp;<?php echo LANG['change_icon']; ?></button>
+			<button onclick='removePackageFamilyIcon(<?php echo $package->package_family_id; ?>)'><img src='img/image-remove.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
+		</div>
 		<table id='tblOtherPackagesData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
@@ -481,7 +479,7 @@ if(!empty($packageFamily->icon)) {
 					echo  '<a href="'.explorerLink('views/computer-detail.php?id='.$j->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$j->computer_id.')">'.htmlspecialchars($j->computer_hostname).'</a>';
 					echo '</td>';
 					echo '<td><a href="'.explorerLink('views/job-container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
-					echo '<td class="middle"><img src="img/'.$j->getIcon().'.dyn.svg">&nbsp;'.$j->getStateString().'</td>';
+					echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 					echo '</tr>';
 				}
 				?>

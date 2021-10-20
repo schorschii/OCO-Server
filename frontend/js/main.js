@@ -421,6 +421,12 @@ function editPackageFamilyIcon(id, file) {
 	req.open('POST', 'views/package-detail.php');
 	req.send(formData);
 }
+function editPackageFamilyNotes(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/package-detail.php', urlencodeObject({'update_package_family_id':id, 'update_notes':newValue}), null, refreshContent);
+	}
+}
 function editPackageVersion(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null && newValue != '') {

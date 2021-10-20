@@ -128,7 +128,7 @@ foreach($computer as $c) {
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
 	echo "<td>";
-	echo  "<img src='img/".$c->getIcon().".dyn.svg' class='".($online ? 'online' : 'offline')."' title='".($online ? LANG['online'] : LANG['offline'])."'>&nbsp;";
+	echo  "<img src='".$c->getIcon()."' class='".($online ? 'online' : 'offline')."' title='".($online ? LANG['online'] : LANG['offline'])."'>&nbsp;";
 	echo  "<a href='".explorerLink('views/computer-detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a>";
 	echo "</td>";
 	echo "<td>".htmlspecialchars($c->os)."</td>";

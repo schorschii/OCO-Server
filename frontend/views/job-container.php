@@ -234,11 +234,11 @@ if(!empty($_GET['id'])) {
 				echo "<td>".htmlspecialchars($job->sequence)."</td>";
 				if(!empty($job->message)) {
 					echo "<td class='middle'>";
-					echo "<img src='img/".$job->getIcon().".dyn.svg'>&nbsp;";
+					echo "<img src='".$job->getIcon()."'>&nbsp;";
 					echo "<a href='#' onclick='event.preventDefault();showErrorDialog(true,\"".$job->getStateString()."\",this.getAttribute(\"message\"),false)' message='".htmlspecialchars(str_replace(chr(0x00),'',trim($job->message)),ENT_QUOTES)."'>".$job->getStateString()."</a>";
 					echo "</td>";
 				} else {
-					echo "<td class='middle'><img src='img/".$job->getIcon().".dyn.svg'>&nbsp;".$job->getStateString()."</td>";
+					echo "<td class='middle'><img src='".$job->getIcon()."'>&nbsp;".$job->getStateString()."</td>";
 				}
 				echo "<td>".htmlspecialchars($job->last_update);
 				echo "</tr>";
