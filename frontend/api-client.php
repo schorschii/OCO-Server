@@ -268,7 +268,9 @@ switch($srcdata['method']) {
 				$data['name'], $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
 				$data['computer_ids'] ?? [], $data['computer_group_ids'] ?? [], $data['package_ids'] ?? [], $data['package_group_ids'] ?? [],
 				$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
-				$data['use_wol'] ?? 1, $data['restart_timeout'] ?? 5, $data['auto_create_uninstall_jobs'] ?? 1, $data['sequence_mode'] ?? 0, $data['priority'] ?? 0
+				$data['use_wol'] ?? 1, $data['restart_timeout'] ?? 5,
+				$data['auto_create_uninstall_jobs'] ?? 1, $data['do_not_uninstall_same_version'] ?? 1,
+				$data['sequence_mode'] ?? 0, $data['priority'] ?? 0
 			);
 			$resdata['error'] = null;
 			$resdata['result'] = [

@@ -87,7 +87,9 @@ if(isset($_POST['add_jobcontainer'])) {
 			$_POST['add_jobcontainer'], $_POST['description'], $_SESSION['um_username'],
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
-			$_POST['use_wol'] ?? 1, $_POST['restart_timeout'] ?? 5, $_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0
+			$_POST['use_wol'] ?? 1, $_POST['restart_timeout'] ?? 5,
+			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['do_not_uninstall_same_version'] ?? 1,
+			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0
 		);
 		die(strval(intval($jcid)));
 	} catch(Exception $e) {
@@ -189,8 +191,13 @@ if(isset($_POST['add_jobcontainer'])) {
 </div>
 
 <div class='controls'>
-	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<label><input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty($db->getSettingByName('default-auto-create-uninstall-jobs'))) echo 'checked'; ?>>&nbsp;<div><?php echo LANG['auto_create_uninstall_jobs']; ?></div></label>
+</div>
+<div class='controls'>
+	<label><input type='checkbox' id='chkDoNotUninstallSameVersion' <?php if(!empty($db->getSettingByName('default-do-not-uninstall-same-version'))) echo 'checked'; ?>>&nbsp;<div><?php echo LANG['do_not_uninstall_same_version']; ?></div></label>
+</div>
+<div class='controls'>
+	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkAutoCreateUninstallJobs.checked, chkDoNotUninstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 </div>
 
 <?php

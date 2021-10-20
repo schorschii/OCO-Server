@@ -211,7 +211,7 @@ class CoreLogic {
 	}
 
 	/*** Deployment Operations ***/
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs, $sequenceMode, $priority) {
+	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs, $doNotUninstallSameVersion, $sequenceMode, $priority) {
 		// check user input
 		if(empty($name)) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -332,14 +332,16 @@ class CoreLogic {
 
 					foreach($this->db->getComputerPackage($computer_id) as $cp) {
 						// ignore if it is an automatically added dependency package and version is the same as already installed
-						if($package['is_dependency'] && $pid == $cp->package_id) continue 2;
+						if($package['is_dependency'] && strval($pid) === $cp->package_id) continue 2;
 
 						// if requested, automagically create uninstall jobs
 						if(!empty($autoCreateUninstallJobs)) {
-							// uninstall it, if it is from the same package family
+							// uninstall it, if it is from the same package family ...
 							if($cp->package_family_id === $package['package_family_id']) {
 								$cpp = $this->db->getPackage($cp->package_id);
-								if($cpp == null) continue;
+								if($cpp == null) continue; // How could it even be possible that this is null? No matter, better safe than sorry.
+								// ... but not, if it is the same package (version) and doNotUninstallSameVersion flag is set
+								if($cp->package_id === strval($pid) && !empty($doNotUninstallSameVersion)) continue;
 								// create uninstallation job
 								$this->db->addJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
@@ -380,6 +382,7 @@ class CoreLogic {
 		}
 
 		// add package after dependencies
+		// note: PHP automatically treats string value $p->id as integer when using numeric strings as array key
 		$packages[$p->id] = [
 			'package_family_id' => $p->package_family_id,
 			'procedure' => $p->install_procedure,
