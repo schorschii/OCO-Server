@@ -110,7 +110,7 @@ if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div
 $packageFamily = $db->getPackageFamily($package->package_family_id);
 ?>
 
-<h1><img src='<?php echo $package->getIcon(); ?>'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($package->name); ?></span></h1>
+<h1><img src='<?php echo $package->getIcon(); ?>'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($package->name)." (".htmlspecialchars($package->version).")"; ?></span></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='window.open("payloadprovider.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize()) echo "disabled"; ?>><img src='img/download.svg'>&nbsp;<?php echo LANG['download']; ?></button>
