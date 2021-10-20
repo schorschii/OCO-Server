@@ -227,10 +227,13 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 			<tr>
 				<th><?php echo LANG['zip_archive']; ?></th>
 				<td>
+					<span id='spnArchiveContents' class='rawvalue'><?php echo $package->getContentListing(); ?></span>
 					<?php
 					$size = $package->getSize();
-					if($size) echo niceSize($size, true).', '.niceSize($size, false);
-					else echo LANG['not_found'];
+					if($size) {
+						echo niceSize($size, true).', '.niceSize($size, false).' ';
+						echo "(<a href='#' onclick='event.preventDefault();showErrorDialog(true,\"".LANG['show_contents']."\",spnArchiveContents.innerText,false)'>".LANG['show_contents']."</a>)";
+					} else echo LANG['not_found'];
 					?>
 				</td>
 			</tr>

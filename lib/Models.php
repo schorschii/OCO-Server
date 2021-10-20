@@ -169,6 +169,24 @@ class Package {
 		if(!$path) return false;
 		return filesize($path);
 	}
+	public function getContentListing() {
+		$filePath = $this->getFilePath();
+		if(!$filePath) return '';
+		$output = ''; $size = 0;
+		$zip = new ZipArchive();
+		$res = $zip->open($filePath);
+		if($res) {
+			$i = 0;
+			while(!empty($zip->statIndex($i)['name'])) {
+				$output .= $zip->statIndex($i)['name']." (".niceSize($zip->statIndex($i)['size']).")<br>\n";
+				$size += $zip->statIndex($i)['size'];
+				$i ++;
+			}
+			$output .= "=========================<br>\n";
+			$output .= niceSize($size);
+		}
+		return $output;
+	}
 }
 class PackageGroup {
 	public $id;

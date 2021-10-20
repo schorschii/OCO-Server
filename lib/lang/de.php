@@ -310,6 +310,7 @@ const LANG = [
 	'delete_package_family' => 'Paketfamilie löschen',
 	'do_not_uninstall_same_version' => 'Keinen Deinstallationsjob anlegen, wenn bereits die gleiche Version installiert ist',
 	'remove_failed_dependent_packages' => 'Das Paket konnte nicht entfernt werden, da noch von diesem Pakete abhängige Pakete zugeordnet sind.',
+	'show_contents' => 'Inhalte anzeigen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

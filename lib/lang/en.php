@@ -310,6 +310,7 @@ const LANG = [
 	'delete_package_family' => 'Delete Package Family',
 	'do_not_uninstall_same_version' => 'Do not create an uninstall job if the same version is already installed',
 	'remove_failed_dependent_packages' => 'The package could not be removed because there are still dependent packages which are referenced to this package.',
+	'show_contents' => 'Show Contents',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
