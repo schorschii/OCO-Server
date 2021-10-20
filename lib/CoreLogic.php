@@ -134,7 +134,7 @@ class CoreLogic {
 				if(!$zip->open($newTmpFilePath, ZipArchive::CREATE)) {
 					throw new Exception(LANG['cannot_create_zip_file']);
 				}
-				$zip->addFile($tmpFilePath, '/'.basename($fileName));
+				$zip->addFile($tmpFilePath, basename($fileName));
 				$zip->close();
 				$tmpFilePath = $newTmpFilePath;
 			}
