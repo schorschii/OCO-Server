@@ -182,6 +182,9 @@ class CoreLogic {
 		if(!$force) {
 			$jobs = $this->db->getPendingJobsForPackageDetailPage($id);
 			if(count($jobs) > 0) throw new Exception(LANG['remove_failed_active_jobs']);
+
+			$dependentPackages = $this->db->getDependentForPackages($id);
+			if(count($dependentPackages) > 0) throw new Exception(LANG['remove_failed_dependent_packages']);
 		}
 
 		$path = $package->getFilePath();

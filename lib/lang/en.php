@@ -124,7 +124,7 @@ const LANG = [
 	'package_created' => 'Package created',
 	'no_elements_selected' => 'No objects selected',
 	'confirm_delete' => 'Really delete?',
-	'confirm_delete_package' => 'Are you sure you want to delete the package(s)?\n\nAll computer assignments will be lost and you can no longer uninstall this package using the OCO server. If the shift key is pressed, all pending jobs are also deleted automatically.',
+	'confirm_delete_package' => 'Are you sure you want to delete the package(s)?\n\nAll computer assignments will be lost and you can no longer uninstall this package using the OCO server. If the shift key is pressed, all pending jobs and assigned package dependencies are also deleted automatically.',
 	'enter_name' => 'Please enter a name',
 	'enter_new_hostname' => 'Please enter a new hostname.\n\nWarning: If you change the host name, you must also change the name on the computer, otherwise the agent can no longer establish a connection with the server!',
 	'confirm_uninstall_package' => 'Are you sure you want to uninstall the package? An uninstall job will be created.\n\nPlease enter a start date.',
@@ -309,6 +309,7 @@ const LANG = [
 	'oldest' => 'Oldest',
 	'delete_package_family' => 'Delete Package Family',
 	'do_not_uninstall_same_version' => 'Do not create an uninstall job if the same version is already installed',
+	'remove_failed_dependent_packages' => 'The package could not be removed because there are still dependent packages which are referenced to this package.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

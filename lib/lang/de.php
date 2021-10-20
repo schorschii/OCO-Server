@@ -124,7 +124,7 @@ const LANG = [
 	'package_created' => 'Paket wurde erstellt',
 	'no_elements_selected' => 'Keine Elemente ausgewählt',
 	'confirm_delete' => 'Wirklich löschen?',
-	'confirm_delete_package' => 'Sind Sie sicher, dass Sie das Paket bzw. die Pakete löschen möchten?\n\nAlle Computerzuordungen gehen verloren und Sie können das Paket nicht mehr über den OCO-Server deinstallieren. Bei gedrückter Umschalt-Taste werden auch alle ausstehenden Jobs automatisch entfernt.',
+	'confirm_delete_package' => 'Sind Sie sicher, dass Sie das Paket bzw. die Pakete löschen möchten?\n\nAlle Computerzuordungen gehen verloren und Sie können das Paket nicht mehr über den OCO-Server deinstallieren. Bei gedrückter Umschalt-Taste werden auch alle ausstehenden Jobs und zugewiesene Abhängigkeiten zu anderen Paketen automatisch entfernt.',
 	'enter_name' => 'Bitte geben Sie einen Namen ein',
 	'enter_new_hostname' => 'Bitte geben Sie einen neuen Hostnamen ein.\n\nAchtung: Wenn Sie den Hostnamen ändern müssen Sie den Namen auch auf dem Computer ändern, andernfalls kann der Agent keine Verbindung mehr mit dem Server herstellen!',
 	'confirm_uninstall_package' => 'Möchten Sie das Paket wirklich deinstallieren? Es wird ein Deinstallationsjob erstellt.\n\nBitte geben Sie eine Startzeit ein.',
@@ -309,6 +309,7 @@ const LANG = [
 	'oldest' => 'Älteste',
 	'delete_package_family' => 'Paketfamilie löschen',
 	'do_not_uninstall_same_version' => 'Keinen Deinstallationsjob anlegen, wenn bereits die gleiche Version installiert ist',
+	'remove_failed_dependent_packages' => 'Das Paket konnte nicht entfernt werden, da noch von diesem Pakete abhängige Pakete zugeordnet sind.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
