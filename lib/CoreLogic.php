@@ -214,7 +214,7 @@ class CoreLogic {
 	}
 
 	/*** Deployment Operations ***/
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs, $doNotUninstallSameVersion, $sequenceMode, $priority) {
+	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs, $autoCreateUninstallJobsSameVersion, $sequenceMode, $priority) {
 		// check user input
 		if(empty($name)) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -300,6 +300,7 @@ class CoreLogic {
 			$priority
 		)) {
 			foreach($computer_ids as $computer_id) {
+				$createdUninstallJobs = [];
 				$sequence = 1;
 
 				foreach($packages as $pid => $package) {
@@ -338,14 +339,18 @@ class CoreLogic {
 						if($package['is_dependency'] && strval($pid) === $cp->package_id) continue 2;
 
 						// if requested, automagically create uninstall jobs
-						if(!empty($autoCreateUninstallJobs)) {
+						if(!empty($autoCreateUninstallJobs) || !empty($autoCreateUninstallJobsSameVersion)) {
 							// uninstall it, if it is from the same package family ...
 							if($cp->package_family_id === $package['package_family_id']) {
 								$cpp = $this->db->getPackage($cp->package_id);
-								if($cpp == null) continue; // How could it even be possible that this is null? No matter, better safe than sorry.
-								// ... but not, if it is the same package (version) and doNotUninstallSameVersion flag is set
-								if($cp->package_id === strval($pid) && !empty($doNotUninstallSameVersion)) continue;
-								// create uninstallation job
+								if($cpp == null) continue;
+								// ... but not, if it is the same package (version) and autoCreateUninstallJobsSameVersion flag is set
+								if($cp->package_id === strval($pid) && empty($autoCreateUninstallJobsSameVersion)) continue;
+								// ... but not, if it is another package family version and autoCreateUninstallJobs flag is set
+								if($cp->package_id !== strval($pid) && empty($autoCreateUninstallJobs)) continue;
+								// ... and not, if uninstall job was already created
+								if(in_array($cp->id, $createdUninstallJobs)) continue;
+								$createdUninstallJobs[] = $cp->id;
 								$this->db->addJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
 									1/*is_uninstall*/, $cpp->download_for_uninstall,

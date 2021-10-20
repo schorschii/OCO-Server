@@ -668,8 +668,8 @@ no parameters
 - `date_end` (null) - deployment end date (unfinished jobs will set to "expired"), null means jobs do not expire
 - `use_wol` - enable or disable WOL
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
-- `auto_create_uninstall_jobs` - (optional - default 1) enable or disable automatic uninstall job creation
-- `do_not_uninstall_same_version` - (optional - default 1) if auto_create_uninstall_jobs is enabled: decide if an uninstall job should be created even if the same version of this package family is already installed
+- `auto_create_uninstall_jobs` - (optional - default 1) enable or disable automatic uninstall job creation if another version of this package family is already installed
+- `auto_create_uninstall_jobs_same_version` - (optional - default 0) enable or disable automatic uninstall job creation if the same version of this package family is already installed
 - `sequence_mode` - (optional - default 0) sequence mode: 0 - ignore failed jobs, 1 - abort after failed job
 - `priority` - (optional - default 0) job container with higher priority will be executed first
 ### Example
@@ -692,7 +692,7 @@ no parameters
 			"use_wol": 1,
 			"restart_timeout": 5,
 			"auto_create_uninstall_jobs": 1,
-			"do_not_uninstall_same_version": 1,
+			"auto_create_uninstall_jobs_same_version": 0,
 			"sequence_mode": 0,
 			"priority": 0
 		}
