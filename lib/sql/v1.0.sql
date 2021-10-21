@@ -220,6 +220,7 @@ CREATE TABLE `job` (
   `state` int(11) NOT NULL DEFAULT 0,
   `return_code` int(11) DEFAULT NULL,
   `message` longtext NOT NULL,
+  `wol_shutdown_set` datetime DEFAULT NULL,
   `last_update` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -237,6 +238,7 @@ CREATE TABLE `job_container` (
   `end_time` datetime DEFAULT NULL,
   `notes` text NOT NULL,
   `wol_sent` tinyint(4) NOT NULL DEFAULT 0,
+  `shutdown_waked_after_completion` tinyint(4) NOT NULL DEFAULT 0,
   `sequence_mode` tinyint(4) NOT NULL DEFAULT 0,
   `priority` tinyint(4) NOT NULL DEFAULT 0,
   `created` datetime NOT NULL DEFAULT current_timestamp()

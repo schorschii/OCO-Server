@@ -42,6 +42,9 @@ class Computer {
 		elseif(strpos($this->os, 'macOS') !== false) return 'img/apple.dyn.svg';
 		else return 'img/linux.dyn.svg';
 	}
+	function isOnline() {
+		return time() - strtotime($this->last_ping) < COMPUTER_OFFLINE_SECONDS;
+	}
 }
 class ComputerNetwork {
 	public $id;
@@ -199,6 +202,7 @@ class JobContainer {
 	public $end_time;
 	public $notes;
 	public $wol_sent;
+	public $shutdown_waked_after_completion;
 	public $sequence_mode;
 	public $priority;
 	public $created;
@@ -228,6 +232,7 @@ class Job {
 	public $state;
 	public $return_code;
 	public $message;
+	public $wol_shutdown_set;
 	public $last_update;
 	// joined computer attributes
 	public $computer_hostname;

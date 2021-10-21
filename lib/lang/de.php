@@ -311,6 +311,8 @@ const LANG = [
 	'auto_create_uninstall_jobs_for_same_version' => 'Automatisch vorangestellte Deinstallationsjobs anlegen, wenn die gleiche Version bereits installiert ist (neu installieren)',
 	'remove_failed_dependent_packages' => 'Das Paket konnte nicht entfernt werden, da noch von diesem Pakete abhängige Pakete zugeordnet sind.',
 	'show_contents' => 'Inhalte anzeigen',
+	'shutdown_waked_computers' => 'Aufgeweckte Computer herunterfahren',
+	'shutdown_waked_after_completion' => 'Aufgeweckte Computer nach Fertigstellung wieder herunterfahren',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

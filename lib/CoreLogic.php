@@ -214,7 +214,7 @@ class CoreLogic {
 	}
 
 	/*** Deployment Operations ***/
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $autoCreateUninstallJobs, $autoCreateUninstallJobsSameVersion, $sequenceMode, $priority) {
+	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $autoCreateUninstallJobsSameVersion, $sequenceMode, $priority) {
 		// check user input
 		if(empty($name)) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -295,18 +295,18 @@ class CoreLogic {
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
 			$description,
-			$wolSent,
-			$sequenceMode,
-			$priority
+			$wolSent, $shutdownWakedAfterCompletion,
+			$sequenceMode, $priority
 		)) {
 			foreach($computer_ids as $computer_id) {
+
+				$tmpComputer = $this->db->getComputer($computer_id);
 				$createdUninstallJobs = [];
 				$sequence = 1;
 
 				foreach($packages as $pid => $package) {
 
 					// check OS compatibility
-					$tmpComputer = $this->db->getComputer($computer_id);
 					if(!empty($package['compatible_os']) && !empty($tmpComputer->os)
 					&& $package['compatible_os'] != $tmpComputer->os) {
 						// create failed job
@@ -348,14 +348,14 @@ class CoreLogic {
 								if($cp->package_id === strval($pid) && empty($autoCreateUninstallJobsSameVersion)) continue;
 								// ... but not, if it is another package family version and autoCreateUninstallJobs flag is set
 								if($cp->package_id !== strval($pid) && empty($autoCreateUninstallJobs)) continue;
-								// ... and not, if uninstall job was already created
+								// ... and not, if this uninstall job was already created
 								if(in_array($cp->id, $createdUninstallJobs)) continue;
 								$createdUninstallJobs[] = $cp->id;
 								$this->db->addJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
 									1/*is_uninstall*/, $cpp->download_for_uninstall,
 									$cpp->uninstall_procedure_post_action, $restartTimeout,
-									$sequence
+									$sequence, Job::STATUS_WAITING_FOR_CLIENT
 								);
 								$sequence ++;
 							}
@@ -367,12 +367,20 @@ class CoreLogic {
 						$pid, $package['procedure'], $package['success_return_codes'],
 						0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 						$package['install_procedure_post_action'], $restartTimeout,
-						$sequence
+						$sequence, Job::STATUS_WAITING_FOR_CLIENT
 					)) {
 						$sequence ++;
 					}
+
 				}
+
 			}
+
+			// if instant WOL: check if computers are currently online (to know if we should shut them down after all jobs are done)
+			if(strtotime($dateStart) <= time() && $useWol && $shutdownWakedAfterCompletion) {
+				$this->db->setComputerOnlineStateForWolShutdown($jcid);
+			}
+
 		}
 
 		return $jcid;
@@ -404,7 +412,7 @@ class CoreLogic {
 
 		return $packages;
 	}
-	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $restartTimeout, $sequenceMode=0, $priority=0) {
+	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0) {
 		// check user input
 		if(empty($name)) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -459,7 +467,7 @@ class CoreLogic {
 			$name, $author,
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
-			$description, $wolSent, $sequenceMode, $priority
+			$description, $wolSent, $shutdownWakedAfterCompletion, $sequenceMode, $priority
 		);
 		foreach($installationIds as $id) {
 			$ap = $this->db->getComputerAssignedPackage($id);
@@ -471,6 +479,10 @@ class CoreLogic {
 				$p->uninstall_procedure_post_action, $restartTimeout,
 				0/*sequence*/
 			);
+		}
+		// if instant WOL: check if computers are currently online (to know if we should shut them down after all jobs are done)
+		if(strtotime($dateStart) <= time() && $useWol && $shutdownWakedAfterCompletion) {
+			$this->db->setComputerOnlineStateForWolShutdown($jcid);
 		}
 	}
 	public function removeComputerAssignedPackage($id) {

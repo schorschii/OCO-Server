@@ -3,7 +3,7 @@ require_once('Loader.php');
 
 // this script is intended to be called periodically every 10 minutes via cron
 
-// job housekeeping
+///// Job Housekeeping /////
 foreach($db->getAllJobContainer() as $container) {
 	// purge old jobs
 	$icon = $db->getJobContainerIcon($container->id);
@@ -31,17 +31,26 @@ foreach($db->getAllJobContainer() as $container) {
 	}
 }
 
-// wake computers for jobs
+///// Wake Computers For Jobs /////
 foreach($db->getAllJobContainer() as $container) {
 	if($container->wol_sent == 0) {
 		if(strtotime($container->start_time) <= time()) {
-			$wolMacAddresses = [];
 			echo('Execute WOL for Job Container #'.$container->id.' ('.$container->name.')'."\n");
+			// check if computers are currently online (to know if we should shut them down after all jobs are done)
+			if(!empty($container->shutdown_waked_after_completion)) {
+				echo('   Check if computers are online for possible shutdown after completion'."\n");
+				$db->setComputerOnlineStateForWolShutdown($container->id);
+			}
+			// collect MAC addresses for WOL
+			$wolMacAddresses = [];
 			foreach($db->getComputerMacByContainer($container->id) as $c) {
-				echo('   Send WOL Magic Packet to '.$c->computer_network_mac."\n");
+				echo('   Found MAC Address '.$c->computer_network_mac."\n");
 				$wolMacAddresses[] = $c->computer_network_mac;
 			}
+			// send WOL packet
+			echo('   Sending '.count($wolMacAddresses).' WOL Magic Packets'."\n");
 			wol($wolMacAddresses);
+			// update WOL sent info in db
 			$db->updateJobContainer(
 				$container->id,
 				$container->name,
@@ -52,9 +61,21 @@ foreach($db->getAllJobContainer() as $container) {
 			);
 		}
 	}
+
+	// check if WOL shutdown should be removed
+	// If the computer does not came up with WOL after a certain time, WOL didn't work -> remove the shutdown.
+	// It is likely that a user has now manually powered on the machine. Then, an automatic shutdown is not desired anymore.
+	if(!empty($container->shutdown_waked_after_completion)) {
+		foreach($db->getAllJobByContainer($container->id) as $j) {
+			if(!empty($j->wol_shutdown_set) && time() - strtotime($j->wol_shutdown_set) > WOL_SHUTDOWN_EXPIRY_SECONDS) {
+				echo('Remove Expired WOL Shutdown for Job #'.$j->id.' (in Container #'.$container->id.' '.$container->name.')'."\n");
+				$db->removeWolShutdownJobInContainer($container->id, $j->id);
+			}
+		}
+	}
 }
 
-// log housekeeping
+///// Log Housekeeping /////
 $result = $db->removeLogEntryOlderThan(DELETE_LOGS_AFTER);
 echo('Purged '.intval($result).' Log Entries older than '.intval(DELETE_LOGS_AFTER).' seconds'."\n");
 

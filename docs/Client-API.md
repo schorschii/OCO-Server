@@ -666,7 +666,8 @@ no parameters
 - `package_group_ids` (int array) - IDs of the package groups to deploy
 - `date_start` - deployment start date
 - `date_end` (null) - deployment end date (unfinished jobs will set to "expired"), null means jobs do not expire
-- `use_wol` - enable or disable WOL
+- `use_wol` - (optional - default 1) enable or disable WOL
+- `shutdown_waked_after_completion` - (optional - default 0) decide if computers which were waked via WOL should be shutted down after jobs finished
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
 - `auto_create_uninstall_jobs` - (optional - default 1) enable or disable automatic uninstall job creation if another version of this package family is already installed
 - `auto_create_uninstall_jobs_same_version` - (optional - default 0) enable or disable automatic uninstall job creation if the same version of this package family is already installed
@@ -690,6 +691,7 @@ no parameters
 			"date_start": "2020-01-01 18:00:00",
 			"date_end": null,
 			"use_wol": 1,
+			"shutdown_waked_after_completion": 0,
 			"restart_timeout": 5,
 			"auto_create_uninstall_jobs": 1,
 			"auto_create_uninstall_jobs_same_version": 0,
@@ -719,7 +721,8 @@ no parameters
 - `installation_ids` - IDs of the package installation assignment records (you can get them by executing `oco.computer.get` or `oco.package.get` from the section `installed_packages`)
 - `date_start` - deployment start date
 - `date_end` (null) - deployment end date (unfinished jobs will set to "expired"), null means jobs do not expire
-- `use_wol` - enable or disable WOL
+- `use_wol` - (optional - default 1) enable or disable WOL
+- `shutdown_waked_after_completion` - (optional - default 0) decide if computers which were waked via WOL should be shutted down after jobs finished
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
 ### Example
 ```
@@ -736,6 +739,7 @@ no parameters
 			"date_start": "2020-01-01 18:00:00",
 			"date_end": null,
 			"use_wol": 1,
+			"shutdown_waked_after_completion": 0,
 			"restart_timeout": 5
 		}
 	}

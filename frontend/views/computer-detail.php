@@ -28,8 +28,7 @@ if(!empty($_POST['remove_package_assignment_id']) && is_array($_POST['remove_pac
 }
 if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninstall_package_assignment_id'])) {
 	try {
-		// compile name
-		$name = '';
+		$name = ''; // compile name
 		foreach($_POST['uninstall_package_assignment_id'] as $id) {
 			$ap = $db->getComputerAssignedPackage($id);
 			if(empty($ap)) continue;
@@ -38,7 +37,11 @@ if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninsta
 			else $name .= ', '.$c->hostname;
 		}
 		if(empty($name)) $name = LANG['uninstall'];
-		$cl->uninstall($name, '', $_SESSION['um_username'], $_POST['uninstall_package_assignment_id'], $_POST['start_time'] ?? date('Y-m-d H:i:s'), null, 1, 5);
+		$cl->uninstall(
+			$name, '', $_SESSION['um_username'],
+			$_POST['uninstall_package_assignment_id'], $_POST['start_time'] ?? date('Y-m-d H:i:s'), null,
+			1/*use wol*/, 0/*shutdown waked after completion*/, 5/*restart timeout*/
+		);
 	} catch(Exception $e) {
 		header('HTTP/1.1 400 Invalid Request');
 		die($e->getMessage());
@@ -81,7 +84,7 @@ if(!empty($_GET['id']))
 
 if($computer === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 
-$online = false; if(time()-strtotime($computer->last_ping)<COMPUTER_OFFLINE_SECONDS) $online = true;
+$online = $computer->isOnline();
 ?>
 
 <h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><?php echo htmlspecialchars($computer->hostname); ?></h1>

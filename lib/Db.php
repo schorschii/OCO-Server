@@ -1088,10 +1088,10 @@ class Db {
 	}
 
 	// Job Operations
-	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $sequence_mode, $priority) {
+	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, sequence_mode, priority)
-			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :sequence_mode, :priority)'
+			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority)
+			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
@@ -1100,6 +1100,7 @@ class Db {
 			':end_time' => $end_time,
 			':notes' => $notes,
 			':wol_sent' => $wol_sent,
+			':shutdown_waked_after_completion' => $shutdown_waked_after_completion,
 			':sequence_mode' => $sequence_mode,
 			':priority' => $priority,
 		]);
@@ -1268,6 +1269,51 @@ class Db {
 		);
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
+	}
+	public function setComputerOnlineStateForWolShutdown($job_container_id) {
+		$tmpJobContainer = $this->getJobContainer($job_container_id);
+		if(empty($tmpJobContainer->shutdown_waked_after_completion)) return;
+		foreach($this->getAllLastComputerJobInContainer($job_container_id) as $j) {
+			$tmpComputer = $this->getComputer($j->computer_id);
+			if(!$tmpComputer->isOnline())
+				$this->setWolShutdownJobInContainer($job_container_id, $tmpComputer->id, $j->max_sequence);
+		}
+	}
+	public function getAllLastComputerJobInContainer($job_container_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT computer_id, MAX(sequence) AS "max_sequence" FROM job
+			WHERE job_container_id = :job_container_id GROUP BY computer_id'
+		);
+		if(!$this->stmt->execute([':job_container_id' => $job_container_id])) return false;
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
+	}
+	public function setWolShutdownJobInContainer($job_container_id, $computer_id, $sequence) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job SET post_action = '.Package::POST_ACTION_SHUTDOWN.','
+			.' wol_shutdown_set = CURRENT_TIMESTAMP'
+			.' WHERE job_container_id = :job_container_id'
+			.' AND computer_id = :computer_id'
+			.' AND sequence = :sequence'
+			.' AND post_action = '.Package::POST_ACTION_NONE
+		);
+		if(!$this->stmt->execute([
+			':job_container_id' => $job_container_id,
+			':computer_id' => $computer_id,
+			':sequence' => $sequence,
+		])) return false;
+	}
+	public function removeWolShutdownJobInContainer($job_container_id, $job_id) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job SET post_action = '.Package::POST_ACTION_NONE.','
+			.' wol_shutdown_set = NULL'
+			.' WHERE job_container_id = :job_container_id'
+			.' AND id = :id'
+			.' AND post_action IS NOT NULL'
+		);
+		if(!$this->stmt->execute([
+			':job_container_id' => $job_container_id,
+			':id' => $job_id,
+		])) return false;
 	}
 	public function updateJobState($id, $state, $return_code, $message) {
 		$this->stmt = $this->dbh->prepare(

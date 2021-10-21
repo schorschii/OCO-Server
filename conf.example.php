@@ -1,8 +1,9 @@
 <?php
 
 ///// GENERAL CONFIGURATION /////
-const PACKAGE_PATH             = '/var/www/oco/depot';
-const COMPUTER_OFFLINE_SECONDS = 125;
+const PACKAGE_PATH                = '/var/www/oco/depot';
+const COMPUTER_OFFLINE_SECONDS    = 125;
+const WOL_SHUTDOWN_EXPIRY_SECONDS = 3600;
 
 const CLIENT_API_ENABLED       = false;
 const CLIENT_API_KEY           = 'Ungah2oo';

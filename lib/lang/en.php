@@ -311,6 +311,8 @@ const LANG = [
 	'auto_create_uninstall_jobs_for_same_version' => 'Automatically create preceding uninstall jobs if the same version is already installed (reinstall)',
 	'remove_failed_dependent_packages' => 'The package could not be removed because there are still dependent packages which are referenced to this package.',
 	'show_contents' => 'Show Contents',
+	'shutdown_waked_computers' => 'Shutdown waked computers',
+	'shutdown_waked_after_completion' => 'Shutdown waked computers after completion',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
