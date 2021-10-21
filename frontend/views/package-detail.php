@@ -110,7 +110,7 @@ if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div
 $packageFamily = $db->getPackageFamily($package->package_family_id);
 ?>
 
-<h1><img src='<?php echo $package->getIcon(); ?>'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($package->name)." (".htmlspecialchars($package->version).")"; ?></span></h1>
+<h1><img src='<?php echo $package->getIcon(); ?>'><?php echo htmlspecialchars($package->name)." (".htmlspecialchars($package->version).")"; ?><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->name); ?></span></h1>
 <div class='controls'>
 	<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='window.open("payloadprovider.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize()) echo "disabled"; ?>><img src='img/download.svg'>&nbsp;<?php echo LANG['download']; ?></button>
@@ -274,7 +274,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 		<h2><?php echo LANG['other_packages_from_this_family']; ?></h2>
 		<div class='controls'>
 		<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
-			<button onclick='renamePackageFamily(<?php echo $package->package_family_id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($package->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+			<button onclick='renamePackageFamily(<?php echo $package->package_family_id; ?>, spnPackageFamilyName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
 			<button onclick='fleIcon.click()' class='nomarginright'><img src='img/image-add.svg'>&nbsp;<?php echo LANG['change_icon']; ?></button>
 			<button onclick='removePackageFamilyIcon(<?php echo $package->package_family_id; ?>)'><img src='img/image-remove.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
 		</div>
