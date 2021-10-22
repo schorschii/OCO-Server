@@ -247,6 +247,7 @@ class Job {
 	public const STATUS_EXPIRED = -2;
 	public const STATUS_OS_INCOMPATIBLE = -3;
 	public const STATUS_PACKAGE_CONFLICT = -4;
+	public const STATUS_ALREADY_INSTALLED = -5;
 	public const STATUS_DOWNLOAD_STARTED = 1;
 	public const STATUS_EXECUTION_STARTED = 2;
 	public const STATUS_SUCCEEDED = 3;
@@ -264,7 +265,7 @@ class Job {
 		if($this->state == self::STATUS_OS_INCOMPATIBLE) return 'img/error.dyn.svg';
 		if($this->state == self::STATUS_PACKAGE_CONFLICT) return 'img/error.dyn.svg';
 		if($this->state == self::STATUS_SUCCEEDED) return 'img/tick.dyn.svg';
-		return 'warning';
+		return 'img/warning.dyn.svg';
 	}
 	function getStateString() {
 		$returnCodeString = '';
@@ -284,6 +285,8 @@ class Job {
 			return LANG['incompatible'];
 		elseif($this->state == self::STATUS_PACKAGE_CONFLICT)
 			return LANG['package_conflict'];
+		elseif($this->state == self::STATUS_ALREADY_INSTALLED)
+			return LANG['already_installed'];
 		elseif($this->state == self::STATUS_DOWNLOAD_STARTED)
 			return LANG['download_started'];
 		elseif($this->state == self::STATUS_EXECUTION_STARTED)

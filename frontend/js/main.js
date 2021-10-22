@@ -1060,7 +1060,7 @@ function editJobContainerNotes(id, oldValue) {
 		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_notes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
-function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, autoCreateUninstallJobsSameVersion, restartTimeout, sequenceMode, priority) {
+function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority) {
 	btnDeploy.disabled = true;
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
@@ -1071,7 +1071,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	formData.append('use_wol', useWol ? 1 : 0);
 	formData.append('shutdown_waked_after_completion', shutdownWakedAfterCompletion ? 1 : 0);
 	formData.append('auto_create_uninstall_jobs', autoCreateUninstallJobs ? 1 : 0);
-	formData.append('auto_create_uninstall_jobs_same_version', autoCreateUninstallJobsSameVersion ? 1 : 0);
+	formData.append('force_install_same_version', forceInstallSameVersion ? 1 : 0);
 	formData.append('restart_timeout', restartTimeout);
 	formData.append('sequence_mode', sequenceMode);
 	formData.append('priority', priority);

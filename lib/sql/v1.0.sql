@@ -418,7 +418,7 @@ CREATE TABLE `setting` (
 INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
 (6, 'default-restart-timeout', '5'),
 (7, 'default-auto-create-uninstall-jobs', '1'),
-(8, 'default-auto-create-uninstall-jobs-same-version', '0'),
+(8, 'default-force-install-same-version', '0'),
 (9, 'motd', 'default_motd');
 
 -- --------------------------------------------------------

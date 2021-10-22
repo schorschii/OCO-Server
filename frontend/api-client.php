@@ -269,7 +269,7 @@ switch($srcdata['method']) {
 				$data['computer_ids'] ?? [], $data['computer_group_ids'] ?? [], $data['package_ids'] ?? [], $data['package_group_ids'] ?? [],
 				$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
 				$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5,
-				$data['auto_create_uninstall_jobs'] ?? 1, $data['auto_create_uninstall_jobs_same_version'] ?? 0,
+				$data['auto_create_uninstall_jobs'] ?? 1, $data['force_install_same_version'] ?? 0,
 				$data['sequence_mode'] ?? 0, $data['priority'] ?? 0
 			);
 			$resdata['error'] = null;

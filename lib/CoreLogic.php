@@ -214,7 +214,7 @@ class CoreLogic {
 	}
 
 	/*** Deployment Operations ***/
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $autoCreateUninstallJobsSameVersion, $sequenceMode, $priority) {
+	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority) {
 		// check user input
 		if(empty($name)) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -306,6 +306,8 @@ class CoreLogic {
 
 				foreach($packages as $pid => $package) {
 
+					$targetJobState = Job::STATUS_WAITING_FOR_CLIENT;
+
 					// check OS compatibility
 					if(!empty($package['compatible_os']) && !empty($tmpComputer->os)
 					&& $package['compatible_os'] != $tmpComputer->os) {
@@ -338,14 +340,18 @@ class CoreLogic {
 						// ignore if it is an automatically added dependency package and version is the same as already installed
 						if($package['is_dependency'] && strval($pid) === $cp->package_id) continue 2;
 
+						// ignore if the same version is already installed
+						if($cp->package_id === strval($pid) && empty($forceInstallSameVersion)) {
+							$targetJobState = Job::STATUS_ALREADY_INSTALLED;
+							break;
+						}
+
 						// if requested, automagically create uninstall jobs
-						if(!empty($autoCreateUninstallJobs) || !empty($autoCreateUninstallJobsSameVersion)) {
+						if(!empty($autoCreateUninstallJobs)) {
 							// uninstall it, if it is from the same package family ...
 							if($cp->package_family_id === $package['package_family_id']) {
 								$cpp = $this->db->getPackage($cp->package_id);
 								if($cpp == null) continue;
-								// ... but not, if it is the same package (version) and autoCreateUninstallJobsSameVersion flag is set
-								if($cp->package_id === strval($pid) && empty($autoCreateUninstallJobsSameVersion)) continue;
 								// ... but not, if it is another package family version and autoCreateUninstallJobs flag is set
 								if($cp->package_id !== strval($pid) && empty($autoCreateUninstallJobs)) continue;
 								// ... and not, if this uninstall job was already created
@@ -367,7 +373,7 @@ class CoreLogic {
 						$pid, $package['procedure'], $package['success_return_codes'],
 						0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 						$package['install_procedure_post_action'], $restartTimeout,
-						$sequence, Job::STATUS_WAITING_FOR_CLIENT
+						$sequence, $targetJobState
 					)) {
 						$sequence ++;
 					}

@@ -670,7 +670,7 @@ no parameters
 - `shutdown_waked_after_completion` - (optional - default 0) decide if computers which were waked via WOL should be shutted down after jobs finished
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
 - `auto_create_uninstall_jobs` - (optional - default 1) enable or disable automatic uninstall job creation if another version of this package family is already installed
-- `auto_create_uninstall_jobs_same_version` - (optional - default 0) enable or disable automatic uninstall job creation if the same version of this package family is already installed
+- `force_install_same_version` - (optional - default 0) force installation even if the same package was already installed
 - `sequence_mode` - (optional - default 0) sequence mode: 0 - ignore failed jobs, 1 - abort after failed job
 - `priority` - (optional - default 0) job container with higher priority will be executed first
 ### Example
@@ -694,7 +694,7 @@ no parameters
 			"shutdown_waked_after_completion": 0,
 			"restart_timeout": 5,
 			"auto_create_uninstall_jobs": 1,
-			"auto_create_uninstall_jobs_same_version": 0,
+			"force_install_same_version": 0,
 			"sequence_mode": 0,
 			"priority": 0
 		}

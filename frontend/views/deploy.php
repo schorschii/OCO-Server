@@ -88,7 +88,7 @@ if(isset($_POST['add_jobcontainer'])) {
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
-			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['auto_create_uninstall_jobs_same_version'] ?? 0,
+			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['force_install_same_version'] ?? 0,
 			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0
 		);
 		die(strval(intval($jcid)));
@@ -197,11 +197,11 @@ if(isset($_POST['add_jobcontainer'])) {
 </div>
 
 <div class='margintop'>
-	<div><label><input type='checkbox' id='chkAutoCreateUninstallJobsForeignVersion' <?php if(!empty($db->getSettingByName('default-auto-create-uninstall-jobs'))) echo 'checked'; ?>>&nbsp;<?php echo LANG['auto_create_uninstall_jobs']; ?></label></div>
-	<div><label><input type='checkbox' id='chkAutoCreateUninstallJobsSameVersion' <?php if(!empty($db->getSettingByName('default-auto-create-uninstall-jobs-same-version'))) echo 'checked'; ?>>&nbsp;<?php echo LANG['auto_create_uninstall_jobs_for_same_version']; ?></label></div>
+	<div><label><input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty($db->getSettingByName('default-auto-create-uninstall-jobs'))) echo 'checked'; ?>>&nbsp;<?php echo LANG['auto_create_uninstall_jobs']; ?></label></div>
+	<div><label><input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty($db->getSettingByName('default-force-install-same-version'))) echo 'checked'; ?>>&nbsp;<?php echo LANG['force_installation_of_same_version']; ?></label></div>
 </div>
 <div class='controls'>
-	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobsForeignVersion.checked, chkAutoCreateUninstallJobsSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 </div>
 
 <?php
