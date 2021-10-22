@@ -1,4 +1,11 @@
 <?php
+class Stat {
+	public $domain_users;
+	public $computers;
+	public $packages;
+	public $job_containers;
+	public $reports;
+}
 class ComputerCommand {
 	public $id;
 	public $icon;

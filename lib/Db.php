@@ -41,6 +41,22 @@ class Db {
 		return ($this->stmt->rowCount() == 1);
 	}
 
+	public function getStats() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT
+			(SELECT count(id) FROM domainuser) AS "domain_users",
+			(SELECT count(id) FROM computer) AS "computers",
+			(SELECT count(id) FROM package) AS "packages",
+			(SELECT count(id) FROM job_container) AS "job_containers",
+			(SELECT count(id) FROM report) AS "reports"
+			FROM DUAL'
+		);
+		$this->stmt->execute();
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Stat') as $row) {
+			return $row;
+		}
+	}
+
 	// Computer Operations
 	public function getAllComputerByName($hostname, $limit=null) {
 		$this->stmt = $this->dbh->prepare(

@@ -4,6 +4,7 @@ require_once(__DIR__.'/../../lib/Loader.php');
 require_once(__DIR__.'/../session.php');
 
 // ----- prepare view -----
+$stats = $db->getStats();
 $sysload = sys_getloadavg()[2];
 $ncpu = 1;
 if(is_file('/proc/cpuinfo')) {
@@ -46,11 +47,11 @@ $used = $total - $free;
 			</td>
 		</tr>
 		<tr>
-			<td class='center'><img src='img/users.dyn.svg'><br><?php echo count($db->getAllDomainuser()).' '.LANG['users']; ?></td>
-			<td class='center'><img src='img/computer.dyn.svg'><br><?php echo count($db->getAllComputer()).' '.LANG['computer']; ?></td>
-			<td class='center'><img src='img/package.dyn.svg'><br><?php echo count($db->getAllPackage()).' '.LANG['packages']; ?></td>
-			<td class='center'><img src='img/job.dyn.svg'><br><?php echo count($db->getAllJobcontainer()).' '.LANG['job_container']; ?></td>
-			<td class='center'><img src='img/report.dyn.svg'><br><?php echo count($db->getAllReport()).' '.LANG['reports']; ?></td>
+			<td class='center'><img src='img/users.dyn.svg'><br><?php echo $stats->domain_users.' '.LANG['users']; ?></td>
+			<td class='center'><img src='img/computer.dyn.svg'><br><?php echo $stats->computers.' '.LANG['computer']; ?></td>
+			<td class='center'><img src='img/package.dyn.svg'><br><?php echo $stats->packages.' '.LANG['packages']; ?></td>
+			<td class='center'><img src='img/job.dyn.svg'><br><?php echo $stats->job_containers.' '.LANG['job_container']; ?></td>
+			<td class='center'><img src='img/report.dyn.svg'><br><?php echo $stats->reports.' '.LANG['reports']; ?></td>
 		</tr>
 		<?php
 		// the message of the day is intentionally not escaped by htmlspecialchars() so you can format the text and insert links
