@@ -1310,7 +1310,7 @@ class Db {
 			.' WHERE job_container_id = :job_container_id'
 			.' AND computer_id = :computer_id'
 			.' AND sequence = :sequence'
-			.' AND post_action = '.Package::POST_ACTION_NONE
+			.' AND (post_action = '.Package::POST_ACTION_NONE.' OR post_action = '.Package::POST_ACTION_EXIT.')'
 		);
 		if(!$this->stmt->execute([
 			':job_container_id' => $job_container_id,
