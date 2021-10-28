@@ -151,7 +151,7 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG['start']; ?></th>
 				<td class='subbuttons'>
-					<span id='spnJobContainerStartTime'><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; ?></span>
+					<span id='spnJobContainerStartTime'><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; if($container->shutdown_waked_after_completion > 0) echo ' ('.LANG['shutdown_waked_computers'].')'; ?></span>
 					<button onclick='event.stopPropagation();editJobContainerStart(<?php echo $container->id; ?>, spnJobContainerStartTime.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
