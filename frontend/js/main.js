@@ -217,11 +217,8 @@ function refreshContentHomepage() {
 function refreshContentSettings(id='') {
 	ajaxRequest('views/setting.php?id='+encodeURIComponent(id), 'explorer-content');
 }
-function refreshContentDomainuser() {
-	ajaxRequest('views/domainuser.php', 'explorer-content');
-}
-function refreshContentDomainuserDetail(id) {
-	ajaxRequest('views/domainuser-detail.php?id='+encodeURIComponent(id), 'explorer-content');
+function refreshContentDomainuser(id='') {
+	ajaxRequest('views/domainuser.php?id='+encodeURIComponent(id), 'explorer-content');
 }
 function refreshContentComputer(id='') {
 	ajaxRequest('views/computer.php?id='+encodeURIComponent(id), 'explorer-content');

@@ -88,7 +88,7 @@ $online = $computer->isOnline();
 ?>
 
 <h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><?php echo htmlspecialchars($computer->hostname); ?></h1>
-<div class='controls'>
+<div class='controls top'>
 	<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
 	<button onclick='renameComputer(<?php echo $computer->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($computer->hostname,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
@@ -233,7 +233,7 @@ $online = $computer->isOnline();
 				<?php
 				foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
 					echo "<tr>";
-					echo "<td><a href='".explorerLink('views/domainuser-detail.php?id='.$logon->domainuser_id)."' onclick='event.preventDefault();refreshContentDomainuserDetail(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
+					echo "<td><a href='".explorerLink('views/domainuser-detail.php?id='.$logon->domainuser_id)."' onclick='event.preventDefault();refreshContentDomainuser(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
 					echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 					echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 					echo "</tr>";

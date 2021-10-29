@@ -565,7 +565,7 @@ class Db {
 	}
 	public function getComputerBySoftwareVersion($sid, $version) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT c.id AS "id", c.hostname AS "hostname", cs.version AS "software_version"
+			'SELECT c.id AS "id", c.hostname AS "hostname", c.os AS "os", c.os_version AS "os_version", cs.version AS "software_version"
 			FROM computer_software cs
 			INNER JOIN computer c ON cs.computer_id = c.id
 			WHERE cs.software_id = :id AND cs.version = :version

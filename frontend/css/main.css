@@ -251,9 +251,6 @@ h3 {
 	margin-top: 0px;
 	padding-top: 0px;
 }
-#explorer-content h2 {
-	margin: 25px 0px 14px 0px;
-}
 #explorer-content .details-abreast h1,
 #explorer-content .details-abreast h2,
 #explorer-content .details-abreast h3,
@@ -367,7 +364,13 @@ body.loading2 #loader-container {
 	display: flex;
 	flex-direction: row;
 	align-items: stretch;
-	margin: 14px 0px;
+	margin: 16px 0px;
+}
+.controls:last-child {
+	margin-bottom: 0px;
+}
+.controls.top {
+	margin-bottom: 25px;
 }
 .spread {
 	display: flex;
@@ -679,6 +682,9 @@ div.details-abreast {
 	display: flex;
 	align-items: flex-start;
 }
+div.details-abreast:not(:last-child) {
+	margin-bottom: 25px;
+}
 div.details-abreast > div {
 	flex-grow: 1;
 	flex-shrink: 1;
@@ -695,8 +701,8 @@ div.details-abreast > div:not(:last-child) {
 div.details-abreast > div > table {
 	width: 100%;
 }
-div.details-abreast.notopmargin > div > *:first-child {
-	margin-top: 0px !important;
+div.details-abreast > div h2 {
+	margin: 0px 0px 14px 0px;
 }
 
 .offline {
@@ -712,10 +718,10 @@ div.details-abreast.notopmargin > div > *:first-child {
 	width: 100%;
 }
 .margintop {
-	margin-top: 15px;
+	margin-top: 16px !important;
 }
 .marginbottom {
-	margin-bottom: 15px;
+	margin-bottom: 16px !important;
 }
 .center {
 	text-align: center;

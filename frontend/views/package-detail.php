@@ -112,7 +112,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 
 <h1><img src='<?php echo $package->getIcon(); ?>'><?php echo htmlspecialchars($package->name)." (".htmlspecialchars($package->version).")"; ?><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->name); ?></span></h1>
 
-<div class="details-abreast notopmargin">
+<div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG['general']; ?></h2>
 		<div class='controls'>
@@ -311,7 +311,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 	</div>
 </div>
 
-<div class="details-abreast">
+<div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG['depends_on']; ?></h2>
 		<div class='controls'>
@@ -409,7 +409,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 	</div>
 </div>
 
-<div class="details-abreast">
+<div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG['installed_on']; ?></h2>
 		<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>

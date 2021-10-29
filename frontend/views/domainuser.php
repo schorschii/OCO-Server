@@ -9,51 +9,98 @@ if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 	}
 	die();
 }
-
-$domainuser = $db->getAllDomainuser();
 ?>
-
-<h1><img src='img/users.dyn.svg'><?php echo LANG['all_domain_user']; ?></h1>
-
-
-<table id='tblDomainuserData' class='list searchable sortable savesort'>
-<thead>
-	<tr>
-		<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDomainuserData, this.checked)'></th>
-		<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['logons']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['computers']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
-	</tr>
-</thead>
 
 <?php
-$counter = 0;
-foreach($domainuser as $u) {
-	$counter ++;
-	echo "<tr>";
-	echo "<td><input type='checkbox' name='domainuser_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblDomainuserData)'></td>";
-	echo "<td><a href='".explorerLink('views/domainuser-detail.php?id='.$u->id)."' onclick='event.preventDefault();refreshContentDomainuserDetail(\"".$u->id."\")'>".htmlspecialchars($u->username)."</a></td>";
-	echo "<td>".htmlspecialchars($u->logon_amount)."</td>";
-	echo "<td>".htmlspecialchars($u->computer_amount)."</td>";
-	echo "<td>".htmlspecialchars($u->timestamp)."</td>";
-	echo "</tr>";
-}
+if(!empty($_GET['id'])) {
+	$domainuser = $db->getDomainuser($_GET['id']);
+	if($domainuser === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 ?>
 
-<tfoot>
-	<tr>
-		<td colspan='999'>
-			<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-			<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
-			<a href='#' onclick='event.preventDefault();downloadTableCsv("tblDomainuserData")'><?php echo LANG['csv']; ?></a>
-		</td>
-	</tr>
-</tfoot>
-</table>
 
-
-<div class='controls'>
-	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-	<button onclick='confirmRemoveSelectedDomainuser("domainuser_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+<h1><img src='img/user.dyn.svg'><?php echo htmlspecialchars($domainuser->username); ?></h1>
+<div class='details-abreast'>
+	<div>
+		<h2><?php echo LANG['logins']; ?></h2>
+		<table id='tblDomainuserDetailData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['count']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
+				</tr>
+			</thead>
+			<?php
+			$counter = 0;
+			foreach($db->getDomainuserLogonByDomainuser($domainuser->id) as $logon) {
+				$counter ++;
+				echo "<tr>";
+				echo "<td><a href='".explorerLink('views/computer-detail.php?id='.$logon->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$logon->computer_id.")'>".htmlspecialchars($logon->computer_hostname)."</a></td>";
+				echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
+				echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
+				echo "</tr>";
+			}
+			?>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblDomainuserDetailData")'><?php echo LANG['csv']; ?></a>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
 </div>
+
+
+<?php
+} else { $domainuser = $db->getAllDomainuser();
+?>
+
+
+<h1><img src='img/users.dyn.svg'><?php echo LANG['all_domain_user']; ?></h1>
+<div class='details-abreast'>
+	<div>
+		<table id='tblDomainuserData' class='list searchable sortable savesort'>
+		<thead>
+			<tr>
+				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDomainuserData, this.checked)'></th>
+				<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['logons']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['computers']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
+			</tr>
+		</thead>
+		<?php
+		$counter = 0;
+		foreach($domainuser as $u) {
+			$counter ++;
+			echo "<tr>";
+			echo "<td><input type='checkbox' name='domainuser_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblDomainuserData)'></td>";
+			echo "<td><a href='".explorerLink('views/domainuser.php?id='.$u->id)."' onclick='event.preventDefault();refreshContentDomainuser(\"".$u->id."\")'>".htmlspecialchars($u->username)."</a></td>";
+			echo "<td>".htmlspecialchars($u->logon_amount)."</td>";
+			echo "<td>".htmlspecialchars($u->computer_amount)."</td>";
+			echo "<td>".htmlspecialchars($u->timestamp)."</td>";
+			echo "</tr>";
+		}
+		?>
+		<tfoot>
+			<tr>
+				<td colspan='999'>
+					<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
+					<a href='#' onclick='event.preventDefault();downloadTableCsv("tblDomainuserData")'><?php echo LANG['csv']; ?></a>
+				</td>
+			</tr>
+		</tfoot>
+		</table>
+		<div class='controls'>
+			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
+			<button onclick='confirmRemoveSelectedDomainuser("domainuser_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		</div>
+	</div>
+</div>
+
+
+<?php } ?>

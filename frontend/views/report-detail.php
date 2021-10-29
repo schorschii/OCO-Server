@@ -97,7 +97,7 @@ foreach($results as $result) {
 		} elseif($key == 'software_id') {
 			echo "<td><a href='".explorerLink('views/software.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentSoftware(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'domainuser_id') {
-			echo "<td><a href='".explorerLink('views/domainuser-detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentDomainuserDetail(\"".intval($value)."\")'>".$value."</a></td>";
+			echo "<td><a href='".explorerLink('views/domainuser-detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentDomainuser(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'jobcontainer_id') {
 			echo "<td><a href='".explorerLink('views/job-container.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentJobContainer(\"".intval($value)."\")'>".$value."</a></td>";
 		} elseif($key == 'report_id') {
