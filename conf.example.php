@@ -85,12 +85,13 @@ const COMPUTER_COMMANDS = [
 	['icon'=>'img/ping.svg', 'name'=>'Ping', 'description'=>'client_extension_note', 'command'=>'ping://$$TARGET$$', 'new_tab'=>false],
 	['icon'=>'img/portscan.svg', 'name'=>'Nmap', 'description'=>'client_extension_note', 'command'=>'nmap://$$TARGET$$', 'new_tab'=>false],
 ];
-const MOTD = [
+const LOGIN_SCREEN_QUOTES = [
 	"Have you tried turning it off and on again?",
 	"The fact that ACPI was designed by a group of monkeys high on LSD, and is some of the worst designs in the industry obviously makes running it at any point pretty damn ugly. ~ Torvalds, Linus",
 	"Microsoft isn't evil, they just make really crappy operating systems. ~ Torvalds, Linus",
 	"XML is crap. Really. There are no excuses. XML is nasty to parse for humans, and it's a disaster to parse even for computers. There's just no reason for that horrible crap to exist. ~ Torvalds, Linus",
 	"The memory management on the PowerPC can be used to frighten small children. ~ Torvalds, Linus",
 	"Software is like sex; it's better when it's free. ~ Torvalds, Linus",
-	"Now, most of you are probably going to be totally bored out of your minds on Christmas day, and here's the perfect distraction. Test 2.6.15-rc7. All the stores will be closed, and there's really nothing better to do in between meals. ~ Torvalds, Linus"
+	"Now, most of you are probably going to be totally bored out of your minds on Christmas day, and here's the perfect distraction. Test 2.6.15-rc7. All the stores will be closed, and there's really nothing better to do in between meals. ~ Torvalds, Linus",
+	"If you didn't get angry and mad and frustrated, that means you don't care about the end result, and are doing something wrong. ~ Kroah-Hartman, Greg",
 ];

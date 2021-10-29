@@ -87,7 +87,7 @@ if(!empty($_SESSION['um_username'])) {
 			<a href='https://github.com/schorschii/oco-server' target='_blank'>
 				<img id='forkme' src='img/forkme.png'>
 			</a>
-			<div id='motd'><?php echo MOTD[ rand(0, sizeof(MOTD)-1) ]; ?></div>
+			<div id='motd'><?php echo LOGIN_SCREEN_QUOTES[ rand(0, sizeof(LOGIN_SCREEN_QUOTES)-1) ]; ?></div>
 		</div>
 	</div>
 
