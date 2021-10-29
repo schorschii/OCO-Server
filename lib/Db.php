@@ -1474,6 +1474,19 @@ class Db {
 			return $row;
 		}
 	}
+	public function getDomainuserLogonHistoryByDomainuser($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT c.id AS "computer_id", c.hostname AS "computer_hostname", dl.console AS "console", dl.timestamp AS "timestamp"
+			FROM domainuser_logon dl
+			INNER JOIN computer c ON dl.computer_id = c.id
+			WHERE dl.domainuser_id = :domainuser_id
+			ORDER BY timestamp DESC, computer_hostname ASC'
+		);
+		$this->stmt->execute([
+			':domainuser_id' => $id,
+		]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainuserLogon');
+	}
 	public function getDomainuserLogonByDomainuser($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "computer_id", c.hostname AS "computer_hostname", COUNT(c.hostname) AS "logon_amount",
