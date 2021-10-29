@@ -695,6 +695,9 @@ div.details-abreast > div:not(:last-child) {
 div.details-abreast > div > table {
 	width: 100%;
 }
+div.details-abreast.notopmargin > div > *:first-child {
+	margin-top: 0px !important;
+}
 
 .offline {
 	opacity: 0.4;
