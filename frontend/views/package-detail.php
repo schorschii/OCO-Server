@@ -273,11 +273,10 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 		<h2><?php echo LANG['other_packages_from_this_family']; ?></h2>
 		<div class='controls'>
 			<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
-			<button onclick='renamePackageFamily(<?php echo $package->package_family_id; ?>, spnPackageFamilyName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-			<button onclick='fleIcon.click()' class='nomarginright'><img src='img/image-add.svg'>&nbsp;<?php echo LANG['change_icon']; ?></button>
-			<button onclick='removePackageFamilyIcon(<?php echo $package->package_family_id; ?>)'><img src='img/image-remove.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
+			<button onclick='refreshContentPackage("", <?php echo $packageFamily->id; ?>)'><img src='img/list.svg'>&nbsp;<?php echo LANG['details']; ?></button>
 		</div>
 		<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $package->package_family_id; ?>, this.files[0])'></input>
+		<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
 		<table id='tblOtherPackagesData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>

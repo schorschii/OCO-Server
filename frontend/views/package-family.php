@@ -31,7 +31,7 @@ echo "</div>";
 	<tr>
 		<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageFamilyData, this.checked)'></th>
 		<th class='searchable sortable'><?php echo LANG['name']; ?></th>
-		<!--<th class='searchable sortable'><?php echo LANG['description']; ?></th>-->
+		<th class='searchable sortable'><?php echo LANG['description']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['count']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['newest']; ?></th>
 		<th class='searchable sortable'><?php echo LANG['oldest']; ?></th>
@@ -46,7 +46,7 @@ foreach($families as $p) {
 	echo "<tr>";
 	echo "<td><input type='checkbox' name='package_family_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageFamilyData)'></td>";
 	echo "<td><a href='".explorerLink('views/package.php?package_family_id='.$p->id)."' onclick='event.preventDefault();refreshContentPackage(\"\", ".$p->id.")' ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
-	#echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
+	echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 	echo "<td>".htmlspecialchars($p->package_count)."</td>";
 	echo "<td>".htmlspecialchars($p->newest_package_created)."</td>";
 	echo "<td>".htmlspecialchars($p->oldest_package_created)."</td>";
