@@ -1522,6 +1522,14 @@ class Db {
 		);
 		$this->stmt->execute([':id' => $id]);
 	}
+	public function removeDomainuserLogonOlderThan($seconds) {
+		if(intval($seconds) < 1) return;
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM domainuser_logon WHERE timestamp < NOW() - INTERVAL '.intval($seconds).' SECOND'
+		);
+		if(!$this->stmt->execute()) return false;
+		return $this->stmt->rowCount();
+	}
 
 	// Settings Operations
 	public function getSettingByName($name) {

@@ -10,12 +10,14 @@ const CLIENT_API_KEY           = 'Ungah2oo';
 
 const AGENT_SELF_REGISTRATION_ENABLED = true;
 const AGENT_REGISTRATION_KEY          = 'ernesto';
-const AGENT_UPDATE_INTERVAL           = 3600;
+const AGENT_UPDATE_INTERVAL           = 3600; // 1 hour
 
-const PURGE_SUCCEEDED_JOBS_AFTER = 14400;
-const PURGE_FAILED_JOBS_AFTER    = 172800;
+const PURGE_SUCCEEDED_JOBS_AFTER = 14400;  // 4 hours
+const PURGE_FAILED_JOBS_AFTER    = 172800; // 2 days
 
-const DELETE_LOGS_AFTER = 172800;
+const PURGE_DOMAINUSER_LOGONS_AFTER = 31536000; // 1 year
+
+const PURGE_LOGS_AFTER  = 172800; // 2 days
 const LOG_LEVEL         = 2;
 // 0 -> DEBUG
 // 1 -> INFO
