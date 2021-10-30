@@ -906,11 +906,10 @@ class Db {
 			return $row;
 		}
 	}
-	public function getAllPackageByName($name, $limit=null) {
+	public function getAllPackageFamilyByName($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name"
-			FROM package p INNER JOIN package_family pf ON pf.id = p.package_family_id
-			WHERE pf.name LIKE :name ORDER BY p.created DESC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+			'SELECT id, name FROM package_family
+			WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');

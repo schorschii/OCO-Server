@@ -16,9 +16,9 @@ $counter = 0;
 		<a onkeydown='handleSearchResultNavigation(event)' onclick='event.preventDefault();closeSearchResults();refreshContentComputerDetail("<?php echo $c->id; ?>")' href='<?php echo explorerLink('views/computer-detail.php?id='.$c->id); ?>'><img src='img/computer.dyn.svg'><?php echo htmlspecialchars($c->hostname); ?></a>
 	</div>
 <?php } ?>
-<?php foreach($db->getAllPackageByName($_GET['query'], 5) as $p) { $counter ++; ?>
+<?php foreach($db->getAllPackageFamilyByName($_GET['query'], 5) as $pf) { $counter ++; ?>
 	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' onclick='event.preventDefault();closeSearchResults();refreshContentPackageDetail("<?php echo $p->id; ?>")' href='<?php echo explorerLink('views/package-detail.php?id='.$p->id); ?>'><img src='img/package.dyn.svg'><?php echo htmlspecialchars($p->name).' ('.htmlspecialchars($p->version).')'; ?></a>
+		<a onkeydown='handleSearchResultNavigation(event)' onclick='event.preventDefault();closeSearchResults();refreshContentPackage("", "<?php echo $pf->id; ?>")' href='<?php echo explorerLink('views/package.php?package_family_id='.$pf->id); ?>'><img src='img/package.dyn.svg'><?php echo htmlspecialchars($pf->name); ?></a>
 	</div>
 <?php } ?>
 <?php foreach($db->getAllJobContainerByName($_GET['query'], 5) as $jc) { $counter ++; ?>
