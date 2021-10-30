@@ -302,7 +302,7 @@ if(!empty($_GET['id'])) {
 				echo "<td><input type='checkbox' name='job_container_id[]' value='".$jc->id."' onchange='refreshCheckedCounter(tblJobcontainerData)'></td>";
 				echo "<td class='middle'>";
 				echo  "<img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'>&nbsp;";
-				echo  "<a href='".explorerLink('views/job-container.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a>";
+				echo  "<a href='".explorerLink('views/job-containers.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a>";
 				echo "</td>";
 				echo "<td>".htmlspecialchars($jc->author)."</td>";
 				echo "<td>".htmlspecialchars($jc->created)."</td>";

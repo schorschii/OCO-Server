@@ -18,12 +18,12 @@ $counter = 0;
 <?php } ?>
 <?php foreach($db->getAllPackageFamilyByName($_GET['query'], 5) as $pf) { $counter ++; ?>
 	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' onclick='event.preventDefault();closeSearchResults();refreshContentPackage("", "<?php echo $pf->id; ?>")' href='<?php echo explorerLink('views/package.php?package_family_id='.$pf->id); ?>'><img src='img/package.dyn.svg'><?php echo htmlspecialchars($pf->name); ?></a>
+		<a onkeydown='handleSearchResultNavigation(event)' onclick='event.preventDefault();closeSearchResults();refreshContentPackage("", "<?php echo $pf->id; ?>")' href='<?php echo explorerLink('views/packages.php?package_family_id='.$pf->id); ?>'><img src='img/package.dyn.svg'><?php echo htmlspecialchars($pf->name); ?></a>
 	</div>
 <?php } ?>
 <?php foreach($db->getAllJobContainerByName($_GET['query'], 5) as $jc) { $counter ++; ?>
 	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' onclick='event.preventDefault();closeSearchResults();refreshContentJobContainer("<?php echo $jc->id; ?>")' href='<?php echo explorerLink('views/job-container.php?id='.$jc->id); ?>'><img src='img/job.dyn.svg'><?php echo htmlspecialchars($jc->name); ?></a>
+		<a onkeydown='handleSearchResultNavigation(event)' onclick='event.preventDefault();closeSearchResults();refreshContentJobContainer("<?php echo $jc->id; ?>")' href='<?php echo explorerLink('views/job-containers.php?id='.$jc->id); ?>'><img src='img/job.dyn.svg'><?php echo htmlspecialchars($jc->name); ?></a>
 	</div>
 <?php } ?>
 <?php foreach($db->getAllDomainuserByName($_GET['query'], 5) as $u) { $counter ++; ?>

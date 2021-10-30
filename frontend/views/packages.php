@@ -80,9 +80,9 @@ if(!empty($_GET['id'])) {
 	echo "<button onclick='editPackageFamilyNotes(".$family->id.", this.getAttribute(\"oldValue\"))' oldValue='".htmlspecialchars($family->notes,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['edit_description']."</button>";
 	echo "<button onclick='fleIcon.click()' class='nomarginright'><img src='img/image-add.svg'>&nbsp;".LANG['change_icon']."</button>";
 	echo "<button onclick='removePackageFamilyIcon(".$family->id.")'><img src='img/image-remove.svg'>&nbsp;".LANG['remove_icon']."</button>";
-	echo "<button onclick='currentExplorerContentUrl=\"views/package-family.php\";confirmRemovePackageFamily([".htmlspecialchars($family->id,ENT_QUOTES)."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_package_family']."</button> ";
+	echo "<button onclick='currentExplorerContentUrl=\"views/package-families.php\";confirmRemovePackageFamily([".htmlspecialchars($family->id,ENT_QUOTES)."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_package_family']."</button> ";
 	echo "<span class='fillwidth'></span> ";
-	echo "<span><a href='".explorerLink('views/package-family.php')."' onclick='event.preventDefault();refreshContentPackageFamily()'>".LANG['package_families']."</a></span>";
+	echo "<span><a href='".explorerLink('views/package-families.php')."' onclick='event.preventDefault();refreshContentPackageFamily()'>".LANG['package_families']."</a></span>";
 	echo "</div>";
 	echo "<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(".$family->id.", this.files[0])'></input>";
 	if(!empty($family->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($family->notes))."</p>";
@@ -94,7 +94,7 @@ if(!empty($_GET['id'])) {
 	echo "<button onclick='refreshContentPackageNew()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
 	echo "<button onclick='newPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
 	echo "<span class='fillwidth'></span> ";
-	echo "<span><a href='".explorerLink('views/package-family.php')."' onclick='event.preventDefault();refreshContentPackageFamily()'>".LANG['package_families']."</a></span>";
+	echo "<span><a href='".explorerLink('views/package-families.php')."' onclick='event.preventDefault();refreshContentPackageFamily()'>".LANG['package_families']."</a></span>";
 	echo "</div>";
 }
 ?>

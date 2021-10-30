@@ -99,7 +99,7 @@ $online = $computer->isOnline();
 				<?php echoComputerGroupOptions($db); ?>
 			</select>
 		</button>
-		<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		<?php
 		if(count(COMPUTER_COMMANDS) > 0) echo "<span class='vl'></span>";
 		foreach(COMPUTER_COMMANDS as $c) {
@@ -203,7 +203,7 @@ $online = $computer->isOnline();
 					$res = $db->getGroupByComputer($computer->id);
 					$i = 0;
 					foreach($res as $group) {
-						echo "<a class='subbuttons' href='".explorerLink('views/computer.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".wrapInSpanIfNotEmpty($db->getComputerGroupBreadcrumbString($group->id));
+						echo "<a class='subbuttons' href='".explorerLink('views/computers.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".wrapInSpanIfNotEmpty($db->getComputerGroupBreadcrumbString($group->id));
 						echo "<button onclick='event.stopPropagation();removeComputerFromGroup([".$computer->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.dyn.svg' title='".LANG['remove_from_group']."'></button>";
 						echo "</a>";
 						if(++$i != count($res)) { echo "<br>"; }
@@ -441,7 +441,7 @@ $online = $computer->isOnline();
 					else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
 					echo  '<a href="'.explorerLink('views/package-detail.php?id='.$j->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$j->package_id.')">'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
 					echo '</td>';
-					echo '<td><a href="'.explorerLink('views/job-container.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
+					echo '<td><a href="'.explorerLink('views/job-containers.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
 					echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 					echo '</tr>';
 				}

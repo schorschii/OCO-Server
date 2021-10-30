@@ -113,7 +113,7 @@ if(!empty($_GET['id'])) {
 			$counter ++;
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='domainuser_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblDomainuserData)'></td>";
-			echo "<td><a href='".explorerLink('views/domainuser.php?id='.$u->id)."' onclick='event.preventDefault();refreshContentDomainuser(\"".$u->id."\")'>".htmlspecialchars($u->username)."</a></td>";
+			echo "<td><a href='".explorerLink('views/domainusers.php?id='.$u->id)."' onclick='event.preventDefault();refreshContentDomainuser(\"".$u->id."\")'>".htmlspecialchars($u->username)."</a></td>";
 			echo "<td>".htmlspecialchars($u->logon_amount)."</td>";
 			echo "<td>".htmlspecialchars($u->computer_amount)."</td>";
 			echo "<td>".htmlspecialchars($u->timestamp)."</td>";

@@ -215,13 +215,13 @@ function refreshContentHomepage() {
 	ajaxRequest('views/homepage.php', 'explorer-content');
 }
 function refreshContentSettings(id='') {
-	ajaxRequest('views/setting.php?id='+encodeURIComponent(id), 'explorer-content');
+	ajaxRequest('views/settings.php?id='+encodeURIComponent(id), 'explorer-content');
 }
 function refreshContentDomainuser(id='') {
-	ajaxRequest('views/domainuser.php?id='+encodeURIComponent(id), 'explorer-content');
+	ajaxRequest('views/domainusers.php?id='+encodeURIComponent(id), 'explorer-content');
 }
 function refreshContentComputer(id='') {
-	ajaxRequest('views/computer.php?id='+encodeURIComponent(id), 'explorer-content');
+	ajaxRequest('views/computers.php?id='+encodeURIComponent(id), 'explorer-content');
 }
 function refreshContentComputerDetail(id) {
 	ajaxRequest('views/computer-detail.php?id='+encodeURIComponent(id), 'explorer-content');
@@ -230,10 +230,10 @@ function refreshContentSoftware(id='', version='', os='') {
 	ajaxRequest('views/software.php?id='+encodeURIComponent(id)+'&version='+encodeURIComponent(version)+'&os='+encodeURIComponent(os), 'explorer-content');
 }
 function refreshContentPackage(id='', package_family_id='') {
-	ajaxRequest('views/package.php?id='+encodeURIComponent(id)+'&package_family_id='+encodeURIComponent(package_family_id), 'explorer-content');
+	ajaxRequest('views/packages.php?id='+encodeURIComponent(id)+'&package_family_id='+encodeURIComponent(package_family_id), 'explorer-content');
 }
 function refreshContentPackageFamily() {
-	ajaxRequest('views/package-family.php', 'explorer-content');
+	ajaxRequest('views/package-families.php', 'explorer-content');
 }
 function refreshContentPackageDetail(id) {
 	ajaxRequest('views/package-detail.php?id='+encodeURIComponent(id), 'explorer-content');
@@ -256,7 +256,7 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 	);
 }
 function refreshContentJobContainer(id='') {
-	ajaxRequest('views/job-container.php?id='+encodeURIComponent(id), 'explorer-content');
+	ajaxRequest('views/job-containers.php?id='+encodeURIComponent(id), 'explorer-content');
 }
 function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids=[], computer_group_ids=[]) {
 	var params = [];
@@ -278,7 +278,7 @@ function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids
 	});
 }
 function refreshContentReport(id='') {
-	ajaxRequest('views/report.php?id='+encodeURIComponent(id), 'explorer-content');
+	ajaxRequest('views/reports.php?id='+encodeURIComponent(id), 'explorer-content');
 }
 function refreshContentReportDetail(id='') {
 	ajaxRequest('views/report-detail.php?id='+encodeURIComponent(id), 'explorer-content');
@@ -496,7 +496,7 @@ function reorderPackageInGroup(groupId, oldPos, newPos) {
 	params.push({'key':'move_from_pos', 'value':oldPos});
 	params.push({'key':'move_to_pos', 'value':newPos});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/packages.php', paramString, null, refreshContent);
 }
 function removeSelectedPackage(checkboxName, attributeName=null, event=null) {
 	var ids = [];
@@ -525,7 +525,7 @@ function confirmRemovePackage(ids, event=null) {
 	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_PACKAGE)) {
-		ajaxRequestPost('views/package.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/packages.php', paramString, null, refreshContent);
 	}
 }
 function removeSelectedPackageFromGroup(checkboxName, groupId) {
@@ -548,7 +548,7 @@ function removePackageFromGroup(ids, groupId) {
 		params.push({'key':'remove_from_group_package_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/packages.php', paramString, null, refreshContent);
 }
 function removeSelectedPackageFamily(checkboxName, attributeName=null) {
 	var ids = [];
@@ -574,7 +574,7 @@ function confirmRemovePackageFamily(ids) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/package-family.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/package-families.php', paramString, null, refreshContent);
 	}
 }
 function deploySelectedPackage(checkboxName, attributeName=null) {
@@ -593,13 +593,13 @@ function deploySelectedPackage(checkboxName, attributeName=null) {
 function newPackageGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/package.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
+		ajaxRequestPost('views/packages.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
 	}
 }
 function renamePackageGroup(id, oldName) {
 	var newName = prompt(L__ENTER_NAME, oldName);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/package.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/packages.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function confirmRemovePackageGroup(ids, event=null) {
@@ -612,7 +612,7 @@ function confirmRemovePackageGroup(ids, event=null) {
 	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
-		ajaxRequestPost('views/package.php', paramString, null, function(){ refreshContentPackageFamily(); refreshSidebar(); });
+		ajaxRequestPost('views/packages.php', paramString, null, function(){ refreshContentPackageFamily(); refreshSidebar(); });
 	}
 }
 function addSelectedPackageToGroup(checkboxName, groupId, attributeName=null) {
@@ -636,14 +636,14 @@ function addSelectedPackageToGroup(checkboxName, groupId, attributeName=null) {
 		params.push({'key':'add_to_group_package_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package.php', paramString, null, function() { alert(L__PACKAGES_ADDED) });
+	ajaxRequestPost('views/packages.php', paramString, null, function() { alert(L__PACKAGES_ADDED) });
 }
 function addPackageToGroup(packageId, groupId) {
 	var params = [];
 	params.push({'key':'add_to_group_id', 'value':groupId});
 	params.push({'key':'add_to_group_package_id[]', 'value':packageId});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package.php', paramString, null, function() { alert(L__PACKAGES_ADDED); refreshContent(); });
+	ajaxRequestPost('views/packages.php', paramString, null, function() { alert(L__PACKAGES_ADDED); refreshContent(); });
 }
 function addPackageDependency(packageId, dependencyPackageId) {
 	var params = [];
@@ -804,7 +804,7 @@ function newComputer() {
 				}
 			}
 		};
-		req.open('POST', 'views/computer.php');
+		req.open('POST', 'views/computers.php');
 		req.send(formData);
 	}
 }
@@ -828,7 +828,7 @@ function removeComputerFromGroup(ids, groupId) {
 		params.push({'key':'remove_from_group_computer_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computer.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/computers.php', paramString, null, refreshContent);
 }
 function removeSelectedComputer(checkboxName, attributeName=null, event=null) {
 	var ids = [];
@@ -857,7 +857,7 @@ function confirmRemoveComputer(ids, event=null) {
 	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/computer.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/computers.php', paramString, null, refreshContent);
 	}
 }
 function deploySelectedComputer(checkboxName, attributeName=null) {
@@ -902,18 +902,18 @@ function confirmWolComputer(ids) {
 		params.push({'key':'wol_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__WOL_SENT) });
+	ajaxRequestPost('views/computers.php', paramString, null, function() { alert(L__WOL_SENT) });
 }
 function newComputerGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/computer.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
+		ajaxRequestPost('views/computers.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
 	}
 }
 function renameComputerGroup(id, oldName) {
 	var newName = prompt(L__ENTER_NAME, oldName);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/computer.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/computers.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function confirmRemoveComputerGroup(ids, event=null) {
@@ -926,7 +926,7 @@ function confirmRemoveComputerGroup(ids, event=null) {
 	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
-		ajaxRequestPost('views/computer.php', paramString, null, function(){ refreshContentComputer(); refreshSidebar(); });
+		ajaxRequestPost('views/computers.php', paramString, null, function(){ refreshContentComputer(); refreshSidebar(); });
 	}
 }
 function addSelectedComputerToGroup(checkboxName, groupId, attributeName=null) {
@@ -950,14 +950,14 @@ function addSelectedComputerToGroup(checkboxName, groupId, attributeName=null) {
 		params.push({'key':'add_to_group_computer_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__COMPUTER_ADDED) });
+	ajaxRequestPost('views/computers.php', paramString, null, function() { alert(L__COMPUTER_ADDED) });
 }
 function addComputerToGroup(computerId, groupId) {
 	var params = [];
 	params.push({'key':'add_to_group_id', 'value':groupId});
 	params.push({'key':'add_to_group_computer_id[]', 'value':computerId});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computer.php', paramString, null, function() { alert(L__COMPUTER_ADDED); refreshContent(); });
+	ajaxRequestPost('views/computers.php', paramString, null, function() { alert(L__COMPUTER_ADDED); refreshContent(); });
 }
 
 // job operations
@@ -985,7 +985,7 @@ function confirmRemoveJobContainer(ids) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_JOBCONTAINER)) {
-		ajaxRequestPost('views/job-container.php', paramString, null, function(){ refreshContentJobContainer(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', paramString, null, function(){ refreshContentJobContainer(); refreshSidebar(); });
 	}
 }
 function removeSelectedJob(checkboxName, attributeName=null) {
@@ -1012,49 +1012,49 @@ function confirmRemoveJob(ids) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_JOB)) {
-		ajaxRequestPost('views/job-container.php', paramString, null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', paramString, null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function confirmRenewFailedJobsInContainer(id, defaultStartTime) {
 	if(!confirm(L__CONFIRM_RENEW_JOBS)) { return; }
 	var startTime = prompt(L__ENTER_START_TIME, defaultStartTime);
 	if(startTime == null || startTime == '') { return; }
-	ajaxRequestPost('views/job-container.php', urlencodeObject({'renew_container_id':id, 'renew_start_time':startTime}), null, function(){ refreshContent(); refreshSidebar(); });
+	ajaxRequestPost('views/job-containers.php', urlencodeObject({'renew_container_id':id, 'renew_start_time':startTime}), null, function(){ refreshContent(); refreshSidebar(); });
 }
 function renameJobContainer(id, oldName) {
 	var newName = prompt(L__ENTER_NAME, oldName);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function editJobContainerStart(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_start':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_start':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function editJobContainerEnd(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_end':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_end':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function editJobContainerSequenceMode(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_sequence_mode':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_sequence_mode':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function editJobContainerPriority(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_priority':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_priority':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function editJobContainerNotes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/job-container.php', urlencodeObject({'edit_container_id':id, 'new_notes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_notes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority) {
@@ -1117,7 +1117,7 @@ function confirmRemoveSelectedDomainuser(checkboxName) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/domainuser.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/domainusers.php', paramString, null, refreshContent);
 	}
 }
 
@@ -1125,13 +1125,13 @@ function confirmRemoveSelectedDomainuser(checkboxName) {
 function newReportGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/report.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
+		ajaxRequestPost('views/reports.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
 	}
 }
 function renameReportGroup(id, oldName) {
 	var newName = prompt(L__ENTER_NAME, oldName);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/report.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/reports.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
 	}
 }
 function confirmRemoveReportGroup(ids) {
@@ -1141,7 +1141,7 @@ function confirmRemoveReportGroup(ids) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
-		ajaxRequestPost('views/report.php', paramString, null, function(){ refreshContentReport(); refreshSidebar(); });
+		ajaxRequestPost('views/reports.php', paramString, null, function(){ refreshContentReport(); refreshSidebar(); });
 	}
 }
 function newReport(group_id=0) {
@@ -1149,7 +1149,7 @@ function newReport(group_id=0) {
 	if(newName != null && newName != '') {
 		var newQuery = prompt(L__ENTER_QUERY);
 		if(newQuery != null && newQuery != '') {
-			ajaxRequestPost('views/report.php', urlencodeObject({'add_report':newName, 'query':newQuery, 'group_id':group_id}), null, refreshContent);
+			ajaxRequestPost('views/reports.php', urlencodeObject({'add_report':newName, 'query':newQuery, 'group_id':group_id}), null, refreshContent);
 		}
 	}
 }
@@ -1195,7 +1195,7 @@ function confirmRemoveReport(ids) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/report.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/reports.php', paramString, null, refreshContent);
 	}
 }
 function moveSelectedReportToGroup(checkboxName, groupId, attributeName=null) {
@@ -1219,7 +1219,7 @@ function moveSelectedReportToGroup(checkboxName, groupId, attributeName=null) {
 		params.push({'key':'move_to_group_report_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/report.php', paramString, null, function() { refreshContent(); alert(L__SAVED); });
+	ajaxRequestPost('views/reports.php', paramString, null, function() { refreshContent(); alert(L__SAVED); });
 }
 
 // systemuser operations
@@ -1240,7 +1240,7 @@ function confirmRemoveSelectedSystemuser(checkboxName) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/setting.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/settings.php', paramString, null, refreshContent);
 	}
 }
 function lockSelectedSystemuser(checkboxName) {
@@ -1255,7 +1255,7 @@ function lockSelectedSystemuser(checkboxName) {
 		params.push({'key':'lock_systemuser_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/setting.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/settings.php', paramString, null, refreshContent);
 }
 function unlockSelectedSystemuser(checkboxName) {
 	var ids = [];
@@ -1269,7 +1269,7 @@ function unlockSelectedSystemuser(checkboxName) {
 		params.push({'key':'unlock_systemuser_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/setting.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/settings.php', paramString, null, refreshContent);
 }
 function createSystemuser(username, fullname, password) {
 	btnCreateUser.disabled = true;
@@ -1278,7 +1278,7 @@ function createSystemuser(username, fullname, password) {
 	formData.append('add_systemuser_username', username);
 	formData.append('add_systemuser_fullname', username);
 	formData.append('add_systemuser_password', password);
-	req.open('POST', 'views/setting.php');
+	req.open('POST', 'views/settings.php');
 	req.send(formData);
 	req.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
@@ -1306,7 +1306,7 @@ function changeSelectedSystemuserPassword(checkboxName, password, password2) {
 	let formData = new FormData();
 	formData.append('change_systemuser_id', ids[0]);
 	formData.append('change_systemuser_password', password);
-	req.open('POST', 'views/setting.php');
+	req.open('POST', 'views/settings.php');
 	req.send(formData);
 	req.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
