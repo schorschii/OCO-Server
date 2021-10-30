@@ -251,6 +251,14 @@ h3 {
 	margin-top: 0px;
 	padding-top: 0px;
 }
+#explorer-content > .details-header:first-child > *:first-child {
+	margin-top: 0px;
+	padding-top: 0px;
+}
+#explorer-content > .details-header:first-child > *:last-child {
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+}
 #explorer-content .details-abreast h1,
 #explorer-content .details-abreast h2,
 #explorer-content .details-abreast h3,
@@ -368,9 +376,6 @@ body.loading2 #loader-container {
 }
 .controls:last-child {
 	margin-bottom: 0px;
-}
-.controls.top {
-	margin-bottom: 25px;
 }
 .spread {
 	display: flex;
@@ -682,8 +687,10 @@ div.details-abreast {
 	display: flex;
 	align-items: flex-start;
 }
-div.details-abreast:not(:last-child) {
-	margin-bottom: 25px;
+div.details-abreast > div h1,
+div.details-abreast > div h2,
+div.details-abreast > div h3 {
+	margin-top: 25px;
 }
 div.details-abreast > div {
 	flex-grow: 1;
@@ -700,9 +707,6 @@ div.details-abreast > div:not(:last-child) {
 }
 div.details-abreast > div > table {
 	width: 100%;
-}
-div.details-abreast > div h2 {
-	margin: 0px 0px 14px 0px;
 }
 
 .offline {
@@ -854,15 +858,15 @@ div.details-abreast > div h2 {
 
 @media (max-width: 1050px) {
 	div.details-abreast {
-		display: block;
+		flex-wrap: wrap;
 	}
 	div.details-abreast > div {
-		width: auto;
+		width: 100%;
 		overflow: visible;
 		padding: 0px;
 	}
 	div.details-abreast > div:not(:last-child) {
-		margin-right: 0px;
+		margin-right: -4px;
 	}
 	.controls {
 		flex-wrap: wrap;

@@ -110,7 +110,9 @@ if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div
 $packageFamily = $db->getPackageFamily($package->package_family_id);
 ?>
 
-<h1><img src='<?php echo $package->getIcon(); ?>'><?php echo htmlspecialchars($package->name)." (".htmlspecialchars($package->version).")"; ?><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->name); ?></span></h1>
+<div class='details-header'>
+	<h1><img src='<?php echo $package->getIcon(); ?>'><?php echo htmlspecialchars($package->name)." (".htmlspecialchars($package->version).")"; ?><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->name); ?></span></h1>
+</div>
 
 <div class='details-abreast'>
 	<div>

@@ -11,9 +11,12 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 ?>
 
 
-<h1><img src='img/software.dyn.svg'><?php echo htmlspecialchars($software->name) . ' ' . htmlspecialchars($_GET['version']); ?></h1>
+<div class='details-header'>
+	<h1><img src='img/software.dyn.svg'><?php echo htmlspecialchars($software->name) . ' ' . htmlspecialchars($_GET['version']); ?></h1>
+</div>
 <div class='details-abreast'>
 	<div>
+		<h2><?php echo LANG['installed_on']; ?></h2>
 		<table id='tblSoftwareComputerData1' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
@@ -53,9 +56,12 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 ?>
 
 
-<h1><img src='img/software.dyn.svg'><?php echo htmlspecialchars($software->name); ?></h1>
+<div class='details-header'>
+	<h1><img src='img/software.dyn.svg'><?php echo htmlspecialchars($software->name); ?></h1>
+</div>
 <div class='details-abreast'>
 	<div>
+		<h2><?php echo LANG['installed_on']; ?></h2>
 		<table id='tblSoftwareComputerData2' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
@@ -89,7 +95,9 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 <?php } else { ?>
 
 
-<h1><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></h1>
+<div class='details-header'>
+	<h1><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></h1>
+</div>
 <div class='details-abreast'>
 	<div>
 		<?php $software = [];
@@ -103,6 +111,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 			echo "<h2>".LANG['linux']."</h2>";
 			$software = $db->getAllSoftwareOther();
 		} else {
+			echo "<h2>".LANG['all_os']."</h2>";
 			$software = $db->getAllSoftware();
 		}
 		?>

@@ -87,24 +87,26 @@ if($computer === null) die("<div class='alert warning'>".LANG['not_found']."</di
 $online = $computer->isOnline();
 ?>
 
-<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><?php echo htmlspecialchars($computer->hostname); ?></h1>
-<div class='controls top'>
-	<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-	<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-	<button onclick='renameComputer(<?php echo $computer->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($computer->hostname,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-	<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
-		&nbsp;<?php echo LANG['add_to']; ?>
-		<select id='sltNewGroup' onclick='event.stopPropagation()'>
-			<?php echoComputerGroupOptions($db); ?>
-		</select>
-	</button>
-	<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-	<?php
-	if(count(COMPUTER_COMMANDS) > 0) echo "<span class='vl'></span>";
-	foreach(COMPUTER_COMMANDS as $c) {
-		echoCommandButton($c, $computer->hostname);
-	}
-	?>
+<div class='details-header'>
+	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><?php echo htmlspecialchars($computer->hostname); ?></h1>
+	<div class='controls'>
+		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
+		<button onclick='renameComputer(<?php echo $computer->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($computer->hostname,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
+			&nbsp;<?php echo LANG['add_to']; ?>
+			<select id='sltNewGroup' onclick='event.stopPropagation()'>
+				<?php echoComputerGroupOptions($db); ?>
+			</select>
+		</button>
+		<button onclick='currentExplorerContentUrl="views/computer.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<?php
+		if(count(COMPUTER_COMMANDS) > 0) echo "<span class='vl'></span>";
+		foreach(COMPUTER_COMMANDS as $c) {
+			echoCommandButton($c, $computer->hostname);
+		}
+		?>
+	</div>
 </div>
 
 <div class="details-abreast">
