@@ -34,8 +34,8 @@ if(!empty($_GET['package_id']) && is_array($_GET['package_id'])) {
 	foreach($select_package_ids as $id) {
 		$p = $db->getPackage($id);
 		if($p == null) continue;
-		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$p->name;
-		else $default_job_container_name .= ', '.$p->name;
+		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$p->package_family_name;
+		else $default_job_container_name .= ', '.$p->package_family_name;
 	}
 }
 if(!empty($_GET['package_group_id']) && is_array($_GET['package_group_id'])) {

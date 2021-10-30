@@ -112,7 +112,7 @@ class ComputerPackage {
 	// joined computer attributes
 	public $computer_hostname;
 	// joined package attributes
-	public $package_name;
+	public $package_family_name;
 	public $package_version;
 }
 class ComputerGroup {
@@ -156,6 +156,7 @@ class Package {
 	public $package_group_member_sequence;
 	// joined package family attributes
 	public $package_family_id;
+	public $package_family_name;
 	public $package_family_icon;
 	// constants
 	public const POST_ACTION_NONE = 0;
@@ -244,7 +245,7 @@ class Job {
 	// joined computer attributes
 	public $computer_hostname;
 	// joined package attributes
-	public $package_name;
+	public $package_family_name;
 	public $package_version;
 	// joined job container attributes
 	public $job_container_start_time = 0;

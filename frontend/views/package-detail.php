@@ -111,7 +111,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $package->getIcon(); ?>'><?php echo htmlspecialchars($package->name)." (".htmlspecialchars($package->version).")"; ?><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->name); ?></span></h1>
+	<h1><img src='<?php echo $package->getIcon(); ?>'><?php echo htmlspecialchars($package->package_family_name)." (".htmlspecialchars($package->version).")"; ?><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->package_family_name); ?></span></h1>
 </div>
 
 <div class='details-abreast'>

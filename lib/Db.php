@@ -129,7 +129,7 @@ class Db {
 	}
 	public function getComputerPackage($cid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
+			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_family_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN package p ON p.id = cp.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
@@ -897,7 +897,7 @@ class Db {
 	}
 	public function getPackage($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name", pf.icon AS "package_family_icon" FROM package p
+			'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE p.id = :id'
 		);
@@ -1228,7 +1228,7 @@ class Db {
 	}
 	public function getAllJobByContainer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.*, pf.name AS "package_name", p.version AS "package_version", c.hostname AS "computer_hostname", jc.start_time AS "job_container_start_time"
+			'SELECT j.*, pf.name AS "package_family_name", p.version AS "package_version", c.hostname AS "computer_hostname", jc.start_time AS "job_container_start_time"
 			FROM job j
 			INNER JOIN computer c ON c.id = j.computer_id
 			INNER JOIN package p ON p.id = j.package_id
@@ -1257,7 +1257,7 @@ class Db {
 	public function getPendingJobsForComputerDetailPage($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time",
-			j.package_id AS "package_id", pf.name AS "package_name", p.version AS "package_version",
+			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
 			j.is_uninstall AS "is_uninstall", j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
 			FROM job j
 			INNER JOIN package p ON j.package_id = p.id

@@ -186,7 +186,7 @@ no parameters
 					"package_id": "109",
 					"installed_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.0.3661.msi",
 					"installed": "2021-04-25 17:01:13",
-					"package_name": "CDBurnerXP",
+					"package_family_name": "CDBurnerXP",
 					"package_version": "1.0",
 					"package_family_id": "3"
 				}
@@ -208,7 +208,7 @@ no parameters
 					"return_code": null,
 					"message": null,
 					"last_update": null,
-					"package_name": "Test Package",
+					"package_family_name": "Test Package",
 					"package_version": "1",
 					"job_container_start_time": "2021-06-22 21:27:00",
 					"job_container_name": "Install VM002",
@@ -442,9 +442,15 @@ no parameters
 				"uninstall_procedure_success_return_codes": "0",
 				"download_for_uninstall": "0",
 				"uninstall_procedure_post_action": "0",
+				"compatible_os": "",
+				"compatible_os_version": "",
 				"created": "2021-03-03 15:52:22",
 				"last_update": "2021-04-21 13:55:14",
-				"name": "Linux_Chrome"
+				"package_group_member_sequence": null,
+				"package_family_id": "13",
+				"package_family_name": "Test Package 222",
+				"package_family_icon": null,
+				"self_service_enabled": "0"
 			},
 			"installations": [
 				{
@@ -453,7 +459,7 @@ no parameters
 					"installed_procedure": "gdebi -n google-chrome-stable_current_amd64.deb",
 					"installed": "2021-03-22 10:13:56",
 					"computer_hostname": "PC001",
-					"package_name": null,
+					"package_family_name": null,
 					"package_version": null
 				}
 			],
@@ -471,8 +477,11 @@ no parameters
 					"state": "0",
 					"return_code": null,
 					"message": null,
+					"wol_shutdown_set": null,
 					"last_update": null,
 					"computer_hostname": "PC002",
+					"package_family_name": null,
+					"package_version": null,
 					"job_container_start_time": "2021-06-24 10:36:00",
 					"job_container_name": "Installieren L_Chrome",
 					"procedure": "gdebi -n google-chrome-stable_current_amd64.deb"
@@ -647,7 +656,7 @@ no parameters
 				"message": "",
 				"last_update": "2021-06-22 21:27:36",
 				"computer_hostname": "VM002",
-				"package_name": "Test Package",
+				"package_family_name": "Test Package",
 				"package_version": "1.0",
 				"job_container_start_time": "2021-06-22 21:27:00"
 			}
