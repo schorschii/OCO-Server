@@ -11,3 +11,7 @@ require_once('Tools.php');
 
 $db = new Db();
 $cl = new CoreLogic($db);
+
+if(DO_HOUSEKEEPING_BY_WEB_REQUESTS) {
+	require_once('HouseKeeping.php');
+}
