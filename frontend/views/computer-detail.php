@@ -187,7 +187,7 @@ $online = $computer->isOnline();
 			</tr>
 			<tr>
 				<th><?php echo LANG['uptime']; ?></th>
-				<td><?php if(!empty($computer->uptime)) echo round($computer->uptime/60/60/24).' '.LANG['days']; ?></td>
+				<td><?php if(!empty($computer->uptime)) echo niceTime($computer->uptime); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['created']; ?></th>
