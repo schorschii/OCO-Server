@@ -182,6 +182,14 @@ $online = $computer->isOnline();
 				<td><?php echo htmlspecialchars($computer->agent_version); ?></td>
 			</tr>
 			<tr>
+				<th><?php echo LANG['remote_address']; ?></th>
+				<td><?php echo htmlspecialchars($computer->remote_address); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['uptime']; ?></th>
+				<td><?php if(!empty($computer->uptime)) echo round($computer->uptime/60/60/24).' '.LANG['days']; ?></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['created']; ?></th>
 				<td><?php echo htmlspecialchars($computer->created); ?></td>
 			</tr>

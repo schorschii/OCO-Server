@@ -24,10 +24,12 @@ class Computer {
 	public $gpu;
 	public $ram;
 	public $agent_version;
+	public $remote_address;
 	public $serial;
 	public $manufacturer;
 	public $model;
 	public $bios_version;
+	public $uptime;
 	public $boot_type;
 	public $domain;
 	public $secure_boot;

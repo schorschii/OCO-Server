@@ -147,8 +147,8 @@ class Db {
 	}
 	public function addComputer($hostname, $agent_version, $networks, $notes, $agent_key, $server_key) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, os_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, boot_type, secure_boot, domain, notes, agent_key, server_key)
-			VALUES (:hostname, :agent_version, CURRENT_TIMESTAMP, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :notes, :agent_key, :server_key)'
+			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, os_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, remote_address, boot_type, secure_boot, domain, notes, agent_key, server_key)
+			VALUES (:hostname, :agent_version, NULL, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :notes, :agent_key, :server_key)'
 		);
 		$this->stmt->execute([
 			':hostname' => $hostname,
@@ -213,12 +213,12 @@ class Db {
 		);
 		return $this->stmt->execute([':id' => $id, ':server_key' => $server_key]);
 	}
-	public function updateComputer($id, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $serial, $manufacturer, $model, $bios_version, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins) {
+	public function updateComputer($id, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins) {
 		$this->dbh->beginTransaction();
 
 		// update general info
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer SET hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, boot_type = :boot_type, secure_boot = :secure_boot, domain = :domain, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP, force_update = 0 WHERE id = :id'
+			'UPDATE computer SET hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, remote_address = :remote_address, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, uptime = :uptime, boot_type = :boot_type, secure_boot = :secure_boot, domain = :domain, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP, force_update = 0 WHERE id = :id'
 		);
 		if(!$this->stmt->execute([
 			':id' => $id,
@@ -233,10 +233,12 @@ class Db {
 			':gpu' => $gpu,
 			':ram' => $ram,
 			':agent_version' => $agent_version,
+			':remote_address' => $remote_address,
 			':serial' => $serial,
 			':manufacturer' => $manufacturer,
 			':model' => $model,
 			':bios_version' => $bios_version,
+			':uptime' => $uptime,
 			':boot_type' => $boot_type,
 			':secure_boot' => $secure_boot,
 			':domain' => $domain,
