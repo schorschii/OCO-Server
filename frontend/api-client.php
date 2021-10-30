@@ -58,10 +58,9 @@ if(!empty(CLIENT_API_KEY) && CLIENT_API_KEY !== ($params['api_key'] ?? '')) {
 switch($srcdata['method']) {
 	case 'oco.computer.list':
 		try {
-			$result = $db->getAllComputer();
 			$resdata['error'] = null;
 			$resdata['result'] = [
-				'success' => true, 'data' => $result
+				'success' => true, 'data' => $db->getAllComputer()
 			];
 		} catch(Exception $e) {
 			$resdata['error'] = $e->getMessage();
@@ -141,10 +140,9 @@ switch($srcdata['method']) {
 
 	case 'oco.package_family.list':
 		try {
-			$result = $db->getAllPackageFamily();
 			$resdata['error'] = null;
 			$resdata['result'] = [
-				'success' => true, 'data' => $result
+				'success' => true, 'data' => $db->getAllPackageFamily($data['show_icons'] ?? false)
 			];
 		} catch(Exception $e) {
 			$resdata['error'] = $e->getMessage();
@@ -157,10 +155,9 @@ switch($srcdata['method']) {
 		try {
 			$pf = $db->getPackageFamily($data['id'] ?? 0);
 			if($pf == null) throw new Exception(LANG['not_found']);
-			$result = $db->getPackageByFamily($data['id'] ?? 0);
 			$resdata['error'] = null;
 			$resdata['result'] = [
-				'success' => true, 'data' => $result
+				'success' => true, 'data' => $db->getPackageByFamily($data['id'] ?? 0)
 			];
 		} catch(Exception $e) {
 			$resdata['error'] = $e->getMessage();
@@ -171,7 +168,7 @@ switch($srcdata['method']) {
 		break;
 	case 'oco.package.get':
 		try {
-			$package = $db->getPackage($data['id'] ?? 0);
+			$package = $db->getPackage($data['id'] ?? 0, $data['show_icons'] ?? false);
 			if($package == null) throw new Exception(LANG['not_found']);
 			$resdata['error'] = null;
 			$resdata['result'] = [
@@ -234,10 +231,9 @@ switch($srcdata['method']) {
 
 	case 'oco.job_container.list':
 		try {
-			$result = $db->getAllJobContainer();
 			$resdata['error'] = null;
 			$resdata['result'] = [
-				'success' => true, 'data' => $result
+				'success' => true, 'data' => $db->getAllJobContainer()
 			];
 		} catch(Exception $e) {
 			$resdata['error'] = $e->getMessage();
@@ -250,10 +246,9 @@ switch($srcdata['method']) {
 		try {
 			$jc = $db->getJobContainer($data['id'] ?? 0);
 			if($jc == null) throw new Exception(LANG['not_found']);
-			$result = $db->getAllJobByContainer($data['id'] ?? 0);
 			$resdata['error'] = null;
 			$resdata['result'] = [
-				'success' => true, 'data' => $result
+				'success' => true, 'data' => $db->getAllJobByContainer($data['id'] ?? 0)
 			];
 		} catch(Exception $e) {
 			$resdata['error'] = $e->getMessage();
@@ -349,10 +344,9 @@ switch($srcdata['method']) {
 		try {
 			$report = $db->getReport(intval($data['id'] ?? 0));
 			if(empty($report)) throw new Exception(LANG['not_found']);
-			$result = $db->executeReport($report->id);
 			$resdata['error'] = null;
 			$resdata['result'] = [
-				'success' => true, 'data' => $result
+				'success' => true, 'data' => $db->executeReport($report->id)
 			];
 		} catch(Exception $e) {
 			$resdata['error'] = $e->getMessage();
@@ -371,4 +365,4 @@ switch($srcdata['method']) {
 
 // return response
 header('Content-Type: application/json');
-echo json_encode($resdata);
+echo json_encode($resdata, JSON_PARTIAL_OUTPUT_ON_ERROR);

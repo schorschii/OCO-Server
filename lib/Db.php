@@ -846,7 +846,7 @@ class Db {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
 	}
-	public function getAllPackageFamily() {
+	public function getAllPackageFamily($binaryAsBase64=false) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT pf.*, (SELECT COUNT(id) FROM package p WHERE p.package_family_id = pf.id) AS "package_count",
 				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created DESC LIMIT 1) AS "newest_package_created",
@@ -854,7 +854,7 @@ class Db {
 			FROM package_family pf ORDER BY newest_package_created DESC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily', [$binaryAsBase64]);
 	}
 	public function getPackageFamily($id) {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE id = :id');
@@ -895,14 +895,14 @@ class Db {
 		}
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup');
 	}
-	public function getPackage($id) {
+	public function getPackage($id, $binaryAsBase64=false) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE p.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package', [$binaryAsBase64]) as $row) {
 			return $row;
 		}
 	}

@@ -311,7 +311,7 @@ no parameters
 
 ## `oco.package_family.list` - List All Package Families
 ### Parameters
-no parameters
+- `show_icons` - (optional - default false) output the package family icons as base64 string (attention: can produce large output, depending on how many icons you have set and on your icon size)
 ### Example
 ```
 {
@@ -319,7 +319,10 @@ no parameters
 	"id": 1,
 	"method": "oco.package_family.list",
 	"params": {
-		"api_key": "🌈💜👆🚧🛸💩"
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"show_icons": true
+		}
 	}
 }
 ```
@@ -408,6 +411,7 @@ no parameters
 ## `oco.package.get` - Get Package Details
 ### Parameters
 - `ìd` - package ID
+- `show_icons` - (optional - default false) output the package family icon as base64 string (attention: can produce large output, depending on your icon size)
 ### Example
 ```
 {
@@ -417,7 +421,8 @@ no parameters
 	"params": {
 		"api_key": "🌈💜👆🚧🛸💩",
 		"data": {
-			"id": 123
+			"id": 123,
+			"show_icons": true
 		}
 	}
 }

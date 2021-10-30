@@ -120,6 +120,10 @@ class ComputerGroup {
 	public $name;
 }
 class PackageFamily {
+	function __construct($binaryAsBase64=false) {
+		if($binaryAsBase64 && !empty($this->icon))
+			$this->icon = base64_encode($this->icon);
+	}
 	public $id;
 	public $name;
 	public $notes;
@@ -137,6 +141,10 @@ class PackageFamily {
 	}
 }
 class Package {
+	function __construct($binaryAsBase64=false) {
+		if($binaryAsBase64 && !empty($this->package_family_icon))
+			$this->package_family_icon = base64_encode($this->package_family_icon);
+	}
 	public $id;
 	public $version;
 	public $notes;
