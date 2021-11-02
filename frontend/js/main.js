@@ -200,12 +200,32 @@ function getSelectValues(select, except=null) {
 }
 
 // content refresh functions
-function refreshSidebar() {
-	ajaxRequest('views/tree.php', 'explorer-tree');
+var REFRESH_SIDEBAR_TIMEOUT = 10000;
+var REFRESH_CONTENT_TIMEOUT = 2000;
+var refreshContentTimer = null;
+var refreshSidebarTimer = null;
+function refreshSidebar(callback=null, handleAutoRefresh=false) {
+	ajaxRequest('views/tree.php', 'explorer-tree', callback, false);
+	if(handleAutoRefresh && refreshSidebarTimer != null) {
+		refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
+	}
 }
-function refreshContent(callback=null) {
+function refreshContent(callback=null, handleAutoRefresh=false) {
 	if(currentExplorerContentUrl != null) {
 		ajaxRequest(currentExplorerContentUrl, 'explorer-content', callback, false);
+	}
+	if(handleAutoRefresh && refreshContentTimer != null) {
+		refreshContentTimer = setTimeout(function(){ refreshContent(null, true) }, REFRESH_CONTENT_TIMEOUT);
+	}
+}
+function toggleAutoRefresh() {
+	if(refreshContentTimer == null) {
+		refreshContentTimer = setTimeout(function(){ refreshContent(null, true) }, REFRESH_CONTENT_TIMEOUT);
+		btnRefresh.classList.add('active');
+	} else {
+		clearTimeout(refreshContentTimer);
+		refreshContentTimer = null;
+		btnRefresh.classList.remove('active');
 	}
 }
 function refreshContentExplorer(url) {

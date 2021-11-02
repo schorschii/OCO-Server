@@ -13,10 +13,6 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 <head>
 	<title><?php echo LANG['app_name']; ?></title>
 	<?php require_once('head.inc.php'); ?>
-	<script>
-		// auto refresh sidebar
-		setInterval(refreshSidebar, 10000);
-	</script>
 	<!--
 		Wir begrüßen Sie an diesem wunderschönen <?php echo date("l"); ?>,
 		<?php echo time(); ?> Sekunden nach dem Unix-Urknall!
@@ -42,13 +38,13 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 			</div>
 		</span>
 		<span class='right'>
-			<button onclick='refreshContentHomepage()' title='<?php echo LANG['home_page']; ?>'><img src='img/home.light.svg'></button>
+			<button id='btnHomepage' onclick='refreshContentHomepage()' title='<?php echo LANG['home_page']; ?>'><img src='img/home.light.svg'></button>
 			<span class='separator'></span>
-			<button onclick='refreshContent();refreshSidebar();' title='<?php echo LANG['refresh']; ?>'><img src='img/refresh.light.svg'></button>
+			<button id='btnRefresh' onclick='refreshContent();refreshSidebar();' ondblclick='toggleAutoRefresh()' title='<?php echo LANG['refresh']; ?>'><img src='img/refresh.light.svg'></button>
 			<span class='separator'></span>
-			<button onclick='refreshContentSettings()' title='<?php echo LANG['settings']; ?>'><img src='img/settings.light.svg'></button>
+			<button id='btnSettings' onclick='refreshContentSettings()' title='<?php echo LANG['settings']; ?>'><img src='img/settings.light.svg'></button>
 			<span class='separator'></span>
-			<button onclick='window.location.href="login.php?logout"' title='<?php echo LANG['log_out']; ?>'><span><?php echo htmlspecialchars($_SESSION['um_username']); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
+			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG['log_out']; ?>'><span><?php echo htmlspecialchars($_SESSION['um_username']); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
 		</span>
 	</div>
 
@@ -80,6 +76,8 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 
 	<script>
 	refreshSidebar();
+	refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
+
 	<?php if($initialExplorerContentAjaxRequest != null) { ?>
 		ajaxRequest("<?php echo str_replace(["'",'"'],'',$initialExplorerContentAjaxRequest); ?>", "explorer-content");
 	<?php } ?>

@@ -64,6 +64,9 @@ h3 {
 	box-shadow: none;
 	color: #B3B9BE;
 }
+#header button.active * {
+	filter: drop-shadow(0px 0px 4px white);
+}
 #header button > span {
 	display: inline-block;
 	margin-bottom: 2px;
@@ -999,5 +1002,10 @@ div.details-abreast > div > table {
 	}
 	table.list .sortsymbol::after {
 		content: '' !important;
+	}
+	#header #btnHomepage,
+	#header #btnRefresh,
+	#header #btnSettings {
+		display: none;
 	}
 }
