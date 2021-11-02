@@ -985,3 +985,19 @@ div.details-abreast > div > table {
 		border: 1px solid transparent
 	}
 }
+
+@media print {
+	#explorer > #explorer-tree, .controls {
+		display: none;
+	}
+	#explorer {
+		height: auto;
+	}
+	#explorer > #explorer-content {
+		flex-basis: 100%;
+		overflow: auto;
+	}
+	table.list .sortsymbol::after {
+		content: '' !important;
+	}
+}
