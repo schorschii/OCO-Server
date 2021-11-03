@@ -88,6 +88,14 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 				<th><?php echo LANG['assume_computer_offline_after']; ?>:</th>
 				<td><?php echo htmlspecialchars(COMPUTER_OFFLINE_SECONDS); ?></td>
 			</tr>
+			<tr>
+				<th><?php echo LANG['purge_domainuser_logons_after']; ?>:</th>
+				<td><?php echo htmlspecialchars(PURGE_DOMAINUSER_LOGONS_AFTER); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['purge_logs_after']; ?>:</th>
+				<td><?php echo htmlspecialchars(PURGE_LOGS_AFTER); ?></td>
+			</tr>
 		</table>
 	</div>
 	<div>
