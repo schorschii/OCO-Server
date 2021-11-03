@@ -341,7 +341,7 @@ const LANG = [
 			<ul>
 				<li>EXE setup for Windows: <code>installer.exe /S</code></li>
 				<li>EXE uninstallation for Windows: <code>C:\Program Files\MyProgram\unins000.exe /S</code>
-				<br>The uninstallation command depends on the specific software, please consider repacking EXE setups as MSI package.</li>
+				<br>The (un)installation command depends on the specific software, please consider repacking EXE setups as MSI package.</li>
 				<li>MSI setup for Windows: <code>msiexec /quiet /i package.msi</code></li>
 				<li>MSI uninstallation for Windows: <code>msiexec /quiet /x package.msi</code> or <code>{PRODUCT-GUID}</code></li>
 				<li>DEB package for Linux: <code>gdebi -n package.deb</code></li>
