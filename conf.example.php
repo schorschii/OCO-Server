@@ -89,6 +89,7 @@ const COMPUTER_COMMANDS = [
 	['icon'=>'img/ping.svg', 'name'=>'Ping', 'description'=>'client_extension_note', 'command'=>'ping://$$TARGET$$', 'new_tab'=>false],
 	['icon'=>'img/portscan.svg', 'name'=>'Nmap', 'description'=>'client_extension_note', 'command'=>'nmap://$$TARGET$$', 'new_tab'=>false],
 ];
+
 const LOGIN_SCREEN_QUOTES = [
 	"Have you tried turning it off and on again?",
 	"The fact that ACPI was designed by a group of monkeys high on LSD, and is some of the worst designs in the industry obviously makes running it at any point pretty damn ugly. ~ Torvalds, Linus",
@@ -98,4 +99,15 @@ const LOGIN_SCREEN_QUOTES = [
 	"Software is like sex; it's better when it's free. ~ Torvalds, Linus",
 	"Now, most of you are probably going to be totally bored out of your minds on Christmas day, and here's the perfect distraction. Test 2.6.15-rc7. All the stores will be closed, and there's really nothing better to do in between meals. ~ Torvalds, Linus",
 	"If you didn't get angry and mad and frustrated, that means you don't care about the end result, and are doing something wrong. ~ Kroah-Hartman, Greg",
+];
+
+const MOTD = 'default_motd';
+
+const DEFAULTS = [
+	// deployment page defaults
+	'default-use-wol' => false,
+	'default-shutdown-waked-after-completion' => false,
+	'default-restart-timeout' => 20,
+	'default-auto-create-uninstall-jobs' => true,
+	'default-force-install-same-version' => false
 ];

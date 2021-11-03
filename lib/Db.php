@@ -34,9 +34,7 @@ class Db {
 	}
 
 	public function existsSchema() {
-		$this->stmt = $this->dbh->prepare(
-			'SHOW TABLES LIKE "setting"'
-		);
+		$this->stmt = $this->dbh->prepare('SHOW TABLES LIKE "computer"');
 		$this->stmt->execute();
 		return ($this->stmt->rowCount() == 1);
 	}
@@ -1531,23 +1529,6 @@ class Db {
 		);
 		if(!$this->stmt->execute()) return false;
 		return $this->stmt->rowCount();
-	}
-
-	// Settings Operations
-	public function getSettingByName($name) {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT value FROM setting WHERE setting = :setting'
-		);
-		$this->stmt->execute([':setting' => $name]);
-		foreach($this->stmt->fetchAll() as $row) {
-			return $row['value'];
-		}
-	}
-	public function updateSetting($name, $value) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE setting SET value = :value WHERE setting = :setting'
-		);
-		return $this->stmt->execute([':setting' => $name, ':value' => $value]);
 	}
 
 	// Systemuser Operations

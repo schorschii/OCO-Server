@@ -404,28 +404,6 @@ INSERT INTO `report_group` (`id`, `parent_report_group_id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `setting`
---
-
-CREATE TABLE `setting` (
-  `id` int(11) NOT NULL,
-  `setting` text NOT NULL,
-  `value` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Daten für Tabelle `setting`
---
-
-INSERT INTO `setting` (`id`, `setting`, `value`) VALUES
-(6, 'default-restart-timeout', '5'),
-(7, 'default-auto-create-uninstall-jobs', '1'),
-(8, 'default-force-install-same-version', '0'),
-(9, 'motd', 'default_motd');
-
--- --------------------------------------------------------
-
---
 -- Tabellenstruktur für Tabelle `software`
 --
 
@@ -630,12 +608,6 @@ ALTER TABLE `report_group`
   ADD KEY `parent_report_group_id` (`parent_report_group_id`);
 
 --
--- Indizes für die Tabelle `setting`
---
-ALTER TABLE `setting`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indizes für die Tabelle `software`
 --
 ALTER TABLE `software`
@@ -788,12 +760,6 @@ ALTER TABLE `report`
 -- AUTO_INCREMENT für Tabelle `report_group`
 --
 ALTER TABLE `report_group`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `setting`
---
-ALTER TABLE `setting`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

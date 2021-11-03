@@ -55,11 +55,10 @@ $used = $total - $free;
 		</tr>
 		<?php
 		// the message of the day is intentionally not escaped by htmlspecialchars() so you can format the text and insert links
-		$motd = $db->getSettingByName('motd');
-		if(!empty($motd)) {
+		if(!empty(MOTD)) {
 		?>
 		<tr>
-			<td class='center' colspan='5'><?php echo $motd=='default_motd' ? LANG['default_motd'] : $motd; ?></td>
+			<td class='center' colspan='5'><?php echo MOTD=='default_motd' ? LANG['default_motd'] : MOTD; ?></td>
 		</tr>
 		<?php } ?>
 	</table>

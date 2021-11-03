@@ -126,9 +126,9 @@ if(isset($_POST['add_jobcontainer'])) {
 	<tr>
 		<th></th>
 		<td>
-			<label><input type='checkbox' id='chkWol' onclick='if(this.checked) {chkShutdownWakedAfterCompletion.disabled=false;} else {chkShutdownWakedAfterCompletion.checked=false; chkShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty($db->getSettingByName('default-use-wol'))) echo 'checked'; ?>><?php echo LANG['send_wol']; ?></label>
+			<label><input type='checkbox' id='chkWol' onclick='if(this.checked) {chkShutdownWakedAfterCompletion.disabled=false;} else {chkShutdownWakedAfterCompletion.checked=false; chkShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty(DEFAULTS['default-use-wol'])) echo 'checked'; ?>><?php echo LANG['send_wol']; ?></label>
 			<br/>
-			<label title='<?php echo LANG['shutdown_waked_after_completion']; ?>'><input type='checkbox' id='chkShutdownWakedAfterCompletion' <?php if(!empty($db->getSettingByName('default-shutdown-waked-after-completion'))) echo 'checked'; else echo 'disabled' ?>><?php echo LANG['shutdown_waked_computers']; ?></label>
+			<label title='<?php echo LANG['shutdown_waked_after_completion']; ?>'><input type='checkbox' id='chkShutdownWakedAfterCompletion' <?php if(!empty(DEFAULTS['default-shutdown-waked-after-completion'])) echo 'checked'; else echo 'disabled' ?>><?php echo LANG['shutdown_waked_computers']; ?></label>
 		</td>
 		<th></th>
 		<td>
@@ -157,7 +157,7 @@ if(isset($_POST['add_jobcontainer'])) {
 		<th><?php echo LANG['timeout_for_reboot']; ?></th>
 		<td>
 			<div class='inputWithLabel' title='<?php echo LANG['timeout_for_reboot_description']; ?>'>
-				<input type='number' id='txtRestartTimeout' value='<?php echo htmlspecialchars($db->getSettingByName('default-restart-timeout')); ?>' min='-1'></input>
+				<input type='number' id='txtRestartTimeout' value='<?php echo htmlspecialchars(DEFAULTS['default-restart-timeout']); ?>' min='-1'></input>
 				<div><?php echo LANG['minutes']; ?></div>
 			</div>
 		</td>
@@ -199,8 +199,8 @@ if(isset($_POST['add_jobcontainer'])) {
 </div>
 
 <div class='margintop'>
-	<div><label><input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty($db->getSettingByName('default-auto-create-uninstall-jobs'))) echo 'checked'; ?>>&nbsp;<?php echo LANG['auto_create_uninstall_jobs']; ?></label></div>
-	<div><label><input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty($db->getSettingByName('default-force-install-same-version'))) echo 'checked'; ?>>&nbsp;<?php echo LANG['force_installation_of_same_version']; ?></label></div>
+	<div><label><input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty(DEFAULTS['default-auto-create-uninstall-jobs'])) echo 'checked'; ?>>&nbsp;<?php echo LANG['auto_create_uninstall_jobs']; ?></label></div>
+	<div><label><input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty(DEFAULTS['default-force-install-same-version'])) echo 'checked'; ?>>&nbsp;<?php echo LANG['force_installation_of_same_version']; ?></label></div>
 </div>
 <div class='controls'>
 	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>

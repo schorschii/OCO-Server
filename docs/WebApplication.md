@@ -7,7 +7,7 @@ When you try to remove a computer/package group with subgroups or a computer/pac
 You can force the deletion of the object by holding the shift key pressed when clicking on the "Remove" button. This will automatically delete all subgroups/pending jobs.
 
 ## Message Of The Day (MOTD)
-The message of the day is displayed on the OCO homepage and can be modified in the `setting` table (setting entry with name `motd`).
+The message of the day is displayed on the OCO homepage and can be modified in the `conf.php` file (constant with name `MOTD`).
 
 Suggestions for your MOTD:
 ```
@@ -25,7 +25,10 @@ WARNING: This device may contain Internet
 <br><a href="/phpmyadmin" target="_blank">phpMyAdmin</a> ‧ <a href="https://bongo.cat/" target="_blank">BongoCat</a>
 ```
 
-## Customization
+## Web UI Default Values
+You can customize the default values of the deployment, package creation and other forms by editing the `DEFAULTS` constant in the `config.php` file.
+
+## Web Design Customization
 You can customize the web design by creating a `*.css` file inside `/frontend/css/css.d` with your desired CSS rules. This ensures that your custom CSS is not overwritten with an update.
 
 Why?
