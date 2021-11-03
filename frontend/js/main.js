@@ -198,6 +198,12 @@ function getSelectValues(select, except=null) {
 	}
 	return result;
 }
+function setInputsDisabled(rootElement, disabled) {
+	var elements = rootElement.querySelectorAll('input, select, textarea, button');
+	for(var i = 0; i < elements.length; i++) {
+		elements[i].disabled = disabled;
+	}
+}
 
 // content refresh functions
 var REFRESH_SIDEBAR_TIMEOUT = 10000;
@@ -345,7 +351,7 @@ function createPackage(name, version, description, archive, install_procedure, i
 		}
 	}
 
-	btnCreatePackage.disabled = true;
+	setInputsDisabled(frmNewPackage, true);
 	btnCreatePackage.style.display = 'none';
 	prgPackageUploadContainer.style.display = 'inline-block';
 
@@ -391,7 +397,7 @@ function createPackage(name, version, description, archive, install_procedure, i
 				refreshContentPackageDetail(parseInt(this.responseText));
 			} else {
 				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
-				btnCreatePackage.disabled = false;
+				setInputsDisabled(frmNewPackage, false);
 				btnCreatePackage.style.display = 'inline-block';
 				prgPackageUploadContainer.style.display = 'none';
 			}
@@ -1078,7 +1084,10 @@ function editJobContainerNotes(id, oldValue) {
 	}
 }
 function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority) {
-	btnDeploy.disabled = true;
+	setInputsDisabled(frmDeploy, true);
+	btnDeploy.style.display = 'none';
+	prgDeployContainer.style.display = 'flex';
+
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('add_jobcontainer', title);
@@ -1113,7 +1122,9 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 				refreshSidebar();
 			} else {
 				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
-				btnDeploy.disabled = false;
+				setInputsDisabled(frmDeploy, false);
+				btnDeploy.style.display = 'inline-block';
+				prgDeployContainer.style.display = 'none';
 			}
 		}
 	};

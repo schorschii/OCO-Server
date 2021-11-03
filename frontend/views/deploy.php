@@ -101,6 +101,8 @@ if(isset($_POST['add_jobcontainer'])) {
 
 <h1><img src='img/deploy.dyn.svg'><?php echo LANG['deployment_assistant']; ?></h1>
 
+<div id='frmDeploy'>
+
 <table class='form'>
 	<tr>
 		<th><?php echo LANG['name']; ?></th>
@@ -202,6 +204,9 @@ if(isset($_POST['add_jobcontainer'])) {
 </div>
 <div class='controls'>
 	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<?php echo progressBar(100, 'prgDeploy', 'prgDeployContainer', 'prgDeployText', 'width:180px;display:none;', false, true); ?>
+</div>
+
 </div>
 
 <?php

@@ -77,7 +77,7 @@ if(isset($_POST['name'])) {
 	<?php } ?>
 </datalist>
 
-<table class='form'>
+<table id='frmNewPackage' class='form'>
 	<tr class='nospace'>
 		<th><?php echo LANG['package_family']; ?></th>
 		<td><input type='text' id='txtName' list='lstPackageNames' value='<?php echo htmlspecialchars($_GET['name']??'',ENT_QUOTES); ?>'></td>
