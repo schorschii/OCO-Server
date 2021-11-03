@@ -14,6 +14,9 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 <div class='details-header'>
 	<h1><img src='img/software.dyn.svg'><?php echo htmlspecialchars($software->name) . ' ' . htmlspecialchars($_GET['version']); ?></h1>
 </div>
+<?php if(!empty($software->description)) { ?>
+	<p class='quote'><?php echo nl2br(htmlspecialchars($software->description)); ?></p>
+<?php } ?>
 <div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG['installed_on']; ?></h2>
