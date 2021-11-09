@@ -375,7 +375,16 @@ function downloadTableCsv(table_id, separator = ';') {
 }
 
 function togglePackageDragAndDrop(table_id, state) {
-	var rows = document.querySelectorAll('table#' + table_id + ' tr.draggable');
+	var table = obj(table_id);
+	// remove invalid elements (e.g. spaces, tabs in HTML code) as they distort the element index
+	var tbody = table.querySelectorAll('tbody')[0];
+	for(var i = 0; i < tbody.childNodes.length; i++) {
+		if(tbody.childNodes[i].tagName === undefined) {
+			tbody.childNodes[i].remove();
+		}
+	}
+	// set dragable state to drag elements
+	var rows = tbody.querySelectorAll('tr.draggable');
 	for(var i = 0; i < rows.length; i++) {
 		rows[i].draggable = state;
 		if(state) {
