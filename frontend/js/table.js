@@ -376,6 +376,7 @@ function downloadTableCsv(table_id, separator = ';') {
 
 function togglePackageDragAndDrop(table_id, state) {
 	var table = obj(table_id);
+	if(table === null) return;
 	// remove invalid elements (e.g. spaces, tabs in HTML code) as they distort the element index
 	var tbody = table.querySelectorAll('tbody')[0];
 	for(var i = 0; i < tbody.childNodes.length; i++) {
