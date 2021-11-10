@@ -8,62 +8,65 @@ import ctypes
 def main():
 
 	APP_TITLE = 'OCO Client Extension for Windows'
-	mBox = ctypes.windll.user32.MessageBoxW
+	msgBox = ctypes.windll.user32.MessageBoxW
 
 	for arg in sys.argv:
 
 		if(arg.startswith('ping://')):
 			try:
-				protocolPayload = unquote(arg).replace('ping://', '').split('/')[0]
-				os.system('start cmd.exe @cmd /c "ping /t '+protocolPayload+'"')
+				os.system('start cmd.exe @cmd /c "ping /t '+shellQuote(getProtocolPayload(arg))+' & pause"')
 				sys.exit(0)
 			except Exception as e:
-				mBox(None, 'Unable to start CMD with ping command. Strange.\n\n'+str(e), APP_TITLE, 48)
+				msgBox(None, 'Unable to start CMD with ping command. Strange.\n\n'+str(e), APP_TITLE, 48)
 				sys.exit(2)
 
 		if(arg.startswith('nmap://')):
 			try:
-				protocolPayload = unquote(arg).replace('nmap://', '').split('/')[0]
 				os.chdir('C:\\Program Files (x86)\\Nmap')
-				os.system('start cmd.exe @cmd /c ".\\nmap.exe -Pn '+protocolPayload+' && pause"')
+				os.system('start cmd.exe @cmd /c ".\\nmap.exe -Pn '+shellQuote(getProtocolPayload(arg))+' & pause"')
 				sys.exit(0)
 			except Exception as e:
-				mBox(None, 'Unable to start Nmap. Please check if it is installed correctly.\n\n'+str(e), APP_TITLE, 48)
+				msgBox(None, 'Unable to start Nmap. Please check if it is installed correctly.\n\n'+str(e), APP_TITLE, 48)
 				sys.exit(2)
 
 		if(arg.startswith('vnc://')):
 			try:
-				protocolPayload = unquote(arg).replace('vnc://', '').split('/')[0]
 				os.chdir('C:\\Program Files\\TightVNC')
-				os.system('.\\tvnviewer.exe '+protocolPayload)
+				os.system('.\\tvnviewer.exe '+shellQuote(getProtocolPayload(arg)))
 				sys.exit(0)
 			except Exception as e:
-				mBox(None, 'Unable to start TightVNC Viewer. Please check if it is installed correctly.\n\n'+str(e), APP_TITLE, 48)
+				msgBox(None, 'Unable to start TightVNC Viewer. Please check if it is installed correctly.\n\n'+str(e), APP_TITLE, 48)
 				sys.exit(2)
 
 		if(arg.startswith('rdp://')):
 			try:
-				protocolPayload = unquote(arg).replace('rdp://', '').split('/')[0]
-				os.system('mstsc.exe /v:'+protocolPayload)
+				os.system('mstsc.exe /v:'+shellQuote(getProtocolPayload(arg)))
 				sys.exit(0)
 			except Exception as e:
-				mBox(None, 'Unable to start Windows RDP Viewer. Please check if mstsc.exe exists in PATH.\n\n'+str(e), APP_TITLE, 48)
+				msgBox(None, 'Unable to start Windows RDP Viewer. Please check if mstsc.exe exists in PATH.\n\n'+str(e), APP_TITLE, 48)
 				sys.exit(2)
-
 
 		if(arg.startswith('ssh://')):
 			try:
-				protocolPayload = unquote(arg).replace('ssh://', '').split('/')[0]
-				os.system('start cmd.exe @cmd /c "ssh '+protocolPayload+'"')
+				returnCode = os.system('start cmd.exe @cmd /c "ssh '+shellQuote(getProtocolPayload(arg))+' & pause"')
 				sys.exit(0)
 			except Exception as e:
-				mBox(None, 'Unable to start SSH session. Please check if ssh.exe is in PATH.\n\n'+str(e), APP_TITLE, 48)
+				msgBox(None, 'Unable to start SSH session. Please check if ssh.exe is in PATH.\n\n'+str(e), APP_TITLE, 48)
 				sys.exit(2)
 
-
 	print('Error: no valid protocol scheme parameter found.')
-	mBox(None, 'No valid protocol scheme parameter found.', APP_TITLE, 48)
+	msgBox(None, 'No valid protocol scheme parameter found.', APP_TITLE, 48)
 	sys.exit(1)
+
+def getProtocolPayload(protocolString):
+	splitter = unquote(protocolString).split('://')
+	if(len(splitter) > 1):
+		return splitter[1].strip('/')
+	else:
+		return protocolString
+
+def shellQuote(s):
+	return '"' + s.replace('"', '') + '"'
 
 
 if __name__ == '__main__':
