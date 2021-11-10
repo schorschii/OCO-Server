@@ -25,12 +25,12 @@ def main():
 		if(arg.startswith('ping://')):
 			guiTerminalArgs.append('ping '+shellQuote(getProtocolPayload(arg))+'; read wait')
 			subprocess.run(guiTerminalArgs)
-			sys.exit(0)
+			exit(0)
 
 		if(arg.startswith('nmap://')):
 			guiTerminalArgs.append('nmap '+shellQuote(getProtocolPayload(arg))+'; read wait')
 			subprocess.run(guiTerminalArgs)
-			sys.exit(0)
+			exit(0)
 
 		if(arg.startswith('vnc://')):
 			f = open(REMMINA_FILE, "w")
@@ -42,7 +42,7 @@ def main():
 			)
 			f.close()
 			subprocess.run(['remmina', '-c', REMMINA_FILE])
-			sys.exit(0)
+			exit(0)
 
 		if(arg.startswith('rdp://')):
 			f = open(REMMINA_FILE, "w")
@@ -55,7 +55,7 @@ def main():
 			)
 			f.close()
 			subprocess.run(['remmina', '-c', REMMINA_FILE])
-			sys.exit(0)
+			exit(0)
 
 		if(arg.startswith('ssh://')):
 			f = open(REMMINA_FILE, "w")
@@ -67,10 +67,10 @@ def main():
 			)
 			f.close()
 			subprocess.run(['remmina', '-c', REMMINA_FILE])
-			sys.exit(0)
+			exit(0)
 
 	print('Error: no valid protocol scheme parameter found.')
-	sys.exit(1)
+	exit(1)
 
 def getProtocolPayload(protocolString):
 	splitter = unquote(protocolString).split('://')
