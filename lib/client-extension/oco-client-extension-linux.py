@@ -10,9 +10,10 @@ def main():
 
 	REMMINA_FILE = tempfile.gettempdir()+'/oco.client.remmina'
 	TERMINAL_EMULATORS = [
-		['gnome-terminal', '--wait', '--', 'bash', '-c'],
-		['konsole', '-e', 'bash', '-c'],
-		['xfce4-terminal', '-x', 'bash', '-c'],
+		['/usr/bin/gnome-terminal', '--wait', '--', 'bash', '-c'],
+		['/usr/bin/xfce4-terminal', '-x', 'bash', '-c'],
+		['/usr/bin/konsole', '-e', 'bash', '-c'],
+		['/usr/bin/xterm', '-e', 'bash', '-c'],
 	]
 	guiTerminalArgs = TERMINAL_EMULATORS[0]
 	for emulator in TERMINAL_EMULATORS:
