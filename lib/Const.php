@@ -1,6 +1,6 @@
 <?php
 
-const APP_VERSION = '0.10.0';
+const APP_VERSION = '0.11.0';
 
 const LCIDS = [
 	1078 =>
