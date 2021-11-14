@@ -59,7 +59,7 @@ def main():
 	sys.exit(1)
 
 def getProtocolPayload(protocolString):
-	splitter = unquote(protocolString).split('://')
+	splitter = unquote(protocolString).split('://', 1)
 	if(len(splitter) > 1):
 		return splitter[1].strip('/')
 	else:
