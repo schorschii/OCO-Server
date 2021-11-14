@@ -65,8 +65,13 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
 
 3. Start the first sync manually by executing `cd /var/www/oco/lib && php LdapSync.php`. Now you can log in with the synced accounts on the web frontend.
 
-## More Information
+## Translations & Contributions Welcome!
+Please open a pull request for any improvements you like!
+
+For translators: the language files are in `lib/lang/<langcode>.php`. There you can insert new files with your translations or correct existing ones. Thank you very much!
+
+## More Information / Manual
 **Please read the documentation in the `/docs` folder.**
 
-## Specific Adjustments
-You need specific adjustments for your environment? You can hire me to extend OCO to your needs or to write custom reports etc. Please [contact me](https://georg-sieber.de/?page=impressum) if you are interested.
+## Support & Specific Adjustments
+You need support or specific adjustments for your environment? You can hire me to extend OCO to your needs or to write custom reports etc. Please [contact me](https://georg-sieber.de/?page=impressum) if you are interested.
