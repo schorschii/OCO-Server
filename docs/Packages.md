@@ -30,11 +30,11 @@ When deploying, the `.zip` archive is unpacked into a temporary directory. Then 
   - It is easier to uninstall `.msi` packages using the original installation file - but this means that the package must be downloaded again for uninstallation. That's why, for bigger packages, you should use the GUID in the uninstallation command. You can find it out by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup).
 - DEB package for Linux: `gdebi -n package.deb`
 - DEB package for Linux uninstallation: `apt remove -y packagename`
-- Own Shell script for Linux/macOS: `myscript.sh`
 - PKG package on macOS: `sudo installer -pkg package.pkg -target /`
   - The macOS `.pkg` package format does not have uninstallation support. Yes, this is no joke. WTF, Apple.
-- APP directory on macOS: `cp -R GIMP-2.10.app /Applications ; chmod -R +x /Applications/GIMP-2.10.app`
-- APP directory on macOS uninstallation: `rm -R /Applications/GIMP-2.10.app`
+- .app directory on macOS: `hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/myprogram`
+- .app directory on macOS uninstallation: `rm -R /Applications/GIMP-2.10.app`
+- Own Batch/Shell script: `myscript.bat` or `myscript.sh`
 
 ### Example: Create OCO Windows Agent Update Packages
 Please install the agent package regularily, e.g. with this procedure for Windows: `oco-agent.exe /SILENT`.
