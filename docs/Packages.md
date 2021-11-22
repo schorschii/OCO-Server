@@ -18,37 +18,77 @@ The restart/shutdown timeout is specified later in the deployment assistant. Thi
 ### Deployment Process
 When deploying, the `.zip` archive is unpacked into a temporary directory. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (`.bat` or `.sh`) you have written yourself.
 
-### General Example Procedures
-- EXE setup for Windows: `installer.exe /SILENT`
-  - It depends on the programm which parameters are available. Please check which parameters are available by executing `installer.exe /?` or consult the software manufacturer for more information.
-- EXE uninstallation for Windows: `C:\Program Files\MyProgram\unins000.exe /SILENT`
-  - The uninstallation command depends on the specific software, please consider repacking EXE setups as MSI package, which can be uninstalled by the standardized command `msiexec /x` (see below).
-- Own Batch file for Windows: `myscript.bat`
-  - You can run own scripts which may contain multiple commands or more complex logic.
-- MSI setup for Windows: `msiexec /quiet /i package.msi`
-- MSI uninstallation for Windows: `msiexec /quiet /x package.msi` or `{PRODUCT-GUID}`
+### Widely Used Installer Systems
+It depends on the platform and program which command can be used for (un)installation.
+
+#### Windows
+Several installer systems have become established under Windows. Please check which parameters are available by executing `installer.exe /?` or consult the software manufacturer for more information. Please also consider repacking EXE setups as MSI package, which can be uninstalled by the standardized command `msiexec /x` (see below).
+
+##### Windows Installer
+- MSI installation: `msiexec /quiet /i package.msi`
+- MSI uninstallation: `msiexec /quiet /x package.msi` or `{PRODUCT-GUID}`
   - It is easier to uninstall `.msi` packages using the original installation file - but this means that the package must be downloaded again for uninstallation. That's why, for bigger packages, you should use the GUID in the uninstallation command. You can find it out by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup).
-- DEB package for Linux: `gdebi -n package.deb`
-- DEB package for Linux uninstallation: `apt remove -y packagename`
+
+##### Inno Setup
+- EXE installation: `installer.exe /SILENT`
+- EXE uninstallation: `C:\Program Files\MyProgram\unins000.exe /SILENT`
+
+##### National Installer
+- EXE installation: `installer.exe /q /AcceptLicenses yes`
+
+##### Nullsoft Install System
+- EXE installation: `installer.exe /S`
+- EXE uninstallation: `C:\Program Files\MyProgram\uninstall.exe /S`
+
+##### Windows Driver Installation
+You may want to deploy drivers for printers, scanners etc. They can be installed with the `pnputil` command line utility from windows. Example:
+```
+pnputil -i -a oemsetup.inf
+```
+Where `oemsetup.inf` is the name of your driver's `.inf` file. Important: the ZIP archive must contain all necessary driver files, not only the `.inf` metadata file!
+
+#### Debian/Ubuntu Linux: apt/gdebi
+- package from official repository: `apt install -y gimp`
+- package from official repository uninstallation: `apt remove -y gimp`
+- DEB package: `gdebi -n package.deb`
+- DEB package uninstallation: `apt remove -y packagename`
+
+#### macOS
 - PKG package on macOS: `sudo installer -pkg package.pkg -target /`
   - The macOS `.pkg` package format does not have uninstallation support. Yes, this is no joke. WTF, Apple.
 - .app directory on macOS: `hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/myprogram`
 - .app directory on macOS uninstallation: `rm -R /Applications/GIMP-2.10.app`
-- Own Batch/Shell script: `myscript.bat` or `myscript.sh`
 
-### Example: Create OCO Windows Agent Update Packages
-Please install the agent package regularily, e.g. with this procedure for Windows: `oco-agent.exe /SILENT`.
+#### Own Scripts
+You can run own scripts which may contain multiple commands or more complex logic (which cannot be put into the single OCO installation command).
+- own Batch file for Windows: `myscript.bat`
+- own Shell script for Linux/macOS: `myscript.sh`
+
+### Specific Examples
+#### Example: Create OCO Windows Agent Update Package
+Please update the agent package regularily, e.g. with this procedure for Windows: `oco-agent.exe /SILENT`.
 
 The agent installer does not overwrite an existing config file. After agent update installation, a restart is required in order to load the new agent binary.
 
-### Example: Windows-Upgrade
-It is also possible to update your Windows-Installation to a newer build using a OCO software job.
+#### Example: Windows-Upgrade
+It is possible to even update your Windows installation to a newer build using a OCO software job!
 1. Extract the contents of the new Windows `.iso` file and add them into a `.zip` file. Upload this `.zip` file on the OCO web console.
 2. Choose the following command line as installation procedure: `setup.exe /auto upgrade /showoobe None /noreboot`
 3. Choose `Reboot` as action after package installation.
 
-### Example: Java Installation
+### Example: Java Installation on Windows
 Oracle provides an EXE setup for installing Java. This EXE contains a MSI file, which is automatically extracted into `C:\Users\%username%\AppData\LocalLow\Oracle\Java\` when starting the EXE file. You should use this MSI file for creating a package in OCO because of the easy uninstallation with `msiexec /x`.
+
+### Example: Arduino IDE with Drivers on Windows
+Driver installations are tricky. The installers will call a windows driver installation utility, which displays a confirmation dialog to the user if the driver certificate is not already in the system trust store. Since the OCO agent is running as a service, this dialog is never visible on the screen. That's why we have to import those certificates first.
+
+1. Get the certificate file by right-clicking you driver's `.cat` file -> Properties -> Digital Signatures -> Details-> View Certificate -> Details tab -> Copy to File…
+   - For Arduino IDE, you have to to this with these 3 files: `AdafruitCircuitPlayground.cat`, `arduino.cat`, `linino-boards_amd64.cat` and save the certificate as `*.cer` file.
+2. Create a ZIP package with those 3 certificate files plus the setup EXE. Use this ZIP as archive for your OCO package.
+3. Use the following commands as OCO installation procedure. This will install the certificates first and then execute the regular setup (a common Nullsoft Installer which understands the `/S` parameter for silent installation).
+   ```
+   certutil -addstore "TrustedPublisher" ".\AdafruitCircuitPlayground.cer" && certutil -addstore "TrustedPublisher" ".\arduino.cer" && certutil -addstore "TrustedPublisher" ".\linino-boards_amd64.cer" && arduino-x.y.z-windows.exe /S
+   ```
 
 ## Special Status Codes
 The following status codes are not real return codes from your (un)installation command but generated by the OCO system.
