@@ -99,8 +99,8 @@ rg \\ /
   ```
 
 ## 4. Set Up Linux Installation
-- Unzip Linux Mint 20.1 `.iso` file into `/srv/tftp/linux-live/LinuxMint20.1_amd64/`
-- Create preseed file for automatic installation: `/srv/tftp/linux-live/LinuxMint20.1_amd64/preseed/myconfig.cfg` (see `mint.cfg` for examples)
+- For example, unzip a Linux Mint 20.1 `.iso` file into `/srv/tftp/linux-live/LinuxMint20.1_amd64/` (this also works with Ubuntu or other derived distros)
+- Create preseed file for automatic installation: `/srv/tftp/linux-live/LinuxMint20.1_amd64/preseed/myconfig.cfg` (see `examples/mint.cfg` for examples)
 - Remaster Linux squashfs live filesystem in order to integrate the OCO agent (and other software), so you don't have to manually install it after OS installation finished.
   - https://help.ubuntu.com/community/LiveCDCustomization
 
@@ -108,8 +108,8 @@ rg \\ /
 - https://ipxe.org/howto/winpe
 
 ## 6. Boot!
-Boot your client device via PXE. Maybe you need to enter your BIOS/EFI settings and set the network card as first boot device.
+Boot your client device via PXE. Maybe you need to enter your BIOS/UEFI settings and set the network card as first boot device.
 
-Disable "CSM" if possible, this will ensure your UEFI starts the OS in EFI mode, not in legacy BIOS mode.
+Disable "CSM (Compatibility Support Module)" if it exists in the BIOS/UEFI of your computer, this will ensure your UEFI starts the OS in EFI mode, not in legacy BIOS mode.
 
 You also need to disable Secure Boot in order to load iPXE. After installation, you can turn it on again.
