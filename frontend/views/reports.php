@@ -76,6 +76,7 @@ if(empty($_GET['id'])) {
 			<tr>
 				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblReportData, this.checked)'></th>
 				<th class='searchable sortable'><?php echo LANG['name']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['description']; ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -83,6 +84,7 @@ if(empty($_GET['id'])) {
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='report_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblReportData)'></td>";
 				echo "<td><a href='".explorerLink('views/report-detail.php?id='.$r->id)."' onclick='event.preventDefault();refreshContentReportDetail(".$r->id.")'>".htmlspecialchars($r->name)."</a></td>";
+				echo "<td>".htmlspecialchars(shorter($r->notes))."</td>";
 				echo "</tr>";
 			} ?>
 		</tbody>
