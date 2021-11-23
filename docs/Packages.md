@@ -25,20 +25,31 @@ It depends on the platform and program which command can be used for (un)install
 Several installer systems have become established under Windows. Please check which parameters are available by executing `installer.exe /?` or consult the software manufacturer for more information. Please also consider repacking EXE setups as MSI package, which can be uninstalled by the standardized command `msiexec /x` (see below).
 
 ##### Windows Installer
-- MSI installation: `msiexec /quiet /i package.msi`
-- MSI uninstallation: `msiexec /quiet /x package.msi` or `{PRODUCT-GUID}`
+- silent MSI installation: `msiexec /quiet /i package.msi`
+- silent MSI uninstallation: `msiexec /quiet /x package.msi` or `msiexec /quiet /x {PRODUCT-GUID}`
   - It is easier to uninstall `.msi` packages using the original installation file - but this means that the package must be downloaded again for uninstallation. That's why, for bigger packages, you should use the GUID in the uninstallation command. You can find it out by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup).
 
 ##### Inno Setup
-- EXE installation: `installer.exe /SILENT`
-- EXE uninstallation: `C:\Program Files\MyProgram\unins000.exe /SILENT`
+- silent EXE installation: `installer.exe /SILENT`
+- silent EXE uninstallation: `C:\Program Files\MyProgram\unins000.exe /SILENT`
+- additional parameters
+  - `/DIR="x:\dirname"`: install directory
+  - `/NORESTART`: prevent automatic restart
+  - `/SAVEINF="FILENAME"`: save installation settings to the specified file
+  - `/LOADINF="FILENAME"`: use settings from the specified file
 
 ##### National Installer
-- EXE installation: `installer.exe /q /AcceptLicenses yes`
+- silent EXE installation: `installer.exe /q /AcceptLicenses yes`
+- additional parameters
+  - `/r:n` to prevent automatic restart or `/r:f` to force automatic restart
 
 ##### Nullsoft Install System
-- EXE installation: `installer.exe /S`
-- EXE uninstallation: `C:\Program Files\MyProgram\uninstall.exe /S`
+- silent EXE installation: `installer.exe /S`
+- silent EXE uninstallation: `C:\Program Files\MyProgram\uninstall.exe /S`
+- additional parameters
+  - `/D=PATH`: install directory
+  - `/DS=0`: exclude the desktop shortcut
+  - `/SMS=0`: exclude start menu shortcut
 
 ##### Windows Driver Installation
 You may want to deploy drivers for printers, scanners etc. They can be installed with the `pnputil` command line utility from windows. Example:
@@ -47,7 +58,7 @@ pnputil -i -a oemsetup.inf
 ```
 Where `oemsetup.inf` is the name of your driver's `.inf` file. Important: the ZIP archive must contain all necessary driver files, not only the `.inf` metadata file!
 
-#### Debian/Ubuntu Linux: apt/gdebi
+#### Debian/Ubuntu Linux: `apt`/`gdebi`
 - package from official repository: `apt install -y gimp`
 - package from official repository uninstallation: `apt remove -y gimp`
 - DEB package: `gdebi -n package.deb`
@@ -56,6 +67,7 @@ Where `oemsetup.inf` is the name of your driver's `.inf` file. Important: the ZI
 #### macOS
 - PKG package on macOS: `sudo installer -pkg package.pkg -target /`
   - The macOS `.pkg` package format does not have uninstallation support. Yes, this is no joke. WTF, Apple.
+  - You can remove the corresponding .app directory using `rm -R /Applications/myapp.app`, but this may leave files installed in system directories behind.
 - .app directory on macOS: `hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/myprogram`
 - .app directory on macOS uninstallation: `rm -R /Applications/GIMP-2.10.app`
 
@@ -66,7 +78,7 @@ You can run own scripts which may contain multiple commands or more complex logi
 
 ### Specific Examples
 #### Example: Create OCO Windows Agent Update Package
-Please update the agent package regularily, e.g. with this procedure for Windows: `oco-agent.exe /SILENT`.
+Please update the agent package regularily with this procedure for Windows: `oco-agent.exe /SILENT` or this procedure for Debian/Ubuntu Linux: `gdebi -n oco-agent.deb` and the action after installation: "Restart Agent".
 
 The agent installer does not overwrite an existing config file. After agent update installation, a restart is required in order to load the new agent binary.
 
