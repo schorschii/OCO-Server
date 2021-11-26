@@ -243,7 +243,7 @@ $online = $computer->isOnline();
 				<?php
 				foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
 					echo "<tr>";
-					echo "<td><a href='".explorerLink('views/domainuser-detail.php?id='.$logon->domainuser_id)."' onclick='event.preventDefault();refreshContentDomainuser(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
+					echo "<td><a href='".explorerLink('views/domainusers.php?id='.$logon->domainuser_id)."' onclick='event.preventDefault();refreshContentDomainuser(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
 					echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 					echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 					echo "</tr>";

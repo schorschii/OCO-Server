@@ -28,7 +28,7 @@ $counter = 0;
 <?php } ?>
 <?php foreach($db->getAllDomainuserByName($_GET['query'], 5) as $u) { $counter ++; ?>
 	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' onclick='event.preventDefault();closeSearchResults();refreshContentDomainuser("<?php echo $u->id; ?>")' href='<?php echo explorerLink('views/domainuser-detail.php?id='.$u->id); ?>'><img src='img/users.dyn.svg'><?php echo htmlspecialchars($u->username); ?></a>
+		<a onkeydown='handleSearchResultNavigation(event)' onclick='event.preventDefault();closeSearchResults();refreshContentDomainuser("<?php echo $u->id; ?>")' href='<?php echo explorerLink('views/domainusers.php?id='.$u->id); ?>'><img src='img/users.dyn.svg'><?php echo htmlspecialchars($u->username); ?></a>
 	</div>
 <?php } ?>
 <?php foreach($db->getAllReportByName($_GET['query'], 5) as $r) { $counter ++; ?>
