@@ -36,8 +36,12 @@ Please open a pull request for any improvements you like!
 
 For translators: the language files are in `lib/lang/<langcode>.php`. There you can insert new files with your translations or correct existing ones. Thank you very much!
 
-## More Information / Manual
+## Information, Manual, Documentation
 **Please read the documentation in the [`/docs`](docs/README.md) folder.**
+
+Quick Links:
+- [Overview](docs/README.md)
+- [Installation Guide](docs/Server-Installation.md)
 
 ## Support & Specific Adjustments
 You need support or specific adjustments for your environment? You can hire me to extend OCO to your needs or to write custom reports etc. Please [contact me](https://georg-sieber.de/?page=impressum) if you are interested.

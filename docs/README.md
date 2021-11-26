@@ -14,7 +14,7 @@ This page gives an overview of the available documentation for the OCO project.
 ## System Requirements
 Please refer to [README.md in the repo root](../README.md).
 
-## Agent Specific Documentation
+## Agent Installation Guide & Documentation
 Please refer to the [README.md in the OCO Agent repo](https://github.com/schorschii/OCO-Agent).
 
 ## Installation/Upgrade
