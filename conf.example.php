@@ -10,7 +10,7 @@ const DO_HOUSEKEEPING_BY_WEB_REQUESTS = false;
 const CLIENT_API_ENABLED       = false;
 const CLIENT_API_KEY           = 'Ungah2oo';
 
-const AGENT_SELF_REGISTRATION_ENABLED = true;
+const AGENT_SELF_REGISTRATION_ENABLED = false;
 const AGENT_REGISTRATION_KEY          = 'ernesto';
 const AGENT_UPDATE_INTERVAL           = 3600; // 1 hour
 
