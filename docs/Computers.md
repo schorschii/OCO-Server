@@ -9,6 +9,9 @@ This feature must be activated first in the config file `conf.php` by setting `A
 ### 2. Manual (Pre-)Registration
 For this method, a new computer object must be created first in the web frontend or using the client API. The name which you enter on the dialog must exactly match the new computers hostname. Then, the computer is able update its inventory values using the global agent key (defined in the config file). During the first communication with the server, a unique agent key will be set for the new computer.
 
+## Group Computers
+You can create computer groups e.g. to group all computers of specific locations inside your company, or to group computers which should get special software packages installed.
+
 ## Server Hardening
 While it is technically possible, **never** let the agent commuicate in plaintext HTTP with the server! Attackers can do a man-in-the-middle attack to send any malicious software package to your agent. **Always** configure your (Apache) web server to use HTTPS with a valid certificate. Redirect **all** HTTP requests to HTTPS using appropriate rewrite rules. It is also possible to use a self-signed certificate if necessary. Then, you have to import your own CA certificate into the trust store of your agent's operating system.
 

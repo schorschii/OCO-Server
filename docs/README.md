@@ -22,13 +22,14 @@ Please refer to the [README.md in the OCO Agent repo](https://github.com/schorsc
 - [Upgrade Guide](Server-Upgrade.md)
 
 ## Server Operation Instructions
-- [Client API](Client-API.md)
 - [Computers](Computers.md)
-- [Extensions](Extensions.md)
-- [Automated OS Installation](OS-Installation.md)
 - [Packages](Packages.md)
+- [Deployment](Deploy-Install-Uninstall.md)
+- [Automated OS Installation](OS-Installation.md)
 - [Reports](Reports.md)
 - [Web Application ("OCO Client")](WebApplication.md)
+- [Extensions](Extensions.md)
 
 ## Developer Documentation
+- [Client API](Client-API.md)
 - [Architecture Decision Records](decisions)

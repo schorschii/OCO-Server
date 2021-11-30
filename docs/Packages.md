@@ -1,12 +1,49 @@
 # OCO: Packages
 
-## How To Create Packages In OCO Web Console
-Packages are created in the web frontend. Since OCO supports Linux, MacOS and Windows, a package is a simple `.zip` archive containing the necessary (operating system specific) installer files.
+## Package Families
+A package is always subordinate to a package family.
+- The package family holds the name and the icon of a package.
+- A package family can contain multiple versions.
 
-An OCO package can therefore contains `.deb` files for Debian-based Linux Distros, `.dmg` files for MacOS and `.exe` or `.msi` files for Windows.
+## Packages For Multiple Operating Systems
+There are mainly two strategies how to deal with software for multiple operating systems:
+
+- **One Package Family For Each Operating System**
+  ```
+  Family: L_VLC Media Player
+  └──> Version: 2.3.3
+
+  Family: M_VLC Media Player
+  └──> Version: 2.3.3
+
+  Family: W_VLC Media Player
+  ├──> Version: 2.3.1
+  └──> Version: 2.3.3
+  ```
+- **Multiple Versions For Each Operating System In One Package Family**
+  ```
+  Family: VLC Media Player
+  ├──> Version: 2.3.3-Linux
+  ├──> Version: 2.3.3-macOS
+  ├──> Version: 2.3.1-Windows
+  └──> Version: 2.3.3-Windows
+  ```
+
+## Create Packages
+Packages can be created in the web frontend or via the [API](Client-API.md).
+
+Since OCO supports Linux, macOS and Windows, a package is a simple `.zip` archive containing the necessary (operating system specific) installer files. An OCO package can therefore contains `.deb` files for Debian-based Linux Distros, `.dmg` files for MacOS and `.exe` or `.msi` files for Windows.
+
+You can decide to not upload any file. Then, no archive will be downloaded when deploying this package. This can be useful if you just want to execute a command to install software from a network share or via `apt` package manager from software repositories on Linux.
+
+## Continuous Integration/Delivery/Deployment
+The OCO API can for example be used to automatically create packages from a Continuous Integration service like GitLab CI/CD. Your CI pipeline will then call the OCO API after builing the binaries, and create a package with them. OCO can act as Continuous Delivery or Continuous Deployment service, which automatically deploys your binaries on tester's or user's computers.
+
+## Group Packages
+You can group multiple package (versions) together - e.g. into a group called 'Base Packages' to easily install all basic software packages (which should be available on all computers in your domain) on new computers.
 
 ### Procedure And Return Codes
-In the 'Procedure' fields, you define which commands should be executed when deploying or uninstalling a package. After that, you can enter the exit/return codes which should be considered as success (multiple return codes have to be separated by a comma `,`). If you leave the return code field blank, all return codes are considered as success (this is not recommended - keep `0` if you are unsure, this is normally the return code for success).
+In the 'Procedure' fields, you define which commands should be executed when installing or uninstalling a package. After that, you can enter the exit/return codes which should be considered as success (multiple return codes have to be separated by a comma `,`). If you leave the return code field blank, all return codes are considered as success (this is not recommended - keep `0` if you are unsure, this is normally the return code for success).
 
 For example, MSI packages can also return `3010` if the installation succeeded but a reboot is required (see [list of MSI return codes](https://docs.microsoft.com/de-de/windows/win32/msi/error-codes)).
 
@@ -16,7 +53,7 @@ Below the procedure you can specify if the computer should be restartet or shut 
 The restart/shutdown timeout is specified later in the deployment assistant. This timeout allows the user to save his work before the computer gets restartet. If no user is logged in on the target computer, it will be restartet immediately, ignoring the timeout value. If you specify a negative timeout value in the deployment assistant, no restart/shutdown will be executed (in other words, this overrides the package restart/shutdown setting).
 
 ### Deployment Process
-When deploying, the `.zip` archive is unpacked into a temporary directory. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (`.bat` or `.sh`) you have written yourself.
+When deploying, the `.zip` archive is unpacked into a temporary directory. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (`.bat` or `.sh` inside the archive) you have written yourself.
 
 ### Widely Used Installer Systems
 It depends on the platform and program which command can be used for (un)installation.
@@ -108,8 +145,11 @@ The following status codes are not real return codes from your (un)installation 
 ### Job Fails With Status Code `-9999`
 The status code `-9999` indicates an agent error. Possible reasons are:
 - package download aborted beacause the network connection was lost
+  - you can try to reschedule the job
 - unable to execute installation command
-- Windows: unable to decode program output, see below
+  - check if your installation command works by executing it manually on the command line
+- other unhandled agent errors
+  - you can open an issue in the OCO Agent repository with detailed information
 
 ### Job Fails With Status Code `-8888`
 The status code `-8888` indicates that a previous job failed and the 'sequence mode' is set to 'abort after failed job'. Then, all pending jobs are automatically set to `Failed (-8888)`. You can set the 'sequence mode' to 'ignore failed jobs' if you want to continue executing pending jobs after a failed job.
