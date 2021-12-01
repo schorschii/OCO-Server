@@ -20,8 +20,9 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
 ## System Requirements
 ### Server
 - Linux Server
-- MySQL Database Server
-- Apache2 Web Server with PHP 7.0 or newer
+- MySQL/MariaDB Database Server
+- Apache2 or an other PHP-capable web server
+- PHP 7.0 or newer
 
 ### Client
 - Chromium-based Web Browser (Chrome/Chromium v80 or newer, Opera etc.)
