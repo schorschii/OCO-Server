@@ -63,17 +63,23 @@ Several installer systems have become established under Windows. Please check wh
 
 ##### Windows Installer
 - silent MSI installation: `msiexec /quiet /i package.msi`
+- silent MSI repair: `msiexec /quiet /f package.msi` or `msiexec /quiet /f {PRODUCT-GUID}`
 - silent MSI uninstallation: `msiexec /quiet /x package.msi` or `msiexec /quiet /x {PRODUCT-GUID}`
   - It is easier to uninstall `.msi` packages using the original installation file - but this means that the package must be downloaded again for uninstallation. That's why, for bigger packages, you should use the GUID in the uninstallation command. You can find it out by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup).
+- additional parameters
+  - `/norestart`: prevent automatic restart - if your product needs a restart, you should set this option and use the OCO restart feature ("post action") instead
+  - `MY_PROP="myValue"`: custom software-specific properties - please contact the MSI package software vendor for a list of supported options
+- detailed parameter documentation can be found in the [Microsoft docs](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/msiexec)
 
 ##### Inno Setup
 - silent EXE installation: `installer.exe /SILENT`
 - silent EXE uninstallation: `C:\Program Files\MyProgram\unins000.exe /SILENT`
 - additional parameters
   - `/DIR="x:\dirname"`: install directory
-  - `/NORESTART`: prevent automatic restart
+  - `/NORESTART`: prevent automatic restart - if your product needs a restart, you should set this option and use the OCO restart feature ("post action") instead
   - `/SAVEINF="FILENAME"`: save installation settings to the specified file
   - `/LOADINF="FILENAME"`: use settings from the specified file
+- detailed parameter documentation can be found in the [Inno Setup docs](https://jrsoftware.org/ishelp/index.php?topic=setupcmdline)
 
 ##### National Installer
 - silent EXE installation: `installer.exe /q /AcceptLicenses yes`
