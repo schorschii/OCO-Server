@@ -233,7 +233,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 					$size = $package->getSize();
 					if($size) {
 						echo niceSize($size, true).', '.niceSize($size, false).' ';
-						echo "(<a href='#' onclick='event.preventDefault();showErrorDialog(true,\"".LANG['show_contents']."\",spnArchiveContents.innerText,false)'>".LANG['show_contents']."</a>)";
+						echo "(<a href='#' onclick='event.preventDefault();showDialog(\"".LANG['show_contents']."\",spnArchiveContents.innerText,DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)'>".LANG['show_contents']."</a>)";
 					} else echo LANG['not_found'];
 					?>
 				</td>

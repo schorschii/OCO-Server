@@ -62,21 +62,57 @@ window.onpopstate = function (event) {
 	}
 };
 
-function showErrorDialog(active, title='', text='', showReload=true) {
-	if(active) {
-		obj('dialog-container').classList.add('active');
-		obj('dialog-title').innerText = title;
-		obj('dialog-text').innerText = text;
-		if(showReload) {
-			btnDialogHome.style.visibility = 'visible';
-			btnDialogReload.style.visibility = 'visible';
-		} else {
-			btnDialogHome.style.visibility = 'collapse';
-			btnDialogReload.style.visibility = 'collapse';
-		}
+const DIALOG_BUTTONS_NONE   = 0;
+const DIALOG_BUTTONS_RELOAD = 1;
+const DIALOG_BUTTONS_CLOSE  = 2;
+const DIALOG_SIZE_LARGE     = 0;
+const DIALOG_SIZE_SMALL     = 1;
+const DIALOG_SIZE_AUTO      = 2;
+function showErrorDialog(title='', text='') {
+	showDialog(title, text, DIALOG_BUTTONS_RELOAD, DIALOG_SIZE_LARGE, true);
+}
+function showDialog(title='', text='', controls=false, size=false, monospace=false) {
+	showDialogHTML(title, escapeHTML(text), controls, size, monospace);
+}
+function showDialogHTML(title='', text='', controls=false, size=false, monospace=false) {
+	obj('dialog-container').classList.add('active');
+	obj('dialog-title').innerText = title;
+	obj('dialog-text').innerHTML = text;
+	if(controls == DIALOG_BUTTONS_RELOAD) {
+		obj('dialog-controls').style.display = 'flex';
+		obj('btnDialogHome').style.visibility = 'visible';
+		obj('btnDialogReload').style.visibility = 'visible';
+		obj('btnDialogClose').style.visibility = 'visible';
+	} else if(controls == DIALOG_BUTTONS_CLOSE) {
+		obj('dialog-controls').style.display = 'flex';
+		obj('btnDialogHome').style.visibility = 'collapse';
+		obj('btnDialogReload').style.visibility = 'collapse';
+		obj('btnDialogClose').style.visibility = 'inline-block';
 	} else {
-		obj('dialog-container').classList.remove('active');
+		obj('dialog-controls').style.display = 'none';
 	}
+	obj('dialog-box').className = '';
+	if(size == DIALOG_SIZE_LARGE) {
+		obj('dialog-box').classList.add('large');
+	} else if(size == DIALOG_SIZE_SMALL) {
+		obj('dialog-box').classList.add('small');
+	}
+	if(monospace) {
+		obj('dialog-text').classList.add('monospace');
+	} else {
+		obj('dialog-text').classList.remove('monospace');
+	}
+}
+function hideDialog() {
+	obj('dialog-container').classList.remove('active');
+}
+function escapeHTML(unsafe) {
+	return unsafe
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#039;");
 }
 
 var currentExplorerContentUrl = null;
@@ -104,7 +140,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true) {
 					clearTimeout(timer);
 					showLoader(false);
 					showLoader2(false);
-					showErrorDialog(false);
+					hideDialog();
 				}
 			}
 			if(callback != undefined && typeof callback == 'function') {
@@ -116,9 +152,9 @@ function ajaxRequest(url, objID, callback, addToHistory=true) {
 			showLoader(false);
 			showLoader2(false);
 			if(this.status == 0) {
-				showErrorDialog(true, L__NO_CONNECTION_TO_SERVER, L__PLEASE_CHECK_NETWORK);
+				showErrorDialog(L__NO_CONNECTION_TO_SERVER, L__PLEASE_CHECK_NETWORK);
 			} else {
-				showErrorDialog(true, L__ERROR+' '+this.status+' '+this.statusText, this.responseText);
+				showErrorDialog(L__ERROR+' '+this.status+' '+this.statusText, this.responseText);
 			}
 		}
 	};

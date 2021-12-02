@@ -1,8 +1,10 @@
 <?php
 const LANG = [
 	'app_name' => 'OCO IT Client Manager',
-	'app_name_frontpage' => '[ Open Computer Orchestration ]',
+	'project_name' => 'Open Computer Orchestration',
 	'app_subtitle' => 'Client inventory and software delivery made simple',
+	'app_copyright' => '© <a href="https://georg-sieber.de" target="_blank">Georg Sieber</a> 2020-2021 | <a href="https://github.com/schorschii/oco-server" target="_blank">OCO-Server on Github</a>',
+	'about' => 'About',
 	'please_fill_required_fields' => 'Please fill the required fields.',
 	'copy' => 'Copy (CTRL+C)',
 	'refresh' => 'Refresh (F5), double click for auto refresh',

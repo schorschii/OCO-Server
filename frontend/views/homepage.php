@@ -21,7 +21,7 @@ $used = $total - $free;
 <div id='homepage'>
 	<img src='img/logo.dyn.svg'>
 	<p>
-		<div class='title'><?php echo LANG['app_name_frontpage']; ?></div>
+		<div class='title'>[ <?php echo LANG['project_name']; ?> ]</div>
 		<div class='subtitle'><?php echo LANG['app_subtitle']; ?></div>
 	</p>
 
@@ -64,6 +64,6 @@ $used = $total - $free;
 	</table>
 
 	<div class='footer'>
-		© <a href='https://georg-sieber.de' target='_blank'>Georg Sieber</a> 2020-2021 | <a href='https://github.com/schorschii/oco-server' target='_blank'>OCO-Server auf Github</a>
+		<?php echo LANG['app_copyright']; ?>
 	</div>
 </div>
