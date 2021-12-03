@@ -99,6 +99,10 @@ if(!empty($_GET['explorer-content']) && substr($_GET['explorer-content'], 0, 5) 
 
 			<h3>3rd Party Components</h3>
 			<p>
+				<a href='https://fonts.google.com/icons' target='_blank'><b>Material Icons</b></a>, Copyright (c) 2021 Google LLC, Apache License, Version 2.0<br>
+				You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+			</p>
+			<p>
 				<a href='https://github.com/catdad/canvas-confetti' target='_blank'><b>confetti.js</b></a>, Copyright (c) 2020, Kiril Vatev, ISC License<br>
 				Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
 			</p>
