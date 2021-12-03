@@ -331,7 +331,7 @@ body.loading2 #loader-container {
 	background-color: white;
 	border-radius: 4px;
 	z-index: 999;
-	box-shadow: 0px 0px 25px rgba(0,0,0,0.3);
+	box-shadow: 0px 0px 25px rgba(0,0,0,0.2);
 }
 #dialog-container #dialog-box.large {
 	width: 75%;
