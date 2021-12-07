@@ -70,3 +70,15 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
    ```
 3. Start the first sync manually by executing `cd /var/www/oco/lib && php LdapSync.php`.  
    Now you can log in with the synced accounts on the web frontend.
+
+### Only Provide Agent API On Virtual Host
+Ou may only want to provide the agent api and not the full web interface with client API on a virtual host. In this case, please use `api-agent` as web server root directory (instead of `frontend`).
+
+The web client can then be made available on a separate, internal-only web server or virtual host, which has additional security options set in the web server config (e.g. IP address restrictions or an additional HTTP basic auth).
+
+### Server Cluster
+You can install this webapp on multiple web servers for failure safety.
+
+In multiple server setup, load balancing can be done the easiest way via multiple DNS records or using a dedicated load balancer / reverse proxy.
+
+When using multiple web servers, you should also use a database cluster, so that your OCO installation is not dependend on a single database server.

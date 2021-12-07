@@ -41,6 +41,9 @@ You can also insert some useful links (the MOTD is intentionally not HTML escape
 WARNING: This device may contain Internet
 <br><a href="/phpmyadmin" target="_blank">phpMyAdmin</a> ‧ <a href="https://bongo.cat/" target="_blank">BongoCat</a>
 ```
+```
+This server runs on Runlevel 7™.
+```
 
 ## Web UI Default Values
 You can customize the default values of the deployment, package creation and other forms by editing the `DEFAULTS` constant in the `config.php` file.
