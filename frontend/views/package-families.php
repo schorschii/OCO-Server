@@ -16,13 +16,13 @@ if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 }
 
 $families = $db->getAllPackageFamily();
-echo "<h1><img src='img/package.dyn.svg'>".LANG['package_families']."</h1>";
+echo "<h1><img src='img/package.dyn.svg'><span id='page-title'>".LANG['package_families']."</span></h1>";
 
 echo "<div class='controls'>";
 echo "<button onclick='refreshContentPackageNew()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
 echo "<button onclick='newPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
 echo "<span class='fillwidth'></span> ";
-echo "<span><a href='".explorerLink('views/packages.php')."' onclick='event.preventDefault();refreshContentPackage()'>".LANG['all_packages']."</a></span>";
+echo "<span><a ".explorerLink('views/packages.php').">".LANG['all_packages']."</a></span>";
 echo "</div>";
 ?>
 
@@ -46,7 +46,7 @@ echo "</div>";
 			$counter ++;
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='package_family_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageFamilyData)'></td>";
-			echo "<td><a href='".explorerLink('views/packages.php?package_family_id='.$p->id)."' onclick='event.preventDefault();refreshContentPackage(\"\", ".$p->id.")' ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
+			echo "<td><a ".explorerLink('views/packages.php?package_family_id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
 			echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 			echo "<td>".htmlspecialchars($p->package_count)."</td>";
 			echo "<td>".htmlspecialchars($p->newest_package_created)."</td>";

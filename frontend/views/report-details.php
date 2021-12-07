@@ -44,7 +44,7 @@ try {
 ?>
 
 <div class='details-header'>
-	<h1><img src='img/report.dyn.svg'><?php echo htmlspecialchars($report->name); ?></h1>
+	<h1><img src='img/report.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($report->name); ?></span></h1>
 	<div class='controls'>
 		<button onclick='renameReport(<?php echo $report->id; ?>, this.getAttribute("oldValue"))' oldValue='<?php echo htmlspecialchars($report->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
 		<button onclick='editReportQuery(<?php echo $report->id; ?>, this.getAttribute("oldValue"))' oldValue='<?php echo htmlspecialchars($report->query,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit_query']; ?></button>
@@ -103,20 +103,20 @@ try {
 			foreach($result as $key => $value) {
 				if($key == 'computer_id') {
 					$hasComputerIds = true;
-					echo "<td><a href='".explorerLink('views/computer-detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentComputerDetail(\"".intval($value)."\")'>".$value."</a></td>";
+					echo "<td><a ".explorerLink('views/computer-details.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'package_id') {
 					$hasPackageIds = true;
-					echo "<td><a href='".explorerLink('views/package-detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentPackageDetail(\"".intval($value)."\")'>".$value."</a></td>";
+					echo "<td><a ".explorerLink('views/package-details.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'software_id') {
-					echo "<td><a href='".explorerLink('views/software.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentSoftware(\"".intval($value)."\")'>".$value."</a></td>";
+					echo "<td><a ".explorerLink('views/software.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'domainuser_id') {
-					echo "<td><a href='".explorerLink('views/domainusers.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentDomainuser(\"".intval($value)."\")'>".$value."</a></td>";
+					echo "<td><a ".explorerLink('views/domain-users.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'jobcontainer_id') {
-					echo "<td><a href='".explorerLink('views/job-containers.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentJobContainer(\"".intval($value)."\")'>".$value."</a></td>";
+					echo "<td><a ".explorerLink('views/job-containers.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'report_id') {
-					echo "<td><a href='".explorerLink('views/report-detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentReport(\"".intval($value)."\")'>".$value."</a></td>";
+					echo "<td><a ".explorerLink('views/report-details.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'parent_report_id') {
-					echo "<td><a href='".explorerLink('views/report-detail.php?id='.intval($value))."' onclick='event.preventDefault();refreshContentReport(\"".intval($value)."\")'>".$value."</a></td>";
+					echo "<td><a ".explorerLink('views/report-details.php?id='.intval($value)).">".$value."</a></td>";
 				} else {
 					echo "<td>".$value."</td>";
 				}

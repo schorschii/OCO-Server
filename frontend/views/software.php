@@ -12,7 +12,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/software.dyn.svg'><?php echo htmlspecialchars($software->name) . ' ' . htmlspecialchars($_GET['version']); ?></h1>
+	<h1><img src='img/software.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($software->name) . ' ' . htmlspecialchars($_GET['version']); ?></span></h1>
 </div>
 <?php if(!empty($software->description)) { ?>
 	<p class='quote'><?php echo nl2br(htmlspecialchars($software->description)); ?></p>
@@ -33,7 +33,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 			foreach($db->getComputerBySoftwareVersion($_GET['id'], $_GET['version']) as $c) {
 				$counter ++;
 				echo "<tr>";
-				echo "<td><a href='".explorerLink('views/computer-detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
+				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($c->os)."</td>";
 				echo "<td>".htmlspecialchars($c->os_version)."</td>";
 				echo "</tr>";
@@ -60,7 +60,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/software.dyn.svg'><?php echo htmlspecialchars($software->name); ?></h1>
+	<h1><img src='img/software.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($software->name); ?></span></h1>
 </div>
 <div class='details-abreast'>
 	<div>
@@ -77,8 +77,8 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 			foreach($db->getComputerBySoftware($_GET['id']) as $c) {
 				$counter ++;
 				echo "<tr>";
-				echo "<td><a href='".explorerLink('views/computer-detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a></td>";
-				echo "<td><a href='".explorerLink('views/software.php?id='.$software->id.'&version='.$c->software_version)."' onclick='event.preventDefault();refreshContentSoftware(".$software->id.", \"".htmlspecialchars($c->software_version)."\")'>".htmlspecialchars($c->software_version)."</a></td>";
+				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
+				echo "<td><a ".explorerLink('views/software.php?id='.$software->id.'&version='.$c->software_version).">".htmlspecialchars($c->software_version)."</a></td>";
 				echo "</tr>";
 			}
 			?>
@@ -99,7 +99,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></h1>
+	<h1><img src='img/software.dyn.svg'><span id='page-title'><?php echo LANG['recognised_software']; ?></span></h1>
 </div>
 <div class='details-abreast'>
 	<div>
@@ -130,7 +130,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 		foreach($software as $s) {
 			$counter ++;
 			echo "<tr>";
-			echo "<td><a href='".explorerLink('views/software.php?id='.$s->id)."' onclick='event.preventDefault();refreshContentSoftware(\"".$s->id."\")'>".htmlspecialchars($s->name)."</a></td>";
+			echo "<td><a ".explorerLink('views/software.php?id='.$s->id).">".htmlspecialchars($s->name)."</a></td>";
 			echo "<td>".$s->installations."</td>";
 			echo "</tr>";
 		}

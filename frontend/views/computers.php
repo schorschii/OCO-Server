@@ -71,7 +71,7 @@ $group = null;
 $computer = [];
 if(empty($_GET['id'])) {
 	$computer = $db->getAllComputer();
-	echo "<h1><img src='img/computer.dyn.svg'>".LANG['all_computer']."</h1>";
+	echo "<h1><img src='img/computer.dyn.svg'><span id='page-title'>".LANG['all_computer']."</span></h1>";
 
 	echo "<div class='controls'>";
 	echo "<button onclick='newComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button> ";
@@ -83,7 +83,7 @@ if(empty($_GET['id'])) {
 	$computer = $db->getComputerByGroup($_GET['id']);
 	$group = $db->getComputerGroup($_GET['id']);
 	if($group === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-	echo "<h1><img src='img/folder.dyn.svg'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</h1>";
+	echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</span></h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
 	echo "<button onclick='newComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
@@ -129,7 +129,7 @@ foreach($computer as $c) {
 	echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
 	echo "<td>";
 	echo  "<img src='".$c->getIcon()."' class='".($online ? 'online' : 'offline')."' title='".($online ? LANG['online'] : LANG['offline'])."'>&nbsp;";
-	echo  "<a href='".explorerLink('views/computer-detail.php?id='.$c->id)."' onclick='event.preventDefault();refreshContentComputerDetail(\"".$c->id."\")'>".htmlspecialchars($c->hostname)."</a>";
+	echo  "<a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a>";
 	echo "</td>";
 	echo "<td>".htmlspecialchars($c->os)."</td>";
 	echo "<td>".htmlspecialchars($c->os_version)."</td>";

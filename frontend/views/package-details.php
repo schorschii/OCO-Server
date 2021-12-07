@@ -111,7 +111,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $package->getIcon(); ?>'><?php echo htmlspecialchars($package->package_family_name)." (".htmlspecialchars($package->version).")"; ?><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->package_family_name); ?></span></h1>
+	<h1><img src='<?php echo $package->getIcon(); ?>'><span id='page-title'><?php echo htmlspecialchars($package->package_family_name)." (".htmlspecialchars($package->version).")"; ?></span><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->package_family_name); ?></span></h1>
 </div>
 
 <div class='details-abreast'>
@@ -253,7 +253,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 					$res = $db->getGroupByPackage($package->id);
 					$i = 0;
 					foreach($res as $group) {
-						echo "<a class='subbuttons' href='".explorerLink('views/packages.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentPackage(".$group->id.")'>".wrapInSpanIfNotEmpty($db->getPackageGroupBreadcrumbString($group->id));
+						echo "<a class='subbuttons' ".explorerLink('views/packages.php?id='.$group->id).">".wrapInSpanIfNotEmpty($db->getPackageGroupBreadcrumbString($group->id));
 						echo "<button onclick='event.stopPropagation();removePackageFromGroup([".$package->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.dyn.svg' title='".LANG['remove_from_group']."'></button>";
 						echo "</a>";
 						if(++$i != count($res)) { echo "<br>"; }
@@ -275,7 +275,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 		<h2><?php echo LANG['other_packages_from_this_family']; ?></h2>
 		<div class='controls'>
 			<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
-			<button onclick='refreshContentPackage("", <?php echo $packageFamily->id; ?>)'><img src='img/list.svg'>&nbsp;<?php echo LANG['details']; ?></button>
+			<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.svg'>&nbsp;<?php echo LANG['details']; ?></button>
 		</div>
 		<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $package->package_family_id; ?>, this.files[0])'></input>
 		<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
@@ -294,7 +294,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 					if($p->id === $package->id) continue; // do not show this package
 					$counter ++;
 					echo '<tr>';
-					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$p->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->id.')">'.htmlspecialchars($p->version).'</a></td>';
+					echo '<td><a '.explorerLink('views/package-details.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
 					echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
 					echo '<td>'.$p->created.'</td>';
 					echo '</tr>';
@@ -340,8 +340,8 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="dependency_package_id[]" value="'.$dp->id.'" onchange="refreshCheckedCounter(tblDependencyPackageData)"></td>';
-					echo '<td><a href="'.explorerLink('views/packages.php?package_family_id='.$dp->package_family_id).'" onclick="event.preventDefault();refreshContentPackage(\'\', '.$dp->package_family_id.')">'.htmlspecialchars($dp->name).'</a></td>';
-					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$dp->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$dp->id.')">'.htmlspecialchars($dp->version).'</a></td>';
+					echo '<td><a '.explorerLink('views/packages.php?package_family_id='.$dp->package_family_id).'>'.htmlspecialchars($dp->name).'</a></td>';
+					echo '<td><a '.explorerLink('views/package-details.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
 					echo '</tr>';
 				}
 				?>
@@ -388,8 +388,8 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="dependent_package_id[]" value="'.$dp->id.'" onchange="refreshCheckedCounter(tblDependentPackageData)"></td>';
-					echo '<td><a href="'.explorerLink('views/packages.php?package_family_id='.$dp->package_family_id).'" onclick="event.preventDefault();refreshContentPackage(\'\', '.$dp->package_family_id.')">'.htmlspecialchars($dp->name).'</a></td>';
-					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$dp->id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$dp->id.')">'.htmlspecialchars($dp->version).'</a></td>';
+					echo '<td><a '.explorerLink('views/packages.php?package_family_id='.$dp->package_family_id).'>'.htmlspecialchars($dp->name).'</a></td>';
+					echo '<td><a '.explorerLink('views/package-details.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
 					echo '</tr>';
 				}
 				?>
@@ -429,7 +429,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
-					echo '<td><a href="'.explorerLink('views/computer-detail.php?id='.$p->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$p->computer_id.')">'.htmlspecialchars($p->computer_hostname).'</a></td>';
+					echo '<td><a '.explorerLink('views/computer-details.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
 					echo '<td title="'.htmlspecialchars($p->installed_procedure, ENT_QUOTES).'">'.htmlspecialchars(shorter($p->installed_procedure)).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
 					echo '</tr>';
@@ -480,9 +480,9 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 					echo '<td>';
 					if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
 					else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
-					echo  '<a href="'.explorerLink('views/computer-detail.php?id='.$j->computer_id).'" onclick="event.preventDefault();refreshContentComputerDetail('.$j->computer_id.')">'.htmlspecialchars($j->computer_hostname).'</a>';
+					echo  '<a '.explorerLink('views/computer-details.php?id='.$j->computer_id).'>'.htmlspecialchars($j->computer_hostname).'</a>';
 					echo '</td>';
-					echo '<td><a href="'.explorerLink('views/job-containers.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
+					echo '<td><a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
 					echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 					echo '</tr>';
 				}

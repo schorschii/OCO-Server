@@ -99,7 +99,7 @@ if(isset($_POST['add_jobcontainer'])) {
 }
 ?>
 
-<h1><img src='img/deploy.dyn.svg'><?php echo LANG['deployment_assistant']; ?></h1>
+<h1><img src='img/deploy.dyn.svg'><span id='page-title'><?php echo LANG['deployment_assistant']; ?></span></h1>
 
 <div id='frmDeploy'>
 

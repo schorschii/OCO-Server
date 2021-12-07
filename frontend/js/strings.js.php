@@ -3,6 +3,7 @@ require_once('../../lib/Lang.php');
 header('Content-Type: text/javascript');
 ?>
 
+var L__DEFAULT_PAGE_TITLE = "<?php echo LANG['app_name']; ?>";
 var L__PACKAGE_CREATED = "<?php echo LANG['package_created']; ?>";
 var L__NO_ELEMENTS_SELECTED = "<?php echo LANG['no_elements_selected']; ?>";
 var L__ENTER_NAME = "<?php echo LANG['enter_name']; ?>";

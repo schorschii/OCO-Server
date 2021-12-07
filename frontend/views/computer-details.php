@@ -88,7 +88,7 @@ $online = $computer->isOnline();
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><?php echo htmlspecialchars($computer->hostname); ?></h1>
+	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><?php echo htmlspecialchars($computer->hostname); ?></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
@@ -211,7 +211,7 @@ $online = $computer->isOnline();
 					$res = $db->getGroupByComputer($computer->id);
 					$i = 0;
 					foreach($res as $group) {
-						echo "<a class='subbuttons' href='".explorerLink('views/computers.php?id='.$group->id)."' onclick='event.preventDefault();refreshContentComputer(".$group->id.")'>".wrapInSpanIfNotEmpty($db->getComputerGroupBreadcrumbString($group->id));
+						echo "<a class='subbuttons' ".explorerLink('views/computers.php?id='.$group->id).">".wrapInSpanIfNotEmpty($db->getComputerGroupBreadcrumbString($group->id));
 						echo "<button onclick='event.stopPropagation();removeComputerFromGroup([".$computer->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.dyn.svg' title='".LANG['remove_from_group']."'></button>";
 						echo "</a>";
 						if(++$i != count($res)) { echo "<br>"; }
@@ -243,7 +243,7 @@ $online = $computer->isOnline();
 				<?php
 				foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
 					echo "<tr>";
-					echo "<td><a href='".explorerLink('views/domainusers.php?id='.$logon->domainuser_id)."' onclick='event.preventDefault();refreshContentDomainuser(".$logon->domainuser_id.")'>".htmlspecialchars($logon->domainuser_username)."</a></td>";
+					echo "<td><a ".explorerLink('views/domain-users.php?id='.$logon->domainuser_id).">".htmlspecialchars($logon->domainuser_username)."</a></td>";
 					echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 					echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 					echo "</tr>";
@@ -403,7 +403,7 @@ $online = $computer->isOnline();
 					$counter ++;
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
-					echo '<td><a href="'.explorerLink('views/package-detail.php?id='.$p->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$p->package_id.')">'.htmlspecialchars($p->package_family_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
+					echo '<td><a '.explorerLink('views/package-details.php?id='.$p->package_id).'>'.htmlspecialchars($p->package_family_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 					echo '<td title="'.htmlspecialchars($p->installed_procedure, ENT_QUOTES).'">'.htmlspecialchars(shorter($p->installed_procedure)).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
 					echo '</tr>';
@@ -447,9 +447,9 @@ $online = $computer->isOnline();
 					echo '<td>';
 					if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
 					else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
-					echo  '<a href="'.explorerLink('views/package-detail.php?id='.$j->package_id).'" onclick="event.preventDefault();refreshContentPackageDetail('.$j->package_id.')">'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
+					echo  '<a '.explorerLink('views/package-details.php?id='.$j->package_id).'>'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
 					echo '</td>';
-					echo '<td><a href="'.explorerLink('views/job-containers.php?id='.$j->job_container_id).'" onclick="event.preventDefault();refreshContentJobContainer('.$j->job_container_id.')">'.htmlspecialchars($j->job_container_name).'</a></td>';
+					echo '<td><a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
 					echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 					echo '</tr>';
 				}
@@ -483,8 +483,8 @@ $online = $computer->isOnline();
 				foreach($db->getComputerSoftware($computer->id) as $s) {
 					$counter ++;
 					echo "<tr>";
-					echo "<td><a href='".explorerLink('views/software.php?id='.$s->software_id)."' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.")'>".htmlspecialchars($s->software_name)."</a></td>";
-					echo "<td><a href='".explorerLink('views/software.php?id='.$s->software_id.'&version='.$s->version)."' onclick='event.preventDefault();refreshContentSoftware(".$s->software_id.", \"".htmlspecialchars($s->version)."\")'>".htmlspecialchars($s->version)."</a></td>";
+					echo "<td><a ".explorerLink('views/software.php?id='.$s->software_id).">".htmlspecialchars($s->software_name)."</a></td>";
+					echo "<td><a ".explorerLink('views/software.php?id='.$s->software_id.'&version='.$s->version).">".htmlspecialchars($s->version)."</a></td>";
 					echo "<td>".htmlspecialchars($s->software_description)."</td>";
 					echo "</tr>";
 				}

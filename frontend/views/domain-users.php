@@ -19,7 +19,7 @@ if(!empty($_GET['id'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/user.dyn.svg'><?php echo htmlspecialchars($domainuser->username); ?></h1>
+	<h1><img src='img/user.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($domainuser->username); ?></span></h1>
 </div>
 <div class='details-abreast'>
 	<div>
@@ -37,7 +37,7 @@ if(!empty($_GET['id'])) {
 			foreach($db->getDomainuserLogonByDomainuser($domainuser->id) as $logon) {
 				$counter ++;
 				echo "<tr>";
-				echo "<td><a href='".explorerLink('views/computer-detail.php?id='.$logon->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$logon->computer_id.")'>".htmlspecialchars($logon->computer_hostname)."</a></td>";
+				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 				echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 				echo "</tr>";
@@ -68,7 +68,7 @@ if(!empty($_GET['id'])) {
 			foreach($db->getDomainuserLogonHistoryByDomainuser($domainuser->id) as $logon) {
 				$counter ++;
 				echo "<tr>";
-				echo "<td><a href='".explorerLink('views/computer-detail.php?id='.$logon->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$logon->computer_id.")'>".htmlspecialchars($logon->computer_hostname)."</a></td>";
+				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->console)."</td>";
 				echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 				echo "</tr>";
@@ -93,7 +93,7 @@ if(!empty($_GET['id'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/users.dyn.svg'><?php echo LANG['all_domain_user']; ?></h1>
+	<h1><img src='img/users.dyn.svg'><span id='page-title'><?php echo LANG['all_domain_user']; ?></span></h1>
 </div>
 <div class='details-abreast margintop'>
 	<div>
@@ -113,7 +113,7 @@ if(!empty($_GET['id'])) {
 			$counter ++;
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='domainuser_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblDomainuserData)'></td>";
-			echo "<td><a href='".explorerLink('views/domainusers.php?id='.$u->id)."' onclick='event.preventDefault();refreshContentDomainuser(\"".$u->id."\")'>".htmlspecialchars($u->username)."</a></td>";
+			echo "<td><a ".explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a></td>";
 			echo "<td>".htmlspecialchars($u->logon_amount)."</td>";
 			echo "<td>".htmlspecialchars($u->computer_amount)."</td>";
 			echo "<td>".htmlspecialchars($u->timestamp)."</td>";

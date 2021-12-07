@@ -27,7 +27,7 @@ if(isset($_POST['name'])) {
 }
 ?>
 
-<h1><img src='img/package-new.dyn.svg'><?php echo LANG['new_package']; ?></h1>
+<h1><img src='img/package-new.dyn.svg'><span id='page-title'><?php echo LANG['new_package']; ?></span></h1>
 
 <datalist id='lstPackageNames'>
 	<?php foreach($db->getAllPackageFamily() as $p) { ?>

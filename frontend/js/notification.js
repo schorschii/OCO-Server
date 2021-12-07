@@ -35,7 +35,7 @@ function refreshNotificationInfo() {
 			checkNotification(JSON.parse(this.responseText));
 		}
 	};
-	xhttp.open('GET', 'views/notification-info.php', true);
+	xhttp.open('GET', 'ajax/notification-info.php', true);
 	xhttp.send();
 }
 

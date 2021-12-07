@@ -54,7 +54,7 @@ if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_
 ?>
 
 <div class='details-header'>
-	<h1><img src='img/settings.dyn.svg'><?php echo LANG['settings']; ?></h1>
+	<h1><img src='img/settings.dyn.svg'><span id='page-title'><?php echo LANG['settings']; ?></span></h1>
 </div>
 
 <div class='details-abreast'>

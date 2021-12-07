@@ -60,7 +60,7 @@ if(!empty($_GET['id'])) {
 	$packages = $db->getPackageByGroup($_GET['id']);
 	$group = $db->getPackageGroup($_GET['id']);
 	if($group === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-	echo "<h1><img src='img/folder.dyn.svg'>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id))."</h1>";
+	echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id))."</span></h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
 	echo "<button onclick='newPackageGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
@@ -72,7 +72,7 @@ if(!empty($_GET['id'])) {
 	$packages = $db->getPackageByFamily($_GET['package_family_id']);
 	$family = $db->getPackageFamily($_GET['package_family_id']);
 	if($family === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-	echo "<h1><img src='".$family->getIcon()."'>".htmlspecialchars($family->name)."</h1>";
+	echo "<h1><img src='".$family->getIcon()."'><span id='page-title'>".htmlspecialchars($family->name)."</span></h1>";
 
 	echo "<div class='controls'>";
 	echo "<button onclick='refreshContentPackageNew(\"".htmlspecialchars($family->name,ENT_QUOTES)."\")'><img src='img/add.svg'>&nbsp;".LANG['new_version']."</button> ";
@@ -82,19 +82,19 @@ if(!empty($_GET['id'])) {
 	echo "<button onclick='removePackageFamilyIcon(".$family->id.")'><img src='img/image-remove.svg'>&nbsp;".LANG['remove_icon']."</button>";
 	echo "<button onclick='currentExplorerContentUrl=\"views/package-families.php\";confirmRemovePackageFamily([".htmlspecialchars($family->id,ENT_QUOTES)."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_package_family']."</button> ";
 	echo "<span class='fillwidth'></span> ";
-	echo "<span><a href='".explorerLink('views/package-families.php')."' onclick='event.preventDefault();refreshContentPackageFamily()'>".LANG['package_families']."</a></span>";
+	echo "<span><a ".explorerLink('views/package-families.php').">".LANG['package_families']."</a></span>";
 	echo "</div>";
 	echo "<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(".$family->id.", this.files[0])'></input>";
 	if(!empty($family->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($family->notes))."</p>";
 } else {
 	$packages = $db->getAllPackage();
-	echo "<h1><img src='img/package.dyn.svg'>".LANG['complete_package_library']."</h1>";
+	echo "<h1><img src='img/package.dyn.svg'><span id='page-title'>".LANG['complete_package_library']."</span></h1>";
 
 	echo "<div class='controls'>";
 	echo "<button onclick='refreshContentPackageNew()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
 	echo "<button onclick='newPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
 	echo "<span class='fillwidth'></span> ";
-	echo "<span><a href='".explorerLink('views/package-families.php')."' onclick='event.preventDefault();refreshContentPackageFamily()'>".LANG['package_families']."</a></span>";
+	echo "<span><a ".explorerLink('views/package-families.php').">".LANG['package_families']."</a></span>";
 	echo "</div>";
 }
 ?>
@@ -128,8 +128,8 @@ if(!empty($_GET['id'])) {
 			if($group !== null) echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)' onkeyup='handlePackageReorderByKeyboard(event, ".$group->id.", ".$p->package_group_member_sequence.")'></td>";
 			else echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)'></td>";
 
-			echo "<td><a href='".explorerLink('views/package-detail.php?id='.$p->id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")' ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
-			echo "<td><a href='".explorerLink('views/package-detail.php?id='.$p->id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$p->id.")' ondragstart='return false'>".htmlspecialchars($p->version)."</a></td>";
+			echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
+			echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->version)."</a></td>";
 			echo "<td>".htmlspecialchars($p->author)."</td>";
 			echo "<td sort_key='".htmlspecialchars($size)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG['not_found'])."</td>";
 			echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";

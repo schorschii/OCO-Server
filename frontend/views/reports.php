@@ -52,7 +52,7 @@ if(empty($_GET['id'])) {
 ?>
 
 <?php if(empty($_GET['id'])) { ?>
-	<h1><img src='img/report.dyn.svg'><?php echo LANG['reports']; ?></h1>
+	<h1><img src='img/report.dyn.svg'><span id='page-title'><?php echo LANG['reports']; ?></span></h1>
 	<div class='controls'>
 		<button onclick='newReport()'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
 		<button onclick='newReportGroup()'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
@@ -60,7 +60,7 @@ if(empty($_GET['id'])) {
 		<span><a target='_blank' href='img/dbschema.png' title='<?php echo LANG['database_schema_description']; ?>'><?php echo LANG['database_schema']; ?></a></span>
 	</div>
 <?php } else { ?>
-	<h1><img src='img/folder.dyn.svg'><?php echo htmlspecialchars($db->getReportGroupBreadcrumbString($reportGroup->id)); ?></h1>
+	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getReportGroupBreadcrumbString($reportGroup->id)); ?></span></h1>
 	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
 		<button onclick='newReport(<?php echo $reportGroup->id; ?>)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
 		<button onclick='newReportGroup(<?php echo $reportGroup->id; ?>)'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
@@ -83,7 +83,7 @@ if(empty($_GET['id'])) {
 			<?php foreach($reports as $r) {
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='report_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblReportData)'></td>";
-				echo "<td><a href='".explorerLink('views/report-detail.php?id='.$r->id)."' onclick='event.preventDefault();refreshContentReportDetail(".$r->id.")'>".htmlspecialchars($r->name)."</a></td>";
+				echo "<td><a ".explorerLink('views/report-details.php?id='.$r->id).">".htmlspecialchars($r->name)."</a></td>";
 				echo "<td>".htmlspecialchars(shorter($r->notes))."</td>";
 				echo "</tr>";
 			} ?>

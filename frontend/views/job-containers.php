@@ -129,7 +129,7 @@ if(!empty($_GET['id'])) {
 	$icon = $db->getJobContainerIcon($container->id);
 ?>
 
-	<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><?php echo htmlspecialchars($container->name); ?></h1>
+	<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($container->name); ?></span></h1>
 
 	<div class='controls'>
 		<button onclick='renameJobContainer(<?php echo $container->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($container->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
@@ -221,8 +221,8 @@ if(!empty($_GET['id'])) {
 				$counter ++;
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."' onchange='refreshCheckedCounter(tblJobData)'></td>";
-				echo "<td><a href='".explorerLink('views/computer-detail.php?id='.$job->computer_id)."' onclick='event.preventDefault();refreshContentComputerDetail(".$job->computer_id.")'>".htmlspecialchars($job->computer_hostname)."</a></td>";
-				echo "<td><a href='".explorerLink('views/package-detail.php?id='.$job->package_id)."' onclick='event.preventDefault();refreshContentPackageDetail(".$job->package_id.")'>".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
+				echo "<td><a ".explorerLink('views/computer-details.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
+				echo "<td><a ".explorerLink('views/package-details.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle' title='".htmlspecialchars($job->package_procedure, ENT_QUOTES)."'>";
 				if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
 				else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
@@ -263,7 +263,7 @@ if(!empty($_GET['id'])) {
 
 <?php } else { ?>
 
-	<h1><img src='img/job.dyn.svg'><?php echo LANG['job_container']; ?></h1>
+	<h1><img src='img/job.dyn.svg'><span id='page-title'><?php echo LANG['job_container']; ?></span></h1>
 
 	<div class='controls'>
 		<button onclick='refreshContentDeploy()'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_deployment_job']; ?></button>
@@ -302,7 +302,7 @@ if(!empty($_GET['id'])) {
 				echo "<td><input type='checkbox' name='job_container_id[]' value='".$jc->id."' onchange='refreshCheckedCounter(tblJobcontainerData)'></td>";
 				echo "<td class='middle'>";
 				echo  "<img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'>&nbsp;";
-				echo  "<a href='".explorerLink('views/job-containers.php?id='.$jc->id)."' onclick='event.preventDefault();refreshContentJobContainer(".$jc->id.")'>".htmlspecialchars($jc->name)."</a>";
+				echo  "<a ".explorerLink('views/job-containers.php?id='.$jc->id).">".htmlspecialchars($jc->name)."</a>";
 				echo "</td>";
 				echo "<td>".htmlspecialchars($jc->author)."</td>";
 				echo "<td>".htmlspecialchars($jc->created)."</td>";
