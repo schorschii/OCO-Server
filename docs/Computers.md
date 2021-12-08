@@ -12,6 +12,8 @@ For this method, a new computer object must be created first in the web frontend
 ## Group Computers
 You can create computer groups e.g. to group all computers of specific locations inside your company, or to group computers which should get special software packages installed.
 
+These are static, manually filled groups. In contrast to that, you can create a report if you want a "dynamic group" whose contents is automatically filled/updated based on various criteria (e.g. "all computers of a certain model").
+
 ## Server Hardening
 While it is technically possible, **never** let the agent commuicate in plaintext HTTP with the server! Attackers can do a man-in-the-middle attack to send any malicious software package to your agent. **Always** configure your (Apache) web server to use HTTPS with a valid certificate. Redirect **all** HTTP requests to HTTPS using appropriate rewrite rules. It is also possible to use a self-signed certificate if necessary. Then, you have to import your own CA certificate into the trust store of your agent's operating system.
 

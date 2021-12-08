@@ -145,6 +145,8 @@ Driver installations are tricky. The installers will call a windows driver insta
 ## Group Packages
 You can group multiple package (versions) together - e.g. into a group called 'Base Packages' to easily install all basic software packages (which should be available on all computers in your domain) on new computers.
 
+These are static, manually filled groups. In contrast to that, you can create a report if you want a "dynamic group" whose contents is automatically filled/updated based on various criteria (e.g. "all packages which are not installed on any computers").
+
 ## Dependencies
 You can reference other packages to one package to make them dependent on one another.
 
