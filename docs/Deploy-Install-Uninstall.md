@@ -12,6 +12,8 @@ You can select a start date in the future. Then, the jobs are schedules and exec
 ## WOL/Shutdown
 You can enable sending Wake On Lan packets on the job start time and automatic shutdown after completion. This will only shutdown computers, which could be waked up - all computers, which are already powered on will not be shutted down (in order to not shut down computers which have to be always on, like machine control computers).
 
+Please also have a look at the WOL section in [Computers.md](Computers.md).
+
 ## Priority
 Job containers with higher priority will be executed first, even if they are created later in time.
 
@@ -26,3 +28,12 @@ In some cases, it is necessary to manually remove a computer-package assignment 
 
 # Automatically Remove Completed Job Containers
 You can specify in the OCO config file when succeeded or failed job containers should be automatically purged.
+
+# Update Packages
+Software is often updated regularily and you want to rollout these updates on your clients to ensure users use the newest version to profit from new features and avoid security risks of older versions.
+
+Rolling out a new version is normally done by opening the detail page of the old package, selecting all computers on which it is installed, and then deploying the new version to all this computers.
+
+"Automatically create uninstall jobs" is set by default and ensures that the old version is correctly uninstalled, so that no files from the old package will be left behind.
+
+After the old packages was uninstalled from every computer, you can delete the old version to free up some space on the server.

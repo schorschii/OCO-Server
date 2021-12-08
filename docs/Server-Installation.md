@@ -79,6 +79,8 @@ The web client can then be made available on a separate, internal-only web serve
 ### Server Cluster
 You can install this webapp on multiple web servers for failure safety.
 
-In multiple server setup, load balancing can be done the easiest way via multiple DNS records or using a dedicated load balancer / reverse proxy.
+In a multi-server configuration, the easiest way to load balance is through multiple DNS records or by using a dedicated load balancer / reverse proxy.
+
+The `depot` directory must then be stored on a shared file system, e.g. on a NFS share.
 
 When using multiple web servers, you should also use a database cluster, so that your OCO installation is not dependend on a single database server.

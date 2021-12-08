@@ -1,6 +1,8 @@
 # OCO Documentation
 This page gives an overview of the available documentation for the OCO project.
 
+The documentation is currently only available in English.
+
 ## Wording
 | Term               | Description        |
 | ------------------ | ------------------ |
