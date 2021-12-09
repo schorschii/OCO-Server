@@ -1,6 +1,7 @@
 <?php
 
-const APP_VERSION = '0.11.0';
+const APP_VERSION = '0.12.0';
+const APP_RELEASE = 'Christmas Release 🛷';
 
 const LCIDS = [
 	1078 =>

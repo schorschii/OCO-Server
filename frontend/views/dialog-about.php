@@ -8,7 +8,7 @@ require_once('../session.php');
 	<img src='img/logo.dyn.svg' style='margin-right:15px'>
 	<div style='display:inline-block'>
 		<h3 style='margin-top:0px'><?php echo LANG['project_name']; ?></h3>
-		<div><?php echo LANG['version'].' '.APP_VERSION; ?></div>
+		<div><?php echo LANG['version'].' '.APP_VERSION.' '.APP_RELEASE; ?></div>
 		<div><?php echo LANG['app_subtitle']; ?></div>
 		<div><?php echo LANG['app_copyright']; ?></div>
 	</div>

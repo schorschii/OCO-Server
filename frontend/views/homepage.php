@@ -37,7 +37,7 @@ $used = $total - $free;
 				?>
 			</td>
 			<td class='center'>
-				<?php echo LANG['version'].' '.APP_VERSION; ?>
+				<?php echo LANG['version'].' '.APP_VERSION.' '.APP_RELEASE; ?>
 			</td>
 			<td class='center' colspan='2' title='<?php echo htmlspecialchars(niceSize($used).' / '.niceSize($total)); ?>'>
 				<?php
