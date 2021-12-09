@@ -182,7 +182,7 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 			if(errorCallback != undefined && typeof errorCallback == 'function') {
 				errorCallback(this.status, this.statusText, this.responseText);
 			} else {
-				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 			}
 		}
 	};
@@ -452,7 +452,7 @@ function createPackage(name, version, description, archive, install_procedure, i
 				emitMessage(L__PACKAGE_CREATED, name+' ('+version+')', MESSAGE_TYPE_SUCCESS);
 				if(newPackageId == 1 || newPackageId % 100 == 0) topConfettiRain();
 			} else {
-				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 				setInputsDisabled(frmNewPackage, false);
 				btnCreatePackage.style.display = 'inline-block';
 				prgPackageUploadContainer.style.display = 'none';
@@ -1308,7 +1308,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 				refreshSidebar();
 				emitMessage(L__JOBS_CREATED, title, MESSAGE_TYPE_SUCCESS);
 			} else {
-				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 				setInputsDisabled(frmDeploy, false);
 				btnDeploy.style.display = 'inline-block';
 				prgDeployContainer.style.display = 'none';
