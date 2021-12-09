@@ -50,7 +50,7 @@ foreach($db->getAllJobContainer() as $container) {
 			}
 			// send WOL packet
 			if($cliMode) echo('   Sending '.count($wolMacAddresses).' WOL Magic Packets'."\n");
-			wol($wolMacAddresses);
+			wol($wolMacAddresses, $cliMode);
 			// update WOL sent info in db
 			$db->updateJobContainer(
 				$container->id,
