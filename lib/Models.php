@@ -343,6 +343,9 @@ class Systemuser {
 	public $mobile;
 	public $description;
 	public $locked;
+	public $last_login;
+	public $created;
+	public $systemuser_role_id;
 }
 class Software {
 	public $id;

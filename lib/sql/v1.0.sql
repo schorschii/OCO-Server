@@ -430,6 +430,8 @@ CREATE TABLE `systemuser` (
   `mobile` text DEFAULT NULL,
   `description` text DEFAULT NULL,
   `locked` tinyint(4) NOT NULL DEFAULT 0,
+  `last_login` datetime DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT current_timestamp(),
   `systemuser_role_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

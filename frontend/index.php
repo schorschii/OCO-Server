@@ -107,9 +107,11 @@ if(!empty($_GET['view'])) {
 	<?php if($initialExplorerContent != null) { ?>
 		ajaxRequest("<?php echo htmlspecialchars($initialExplorerContent.'?'.$initialExplorerContentParameter); ?>", "explorer-content");
 	<?php } ?>
-	<?php if(rand(0,1000) == 42) { ?>
-		topConfettiRain();
-	<?php } ?>
+	<?php if(empty($_SESSION['um_last_login'])) {
+		$_SESSION['um_last_login'] = true;
+		echo "topConfettiRain();";
+		echo "emitMessage(L__WELCOME_TEXT, L__WELCOME_DESCRIPTION, MESSAGE_TYPE_INFO);";
+	} ?>
 	</script>
 
 </div>

@@ -18,6 +18,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		if(empty($user)) throw new Exception(LANG['unknown_error']);
 		// login successful
 		$db->addLogEntry(Log::LEVEL_INFO, $user->username, 'oco.webfrontend.authentication', 'Login Successful');
+		$_SESSION['um_last_login'] = $user->last_login;
 		$_SESSION['um_username'] = $user->username;
 		$_SESSION['um_userid'] = $user->id;
 		header('Location: index.php');

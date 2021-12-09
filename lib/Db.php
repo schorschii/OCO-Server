@@ -1592,6 +1592,10 @@ class Db {
 			':locked' => $locked,
 		]);
 	}
+	public function updateSystemuserLastLogin($id) {
+		$this->stmt = $this->dbh->prepare('UPDATE systemuser SET last_login = CURRENT_TIMESTAMP WHERE id = :id');
+		return $this->stmt->execute([':id' => $id]);
+	}
 	public function removeSystemuser($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM systemuser WHERE id = :id'

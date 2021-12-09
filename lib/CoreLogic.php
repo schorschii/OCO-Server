@@ -25,6 +25,7 @@ class CoreLogic {
 		} else {
 			if(!$user->locked) {
 				if($this->checkPassword($user, $password)) {
+					$this->db->updateSystemuserLastLogin($user->id);
 					return $user;
 				} else {
 					sleep(2);
