@@ -22,6 +22,7 @@ if(file_exists(DOCS_DIR.'/'.$fileName)) {
 	foreach($nodes as $node) {
 		foreach($node->attributes as $att) {
 			if($att->name == 'href') {
+				if(startsWith($node->getAttribute('href'), 'https://github.com/')) continue;
 				$node->setAttribute('href', 'index.php?view=docs&page='.urlencode($att->value));
 			}
 		}
