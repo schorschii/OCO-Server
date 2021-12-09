@@ -8,7 +8,7 @@ if(!empty($_POST['update_package_family_id']) && !empty($_POST['update_name'])) 
 	$db->updatePackageFamilyName($_POST['update_package_family_id'], $_POST['update_name']);
 	die();
 }
-if(!empty($_POST['update_package_family_id']) && !empty($_POST['update_notes'])) {
+if(!empty($_POST['update_package_family_id']) && isset($_POST['update_notes'])) {
 	$db->updatePackageFamilyNotes($_POST['update_package_family_id'], $_POST['update_notes']);
 	die();
 }
@@ -126,7 +126,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 					<?php echoPackageGroupOptions($db); ?>
 				</select>
 			</button>
-			<button onclick='currentExplorerContentUrl="views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='currentExplorerContentUrl="views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 		<table class='list metadata'>
 			<tr>

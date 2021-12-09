@@ -44,25 +44,27 @@ try {
 ?>
 
 <div class='details-header'>
-	<h1><img src='img/report.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($report->name); ?></span></h1>
+	<h1><img src='img/report.dyn.svg'><span id='page-title'><span id='spnReportName'><?php echo htmlspecialchars($report->name); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='renameReport(<?php echo $report->id; ?>, this.getAttribute("oldValue"))' oldValue='<?php echo htmlspecialchars($report->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-		<button onclick='editReportQuery(<?php echo $report->id; ?>, this.getAttribute("oldValue"))' oldValue='<?php echo htmlspecialchars($report->query,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit_query']; ?></button>
-		<button onclick='editReportNote(<?php echo $report->id; ?>, this.getAttribute("oldValue"))' oldValue='<?php echo htmlspecialchars($report->notes,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit_description']; ?></button>
-		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='renameReport(<?php echo $report->id; ?>, spnReportName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='editReportQuery(<?php echo $report->id; ?>, spnReportQuery.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit_query']; ?></button>
+		<button onclick='editReportNote(<?php echo $report->id; ?>, spnReportNotes.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit_description']; ?></button>
+		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 </div>
 
 <div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG['query']; ?></h2>
-		<code class='block'><?php echo htmlspecialchars($report->query); ?></code>
+		<code class='block'><span id='spnReportQuery'><?php echo htmlspecialchars($report->query); ?></span></code>
 	</div>
 	<div>
 		<h2><?php echo LANG['description']; ?></h2>
+		<span id='spnReportNotes'>
 		<?php if(!empty($report->notes)) { ?>
 			<p class='quote'><?php echo nl2br(htmlspecialchars($report->notes)); ?></p>
 		<?php } ?>
+		</span>
 	</div>
 </div>
 

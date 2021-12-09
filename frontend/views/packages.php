@@ -60,32 +60,34 @@ if(!empty($_GET['id'])) {
 	$packages = $db->getPackageByGroup($_GET['id']);
 	$group = $db->getPackageGroup($_GET['id']);
 	if($group === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-	echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id))."</span></h1>";
+	echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id))."</span><span id='spnPackageGroupName' class='rawvalue'>".htmlspecialchars($group->name)."</span></h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
 	echo "<button onclick='newPackageGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
 	echo "<button onclick='refreshContentDeploy([],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_all']."</button> ";
-	echo "<button onclick='renamePackageGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
-	echo "<button onclick='confirmRemovePackageGroup([".$group->id."], event)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
+	echo "<button onclick='renamePackageGroup(".$group->id.", spnPackageGroupName.innerText)'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
+	echo "<button onclick='confirmRemovePackageGroup([".$group->id."], event, spnPackageGroupName.innerText)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
 	echo "</div>";
 } elseif(!empty($_GET['package_family_id'])) {
 	$packages = $db->getPackageByFamily($_GET['package_family_id']);
 	$family = $db->getPackageFamily($_GET['package_family_id']);
 	if($family === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-	echo "<h1><img src='".$family->getIcon()."'><span id='page-title'>".htmlspecialchars($family->name)."</span></h1>";
+	echo "<h1><img src='".$family->getIcon()."'><span id='page-title'><span id='spnPackageFamilyName'>".htmlspecialchars($family->name)."</span></span></h1>";
 
 	echo "<div class='controls'>";
 	echo "<button onclick='refreshContentPackageNew(\"".htmlspecialchars($family->name,ENT_QUOTES)."\")'><img src='img/add.svg'>&nbsp;".LANG['new_version']."</button> ";
-	echo "<button onclick='renamePackageFamily(".$family->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($family->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename']."</button>";
-	echo "<button onclick='editPackageFamilyNotes(".$family->id.", this.getAttribute(\"oldValue\"))' oldValue='".htmlspecialchars($family->notes,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['edit_description']."</button>";
-	echo "<button onclick='fleIcon.click()' class='nomarginright'><img src='img/image-add.svg'>&nbsp;".LANG['change_icon']."</button>";
-	echo "<button onclick='removePackageFamilyIcon(".$family->id.")'><img src='img/image-remove.svg'>&nbsp;".LANG['remove_icon']."</button>";
-	echo "<button onclick='currentExplorerContentUrl=\"views/package-families.php\";confirmRemovePackageFamily([".htmlspecialchars($family->id,ENT_QUOTES)."])'><img src='img/delete.svg'>&nbsp;".LANG['delete_package_family']."</button> ";
+	echo "<button onclick='renamePackageFamily(".$family->id.", spnPackageFamilyName.innerText)'><img src='img/edit.svg'>&nbsp;".LANG['rename']."</button>";
+	echo "<button onclick='editPackageFamilyNotes(".$family->id.", spnPackageFamilyNotes.innerText)'><img src='img/edit.svg'>&nbsp;".LANG['edit_description']."</button>";
+	echo "<button class='".(!empty($family->icon)?'nomarginright':'')."' onclick='fleIcon.click()'><img src='img/image-add.svg'>&nbsp;".LANG['change_icon']."</button>";
+	if(!empty($family->icon)) echo "<button onclick='removePackageFamilyIcon(".$family->id.")'><img src='img/image-remove.svg'>&nbsp;".LANG['remove_icon']."</button>";
+	echo "<button onclick='currentExplorerContentUrl=\"views/package-families.php\";confirmRemovePackageFamily([".htmlspecialchars($family->id,ENT_QUOTES)."], spnPackageFamilyName.innerText)'><img src='img/delete.svg'>&nbsp;".LANG['delete_package_family']."</button> ";
 	echo "<span class='fillwidth'></span> ";
 	echo "<span><a ".explorerLink('views/package-families.php').">".LANG['package_families']."</a></span>";
 	echo "</div>";
 	echo "<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(".$family->id.", this.files[0])'></input>";
+	echo "<span id='spnPackageFamilyNotes'>";
 	if(!empty($family->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($family->notes))."</p>";
+	echo "</span>";
 } else {
 	$packages = $db->getAllPackage();
 	echo "<h1><img src='img/package.dyn.svg'><span id='page-title'>".LANG['complete_package_library']."</span></h1>";

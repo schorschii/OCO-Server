@@ -88,18 +88,18 @@ $online = $computer->isOnline();
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><?php echo htmlspecialchars($computer->hostname); ?></span></h1>
+	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-		<button onclick='renameComputer(<?php echo $computer->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($computer->hostname,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='renameComputer(<?php echo $computer->id; ?>, spnComputerName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
 		<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
 			&nbsp;<?php echo LANG['add_to']; ?>
 			<select id='sltNewGroup' onclick='event.stopPropagation()'>
 				<?php echoComputerGroupOptions($db); ?>
 			</select>
 		</button>
-		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		<?php
 		if(count(COMPUTER_COMMANDS) > 0) echo "<span class='vl'></span>";
 		foreach(COMPUTER_COMMANDS as $c) {
@@ -222,8 +222,8 @@ $online = $computer->isOnline();
 			<tr>
 				<th><?php echo LANG['notes']; ?></th>
 				<td class='subbuttons'>
-					<?php echo htmlspecialchars($computer->notes); ?>
-					<button onclick='event.stopPropagation();editComputerNotes(<?php echo $computer->id; ?>, this.getAttribute("oldValue"));return false' oldValue='<?php echo htmlspecialchars($computer->notes,ENT_QUOTES); ?>'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<span id='spnComputerNotes'><?php echo htmlspecialchars($computer->notes); ?></span>
+					<button onclick='event.stopPropagation();editComputerNotes(<?php echo $computer->id; ?>, spnComputerNotes.innerText);return false'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 		</table>

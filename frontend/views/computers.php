@@ -83,13 +83,13 @@ if(empty($_GET['id'])) {
 	$computer = $db->getComputerByGroup($_GET['id']);
 	$group = $db->getComputerGroup($_GET['id']);
 	if($group === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-	echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</span></h1>";
+	echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</span><span id='spnComputerGroupName' class='rawvalue'>".htmlspecialchars($group->name)."</span></h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
 	echo "<button onclick='newComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
 	echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_for_all']."</button> ";
 	echo "<button onclick='renameComputerGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
-	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."], event)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
+	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."], event, spnComputerGroupName.innerText)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
 	echo "</div>";
 }
 ?>

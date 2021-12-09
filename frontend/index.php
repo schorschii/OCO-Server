@@ -56,7 +56,7 @@ if(!empty($_GET['view'])) {
 		<span class='right'>
 			<button id='btnHomepage' class='noprint' onclick='refreshContentExplorer("views/homepage.php")' title='<?php echo LANG['home_page']; ?>'><img src='img/home.light.svg'></button>
 			<span class='separator noprint'></span>
-			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' ondblclick='toggleAutoRefresh()' title='<?php echo LANG['refresh']; ?>'><img src='img/refresh.light.svg'></button>
+			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG['refresh']; ?>'><img src='img/refresh.light.svg'></button>
 			<span class='separator noprint'></span>
 			<button id='btnSettings' class='noprint' onclick='refreshContentExplorer("views/settings.php")' title='<?php echo LANG['settings']; ?>'><img src='img/settings.light.svg'></button>
 			<span class='separator noprint'></span>
@@ -90,6 +90,9 @@ if(!empty($_GET['view'])) {
 				<button id='btnDialogClose' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.svg'>&nbsp;<?php echo LANG['close']; ?></button>
 			</div>
 		</div>
+	</div>
+
+	<div id='message-container'>
 	</div>
 
 	<div id='dialog-contents'>

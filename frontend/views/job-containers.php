@@ -36,12 +36,17 @@ if(!empty($_POST['edit_container_id']) && isset($_POST['new_end'])) {
 		header('HTTP/1.1 404 Not Found');
 		die(LANG['not_found']);
 	}
-	if(strtotime($container->start_time) > strtotime($_POST['new_end'])) {
-		header('HTTP/1.1 400 Invalid Request');
-		die(LANG['end_time_before_start_time']);
+	if(empty($_POST['new_end'])) {
+		$db->editJobContainerEnd($_POST['edit_container_id'], null);
+		die();
+	} else {
+		if(strtotime($container->start_time) > strtotime($_POST['new_end'])) {
+			header('HTTP/1.1 400 Invalid Request');
+			die(LANG['end_time_before_start_time']);
+		}
+		$db->editJobContainerEnd($_POST['edit_container_id'], $_POST['new_end']);
+		die();
 	}
-	$db->editJobContainerEnd($_POST['edit_container_id'], $_POST['new_end']);
-	die();
 }
 if(!empty($_POST['edit_container_id']) && isset($_POST['new_sequence_mode'])) {
 	if(is_numeric($_POST['new_sequence_mode']) && in_array($_POST['new_sequence_mode'], [JobContainer::SEQUENCE_MODE_IGNORE_FAILED, JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
@@ -129,12 +134,12 @@ if(!empty($_GET['id'])) {
 	$icon = $db->getJobContainerIcon($container->id);
 ?>
 
-	<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($container->name); ?></span></h1>
+	<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 
 	<div class='controls'>
-		<button onclick='renameJobContainer(<?php echo $container->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($container->name,ENT_QUOTES); ?>'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='renameJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
 		<button onclick='confirmRenewFailedJobsInContainer(<?php echo $container->id; ?>, "<?php echo date('Y-m-d H:i:s'); ?>")' <?php echo ($failed>0 ? '' : 'disabled'); ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
-		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>])'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 
 	<div class='details-abreast margintop marginbottom'>
@@ -151,14 +156,16 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG['start']; ?></th>
 				<td class='subbuttons'>
-					<span id='spnJobContainerStartTime'><?php echo htmlspecialchars($container->start_time); if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; if($container->shutdown_waked_after_completion > 0) echo ' ('.LANG['shutdown_waked_computers'].')'; ?></span>
+					<span id='spnJobContainerStartTime'><?php echo htmlspecialchars($container->start_time); ?></span>
+					<?php if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; if($container->shutdown_waked_after_completion > 0) echo ' ('.LANG['shutdown_waked_computers'].')'; ?>
 					<button onclick='event.stopPropagation();editJobContainerStart(<?php echo $container->id; ?>, spnJobContainerStartTime.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['end']; ?></th>
 				<td class='subbuttons'>
-					<span id='spnJobContainerEndTime'><?php echo htmlspecialchars($container->end_time ?? "-"); ?></span>
+					<?php echo htmlspecialchars($container->end_time ?? "-"); ?>
+					<span id='spnJobContainerEndTime' class='rawvalue'><?php echo htmlspecialchars($container->end_time ?? ""); ?></span>
 					<button onclick='event.stopPropagation();editJobContainerEnd(<?php echo $container->id; ?>, spnJobContainerEndTime.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 				</td>
 			</tr>

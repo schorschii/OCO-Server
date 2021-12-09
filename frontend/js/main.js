@@ -1,7 +1,7 @@
+// ======== GENERAL ========
 function obj(id) {
 	return document.getElementById(id);
 }
-
 function handleRefresh(e) {
 	if((e.which || e.keyCode) == 116) {
 		e.preventDefault();
@@ -9,7 +9,6 @@ function handleRefresh(e) {
 		refreshSidebar();
 	}
 }
-
 function getCheckedRadioValue(name) {
 	var rates = document.getElementsByName(name);
 	for(var i = 0; i < rates.length; i++) {
@@ -17,22 +16,6 @@ function getCheckedRadioValue(name) {
 			return rates[i].value;
 		}
 	}
-}
-
-function handleSearchResultNavigation(event) {
-	if(event.code == 'ArrowDown') focusNextSearchResult();
-	else if(event.code == 'ArrowUp') focusNextSearchResult(-1);
-}
-function focusNextSearchResult(step=1) {
-	var links = document.querySelectorAll('#search-results a');
-	for(let i=0; i<links.length; i++) {
-		if(links[i] === document.activeElement) {
-			var next = links[i + step] || links[0];
-			next.focus();
-			return;
-		}
-	}
-	links[0].focus();
 }
 
 function rewriteUrlContentParameter(ajaxRequestUrl) {
@@ -74,20 +57,18 @@ window.onpopstate = function (event) {
 	}
 };
 
+// ======== DIALOG ========
 const DIALOG_BUTTONS_NONE   = 0;
 const DIALOG_BUTTONS_RELOAD = 1;
 const DIALOG_BUTTONS_CLOSE  = 2;
 const DIALOG_SIZE_LARGE     = 0;
 const DIALOG_SIZE_SMALL     = 1;
 const DIALOG_SIZE_AUTO      = 2;
-function showErrorDialog(title='', text='') {
-	showDialog(title, text, DIALOG_BUTTONS_RELOAD, DIALOG_SIZE_LARGE, true);
-}
 function showDialog(title='', text='', controls=false, size=false, monospace=false) {
 	showDialogHTML(title, escapeHTML(text), controls, size, monospace);
 }
 function showDialogAjax(title='', url='', controls=false, size=false, monospace=false) {
-	ajaxRequest(url, null, function(text){
+	ajaxRequest(url, null, function(text) {
 		showDialogHTML(title, text, controls, size, monospace);
 	}, false)
 }
@@ -132,13 +113,14 @@ function escapeHTML(unsafe) {
 		.replace(/'/g, "&#039;");
 }
 
+// ======== AJAX OPERATIONS ========
 var currentExplorerContentUrl = null;
-function ajaxRequest(url, objID, callback, addToHistory=true) {
+function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoader=true) {
 	let timer = null;
 	if(objID == 'explorer-content') {
 		currentExplorerContentUrl = url;
 		showLoader(true);
-		timer = setTimeout(function(){ showLoader2(true) }, 100);
+		if(showFullscreenLoader) timer = setTimeout(function(){ showLoader2(true) }, 100);
 	}
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
@@ -158,11 +140,6 @@ function ajaxRequest(url, objID, callback, addToHistory=true) {
 					// init newly loaded tables
 					initTableSort()
 					initTableSearch()
-					// hide loaders and dialog
-					clearTimeout(timer);
-					showLoader(false);
-					showLoader2(false);
-					hideDialog();
 				}
 			}
 			if(callback != undefined && typeof callback == 'function') {
@@ -171,13 +148,17 @@ function ajaxRequest(url, objID, callback, addToHistory=true) {
 		} else if(this.status == 401) {
 			window.location.href = 'login.php';
 		} else {
+			if(this.status == 0) {
+				emitMessage(L__NO_CONNECTION_TO_SERVER, L__PLEASE_CHECK_NETWORK, MESSAGE_TYPE_ERROR);
+			} else {
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
+			}
+		}
+		// hide loaders
+		if(objID == 'explorer-content') {
+			if(showFullscreenLoader) clearTimeout(timer);
 			showLoader(false);
 			showLoader2(false);
-			if(this.status == 0) {
-				showErrorDialog(L__NO_CONNECTION_TO_SERVER, L__PLEASE_CHECK_NETWORK);
-			} else {
-				showErrorDialog(L__ERROR+' '+this.status+' '+this.statusText, this.responseText);
-			}
 		}
 	};
 	xhttp.open("GET", url, true);
@@ -201,7 +182,7 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 			if(errorCallback != undefined && typeof errorCallback == 'function') {
 				errorCallback(this.status, this.statusText, this.responseText);
 			} else {
-				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
 			}
 		}
 	};
@@ -263,28 +244,38 @@ function setInputsDisabled(rootElement, disabled) {
 	}
 }
 
-// content refresh functions
-var REFRESH_SIDEBAR_TIMEOUT = 10000;
-var REFRESH_CONTENT_TIMEOUT = 2000;
+// ======== CONTENT REFRESH FUNCTIONS ========
+const REFRESH_SIDEBAR_TIMEOUT = 10000;
+const REFRESH_CONTENT_TIMEOUT = 2000;
 var refreshContentTimer = null;
 var refreshSidebarTimer = null;
 function refreshSidebar(callback=null, handleAutoRefresh=false) {
-	ajaxRequest('views/tree.php', 'explorer-tree', callback, false);
-	if(handleAutoRefresh && refreshSidebarTimer != null) {
-		refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
-	}
+	ajaxRequest('views/tree.php', 'explorer-tree', function() {
+		// execute custom callback
+		if(callback != undefined && typeof callback == 'function') callback(text);
+		// schedule next refresh after loading finished
+		if(handleAutoRefresh && refreshSidebarTimer != null) {
+			refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
+		}
+	}, false);
 }
 function refreshContent(callback=null, handleAutoRefresh=false) {
-	if(currentExplorerContentUrl != null) {
-		ajaxRequest(currentExplorerContentUrl, 'explorer-content', callback, false);
-	}
-	if(handleAutoRefresh && refreshContentTimer != null) {
-		refreshContentTimer = setTimeout(function(){ refreshContent(null, true) }, REFRESH_CONTENT_TIMEOUT);
-	}
+	if(currentExplorerContentUrl == null) return;
+	ajaxRequest(currentExplorerContentUrl, 'explorer-content', function(text) {
+		// execute custom callback
+		if(callback != undefined && typeof callback == 'function') callback(text);
+		// schedule next refresh after loading finished
+		if(handleAutoRefresh && refreshContentTimer != null) {
+			scheduleNextContentRefresh();
+		}
+	}, false, !handleAutoRefresh);
+}
+function scheduleNextContentRefresh() {
+	refreshContentTimer = setTimeout(function(){ refreshContent(null, true) }, REFRESH_CONTENT_TIMEOUT);
 }
 function toggleAutoRefresh() {
 	if(refreshContentTimer == null) {
-		refreshContentTimer = setTimeout(function(){ refreshContent(null, true) }, REFRESH_CONTENT_TIMEOUT);
+		scheduleNextContentRefresh();
 		btnRefresh.classList.add('active');
 	} else {
 		clearTimeout(refreshContentTimer);
@@ -332,7 +323,7 @@ function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids
 	});
 }
 
-// search operation
+// ======== SEARCH OPERATIONS ========
 function doSearch(query) {
 	ajaxRequest('views/search.php?query='+encodeURIComponent(query), 'search-results');
 	openSearchResults();
@@ -345,8 +336,49 @@ function openSearchResults() {
 	obj('search-results').style.display = 'block';
 	obj('search-glass').classList.add('focus');
 }
+function handleSearchResultNavigation(event) {
+	if(event.code == 'ArrowDown') focusNextSearchResult();
+	else if(event.code == 'ArrowUp') focusNextSearchResult(-1);
+}
+function focusNextSearchResult(step=1) {
+	var links = document.querySelectorAll('#search-results a');
+	for(let i=0; i<links.length; i++) {
+		if(links[i] === document.activeElement) {
+			var next = links[i + step] || links[0];
+			next.focus();
+			return;
+		}
+	}
+	links[0].focus();
+}
 
-// package operations
+// ======== MESSAGE BOX OPERATIONS ========
+const MESSAGE_TYPE_INFO    = 'info';
+const MESSAGE_TYPE_SUCCESS = 'success';
+const MESSAGE_TYPE_WARNING = 'warning';
+const MESSAGE_TYPE_ERROR   = 'error';
+function emitMessage(title, text, type='info', timeout=8000) {
+	var messageBox = document.createElement('div');
+	messageBox.classList.add('message');
+	messageBox.classList.add('icon');
+	messageBox.classList.add(type);
+	var messageBoxTitle = document.createElement('div');
+	messageBoxTitle.classList.add('message-title');
+	messageBoxTitle.innerText = title;
+	messageBox.appendChild(messageBoxTitle);
+	var messageBoxText = document.createElement('div');
+	messageBoxText.innerText = text;
+	messageBox.appendChild(messageBoxText);
+	var messageBoxClose = document.createElement('button');
+	messageBoxClose.classList.add('message-close');
+	messageBoxClose.innerText = 'Close';
+	messageBoxClose.onclick = function() { messageBox.remove(); };
+	messageBox.appendChild(messageBoxClose);
+	obj('message-container').prepend(messageBox);
+	if(timeout != null) setTimeout(function() { messageBox.remove(); }, timeout);
+}
+
+// ======== PACKAGE OPERATIONS ========
 function updatePackageProcedureTemplates() {
 	if(fleArchive.files.length > 0) {
 		var newOptions = '';
@@ -415,10 +447,12 @@ function createPackage(name, version, description, archive, install_procedure, i
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
 			if(this.status == 200) {
-				alert(L__PACKAGE_CREATED);
-				refreshContentExplorer('views/package-details.php?id='+parseInt(this.responseText));
+				var newPackageId = parseInt(this.responseText);
+				refreshContentExplorer('views/package-details.php?id='+newPackageId);
+				emitMessage(L__PACKAGE_CREATED, name+' ('+version+')', MESSAGE_TYPE_SUCCESS);
+				if(newPackageId == 1 || newPackageId % 100 == 0) topConfettiRain();
 			} else {
-				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
 				setInputsDisabled(frmNewPackage, false);
 				btnCreatePackage.style.display = 'inline-block';
 				prgPackageUploadContainer.style.display = 'none';
@@ -432,18 +466,22 @@ function createPackage(name, version, description, archive, install_procedure, i
 function renamePackageFamily(id, oldValue) {
 	var newValue = prompt(L__ENTER_NAME, oldValue);
 	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_family_id':id, 'update_name':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_family_id':id, 'update_name':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function removePackageFamilyIcon(id) {
-	if(!confirm(L__ARE_YOU_SURE)) {
-		return;
-	}
-	ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_family_id':id, 'remove_icon':1}), null, refreshContent);
+	if(!confirm(L__ARE_YOU_SURE)) return;
+	ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_family_id':id, 'remove_icon':1}), null, function() {
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function editPackageFamilyIcon(id, file) {
 	if(file.size/1024/1024 > 2/*MiB*/) {
-		alert(L__FILE_TOO_BIG);
+		emitMessage(L__FILE_TOO_BIG, '', MESSAGE_TYPE_ERROR);
 		return;
 	}
 
@@ -455,10 +493,10 @@ function editPackageFamilyIcon(id, file) {
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
 			if(this.status == 200) {
-				alert(L__SAVED);
 				refreshContent();
+				emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 			} else {
-				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
 			}
 		}
 	};
@@ -468,74 +506,110 @@ function editPackageFamilyIcon(id, file) {
 }
 function editPackageFamilyNotes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_family_id':id, 'update_notes':newValue}), null, refreshContent);
+	if(newValue != null) {
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_family_id':id, 'update_notes':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageVersion(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_version':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_version':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageInstallProcedure(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_install_procedure':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_install_procedure':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageInstallProcedureSuccessReturnCodes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_success_return_codes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_success_return_codes':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageInstallProcedureAction(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_PROCEDURE_POST_ACTION, oldValue);
 	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_action':newValue}), null, function(){ refreshContent(); });
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_action':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageUninstallProcedure(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageUninstallProcedureSuccessReturnCodes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_success_return_codes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_success_return_codes':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageUninstallProcedureAction(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_PROCEDURE_POST_ACTION, oldValue);
 	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_action':newValue}), null, refreshContent);
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_action':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageDownloadForUninstall(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_DOWNLOAD_FOR_UNINSTALL_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_download_for_uninstall':newValue}), null, refreshContent);
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_download_for_uninstall':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageNotes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_note':newValue}), null, refreshContent);
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_note':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageCompatibleOs(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_compatible_os':newValue}), null, refreshContent);
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_compatible_os':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editPackageCompatibleOsVersion(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_compatible_os_version':newValue}), null, refreshContent);
+		ajaxRequestPost('views/package-details.php', urlencodeObject({'update_package_id':id, 'update_compatible_os_version':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function reorderPackageInGroup(groupId, oldPos, newPos) {
@@ -558,12 +632,12 @@ function removeSelectedPackage(checkboxName, attributeName=null, event=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	confirmRemovePackage(ids, event);
 }
-function confirmRemovePackage(ids, event=null) {
+function confirmRemovePackage(ids, event=null, infoText='') {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
@@ -573,7 +647,10 @@ function confirmRemovePackage(ids, event=null) {
 	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_PACKAGE)) {
-		ajaxRequestPost('views/packages.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/packages.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_REMOVED, infoText, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function removeSelectedPackageFromGroup(checkboxName, groupId) {
@@ -584,7 +661,7 @@ function removeSelectedPackageFromGroup(checkboxName, groupId) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	removePackageFromGroup(ids, groupId);
@@ -596,7 +673,10 @@ function removePackageFromGroup(ids, groupId) {
 		params.push({'key':'remove_from_group_package_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/packages.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/packages.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__OBJECT_REMOVED_FROM_GROUP, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function removeSelectedPackageFamily(checkboxName, attributeName=null) {
 	var ids = [];
@@ -610,19 +690,22 @@ function removeSelectedPackageFamily(checkboxName, attributeName=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	confirmRemovePackageFamily(ids);
 }
-function confirmRemovePackageFamily(ids) {
+function confirmRemovePackageFamily(ids, infoText='') {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/package-families.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/package-families.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_REMOVED, infoText, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function deploySelectedPackage(checkboxName, attributeName=null) {
@@ -641,16 +724,23 @@ function deploySelectedPackage(checkboxName, attributeName=null) {
 function newPackageGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/packages.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
+		ajaxRequestPost('views/packages.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, function(text) {
+			refreshContentExplorer('views/packages.php?id='+parseInt(text));
+			refreshSidebar();
+			emitMessage(L__GROUP_CREATED, newName, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function renamePackageGroup(id, oldName) {
-	var newName = prompt(L__ENTER_NAME, oldName);
-	if(newName != null && newName != '') {
-		ajaxRequestPost('views/packages.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+	var newValue = prompt(L__ENTER_NAME, oldName);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/packages.php', urlencodeObject({'rename_group':id, 'new_name':newValue}), null, function() {
+			refreshContent(); refreshSidebar();
+			emitMessage(L__GROUP_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
-function confirmRemovePackageGroup(ids, event=null) {
+function confirmRemovePackageGroup(ids, event=null, infoText='') {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_group_id[]', 'value':entry});
@@ -660,7 +750,10 @@ function confirmRemovePackageGroup(ids, event=null) {
 	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
-		ajaxRequestPost('views/packages.php', paramString, null, function(){ refreshContentExplorer('views/packages.php'); refreshSidebar(); });
+		ajaxRequestPost('views/packages.php', paramString, null, function() {
+			refreshContentExplorer('views/packages.php'); refreshSidebar();
+			emitMessage(L__OBJECT_REMOVED, infoText, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function addSelectedPackageToGroup(checkboxName, groupId, attributeName=null) {
@@ -675,7 +768,7 @@ function addSelectedPackageToGroup(checkboxName, groupId, attributeName=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	var params = [];
@@ -684,21 +777,29 @@ function addSelectedPackageToGroup(checkboxName, groupId, attributeName=null) {
 		params.push({'key':'add_to_group_package_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/packages.php', paramString, null, function() { alert(L__PACKAGES_ADDED) });
+	ajaxRequestPost('views/packages.php', paramString, null, function() {
+		emitMessage(L__PACKAGES_ADDED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function addPackageToGroup(packageId, groupId) {
 	var params = [];
 	params.push({'key':'add_to_group_id', 'value':groupId});
 	params.push({'key':'add_to_group_package_id[]', 'value':packageId});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/packages.php', paramString, null, function() { alert(L__PACKAGES_ADDED); refreshContent(); });
+	ajaxRequestPost('views/packages.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__PACKAGES_ADDED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function addPackageDependency(packageId, dependencyPackageId) {
 	var params = [];
 	params.push({'key':'update_package_id', 'value':packageId});
 	params.push({'key':'add_dependency_package_id', 'value':dependencyPackageId});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package-details.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/package-details.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function removeSelectedPackageDependency(checkboxName, packageId) {
 	var ids = [];
@@ -708,7 +809,7 @@ function removeSelectedPackageDependency(checkboxName, packageId) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	removePackageDependency(ids, packageId);
@@ -720,7 +821,10 @@ function removePackageDependency(ids, packageId) {
 		params.push({'key':'remove_dependency_package_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package-details.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/package-details.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function removeSelectedDependentPackages(checkboxName, packageId) {
 	var ids = [];
@@ -730,7 +834,7 @@ function removeSelectedDependentPackages(checkboxName, packageId) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	removeDependentPackages(ids, packageId);
@@ -742,7 +846,10 @@ function removeDependentPackages(ids, packageId) {
 		params.push({'key':'remove_dependent_package_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/package-details.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/package-details.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function confirmUninstallPackage(checkboxName, defaultStartTime) {
 	var ids = [];
@@ -752,7 +859,7 @@ function confirmUninstallPackage(checkboxName, defaultStartTime) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	var params = [];
@@ -763,7 +870,10 @@ function confirmUninstallPackage(checkboxName, defaultStartTime) {
 	if(startTime != null && startTime != '') {
 		params.push({'key':'start_time', 'value':startTime});
 		var paramString = urlencodeArray(params);
-		ajaxRequestPost('views/computer-details.php', paramString, null, function() { refreshSidebar(); refreshContent(); });
+		ajaxRequestPost('views/computer-details.php', paramString, null, function() {
+			refreshSidebar(); refreshContent();
+			emitMessage(L__JOBS_CREATED, '', MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function confirmRemovePackageComputerAssignment(checkboxName) {
@@ -774,7 +884,7 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	var params = [];
@@ -783,7 +893,10 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT)) {
-		ajaxRequestPost('views/computer-details.php', paramString, null, function() { refreshContent() });
+		ajaxRequestPost('views/computer-details.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshPackagesGroupId=null, preselectComputerIds=[], preselectPackageIds=[]) {
@@ -827,15 +940,21 @@ function refreshDeployCount() {
 	spnTotalPackageGroups.innerHTML = sltPackageGroup.options.length;
 }
 
-// computer operations
+// ======== COMPUTER OPERATIONS ========
 function editComputerNotes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/computer-details.php', urlencodeObject({'update_computer_id':id, 'update_note':newValue}), null, refreshContent);
+		ajaxRequestPost('views/computer-details.php', urlencodeObject({'update_computer_id':id, 'update_note':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function setComputerForceUpdate(id, value) {
-	ajaxRequestPost('views/computer-details.php', urlencodeObject({'update_computer_id':id, 'update_force_update':value}), null, refreshContent);
+	ajaxRequestPost('views/computer-details.php', urlencodeObject({'update_computer_id':id, 'update_force_update':value}), null, function() {
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function newComputer() {
 	var newName = prompt(L__ENTER_NAME);
@@ -847,8 +966,9 @@ function newComputer() {
 			if(this.readyState == 4) {
 				if(this.status == 200) {
 					refreshContentExplorer('views/computer-details.php?id='+parseInt(this.responseText));
+					emitMessage(L__COMPUTER_CREATED, newName, MESSAGE_TYPE_SUCCESS);
 				} else {
-					alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+					emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
 				}
 			}
 		};
@@ -864,7 +984,7 @@ function removeSelectedComputerFromGroup(checkboxName, groupId) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	removeComputerFromGroup(ids, groupId);
@@ -876,7 +996,10 @@ function removeComputerFromGroup(ids, groupId) {
 		params.push({'key':'remove_from_group_computer_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computers.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/computers.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__OBJECT_REMOVED_FROM_GROUP, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function removeSelectedComputer(checkboxName, attributeName=null, event=null) {
 	var ids = [];
@@ -890,12 +1013,12 @@ function removeSelectedComputer(checkboxName, attributeName=null, event=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	confirmRemoveComputer(ids, event);
 }
-function confirmRemoveComputer(ids, event=null) {
+function confirmRemoveComputer(ids, event=null, infoText='') {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
@@ -905,7 +1028,10 @@ function confirmRemoveComputer(ids, event=null) {
 	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/computers.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/computers.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_REMOVED, infoText, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function deploySelectedComputer(checkboxName, attributeName=null) {
@@ -921,6 +1047,15 @@ function deploySelectedComputer(checkboxName, attributeName=null) {
 	});
 	refreshContentDeploy([],[],ids);
 }
+function renameComputer(id, oldName) {
+	var newValue = prompt(L__ENTER_NEW_HOSTNAME, oldName);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/computer-details.php', urlencodeObject({'rename_computer_id':id, 'new_name':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
 function wolSelectedComputer(checkboxName, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
@@ -933,16 +1068,10 @@ function wolSelectedComputer(checkboxName, attributeName=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	confirmWolComputer(ids);
-}
-function renameComputer(id, oldName) {
-	var newName = prompt(L__ENTER_NEW_HOSTNAME, oldName);
-	if(newName != null && newName != '') {
-		ajaxRequestPost('views/computer-details.php', urlencodeObject({'rename_computer_id':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
-	}
 }
 function confirmWolComputer(ids) {
 	var params = [];
@@ -950,21 +1079,29 @@ function confirmWolComputer(ids) {
 		params.push({'key':'wol_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computers.php', paramString, null, function() { alert(L__WOL_SENT) });
+	ajaxRequestPost('views/computers.php', paramString, null, function() {
+		emitMessage(L__WOL_SENT, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function newComputerGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/computers.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
+		ajaxRequestPost('views/computers.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, function(text){
+			refreshSidebar(); refreshContentExplorer('views/computers.php?id='+parseInt(text));
+			emitMessage(L__GROUP_CREATED, newName, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function renameComputerGroup(id, oldName) {
-	var newName = prompt(L__ENTER_NAME, oldName);
-	if(newName != null && newName != '') {
-		ajaxRequestPost('views/computers.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+	var newValue = prompt(L__ENTER_NAME, oldName);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/computers.php', urlencodeObject({'rename_group':id, 'new_name':newValue}), null, function() {
+			refreshContent(); refreshSidebar();
+			emitMessage(L__GROUP_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
-function confirmRemoveComputerGroup(ids, event=null) {
+function confirmRemoveComputerGroup(ids, event=null, infoText='') {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_group_id[]', 'value':entry});
@@ -974,7 +1111,10 @@ function confirmRemoveComputerGroup(ids, event=null) {
 	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
-		ajaxRequestPost('views/computers.php', paramString, null, function(){ refreshContentExplorer('views/computers.php'); refreshSidebar(); });
+		ajaxRequestPost('views/computers.php', paramString, null, function() {
+			refreshContentExplorer('views/computers.php'); refreshSidebar();
+			emitMessage(L__GROUP_REMOVED, infoText, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function addSelectedComputerToGroup(checkboxName, groupId, attributeName=null) {
@@ -989,7 +1129,7 @@ function addSelectedComputerToGroup(checkboxName, groupId, attributeName=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	var params = [];
@@ -998,17 +1138,22 @@ function addSelectedComputerToGroup(checkboxName, groupId, attributeName=null) {
 		params.push({'key':'add_to_group_computer_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computers.php', paramString, null, function() { alert(L__COMPUTER_ADDED) });
+	ajaxRequestPost('views/computers.php', paramString, null, function() {
+		emitMessage(L__COMPUTER_ADDED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function addComputerToGroup(computerId, groupId) {
 	var params = [];
 	params.push({'key':'add_to_group_id', 'value':groupId});
 	params.push({'key':'add_to_group_computer_id[]', 'value':computerId});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/computers.php', paramString, null, function() { alert(L__COMPUTER_ADDED); refreshContent(); });
+	ajaxRequestPost('views/computers.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__COMPUTER_ADDED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 
-// job operations
+// ======== JOB OPERATIONS ========
 function removeSelectedJobContainer(checkboxName, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
@@ -1021,19 +1166,22 @@ function removeSelectedJobContainer(checkboxName, attributeName=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	confirmRemoveJobContainer(ids);
 }
-function confirmRemoveJobContainer(ids) {
+function confirmRemoveJobContainer(ids, infoText='') {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_container_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_JOBCONTAINER)) {
-		ajaxRequestPost('views/job-containers.php', paramString, null, function(){ refreshContentExplorer('views/job-containers.php'); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', paramString, null, function() {
+			refreshContentExplorer('views/job-containers.php'); refreshSidebar();
+			emitMessage(L__OBJECT_REMOVED, infoText, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function removeSelectedJob(checkboxName, attributeName=null) {
@@ -1048,7 +1196,7 @@ function removeSelectedJob(checkboxName, attributeName=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	confirmRemoveJob(ids);
@@ -1060,49 +1208,73 @@ function confirmRemoveJob(ids) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_JOB)) {
-		ajaxRequestPost('views/job-containers.php', paramString, null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', paramString, null, function() {
+			refreshContent(); refreshSidebar();
+			emitMessage(L__OBJECT_REMOVED, '', MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function confirmRenewFailedJobsInContainer(id, defaultStartTime) {
 	if(!confirm(L__CONFIRM_RENEW_JOBS)) { return; }
 	var startTime = prompt(L__ENTER_START_TIME, defaultStartTime);
 	if(startTime == null || startTime == '') { return; }
-	ajaxRequestPost('views/job-containers.php', urlencodeObject({'renew_container_id':id, 'renew_start_time':startTime}), null, function(){ refreshContent(); refreshSidebar(); });
+	ajaxRequestPost('views/job-containers.php', urlencodeObject({'renew_container_id':id, 'renew_start_time':startTime}), null, function() {
+		refreshContent(); refreshSidebar();
+		emitMessage(L__JOBS_CREATED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function renameJobContainer(id, oldName) {
-	var newName = prompt(L__ENTER_NAME, oldName);
-	if(newName != null && newName != '') {
-		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+	var newValue = prompt(L__ENTER_NAME, oldName);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_name':newValue}), null, function() {
+			refreshContent(); refreshSidebar();
+			emitMessage(L__OBJECT_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editJobContainerStart(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_start':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_start':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editJobContainerEnd(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_end':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_end':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editJobContainerSequenceMode(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_sequence_mode':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_sequence_mode':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editJobContainerPriority(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_priority':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_priority':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editJobContainerNotes(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_notes':newValue}), null, function(){ refreshContent(); refreshSidebar(); });
+		ajaxRequestPost('views/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_notes':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority) {
@@ -1140,10 +1312,11 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
 			if(this.status == 200) {
-				refreshContentExplorer('job-containers.php?id='+parseInt(this.responseText));
+				refreshContentExplorer('views/job-containers.php?id='+parseInt(this.responseText));
 				refreshSidebar();
+				emitMessage(L__JOBS_CREATED, title, MESSAGE_TYPE_SUCCESS);
 			} else {
-				alert(L__ERROR+' '+this.status+' '+this.statusText+"\n"+this.responseText);
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
 				setInputsDisabled(frmDeploy, false);
 				btnDeploy.style.display = 'inline-block';
 				prgDeployContainer.style.display = 'none';
@@ -1152,7 +1325,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	};
 }
 
-// domainuser operations
+// ======== DOMAINUSER OPERATIONS ========
 function confirmRemoveSelectedDomainuser(checkboxName) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
@@ -1161,7 +1334,7 @@ function confirmRemoveSelectedDomainuser(checkboxName) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	var params = [];
@@ -1170,31 +1343,44 @@ function confirmRemoveSelectedDomainuser(checkboxName) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/domain-users.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/domain-users.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_REMOVED, '', MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 
-// report operations
+// ======== REPOT OPERATIONS ========
 function newReportGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null && newName != '') {
-		ajaxRequestPost('views/reports.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, refreshSidebar);
+		ajaxRequestPost('views/reports.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, function(text) {
+			refreshContentExplorer('views/reports.php?id='+parseInt(text));
+			refreshSidebar();
+			emitMessage(L__GROUP_CREATED, newName, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function renameReportGroup(id, oldName) {
-	var newName = prompt(L__ENTER_NAME, oldName);
-	if(newName != null && newName != '') {
-		ajaxRequestPost('views/reports.php', urlencodeObject({'rename_group':id, 'new_name':newName}), null, function(){ refreshContent(); refreshSidebar(); });
+	var newValue = prompt(L__ENTER_NAME, oldName);
+	if(newValue != null && newValue != '') {
+		ajaxRequestPost('views/reports.php', urlencodeObject({'rename_group':id, 'new_name':newValue}), null, function() {
+			refreshContent(); refreshSidebar();
+			emitMessage(L__GROUP_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
-function confirmRemoveReportGroup(ids) {
+function confirmRemoveReportGroup(ids, infoText='') {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_group_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
-		ajaxRequestPost('views/reports.php', paramString, null, function(){ refreshContentExplorer('views/reports.php'); refreshSidebar(); });
+		ajaxRequestPost('views/reports.php', paramString, null, function() {
+			refreshContentExplorer('views/reports.php'); refreshSidebar();
+			emitMessage(L__GROUP_REMOVED, infoText, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function newReport(group_id=0) {
@@ -1202,26 +1388,38 @@ function newReport(group_id=0) {
 	if(newName != null && newName != '') {
 		var newQuery = prompt(L__ENTER_QUERY);
 		if(newQuery != null && newQuery != '') {
-			ajaxRequestPost('views/reports.php', urlencodeObject({'add_report':newName, 'query':newQuery, 'group_id':group_id}), null, refreshContent);
+			ajaxRequestPost('views/reports.php', urlencodeObject({'add_report':newName, 'query':newQuery, 'group_id':group_id}), null, function(text) {
+				refreshContentExplorer('views/report-details.php?id='+parseInt(text));
+				emitMessage(L__REPORT_CREATED, newName, MESSAGE_TYPE_SUCCESS);
+			});
 		}
 	}
 }
 function renameReport(id, oldValue) {
 	var newValue = prompt(L__ENTER_NAME, oldValue);
 	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/report-details.php', urlencodeObject({'update_report_id':id, 'update_name':newValue}), null, refreshContent);
+		ajaxRequestPost('views/report-details.php', urlencodeObject({'update_report_id':id, 'update_name':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editReportNote(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {
-		ajaxRequestPost('views/report-details.php', urlencodeObject({'update_report_id':id, 'update_note':newValue}), null, refreshContent);
+		ajaxRequestPost('views/report-details.php', urlencodeObject({'update_report_id':id, 'update_note':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function editReportQuery(id, oldValue) {
 	var newValue = prompt(L__ENTER_QUERY, oldValue);
 	if(newValue != null && newValue != '') {
-		ajaxRequestPost('views/report-details.php', urlencodeObject({'update_report_id':id, 'update_query':newValue}), null, refreshContent);
+		ajaxRequestPost('views/report-details.php', urlencodeObject({'update_report_id':id, 'update_query':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function removeSelectedReport(checkboxName, attributeName=null) {
@@ -1236,19 +1434,22 @@ function removeSelectedReport(checkboxName, attributeName=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	confirmRemoveReport(ids);
 }
-function confirmRemoveReport(ids) {
+function confirmRemoveReport(ids, infoText='') {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/reports.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/reports.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_REMOVED, infoText, MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function moveSelectedReportToGroup(checkboxName, groupId, attributeName=null) {
@@ -1263,7 +1464,7 @@ function moveSelectedReportToGroup(checkboxName, groupId, attributeName=null) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	var params = [];
@@ -1272,10 +1473,13 @@ function moveSelectedReportToGroup(checkboxName, groupId, attributeName=null) {
 		params.push({'key':'move_to_group_report_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/reports.php', paramString, null, function() { refreshContent(); alert(L__SAVED); });
+	ajaxRequestPost('views/reports.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 
-// systemuser operations
+// ======== SYSTEMUSER OPERATIONS ========
 function confirmRemoveSelectedSystemuser(checkboxName) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
@@ -1284,7 +1488,7 @@ function confirmRemoveSelectedSystemuser(checkboxName) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	var params = [];
@@ -1293,7 +1497,10 @@ function confirmRemoveSelectedSystemuser(checkboxName) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
-		ajaxRequestPost('views/settings.php', paramString, null, refreshContent);
+		ajaxRequestPost('views/settings.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_REMOVED, '', MESSAGE_TYPE_SUCCESS);
+		});
 	}
 }
 function lockSelectedSystemuser(checkboxName) {
@@ -1308,7 +1515,10 @@ function lockSelectedSystemuser(checkboxName) {
 		params.push({'key':'lock_systemuser_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/settings.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/settings.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function unlockSelectedSystemuser(checkboxName) {
 	var ids = [];
@@ -1322,7 +1532,10 @@ function unlockSelectedSystemuser(checkboxName) {
 		params.push({'key':'unlock_systemuser_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('views/settings.php', paramString, null, refreshContent);
+	ajaxRequestPost('views/settings.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function createSystemuser(username, fullname, password) {
 	btnCreateUser.disabled = true;
@@ -1336,6 +1549,7 @@ function createSystemuser(username, fullname, password) {
 	req.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
 			refreshContent();
+			emitMessage(L__USER_CREATED, username, MESSAGE_TYPE_SUCCESS);
 		}
 	};
 }
@@ -1351,7 +1565,7 @@ function changeSelectedSystemuserPassword(checkboxName, password, password2) {
 		}
 	});
 	if(ids.length == 0) {
-		alert(L__NO_ELEMENTS_SELECTED);
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
 	btnChangePassword.disabled = true;
@@ -1363,8 +1577,8 @@ function changeSelectedSystemuserPassword(checkboxName, password, password2) {
 	req.send(formData);
 	req.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
-			alert(L__SAVED);
 			refreshContent();
+			emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 		}
 	};
 }
