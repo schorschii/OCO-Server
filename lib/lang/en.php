@@ -244,6 +244,7 @@ const LANG = [
 	'username_cannot_be_empty' => 'The user name cannot be empty',
 	'password_cannot_be_empty' => 'The password cannot be empty',
 	'hostname_already_exists' => 'This hostname already exists',
+	'username_already_exists' => 'This username already exists',
 	'pending_jobs' => 'Pending Jobs',
 	'license' => 'License',
 	'activated' => 'Activated',
@@ -345,6 +346,7 @@ const LANG = [
 	'object_deleted' => 'Object(s) deleted',
 	'group_deleted' => 'Group deleted',
 	'object_removed_from_group' => 'Object(s) removed from group',
+	'create_system_user' => 'Create System User',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

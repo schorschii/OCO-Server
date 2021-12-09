@@ -48,6 +48,9 @@ var L__ENTER_NEW_SEQUENCE_NUMBER = "<?php echo LANG['enter_new_sequence_number']
 var L__OBJECT_DELETED = "<?php echo LANG['object_deleted']; ?>";
 var L__GROUP_DELETED = "<?php echo LANG['group_deleted']; ?>";
 var L__OBJECT_REMOVED_FROM_GROUP = "<?php echo LANG['object_removed_from_group']; ?>";
+var L__CREATE_SYSTEM_USER = "<?php echo LANG['create_system_user']; ?>";
+var L__PASSWORDS_DO_NOT_MATCH = "<?php echo LANG['passwords_do_not_match']; ?>";
+var L__NEW_PASSWORD = "<?php echo LANG['new_password']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";

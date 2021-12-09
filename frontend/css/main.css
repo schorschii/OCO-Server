@@ -325,7 +325,7 @@ body.loading2 #loader-container {
 #dialog-container #dialog-box {
 	display: flex;
 	flex-direction: column;
-	width: 55%;
+	width: auto;
 	height: auto;
 	padding: 25px;
 	background-color: white;
@@ -369,6 +369,7 @@ body.loading2 #loader-container {
 	width: 22%;
 	min-width: 200px;
 	padding: 5px;
+	z-index: 999;
 }
 #message-container .message {
 	position: relative;
@@ -516,6 +517,12 @@ table {
 table th, table td {
 	text-align: left;
 	padding: 2px 4px;
+}
+table.aligned tr > *:first-child {
+	padding-left: 0px;
+}
+table.aligned tr > *:last-child {
+	padding-right: 0px;
 }
 
 #txtDescription {

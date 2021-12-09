@@ -178,7 +178,10 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_group_package_id']) && is_array($_POST['add_to_group_package_id'])) {
+	if(isset($_POST['add_to_group_id']) && isset($_POST['add_to_group_package_id']) && is_array($_POST['add_to_group_package_id'])) {
+		if($db->getPackageGroup($_POST['add_to_group_id']) == null) {
+			throw new Exception(LANG['not_found']);
+		}
 		foreach($_POST['add_to_group_package_id'] as $pid) {
 			if(count($db->getPackageByPackageAndGroup($pid, $_POST['add_to_group_id'])) == 0) {
 				$db->addPackageToGroup($pid, $_POST['add_to_group_id']);

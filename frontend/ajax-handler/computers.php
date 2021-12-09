@@ -99,7 +99,10 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_group_computer_id']) && is_array($_POST['add_to_group_computer_id'])) {
+	if(isset($_POST['add_to_group_id']) && isset($_POST['add_to_group_computer_id']) && is_array($_POST['add_to_group_computer_id'])) {
+		if($db->getComputerGroup($_POST['add_to_group_id']) == null) {
+			throw new Exception(LANG['not_found']);
+		}
 		foreach($_POST['add_to_group_computer_id'] as $cid) {
 			if(count($db->getComputerByComputerAndGroup($cid, $_POST['add_to_group_id'])) == 0) {
 				$db->addComputerToGroup($cid, $_POST['add_to_group_id']);

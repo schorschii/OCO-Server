@@ -240,6 +240,7 @@ const LANG = [
 	'username_cannot_be_empty' => 'Der Benutzername darf nicht leer sein',
 	'password_cannot_be_empty' => 'Das Passwort darf nicht leer sein',
 	'hostname_already_exists' => 'Der angegebene Hostname existiert bereits',
+	'username_already_exists' => 'Der angegebene Benutzername existiert bereits',
 	'pending_jobs' => 'Ausstehende Jobs',
 	'license' => 'Lizenz',
 	'activated' => 'Aktiviert',
@@ -341,6 +342,7 @@ const LANG = [
 	'object_deleted' => 'Objekt(e) wurden gelöscht',
 	'group_deleted' => 'Gruppe wurde gelöscht',
 	'object_removed_from_group' => 'Objekt(e) wurden aus Gruppe entfernt',
+	'create_system_user' => 'Systembenutzer erstellen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

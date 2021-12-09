@@ -13,6 +13,9 @@ try {
 		if(empty(trim($_POST['add_systemuser_password']))) {
 			throw new Exception(LANG['password_cannot_be_empty']);
 		}
+		if($db->getSystemuserByLogin($_POST['add_systemuser_username']) !== null) {
+			throw new Exception(LANG['username_already_exists']);
+		}
 		$db->addSystemuser(
 			$_POST['add_systemuser_username'],
 			$_POST['add_systemuser_fullname'],

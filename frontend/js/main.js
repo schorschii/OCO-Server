@@ -1505,6 +1505,10 @@ function lockSelectedSystemuser(checkboxName) {
 			ids.push(entry.value);
 		}
 	});
+	if(ids.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return;
+	}
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'lock_systemuser_id[]', 'value':entry});
@@ -1522,6 +1526,10 @@ function unlockSelectedSystemuser(checkboxName) {
 			ids.push(entry.value);
 		}
 	});
+	if(ids.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return;
+	}
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'unlock_systemuser_id[]', 'value':entry});
@@ -1539,15 +1547,12 @@ function createSystemuser(username, fullname, password) {
 	params.push({'key':'add_systemuser_password', 'value':password});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		hideDialog();
 		refreshContent();
 		emitMessage(L__USER_CREATED, username, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function changeSelectedSystemuserPassword(checkboxName, password, password2) {
-	if(password != password2) {
-		emitMessage(L__PASSWORDS_DO_NOT_MATCH, '', MESSAGE_TYPE_WARNING);
-		return;
-	}
+function changeSelectedSystemuserPassword(checkboxName, password) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -1563,6 +1568,7 @@ function changeSelectedSystemuserPassword(checkboxName, password, password2) {
 	params.push({'key':'change_systemuser_password', 'value':password});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		hideDialog();
 		refreshContent();
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});

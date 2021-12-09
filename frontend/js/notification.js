@@ -1,12 +1,12 @@
 function askNotificationPermission() {
 	if(!Notification) {
-		alert(L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED);
+		emitMessage(L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED, '', MESSAGE_TYPE_ERROR);
 		return;
 	}
 	if(Notification.permission !== 'granted') {
 		Notification.requestPermission().then(function(result) {
 			if(result === 'denied') {
-				alert(L__DESKTOP_NOTIFICATIONS_DENIED);
+				emitMessage(L__DESKTOP_NOTIFICATIONS_DENIED, '', MESSAGE_TYPE_WARNING);
 			}
 			if(result === 'granted') {
 				// start watching for notifications
@@ -14,7 +14,7 @@ function askNotificationPermission() {
 			}
 		});
 	} else {
-		alert(L__DESKTOP_NOTIFICATIONS_ALREADY_PERMITTED);
+		emitMessage(L__DESKTOP_NOTIFICATIONS_ALREADY_PERMITTED, '', MESSAGE_TYPE_INFO);
 	}
 }
 
@@ -35,7 +35,7 @@ function refreshNotificationInfo() {
 			checkNotification(JSON.parse(this.responseText));
 		}
 	};
-	xhttp.open('GET', 'ajax/notification-info.php', true);
+	xhttp.open('GET', 'ajax-handler/notification-info.php', true);
 	xhttp.send();
 }
 

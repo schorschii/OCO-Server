@@ -72,7 +72,10 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['move_to_group_id']) && !empty($_POST['move_to_group_report_id']) && is_array($_POST['move_to_group_report_id'])) {
+	if(isset($_POST['move_to_group_id']) && isset($_POST['move_to_group_report_id']) && is_array($_POST['move_to_group_report_id'])) {
+		if($db->getReportGroup($_POST['move_to_group_id']) == null) {
+			throw new Exception(LANG['not_found']);
+		}
 		foreach($_POST['move_to_group_report_id'] as $rid) {
 			$report = $db->getReport($rid);
 			if($report == null) continue;
