@@ -345,6 +345,7 @@ const LANG = [
 	'group_deleted' => 'Gruppe wurde gelöscht',
 	'object_removed_from_group' => 'Objekt(e) wurden aus Gruppe entfernt',
 	'create_system_user' => 'Systembenutzer erstellen',
+	'help' => 'Hilfe',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

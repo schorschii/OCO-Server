@@ -62,6 +62,8 @@ if(!empty($_GET['view'])) {
 			<span class='separator noprint'></span>
 			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG['about']; ?>", "views/dialog-about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL, false)' title='<?php echo LANG['about']; ?>'><img src='img/info.light.svg'></button>
 			<span class='separator noprint'></span>
+			<button id='btnHelp' class='noprint' onclick='refreshContentExplorer("views/docs.php")' title='<?php echo LANG['help']; ?>'><img src='img/help.light.svg'></button>
+			<span class='separator noprint'></span>
 			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG['log_out']; ?>'><span><?php echo htmlspecialchars($_SESSION['um_username']); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
 		</span>
 	</div>
