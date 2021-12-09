@@ -547,7 +547,7 @@ function editPackageInstallProcedureSuccessReturnCodes(id, oldValue) {
 }
 function editPackageInstallProcedureAction(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_PROCEDURE_POST_ACTION, oldValue);
-	if(newValue != null && newValue != '') {
+	if(newValue != null) {
 		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_action':newValue}), null, function() {
 			refreshContent();
 			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
@@ -728,7 +728,7 @@ function deploySelectedPackage(checkboxName, attributeName=null) {
 }
 function newPackageGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
-	if(newName != null && newName != '') {
+	if(newName != null) {
 		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, function(text) {
 			refreshContentExplorer('views/packages.php?id='+parseInt(text));
 			refreshSidebar();
@@ -738,7 +738,7 @@ function newPackageGroup(parent_id=null) {
 }
 function renamePackageGroup(id, oldName) {
 	var newValue = prompt(L__ENTER_NAME, oldName);
-	if(newValue != null && newValue != '') {
+	if(newValue != null) {
 		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'rename_group':id, 'new_name':newValue}), null, function() {
 			refreshContent(); refreshSidebar();
 			emitMessage(L__GROUP_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
@@ -872,7 +872,7 @@ function confirmUninstallPackage(checkboxName, defaultStartTime) {
 		params.push({'key':'uninstall_package_assignment_id[]', 'value':entry});
 	});
 	var startTime = prompt(L__CONFIRM_UNINSTALL_PACKAGE, defaultStartTime);
-	if(startTime != null && startTime != '') {
+	if(startTime != null) {
 		params.push({'key':'start_time', 'value':startTime});
 		var paramString = urlencodeArray(params);
 		ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
@@ -1046,7 +1046,7 @@ function deploySelectedComputer(checkboxName, attributeName=null) {
 }
 function renameComputer(id, oldName) {
 	var newValue = prompt(L__ENTER_NEW_HOSTNAME, oldName);
-	if(newValue != null && newValue != '') {
+	if(newValue != null) {
 		ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'rename_computer_id':id, 'new_name':newValue}), null, function() {
 			refreshContent();
 			emitMessage(L__OBJECT_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
@@ -1082,7 +1082,7 @@ function confirmWolComputer(ids) {
 }
 function newComputerGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
-	if(newName != null && newName != '') {
+	if(newName != null) {
 		ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, function(text){
 			refreshSidebar(); refreshContentExplorer('views/computers.php?id='+parseInt(text));
 			emitMessage(L__GROUP_CREATED, newName, MESSAGE_TYPE_SUCCESS);
@@ -1091,7 +1091,7 @@ function newComputerGroup(parent_id=null) {
 }
 function renameComputerGroup(id, oldName) {
 	var newValue = prompt(L__ENTER_NAME, oldName);
-	if(newValue != null && newValue != '') {
+	if(newValue != null) {
 		ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'rename_group':id, 'new_name':newValue}), null, function() {
 			refreshContent(); refreshSidebar();
 			emitMessage(L__GROUP_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
