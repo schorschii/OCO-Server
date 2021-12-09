@@ -100,6 +100,11 @@ function showDialogHTML(title='', text='', controls=false, size=false, monospace
 	} else {
 		obj('dialog-text').classList.remove('monospace');
 	}
+	var childs = document.querySelectorAll('*');
+	for(var i = 0; i < childs.length; i++) {
+		if(childs[i].getAttribute('autofocus'))
+			childs[i].focus();
+	}
 }
 function hideDialog() {
 	obj('dialog-container').classList.remove('active');
