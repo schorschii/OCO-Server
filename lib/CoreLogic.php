@@ -507,4 +507,16 @@ class CoreLogic {
 		return $result;
 	}
 
+	/*** Report Operations ***/
+	public function removeReportGroup($id, $force=false) {
+		if(!$force) {
+			$subgroups = $this->db->getAllReportGroup($id);
+			if(count($subgroups) > 0) throw new Exception(LANG['remove_failed_subgroups']);
+		}
+
+		$result = $this->db->removeReportGroup($id);
+		if(!$result) throw new Exception(LANG['not_found']);
+		return $result;
+	}
+
 }

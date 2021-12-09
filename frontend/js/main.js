@@ -1370,11 +1370,14 @@ function renameReportGroup(id, oldName) {
 		});
 	}
 }
-function confirmRemoveReportGroup(ids, infoText='') {
+function confirmRemoveReportGroup(ids, event=null, infoText='') {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_group_id[]', 'value':entry});
 	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_GROUP)) {
 		ajaxRequestPost('views/reports.php', paramString, null, function() {

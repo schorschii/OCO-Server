@@ -29,7 +29,12 @@ if(!empty($_POST['rename_group']) && !empty($_POST['new_name'])) {
 }
 if(!empty($_POST['remove_group_id']) && is_array($_POST['remove_group_id'])) {
 	foreach($_POST['remove_group_id'] as $id) {
-		$db->removeReportGroup($id);
+		try {
+			$cl->removeReportGroup($id, !empty($_POST['force']));
+		} catch(Exception $e) {
+			header('HTTP/1.1 400 Invalid Request');
+			die($e->getMessage());
+		}
 	}
 	die();
 }
@@ -65,7 +70,7 @@ if(empty($_GET['id'])) {
 		<button onclick='newReport(<?php echo $reportGroup->id; ?>)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
 		<button onclick='newReportGroup(<?php echo $reportGroup->id; ?>)'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
 		<button onclick='renameReportGroup(<?php echo $reportGroup->id; ?>, spnReportGroupName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
-		<button onclick='confirmRemoveReportGroup([<?php echo $reportGroup->id; ?>], spnReportGroupName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
+		<button onclick='confirmRemoveReportGroup([<?php echo $reportGroup->id; ?>], event, spnReportGroupName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>
 <?php } ?>
 
