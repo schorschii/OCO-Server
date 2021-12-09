@@ -3,34 +3,6 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-if(!empty($_POST['update_report_id']) && !empty($_POST['update_name'])) {
-	$report = $db->getReport($_POST['update_report_id']);
-	if($report == null || empty(trim($_POST['update_name']))) {
-		header('HTTP/1.1 400 Invalid Request');
-		die(LANG['name_cannot_be_empty']);
-	}
-	$db->updateReport($report->id, $report->report_group_id, $_POST['update_name'], $report->notes, $report->query);
-	die();
-}
-if(!empty($_POST['update_report_id']) && isset($_POST['update_note'])) {
-	$report = $db->getReport($_POST['update_report_id']);
-	if($report == null) {
-		header('HTTP/1.1 400 Invalid Request');
-		die(LANG['name_cannot_be_empty']);
-	}
-	$db->updateReport($report->id, $report->report_group_id, $report->name, $_POST['update_note'], $report->query);
-	die();
-}
-if(!empty($_POST['update_report_id']) && !empty($_POST['update_query'])) {
-	$report = $db->getReport($_POST['update_report_id']);
-	if($report == null || empty(trim($_POST['update_query']))) {
-		header('HTTP/1.1 400 Invalid Request');
-		die(LANG['name_cannot_be_empty']);
-	}
-	$db->updateReport($report->id, $report->report_group_id, $report->name, $report->notes, $_POST['update_query']);
-	die();
-}
-
 $report = $db->getReport($_GET['id'] ?? -1);
 if($report === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
 

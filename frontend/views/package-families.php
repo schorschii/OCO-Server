@@ -3,18 +3,6 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
-	foreach($_POST['remove_id'] as $id) {
-		try {
-			$cl->removePackageFamily($id);
-		} catch(Exception $e) {
-			header('HTTP/1.1 400 Invalid Request');
-			die($e->getMessage());
-		}
-	}
-	die();
-}
-
 $families = $db->getAllPackageFamily();
 echo "<h1><img src='img/package.dyn.svg'><span id='page-title'>".LANG['package_families']."</span></h1>";
 

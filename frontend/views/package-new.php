@@ -2,29 +2,6 @@
 $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
-
-if(isset($_POST['name'])) {
-	try {
-		// no payload by default
-		$tmpFilePath = null;
-		$tmpFileName = null;
-		if(!empty($_FILES['archive'])) {
-			// use file from user upload
-			$tmpFilePath = $_FILES['archive']['tmp_name'];
-			$tmpFileName = $_FILES['archive']['name'];
-		}
-		// create package
-		$insertId = $cl->createPackage($_POST['name'], $_POST['version'], $_POST['description'] ?? '', $_SESSION['um_username'] ?? '',
-			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_post_action'] ?? null,
-			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'], $_POST['uninstall_procedure_post_action'] ?? null,
-			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $tmpFilePath, $tmpFileName
-		);
-		die(strval(intval($insertId)));
-	} catch(Exception $e) {
-		header('HTTP/1.1 400 Unable To Perform Requested Action');
-		die($e->getMessage());
-	}
-}
 ?>
 
 <h1><img src='img/package-new.dyn.svg'><span id='page-title'><?php echo LANG['new_package']; ?></span></h1>

@@ -92,7 +92,7 @@ class CoreLogic {
 	public function removeComputer($id, $force=false) {
 		if(!$force) {
 			$jobs = $this->db->getPendingJobsForComputerDetailPage($id);
-			if(count($jobs) > 0) throw new Exception(LANG['remove_failed_active_jobs']);
+			if(count($jobs) > 0) throw new Exception(LANG['delete_failed_active_jobs']);
 		}
 
 		$result = $this->db->removeComputer($id);
@@ -102,7 +102,7 @@ class CoreLogic {
 	public function removeComputerGroup($id, $force=false) {
 		if(!$force) {
 			$subgroups = $this->db->getAllComputerGroup($id);
-			if(count($subgroups) > 0) throw new Exception(LANG['remove_failed_subgroups']);
+			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
 		}
 
 		$result = $this->db->removeComputerGroup($id);
@@ -181,10 +181,10 @@ class CoreLogic {
 
 		if(!$force) {
 			$jobs = $this->db->getPendingJobsForPackageDetailPage($id);
-			if(count($jobs) > 0) throw new Exception(LANG['remove_failed_active_jobs']);
+			if(count($jobs) > 0) throw new Exception(LANG['delete_failed_active_jobs']);
 
 			$dependentPackages = $this->db->getDependentForPackages($id);
-			if(count($dependentPackages) > 0) throw new Exception(LANG['remove_failed_dependent_packages']);
+			if(count($dependentPackages) > 0) throw new Exception(LANG['delete_failed_dependent_packages']);
 		}
 
 		$path = $package->getFilePath();
@@ -196,7 +196,7 @@ class CoreLogic {
 	}
 	public function removePackageFamily($id) {
 		$packages = $this->db->getPackageByFamily($id);
-		if(count($packages) > 0) throw new Exception(LANG['remove_failed_package_family_contains_packages']);
+		if(count($packages) > 0) throw new Exception(LANG['delete_failed_package_family_contains_packages']);
 
 		$result = $this->db->removePackageFamily($id);
 		if(!$result) throw new Exception(LANG['not_found']);
@@ -205,7 +205,7 @@ class CoreLogic {
 	public function removePackageGroup($id, $force=false) {
 		if(!$force) {
 			$subgroups = $this->db->getAllPackageGroup($id);
-			if(count($subgroups) > 0) throw new Exception(LANG['remove_failed_subgroups']);
+			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
 		}
 
 		$result = $this->db->removePackageGroup($id);
@@ -511,7 +511,7 @@ class CoreLogic {
 	public function removeReportGroup($id, $force=false) {
 		if(!$force) {
 			$subgroups = $this->db->getAllReportGroup($id);
-			if(count($subgroups) > 0) throw new Exception(LANG['remove_failed_subgroups']);
+			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
 		}
 
 		$result = $this->db->removeReportGroup($id);

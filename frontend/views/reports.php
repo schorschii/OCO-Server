@@ -3,50 +3,6 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-if(!empty($_POST['add_report']) && !empty($_POST['query']) && isset($_POST['group_id'])) {
-	if(empty(trim($_POST['add_report'])) || empty(trim($_POST['query']))) {
-		header('HTTP/1.1 400 Invalid Request');
-		die(LANG['name_cannot_be_empty']);
-	}
-	$insertId = $db->addReport($_POST['group_id'], $_POST['add_report'], '', $_POST['query']);
-	die(strval(intval($insertId)));
-}
-if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
-	foreach($_POST['remove_id'] as $id) {
-		$db->removeReport($id);
-	}
-	die();
-}
-if(!empty($_POST['add_group'])) {
-	$insertId = -1;
-	if(empty($_POST['parent_id'])) $insertId = $db->addReportGroup($_POST['add_group']);
-	else $insertId = $db->addReportGroup($_POST['add_group'], intval($_POST['parent_id']));
-	die(strval(intval($insertId)));
-}
-if(!empty($_POST['rename_group']) && !empty($_POST['new_name'])) {
-	$db->renameReportGroup($_POST['rename_group'], $_POST['new_name']);
-	die();
-}
-if(!empty($_POST['remove_group_id']) && is_array($_POST['remove_group_id'])) {
-	foreach($_POST['remove_group_id'] as $id) {
-		try {
-			$cl->removeReportGroup($id, !empty($_POST['force']));
-		} catch(Exception $e) {
-			header('HTTP/1.1 400 Invalid Request');
-			die($e->getMessage());
-		}
-	}
-	die();
-}
-if(!empty($_POST['move_to_group_id']) && !empty($_POST['move_to_group_report_id']) && is_array($_POST['move_to_group_report_id'])) {
-	foreach($_POST['move_to_group_report_id'] as $rid) {
-		$report = $db->getReport($rid);
-		if($report == null) continue;
-		$db->updateReport($report->id, intval($_POST['move_to_group_id']), $report->name, $report->notes, $report->query);
-	}
-	die();
-}
-
 if(empty($_GET['id'])) {
 	$reports = $db->getAllReport();
 } else {

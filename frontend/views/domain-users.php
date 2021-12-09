@@ -2,13 +2,6 @@
 $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
-
-if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
-	foreach($_POST['remove_id'] as $id) {
-		$db->removeDomainuser($id);
-	}
-	die();
-}
 ?>
 
 <?php

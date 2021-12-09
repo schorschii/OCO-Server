@@ -3,52 +3,6 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-if(!empty($_POST['rename_computer_id']) && !empty($_POST['new_name'])) {
-	$db->updateComputerHostname($_POST['rename_computer_id'], $_POST['new_name']);
-	die();
-}
-if(!empty($_POST['update_computer_id']) && isset($_POST['update_note'])) {
-	$db->updateComputerNote($_POST['update_computer_id'], $_POST['update_note']);
-	die();
-}
-if(!empty($_POST['update_computer_id']) && isset($_POST['update_force_update'])) {
-	$db->updateComputerForceUpdate($_POST['update_computer_id'], $_POST['update_force_update']);
-	die();
-}
-if(!empty($_POST['remove_package_assignment_id']) && is_array($_POST['remove_package_assignment_id'])) {
-	foreach($_POST['remove_package_assignment_id'] as $id) {
-		try {
-			$cl->removeComputerAssignedPackage($id);
-		} catch(Exception $e) {
-			header('HTTP/1.1 400 Invalid Request');
-			die($e->getMessage());
-		}
-	}
-	die();
-}
-if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninstall_package_assignment_id'])) {
-	try {
-		$name = ''; // compile name
-		foreach($_POST['uninstall_package_assignment_id'] as $id) {
-			$ap = $db->getComputerAssignedPackage($id);
-			if(empty($ap)) continue;
-			$c = $db->getComputer($ap->computer_id);
-			if(empty($name)) $name = LANG['uninstall'].' '.$c->hostname;
-			else $name .= ', '.$c->hostname;
-		}
-		if(empty($name)) $name = LANG['uninstall'];
-		$cl->uninstall(
-			$name, '', $_SESSION['um_username'],
-			$_POST['uninstall_package_assignment_id'], $_POST['start_time'] ?? date('Y-m-d H:i:s'), null,
-			1/*use wol*/, 0/*shutdown waked after completion*/, 5/*restart timeout*/
-		);
-	} catch(Exception $e) {
-		header('HTTP/1.1 400 Invalid Request');
-		die($e->getMessage());
-	}
-	die();
-}
-
 function echoCommandButton($c, $target, $link=false) {
 	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
 	$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);

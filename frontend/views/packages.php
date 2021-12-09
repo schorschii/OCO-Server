@@ -3,57 +3,6 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-if(!empty($_POST['move_in_group']) && !empty($_POST['move_from_pos']) && !empty($_POST['move_to_pos'])) {
-	$db->reorderPackageInGroup($_POST['move_in_group'], $_POST['move_from_pos'], $_POST['move_to_pos']);
-	die();
-}
-if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
-	foreach($_POST['remove_id'] as $id) {
-		try {
-			$cl->removePackage($id, !empty($_POST['force']));
-		} catch(Exception $e) {
-			header('HTTP/1.1 400 Invalid Request');
-			die($e->getMessage());
-		}
-	}
-	die();
-}
-if(!empty($_POST['remove_group_id']) && is_array($_POST['remove_group_id'])) {
-	foreach($_POST['remove_group_id'] as $id) {
-		try {
-			$cl->removePackageGroup($id, !empty($_POST['force']));
-		} catch(Exception $e) {
-			header('HTTP/1.1 400 Invalid Request');
-			die($e->getMessage());
-		}
-	}
-	die();
-}
-if(!empty($_POST['remove_from_group_id']) && !empty($_POST['remove_from_group_package_id']) && is_array($_POST['remove_from_group_package_id'])) {
-	foreach($_POST['remove_from_group_package_id'] as $pid) {
-		$db->removePackageFromGroup($pid, $_POST['remove_from_group_id']);
-	}
-	die();
-}
-if(!empty($_POST['add_group'])) {
-	$insertId = -1;
-	if(empty($_POST['parent_id'])) $insertId = $db->addPackageGroup($_POST['add_group']);
-	else $insertId = $db->addPackageGroup($_POST['add_group'], intval($_POST['parent_id']));
-	die(strval(intval($insertId)));
-}
-if(!empty($_POST['rename_group']) && !empty($_POST['new_name'])) {
-	$db->renamePackageGroup($_POST['rename_group'], $_POST['new_name']);
-	die();
-}
-if(!empty($_POST['add_to_group_id']) && !empty($_POST['add_to_group_package_id']) && is_array($_POST['add_to_group_package_id'])) {
-	foreach($_POST['add_to_group_package_id'] as $pid) {
-		if(count($db->getPackageByPackageAndGroup($pid, $_POST['add_to_group_id'])) == 0) {
-			$db->addPackageToGroup($pid, $_POST['add_to_group_id']);
-		}
-	}
-	die();
-}
-
 $group = null;
 $packages = [];
 if(!empty($_GET['id'])) {

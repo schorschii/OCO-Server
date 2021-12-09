@@ -45,8 +45,8 @@ var L__CHANGE_ICON = "<?php echo LANG['change_icon']; ?>";
 var L__REMOVE_ICON = "<?php echo LANG['remove_icon']; ?>";
 var L__ARE_YOU_SURE = "<?php echo LANG['are_you_sure']; ?>";
 var L__ENTER_NEW_SEQUENCE_NUMBER = "<?php echo LANG['enter_new_sequence_number']; ?>";
-var L__OBJECT_REMOVED = "<?php echo LANG['object_removed']; ?>";
-var L__GROUP_REMOVED = "<?php echo LANG['group_removed']; ?>";
+var L__OBJECT_DELETED = "<?php echo LANG['object_deleted']; ?>";
+var L__GROUP_DELETED = "<?php echo LANG['group_deleted']; ?>";
 var L__OBJECT_REMOVED_FROM_GROUP = "<?php echo LANG['object_removed_from_group']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";

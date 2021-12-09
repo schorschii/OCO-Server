@@ -2,55 +2,6 @@
 $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
-
-if(!empty($_POST['add_systemuser_username'])) {
-	$db->addSystemuser(
-		$_POST['add_systemuser_username'],
-		$_POST['add_systemuser_fullname'],
-		password_hash($_POST['add_systemuser_password'], PASSWORD_DEFAULT),
-		0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, ''/*description*/, 0
-	);
-	die();
-}
-if(!empty($_POST['change_systemuser_id']) && !empty($_POST['change_systemuser_password'])) {
-	$u = $db->getSystemuser($_POST['change_systemuser_id']);
-	if($u != null) {
-		$db->updateSystemuser(
-			$u->id, $u->username, $u->fullname,
-			password_hash($_POST['change_systemuser_password'], PASSWORD_DEFAULT),
-			$u->ldap, $u->email, $u->phone, $u->mobile, $u->description, $u->locked
-		);
-	}
-	die();
-}
-if(!empty($_POST['remove_systemuser_id']) && is_array($_POST['remove_systemuser_id'])) {
-	foreach($_POST['remove_systemuser_id'] as $id) {
-		$db->removeSystemuser($id);
-	}
-	die();
-}
-if(!empty($_POST['lock_systemuser_id']) && is_array($_POST['lock_systemuser_id'])) {
-	foreach($_POST['lock_systemuser_id'] as $id) {
-		$u = $db->getSystemuser($id);
-		if($u != null) {
-			$db->updateSystemuser(
-				$u->id, $u->username, $u->fullname, $u->password, $u->ldap, $u->email, $u->phone, $u->mobile, $u->description, 1
-			);
-		}
-	}
-	die();
-}
-if(!empty($_POST['unlock_systemuser_id']) && is_array($_POST['unlock_systemuser_id'])) {
-	foreach($_POST['unlock_systemuser_id'] as $id) {
-		$u = $db->getSystemuser($id);
-		if($u != null) {
-			$db->updateSystemuser(
-				$u->id, $u->username, $u->fullname, $u->password, $u->ldap, $u->email, $u->phone, $u->mobile, $u->description, 0
-			);
-		}
-	}
-	die();
-}
 ?>
 
 <div class='details-header'>
