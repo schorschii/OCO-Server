@@ -1,7 +1,10 @@
 # OCO: Server Installation
 
 ## Basic Setup
-0. Install PHP 7.x, MySQL/MariaDB and a web sever of your choice (Apache recommended).
+0. Install PHP 7.x (with PHP-DOM module), MySQL/MariaDB and a web sever of your choice (Apache recommended).
+   ```
+   apt install php php-dom mariadb-server apache2 libapache2-mod-php
+   ```
 1. Download the [latest release](https://github.com/schorschii/oco-server/releases), copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.
 2. Import the database schema (use the newest version, e.g. `lib/sql/v1.0.sql`) into an empty database.
    ```
