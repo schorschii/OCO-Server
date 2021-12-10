@@ -14,7 +14,7 @@
    mysql> GRANT ALL PRIVILEGES ON oco.* TO 'oco'@'localhost';
    mysql> FLUSH PRIVILEGES;
    mysql> EXIT;
-   root@ocoserver:/# mysql oco < /srv/www/oco/lib/sql/v1.x.sql
+   root@ocoserver:/# mysql oco < /var/www/oco/lib/sql/v1.x.sql
    ```
 3. Enter your MySQL credentials in `conf.php` (create this file by copying the template `conf.example.php`).  
    (Use a separate user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.)
@@ -28,7 +28,7 @@
      ```
      <VirtualHost *:80>
         .....
-        DocumentRoot /srv/www/oco
+        DocumentRoot /var/www/oco
         ## Redirect to HTTPS
         RewriteEngine On
         RewriteCond %{HTTPS} !=on
@@ -38,7 +38,7 @@
 
      <VirtualHost *:443>
       .....
-      DocumentRoot /srv/www/oco
+      DocumentRoot /var/www/oco
       SSLEngine on
       SSLCertificateFile /etc/apache2/ssl/mycertwithchain.crt
       SSLCertificateKeyFile /etc/apache2/ssl/myprivkey.key
