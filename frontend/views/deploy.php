@@ -4,20 +4,8 @@ require_once('../../lib/Loader.php');
 require_once('../session.php');
 
 $default_job_container_name = '';
-$select_computer_ids = [];
 $select_computer_group_ids = [];
-$select_package_ids = [];
 $select_package_group_ids = [];
-if(!empty($_GET['computer_id']) && is_array($_GET['computer_id'])) {
-	$select_computer_ids = $_GET['computer_id'];
-	// compile job name
-	foreach($select_computer_ids as $id) {
-		$c = $db->getComputer($id);
-		if($c == null) continue;
-		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$c->hostname;
-		else $default_job_container_name .= ', '.$c->hostname;
-	}
-}
 if(!empty($_GET['computer_group_id']) && is_array($_GET['computer_group_id'])) {
 	$select_computer_group_ids = $_GET['computer_group_id'];
 	// compile job name
@@ -26,16 +14,6 @@ if(!empty($_GET['computer_group_id']) && is_array($_GET['computer_group_id'])) {
 		if($cg == null) continue;
 		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$cg->name;
 		else $default_job_container_name .= ', '.$cg->name;
-	}
-}
-if(!empty($_GET['package_id']) && is_array($_GET['package_id'])) {
-	$select_package_ids = $_GET['package_id'];
-	// compile job name
-	foreach($select_package_ids as $id) {
-		$p = $db->getPackage($id);
-		if($p == null) continue;
-		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$p->package_family_name;
-		else $default_job_container_name .= ', '.$p->package_family_name;
 	}
 }
 if(!empty($_GET['package_group_id']) && is_array($_GET['package_group_id'])) {
