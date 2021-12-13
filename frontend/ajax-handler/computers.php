@@ -51,9 +51,6 @@ try {
 	}
 
 	if(isset($_POST['add_computer'])) {
-		if(empty(trim($_POST['add_computer']))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
-		}
 		die(strval(intval( $cl->createComputer($_POST['add_computer']) )));
 	}
 
