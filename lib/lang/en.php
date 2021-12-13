@@ -142,7 +142,6 @@ const LANG = [
 	'confirm_delete_package' => 'Are you sure you want to delete the package(s)?\n\nAll computer assignments will be lost and you can no longer uninstall this package using the OCO server. If the shift key is pressed, all pending jobs and assigned package dependencies are also deleted automatically.',
 	'enter_name' => 'Please enter a name',
 	'enter_new_hostname' => 'Please enter a new hostname.\n\nWarning: If you change the host name, you must also change the name on the computer, otherwise the agent can no longer establish a connection with the server!',
-	'confirm_uninstall_package' => 'Are you sure you want to uninstall the package? An uninstall job will be created.\n\nPlease enter a start date.',
 	'confirm_remove_package_assignment' => 'Are you sure you want to unassign the computer package? Usually the package should be uninstalled.',
 	'confirm_delete_group' => 'Are you sure you want to delete the selected group(s)? The objects in the group are not deleted.',
 	'confirm_delete_jobcontainer' => 'Are you sure you want to delete this job container? Pending jobs are not distributed.',
@@ -350,6 +349,8 @@ const LANG = [
 	'create_system_user' => 'Create System User',
 	'edit_report' => 'Edit Report',
 	'help' => 'Help',
+	'uninstall_packages' => 'Uninstall Packages',
+	'uninstall_job_container_will_be_created' => 'An uninstall job container will be created.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

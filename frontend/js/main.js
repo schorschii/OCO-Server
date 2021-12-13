@@ -859,7 +859,7 @@ function removeDependentPackages(ids, packageId) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function confirmUninstallPackage(checkboxName, defaultStartTime) {
+function uninstallPackage(checkboxName, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, restartTimeout, priority) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -874,15 +874,20 @@ function confirmUninstallPackage(checkboxName, defaultStartTime) {
 	ids.forEach(function(entry) {
 		params.push({'key':'uninstall_package_assignment_id[]', 'value':entry});
 	});
-	var startTime = prompt(L__CONFIRM_UNINSTALL_PACKAGE, defaultStartTime);
-	if(startTime != null) {
-		params.push({'key':'start_time', 'value':startTime});
-		var paramString = urlencodeArray(params);
-		ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
-			refreshSidebar(); refreshContent();
-			emitMessage(L__JOBS_CREATED, '', MESSAGE_TYPE_SUCCESS);
-		});
-	}
+	params.push({'key':'name', 'value':name});
+	params.push({'key':'notes', 'value':notes});
+	params.push({'key':'start_time', 'value':startTime});
+	params.push({'key':'end_time', 'value':endTime});
+	params.push({'key':'use_wol', 'value':useWol ? 1 : 0});
+	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
+	params.push({'key':'restart_timeout', 'value':restartTimeout});
+	params.push({'key':'priority', 'value':priority});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
+		hideDialog();
+		refreshSidebar(); refreshContent();
+		emitMessage(L__JOBS_CREATED, name, MESSAGE_TYPE_SUCCESS);
+	});
 }
 function confirmRemovePackageComputerAssignment(checkboxName) {
 	var ids = [];

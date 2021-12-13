@@ -138,7 +138,6 @@ const LANG = [
 	'confirm_delete_package' => 'Sind Sie sicher, dass Sie das Paket bzw. die Pakete löschen möchten?\n\nAlle Computerzuordungen gehen verloren und Sie können das Paket nicht mehr über den OCO-Server deinstallieren. Bei gedrückter Umschalt-Taste werden auch alle ausstehenden Jobs und zugewiesene Abhängigkeiten zu anderen Paketen automatisch gelöscht.',
 	'enter_name' => 'Bitte geben Sie einen Namen ein',
 	'enter_new_hostname' => 'Bitte geben Sie einen neuen Hostnamen ein.\n\nAchtung: Wenn Sie den Hostnamen ändern müssen Sie den Namen auch auf dem Computer ändern, andernfalls kann der Agent keine Verbindung mehr mit dem Server herstellen!',
-	'confirm_uninstall_package' => 'Möchten Sie das Paket wirklich deinstallieren? Es wird ein Deinstallationsjob erstellt.\n\nBitte geben Sie eine Startzeit ein.',
 	'confirm_remove_package_assignment' => 'Möchten Sie die Computer-Paket-Zuordnung wirklich aufheben? Normalerweise sollte das Paket deinstalliert werden.',
 	'confirm_delete_group' => 'Möchten Sie die Gruppe(n) wirklich löschen? Die Objekte in der Gruppe werden nicht gelöscht.',
 	'confirm_delete_jobcontainer' => 'Möchten Sie diesen Jobcontainer wirklich löschen? Ausstehende Jobs werden nicht mehr ausgeführt.',
@@ -347,6 +346,8 @@ const LANG = [
 	'create_report' => 'Report erstellen',
 	'edit_report' => 'Report bearbeiten',
 	'help' => 'Hilfe',
+	'uninstall_packages' => 'Pakete deinstallieren',
+	'uninstall_job_container_will_be_created' => 'Es wird ein Deinstallations-Jobcontainer erstellt.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

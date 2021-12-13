@@ -380,7 +380,7 @@ $online = $computer->isOnline();
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-			<button onclick='confirmUninstallPackage("package_id[]", "<?php echo date('Y-m-d H:i:s'); ?>")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+			<button onclick='showDialogAjax(L__UNINSTALL_PACKAGES, "views/dialog-uninstall.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 		</div>
 	</div>
 

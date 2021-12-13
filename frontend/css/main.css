@@ -625,6 +625,20 @@ select:active {
 	text-align: right;
 	min-width: 25px;
 }
+.stretchInput {
+	display: flex;
+	align-items: center;
+	vertical-align: middle;
+}
+.stretchInput > * {
+	width: auto !important;
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 1;
+}
+.stretchInput > *:not(:last-child) {
+	margin-right: 5px;
+}
 
 table.largepadding td,
 table.largepadding th {

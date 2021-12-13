@@ -239,7 +239,7 @@ class CoreLogic {
 	/*** Deployment Operations ***/
 	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority) {
 		// check user input
-		if(empty($name)) {
+		if(empty(trim($name))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
 		if(empty($restartTimeout) || empty($dateStart) || strtotime($dateStart) === false) {
@@ -443,7 +443,7 @@ class CoreLogic {
 	}
 	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0) {
 		// check user input
-		if(empty($name)) {
+		if(empty(trim($name))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
 		if(empty($restartTimeout) || empty($dateStart) || strtotime($dateStart) === false) {

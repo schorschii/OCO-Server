@@ -27,20 +27,21 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['uninstall_package_assignment_id']) && is_array($_POST['uninstall_package_assignment_id'])) {
-		$name = ''; // compile name
-		foreach($_POST['uninstall_package_assignment_id'] as $id) {
-			$ap = $db->getComputerAssignedPackage($id);
-			if(empty($ap)) continue;
-			$c = $db->getComputer($ap->computer_id);
-			if(empty($name)) $name = LANG['uninstall'].' '.$c->hostname;
-			else $name .= ', '.$c->hostname;
-		}
-		if(empty($name)) $name = LANG['uninstall'];
+	if(!empty($_POST['uninstall_package_assignment_id'])
+	&& is_array($_POST['uninstall_package_assignment_id'])
+	&& isset($_POST['name'])
+	&& isset($_POST['notes'])
+	&& isset($_POST['start_time'])
+	&& isset($_POST['end_time'])
+	&& isset($_POST['use_wol'])
+	&& isset($_POST['shutdown_waked_after_completion'])
+	&& isset($_POST['restart_timeout'])
+	&& isset($_POST['priority'])) {
 		$cl->uninstall(
-			$name, '', $_SESSION['um_username'],
-			$_POST['uninstall_package_assignment_id'], $_POST['start_time'] ?? date('Y-m-d H:i:s'), null,
-			1/*use wol*/, 0/*shutdown waked after completion*/, 5/*restart timeout*/
+			$_POST['name'], $_POST['notes'], $_SESSION['um_username'],
+			$_POST['uninstall_package_assignment_id'], $_POST['start_time'], $_POST['end_time'],
+			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'], $_POST['restart_timeout'],
+			0/*sequence mode*/, $_POST['priority']
 		);
 		die();
 	}
