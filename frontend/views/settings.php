@@ -59,7 +59,7 @@ require_once('../session.php');
 	<div>
 		<h2><?php echo LANG['system_users']; ?></h2>
 		<div class='controls'>
-			<button onclick='showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, false)'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 		</div>
 		<table id='tblSystemuserData' class='list searchable sortable savesort'>
 		<thead>
@@ -98,7 +98,7 @@ require_once('../session.php');
 
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button id='btnChangePassword' onclick='showDialogAjax(L__NEW_PASSWORD, "views/dialog-system-user-change-password.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, false)'>
+			<button id='btnChangePassword' onclick='showDialogAjax(L__NEW_PASSWORD, "views/dialog-system-user-change-password.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)'>
 				<img src='img/edit.svg'>&nbsp;<?php echo LANG['new_password']; ?>
 			</button>
 			<button onclick='lockSelectedSystemuser("systemuser_id[]")'><img src='img/lock.svg'>&nbsp;<?php echo LANG['lock']; ?></button>

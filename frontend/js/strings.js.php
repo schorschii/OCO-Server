@@ -39,7 +39,6 @@ var L__ENTER_NEW_VALUE = "<?php echo LANG['enter_new_value']; ?>";
 var L__ENTER_START_TIME = "<?php echo LANG['enter_start_time']; ?>";
 var L__ENTER_NEW_PROCEDURE_POST_ACTION = "<?php echo LANG['enter_new_procedure_post_action']; ?>";
 var L__ENTER_NEW_DOWNLOAD_FOR_UNINSTALL_VALUE = "<?php echo LANG['enter_new_download_for_uninstall_action']; ?>";
-var L__ENTER_QUERY = "<?php echo LANG['enter_query']; ?>";
 var L__FILE_TOO_BIG = "<?php echo LANG['file_too_big']; ?>";
 var L__CHANGE_ICON = "<?php echo LANG['change_icon']; ?>";
 var L__REMOVE_ICON = "<?php echo LANG['remove_icon']; ?>";
@@ -53,6 +52,8 @@ var L__PASSWORDS_DO_NOT_MATCH = "<?php echo LANG['passwords_do_not_match']; ?>";
 var L__NEW_PASSWORD = "<?php echo LANG['new_password']; ?>";
 var L__WELCOME_TEXT = "<?php echo LANG['welcome_text']; ?>";
 var L__WELCOME_DESCRIPTION = "<?php echo LANG['welcome_description']; ?>";
+var L__CREATE_REPORT = "<?php echo LANG['create_report']; ?>";
+var L__EDIT_REPORT = "<?php echo LANG['edit_report']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";

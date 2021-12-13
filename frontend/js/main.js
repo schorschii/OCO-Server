@@ -67,9 +67,12 @@ const DIALOG_SIZE_AUTO      = 2;
 function showDialog(title='', text='', controls=false, size=false, monospace=false) {
 	showDialogHTML(title, escapeHTML(text), controls, size, monospace);
 }
-function showDialogAjax(title='', url='', controls=false, size=false, monospace=false) {
+function showDialogAjax(title='', url='', controls=false, size=false, callback=null) {
 	ajaxRequest(url, null, function(text) {
-		showDialogHTML(title, text, controls, size, monospace);
+		showDialogHTML(title, text, controls, size, false);
+		if(callback != undefined && typeof callback == 'function') {
+			callback(this.responseText);
+		}
 	}, false)
 }
 function showDialogHTML(title='', text='', controls=false, size=false, monospace=false) {
@@ -1347,8 +1350,8 @@ function confirmRemoveSelectedDomainuser(checkboxName) {
 	}
 }
 
-// ======== REPOT OPERATIONS ========
-function newReportGroup(parent_id=null) {
+// ======== REPORT OPERATIONS ========
+function createReportGroup(parent_id=null) {
 	var newValue = prompt(L__ENTER_NAME);
 	if(newValue != null) {
 		ajaxRequestPost('ajax-handler/reports.php', urlencodeObject({'add_group':newValue, 'parent_id':parent_id}), null, function(text) {
@@ -1383,44 +1386,31 @@ function confirmRemoveReportGroup(ids, event=null, infoText='') {
 		});
 	}
 }
-function newReport(group_id=0) {
-	var newName = prompt(L__ENTER_NAME);
-	if(newName != null) {
-		var newQuery = prompt(L__ENTER_QUERY);
-		if(newQuery != null) {
-			ajaxRequestPost('ajax-handler/reports.php', urlencodeObject({'add_report':newName, 'query':newQuery, 'group_id':group_id}), null, function(text) {
-				refreshContentExplorer('views/report-details.php?id='+parseInt(text));
-				emitMessage(L__REPORT_CREATED, newName, MESSAGE_TYPE_SUCCESS);
-			});
-		}
-	}
+function createReport(name, notes, query, group_id=0) {
+	var params = [];
+	params.push({'key':'add_report', 'value':name});
+	params.push({'key':'notes', 'value':notes});
+	params.push({'key':'query', 'value':query});
+	params.push({'key':'group_id', 'value':group_id});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/reports.php', paramString, null, function(text) {
+		hideDialog();
+		refreshContentExplorer('views/report-details.php?id='+parseInt(text));
+		emitMessage(L__REPORT_CREATED, name, MESSAGE_TYPE_SUCCESS);
+	});
 }
-function renameReport(id, oldValue) {
-	var newValue = prompt(L__ENTER_NAME, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/reports.php', urlencodeObject({'update_report_id':id, 'update_name':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__OBJECT_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editReportNote(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/reports.php', urlencodeObject({'update_report_id':id, 'update_note':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editReportQuery(id, oldValue) {
-	var newValue = prompt(L__ENTER_QUERY, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/reports.php', urlencodeObject({'update_report_id':id, 'update_query':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function editReport(id, name, notes, query) {
+	var params = [];
+	params.push({'key':'update_report_id', 'value':id});
+	params.push({'key':'name', 'value':name});
+	params.push({'key':'notes', 'value':notes});
+	params.push({'key':'query', 'value':query});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/reports.php', paramString, null, function(text) {
+		hideDialog();
+		refreshContent();
+		emitMessage(L__SAVED, name, MESSAGE_TYPE_SUCCESS);
+	});
 }
 function removeSelectedReport(checkboxName, attributeName=null) {
 	var ids = [];

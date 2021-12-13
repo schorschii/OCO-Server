@@ -754,7 +754,9 @@ a.subbuttons > button {
 .small {
 	font-size: 90%;
 }
-
+.monospace {
+	font-family: monospace;
+}
 .rawvalue {
 	display: none;
 }

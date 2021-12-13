@@ -274,8 +274,6 @@ const LANG = [
 	'database_schema' => 'Database Schema',
 	'database_schema_description' => 'Take a look at the database schema in order to write SQL reports for the OCO database.',
 	'move_to' => 'Move to',
-	'enter_query' => 'Please enter a query',
-	'edit_query' => 'Edit Query',
 	'edit_description' => 'Edit Description',
 	'unknown_error' => 'Unknown Error',
 	'unknown_method' => 'Unbekannte Methode',
@@ -350,6 +348,7 @@ const LANG = [
 	'group_deleted' => 'Group deleted',
 	'object_removed_from_group' => 'Object(s) removed from group',
 	'create_system_user' => 'Create System User',
+	'edit_report' => 'Edit Report',
 	'help' => 'Help',
 	'package_creation_notes' => '
 		<p>

@@ -5,39 +5,21 @@ require_once('../session.php');
 
 try {
 
-	if(!empty($_POST['update_report_id']) && isset($_POST['update_name'])) {
-		$report = $db->getReport($_POST['update_report_id']);
-		if($report == null || empty(trim($_POST['update_name']))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
-		}
-		$db->updateReport($report->id, $report->report_group_id, $_POST['update_name'], $report->notes, $report->query);
+	if(!empty($_POST['update_report_id'])
+	&& isset($_POST['name'])
+	&& isset($_POST['notes'])
+	&& isset($_POST['query'])) {
+		$cl->updateReport($_POST['update_report_id'], $_POST['name'], $_POST['notes'], $_POST['query']);
 		die();
 	}
 
-	if(!empty($_POST['update_report_id']) && isset($_POST['update_note'])) {
-		$report = $db->getReport($_POST['update_report_id']);
-		if($report == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		$db->updateReport($report->id, $report->report_group_id, $report->name, $_POST['update_note'], $report->query);
-		die();
-	}
-
-	if(!empty($_POST['update_report_id']) && isset($_POST['update_query'])) {
-		$report = $db->getReport($_POST['update_report_id']);
-		if($report == null || empty(trim($_POST['update_query']))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
-		}
-		$db->updateReport($report->id, $report->report_group_id, $report->name, $report->notes, $_POST['update_query']);
-		die();
-	}
-
-	if(!empty($_POST['add_report']) && isset($_POST['query']) && isset($_POST['group_id'])) {
-		if(empty(trim($_POST['add_report'])) || empty(trim($_POST['query']))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
-		}
-		$insertId = $db->addReport($_POST['group_id'], $_POST['add_report'], '', $_POST['query']);
-		die(strval(intval($insertId)));
+	if(!empty($_POST['add_report'])
+	&& isset($_POST['notes'])
+	&& isset($_POST['query'])
+	&& isset($_POST['group_id'])) {
+		die(strval(intval(
+			$cl->createReport($_POST['add_report'], $_POST['notes'], $_POST['query'], $_POST['group_id'])
+		)));
 	}
 
 	if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {

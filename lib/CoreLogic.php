@@ -531,6 +531,24 @@ class CoreLogic {
 	}
 
 	/*** Report Operations ***/
+	public function createReport($name, $notes, $query, $groupId=0) {
+		if(empty(trim($name)) || empty(trim($query))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$insertId = $this->db->addReport($groupId, $name, $notes, $query);
+		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		return $insertId;
+	}
+	public function updateReport($id, $name, $notes, $query) {
+		$report = $this->db->getReport($id);
+		if($report === null) {
+			throw new Exception(LANG['not_found']);
+		}
+		if(empty(trim($name)) || empty(trim($query))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$this->db->updateReport($report->id, $report->report_group_id, $name, $notes, $query);
+	}
 	public function removeReportGroup($id, $force=false) {
 		if(!$force) {
 			$subgroups = $this->db->getAllReportGroup($id);

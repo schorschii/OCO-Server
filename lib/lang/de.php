@@ -270,8 +270,6 @@ const LANG = [
 	'database_schema' => 'Datenbankschema',
 	'database_schema_description' => 'Schauen Sie sich das Datenbankschema an, um SQL-Reports für die OCO-Datenbank schreiben zu können.',
 	'move_to' => 'Verschieben nach',
-	'enter_query' => 'Bitte geben Sie eine Abfrage ein',
-	'edit_query' => 'Abfrage bearbeiten',
 	'edit_description' => 'Beschreibung bearbeiten',
 	'unknown_error' => 'Unbekannter Fehler',
 	'unknown_method' => 'Unbekannte Methode',
@@ -346,6 +344,8 @@ const LANG = [
 	'group_deleted' => 'Gruppe wurde gelöscht',
 	'object_removed_from_group' => 'Objekt(e) wurden aus Gruppe entfernt',
 	'create_system_user' => 'Systembenutzer erstellen',
+	'create_report' => 'Report erstellen',
+	'edit_report' => 'Report bearbeiten',
 	'help' => 'Hilfe',
 	'package_creation_notes' => '
 		<p>
