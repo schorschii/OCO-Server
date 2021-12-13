@@ -31,6 +31,9 @@ switch($srcdata['method']) {
 
 		// check authorization
 		$computer = $db->getComputerByName($params['hostname']);
+		if($computer === null) {
+			header('HTTP/1.1 404 Computer Not Found'); die();
+		}
 		if($params['agent-key'] !== $computer->agent_key) {
 			authErrorExit();
 		}
@@ -40,6 +43,9 @@ switch($srcdata['method']) {
 		$job = $db->getJob($data['job-id']);
 		if($job === null) {
 			header('HTTP/1.1 400 Job Not Found'); die();
+		}
+		if($job->computer_id !== $computer->id) {
+			header('HTTP/1.1 403 Forbidden'); die();
 		}
 
 		// if job finished, we need to check the return code
