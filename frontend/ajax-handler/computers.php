@@ -6,10 +6,7 @@ require_once('../session.php');
 try {
 
 	if(!empty($_POST['rename_computer_id']) && isset($_POST['new_name'])) {
-		if(empty(trim($_POST['new_name']))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
-		}
-		$db->updateComputerHostname($_POST['rename_computer_id'], $_POST['new_name']);
+		$cl->renameComputer($_POST['rename_computer_id'], $_POST['new_name']);
 		die();
 	}
 

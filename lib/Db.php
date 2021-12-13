@@ -197,7 +197,8 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET hostname = :hostname WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname]);
+		if(!$this->stmt->execute([':id' => $id, ':hostname' => $hostname])) return false;
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function updateComputerAgentkey($id, $agent_key) {
 		$this->stmt = $this->dbh->prepare(

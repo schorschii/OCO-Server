@@ -74,6 +74,18 @@ class CoreLogic {
 		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
+	public function renameComputer($id, $newName) {
+		$finalHostname = trim($newName);
+		if(empty($finalHostname)) {
+			throw new Exception(LANG['hostname_cannot_be_empty']);
+		}
+		if($this->db->getComputerByName($finalHostname) !== null) {
+			throw new Exception(LANG['hostname_already_exists']);
+		}
+		$result = $this->db->updateComputerHostname($id, $finalHostname);
+		if(!$result) throw new Exception(LANG['not_found']);
+		return $result;
+	}
 	public function wolComputers($ids, $debugOutput=true) {
 		$wolMacAdresses = [];
 		foreach($ids as $id) {
