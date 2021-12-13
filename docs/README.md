@@ -34,4 +34,5 @@ Please refer to the [README.md in the OCO Agent repo](https://github.com/schorsc
 
 ## Developer Documentation
 - [Client API](Client-API.md)
+- [Agent API](Agent-API.md)
 - [Architecture Decision Records](decisions)
