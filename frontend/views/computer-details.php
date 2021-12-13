@@ -100,6 +100,10 @@ $online = $computer->isOnline();
 				<td><?php echo htmlspecialchars($computer->cpu); ?></td>
 			</tr>
 			<tr>
+				<th><?php echo LANG['gpu']; ?></th>
+				<td><?php echo htmlspecialchars($computer->gpu); ?></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['ram']; ?></th>
 				<td><?php echo niceSize($computer->ram, true, 0); ?></td>
 			</tr>

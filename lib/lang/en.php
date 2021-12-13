@@ -41,6 +41,7 @@ const LANG = [
 	'os' => 'OS',
 	'version' => 'Version',
 	'cpu' => 'CPU',
+	'gpu' => 'GPU',
 	'ram' => 'RAM',
 	'ip_addresses' => 'IP Addresses',
 	'mac_addresses' => 'MAC Addresses',
