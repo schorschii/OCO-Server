@@ -5,35 +5,35 @@ require_once('../session.php');
 
 try {
 
-	if(isset($_POST['add_systemuser_username'])) {
-		if(empty(trim($_POST['add_systemuser_username']))
-		|| empty(trim($_POST['add_systemuser_fullname']))) {
+	if(isset($_POST['create_systemuser'])) {
+		if(empty(trim($_POST['create_systemuser']))
+		|| empty(trim($_POST['fullname']))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
-		if(empty(trim($_POST['add_systemuser_password']))) {
+		if(empty(trim($_POST['password']))) {
 			throw new Exception(LANG['password_cannot_be_empty']);
 		}
-		if($db->getSystemuserByLogin($_POST['add_systemuser_username']) !== null) {
+		if($db->getSystemuserByLogin($_POST['create_systemuser']) !== null) {
 			throw new Exception(LANG['username_already_exists']);
 		}
 		$db->addSystemuser(
-			$_POST['add_systemuser_username'],
-			$_POST['add_systemuser_fullname'],
-			password_hash($_POST['add_systemuser_password'], PASSWORD_DEFAULT),
+			$_POST['create_systemuser'],
+			$_POST['fullname'],
+			password_hash($_POST['password'], PASSWORD_DEFAULT),
 			0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, ''/*description*/, 0
 		);
 		die();
 	}
 
-	if(!empty($_POST['change_systemuser_id']) && isset($_POST['change_systemuser_password'])) {
-		if(empty(trim($_POST['change_systemuser_password']))) {
+	if(!empty($_POST['update_systemuser_id']) && isset($_POST['password'])) {
+		if(empty(trim($_POST['password']))) {
 			throw new Exception(LANG['password_cannot_be_empty']);
 		}
-		$u = $db->getSystemuser($_POST['change_systemuser_id']);
+		$u = $db->getSystemuser($_POST['update_systemuser_id']);
 		if($u == null) throw new Exception(LANG['not_found']);
 		$db->updateSystemuser(
 			$u->id, $u->username, $u->fullname,
-			password_hash($_POST['change_systemuser_password'], PASSWORD_DEFAULT),
+			password_hash($_POST['password'], PASSWORD_DEFAULT),
 			$u->ldap, $u->email, $u->phone, $u->mobile, $u->description, $u->locked
 		);
 		die();

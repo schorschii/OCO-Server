@@ -8,7 +8,7 @@ echo "<h1><img src='img/package.dyn.svg'><span id='page-title'>".LANG['package_f
 
 echo "<div class='controls'>";
 echo "<button onclick='refreshContentPackageNew()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
-echo "<button onclick='newPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
+echo "<button onclick='createPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
 echo "<span class='fillwidth'></span> ";
 echo "<span><a ".explorerLink('views/packages.php').">".LANG['all_packages']."</a></span>";
 echo "</div>";

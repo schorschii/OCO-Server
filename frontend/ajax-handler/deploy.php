@@ -54,9 +54,9 @@ try {
 	}
 
 	// ----- create jobs if requested -----
-	if(isset($_POST['add_jobcontainer'])) {
+	if(isset($_POST['create_install_jobcontainer'])) {
 		$jcid = $cl->deploy(
-			$_POST['add_jobcontainer'], $_POST['description'], $_SESSION['um_username'],
+			$_POST['create_install_jobcontainer'], $_POST['description'], $_SESSION['um_username'],
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,

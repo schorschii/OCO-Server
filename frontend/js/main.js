@@ -419,7 +419,7 @@ function createPackage(name, version, description, archive, install_procedure, i
 
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
-	formData.append('name', name);
+	formData.append('create_package', name);
 	formData.append('version', version);
 	formData.append('description', description);
 	formData.append('archive', archive);
@@ -729,10 +729,10 @@ function deploySelectedPackage(checkboxName, attributeName=null) {
 	});
 	refreshContentDeploy(ids);
 }
-function newPackageGroup(parent_id=null) {
+function createPackageGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, function(text) {
+		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'create_group':newName, 'parent_id':parent_id}), null, function(text) {
 			refreshContentExplorer('views/packages.php?id='+parseInt(text));
 			refreshSidebar();
 			emitMessage(L__GROUP_CREATED, newName, MESSAGE_TYPE_SUCCESS);
@@ -969,11 +969,11 @@ function setComputerForceUpdate(id, value) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function newComputer() {
+function createComputer() {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null) {
 		var params = [];
-		params.push({'key':'add_computer', 'value':newName});
+		params.push({'key':'create_computer', 'value':newName});
 		var paramString = urlencodeArray(params);
 		ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
 			refreshContentExplorer('views/computer-details.php?id='+parseInt(text));
@@ -1088,10 +1088,10 @@ function confirmWolComputer(ids) {
 		emitMessage(L__WOL_SENT, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function newComputerGroup(parent_id=null) {
+function createComputerGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
 	if(newName != null) {
-		ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'add_group':newName, 'parent_id':parent_id}), null, function(text){
+		ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'create_group':newName, 'parent_id':parent_id}), null, function(text){
 			refreshSidebar(); refreshContentExplorer('views/computers.php?id='+parseInt(text));
 			emitMessage(L__GROUP_CREATED, newName, MESSAGE_TYPE_SUCCESS);
 		});
@@ -1289,7 +1289,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
-	formData.append('add_jobcontainer', title);
+	formData.append('create_install_jobcontainer', title);
 	formData.append('date_start', start);
 	formData.append('date_end', end);
 	formData.append('description', description);
@@ -1359,7 +1359,7 @@ function confirmRemoveSelectedDomainuser(checkboxName) {
 function createReportGroup(parent_id=null) {
 	var newValue = prompt(L__ENTER_NAME);
 	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/reports.php', urlencodeObject({'add_group':newValue, 'parent_id':parent_id}), null, function(text) {
+		ajaxRequestPost('ajax-handler/reports.php', urlencodeObject({'create_group':newValue, 'parent_id':parent_id}), null, function(text) {
 			refreshContentExplorer('views/reports.php?id='+parseInt(text));
 			refreshSidebar();
 			emitMessage(L__GROUP_CREATED, newValue, MESSAGE_TYPE_SUCCESS);
@@ -1393,7 +1393,7 @@ function confirmRemoveReportGroup(ids, event=null, infoText='') {
 }
 function createReport(name, notes, query, group_id=0) {
 	var params = [];
-	params.push({'key':'add_report', 'value':name});
+	params.push({'key':'create_report', 'value':name});
 	params.push({'key':'notes', 'value':notes});
 	params.push({'key':'query', 'value':query});
 	params.push({'key':'group_id', 'value':group_id});
@@ -1542,9 +1542,9 @@ function unlockSelectedSystemuser(checkboxName) {
 }
 function createSystemuser(username, fullname, password) {
 	var params = [];
-	params.push({'key':'add_systemuser_username', 'value':username});
-	params.push({'key':'add_systemuser_fullname', 'value':fullname});
-	params.push({'key':'add_systemuser_password', 'value':password});
+	params.push({'key':'create_systemuser', 'value':username});
+	params.push({'key':'fullname', 'value':fullname});
+	params.push({'key':'password', 'value':password});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
 		hideDialog();
@@ -1564,8 +1564,8 @@ function changeSelectedSystemuserPassword(checkboxName, password) {
 		return;
 	}
 	var params = [];
-	params.push({'key':'change_systemuser_id', 'value':ids[0]});
-	params.push({'key':'change_systemuser_password', 'value':password});
+	params.push({'key':'update_systemuser_id', 'value':ids[0]});
+	params.push({'key':'password', 'value':password});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
 		hideDialog();

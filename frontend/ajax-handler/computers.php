@@ -51,8 +51,8 @@ try {
 		die();
 	}
 
-	if(isset($_POST['add_computer'])) {
-		die(strval(intval( $cl->createComputer($_POST['add_computer']) )));
+	if(isset($_POST['create_computer'])) {
+		die(strval(intval( $cl->createComputer($_POST['create_computer']) )));
 	}
 
 	if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
@@ -76,13 +76,13 @@ try {
 		die();
 	}
 
-	if(isset($_POST['add_group'])) {
-		if(empty(trim($_POST['add_group']))) {
+	if(isset($_POST['create_group'])) {
+		if(empty(trim($_POST['create_group']))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
 		$insertId = -1;
-		if(empty($_POST['parent_id'])) $insertId = $db->addComputerGroup($_POST['add_group']);
-		else $insertId = $db->addComputerGroup($_POST['add_group'], intval($_POST['parent_id']));
+		if(empty($_POST['parent_id'])) $insertId = $db->addComputerGroup($_POST['create_group']);
+		else $insertId = $db->addComputerGroup($_POST['create_group'], intval($_POST['parent_id']));
 		die(strval(intval($insertId)));
 	}
 

@@ -13,12 +13,12 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['add_report'])
+	if(!empty($_POST['create_report'])
 	&& isset($_POST['notes'])
 	&& isset($_POST['query'])
 	&& isset($_POST['group_id'])) {
 		die(strval(intval(
-			$cl->createReport($_POST['add_report'], $_POST['notes'], $_POST['query'], $_POST['group_id'])
+			$cl->createReport($_POST['create_report'], $_POST['notes'], $_POST['query'], $_POST['group_id'])
 		)));
 	}
 
@@ -29,13 +29,13 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['add_group'])) {
-		if(empty(trim($_POST['add_group']))) {
+	if(!empty($_POST['create_group'])) {
+		if(empty(trim($_POST['create_group']))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
 		$insertId = -1;
-		if(empty($_POST['parent_id'])) $insertId = $db->addReportGroup($_POST['add_group']);
-		else $insertId = $db->addReportGroup($_POST['add_group'], intval($_POST['parent_id']));
+		if(empty($_POST['parent_id'])) $insertId = $db->addReportGroup($_POST['create_group']);
+		else $insertId = $db->addReportGroup($_POST['create_group'], intval($_POST['parent_id']));
 		die(strval(intval($insertId)));
 	}
 

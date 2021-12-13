@@ -10,8 +10,8 @@ if(empty($_GET['id'])) {
 	echo "<h1><img src='img/computer.dyn.svg'><span id='page-title'>".LANG['all_computer']."</span></h1>";
 
 	echo "<div class='controls'>";
-	echo "<button onclick='newComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button> ";
-	echo "<button onclick='newComputerGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
+	echo "<button onclick='createComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button> ";
+	echo "<button onclick='createComputerGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
 	echo "<span class='fillwidth'></span> ";
 	echo "<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='".LANG['agent_download_description']."'>".LANG['agent_download']."</a></span> ";
 	echo "</div>";
@@ -22,7 +22,7 @@ if(empty($_GET['id'])) {
 	echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</span><span id='spnComputerGroupName' class='rawvalue'>".htmlspecialchars($group->name)."</span></h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
-	echo "<button onclick='newComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
+	echo "<button onclick='createComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
 	echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_for_all']."</button> ";
 	echo "<button onclick='renameComputerGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
 	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."], event, spnComputerGroupName.innerText)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";

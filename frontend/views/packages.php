@@ -12,7 +12,7 @@ if(!empty($_GET['id'])) {
 	echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id))."</span><span id='spnPackageGroupName' class='rawvalue'>".htmlspecialchars($group->name)."</span></h1>";
 
 	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
-	echo "<button onclick='newPackageGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
+	echo "<button onclick='createPackageGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
 	echo "<button onclick='refreshContentDeploy([],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_all']."</button> ";
 	echo "<button onclick='renamePackageGroup(".$group->id.", spnPackageGroupName.innerText)'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
 	echo "<button onclick='confirmRemovePackageGroup([".$group->id."], event, spnPackageGroupName.innerText)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
@@ -43,7 +43,7 @@ if(!empty($_GET['id'])) {
 
 	echo "<div class='controls'>";
 	echo "<button onclick='refreshContentPackageNew()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
-	echo "<button onclick='newPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
+	echo "<button onclick='createPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
 	echo "<span class='fillwidth'></span> ";
 	echo "<span><a ".explorerLink('views/package-families.php').">".LANG['package_families']."</a></span>";
 	echo "</div>";
