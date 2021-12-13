@@ -83,7 +83,17 @@ class CoreLogic {
 			throw new Exception(LANG['hostname_already_exists']);
 		}
 		$result = $this->db->updateComputerHostname($id, $finalHostname);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
+		return $result;
+	}
+	public function updateComputerNote($id, $newValue) {
+		$result = $this->db->updateComputerNote($id, $newValue);
+		if(!$result) throw new Exception(LANG['unknown_error']);
+		return $result;
+	}
+	public function updateComputerForceUpdate($id, $newValue) {
+		$result = $this->db->updateComputerForceUpdate($id, $newValue);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function wolComputers($ids, $debugOutput=true) {

@@ -11,12 +11,12 @@ try {
 	}
 
 	if(!empty($_POST['update_computer_id']) && isset($_POST['update_note'])) {
-		$db->updateComputerNote($_POST['update_computer_id'], $_POST['update_note']);
+		$cl->updateComputerNote($_POST['update_computer_id'], $_POST['update_note']);
 		die();
 	}
 
 	if(!empty($_POST['update_computer_id']) && isset($_POST['update_force_update'])) {
-		$db->updateComputerForceUpdate($_POST['update_computer_id'], $_POST['update_force_update']);
+		$cl->updateComputerForceUpdate($_POST['update_computer_id'], $_POST['update_force_update']);
 		die();
 	}
 

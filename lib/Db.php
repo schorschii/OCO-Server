@@ -191,14 +191,13 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET force_update = :force_update WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id, ':force_update' => $force_update]);
+		return $this->stmt->execute([':id' => $id, ':force_update' => intval($force_update)]);
 	}
 	public function updateComputerHostname($id, $hostname) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET hostname = :hostname WHERE id = :id'
 		);
-		if(!$this->stmt->execute([':id' => $id, ':hostname' => $hostname])) return false;
-		return ($this->stmt->rowCount() == 1);
+		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname]);
 	}
 	public function updateComputerAgentkey($id, $agent_key) {
 		$this->stmt = $this->dbh->prepare(
