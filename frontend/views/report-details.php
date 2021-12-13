@@ -18,7 +18,7 @@ try {
 <div class='details-header'>
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><span id='spnReportName'><?php echo htmlspecialchars($report->name); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='showDialogAjax(L__EDIT_REPORT, "views/dialog-report-edit.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){ txtReportId.value="<?php echo $report->id; ?>"; txtReportName.value=spnReportName.innerText; txtReportNotes.value=spnReportNotes.innerText; txtReportQuery.value=spnReportQuery.innerText; })'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
+		<button onclick='showDialogAjax(L__EDIT_REPORT, "views/dialog-report-edit.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){ txtEditReportId.value="<?php echo $report->id; ?>"; txtEditReportName.value=spnReportName.innerText; txtEditReportNotes.value=spnReportNotes.innerText; txtEditReportQuery.value=spnReportQuery.innerText; })'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
 		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 </div>
