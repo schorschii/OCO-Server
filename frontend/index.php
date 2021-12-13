@@ -19,6 +19,7 @@ if(!empty($_GET['view'])) {
 	$parameter = [];
 	foreach($_GET as $key => $value) {
 		if($key == 'view') continue;
+		if(is_array($value)) continue;
 		$parameter[] = urlencode($key).'='.urlencode($value);
 	}
 	$initialExplorerContentParameter = implode('&', $parameter);
