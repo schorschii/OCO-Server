@@ -57,6 +57,6 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td><button class='fullwidth' onclick='uninstallPackage("package_id[]", txtUninstallJobContainerName.value, txtUninstallJobContainerNotes.value, txtUninstallJobContainerStartDate.value+" "+txtUninstallJobContainerStartTime.value, (txtUninstallJobContainerEndDate.value+" "+txtUninstallJobContainerEndTime.value).trim(), chkUninstallWol.checked, chkUninstallShutdownWakedAfterCompletion.checked, txtUninstallRestartTimeout.value, sldUninstallPriority.value)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button></td>
+		<td><button class='fullwidth' onclick='uninstall("package_id[]", txtUninstallJobContainerName.value, txtUninstallJobContainerNotes.value, txtUninstallJobContainerStartDate.value+" "+txtUninstallJobContainerStartTime.value, (txtUninstallJobContainerEndDate.value+" "+txtUninstallJobContainerEndTime.value).trim(), chkUninstallWol.checked, chkUninstallShutdownWakedAfterCompletion.checked, txtUninstallRestartTimeout.value, sldUninstallPriority.value)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button></td>
 	</tr>
 </table>

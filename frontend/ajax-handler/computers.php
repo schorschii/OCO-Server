@@ -20,32 +20,6 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['remove_package_assignment_id']) && is_array($_POST['remove_package_assignment_id'])) {
-		foreach($_POST['remove_package_assignment_id'] as $id) {
-			$cl->removeComputerAssignedPackage($id);
-		}
-		die();
-	}
-
-	if(!empty($_POST['uninstall_package_assignment_id'])
-	&& is_array($_POST['uninstall_package_assignment_id'])
-	&& isset($_POST['name'])
-	&& isset($_POST['notes'])
-	&& isset($_POST['start_time'])
-	&& isset($_POST['end_time'])
-	&& isset($_POST['use_wol'])
-	&& isset($_POST['shutdown_waked_after_completion'])
-	&& isset($_POST['restart_timeout'])
-	&& isset($_POST['priority'])) {
-		$cl->uninstall(
-			$_POST['name'], $_POST['notes'], $_SESSION['um_username'],
-			$_POST['uninstall_package_assignment_id'], $_POST['start_time'], $_POST['end_time'],
-			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'], $_POST['restart_timeout'],
-			0/*sequence mode*/, $_POST['priority']
-		);
-		die();
-	}
-
 	if(!empty($_POST['wol_id']) && is_array($_POST['wol_id'])) {
 		$cl->wolComputers($_POST['wol_id']);
 		die();

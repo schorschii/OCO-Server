@@ -859,59 +859,6 @@ function removeDependentPackages(ids, packageId) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function uninstallPackage(checkboxName, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, restartTimeout, priority) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			ids.push(entry.value);
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'uninstall_package_assignment_id[]', 'value':entry});
-	});
-	params.push({'key':'name', 'value':name});
-	params.push({'key':'notes', 'value':notes});
-	params.push({'key':'start_time', 'value':startTime});
-	params.push({'key':'end_time', 'value':endTime});
-	params.push({'key':'use_wol', 'value':useWol ? 1 : 0});
-	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
-	params.push({'key':'restart_timeout', 'value':restartTimeout});
-	params.push({'key':'priority', 'value':priority});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
-		hideDialog();
-		refreshSidebar(); refreshContent();
-		emitMessage(L__JOBS_CREATED, name, MESSAGE_TYPE_SUCCESS);
-	});
-}
-function confirmRemovePackageComputerAssignment(checkboxName) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			ids.push(entry.value);
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_package_assignment_id[]', 'value':entry});
-	});
-	var paramString = urlencodeArray(params);
-	if(confirm(L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT)) {
-		ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
 function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshPackagesGroupId=null, preselectComputerIds=[], preselectPackageIds=[]) {
 	if(refreshComputersGroupId != null) {
 		var params = [];
@@ -1289,7 +1236,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
-	formData.append('create_install_jobcontainer', title);
+	formData.append('create_install_job_container', title);
 	formData.append('date_start', start);
 	formData.append('date_end', end);
 	formData.append('description', description);
@@ -1328,6 +1275,59 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 			}
 		}
 	};
+}
+function uninstall(checkboxName, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, restartTimeout, priority) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	params.push({'key':'create_uninstall_job_container', 'value':name});
+	ids.forEach(function(entry) {
+		params.push({'key':'uninstall_package_assignment_id[]', 'value':entry});
+	});
+	params.push({'key':'notes', 'value':notes});
+	params.push({'key':'start_time', 'value':startTime});
+	params.push({'key':'end_time', 'value':endTime});
+	params.push({'key':'use_wol', 'value':useWol ? 1 : 0});
+	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
+	params.push({'key':'restart_timeout', 'value':restartTimeout});
+	params.push({'key':'priority', 'value':priority});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/deploy.php', paramString, null, function() {
+		hideDialog();
+		refreshSidebar(); refreshContent();
+		emitMessage(L__JOBS_CREATED, name, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function confirmRemovePackageComputerAssignment(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_package_assignment_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT)) {
+		ajaxRequestPost('ajax-handler/deploy.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+		});
+	}
 }
 
 // ======== DOMAINUSER OPERATIONS ========
