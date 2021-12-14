@@ -313,6 +313,8 @@ const LANG = [
 	'delete_failed_package_family_contains_packages' => 'Die Paketfamilie konnte nicht gelöscht werden, da sie noch mindestens ein Paket enthält. Bitte löschen Sie zuerst alle Pakete dieser Familie und versuchen Sie es erneut.',
 	'depends_on' => 'Hängt ab von',
 	'dependent_packages' => 'Von diesem Paket abhängige Pakete',
+	'add_dependency' => 'Abhängigkeit hinzufügen',
+	'add_dependent_package' => 'Abhängiges Paket hinzufügen',
 	'please_select_placeholder' => '=== Bitte auswählen ===',
 	'new_version' => 'Neue Version',
 	'newest' => 'Neuste',

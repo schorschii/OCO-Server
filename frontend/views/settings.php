@@ -84,7 +84,7 @@ require_once('../session.php');
 			echo "</td>";
 			echo "<td id='spnSystemuserFullname".$u->id."'>".htmlspecialchars($u->fullname)."</td>";
 			echo "<td id='spnSystemuserDescription".$u->id."'>".htmlspecialchars($u->description)."</td>";
-			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemuser(".$u->id.", spnSystemuserUsername".$u->id.".innerText, spnSystemuserFullname".$u->id.".innerText, spnSystemuserDescription".$u->id.".innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit']; ?></button></td>";
+			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemuser(".$u->id.", spnSystemuserUsername".$u->id.".innerText, spnSystemuserFullname".$u->id.".innerText, spnSystemuserDescription".$u->id.".innerText)'><img src='img/edit.svg'></button></td>";
 			echo "</tr>";
 		}
 		?>

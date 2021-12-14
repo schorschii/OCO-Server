@@ -111,6 +111,8 @@ function showDialogHTML(title='', text='', controls=false, size=false, monospace
 }
 function hideDialog() {
 	obj('dialog-container').classList.remove('active');
+	obj('dialog-title').innerText = '';
+	obj('dialog-text').innerHTML = '';
 }
 function escapeHTML(unsafe) {
 	return unsafe
@@ -800,11 +802,16 @@ function addPackageToGroup(packageId, groupId) {
 	});
 }
 function addPackageDependency(packageId, dependencyPackageId) {
+	if(packageId == '' || dependencyPackageId == '') {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return;
+	}
 	var params = [];
 	params.push({'key':'update_package_id', 'value':packageId});
 	params.push({'key':'add_dependency_package_id', 'value':dependencyPackageId});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
+		hideDialog();
 		refreshContent();
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -880,24 +887,33 @@ function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshP
 	}
 }
 function refreshDeployCount() {
-	spnSelectedComputers.innerHTML = getSelectValues(sltComputer).length;
-	spnSelectedPackages.innerHTML = getSelectValues(sltPackage).length;
-	spnTotalComputers.innerHTML = sltComputer.options.length;
-	spnTotalPackages.innerHTML = sltPackage.options.length;
+	if(obj('sltComputer')) {
+		spnSelectedComputers.innerHTML = getSelectValues(sltComputer).length;
+		spnTotalComputers.innerHTML = sltComputer.options.length;
+	}
+	if(obj('sltPackage')) {
+		spnSelectedPackages.innerHTML = getSelectValues(sltPackage).length;
+		spnTotalPackages.innerHTML = sltPackage.options.length;
+	}
 
-	let computerGroupCount = getSelectValues(sltComputerGroup, -1).length;
-	let packageGroupCount = getSelectValues(sltPackageGroup, -1).length;
+	if(obj('sltComputerGroup')) {
+		let computerGroupCount = getSelectValues(sltComputerGroup, -1).length;
 
-	// computer ids have priority - if only one group is selected, we evaluate the selected computers instead of the whole group
-	if(computerGroupCount == 1) spnSelectedComputerGroups.innerHTML = '0';
-	else spnSelectedComputerGroups.innerHTML = computerGroupCount;
+		// computer ids have priority - if only one group is selected, we evaluate the selected computers instead of the whole group
+		if(computerGroupCount == 1) spnSelectedComputerGroups.innerHTML = '0';
+		else spnSelectedComputerGroups.innerHTML = computerGroupCount;
 
-	// package ids have priority - if only one group is selected, we evaluate the selected packages instead of the whole group
-	if(packageGroupCount == 1) spnSelectedPackageGroups.innerHTML = '0';
-	else spnSelectedPackageGroups.innerHTML = packageGroupCount;
+		spnTotalComputerGroups.innerHTML = sltComputerGroup.options.length;
+	}
+	if(obj('sltPackageGroup')) {
+		let packageGroupCount = getSelectValues(sltPackageGroup, -1).length;
 
-	spnTotalComputerGroups.innerHTML = sltComputerGroup.options.length;
-	spnTotalPackageGroups.innerHTML = sltPackageGroup.options.length;
+		// package ids have priority - if only one group is selected, we evaluate the selected packages instead of the whole group
+		if(packageGroupCount == 1) spnSelectedPackageGroups.innerHTML = '0';
+		else spnSelectedPackageGroups.innerHTML = packageGroupCount;
+
+		spnTotalPackageGroups.innerHTML = sltPackageGroup.options.length;
+	}
 }
 
 // ======== COMPUTER OPERATIONS ========

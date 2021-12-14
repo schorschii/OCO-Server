@@ -217,16 +217,6 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 <div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG['depends_on']; ?></h2>
-		<div class='controls'>
-			<button class='fullwidth' onclick='addPackageDependency(<?php echo $package->id; ?>, sltNewPackageDependency.value)'><img src='img/add.svg'>
-				&nbsp;<?php echo LANG['add']; ?>
-				<select id='sltNewPackageDependency' onclick='event.stopPropagation()'>
-					<?php foreach($db->getAllPackage() as $p) { ?>
-						<option value='<?php echo $p->id; ?>'><?php echo htmlspecialchars($p->name.' ('.$p->version.')'); ?></option>
-					<?php } ?>
-				</select>
-			</button>
-		</div>
 		<table id='tblDependencyPackageData' class='list sortable savesort'>
 			<thead>
 				<tr>
@@ -258,6 +248,8 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 			</tfoot>
 		</table>
 		<div class='controls'>
+			<button onclick='showDialogAjax(L__ADD_DEPENDENCY, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){ txtEditPackageId.value="<?php echo $package->id; ?>"; refreshDeployComputerAndPackages(null, sltPackage.value); })'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 			<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 		</div>
@@ -265,16 +257,6 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 
 	<div>
 		<h2><?php echo LANG['dependent_packages']; ?></h2>
-		<div class='controls'>
-			<button class='fullwidth' onclick='addPackageDependency(sltNewDependentPackage.value, <?php echo $package->id; ?>)'><img src='img/add.svg'>
-				&nbsp;<?php echo LANG['add']; ?>
-				<select id='sltNewDependentPackage' onclick='event.stopPropagation()'>
-				<?php foreach($db->getAllPackage() as $p) { ?>
-						<option value='<?php echo $p->id; ?>'><?php echo htmlspecialchars($p->name.' ('.$p->version.')'); ?></option>
-					<?php } ?>
-				</select>
-			</button>
-		</div>
 		<table id='tblDependentPackageData' class='list sortable savesort'>
 			<thead>
 				<tr>
@@ -306,6 +288,8 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 			</tfoot>
 		</table>
 		<div class='controls'>
+			<button onclick='showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){ txtSetAsDependentPackage.value="1"; txtEditPackageId.value="<?php echo $package->id; ?>"; refreshDeployComputerAndPackages(null, sltPackage.value); })'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 			<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 		</div>
