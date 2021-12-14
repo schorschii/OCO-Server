@@ -1562,7 +1562,7 @@ function createSystemuser(username, fullname, description, password) {
 	});
 }
 function showDialogEditSystemuser(id, username, fullname, description) {
-	showDialogAjax(L__NEW_PASSWORD, "views/dialog-system-user-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
 		txtEditSystemuserId.value = id;
 		txtEditSystemuserUsername.value = username;
 		txtEditSystemuserFullname.value = fullname;

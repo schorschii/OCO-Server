@@ -349,6 +349,7 @@ const LANG = [
 	'object_removed_from_group' => 'Object(s) removed from group',
 	'create_system_user' => 'Create System User',
 	'edit_report' => 'Edit Report',
+	'edit_user' => 'Edit User',
 	'help' => 'Help',
 	'uninstall_packages' => 'Uninstall Packages',
 	'uninstall_job_container_will_be_created' => 'An uninstall job container will be created.',

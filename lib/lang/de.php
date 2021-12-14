@@ -345,6 +345,7 @@ const LANG = [
 	'create_system_user' => 'Systembenutzer erstellen',
 	'create_report' => 'Report erstellen',
 	'edit_report' => 'Report bearbeiten',
+	'edit_user' => 'Benutzer bearbeiten',
 	'help' => 'Hilfe',
 	'uninstall_packages' => 'Pakete deinstallieren',
 	'uninstall_job_container_will_be_created' => 'Es wird ein Deinstallations-Jobcontainer erstellt.',
