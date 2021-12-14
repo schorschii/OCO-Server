@@ -14,7 +14,7 @@ if(!empty($_GET['id'])) {
 	$percent = 0;
 	if(count($jobs) > 0) {
 		foreach($jobs as $job) {
-			if($job->state == Job::STATUS_SUCCEEDED) $done ++;
+			if($job->state == Job::STATUS_SUCCEEDED || $job->state == Job::STATUS_ALREADY_INSTALLED) $done ++;
 			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED || $job->state == Job::STATUS_OS_INCOMPATIBLE || $job->state == Job::STATUS_PACKAGE_CONFLICT) $failed ++;
 		}
 		$percent = $done/count($jobs)*100;
@@ -190,7 +190,7 @@ if(!empty($_GET['id'])) {
 				$jobs = $db->getAllJobByContainer($jc->id);
 				if(count($jobs) > 0) {
 					foreach($jobs as $job) {
-						if($job->state == Job::STATUS_SUCCEEDED) $done ++;
+						if($job->state == Job::STATUS_SUCCEEDED || $job->state == Job::STATUS_ALREADY_INSTALLED) $done ++;
 					}
 					$percent = $done/count($jobs)*100;
 				}
