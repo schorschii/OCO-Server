@@ -95,6 +95,24 @@ try {
 		die();
 	}
 
+	// ----- renew failed jobs in container if requested -----
+	if(!empty($_POST['create_renew_job_container'])
+	&& isset($_POST['renew_container_id'])
+	&& isset($_POST['notes'])
+	&& isset($_POST['start_time'])
+	&& isset($_POST['end_time'])
+	&& isset($_POST['use_wol'])
+	&& isset($_POST['shutdown_waked_after_completion'])
+	&& isset($_POST['priority'])) {
+		$cl->renewFailedJobsInContainer(
+			$_POST['create_renew_job_container'], $_POST['notes'], $_SESSION['um_username'],
+			$_POST['renew_container_id'], $_POST['start_time'], $_POST['end_time'],
+			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'],
+			0/*sequence mode*/, $_POST['priority']
+		);
+		die();
+	}
+
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
 	die($e->getMessage());

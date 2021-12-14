@@ -519,6 +519,99 @@ class CoreLogic {
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
+	public function renewFailedJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
+		// check user input
+		if(empty(trim($name))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		if(empty($dateStart) || strtotime($dateStart) === false) {
+			throw new Exception(LANG['please_fill_required_fields']);
+		}
+		if(!empty($dateEnd) // check end date if not empty
+		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
+		) {
+			throw new Exception(LANG['end_time_before_start_time']);
+		}
+		if($sequenceMode != JobContainer::SEQUENCE_MODE_IGNORE_FAILED
+		&& $sequenceMode != JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+			throw new Exception(LANG['invalid_input']);
+		}
+		if($priority < -100 || $priority > 100) {
+			throw new Exception(LANG['invalid_input']);
+		}
+
+		// get old job container
+		$container = $this->db->getJobContainer($renewContainerId);
+		if($container === null) {
+			throw new Exception(LANG['not_found']);
+		}
+
+		// wol handling
+		$computer_ids = [];
+		foreach($this->db->getAllJobByContainer($container->id) as $job) {
+			if($job->state == Job::STATUS_FAILED
+			|| $job->state == Job::STATUS_EXPIRED
+			|| $job->state == Job::STATUS_OS_INCOMPATIBLE
+			|| $job->state == Job::STATUS_PACKAGE_CONFLICT) {
+				$computer_ids[] = $job->computer_id;
+			}
+		}
+		$wolSent = -1;
+		if($useWol) {
+			if(strtotime($dateStart) <= time()) {
+				// instant WOL if start time is already in the past
+				$wolSent = 1;
+				$wolMacAdresses = [];
+				foreach($computer_ids as $cid) {
+					foreach($this->db->getComputerNetwork($cid) as $cn) {
+						$wolMacAdresses[] = $cn->mac;
+					}
+				}
+				wol($wolMacAdresses, false);
+			} else {
+				$wolSent = 0;
+			}
+		}
+
+		// create renew jobs
+		if($jcid = $this->db->addJobContainer(
+			$name, $author,
+			$dateStart, empty($dateEnd) ? null : $dateEnd,
+			$description, $wolSent, $shutdownWakedAfterCompletion,
+			$sequenceMode, $priority
+		)) {
+			$count = 0;
+			foreach($this->db->getAllJobByContainer($container->id) as $job) {
+				if($job->state == Job::STATUS_FAILED
+				|| $job->state == Job::STATUS_EXPIRED
+				|| $job->state == Job::STATUS_OS_INCOMPATIBLE
+				|| $job->state == Job::STATUS_PACKAGE_CONFLICT) {
+					if($this->db->addJob($jcid,
+						$job->computer_id, $job->package_id,
+						$job->package_procedure, $job->success_return_codes,
+						$job->is_uninstall, $job->download,
+						$job->post_action, $job->post_action_timeout,
+						$job->sequence
+					)) {
+						if($this->db->removeJob($job->id)) {
+							$count ++;
+						}
+					}
+				}
+			}
+
+			// check if there are any computer & packages
+			if($count == 0) {
+				$this->db->removeJobContainer($jcid);
+				throw new Exception(LANG['no_jobs_created']);
+			}
+
+			// if instant WOL: check if computers are currently online (to know if we should shut them down after all jobs are done)
+			if(strtotime($dateStart) <= time() && $useWol && $shutdownWakedAfterCompletion) {
+				$this->db->setComputerOnlineStateForWolShutdown($jcid);
+			}
+		}
+	}
 	public function removeJobContainer($id) {
 		$result = $this->db->removeJobContainer($id);
 		if(!$result) throw new Exception(LANG['not_found']);

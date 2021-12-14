@@ -1,7 +1,8 @@
 <?php
 /*
 	Naming Convention Hints
-	- Objects (Computers, Packages, Reports, Groups) are *deleted* while assigments are *removed*
+	- Objects (Computers, Packages, Reports, Groups) are *created* while assignments are *added*
+	- Objects (Computers, Packages, Reports, Groups) are *deleted* while assignments are *removed*
 */
 const LANG = [
 	'app_name' => 'OCO IT Client Manager',
@@ -201,7 +202,7 @@ const LANG = [
 	'expired' => 'Expired',
 	'in_progress' => 'In Progress...',
 	'renew_failed_jobs' => 'Renew Failed Jobs',
-	'confirm_renew_jobs' => 'A new job container with all failed jobs will be created and the failed jobs will be deleted from the original job container.',
+	'renew_jobs_description' => 'A new job container with all failed jobs will be created and the failed jobs will be deleted from the original job container.',
 	'renew' => 'Renew',
 	'default_motd' => 'The documentation and the bug tracker can be found on <a href="https://github.com/schorschii/OCO-Server" target="_blank">Github</a> - feedback and pull requests are welcome!<br>If you have any questions you can also <a href="https://georg-sieber.de/?page=impressum" target="_blank">get professional support</a>.<br><br>Please have a look at the new <a href="https://github.com/schorschii/oco-server/blob/master/docs/Client-API.md" target="_blank">JSON-RPC-API</a> too.',
 	'report_secureboot_disabled' => 'SecureBoot Disabled',

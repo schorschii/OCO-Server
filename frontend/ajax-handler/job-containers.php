@@ -78,39 +78,6 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['renew_container_id']) && isset($_POST['renew_start_time'])) {
-		if(DateTime::createFromFormat('Y-m-d H:i:s', $_POST['renew_start_time']) === false) {
-			throw new Exception(LANG['date_parse_error']);
-		}
-		$container = $db->getJobContainer($_POST['renew_container_id']);
-		if($container === null) {
-			throw new Exception(LANG['not_found']);
-		}
-		if($jcid = $db->addJobContainer(
-			$container->name.' - '.LANG['renew'], $_SESSION['um_username'],
-			$_POST['renew_start_time'], null /*end time*/,
-			'' /*description*/, 0 /*wol sent*/, 0 /*shutdown waked after completion*/, $container->sequence_mode, $container->priority
-		)) {
-			$count = 0;
-			foreach($db->getAllJobByContainer($container->id) as $job) {
-				if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED || $job->state == Job::STATUS_OS_INCOMPATIBLE || $job->state == Job::STATUS_PACKAGE_CONFLICT) {
-					if($db->addJob($jcid, $job->computer_id,
-						$job->package_id, $job->package_procedure, $job->success_return_codes,
-						$job->is_uninstall, $job->download,
-						$job->post_action,
-						$job->post_action_timeout,
-						$job->sequence
-					)) {
-						if($db->removeJob($job->id)) {
-							$count ++;
-						}
-					}
-				}
-			}
-		}
-		die();
-	}
-
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
 	die($e->getMessage());

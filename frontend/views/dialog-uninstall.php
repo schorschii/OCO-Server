@@ -4,7 +4,7 @@ require_once('../../lib/Loader.php');
 require_once('../session.php');
 ?>
 
-<p><?php echo LANG['uninstall_job_container_will_be_created']; ?></p>
+<p style='max-width:450px'><?php echo LANG['uninstall_job_container_will_be_created']; ?></p>
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG['name']; ?></th>

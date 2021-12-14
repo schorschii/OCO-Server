@@ -1166,15 +1166,6 @@ function confirmRemoveJob(ids) {
 		});
 	}
 }
-function confirmRenewFailedJobsInContainer(id, defaultStartTime) {
-	if(!confirm(L__CONFIRM_RENEW_JOBS)) { return; }
-	var startTime = prompt(L__ENTER_START_TIME, defaultStartTime);
-	if(startTime == null || startTime == '') { return; }
-	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({'renew_container_id':id, 'renew_start_time':startTime}), null, function() {
-		refreshContent(); refreshSidebar();
-		emitMessage(L__JOBS_CREATED, '', MESSAGE_TYPE_SUCCESS);
-	});
-}
 function renameJobContainer(id, oldName) {
 	var newValue = prompt(L__ENTER_NAME, oldName);
 	if(newValue != null) {
@@ -1328,6 +1319,23 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 			emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 		});
 	}
+}
+function renewFailedJobsInContainer(id, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
+	var params = [];
+	params.push({'key':'create_renew_job_container', 'value':name});
+	params.push({'key':'renew_container_id', 'value':id});
+	params.push({'key':'notes', 'value':notes});
+	params.push({'key':'start_time', 'value':startTime});
+	params.push({'key':'end_time', 'value':endTime});
+	params.push({'key':'use_wol', 'value':useWol ? 1 : 0});
+	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
+	params.push({'key':'priority', 'value':priority});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/deploy.php', paramString, null, function() {
+		hideDialog();
+		refreshSidebar(); refreshContent();
+		emitMessage(L__JOBS_CREATED, name, MESSAGE_TYPE_SUCCESS);
+	});
 }
 
 // ======== DOMAINUSER OPERATIONS ========
