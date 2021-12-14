@@ -17,7 +17,7 @@ if(file_exists(DOCS_DIR.'/'.$fileName)) {
 	$html = $Parsedown->text($content);
 
 	$dom = new DOMDocument;
-	@$dom->loadHTML($html);
+	@$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
 	$nodes = $dom->getElementsByTagName('a');
 	foreach($nodes as $node) {
 		foreach($node->attributes as $att) {
@@ -31,4 +31,3 @@ if(file_exists(DOCS_DIR.'/'.$fileName)) {
 } else {
 	echo "<div class='alert error'>".LANG['not_found']."</div>";
 }
-
