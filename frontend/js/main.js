@@ -801,6 +801,19 @@ function addPackageToGroup(packageId, groupId) {
 		emitMessage(L__PACKAGES_ADDED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
+function showDialogAddPackageDependency(id) {
+	showDialogAjax(L__ADD_DEPENDENCY, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
+		txtEditPackageId.value = id;
+		refreshDeployComputerAndPackages(null, sltPackage.value);
+	});
+}
+function showDialogAddPDependentPackage(id) {
+	showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
+		txtSetAsDependentPackage.value = "1";
+		txtEditPackageId.value = id;
+		refreshDeployComputerAndPackages(null, sltPackage.value);
+	});
+}
 function addPackageDependency(packageId, dependencyPackageId) {
 	if(packageId == '' || dependencyPackageId == '') {
 		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
@@ -1283,6 +1296,9 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 		}
 	};
 }
+function showDialogUninstall() {
+	showDialogAjax(L__UNINSTALL_PACKAGES, "views/dialog-uninstall.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+}
 function uninstall(checkboxName, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, restartTimeout, priority) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
@@ -1335,6 +1351,12 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 			emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 		});
 	}
+}
+function showDialogRenewFailedJobs(id, defaultName) {
+	showDialogAjax(L__RENEW_FAILED_JOBS, "views/dialog-jobs-renew.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
+		txtRenewJobContainerId.value = id;
+		txtRenewJobContainerName.value = defaultName;
+	});
 }
 function renewFailedJobsInContainer(id, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
 	var params = [];
@@ -1415,6 +1437,11 @@ function confirmRemoveReportGroup(ids, event=null, infoText='') {
 		});
 	}
 }
+function showDialogCreateReport(group_id=0) {
+	showDialogAjax(L__CREATE_REPORT, "views/dialog-report-create.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){
+		txtCreateReportGroup.value = group_id
+	});
+}
 function createReport(name, notes, query, group_id=0) {
 	var params = [];
 	params.push({'key':'create_report', 'value':name});
@@ -1426,6 +1453,14 @@ function createReport(name, notes, query, group_id=0) {
 		hideDialog();
 		refreshContentExplorer('views/report-details.php?id='+parseInt(text));
 		emitMessage(L__REPORT_CREATED, name, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogEditReport(id, name, notes, query) {
+	showDialogAjax(L__EDIT_REPORT, "views/dialog-report-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){
+		txtEditReportId.value = id;
+		txtEditReportName.value = name;
+		txtEditReportNotes.value = notes;
+		txtEditReportQuery.value = query;
 	});
 }
 function editReport(id, name, notes, query) {
@@ -1563,6 +1598,9 @@ function unlockSelectedSystemuser(checkboxName) {
 		refreshContent();
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
+}
+function showDialogCreateSystemuser() {
+	showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-create.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)
 }
 function createSystemuser(username, fullname, description, password) {
 	var params = [];

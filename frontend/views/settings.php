@@ -59,7 +59,7 @@ require_once('../session.php');
 	<div>
 		<h2><?php echo LANG['system_users']; ?></h2>
 		<div class='controls'>
-			<button onclick='showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-create.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogCreateSystemuser()'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 		</div>
 		<table id='tblSystemuserData' class='list searchable sortable savesort'>
 		<thead>

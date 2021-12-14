@@ -248,7 +248,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 			</tfoot>
 		</table>
 		<div class='controls'>
-			<button onclick='showDialogAjax(L__ADD_DEPENDENCY, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){ txtEditPackageId.value="<?php echo $package->id; ?>"; refreshDeployComputerAndPackages(null, sltPackage.value); })'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 			<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
@@ -288,7 +288,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 			</tfoot>
 		</table>
 		<div class='controls'>
-			<button onclick='showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){ txtSetAsDependentPackage.value="1"; txtEditPackageId.value="<?php echo $package->id; ?>"; refreshDeployComputerAndPackages(null, sltPackage.value); })'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 			<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
@@ -341,7 +341,7 @@ $packageFamily = $db->getPackageFamily($package->package_family_id);
 				</select>
 			</button>
 			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-			<button onclick='showDialogAjax(L__UNINSTALL_PACKAGES, "views/dialog-uninstall.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+			<button onclick='showDialogUninstall()'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 		</div>
 	</div>
 

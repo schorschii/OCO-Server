@@ -15,7 +15,7 @@ if(empty($_GET['id'])) {
 <?php if(empty($_GET['id'])) { ?>
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><?php echo LANG['reports']; ?></span></h1>
 	<div class='controls'>
-		<button onclick='showDialogAjax(L__CREATE_REPORT, "views/dialog-report-create.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
+		<button onclick='showDialogCreateReport()'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
 		<button onclick='createReportGroup()'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
 		<span class='fillwidth'></span>
 		<span><a target='_blank' href='img/dbschema.png' title='<?php echo LANG['database_schema_description']; ?>'><?php echo LANG['database_schema']; ?></a></span>
@@ -23,7 +23,7 @@ if(empty($_GET['id'])) {
 <?php } else { ?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getReportGroupBreadcrumbString($reportGroup->id)); ?></span><span id='spnReportGroupName' class='rawvalue'><?php echo htmlspecialchars($reportGroup->name); ?></span></h1>
 	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
-		<button onclick='showDialogAjax(L__CREATE_REPORT, "views/dialog-report-create.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){txtCreateReportGroup.value="<?php echo $reportGroup->id; ?>"})'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
+		<button onclick='showDialogCreateReport("<?php echo $reportGroup->id; ?>")'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
 		<button onclick='createReportGroup(<?php echo $reportGroup->id; ?>)'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
 		<button onclick='renameReportGroup(<?php echo $reportGroup->id; ?>, spnReportGroupName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
 		<button onclick='confirmRemoveReportGroup([<?php echo $reportGroup->id; ?>], event, spnReportGroupName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>

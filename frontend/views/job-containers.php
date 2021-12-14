@@ -27,7 +27,7 @@ if(!empty($_GET['id'])) {
 
 	<div class='controls'>
 		<button onclick='renameJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-		<button onclick='showDialogAjax(L__RENEW_FAILED_JOBS, "views/dialog-jobs-renew.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){ txtRenewJobContainerId.value="<?php echo $container->id; ?>"; txtRenewJobContainerName.value=spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>" })' <?php echo ($failed>0 ? '' : 'disabled'); ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
+		<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>")' <?php echo ($failed>0 ? '' : 'disabled'); ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
 		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 
