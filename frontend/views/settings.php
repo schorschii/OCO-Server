@@ -58,9 +58,6 @@ require_once('../session.php');
 <div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG['system_users']; ?></h2>
-		<div class='controls'>
-			<button onclick='showDialogCreateSystemUser()'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
-		</div>
 		<table id='tblSystemUserData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
@@ -99,6 +96,8 @@ require_once('../session.php');
 		</table>
 
 		<div class='controls'>
+			<button onclick='showDialogCreateSystemUser()'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 			<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
 			<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
