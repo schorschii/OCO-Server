@@ -19,6 +19,8 @@ const PURGE_FAILED_JOBS_AFTER    = 172800; // 2 days
 
 const PURGE_DOMAIN_USER_LOGONS_AFTER = 31536000; // 1 year
 
+const CHECK_UPDATE = true;
+
 const PURGE_LOGS_AFTER  = 172800; // 2 days
 const LOG_LEVEL         = 2;
 // 0 -> DEBUG

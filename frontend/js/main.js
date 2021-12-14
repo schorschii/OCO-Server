@@ -1637,3 +1637,12 @@ function editSystemUser(id, username, fullname, description, password) {
 		emitMessage(L__SAVED, username, MESSAGE_TYPE_SUCCESS);
 	});
 }
+
+// ======== SYSTEM OPERATIONS ========
+function checkUpdate() {
+	ajaxRequestPost('ajax-handler/update-check.php', '', null, function(text) {
+		if(text.trim() != '') {
+			emitMessage(L__UPDATE_AVAILABLE, text.trim(), MESSAGE_TYPE_INFO);
+		}
+	});
+}

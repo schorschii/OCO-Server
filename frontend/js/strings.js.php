@@ -56,6 +56,7 @@ var L__EDIT_REPORT = "<?php echo LANG['edit_report']; ?>";
 var L__RENEW_FAILED_JOBS = "<?php echo LANG['renew_failed_jobs']; ?>";
 var L__ADD_DEPENDENCY = "<?php echo LANG['add_dependency']; ?>";
 var L__ADD_DEPENDENT_PACKAGE = "<?php echo LANG['add_dependent_package']; ?>";
+var L__UPDATE_AVAILABLE = "<?php echo LANG['update_available']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";

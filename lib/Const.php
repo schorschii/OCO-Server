@@ -3,6 +3,8 @@
 const APP_VERSION = '0.12.0';
 const APP_RELEASE = 'Christmas Release 🛷';
 
+const UPDATE_API_URL = 'https://api.github.com/repos/schorschii/oco-server/releases';
+
 const LCIDS = [
 	1078 =>
 	array (

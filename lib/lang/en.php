@@ -356,6 +356,8 @@ const LANG = [
 	'uninstall_packages' => 'Uninstall Packages',
 	'uninstall_job_container_will_be_created' => 'An uninstall job container will be created.',
 	'ldap_accounts_cannot_be_modified' => 'LDAP can only be edited using your directory service',
+	'update_available' => 'Update available!',
+	'prerelease_note' => '(Prerelease)',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
