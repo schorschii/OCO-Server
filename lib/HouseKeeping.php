@@ -77,8 +77,8 @@ foreach($db->getAllJobContainer() as $container) {
 }
 
 ///// Logon Entries Housekeeping /////
-$result = $db->removeDomainuserLogonOlderThan(PURGE_DOMAINUSER_LOGONS_AFTER);
-if($cliMode) echo('Purged '.intval($result).' Domainuser Logons older than '.intval(PURGE_DOMAINUSER_LOGONS_AFTER).' seconds'."\n");
+$result = $db->removeDomainUserLogonOlderThan(PURGE_DOMAIN_USER_LOGONS_AFTER);
+if($cliMode) echo('Purged '.intval($result).' Domain User Logons older than '.intval(PURGE_DOMAIN_USER_LOGONS_AFTER).' seconds'."\n");
 
 ///// Log Housekeeping /////
 $result = $db->removeLogEntryOlderThan(PURGE_LOGS_AFTER);

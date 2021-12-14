@@ -81,9 +81,9 @@ try {
 					echo "<td><a ".explorerLink('views/package-details.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'software_id') {
 					echo "<td><a ".explorerLink('views/software.php?id='.intval($value)).">".$value."</a></td>";
-				} elseif($key == 'domainuser_id') {
+				} elseif($key == 'domain_user_id') {
 					echo "<td><a ".explorerLink('views/domain-users.php?id='.intval($value)).">".$value."</a></td>";
-				} elseif($key == 'jobcontainer_id') {
+				} elseif($key == 'job_container_id') {
 					echo "<td><a ".explorerLink('views/job-containers.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'report_id') {
 					echo "<td><a ".explorerLink('views/report-details.php?id='.intval($value)).">".$value."</a></td>";

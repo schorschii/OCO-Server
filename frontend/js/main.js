@@ -1376,8 +1376,8 @@ function renewFailedJobsInContainer(id, name, notes, startTime, endTime, useWol,
 	});
 }
 
-// ======== DOMAINUSER OPERATIONS ========
-function confirmRemoveSelectedDomainuser(checkboxName) {
+// ======== DOMAIN USER OPERATIONS ========
+function confirmRemoveSelectedDomainUser(checkboxName) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -1533,8 +1533,8 @@ function moveSelectedReportToGroup(checkboxName, groupId, attributeName=null) {
 	});
 }
 
-// ======== SYSTEMUSER OPERATIONS ========
-function confirmRemoveSelectedSystemuser(checkboxName) {
+// ======== SYSTEM USER OPERATIONS ========
+function confirmRemoveSelectedSystemUser(checkboxName) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -1547,7 +1547,7 @@ function confirmRemoveSelectedSystemuser(checkboxName) {
 	}
 	var params = [];
 	ids.forEach(function(entry) {
-		params.push({'key':'remove_systemuser_id[]', 'value':entry});
+		params.push({'key':'remove_system_user_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
@@ -1557,7 +1557,7 @@ function confirmRemoveSelectedSystemuser(checkboxName) {
 		});
 	}
 }
-function lockSelectedSystemuser(checkboxName) {
+function lockSelectedSystemUser(checkboxName) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -1570,7 +1570,7 @@ function lockSelectedSystemuser(checkboxName) {
 	}
 	var params = [];
 	ids.forEach(function(entry) {
-		params.push({'key':'lock_systemuser_id[]', 'value':entry});
+		params.push({'key':'lock_system_user_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
@@ -1578,7 +1578,7 @@ function lockSelectedSystemuser(checkboxName) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function unlockSelectedSystemuser(checkboxName) {
+function unlockSelectedSystemUser(checkboxName) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -1591,7 +1591,7 @@ function unlockSelectedSystemuser(checkboxName) {
 	}
 	var params = [];
 	ids.forEach(function(entry) {
-		params.push({'key':'unlock_systemuser_id[]', 'value':entry});
+		params.push({'key':'unlock_system_user_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
@@ -1599,12 +1599,12 @@ function unlockSelectedSystemuser(checkboxName) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogCreateSystemuser() {
+function showDialogCreateSystemUser() {
 	showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-create.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)
 }
-function createSystemuser(username, fullname, description, password) {
+function createSystemUser(username, fullname, description, password) {
 	var params = [];
-	params.push({'key':'create_systemuser', 'value':username});
+	params.push({'key':'create_system_user', 'value':username});
 	params.push({'key':'fullname', 'value':fullname});
 	params.push({'key':'description', 'value':description});
 	params.push({'key':'password', 'value':password});
@@ -1615,17 +1615,17 @@ function createSystemuser(username, fullname, description, password) {
 		emitMessage(L__USER_CREATED, username, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditSystemuser(id, username, fullname, description) {
+function showDialogEditSystemUser(id, username, fullname, description) {
 	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
-		txtEditSystemuserId.value = id;
-		txtEditSystemuserUsername.value = username;
-		txtEditSystemuserFullname.value = fullname;
-		txtEditSystemuserDescription.value = description;
+		txtEditSystemUserId.value = id;
+		txtEditSystemUserUsername.value = username;
+		txtEditSystemUserFullname.value = fullname;
+		txtEditSystemUserDescription.value = description;
 	});
 }
-function editSystemuser(id, username, fullname, description, password) {
+function editSystemUser(id, username, fullname, description, password) {
 	var params = [];
-	params.push({'key':'update_systemuser_id', 'value':id});
+	params.push({'key':'update_system_user_id', 'value':id});
 	params.push({'key':'username', 'value':username});
 	params.push({'key':'fullname', 'value':fullname});
 	params.push({'key':'description', 'value':description});

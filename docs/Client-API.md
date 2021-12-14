@@ -126,12 +126,12 @@ no parameters
 			"logins": [
 				{
 					"id": null,
-					"domainuser_id": "8",
+					"domain_user_id": "8",
 					"console": null,
 					"timestamp": "2020-11-17 12:33:31",
 					"logon_amount": "5",
 					"computer_hostname": null,
-					"domainuser_username": "hulk"
+					"domain_user_username": "hulk"
 				}
 			],
 			"networks": [

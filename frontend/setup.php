@@ -5,7 +5,7 @@ $info = null;
 $infoclass = null;
 
 // exit if setup was already done
-if($db->existsSchema() && count($db->getAllSystemuser()) > 0) {
+if($db->existsSchema() && count($db->getAllSystemUser()) > 0) {
 	header('Location: index.php');
 	die();
 }
@@ -23,7 +23,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 		$infoclass = 'error';
 	} else {
 		if(
-			$db->addSystemuser(
+			$db->addSystemUser(
 				$_POST['username'], $_POST['username'],
 				password_hash($_POST['password'], PASSWORD_DEFAULT),
 				0/*ldap-flag*/, null, null, null, 'initial admin user', 0/*locked*/

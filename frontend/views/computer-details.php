@@ -199,9 +199,9 @@ $online = $computer->isOnline();
 			</thead>
 			<tbody>
 				<?php
-				foreach($db->getDomainuserLogonByComputer($computer->id) as $logon) {
+				foreach($db->getDomainUserLogonByComputer($computer->id) as $logon) {
 					echo "<tr>";
-					echo "<td><a ".explorerLink('views/domain-users.php?id='.$logon->domainuser_id).">".htmlspecialchars($logon->domainuser_username)."</a></td>";
+					echo "<td><a ".explorerLink('views/domain-users.php?id='.$logon->domain_user_id).">".htmlspecialchars($logon->domain_user_username)."</a></td>";
 					echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 					echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 					echo "</tr>";

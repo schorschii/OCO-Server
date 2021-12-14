@@ -78,7 +78,7 @@ switch($srcdata['method']) {
 				'success' => true,
 				'data' => [
 					'general' => $computer,
-					'logins' => $db->getDomainuserLogonByComputer($computer->id),
+					'logins' => $db->getDomainUserLogonByComputer($computer->id),
 					'networks' => $db->getComputerNetwork($computer->id),
 					'screens' => $db->getComputerScreen($computer->id),
 					'printers' => $db->getComputerPrinter($computer->id),

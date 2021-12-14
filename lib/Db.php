@@ -42,7 +42,7 @@ class Db {
 	public function getStats() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT
-			(SELECT count(id) FROM domainuser) AS "domain_users",
+			(SELECT count(id) FROM domain_user) AS "domain_users",
 			(SELECT count(id) FROM computer) AS "computers",
 			(SELECT count(id) FROM package) AS "packages",
 			(SELECT count(id) FROM job_container) AS "job_containers",
@@ -475,28 +475,28 @@ class Db {
 			}
 		}
 
-		// insert new domainuser logins
-		$domainusers = $this->getAllDomainuser();
+		// insert new domain user logins
+		$domainUsers = $this->getAllDomainUser();
 		foreach($logins as $index => $l) {
-			$domainuser = null;
-			foreach($domainusers as $du) {
+			$domainUser = null;
+			foreach($domainUsers as $du) {
 				if(strtolower($du->username) === strtolower($l['username'])) {
-					$domainuser = $du; break;
+					$domainUser = $du; break;
 				}
 			}
-			if($domainuser === null) {
-				$du_id = $this->addDomainuser($l['username']);
-				$domainuser = $this->getDomainuser($du_id);
-				$domainusers = $this->getAllDomainuser();
+			if($domainUser === null) {
+				$du_id = $this->addDomainUser($l['username']);
+				$domainUser = $this->getDomainUser($du_id);
+				$domainUsers = $this->getAllDomainUser();
 			}
-			if($this->getDomainuserLogonByComputerDomainuserConsoleTimestamp($id, $domainuser->id, $l['console'], $l['timestamp']) === null) {
+			if($this->getDomainUserLogonByComputerDomainUserConsoleTimestamp($id, $domainUser->id, $l['console'], $l['timestamp']) === null) {
 				$this->stmt = $this->dbh->prepare(
-					'INSERT INTO domainuser_logon (computer_id, domainuser_id, console, timestamp)
-					VALUES (:computer_id, :domainuser_id, :console, :timestamp)'
+					'INSERT INTO domain_user_logon (computer_id, domain_user_id, console, timestamp)
+					VALUES (:computer_id, :domain_user_id, :console, :timestamp)'
 				);
 				if(!$this->stmt->execute([
 					':computer_id' => $id,
-					':domainuser_id' => $domainuser->id,
+					':domain_user_id' => $domainUser->id,
 					':console' => $l['console'],
 					':timestamp' => $l['timestamp'],
 				])) return false;
@@ -1418,148 +1418,148 @@ class Db {
 		return ($this->stmt->rowCount() == 1);
 	}
 
-	// Domainuser Operations
-	public function addDomainuser($username) {
+	// Domain User Operations
+	public function addDomainUser($username) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO domainuser (username) VALUES (:username)'
+			'INSERT INTO domain_user (username) VALUES (:username)'
 		);
 		$this->stmt->execute([
 			':username' => $username,
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function getAllDomainuser() {
+	public function getAllDomainUser() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT *,
-				(SELECT count(dl2.id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS "logon_amount",
-				(SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS "computer_amount",
-				(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
-			FROM domainuser du
+				(SELECT count(dl2.id) FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id) AS "logon_amount",
+				(SELECT count(DISTINCT dl2.computer_id) FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id) AS "computer_amount",
+				(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
+			FROM domain_user du
 			ORDER BY username ASC'
 		);
 		$this->stmt->execute([]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Domainuser');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUser');
 	}
-	public function getAllDomainuserByName($name, $limit=null) {
+	public function getAllDomainUserByName($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM domainuser WHERE username LIKE :username ORDER BY username ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+			'SELECT * FROM domain_user WHERE username LIKE :username ORDER BY username ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':username' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Domainuser');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUser');
 	}
-	public function getDomainuser($id) {
+	public function getDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT *, (SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
-			FROM domainuser du
+			'SELECT *, (SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
+			FROM domain_user du
 			WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Domainuser') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUser') as $row) {
 			return $row;
 		}
 	}
-	public function getDomainuserLogonByComputerDomainuserConsoleTimestamp($cid, $did, $console, $timestamp) {
+	public function getDomainUserLogonByComputerDomainUserConsoleTimestamp($cid, $did, $console, $timestamp) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM domainuser_logon dl
-			WHERE dl.computer_id = :computer_id AND dl.domainuser_id = :domainuser_id AND dl.console = :console AND dl.timestamp = :timestamp'
+			'SELECT * FROM domain_user_logon dl
+			WHERE dl.computer_id = :computer_id AND dl.domain_user_id = :domain_user_id AND dl.console = :console AND dl.timestamp = :timestamp'
 		);
 		$this->stmt->execute([
 			':computer_id' => $cid,
-			':domainuser_id' => $did,
+			':domain_user_id' => $did,
 			':console' => $console,
 			':timestamp' => $timestamp,
 		]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainuserLogon') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUserLogon') as $row) {
 			return $row;
 		}
 	}
-	public function getDomainuserLogonHistoryByDomainuser($id) {
+	public function getDomainUserLogonHistoryByDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "computer_id", c.hostname AS "computer_hostname", dl.console AS "console", dl.timestamp AS "timestamp"
-			FROM domainuser_logon dl
+			FROM domain_user_logon dl
 			INNER JOIN computer c ON dl.computer_id = c.id
-			WHERE dl.domainuser_id = :domainuser_id
+			WHERE dl.domain_user_id = :domain_user_id
 			ORDER BY timestamp DESC, computer_hostname ASC'
 		);
 		$this->stmt->execute([
-			':domainuser_id' => $id,
+			':domain_user_id' => $id,
 		]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainuserLogon');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUserLogon');
 	}
-	public function getDomainuserLogonByDomainuser($id) {
+	public function getDomainUserLogonByDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "computer_id", c.hostname AS "computer_hostname", COUNT(c.hostname) AS "logon_amount",
-			(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domainuser_id = dl.domainuser_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
-			FROM domainuser_logon dl
+			(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domain_user_id = dl.domain_user_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
+			FROM domain_user_logon dl
 			INNER JOIN computer c ON dl.computer_id = c.id
-			WHERE dl.domainuser_id = :domainuser_id
-			GROUP BY dl.domainuser_id, dl.computer_id
+			WHERE dl.domain_user_id = :domain_user_id
+			GROUP BY dl.domain_user_id, dl.computer_id
 			ORDER BY timestamp DESC, logon_amount DESC, computer_hostname ASC'
 		);
 		$this->stmt->execute([
-			':domainuser_id' => $id,
+			':domain_user_id' => $id,
 		]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainuserLogon');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUserLogon');
 	}
-	public function getDomainuserLogonByComputer($id) {
+	public function getDomainUserLogonByComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT du.id AS "domainuser_id", du.username AS "domainuser_username", COUNT(du.username) AS "logon_amount",
-			(SELECT dl2.timestamp FROM domainuser_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domainuser_id = dl.domainuser_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
-			FROM domainuser_logon dl
-			INNER JOIN domainuser du ON dl.domainuser_id = du.id
+			'SELECT du.id AS "domain_user_id", du.username AS "domain_user_username", COUNT(du.username) AS "logon_amount",
+			(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domain_user_id = dl.domain_user_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
+			FROM domain_user_logon dl
+			INNER JOIN domain_user du ON dl.domain_user_id = du.id
 			WHERE dl.computer_id = :computer_id
-			GROUP BY dl.computer_id, dl.domainuser_id
-			ORDER BY timestamp DESC, logon_amount DESC, domainuser_username ASC'
+			GROUP BY dl.computer_id, dl.domain_user_id
+			ORDER BY timestamp DESC, logon_amount DESC, domain_user_username ASC'
 		);
 		$this->stmt->execute([
 			':computer_id' => $id,
 		]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainuserLogon');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUserLogon');
 	}
-	public function removeDomainuser($id) {
+	public function removeDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM domainuser WHERE id = :id'
+			'DELETE FROM domain_user WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 	}
-	public function removeDomainuserLogonOlderThan($seconds) {
+	public function removeDomainUserLogonOlderThan($seconds) {
 		if(intval($seconds) < 1) return;
 		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM domainuser_logon WHERE timestamp < NOW() - INTERVAL '.intval($seconds).' SECOND'
+			'DELETE FROM domain_user_logon WHERE timestamp < NOW() - INTERVAL '.intval($seconds).' SECOND'
 		);
 		if(!$this->stmt->execute()) return false;
 		return $this->stmt->rowCount();
 	}
 
-	// Systemuser Operations
-	public function getAllSystemuser() {
+	// System User Operations
+	public function getAllSystemUser() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM systemuser ORDER BY username ASC'
+			'SELECT * FROM system_user ORDER BY username ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Systemuser');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser');
 	}
-	public function getSystemuser($id) {
+	public function getSystemUser($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM systemuser WHERE id = :id'
+			'SELECT * FROM system_user WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Systemuser') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser') as $row) {
 			return $row;
 		}
 	}
-	public function getSystemuserByLogin($username) {
+	public function getSystemUserByLogin($username) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM systemuser WHERE username = :username'
+			'SELECT * FROM system_user WHERE username = :username'
 		);
 		$this->stmt->execute([':username' => $username]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Systemuser') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser') as $row) {
 			return $row;
 		}
 	}
-	public function addSystemuser($username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
+	public function addSystemUser($username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO systemuser (username, fullname, password, ldap, email, phone, mobile, description, locked)
+			'INSERT INTO system_user (username, fullname, password, ldap, email, phone, mobile, description, locked)
 			VALUES (:username, :fullname, :password, :ldap, :email, :phone, :mobile, :description, :locked)'
 		);
 		$this->stmt->execute([
@@ -1575,9 +1575,9 @@ class Db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updateSystemuser($id, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
+	public function updateSystemUser($id, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE systemuser SET username = :username, fullname = :fullname, password = :password, ldap = :ldap, email = :email, phone = :phone, mobile = :mobile, description = :description, locked = :locked WHERE id = :id'
+			'UPDATE system_user SET username = :username, fullname = :fullname, password = :password, ldap = :ldap, email = :email, phone = :phone, mobile = :mobile, description = :description, locked = :locked WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
@@ -1592,13 +1592,13 @@ class Db {
 			':locked' => $locked,
 		]);
 	}
-	public function updateSystemuserLastLogin($id) {
-		$this->stmt = $this->dbh->prepare('UPDATE systemuser SET last_login = CURRENT_TIMESTAMP WHERE id = :id');
+	public function updateSystemUserLastLogin($id) {
+		$this->stmt = $this->dbh->prepare('UPDATE system_user SET last_login = CURRENT_TIMESTAMP WHERE id = :id');
 		return $this->stmt->execute([':id' => $id]);
 	}
-	public function removeSystemuser($id) {
+	public function removeSystemUser($id) {
 		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM systemuser WHERE id = :id'
+			'DELETE FROM system_user WHERE id = :id'
 		);
 		return $this->stmt->execute([':id' => $id]);
 	}

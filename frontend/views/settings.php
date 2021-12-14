@@ -40,8 +40,8 @@ require_once('../session.php');
 				<td><?php echo htmlspecialchars(COMPUTER_OFFLINE_SECONDS); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['purge_domainuser_logons_after']; ?>:</th>
-				<td><?php echo htmlspecialchars(PURGE_DOMAINUSER_LOGONS_AFTER); ?></td>
+				<th><?php echo LANG['purge_domain_user_logons_after']; ?>:</th>
+				<td><?php echo htmlspecialchars(PURGE_DOMAIN_USER_LOGONS_AFTER); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['purge_logs_after']; ?>:</th>
@@ -59,12 +59,12 @@ require_once('../session.php');
 	<div>
 		<h2><?php echo LANG['system_users']; ?></h2>
 		<div class='controls'>
-			<button onclick='showDialogCreateSystemuser()'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogCreateSystemUser()'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 		</div>
-		<table id='tblSystemuserData' class='list searchable sortable savesort'>
+		<table id='tblSystemUserData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
-				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblSystemuserData, this.checked)'></th>
+				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblSystemUserData, this.checked)'></th>
 				<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['full_name']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['description']; ?></th>
@@ -73,18 +73,18 @@ require_once('../session.php');
 		</thead>
 		<?php
 		$counter = 0;
-		foreach($db->getAllSystemuser() as $u) {
+		foreach($db->getAllSystemUser() as $u) {
 			$counter ++;
 			echo "<tr>";
-			echo "<td><input type='checkbox' name='systemuser_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblSystemuserData)'></td>";
+			echo "<td><input type='checkbox' name='system_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblSystemUserData)'></td>";
 			echo "<td>";
 			if($u->ldap) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG['ldap_account']."'>&nbsp;";
 			if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG['locked']."'>&nbsp;";
-			echo  "<span id='spnSystemuserUsername".$u->id."'>".htmlspecialchars($u->username)."</span>";
+			echo  "<span id='spnSystemUserUsername".$u->id."'>".htmlspecialchars($u->username)."</span>";
 			echo "</td>";
-			echo "<td id='spnSystemuserFullname".$u->id."'>".htmlspecialchars($u->fullname)."</td>";
-			echo "<td id='spnSystemuserDescription".$u->id."'>".htmlspecialchars($u->description)."</td>";
-			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemuser(".$u->id.", spnSystemuserUsername".$u->id.".innerText, spnSystemuserFullname".$u->id.".innerText, spnSystemuserDescription".$u->id.".innerText)'><img src='img/edit.svg'></button></td>";
+			echo "<td id='spnSystemUserFullname".$u->id."'>".htmlspecialchars($u->fullname)."</td>";
+			echo "<td id='spnSystemUserDescription".$u->id."'>".htmlspecialchars($u->description)."</td>";
+			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUsername".$u->id.".innerText, spnSystemUserFullname".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText)'><img src='img/edit.svg'></button></td>";
 			echo "</tr>";
 		}
 		?>
@@ -100,9 +100,9 @@ require_once('../session.php');
 
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='lockSelectedSystemuser("systemuser_id[]")'><img src='img/lock.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
-			<button onclick='unlockSelectedSystemuser("systemuser_id[]")'><img src='img/unlock.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
-			<button onclick='confirmRemoveSelectedSystemuser("systemuser_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
+			<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
+			<button onclick='confirmRemoveSelectedSystemUser("system_user_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 	</div>
 </div>

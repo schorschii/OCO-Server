@@ -26,7 +26,7 @@ $counter = 0;
 		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/job-containers.php?id='.$jc->id, 'closeSearchResults()'); ?>><img src='img/job.dyn.svg'><?php echo htmlspecialchars($jc->name); ?></a>
 	</div>
 <?php } ?>
-<?php foreach($db->getAllDomainuserByName($_GET['query'], 5) as $u) { $counter ++; ?>
+<?php foreach($db->getAllDomainUserByName($_GET['query'], 5) as $u) { $counter ++; ?>
 	<div class='node'>
 		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/domain-users.php?id='.$u->id, 'closeSearchResults()'); ?>><img src='img/users.dyn.svg'><?php echo htmlspecialchars($u->username); ?></a>
 	</div>

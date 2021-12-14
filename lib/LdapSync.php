@@ -90,21 +90,21 @@ for($i=0; $i<$data["count"]; $i++) {
 
 		// check if user already exists
 		$id = null;
-		$checkResult = $db->getSystemuserByLogin($login);
+		$checkResult = $db->getSystemUserByLogin($login);
 		var_dump($mail);
 		if($checkResult !== null) {
 			$id = $checkResult->id;
 			echo "--> found user in OCO db with id: ".$id."\n";
 
 			// update into db
-			if($db->updateSystemuser($id, $login, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/))
+			if($db->updateSystemUser($id, $login, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/))
 				echo "--> updated successfully\n";
 			else echo "--> ERROR updating: ".$db->getLastStatement()->error."\n";
 		} else {
 			echo "--> user not found in OCO db - create new\n";
 
 			// insert into db
-			if($db->addSystemuser($login, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/))
+			if($db->addSystemUser($login, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/))
 				echo "--> inserted successfully\n";
 			else echo "--> ERROR inserting: ".$db->getLastStatement()->error."\n";
 		}
@@ -116,7 +116,7 @@ for($i=0; $i<$data["count"]; $i++) {
 ldap_close($ldapconn);
 
 echo "<===== Check For Deleted Users... =====>\n";
-foreach($db->getAllSystemuser() as $dbUser) {
+foreach($db->getAllSystemUser() as $dbUser) {
 	if($dbUser->ldap != 1) continue;
 	$found = false;
 	foreach($ldapUsers as $ldapUser) {
@@ -125,7 +125,7 @@ foreach($db->getAllSystemuser() as $dbUser) {
 		}
 	}
 	if(!$found) {
-		if($db->removeSystemuser($dbUser->id)) echo "--> '".$dbUser->username."' deleted successfully\n";
+		if($db->removeSystemUser($dbUser->id)) echo "--> '".$dbUser->username."' deleted successfully\n";
 		else echo "--> ERROR deleting '".$dbUser->username."': ".$db->getLastStatement()->error."\n";
 	}
 }

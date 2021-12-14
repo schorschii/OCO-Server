@@ -17,7 +17,7 @@ const AGENT_UPDATE_INTERVAL           = 3600; // 1 hour
 const PURGE_SUCCEEDED_JOBS_AFTER = 14400;  // 4 hours
 const PURGE_FAILED_JOBS_AFTER    = 172800; // 2 days
 
-const PURGE_DOMAINUSER_LOGONS_AFTER = 31536000; // 1 year
+const PURGE_DOMAIN_USER_LOGONS_AFTER = 31536000; // 1 year
 
 const PURGE_LOGS_AFTER  = 172800; // 2 days
 const LOG_LEVEL         = 2;

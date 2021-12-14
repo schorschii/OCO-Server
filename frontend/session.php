@@ -7,7 +7,7 @@ if(!isset($_SESSION['um_username'])) {
 	redirectToLogin();
 }
 // check if user account still exists and is not locked
-$systemUser = $db->getSystemuser($_SESSION['um_userid']);
+$systemUser = $db->getSystemUser($_SESSION['um_userid']);
 if($systemUser === null || !empty($systemUser->locked)) {
 	redirectToLogin(true);
 }

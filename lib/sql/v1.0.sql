@@ -179,10 +179,10 @@ CREATE TABLE `computer_software` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `domainuser`
+-- Tabellenstruktur für Tabelle `domain_user`
 --
 
-CREATE TABLE `domainuser` (
+CREATE TABLE `domain_user` (
   `id` int(11) NOT NULL,
   `username` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -190,13 +190,13 @@ CREATE TABLE `domainuser` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `domainuser_logon`
+-- Tabellenstruktur für Tabelle `domain_user_logon`
 --
 
-CREATE TABLE `domainuser_logon` (
+CREATE TABLE `domain_user_logon` (
   `id` int(11) NOT NULL,
   `computer_id` int(11) NOT NULL,
-  `domainuser_id` int(11) NOT NULL,
+  `domain_user_id` int(11) NOT NULL,
   `console` text DEFAULT NULL,
   `timestamp` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -372,7 +372,7 @@ INSERT INTO `report` (`id`, `report_group_id`, `name`, `notes`, `query`) VALUES
 (1, 1, 'report_secureboot_disabled', '', 'SELECT id AS computer_id, hostname, os, os_version FROM computer WHERE secure_boot = 0'),
 (2, 1, 'report_packages_without_installations', '', 'SELECT p.id AS package_id, pf.name, p.version, count(cp.package_id) AS install_count FROM package p LEFT JOIN computer_package cp ON p.id = cp.package_id INNER JOIN package_family pf ON p.package_family_id = pf.id GROUP BY p.id HAVING install_count = 0'),
 (3, 1, 'report_recognized_software_chrome', '', 'SELECT id as software_id, name FROM software WHERE name LIKE \'%chrome%\''),
-(4, 1, 'report_domainusers_multiple_computers', '', 'SELECT du.id AS domainuser_id, username, (SELECT count(DISTINCT dl2.computer_id) FROM domainuser_logon dl2 WHERE dl2.domainuser_id = du.id) AS \'computer_count\' FROM domainuser du HAVING computer_count > 1'),
+(4, 1, 'report_domain_users_multiple_computers', '', 'SELECT du.id AS domain_user_id, username, (SELECT count(DISTINCT dl2.computer_id) FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id) AS \'computer_count\' FROM domain_user du HAVING computer_count > 1'),
 (5, 1, 'report_expired_jobcontainers', '', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
 (6, 1, 'report_preregistered_computers', '', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update IS NULL OR last_update <= \'2000-01-01 00:00:00\''),
 (7, 1, 'report_all_monitors', '', 'SELECT c.hostname, cs.* FROM computer_screen cs INNER JOIN computer c ON c.id = cs.computer_id WHERE cs.serialno != \"\"'),
@@ -416,10 +416,10 @@ CREATE TABLE `software` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `systemuser`
+-- Tabellenstruktur für Tabelle `system_user`
 --
 
-CREATE TABLE `systemuser` (
+CREATE TABLE `system_user` (
   `id` int(11) NOT NULL,
   `username` text NOT NULL,
   `fullname` text NOT NULL,
@@ -432,16 +432,16 @@ CREATE TABLE `systemuser` (
   `locked` tinyint(4) NOT NULL DEFAULT 0,
   `last_login` datetime DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT current_timestamp(),
-  `systemuser_role_id` int(11) DEFAULT NULL
+  `system_user_role_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `systemuser_role`
+-- Tabellenstruktur für Tabelle `system_user_role`
 --
 
-CREATE TABLE `systemuser_role` (
+CREATE TABLE `system_user_role` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
   `rights` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
@@ -517,18 +517,18 @@ ALTER TABLE `computer_software`
   ADD KEY `fk_computer_software_2` (`software_id`);
 
 --
--- Indizes für die Tabelle `domainuser`
+-- Indizes für die Tabelle `domain_user`
 --
-ALTER TABLE `domainuser`
+ALTER TABLE `domain_user`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indizes für die Tabelle `domainuser_logon`
+-- Indizes für die Tabelle `domain_user_logon`
 --
-ALTER TABLE `domainuser_logon`
+ALTER TABLE `domain_user_logon`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_domainuser_logon_1` (`domainuser_id`),
-  ADD KEY `fk_domainuser_logon_2` (`computer_id`);
+  ADD KEY `fk_domain_user_logon_1` (`domain_user_id`),
+  ADD KEY `fk_domain_user_logon_2` (`computer_id`);
 
 --
 -- Indizes für die Tabelle `job`
@@ -616,16 +616,16 @@ ALTER TABLE `software`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indizes für die Tabelle `systemuser`
+-- Indizes für die Tabelle `system_user`
 --
-ALTER TABLE `systemuser`
+ALTER TABLE `system_user`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_systemuser_role_id` (`systemuser_role_id`);
+  ADD KEY `fk_system_user_role_id` (`system_user_role_id`);
 
 --
--- Indizes für die Tabelle `systemuser_role`
+-- Indizes für die Tabelle `system_user_role`
 --
-ALTER TABLE `systemuser_role`
+ALTER TABLE `system_user_role`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -687,15 +687,15 @@ ALTER TABLE `computer_software`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `domainuser`
+-- AUTO_INCREMENT für Tabelle `domain_user`
 --
-ALTER TABLE `domainuser`
+ALTER TABLE `domain_user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `domainuser_logon`
+-- AUTO_INCREMENT für Tabelle `domain_user_logon`
 --
-ALTER TABLE `domainuser_logon`
+ALTER TABLE `domain_user_logon`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -771,15 +771,15 @@ ALTER TABLE `software`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `systemuser`
+-- AUTO_INCREMENT für Tabelle `system_user`
 --
-ALTER TABLE `systemuser`
+ALTER TABLE `system_user`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `systemuser_role`
+-- AUTO_INCREMENT für Tabelle `system_user_role`
 --
-ALTER TABLE `systemuser_role`
+ALTER TABLE `system_user_role`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -838,11 +838,11 @@ ALTER TABLE `computer_software`
   ADD CONSTRAINT `fk_computer_software_2` FOREIGN KEY (`software_id`) REFERENCES `software` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints der Tabelle `domainuser_logon`
+-- Constraints der Tabelle `domain_user_logon`
 --
-ALTER TABLE `domainuser_logon`
-  ADD CONSTRAINT `fk_domainuser_logon_1` FOREIGN KEY (`domainuser_id`) REFERENCES `domainuser` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_domainuser_logon_2` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `domain_user_logon`
+  ADD CONSTRAINT `fk_domain_user_logon_1` FOREIGN KEY (`domain_user_id`) REFERENCES `domain_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_domain_user_logon_2` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `job`
@@ -898,15 +898,15 @@ ALTER TABLE `report_group`
   ADD CONSTRAINT `fk_parent_report_group_id` FOREIGN KEY (`parent_report_group_id`) REFERENCES `report_group` (`id`);
 
 --
--- Constraints der Tabelle `systemuser`
+-- Constraints der Tabelle `system_user`
 --
-ALTER TABLE `systemuser`
-  ADD CONSTRAINT `fk_systemuser_role_id` FOREIGN KEY (`systemuser_role_id`) REFERENCES `systemuser_role` (`id`);
+ALTER TABLE `system_user`
+  ADD CONSTRAINT `fk_system_user_role_id` FOREIGN KEY (`system_user_role_id`) REFERENCES `system_user_role` (`id`);
 
 --
--- Constraints der Tabelle `systemuser_role`
+-- Constraints der Tabelle `system_user_role`
 --
-ALTER TABLE `systemuser_role`
+ALTER TABLE `system_user_role`
   ADD CONSTRAINT `check_json_role` CHECK(JSON_VALID(rights));
 COMMIT;
 

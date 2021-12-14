@@ -314,25 +314,25 @@ class Job {
 		else return $this->state;
 	}
 }
-class Domainuser {
+class DomainUser {
 	public $id;
 	public $username;
 	// aggregated values
 	public $logon_amount;
 	public $computer_amount;
 }
-class DomainuserLogon {
+class DomainUserLogon {
 	public $id;
 	public $computer_id;
-	public $domainuser_id;
+	public $domain_user_id;
 	public $console;
 	public $timestamp;
 	// aggregated values
 	public $logon_amount;
 	public $computer_hostname;
-	public $domainuser_username;
+	public $domain_user_username;
 }
-class Systemuser {
+class SystemUser {
 	public $id;
 	public $username;
 	public $fullname;
@@ -345,7 +345,7 @@ class Systemuser {
 	public $locked;
 	public $last_login;
 	public $created;
-	public $systemuser_role_id;
+	public $system_user_role_id;
 }
 class Software {
 	public $id;

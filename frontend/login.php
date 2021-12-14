@@ -5,7 +5,7 @@ $info = null;
 $infoclass = null;
 
 // redirect to setup if setup is not done
-if(!$db->existsSchema() || count($db->getAllSystemuser()) == 0) {
+if(!$db->existsSchema() || count($db->getAllSystemUser()) == 0) {
 	header('Location: setup.php');
 	die();
 }
