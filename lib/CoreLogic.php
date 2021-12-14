@@ -653,4 +653,64 @@ class CoreLogic {
 		return $result;
 	}
 
+	/*** System User Operations ***/
+	public function createSystemuser($username, $fullname, $description, $password) {
+		if(empty(trim($username))
+		|| empty(trim($fullname))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		if(empty(trim($password))) {
+			throw new Exception(LANG['password_cannot_be_empty']);
+		}
+		if($this->db->getSystemuserByLogin($username) !== null) {
+			throw new Exception(LANG['username_already_exists']);
+		}
+		$insertId = $this->db->addSystemuser(
+			$username, $fullname,
+			password_hash($password, PASSWORD_DEFAULT),
+			0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, $description, 0/*locked*/
+		);
+		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		return $insertId;
+	}
+	public function updateSystemuser($id, $username, $fullname, $description, $password) {
+		$u = $this->db->getSystemuser($id);
+		if($u === null) throw new Exception(LANG['not_found']);
+		if(!empty($u->ldap)) throw new Exception(LANG['ldap_accounts_cannot_be_modified']);
+
+		if(empty(trim($username))) {
+			throw new Exception(LANG['username_cannot_be_empty']);
+		}
+		$checkUser = $this->db->getSystemuserByLogin($username);
+		if($checkUser !== null && $checkUser->id !== $u->id) {
+			throw new Exception(LANG['username_already_exists']);
+		}
+		if(empty(trim($fullname))) {
+			throw new Exception(LANG['username_cannot_be_empty']);
+		}
+		$newPassword = $u->password;
+		if(!empty($password)) {
+			$newPassword = password_hash($password, PASSWORD_DEFAULT);
+		}
+
+		$this->db->updateSystemuser(
+			$u->id, trim($username), $fullname, $newPassword,
+			$u->ldap, $u->email, $u->phone, $u->mobile, $description, $u->locked
+		);
+	}
+	public function updateSystemuserLocked($id, $locked) {
+		$u = $this->db->getSystemuser($id);
+		if($u === null) throw new Exception(LANG['not_found']);
+
+		$this->db->updateSystemuser(
+			$u->id, $u->username, $u->fullname, $u->password,
+			$u->ldap, $u->email, $u->phone, $u->mobile, $u->description, $locked
+		);
+	}
+	public function removeSystemuser($id) {
+		$result = $this->db->removeSystemuser($id);
+		if(!$result) throw new Exception(LANG['not_found']);
+		return $result;
+	}
+
 }

@@ -68,6 +68,7 @@ require_once('../session.php');
 				<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['full_name']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['description']; ?></th>
+				<th class=''><?php echo LANG['action']; ?></th>
 			</tr>
 		</thead>
 		<?php
@@ -79,10 +80,11 @@ require_once('../session.php');
 			echo "<td>";
 			if($u->ldap) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG['ldap_account']."'>&nbsp;";
 			if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG['locked']."'>&nbsp;";
-			echo  htmlspecialchars($u->username);
+			echo  "<span id='spnSystemuserUsername".$u->id."'>".htmlspecialchars($u->username)."</span>";
 			echo "</td>";
-			echo "<td>".htmlspecialchars($u->fullname)."</td>";
-			echo "<td>".htmlspecialchars($u->description)."</td>";
+			echo "<td id='spnSystemuserFullname".$u->id."'>".htmlspecialchars($u->fullname)."</td>";
+			echo "<td id='spnSystemuserDescription".$u->id."'>".htmlspecialchars($u->description)."</td>";
+			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemuser(".$u->id.", spnSystemuserUsername".$u->id.".innerText, spnSystemuserFullname".$u->id.".innerText, spnSystemuserDescription".$u->id.".innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit']; ?></button></td>";
 			echo "</tr>";
 		}
 		?>
@@ -98,9 +100,6 @@ require_once('../session.php');
 
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button id='btnChangePassword' onclick='showDialogAjax(L__NEW_PASSWORD, "views/dialog-system-user-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)'>
-				<img src='img/edit.svg'>&nbsp;<?php echo LANG['new_password']; ?>
-			</button>
 			<button onclick='lockSelectedSystemuser("systemuser_id[]")'><img src='img/lock.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
 			<button onclick='unlockSelectedSystemuser("systemuser_id[]")'><img src='img/unlock.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
 			<button onclick='confirmRemoveSelectedSystemuser("systemuser_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>

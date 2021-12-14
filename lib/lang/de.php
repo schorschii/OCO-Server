@@ -348,6 +348,7 @@ const LANG = [
 	'help' => 'Hilfe',
 	'uninstall_packages' => 'Pakete deinstallieren',
 	'uninstall_job_container_will_be_created' => 'Es wird ein Deinstallations-Jobcontainer erstellt.',
+	'ldap_accounts_cannot_be_modified' => 'LDAP-Accounts können nur über Ihrem Verzeichnisdienst bearbeitet werden',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

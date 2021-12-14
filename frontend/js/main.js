@@ -1548,10 +1548,11 @@ function unlockSelectedSystemuser(checkboxName) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function createSystemuser(username, fullname, password) {
+function createSystemuser(username, fullname, description, password) {
 	var params = [];
 	params.push({'key':'create_systemuser', 'value':username});
 	params.push({'key':'fullname', 'value':fullname});
+	params.push({'key':'description', 'value':description});
 	params.push({'key':'password', 'value':password});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
@@ -1560,24 +1561,25 @@ function createSystemuser(username, fullname, password) {
 		emitMessage(L__USER_CREATED, username, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function changeSelectedSystemuserPassword(checkboxName, password) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			ids.push(entry.value);
-		}
+function showDialogEditSystemuser(id, username, fullname, description) {
+	showDialogAjax(L__NEW_PASSWORD, "views/dialog-system-user-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
+		txtEditSystemuserId.value = id;
+		txtEditSystemuserUsername.value = username;
+		txtEditSystemuserFullname.value = fullname;
+		txtEditSystemuserDescription.value = description;
 	});
-	if(ids.length == 0) {
-		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
-		return;
-	}
+}
+function editSystemuser(id, username, fullname, description, password) {
 	var params = [];
-	params.push({'key':'update_systemuser_id', 'value':ids[0]});
+	params.push({'key':'update_systemuser_id', 'value':id});
+	params.push({'key':'username', 'value':username});
+	params.push({'key':'fullname', 'value':fullname});
+	params.push({'key':'description', 'value':description});
 	params.push({'key':'password', 'value':password});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
 		hideDialog();
 		refreshContent();
-		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+		emitMessage(L__SAVED, username, MESSAGE_TYPE_SUCCESS);
 	});
 }

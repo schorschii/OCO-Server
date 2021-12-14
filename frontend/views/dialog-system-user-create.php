@@ -14,6 +14,10 @@ require_once('../session.php');
 		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtCreateSystemuserFullname'></input></td>
 	</tr>
 	<tr>
+		<th><?php echo LANG['description']; ?></th>
+		<td><textarea class='fullwidth' autocomplete='new-password' id='txtCreateSystemuserDescription'></textarea></td>
+	</tr>
+	<tr>
 		<th><?php echo LANG['password']; ?></th>
 		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtCreateSystemuserPasswordPassword'></input></td>
 	</tr>
@@ -23,6 +27,6 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td><button id='btnCreateUser' class='fullwidth' onclick='if(txtCreateSystemuserPasswordPassword.value!=txtCreateSystemuserConfirmPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} createSystemuser(txtCreateSystemuserUsername.value, txtCreateSystemuserFullname.value, txtCreateSystemuserPasswordPassword.value)'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button></td>
+		<td><button id='btnCreateUser' class='fullwidth' onclick='if(txtCreateSystemuserPasswordPassword.value!=txtCreateSystemuserConfirmPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} createSystemuser(txtCreateSystemuserUsername.value, txtCreateSystemuserFullname.value, txtCreateSystemuserDescription.value, txtCreateSystemuserPasswordPassword.value)'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button></td>
 	</tr>
 </table>
