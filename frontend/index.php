@@ -65,7 +65,7 @@ if(!empty($_GET['view'])) {
 			<span class='separator noprint'></span>
 			<button id='btnHelp' class='noprint' onclick='refreshContentExplorer("views/docs.php")' title='<?php echo LANG['help']; ?>'><img src='img/help.light.svg'></button>
 			<span class='separator noprint'></span>
-			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG['log_out']; ?>'><span><?php echo htmlspecialchars($_SESSION['um_username']); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
+			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG['log_out']; ?>'><span><?php echo htmlspecialchars($_SESSION['oco_username']); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
 		</span>
 	</div>
 
@@ -110,8 +110,8 @@ if(!empty($_GET['view'])) {
 	<?php if($initialExplorerContent != null) { ?>
 		ajaxRequest("<?php echo htmlspecialchars($initialExplorerContent.'?'.$initialExplorerContentParameter); ?>", "explorer-content");
 	<?php } ?>
-	<?php if(empty($_SESSION['um_last_login'])) {
-		$_SESSION['um_last_login'] = true;
+	<?php if(empty($_SESSION['oco_last_login'])) {
+		$_SESSION['oco_last_login'] = true;
 		echo "topConfettiRain();";
 		echo "emitMessage(L__WELCOME_TEXT, L__WELCOME_DESCRIPTION, MESSAGE_TYPE_INFO);";
 	} ?>

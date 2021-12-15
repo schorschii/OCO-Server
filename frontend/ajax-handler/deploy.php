@@ -56,7 +56,7 @@ try {
 	// ----- create install jobs if requested -----
 	if(isset($_POST['create_install_job_container'])) {
 		$jcid = $cl->deploy(
-			$_POST['create_install_job_container'], $_POST['description'], $_SESSION['um_username'],
+			$_POST['create_install_job_container'], $_POST['description'], $_SESSION['oco_username'],
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
@@ -78,7 +78,7 @@ try {
 	&& isset($_POST['restart_timeout'])
 	&& isset($_POST['priority'])) {
 		$cl->uninstall(
-			$_POST['create_uninstall_job_container'], $_POST['notes'], $_SESSION['um_username'],
+			$_POST['create_uninstall_job_container'], $_POST['notes'], $_SESSION['oco_username'],
 			$_POST['uninstall_package_assignment_id'], $_POST['start_time'], $_POST['end_time'],
 			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'], $_POST['restart_timeout'],
 			0/*sequence mode*/, $_POST['priority']
@@ -105,7 +105,7 @@ try {
 	&& isset($_POST['shutdown_waked_after_completion'])
 	&& isset($_POST['priority'])) {
 		$cl->renewFailedJobsInContainer(
-			$_POST['create_renew_job_container'], $_POST['notes'], $_SESSION['um_username'],
+			$_POST['create_renew_job_container'], $_POST['notes'], $_SESSION['oco_username'],
 			$_POST['renew_container_id'], $_POST['start_time'], $_POST['end_time'],
 			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'],
 			0/*sequence mode*/, $_POST['priority']

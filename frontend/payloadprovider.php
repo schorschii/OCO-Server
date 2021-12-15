@@ -7,7 +7,9 @@ function authErrorExit() {
 }
 
 // check if client is allowed to download
-if(!isset($_SESSION['um_username'])) {
+if(isset($_SESSION['oco_username'])) {
+	require_once('session.php');
+} else {
 	if(empty($_GET['agent-key']) || empty($_GET['hostname'])) {
 		authErrorExit();
 	}

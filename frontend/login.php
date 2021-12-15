@@ -18,9 +18,9 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		if(empty($user)) throw new Exception(LANG['unknown_error']);
 		// login successful
 		$db->addLogEntry(Log::LEVEL_INFO, $user->username, 'oco.webfrontend.authentication', 'Login Successful');
-		$_SESSION['um_last_login'] = $user->last_login;
-		$_SESSION['um_username'] = $user->username;
-		$_SESSION['um_userid'] = $user->id;
+		$_SESSION['oco_last_login'] = $user->last_login;
+		$_SESSION['oco_username'] = $user->username;
+		$_SESSION['oco_user_id'] = $user->id;
 		header('Location: index.php');
 		die();
 	} catch(Exception $e) {
@@ -33,8 +33,8 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 
 // execute logout if requested
 elseif(isset($_GET['logout'])) {
-	if(isset($_SESSION['um_username'])) {
-		$db->addLogEntry(Log::LEVEL_INFO, $_SESSION['um_username'], 'oco.webfrontend.authentication', 'Logout Successful');
+	if(isset($_SESSION['oco_username'])) {
+		$db->addLogEntry(Log::LEVEL_INFO, $_SESSION['oco_username'], 'oco.webfrontend.authentication', 'Logout Successful');
 		session_unset();
 		session_destroy();
 		$info = LANG['log_out_successful'];
@@ -43,7 +43,7 @@ elseif(isset($_GET['logout'])) {
 }
 
 // redirect to index.php if already logged in
-if(!empty($_SESSION['um_username'])) {
+if(!empty($_SESSION['oco_username'])) {
 	header('Location: index.php');
 	die();
 }
