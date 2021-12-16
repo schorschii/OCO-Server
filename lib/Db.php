@@ -677,24 +677,14 @@ class Db {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackageFamilyName($id, $newValue) {
+	public function updatePackageFamily($id, $name, $notes, $icon) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package_family SET name = :name WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':name' => $newValue]);
-	}
-	public function updatePackageFamilyNotes($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package_family SET notes = :notes WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':notes' => $newValue]);
-	}
-	public function updatePackageFamilyIcon($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package_family SET icon = :icon WHERE id = :id'
+			'UPDATE package_family SET name = :name, notes = :notes, icon = :icon WHERE id = :id'
 		);
 		$this->stmt->bindParam(':id', $id, PDO::PARAM_INT);
-		$this->stmt->bindParam(':icon', $newValue, PDO::PARAM_LOB);
+		$this->stmt->bindParam(':name', $name, PDO::PARAM_STR);
+		$this->stmt->bindParam(':notes', $notes, PDO::PARAM_STR);
+		$this->stmt->bindParam(':icon', $icon, PDO::PARAM_LOB);
 		return $this->stmt->execute();
 	}
 	public function updatePackageVersion($id, $newValue) {
@@ -1176,45 +1166,6 @@ class Db {
 			return $row;
 		}
 	}
-	public function renameJobContainer($id, $name) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE job_container SET name = :name WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':name' => $name]);
-	}
-	public function editJobContainerStart($id, $value) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE job_container SET start_time = :start_time WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':start_time' => $value]);
-	}
-	public function editJobContainerEnd($id, $value) {
-		if(empty($value)) $value = null;
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE job_container SET end_time = :end_time WHERE id = :id'
-		);
-		$this->stmt->bindValue(':id', $id);
-		$this->stmt->bindValue(':end_time', $value);
-		return $this->stmt->execute();
-	}
-	public function editJobContainerSequenceMode($id, $value) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE job_container SET sequence_mode = :sequence_mode WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':sequence_mode' => $value]);
-	}
-	public function editJobContainerPriority($id, $value) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE job_container SET priority = :priority WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':priority' => $value]);
-	}
-	public function editJobContainerNotes($id, $value) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE job_container SET notes = :notes WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':notes' => $value]);
-	}
 	public function getComputerMacByContainer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "id", c.hostname AS "hostname", cn.mac AS "computer_network_mac"
@@ -1368,9 +1319,11 @@ class Db {
 		}
 		return true;
 	}
-	public function updateJobContainer($id, $name, $start_time, $end_time, $notes, $wol_sent) {
+	public function updateJobContainer($id, $name, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE job_container SET name = :name, start_time = :start_time, end_time = :end_time, notes = :notes, wol_sent = :wol_sent WHERE id = :id'
+			'UPDATE job_container
+			SET name = :name, start_time = :start_time, end_time = :end_time, notes = :notes, wol_sent = :wol_sent, shutdown_waked_after_completion = :shutdown_waked_after_completion, sequence_mode = :sequence_mode, priority = :priority
+			WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
@@ -1379,6 +1332,9 @@ class Db {
 			':end_time' => $end_time,
 			':notes' => $notes,
 			':wol_sent' => $wol_sent,
+			':shutdown_waked_after_completion' => $shutdown_waked_after_completion,
+			':sequence_mode' => $sequence_mode,
+			':priority' => $priority
 		]);
 	}
 	public function getJobContainerIcon($id) {
@@ -1387,10 +1343,15 @@ class Db {
 		$waitings = 0;
 		$errors = 0;
 		foreach($jobs as $job) {
-			if($job->state == Job::STATUS_WAITING_FOR_CLIENT || $job->state == Job::STATUS_DOWNLOAD_STARTED || $job->state == Job::STATUS_EXECUTION_STARTED) {
+			if($job->state == Job::STATUS_WAITING_FOR_CLIENT
+			|| $job->state == Job::STATUS_DOWNLOAD_STARTED
+			|| $job->state == Job::STATUS_EXECUTION_STARTED) {
 				$waitings ++;
 			}
-			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED || $job->state == Job::STATUS_OS_INCOMPATIBLE || $job->state == Job::STATUS_PACKAGE_CONFLICT) {
+			if($job->state == Job::STATUS_FAILED
+			|| $job->state == Job::STATUS_EXPIRED
+			|| $job->state == Job::STATUS_OS_INCOMPATIBLE
+			|| $job->state == Job::STATUS_PACKAGE_CONFLICT) {
 				$errors ++;
 			}
 		}
@@ -1521,6 +1482,7 @@ class Db {
 			'DELETE FROM domain_user WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function removeDomainUserLogonOlderThan($seconds) {
 		if(intval($seconds) < 1) return;
@@ -1720,7 +1682,8 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM report_group WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function getAllReportGroup($parent_id=null) {
 		if($parent_id === null) {
@@ -1821,7 +1784,8 @@ class Db {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM report WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function getAllReport() {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM report ORDER BY name');

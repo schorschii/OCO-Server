@@ -24,26 +24,19 @@ try {
 
 	if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 		foreach($_POST['remove_id'] as $id) {
-			$db->removeReport($id);
+			$cl->removeReport($id);
 		}
 		die();
 	}
 
 	if(!empty($_POST['create_group'])) {
-		if(empty(trim($_POST['create_group']))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
-		}
-		$insertId = -1;
-		if(empty($_POST['parent_id'])) $insertId = $db->addReportGroup($_POST['create_group']);
-		else $insertId = $db->addReportGroup($_POST['create_group'], intval($_POST['parent_id']));
-		die(strval(intval($insertId)));
+		die(strval(intval(
+			$cl->createReportGroup($_POST['create_group'], empty($_POST['parent_id']) ? null : intval($_POST['parent_id']))
+		)));
 	}
 
-	if(!empty($_POST['rename_group']) && isset($_POST['new_name'])) {
-		if(empty(trim($_POST['new_name']))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
-		}
-		$db->renameReportGroup($_POST['rename_group'], $_POST['new_name']);
+	if(!empty($_POST['rename_group_id']) && isset($_POST['new_name'])) {
+		$cl->renameReportGroup($_POST['rename_group_id'], $_POST['new_name']);
 		die();
 	}
 
@@ -55,13 +48,8 @@ try {
 	}
 
 	if(isset($_POST['move_to_group_id']) && isset($_POST['move_to_group_report_id']) && is_array($_POST['move_to_group_report_id'])) {
-		if($db->getReportGroup($_POST['move_to_group_id']) == null) {
-			throw new Exception(LANG['not_found']);
-		}
 		foreach($_POST['move_to_group_report_id'] as $rid) {
-			$report = $db->getReport($rid);
-			if($report == null) continue;
-			$db->updateReport($report->id, intval($_POST['move_to_group_id']), $report->name, $report->notes, $report->query);
+			$cl->moveReportToGroup($rid, intval($_POST['move_to_group_id']));
 		}
 		die();
 	}

@@ -45,37 +45,25 @@ try {
 
 	if(!empty($_POST['remove_from_group_id']) && !empty($_POST['remove_from_group_computer_id']) && is_array($_POST['remove_from_group_computer_id'])) {
 		foreach($_POST['remove_from_group_computer_id'] as $cid) {
-			$db->removeComputerFromGroup($cid, $_POST['remove_from_group_id']);
+			$cl->removeComputerFromGroup($cid, $_POST['remove_from_group_id']);
 		}
 		die();
 	}
 
 	if(isset($_POST['create_group'])) {
-		if(empty(trim($_POST['create_group']))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
-		}
-		$insertId = -1;
-		if(empty($_POST['parent_id'])) $insertId = $db->addComputerGroup($_POST['create_group']);
-		else $insertId = $db->addComputerGroup($_POST['create_group'], intval($_POST['parent_id']));
-		die(strval(intval($insertId)));
+		die(strval(intval(
+			$cl->createComputerGroup($_POST['create_group'], empty($_POST['parent_id']) ? null : intval($_POST['parent_id']))
+		)));
 	}
 
-	if(!empty($_POST['rename_group']) && isset($_POST['new_name'])) {
-		if(empty(trim($_POST['new_name']))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
-		}
-		$db->renameComputerGroup($_POST['rename_group'], $_POST['new_name']);
+	if(!empty($_POST['rename_group_id']) && isset($_POST['new_name'])) {
+		$cl->renameComputerGroup($_POST['rename_group_id'], $_POST['new_name']);
 		die();
 	}
 
 	if(isset($_POST['add_to_group_id']) && isset($_POST['add_to_group_computer_id']) && is_array($_POST['add_to_group_computer_id'])) {
-		if($db->getComputerGroup($_POST['add_to_group_id']) == null) {
-			throw new Exception(LANG['not_found']);
-		}
 		foreach($_POST['add_to_group_computer_id'] as $cid) {
-			if(count($db->getComputerByComputerAndGroup($cid, $_POST['add_to_group_id'])) == 0) {
-				$db->addComputerToGroup($cid, $_POST['add_to_group_id']);
-			}
+			$cl->addComputerToGroup($cid, $_POST['add_to_group_id']);
 		}
 		die();
 	}

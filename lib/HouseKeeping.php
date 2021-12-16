@@ -58,7 +58,10 @@ foreach($db->getAllJobContainer() as $container) {
 				$container->start_time,
 				$container->end_time,
 				$container->notes,
-				1 /* WOL sent */
+				1 /* WOL sent */,
+				$container->shutdown_waked_after_completion,
+				$container->sequence_mode,
+				$container->priority,
 			);
 		}
 	}

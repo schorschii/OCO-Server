@@ -7,7 +7,7 @@ try {
 
 	if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 		foreach($_POST['remove_id'] as $id) {
-			$db->removeDomainUser($id);
+			$cl->removeDomainUser($id);
 		}
 		die();
 	}

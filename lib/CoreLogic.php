@@ -117,17 +117,43 @@ class CoreLogic {
 			$jobs = $this->db->getPendingJobsForComputerDetailPage($id);
 			if(count($jobs) > 0) throw new Exception(LANG['delete_failed_active_jobs']);
 		}
-
 		$result = $this->db->removeComputer($id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
+	}
+	public function createComputerGroup($name, $parentGroupId=null) {
+		if(empty(trim($name))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$insertId = $this->db->addComputerGroup($name, $parentGroupId);
+		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		return $insertId;
+	}
+	public function renameComputerGroup($id, $newName) {
+		if(empty(trim($newName))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$this->db->renameComputerGroup($id, $newName);
+	}
+	public function addComputerToGroup($computerId, $groupId) {
+		if($this->db->getComputerGroup($groupId) == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		if(count($this->db->getComputerByComputerAndGroup($computerId, $groupId)) == 0) {
+			$this->db->addComputerToGroup($computerId, $groupId);
+		}
+	}
+	public function removeComputerFromGroup($computerId, $groupId) {
+		if($this->db->getComputerGroup($groupId) == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->removeComputerFromGroup($computerId, $groupId);
 	}
 	public function removeComputerGroup($id, $force=false) {
 		if(!$force) {
 			$subgroups = $this->db->getAllComputerGroup($id);
 			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
 		}
-
 		$result = $this->db->removeComputerGroup($id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
@@ -198,6 +224,20 @@ class CoreLogic {
 		}
 		return $insertId;
 	}
+	public function addPackageToGroup($packageId, $groupId) {
+		if($this->db->getPackageGroup($groupId) == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		if(count($this->db->getPackageByPackageAndGroup($packageId, $groupId)) == 0) {
+			$this->db->addPackageToGroup($packageId, $groupId);
+		}
+	}
+	public function removePackageFromGroup($packageId, $groupId) {
+		if($this->db->getPackageGroup($groupId) == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->removePackageFromGroup($packageId, $groupId);
+	}
 	public function removePackage($id, $force=false) {
 		$package = $this->db->getPackage($id);
 		if(empty($package)) throw new Exception(LANG['not_found']);
@@ -225,6 +265,14 @@ class CoreLogic {
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
+	public function createPackageGroup($name, $parentGroupId=null) {
+		if(empty(trim($name))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$insertId = $this->db->addPackageGroup($name, $parentGroupId);
+		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		return $insertId;
+	}
 	public function removePackageGroup($id, $force=false) {
 		if(!$force) {
 			$subgroups = $this->db->getAllPackageGroup($id);
@@ -235,8 +283,112 @@ class CoreLogic {
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
+	public function renamePackageFamily($id, $newName) {
+		if(empty(trim($newName))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$pf = $this->db->getPackageFamily($id);
+		if($pf == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->updatePackageFamily($pf->id, $newName, $pf->notes, $pf->icon);
+	}
+	public function updatePackageFamilyNotes($id, $notes) {
+		$pf = $this->db->getPackageFamily($id);
+		if($pf == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->updatePackageFamily($pf->id, $pf->name, $notes, $pf->icon);
+	}
+	public function updatePackageFamilyIcon($id, $icon) {
+		$pf = $this->db->getPackageFamily($id);
+		if($pf == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->updatePackageFamily($pf->id, $pf->name, $pf->notes, $icon);
+	}
+	public function addPackageDependency($packageId, $dependentPackageId) {
+		if($this->db->getPackage($packageId) == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		if($this->db->getPackage($dependentPackageId) == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->addPackageDependency($packageId, $dependentPackageId);
+	}
+	public function removePackageDependency($packageId, $dependentPackageId) {
+		if($this->db->getPackage($packageId) == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		if($this->db->getPackage($dependentPackageId) == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->removePackageDependency($packageId, $dependentPackageId);
+	}
+	public function updatePackageVersion($id, $newValue) {
+		if(empty(trim($newValue))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$this->db->updatePackageVersion($id, $newValue);
+	}
+	public function updatePackageNote($id, $newValue) {
+		$this->db->updatePackageNote($id, $newValue);
+	}
+	public function updatePackageInstallProcedure($id, $newValue) {
+		if(empty(trim($newValue))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$this->db->updatePackageInstallProcedure($id, $newValue);
+	}
+	public function updatePackageInstallProcedureSuccessReturnCodes($id, $newValue) {
+		$this->db->updatePackageInstallProcedureSuccessReturnCodes($id, $newValue);
+	}
+	public function updatePackageInstallProcedurePostAction($id, $newValue) {
+		if(is_numeric($newValue)
+		&& in_array($newValue, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN, Package::POST_ACTION_EXIT])) {
+			$this->db->updatePackageInstallProcedurePostAction($id, $newValue);
+		} else {
+			throw new Exception(LANG['invalid_input']);
+		}
+	}
+	public function updatePackageUninstallProcedure($id, $newValue) {
+		$this->db->updatePackageUninstallProcedure($id, $newValue);
+	}
+	public function updatePackageUninstallProcedureSuccessReturnCodes($id, $newValue) {
+		$this->db->updatePackageUninstallProcedureSuccessReturnCodes($id, $newValue);
+	}
+	public function updatePackageUninstallProcedurePostAction($id, $newValue) {
+		if(is_numeric($newValue)
+		&& in_array($newValue, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN])) {
+			$this->db->updatePackageUninstallProcedurePostAction($id, $newValue);
+		} else {
+			throw new Exception(LANG['invalid_input']);
+		}
+	}
+	public function updatePackageDownloadForUninstall($id, $newValue) {
+		if(intval($newValue) === 0 || intval($newValue) === 1) {
+			$this->db->updatePackageDownloadForUninstall($_POST['update_package_id'], intval($newValue));
+		} else {
+			throw new Exception(LANG['invalid_input']);
+		}
+	}
+	public function updatePackageCompatibleOs($id, $newValue) {
+		$this->db->updatePackageCompatibleOs($id, $newValue);
+	}
+	public function updatePackageCompatibleOsVersion($id, $newValue) {
+		$this->db->updatePackageCompatibleOsVersion($id, $newValue);
+	}
+	public function reorderPackageInGroup($groupId, $oldPos, $newPos) {
+		$this->db->reorderPackageInGroup($groupId, $oldPos, $newPos);
+	}
+	public function renamePackageGroup($id, $newName) {
+		if(empty(trim($newName))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$this->db->renamePackageGroup($id, $newName);
+	}
 
-	/*** Deployment Operations ***/
+	/*** Deployment / Job Container Operations ***/
 	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority) {
 		// check user input
 		if(empty(trim($name))) {
@@ -612,6 +764,71 @@ class CoreLogic {
 			}
 		}
 	}
+	public function updateJobContainerNotes($id, $notes) {
+		$jc = $this->db->getJobContainer($id);
+		if($jc == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+	}
+	public function renameJobContainer($id, $newName) {
+		if(empty(trim($newName))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$jc = $this->db->getJobContainer($id);
+		if($jc == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->updateJobContainer($jc->id, $newName, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+	}
+	public function updateJobContainerPriority($id, $priority) {
+		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
+			throw new Exception(LANG['invalid_input']);
+		}
+		$jc = $this->db->getJobContainer($id);
+		if($jc == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, intval($priority));
+	}
+	public function updateJobContainerSequenceMode($id, $sequenceMode) {
+		if(!is_numeric($sequenceMode)
+		|| !in_array($sequenceMode, [JobContainer::SEQUENCE_MODE_IGNORE_FAILED, JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
+			throw new Exception(LANG['invalid_input']);
+		}
+		$jc = $this->db->getJobContainer($id);
+		if($jc == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, intval($sequenceMode), $jc->priority);
+	}
+	public function updateJobContainerStart($id, $newStart) {
+		if(DateTime::createFromFormat('Y-m-d H:i:s', $newStart) === false) {
+			throw new Exception(LANG['date_parse_error']);
+		}
+		$jc = $this->db->getJobContainer($id);
+		if($jc == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->updateJobContainer($jc->id, $jc->name, $newStart, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+	}
+	public function updateJobContainerEnd($id, $newEnd) {
+		if(!empty($newEnd) && DateTime::createFromFormat('Y-m-d H:i:s', $newEnd) === false) {
+			throw new Exception(LANG['date_parse_error']);
+		}
+		$jc = $this->db->getJobContainer($id);
+		if($jc == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		if(empty($newEnd)) {
+			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, null, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+		} else {
+			if(strtotime($jc->start_time) > strtotime($newEnd)) {
+				throw new Exception(LANG['end_time_before_start_time']);
+			}
+			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $newEnd, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+		}
+	}
 	public function removeJobContainer($id) {
 		$result = $this->db->removeJobContainer($id);
 		if(!$result) throw new Exception(LANG['not_found']);
@@ -642,15 +859,48 @@ class CoreLogic {
 		}
 		$this->db->updateReport($report->id, $report->report_group_id, $name, $notes, $query);
 	}
+	public function moveReportToGroup($reportId, $groupId) {
+		$report = $this->db->getReport($reportId);
+		if($report === null) {
+			throw new Exception(LANG['not_found']);
+		}
+		if($this->db->getReportGroup($groupId) == null) {
+			throw new Exception(LANG['not_found']);
+		}
+		$this->db->updateReport($report->id, intval($groupId), $report->name, $report->notes, $report->query);
+	}
+	public function removeReport($id) {
+		$result = $this->db->removeReport($id);
+		if(!$result) throw new Exception(LANG['not_found']);
+		return $result;
+	}
+	public function createReportGroup($name, $parentGroupId=null) {
+		if(empty(trim($name))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$insertId = $this->db->addReportGroup($name, $parentGroupId);
+		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		return $insertId;
+	}
+	public function renameReportGroup($id, $newName) {
+		if(empty(trim($newName))) {
+			throw new Exception(LANG['name_cannot_be_empty']);
+		}
+		$this->db->renameReportGroup($id, $newName);
+	}
 	public function removeReportGroup($id, $force=false) {
 		if(!$force) {
 			$subgroups = $this->db->getAllReportGroup($id);
 			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
 		}
-
 		$result = $this->db->removeReportGroup($id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
+	}
+
+	/*** Domain User Operations ***/
+	public function removeDomainUser($id) {
+		return $this->db->removeDomainUser($id);
 	}
 
 	/*** System User Operations ***/

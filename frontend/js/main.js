@@ -624,7 +624,7 @@ function editPackageCompatibleOsVersion(id, oldValue) {
 }
 function reorderPackageInGroup(groupId, oldPos, newPos) {
 	var params = [];
-	params.push({'key':'move_in_group', 'value':groupId});
+	params.push({'key':'move_in_group_id', 'value':groupId});
 	params.push({'key':'move_from_pos', 'value':oldPos});
 	params.push({'key':'move_to_pos', 'value':newPos});
 	var paramString = urlencodeArray(params);
@@ -744,7 +744,7 @@ function createPackageGroup(parent_id=null) {
 function renamePackageGroup(id, oldName) {
 	var newValue = prompt(L__ENTER_NAME, oldName);
 	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'rename_group':id, 'new_name':newValue}), null, function() {
+		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'rename_group_id':id, 'new_name':newValue}), null, function() {
 			refreshContent(); refreshSidebar();
 			emitMessage(L__GROUP_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
 		});
@@ -1076,7 +1076,7 @@ function createComputerGroup(parent_id=null) {
 function renameComputerGroup(id, oldName) {
 	var newValue = prompt(L__ENTER_NAME, oldName);
 	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'rename_group':id, 'new_name':newValue}), null, function() {
+		ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'rename_group_id':id, 'new_name':newValue}), null, function() {
 			refreshContent(); refreshSidebar();
 			emitMessage(L__GROUP_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
 		});
@@ -1415,7 +1415,7 @@ function createReportGroup(parent_id=null) {
 function renameReportGroup(id, oldName) {
 	var newValue = prompt(L__ENTER_NAME, oldName);
 	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/reports.php', urlencodeObject({'rename_group':id, 'new_name':newValue}), null, function() {
+		ajaxRequestPost('ajax-handler/reports.php', urlencodeObject({'rename_group_id':id, 'new_name':newValue}), null, function() {
 			refreshContent(); refreshSidebar();
 			emitMessage(L__GROUP_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
 		});
