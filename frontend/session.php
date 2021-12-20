@@ -7,6 +7,7 @@ if(!isset($_SESSION['oco_username'])) {
 	redirectToLogin();
 }
 // check if user account still exists and is not locked
+if(!isset($db)) { header('Location: index.php'); die(); }
 $currentSystemUser = $db->getSystemUser($_SESSION['oco_user_id']);
 if($currentSystemUser === null || !empty($currentSystemUser->locked)) {
 	redirectToLogin(true);
