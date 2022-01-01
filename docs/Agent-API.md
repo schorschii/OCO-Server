@@ -9,7 +9,11 @@ Within the `params` object, please send the `hostname` with the correct `agent-k
 Please have a look at the following API method documentation for JSON-RPC request/response examples.
 
 # Authentication
+The agent authentication is based on the "trust on first use" (TOFU) principle.
+
 Before the first agent request, both `agent-key` and `server-key` are empty by default (in the server database and the agent config file). In this case, the server will generate new random keys and send it to the agent during the normal `agent_hello` response. The agent should then save the keys into it's config file. On the next request, the agent only trusts the server if it sends the same `server-key` again. If the `{agent|server}-key` is not empty in the agent config file, the agent should not allow a key update!
+
+The server-agent communcation should be encrypted via HTTPS as mentioned in the installation instructions, otherwise attackers can easily obtain the agent and server key.
 
 # Methods
 ## `oco.agent_hello` - Agent Contact Approach
