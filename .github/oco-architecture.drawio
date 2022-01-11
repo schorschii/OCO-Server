@@ -1,11 +1,11 @@
-<mxfile host="Chrome" modified="2022-01-11T14:43:49.070Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36" etag="5jYqbxsIXjhXzXmQaq0q" compressed="false" version="16.2.2" type="device">
+<mxfile host="Chrome" modified="2022-01-11T14:51:20.434Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36" etag="KZLiLwmVtj6bCPEgMlIA" compressed="false" version="16.2.2" type="device">
   <diagram id="L87FYiakqSn3nDc2YnYG" name="Seite-1">
-    <mxGraphModel dx="984" dy="778" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="526" dy="593" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
         <mxCell id="EbMSTE7M3k82zRTxyqx0-20" value="HTTPS" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=#ffffff;rotation=90;" parent="1" vertex="1">
-          <mxGeometry x="233" y="255" width="70" height="20" as="geometry" />
+          <mxGeometry x="221.25" y="265.25" width="93.5" height="20" as="geometry" />
         </mxCell>
         <mxCell id="EbMSTE7M3k82zRTxyqx0-5" value="&lt;b&gt;Management PC&lt;/b&gt;" style="image;html=1;image=img/lib/clip_art/computers/Workstation_128x128.png;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
           <mxGeometry x="80" y="287.5" width="60" height="60" as="geometry" />
@@ -130,17 +130,17 @@
         <mxCell id="68P7AJlM3OViVPwQ6dfX-24" value="Client API" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;labelBackgroundColor=#ffffff;" parent="1" vertex="1">
           <mxGeometry x="280" y="150" width="70" height="20" as="geometry" />
         </mxCell>
-        <mxCell id="JpaonHlg13xQg5MBH8We-1" value="CI/CD Server" style="image;html=1;image=img/lib/clip_art/computers/Mainframe_128x128.png;fontStyle=1" vertex="1" parent="1">
+        <mxCell id="JpaonHlg13xQg5MBH8We-1" value="CI/CD Server" style="image;html=1;image=img/lib/clip_art/computers/Mainframe_128x128.png;fontStyle=1" parent="1" vertex="1">
           <mxGeometry x="80" y="180" width="60" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="JpaonHlg13xQg5MBH8We-2" value="" style="endArrow=classic;html=1;strokeWidth=2;fillColor=#e1d5e7;strokeColor=#9673a6;endFill=1;" edge="1" parent="1">
+        <mxCell id="JpaonHlg13xQg5MBH8We-2" value="" style="endArrow=classic;html=1;strokeWidth=2;fillColor=#e1d5e7;strokeColor=#9673a6;endFill=1;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="240" y="220" as="sourcePoint" />
             <mxPoint x="280" y="220" as="targetPoint" />
             <Array as="points" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="JpaonHlg13xQg5MBH8We-3" value="Build Process" style="image;html=1;image=img/lib/clip_art/computers/Software_128x128.png;fontStyle=2" vertex="1" parent="1">
+        <mxCell id="JpaonHlg13xQg5MBH8We-3" value="Build Process" style="image;html=1;image=img/lib/clip_art/computers/Software_128x128.png;fontStyle=2" parent="1" vertex="1">
           <mxGeometry x="188" y="190" width="36" height="40" as="geometry" />
         </mxCell>
       </root>
