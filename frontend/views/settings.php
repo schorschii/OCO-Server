@@ -55,6 +55,7 @@ require_once('../session.php');
 	</div>
 </div>
 
+<?php if($currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT, false)) { ?>
 <div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG['system_users']; ?></h2>
@@ -64,13 +65,14 @@ require_once('../session.php');
 				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblSystemUserData, this.checked)'></th>
 				<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['full_name']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['role']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['description']; ?></th>
 				<th class=''><?php echo LANG['action']; ?></th>
 			</tr>
 		</thead>
 		<?php
 		$counter = 0;
-		foreach($db->getAllSystemUser() as $u) {
+		foreach($cl->getSystemUsers() as $u) {
 			$counter ++;
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='system_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblSystemUserData)'></td>";
@@ -80,8 +82,9 @@ require_once('../session.php');
 			echo  "<span id='spnSystemUserUsername".$u->id."'>".htmlspecialchars($u->username)."</span>";
 			echo "</td>";
 			echo "<td id='spnSystemUserFullname".$u->id."'>".htmlspecialchars($u->fullname)."</td>";
+			echo "<td id='spnSystemUserRole".$u->id."' rawvalue='".$u->system_user_role_id."'>".htmlspecialchars($u->system_user_role_name)."</td>";
 			echo "<td id='spnSystemUserDescription".$u->id."'>".htmlspecialchars($u->description)."</td>";
-			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUsername".$u->id.".innerText, spnSystemUserFullname".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText)'><img src='img/edit.svg'></button></td>";
+			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUsername".$u->id.".innerText, spnSystemUserFullname".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"))'><img src='img/edit.svg'></button></td>";
 			echo "</tr>";
 		}
 		?>
@@ -105,3 +108,4 @@ require_once('../session.php');
 		</div>
 	</div>
 </div>
+<?php } ?>

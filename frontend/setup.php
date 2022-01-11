@@ -26,7 +26,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 			$db->addSystemUser(
 				$_POST['username'], $_POST['username'],
 				password_hash($_POST['password'], PASSWORD_DEFAULT),
-				0/*ldap-flag*/, null, null, null, 'initial admin user', 0/*locked*/
+				0/*ldap flag*/, null, null, null, 'initial admin user', 0/*locked*/, 1/*default role: superadmin*/
 			)
 		) {
 			header('Location: login.php');
@@ -49,7 +49,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 <div id='container'>
 
 	<div id='header'>
-		<span class='left'><?php echo LANG['app_name']; ?></span>
+		<span class='left'><span class='title'><?php echo LANG['app_name']; ?></span></span>
 		<span class='right'>
 		</span>
 	</div>

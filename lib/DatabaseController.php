@@ -1,9 +1,9 @@
 <?php
 
-class Db {
+class DatabaseController {
 
 	/*
-		 Class Db
+		 Class DatabaseController
 		 Database Abstraction Layer
 
 		 Handles direct database access.
@@ -595,7 +595,7 @@ class Db {
 	}
 	public function getGroupByComputer($cid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cg.id AS "id", cg.name AS "name"
+			'SELECT cg.id AS "id", cg.name AS "name", cg.parent_computer_group_id AS "parent_computer_group_id"
 			FROM computer_group_member cgm
 			INNER JOIN computer_group cg ON cg.id = cgm.computer_group_id
 			WHERE cgm.computer_id = :cid
@@ -862,7 +862,7 @@ class Db {
 	}
 	public function getGroupByPackage($pid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT pg.id AS "id", pg.name AS "name"
+			'SELECT pg.id AS "id", pg.name AS "name", pg.parent_package_group_id AS "parent_package_group_id"
 			FROM package_group_member pgm
 			INNER JOIN package_group pg ON pg.id = pgm.package_group_id
 			WHERE pgm.package_id = :pid
@@ -886,11 +886,20 @@ class Db {
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup');
 	}
 	public function getPackage($id, $binaryAsBase64=false) {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon" FROM package p
-			INNER JOIN package_family pf ON pf.id = p.package_family_id
-			WHERE p.id = :id'
-		);
+		if($binaryAsBase64 === null) {
+			// do not fetch icons if not necessary
+			$this->stmt = $this->dbh->prepare(
+				'SELECT p.*, pf.name AS "package_family_name" FROM package p
+				INNER JOIN package_family pf ON pf.id = p.package_family_id
+				WHERE p.id = :id'
+			);
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon" FROM package p
+				INNER JOIN package_family pf ON pf.id = p.package_family_id
+				WHERE p.id = :id'
+			);
+		}
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package', [$binaryAsBase64]) as $row) {
 			return $row;
@@ -902,7 +911,7 @@ class Db {
 			WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily');
 	}
 	public function getPackageByNameVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
@@ -1494,35 +1503,48 @@ class Db {
 	}
 
 	// System User Operations
-	public function getAllSystemUser() {
+	public function getAllSystemUserRole() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM system_user ORDER BY username ASC'
+			'SELECT * FROM system_user_role ORDER BY name ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUserRole');
+	}
+	public function getAllSystemUser() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT su.*, sur.name AS "system_user_role_name", sur.rights AS "system_user_role_rights"
+			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
+			ORDER BY username ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser', [$this]);
 	}
 	public function getSystemUser($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM system_user WHERE id = :id'
+			'SELECT su.*, sur.name AS "system_user_role_name", sur.rights AS "system_user_role_rights"
+			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
+			WHERE su.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser', [$this]) as $row) {
 			return $row;
 		}
 	}
 	public function getSystemUserByLogin($username) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM system_user WHERE username = :username'
+			'SELECT su.*, sur.name AS "system_user_role_name", sur.rights AS "system_user_role_rights"
+			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
+			WHERE su.username = :username'
 		);
 		$this->stmt->execute([':username' => $username]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser', [$this]) as $row) {
 			return $row;
 		}
 	}
-	public function addSystemUser($username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
+	public function addSystemUser($username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO system_user (username, fullname, password, ldap, email, phone, mobile, description, locked)
-			VALUES (:username, :fullname, :password, :ldap, :email, :phone, :mobile, :description, :locked)'
+			'INSERT INTO system_user (username, fullname, password, ldap, email, phone, mobile, description, locked, system_user_role_id)
+			VALUES (:username, :fullname, :password, :ldap, :email, :phone, :mobile, :description, :locked, :system_user_role_id)'
 		);
 		$this->stmt->execute([
 			':username' => $username,
@@ -1534,12 +1556,13 @@ class Db {
 			':mobile' => $mobile,
 			':description' => $description,
 			':locked' => $locked,
+			':system_user_role_id' => $system_user_role_id,
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updateSystemUser($id, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked) {
+	public function updateSystemUser($id, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE system_user SET username = :username, fullname = :fullname, password = :password, ldap = :ldap, email = :email, phone = :phone, mobile = :mobile, description = :description, locked = :locked WHERE id = :id'
+			'UPDATE system_user SET username = :username, fullname = :fullname, password = :password, ldap = :ldap, email = :email, phone = :phone, mobile = :mobile, description = :description, locked = :locked, system_user_role_id = :system_user_role_id WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
@@ -1552,6 +1575,7 @@ class Db {
 			':mobile' => $mobile,
 			':description' => $description,
 			':locked' => $locked,
+			':system_user_role_id' => $system_user_role_id,
 		]);
 	}
 	public function updateSystemUserLastLogin($id) {

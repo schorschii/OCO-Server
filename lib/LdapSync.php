@@ -97,14 +97,14 @@ for($i=0; $i<$data["count"]; $i++) {
 			echo "--> found user in OCO db with id: ".$id."\n";
 
 			// update into db
-			if($db->updateSystemUser($id, $login, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/))
+			if($db->updateSystemUser($id, $login, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, $checkResult->system_user_role_id))
 				echo "--> updated successfully\n";
 			else echo "--> ERROR updating: ".$db->getLastStatement()->error."\n";
 		} else {
 			echo "--> user not found in OCO db - create new\n";
 
 			// insert into db
-			if($db->addSystemUser($login, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/))
+			if($db->addSystemUser($login, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, LDAP_SYNC_DEFAULT_ROLE_ID))
 				echo "--> inserted successfully\n";
 			else echo "--> ERROR inserting: ".$db->getLastStatement()->error."\n";
 		}

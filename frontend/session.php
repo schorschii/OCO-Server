@@ -9,9 +9,11 @@ if(!isset($_SESSION['oco_username'])) {
 // check if user account still exists and is not locked
 if(!isset($db)) { header('Location: index.php'); die(); }
 $currentSystemUser = $db->getSystemUser($_SESSION['oco_user_id']);
-if($currentSystemUser === null || !empty($currentSystemUser->locked)) {
+if(empty($currentSystemUser) || !empty($currentSystemUser->locked)) {
 	redirectToLogin(true);
 }
+// initialize global CoreLogic with user context
+$cl = new CoreLogic($db, $currentSystemUser);
 
 function redirectToLogin($forceLogout=false) {
 	global $SUBVIEW;

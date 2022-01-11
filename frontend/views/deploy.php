@@ -6,12 +6,30 @@ require_once('../session.php');
 $default_job_container_name = '';
 $select_computer_group_ids = [];
 $select_package_group_ids = [];
+if(!empty($_GET['computer_id']) && is_array($_GET['computer_id'])) {
+	// compile job name
+	foreach($_GET['computer_id'] as $id) {
+		$c = $db->getComputer($id);
+		if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
+		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$c->hostname;
+		else $default_job_container_name .= ', '.$c->hostname;
+	}
+}
+if(!empty($_GET['package_id']) && is_array($_GET['package_id'])) {
+	// compile job name
+	foreach($_GET['package_id'] as $id) {
+		$p = $db->getPackage($id);
+		if(!$currentSystemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
+		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$p->package_family_name;
+		else $default_job_container_name .= ', '.$p->package_family_name;
+	}
+}
 if(!empty($_GET['computer_group_id']) && is_array($_GET['computer_group_id'])) {
 	$select_computer_group_ids = $_GET['computer_group_id'];
 	// compile job name
 	foreach($select_computer_group_ids as $id) {
 		$cg = $db->getComputerGroup($id);
-		if($cg == null) continue;
+		if(!$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
 		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$cg->name;
 		else $default_job_container_name .= ', '.$cg->name;
 	}
@@ -21,7 +39,7 @@ if(!empty($_GET['package_group_id']) && is_array($_GET['package_group_id'])) {
 	// compile job name
 	foreach($select_package_group_ids as $id) {
 		$pg = $db->getPackageGroup($id);
-		if($pg == null) continue;
+		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$pg->name;
 		else $default_job_container_name .= ', '.$pg->name;
 	}
@@ -104,7 +122,7 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['computer_groups']; ?> (<span id='spnSelectedComputerGroups'>0</span>/<span id='spnTotalComputerGroups'>0</span>)</h3>
 		<select id='sltComputerGroup' size='10' multiple='true' onchange='if(getSelectValues(this).length > 1) { sltComputer.innerHTML="";sltComputer.disabled=true;refreshDeployCount(); }else{ sltComputer.disabled=false;refreshDeployComputerAndPackages(this.value, null); }'>
 			<option value='-1'><?php echo LANG['all_computer']; ?></option>
-			<?php echoTargetComputerGroupOptions($db, $select_computer_group_ids); ?>
+			<?php echoTargetComputerGroupOptions($select_computer_group_ids); ?>
 		</select>
 	</div>
 	<div>
@@ -121,7 +139,7 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['package_groups']; ?> (<span id='spnSelectedPackageGroups'>0</span>/<span id='spnTotalPackageGroups'>0</span>)</h3>
 		<select id='sltPackageGroup' size='10' multiple='true' onchange='if(getSelectValues(this).length > 1) { sltPackage.innerHTML="";sltPackage.disabled=true;refreshDeployCount(); }else{ sltPackage.disabled=false;refreshDeployComputerAndPackages(null, this.value) }'>
 			<option value='-1'><?php echo LANG['all_packages']; ?></option>
-			<?php echoTargetPackageGroupOptions($db, $select_package_group_ids); ?>
+			<?php echoTargetPackageGroupOptions($select_package_group_ids); ?>
 		</select>
 	</div>
 	<div>
@@ -144,19 +162,31 @@ if(empty($default_job_container_name)) {
 </div>
 
 <?php
-function echoTargetComputerGroupOptions($db, $select_computer_group_ids, $parent=null, $indent=0) {
+function echoTargetComputerGroupOptions($select_computer_group_ids, $parent=null, $indent=0) {
+	global $db;
+	global $currentSystemUser;
+
 	foreach($db->getAllComputerGroup($parent) as $cg) {
+		if(!$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_READ, false)
+		&& !$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
+
 		$selected = '';
 		if(in_array($cg->id, $select_computer_group_ids)) $selected = 'selected';
 		echo "<option value='".htmlspecialchars($cg->id)."' ".$selected.">".trim(str_repeat("‒",$indent)." ".htmlspecialchars($cg->name))."</option>";
-		echoTargetComputerGroupOptions($db, $select_computer_group_ids, $cg->id, $indent+1);
+		echoTargetComputerGroupOptions($select_computer_group_ids, $cg->id, $indent+1);
 	}
 }
-function echoTargetPackageGroupOptions($db, $select_package_group_ids, $parent=null, $indent=0) {
+function echoTargetPackageGroupOptions($select_package_group_ids, $parent=null, $indent=0) {
+	global $db;
+	global $currentSystemUser;
+
 	foreach($db->getAllPackageGroup($parent) as $pg) {
+		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
+		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
+
 		$selected = '';
 		if(in_array($pg->id, $select_package_group_ids)) $selected = 'selected';
 		echo "<option value='".htmlspecialchars($pg->id)."' ".$selected.">".trim(str_repeat("‒",$indent)." ".htmlspecialchars($pg->name))."</option>";
-		echoTargetPackageGroupOptions($db, $select_package_group_ids, $pg->id, $indent+1);
+		echoTargetPackageGroupOptions($select_package_group_ids, $pg->id, $indent+1);
 	}
 }

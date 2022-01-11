@@ -3,13 +3,18 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-$package = null;
-if(!empty($_GET['id'])) {
-	$package = $db->getPackage($_GET['id']);
+// ----- prepare view -----
+try {
+	$package = $cl->getPackage($_GET['id'] ?? -1);
+	$packageFamily = $db->getPackageFamily($package->package_family_id);
+	if($packageFamily === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
+} catch(NotFoundException $e) {
+	die("<div class='alert warning'>".LANG['not_found']."</div>");
+} catch(PermissionException $e) {
+	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+} catch(InvalidRequestException $e) {
+	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
-if($package === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-
-$packageFamily = $db->getPackageFamily($package->package_family_id);
 ?>
 
 <div class='details-header'>

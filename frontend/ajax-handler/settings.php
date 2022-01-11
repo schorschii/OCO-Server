@@ -8,10 +8,11 @@ try {
 	if(isset($_POST['create_system_user'])
 	&& isset($_POST['fullname'])
 	&& isset($_POST['description'])
-	&& isset($_POST['password'])) {
+	&& isset($_POST['password'])
+	&& isset($_POST['role_id'])) {
 		die(strval(intval(
 			$cl->createSystemUser(
-				$_POST['create_system_user'], $_POST['fullname'], $_POST['description'], $_POST['password']
+				$_POST['create_system_user'], $_POST['fullname'], $_POST['description'], $_POST['password'], $_POST['role_id']
 			)
 		)));
 	}
@@ -20,9 +21,10 @@ try {
 	&& isset($_POST['username'])
 	&& isset($_POST['fullname'])
 	&& isset($_POST['description'])
-	&& isset($_POST['password'])) {
+	&& isset($_POST['password'])
+	&& isset($_POST['role_id'])) {
 		$cl->updateSystemUser(
-			$_POST['update_system_user_id'], $_POST['username'], $_POST['fullname'], $_POST['description'], $_POST['password']
+			$_POST['update_system_user_id'], $_POST['username'], $_POST['fullname'], $_POST['description'], $_POST['password'], $_POST['role_id']
 		);
 		die();
 	}
@@ -51,6 +53,9 @@ try {
 		die();
 	}
 
+} catch(PermissionException $e) {
+	header('HTTP/1.1 403 Forbidden');
+	die(LANG['permission_denied']);
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
 	die($e->getMessage());

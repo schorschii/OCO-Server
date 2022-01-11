@@ -354,6 +354,10 @@ const LANG = [
 	'ldap_accounts_cannot_be_modified' => 'LDAP-Accounts können nur über Ihrem Verzeichnisdienst bearbeitet werden',
 	'update_available' => 'Update verfügbar!',
 	'prerelease_note' => '(Vorabversion)',
+	'permission_denied' => 'Zugriff verweigert. Sie besitzen nicht die notwendigen Rechte.',
+	'web_interface_login_not_allowed' => 'Es ist diesem Benutzer nicht gestattet sich am Web Interface anzumelden',
+	'api_login_not_allowed' => 'Es ist diesem Benutzer nicht gestattet sich an der API anzumelden',
+	'role' => 'Rolle',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

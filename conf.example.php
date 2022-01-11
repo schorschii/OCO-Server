@@ -62,6 +62,9 @@ const LDAP_QUERY_ROOT = '';
 // Example: 'CN=OcoUsers,OU=Benutzer,DC=sieber,DC=systems' or null
 const LDAP_SYNC_GROUP = null;
 
+// Default: Role ID 1 = Superadmin. It is recommended to set this to a role with not too much permission. The role can be changed later in the web frontend.
+const LDAP_SYNC_DEFAULT_ROLE_ID = 1;
+
 ///// SATELLITE WOL CONFIGURATION (optional) /////
 /*
  If you want to use Wake On Lan (WOL) on foreign networks (networks, in which your OCO server

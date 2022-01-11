@@ -19,6 +19,16 @@ require_once('../session.php');
 		<td><textarea class='fullwidth' autocomplete='new-password' id='txtEditSystemUserDescription'></textarea></td>
 	</tr>
 	<tr>
+		<th><?php echo LANG['role']; ?></th>
+		<td>
+			<select class='fullwidth' id='sltEditSystemUserRole'>
+				<?php foreach($cl->getSystemUserRoles() as $role) { ?>
+					<option value='<?php echo htmlspecialchars($role->id); ?>'><?php echo htmlspecialchars($role->name); ?></option>
+				<?php } ?>
+			</select>
+		</td>
+	</tr>
+	<tr>
 		<th><?php echo LANG['new_password']; ?></th>
 		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtEditSystemUserNewPassword'></input></td>
 	</tr>
@@ -28,6 +38,6 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td><button id='btnCreateUser' class='fullwidth' onclick='if(txtEditSystemUserNewPassword.value!=txtEditSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editSystemUser(txtEditSystemUserId.value, txtEditSystemUserUsername.value, txtEditSystemUserFullname.value, txtEditSystemUserDescription.value, txtEditSystemUserNewPassword.value)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['change']; ?></button></td>
+		<td><button id='btnCreateUser' class='fullwidth' onclick='if(txtEditSystemUserNewPassword.value!=txtEditSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editSystemUser(txtEditSystemUserId.value, txtEditSystemUserUsername.value, txtEditSystemUserFullname.value, txtEditSystemUserDescription.value, txtEditSystemUserNewPassword.value, sltEditSystemUserRole.value)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['change']; ?></button></td>
 	</tr>
 </table>

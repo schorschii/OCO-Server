@@ -6,8 +6,15 @@ require_once('../session.php');
 
 <?php
 if(!empty($_GET['id'])) {
-	$domainUser = $db->getDomainUser($_GET['id']);
-	if($domainUser === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
+	try {
+		$domainUser = $cl->getDomainUser($_GET['id']);
+	} catch(NotFoundException $e) {
+		die("<div class='alert warning'>".LANG['not_found']."</div>");
+	} catch(PermissionException $e) {
+		die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+	} catch(InvalidRequestException $e) {
+		die("<div class='alert error'>".$e->getMessage()."</div>");
+	}
 ?>
 
 
@@ -81,7 +88,16 @@ if(!empty($_GET['id'])) {
 
 
 <?php
-} else { $domainUser = $db->getAllDomainUser();
+} else {
+	try {
+		$domainUsers = $cl->getDomainUsers();
+	} catch(NotFoundException $e) {
+		die("<div class='alert warning'>".LANG['not_found']."</div>");
+	} catch(PermissionException $e) {
+		die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+	} catch(InvalidRequestException $e) {
+		die("<div class='alert error'>".$e->getMessage()."</div>");
+	}
 ?>
 
 
@@ -102,7 +118,7 @@ if(!empty($_GET['id'])) {
 		</thead>
 		<?php
 		$counter = 0;
-		foreach($domainUser as $u) {
+		foreach($domainUsers as $u) {
 			$counter ++;
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblDomainUserData)'></td>";

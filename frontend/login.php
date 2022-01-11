@@ -14,8 +14,14 @@ if(!$db->existsSchema() || count($db->getAllSystemUser()) == 0) {
 session_start();
 if(isset($_POST['username']) && isset($_POST['password'])) {
 	try {
-		$user = $cl->login($_POST['username'], $_POST['password']);
-		if(empty($user)) throw new Exception(LANG['unknown_error']);
+		$authenticator = new AuthenticationController($db);
+		$user = $authenticator->login($_POST['username'], $_POST['password']);
+		if($user == null || !$user instanceof SystemUser) throw new Exception(LANG['unknown_error']);
+
+		if(!$user->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND, false)) {
+			throw new AuthenticationException(LANG['web_interface_login_not_allowed']);
+		}
+
 		// login successful
 		$db->addLogEntry(Log::LEVEL_INFO, $user->username, 'oco.webfrontend.authentication', 'Login Successful');
 		$_SESSION['oco_last_login'] = $user->last_login;
@@ -23,7 +29,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		$_SESSION['oco_user_id'] = $user->id;
 		header('Location: index.php');
 		die();
-	} catch(Exception $e) {
+	} catch(AuthenticationException $e) {
 		$db->addLogEntry(Log::LEVEL_WARNING, $_POST['username'], 'oco.webfrontend.authentication', 'Login Failed');
 
 		$info = $e->getMessage();

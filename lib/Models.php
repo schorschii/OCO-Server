@@ -119,6 +119,7 @@ class ComputerPackage {
 }
 class ComputerGroup {
 	public $id;
+	public $parent_computer_group_id;
 	public $name;
 }
 class PackageFamily {
@@ -126,6 +127,12 @@ class PackageFamily {
 		if($binaryAsBase64 && !empty($this->icon))
 			$this->icon = base64_encode($this->icon);
 	}
+	public static function __constructWithId($id) {
+		$item = new PackageFamily();
+		$item->id = $id;
+		return $item;
+	}
+	// attributes
 	public $id;
 	public $name;
 	public $notes;
@@ -147,6 +154,7 @@ class Package {
 		if($binaryAsBase64 && !empty($this->package_family_icon))
 			$this->package_family_icon = base64_encode($this->package_family_icon);
 	}
+	// attributes
 	public $id;
 	public $version;
 	public $notes;
@@ -211,6 +219,7 @@ class Package {
 }
 class PackageGroup {
 	public $id;
+	public $parent_package_group_id;
 	public $name;
 }
 class JobContainer {
@@ -333,6 +342,11 @@ class DomainUserLogon {
 	public $domain_user_username;
 }
 class SystemUser {
+	private $db;
+	public function __construct(DatabaseController $db) {
+		$this->db = $db;
+	}
+	// attributes
 	public $id;
 	public $username;
 	public $fullname;
@@ -346,6 +360,22 @@ class SystemUser {
 	public $last_login;
 	public $created;
 	public $system_user_role_id;
+	// joined system user role attributes
+	public $system_user_role_name;
+	public $system_user_role_rights;
+	// permission implementation
+	private $pm;
+	function checkPermission($ressource, String $method, Bool $throw=true) {
+		if($this->pm === null) $this->pm = new PermissionManager($this->db, $this);
+		$checkResult = $this->pm->hasPermission($ressource, $method);
+		if(!$checkResult && $throw) throw new PermissionException();
+		return $checkResult;
+	}
+}
+class SystemUserRole {
+	public $id;
+	public $name;
+	public $rights;
 }
 class Software {
 	public $id;
@@ -356,12 +386,14 @@ class Software {
 }
 class Report {
 	public $id;
+	public $report_group_id;
 	public $name;
 	public $notes;
 	public $query;
 }
 class ReportGroup {
 	public $id;
+	public $parent_report_group_id;
 	public $name;
 }
 class Log {

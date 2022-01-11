@@ -24,15 +24,25 @@ if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2
 }
 
 // login
+$cl = null;
 try {
 	if(empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW'])) {
-		throw new Exception(LANG['username_cannot_be_empty']);
+		throw new AuthenticationException(LANG['username_cannot_be_empty']);
 	}
-	if(empty($cl->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']))) {
-		throw new Exception(LANG['unknown_error']);
+	$authenticator = new AuthenticationController($db);
+	$user = $authenticator->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
+	if($user == null || !$user instanceof SystemUser) {
+		throw new AuthenticationException(LANG['unknown_error']);
 	}
+
+	if(!$user->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_CLIENT_API, false)) {
+		throw new AuthenticationException(LANG['api_login_not_allowed']);
+	}
+
+	// login successful
+	$cl = new CoreLogic($db, $user);
 	$db->addLogEntry(Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], 'oco.clientapi.authentication', 'Authentication Successful');
-} catch(Exception $e) {
+} catch(AuthenticationException $e) {
 	$db->addLogEntry(Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'], 'oco.clientapi.authentication', 'Authentication Failed');
 
 	header('HTTP/1.1 401 Client Not Authorized');
@@ -54,313 +64,220 @@ if(!empty(CLIENT_API_KEY) && CLIENT_API_KEY !== ($params['api_key'] ?? '')) {
 	die();
 }
 
+try {
+
 // handle method
 switch($srcdata['method']) {
 	case 'oco.computer.list':
-		try {
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => $db->getAllComputer()
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => $cl->getComputers()
+		];
 		break;
+
 	case 'oco.computer.get':
-		try {
-			$computer = $db->getComputer($data['id'] ?? 0);
-			if($computer == null) throw new Exception(LANG['not_found']);
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true,
-				'data' => [
-					'general' => $computer,
-					'logins' => $db->getDomainUserLogonByComputer($computer->id),
-					'networks' => $db->getComputerNetwork($computer->id),
-					'screens' => $db->getComputerScreen($computer->id),
-					'printers' => $db->getComputerPrinter($computer->id),
-					'filesystems' => $db->getComputerPartition($computer->id),
-					'recognised_software' => $db->getComputerSoftware($computer->id),
-					'installed_packages' => $db->getComputerPackage($computer->id),
-					'pending_jobs' => $db->getPendingJobsForComputerDetailPage($computer->id),
-				]
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$computer = $cl->getComputer($data['id'] ?? 0);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true,
+			'data' => [
+				'general' => $computer,
+				'logins' => $db->getDomainUserLogonByComputer($computer->id),
+				'networks' => $db->getComputerNetwork($computer->id),
+				'screens' => $db->getComputerScreen($computer->id),
+				'printers' => $db->getComputerPrinter($computer->id),
+				'filesystems' => $db->getComputerPartition($computer->id),
+				'recognised_software' => $db->getComputerSoftware($computer->id),
+				'installed_packages' => $db->getComputerPackage($computer->id),
+				'pending_jobs' => $db->getPendingJobsForComputerDetailPage($computer->id),
+			]
+		];
 		break;
+
 	case 'oco.computer.create':
-		try {
-			$insertId = $cl->createComputer($data['hostname'] ?? '', $data['notes'] ?? '');
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => [ 'id' => $insertId ]
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$insertId = $cl->createComputer($data['hostname'] ?? '', $data['notes'] ?? '');
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => [ 'id' => $insertId ]
+		];
 		break;
+
 	case 'oco.computer.wol':
-		try {
-			$cl->wolComputers([intval($data['id'] ?? 0)], false);
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => []
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$cl->wolComputers([intval($data['id'] ?? 0)], false);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
+		];
 		break;
+
 	case 'oco.computer.remove':
-		try {
-			$cl->removeComputer(intval($data['id'] ?? 0), boolval($data['force'] ?? 1));
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => []
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$cl->removeComputer(intval($data['id'] ?? 0), boolval($data['force'] ?? 1));
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
+		];
 		break;
 
 	case 'oco.package_family.list':
-		try {
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => $db->getAllPackageFamily($data['show_icons'] ?? false)
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => $cl->getPackageFamilies(null, $data['show_icons'] ?? false)
+		];
 		break;
+
 	case 'oco.package.list':
-		try {
-			$pf = $db->getPackageFamily($data['id'] ?? 0);
-			if($pf == null) throw new Exception(LANG['not_found']);
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => $db->getPackageByFamily($data['id'] ?? 0)
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$pf = $cl->getPackageFamily($data['id'] ?? 0);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => $db->getPackageByFamily($data['id'] ?? 0)
+		];
 		break;
+
 	case 'oco.package.get':
-		try {
-			$package = $db->getPackage($data['id'] ?? 0, $data['show_icons'] ?? false);
-			if($package == null) throw new Exception(LANG['not_found']);
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => [
-					'general' => $package,
-					'installations' => $db->getPackageComputer($package->id),
-					'pending_jobs' => $db->getPendingJobsForPackageDetailPage($package->id),
-				]
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$package = $cl->getPackage($data['id'] ?? 0, $data['show_icons'] ?? false);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => [
+				'general' => $package,
+				'installations' => $db->getPackageComputer($package->id),
+				'pending_jobs' => $db->getPendingJobsForPackageDetailPage($package->id),
+			]
+		];
 		break;
+
 	case 'oco.package.create':
-		try {
-			// prepare file (extract content from base64 encoded JSON)
-			$tmpFilePath = null;
-			if(!empty($data['file'])) {
-				$tmpFilePath = '/tmp/ocotmp';
-				$fileContent = base64_decode($data['file'], true);
-				if(!$fileContent) {
-					throw new Exception(LANG['payload_corrupt']);
-				}
-				file_put_contents($tmpFilePath, $fileContent);
+		// prepare file (extract content from base64 encoded JSON)
+		$tmpFilePath = null;
+		if(!empty($data['file'])) {
+			$tmpFilePath = '/tmp/ocotmp';
+			$fileContent = base64_decode($data['file'], true);
+			if(!$fileContent) {
+				throw new InvalidRequestException(LANG['payload_corrupt']);
 			}
-			// insert into database
-			$insertId = $cl->createPackage($data['name'] ?? '', $data['version'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
-				$data['install_procedure'] ?? '', $data['install_procedure_success_return_codes'] ?? '0', $data['install_procedure_post_action'] ?? 0,
-				$data['uninstall_procedure'] ?? '', $data['uninstall_procedure_success_return_codes'] ?? '0', $data['download_for_uninstall'] ?? 0, $data['uninstall_procedure_post_action'] ?? 0,
-				$data['compatible_os'] ?? '', $data['compatible_os_version'] ?? '', $tmpFilePath, $data['file_name'] ?? 'file'
-			);
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => [ 'id' => $insertId ]
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
+			file_put_contents($tmpFilePath, $fileContent);
 		}
+		// insert into database
+		$insertId = $cl->createPackage($data['name'] ?? '', $data['version'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+			$data['install_procedure'] ?? '', $data['install_procedure_success_return_codes'] ?? '0', $data['install_procedure_post_action'] ?? 0,
+			$data['uninstall_procedure'] ?? '', $data['uninstall_procedure_success_return_codes'] ?? '0', $data['download_for_uninstall'] ?? 0, $data['uninstall_procedure_post_action'] ?? 0,
+			$data['compatible_os'] ?? '', $data['compatible_os_version'] ?? '', $tmpFilePath, $data['file_name'] ?? 'file'
+		);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => [ 'id' => $insertId ]
+		];
 		break;
+
 	case 'oco.package.remove':
-		try {
-			$cl->removePackage(intval($data['id'] ?? 0), boolval($data['force'] ?? 1));
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => []
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$cl->removePackage(intval($data['id'] ?? 0), boolval($data['force'] ?? 1));
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
+		];
 		break;
 
 	case 'oco.job_container.list':
-		try {
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => $db->getAllJobContainer()
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => $cl->getJobContainers()
+		];
 		break;
+
 	case 'oco.job.list':
-		try {
-			$jc = $db->getJobContainer($data['id'] ?? 0);
-			if($jc == null) throw new Exception(LANG['not_found']);
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => $db->getAllJobByContainer($data['id'] ?? 0)
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$jc = $cl->getJobContainer($data['id'] ?? 0);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => $db->getAllJobByContainer($data['id'] ?? 0)
+		];
 		break;
+
 	case 'oco.deploy':
-		try {
-			$insertId = $cl->deploy(
-				$data['name'], $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
-				$data['computer_ids'] ?? [], $data['computer_group_ids'] ?? [], $data['package_ids'] ?? [], $data['package_group_ids'] ?? [],
-				$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
-				$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5,
-				$data['auto_create_uninstall_jobs'] ?? 1, $data['force_install_same_version'] ?? 0,
-				$data['sequence_mode'] ?? 0, $data['priority'] ?? 0
-			);
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => [ 'id' => $insertId ]
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$insertId = $cl->deploy(
+			$data['name'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+			$data['computer_ids'] ?? [], $data['computer_group_ids'] ?? [], $data['package_ids'] ?? [], $data['package_group_ids'] ?? [],
+			$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
+			$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5,
+			$data['auto_create_uninstall_jobs'] ?? 1, $data['force_install_same_version'] ?? 0,
+			$data['sequence_mode'] ?? 0, $data['priority'] ?? 0
+		);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => [ 'id' => $insertId ]
+		];
 		break;
+
 	case 'oco.uninstall':
-		try {
-			$insertId = $cl->uninstall(
-				$data['name'], $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
-				$data['installation_ids'] ?? [],
-				$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
-				$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5
-			);
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => [ 'id' => $insertId ]
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$insertId = $cl->uninstall(
+			$data['name'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+			$data['installation_ids'] ?? [],
+			$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
+			$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5
+		);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => [ 'id' => $insertId ]
+		];
 		break;
+
 	case 'oco.remove_installation_assignment':
-		try {
-			$cl->removeComputerAssignedPackage(intval($data['id'] ?? 0));
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => []
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$cl->removeComputerAssignedPackage(intval($data['id'] ?? 0));
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
+		];
 		break;
+
 	case 'oco.job_container.remove':
-		try {
-			$cl->removeJobContainer(intval($data['id'] ?? 0));
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => []
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$cl->removeJobContainer(intval($data['id'] ?? 0));
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
+		];
 		break;
+
 	case 'oco.job.remove':
-		try {
-			$cl->removeJob(intval($data['id'] ?? 0));
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => []
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$cl->removeJob(intval($data['id'] ?? 0));
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
+		];
 		break;
 
 	case 'oco.report.execute':
-		try {
-			$report = $db->getReport(intval($data['id'] ?? 0));
-			if(empty($report)) throw new Exception(LANG['not_found']);
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => true, 'data' => $db->executeReport($report->id)
-			];
-		} catch(Exception $e) {
-			$resdata['error'] = $e->getMessage();
-			$resdata['result'] = [
-				'success' => false, 'data' => []
-			];
-		}
+		$report = $cl->getReport(intval($data['id'] ?? 0));
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => $db->executeReport($report->id)
+		];
 		break;
 
 	default:
-		$resdata['error'] = 'Unknown Method';
-		$resdata['result'] = [
-			'success' => false,
-		];
+		throw new InvalidRequestException(LANG['unknown_method']);
+}
+
+} catch(NotFoundException $e) {
+	header('HTTP/1.1 404 Not Found');
+	$resdata['error'] = LANG['not_found'];
+	$resdata['result'] = [
+		'success' => false
+	];
+} catch(PermissionException $e) {
+	header('HTTP/1.1 403 Forbidden');
+	$resdata['error'] = LANG['permission_denied'];
+	$resdata['result'] = [
+		'success' => false
+	];
+} catch(InvalidRequestException $e) {
+	header('HTTP/1.1 400 Invalid Request');
+	$resdata['error'] = $e->getMessage();
+	$resdata['result'] = [
+		'success' => false
+	];
+} catch(Exception $e) {
+	$resdata['error'] = $e->getMessage();
+	$resdata['result'] = [
+		'success' => false
+	];
 }
 
 // return response

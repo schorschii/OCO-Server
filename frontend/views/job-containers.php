@@ -5,13 +5,18 @@ require_once('../session.php');
 
 if(!empty($_GET['id'])) {
 
-	$container = $db->getJobContainer($_GET['id']);
-	if($container === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-	$jobs = $db->getAllJobByContainer($container->id);
+	try {
+		$container = $cl->getJobContainer($_GET['id'] ?? -1);
+	} catch(NotFoundException $e) {
+		die("<div class='alert warning'>".LANG['not_found']."</div>");
+	} catch(PermissionException $e) {
+		die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+	} catch(InvalidRequestException $e) {
+		die("<div class='alert error'>".$e->getMessage()."</div>");
+	}
 
-	$done = 0;
-	$failed = 0;
-	$percent = 0;
+	$jobs = $db->getAllJobByContainer($container->id);
+	$done = 0; $failed = 0; $percent = 0;
 	if(count($jobs) > 0) {
 		foreach($jobs as $job) {
 			if($job->state == Job::STATUS_SUCCEEDED || $job->state == Job::STATUS_ALREADY_INSTALLED) $done ++;
@@ -157,7 +162,18 @@ if(!empty($_GET['id'])) {
 	</div>
 	</div>
 
-<?php } else { ?>
+<?php
+} else {
+	try {
+		$containers = $cl->getJobContainers();
+	} catch(NotFoundException $e) {
+		die("<div class='alert warning'>".LANG['not_found']."</div>");
+	} catch(PermissionException $e) {
+		die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+	} catch(InvalidRequestException $e) {
+		die("<div class='alert error'>".$e->getMessage()."</div>");
+	}
+?>
 
 	<h1><img src='img/job.dyn.svg'><span id='page-title'><?php echo LANG['job_container']; ?></span></h1>
 
@@ -183,7 +199,7 @@ if(!empty($_GET['id'])) {
 			</thead>
 			<tbody>
 			<?php $counter = 0;
-			foreach($db->getAllJobContainer() as $jc) {
+			foreach($cl->getJobContainers() as $jc) {
 				$counter ++;
 				$percent = 0;
 				$done = 0;

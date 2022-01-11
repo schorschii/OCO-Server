@@ -3,16 +3,25 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-if(empty($_GET['id'])) {
-	$reports = $db->getAllReport();
-} else {
-	$reportGroup = $db->getReportGroup($_GET['id']);
-	if(empty($reportGroup)) die("<div class='alert warning'>".LANG['not_found']."</div>");
-	$reports = $db->getAllReportByGroup($reportGroup->id);
+$group = null;
+$reports = [];
+try {
+	if(!empty($_GET['id'])) {
+		$group = $cl->getReportGroup($_GET['id']);
+		$reports = $cl->getReports($group);
+	} else {
+		$reports = $cl->getReports();
+	}
+} catch(NotFoundException $e) {
+	die("<div class='alert warning'>".LANG['not_found']."</div>");
+} catch(PermissionException $e) {
+	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+} catch(InvalidRequestException $e) {
+	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
 ?>
 
-<?php if(empty($_GET['id'])) { ?>
+<?php if($group === null) { ?>
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><?php echo LANG['reports']; ?></span></h1>
 	<div class='controls'>
 		<button onclick='showDialogCreateReport()'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
@@ -21,12 +30,12 @@ if(empty($_GET['id'])) {
 		<span><a target='_blank' href='img/dbschema.png' title='<?php echo LANG['database_schema_description']; ?>'><?php echo LANG['database_schema']; ?></a></span>
 	</div>
 <?php } else { ?>
-	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getReportGroupBreadcrumbString($reportGroup->id)); ?></span><span id='spnReportGroupName' class='rawvalue'><?php echo htmlspecialchars($reportGroup->name); ?></span></h1>
+	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getReportGroupBreadcrumbString($group->id)); ?></span><span id='spnReportGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
 	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
-		<button onclick='showDialogCreateReport("<?php echo $reportGroup->id; ?>")'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
-		<button onclick='createReportGroup(<?php echo $reportGroup->id; ?>)'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
-		<button onclick='renameReportGroup(<?php echo $reportGroup->id; ?>, spnReportGroupName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
-		<button onclick='confirmRemoveReportGroup([<?php echo $reportGroup->id; ?>], event, spnReportGroupName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
+		<button onclick='showDialogCreateReport("<?php echo $group->id; ?>")'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
+		<button onclick='createReportGroup(<?php echo $group->id; ?>)'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
+		<button onclick='renameReportGroup(<?php echo $group->id; ?>, spnReportGroupName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
+		<button onclick='confirmRemoveReportGroup([<?php echo $group->id; ?>], event, spnReportGroupName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>
 <?php } ?>
 

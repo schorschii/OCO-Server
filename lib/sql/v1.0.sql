@@ -432,7 +432,7 @@ CREATE TABLE `system_user` (
   `locked` tinyint(4) NOT NULL DEFAULT 0,
   `last_login` datetime DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT current_timestamp(),
-  `system_user_role_id` int(11) DEFAULT NULL
+  `system_user_role_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -446,6 +446,15 @@ CREATE TABLE `system_user_role` (
   `name` text NOT NULL,
   `rights` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
 ) ;
+
+--
+-- Daten für Tabelle `system_user_role`
+--
+
+INSERT INTO `system_user_role` (`id`, `name`, `rights`) VALUES
+(1, 'Superadmin', '{\"client_api_allowed\": true, \"package_management\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"computer_management\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"domain_user_management\": {\"read\": true, \"delete\": true}, \"system_user_management\": true, \"report_management\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"report_group_management\": {\"*\": {\"read\": true, \"items\": {}, \"write\": true, \"create\": true, \"delete\": true}}, \"job_container_management\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": false}, \"package_group_management\": {\"*\": {\"read\": true, \"items\": {}, \"write\": true, \"create\": true, \"delete\": true}}, \"recognised_software_view\": true, \"computer_group_management\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"package_family_management\": {\"*\": {\"read\": true, \"items\": {}, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"client_web_frontend_allowed\": true}');
+
+-- --------------------------------------------------------
 
 --
 -- Indizes der exportierten Tabellen

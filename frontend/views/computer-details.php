@@ -3,46 +3,20 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-function echoCommandButton($c, $target, $link=false) {
-	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
-	$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);
-	$description = $c['description'];
-	if(array_key_exists($c['description'], LANG)) $description = LANG[$c['description']];
-	if($c['new_tab']) {
-		if($link) {
-			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."' target='_blank'>";
-			echo htmlspecialchars($c['name']);
-			echo "</a>";
-		} else {
-			echo "<button title='".htmlspecialchars($description)."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
-			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
-			echo "</button>";
-		}
-	} else {
-		if($link) {
-			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."'>";
-			echo htmlspecialchars($c['name']);
-			echo "</a>";
-		} else {
-			echo "<button title='".htmlspecialchars($description)."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
-			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
-			echo "</button>";
-		}
-	}
-}
-
 // ----- prepare view -----
-$computer = null;
-if(!empty($_GET['id']))
-	$computer = $db->getComputer($_GET['id']);
-
-if($computer === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-
-$online = $computer->isOnline();
+try {
+	$computer = $cl->getComputer($_GET['id'] ?? -1);
+} catch(NotFoundException $e) {
+	die("<div class='alert warning'>".LANG['not_found']."</div>");
+} catch(PermissionException $e) {
+	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+} catch(InvalidRequestException $e) {
+	die("<div class='alert error'>".$e->getMessage()."</div>");
+}
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($online ? 'online' : 'offline'); ?>' title='<?php echo($online ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
+	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline() ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
@@ -456,3 +430,32 @@ $online = $computer->isOnline();
 		</table>
 	</div>
 </div>
+
+<?php
+function echoCommandButton($c, $target, $link=false) {
+	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
+	$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);
+	$description = $c['description'];
+	if(array_key_exists($c['description'], LANG)) $description = LANG[$c['description']];
+	if($c['new_tab']) {
+		if($link) {
+			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."' target='_blank'>";
+			echo htmlspecialchars($c['name']);
+			echo "</a>";
+		} else {
+			echo "<button title='".htmlspecialchars($description)."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
+			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
+			echo "</button>";
+		}
+	} else {
+		if($link) {
+			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."'>";
+			echo htmlspecialchars($c['name']);
+			echo "</a>";
+		} else {
+			echo "<button title='".htmlspecialchars($description)."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
+			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
+			echo "</button>";
+		}
+	}
+}

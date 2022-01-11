@@ -11,58 +11,61 @@ class CoreLogic {
 	*/
 
 	private $db;
+	private $systemUser;
 
-	function __construct($db) {
+	function __construct($db, $systemUser=null) {
 		$this->db = $db;
+		$this->systemUser = $systemUser;
 	}
 
-	/*** Authentication Logic ***/
-	public function login($username, $password) {
-		$user = $this->db->getSystemUserByLogin($username);
-		if($user === null) {
-			sleep(2); // delay to avoid brute force attacks
-			throw new Exception(LANG['user_does_not_exist']);
-		} else {
-			if(!$user->locked) {
-				if($this->checkPassword($user, $password)) {
-					$this->db->updateSystemUserLastLogin($user->id);
-					return $user;
-				} else {
-					sleep(2);
-					throw new Exception(LANG['login_failed']);
-				}
-			} else {
-				sleep(1);
-				throw new Exception(LANG['user_locked']);
-			}
-		}
-		return false;
-	}
-	private function checkPassword($userObject, $checkPassword) {
-		$result = $this->validatePassword($userObject, $checkPassword);
-		if(!$result) {
-			// log for fail2ban
-			error_log('user '.$userObject->username.': authentication failure');
-		}
-		return $result;
-	}
-	private function validatePassword($userObject, $checkPassword) {
-		if($userObject->ldap) {
-			if(empty($checkPassword)) return false;
-			$ldapconn = ldap_connect(LDAP_SERVER);
-			if(!$ldapconn) return false;
-			ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
-			ldap_set_option($ldapconn, LDAP_OPT_NETWORK_TIMEOUT, 3);
-			$ldapbind = @ldap_bind($ldapconn, $userObject->username.'@'.LDAP_DOMAIN, $checkPassword);
-			if(!$ldapbind) return false;
-			return true;
-		} else {
-			return password_verify($checkPassword, $userObject->password);
-		}
+	/*** Permission Check Logic ***/
+	private function checkPermission(Object $ressource, String $method) {
+		// do not check permissions if CoreLogic is used in system context (e.g. cron jobs)
+		if($this->systemUser !== null && $this->systemUser instanceof SystemUser)
+		return $this->systemUser->checkPermission($ressource, $method, true/*throw*/);
 	}
 
 	/*** Computer Operations ***/
+	public function getComputers(Object $filterRessource=null) {
+		if($filterRessource === null) {
+			$computersFiltered = [];
+			foreach($this->db->getAllComputer() as $computer) {
+				if($this->systemUser->checkPermission($computer, PermissionManager::METHOD_READ, false))
+					$computersFiltered[] = $computer;
+			}
+			return $computersFiltered;
+		} elseif($filterRessource instanceof ComputerGroup) {
+			$group = $this->db->getComputerGroup($filterRessource->id);
+			if(empty($group)) throw new NotFoundException();
+			$this->systemUser->checkPermission($group, PermissionManager::METHOD_READ);
+			return $this->db->getComputerByGroup($group->id);
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function getComputerGroups($parentId=null) {
+		$computerGroupsFiltered = [];
+		foreach($this->db->getAllComputerGroup($parentId) as $computerGroup) {
+			if($this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_READ, false))
+				$computerGroupsFiltered[] = $computerGroup;
+		}
+		return $computerGroupsFiltered;
+	}
+	public function getComputer($id) {
+		$computer = $this->db->getComputer($id);
+		if(empty($computer)) throw new NotFoundException();
+		$this->systemUser->checkPermission($computer, PermissionManager::METHOD_READ);
+		return $computer;
+	}
+	public function getComputerGroup($id) {
+		$computerGroup = $this->db->getComputerGroup($id);
+		if(empty($computerGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_READ);
+		return $computerGroup;
+	}
 	public function createComputer($hostname, $notes='') {
+		$this->checkPermission(new Computer, PermissionManager::METHOD_CREATE);
+
 		$finalHostname = trim($hostname);
 		if(empty($finalHostname)) {
 			throw new Exception(LANG['hostname_cannot_be_empty']);
@@ -75,6 +78,10 @@ class CoreLogic {
 		return $result;
 	}
 	public function renameComputer($id, $newName) {
+		$computer = $this->db->getComputer($id);
+		if(empty($computer)) throw new NotFoundException();
+		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
+
 		$finalHostname = trim($newName);
 		if(empty($finalHostname)) {
 			throw new Exception(LANG['hostname_cannot_be_empty']);
@@ -82,26 +89,36 @@ class CoreLogic {
 		if($this->db->getComputerByName($finalHostname) !== null) {
 			throw new Exception(LANG['hostname_already_exists']);
 		}
-		$result = $this->db->updateComputerHostname($id, $finalHostname);
+		$result = $this->db->updateComputerHostname($computer->id, $finalHostname);
 		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function updateComputerNote($id, $newValue) {
-		$result = $this->db->updateComputerNote($id, $newValue);
+		$computer = $this->db->getComputer($id);
+		if(empty($computer)) throw new NotFoundException();
+		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
+
+		$result = $this->db->updateComputerNote($computer->id, $newValue);
 		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function updateComputerForceUpdate($id, $newValue) {
-		$result = $this->db->updateComputerForceUpdate($id, $newValue);
+		$computer = $this->db->getComputer($id);
+		if(empty($computer)) throw new NotFoundException();
+		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
+
+		$result = $this->db->updateComputerForceUpdate($computer->id, $newValue);
 		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function wolComputers($ids, $debugOutput=true) {
 		$wolMacAdresses = [];
 		foreach($ids as $id) {
-			$c = $this->db->getComputer($id);
-			if($c == null) continue;
-			foreach($this->db->getComputerNetwork($c->id) as $n) {
+			$computer = $this->db->getComputer($id);
+			if(empty($computer)) throw new NotFoundException();
+			$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
+
+			foreach($this->db->getComputerNetwork($computer->id) as $n) {
 				if(empty($n->mac) || $n->mac == '-' || $n->mac == '?') continue;
 				$wolMacAdresses[] = $n->mac;
 			}
@@ -113,15 +130,27 @@ class CoreLogic {
 		return true;
 	}
 	public function removeComputer($id, $force=false) {
+		$computer = $this->db->getComputer($id);
+		if(empty($computer)) throw new NotFoundException();
+		$this->checkPermission($computer, PermissionManager::METHOD_DELETE);
+
 		if(!$force) {
 			$jobs = $this->db->getPendingJobsForComputerDetailPage($id);
 			if(count($jobs) > 0) throw new Exception(LANG['delete_failed_active_jobs']);
 		}
-		$result = $this->db->removeComputer($id);
+		$result = $this->db->removeComputer($computer->id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
 	public function createComputerGroup($name, $parentGroupId=null) {
+		if($parentGroupId == null) {
+			$this->systemUser->checkPermission(new ComputerGroup(), PermissionManager::METHOD_CREATE);
+		} else {
+			$computerGroup = $this->db->getComputerGroup($parentGroupId);
+			if(empty($computerGroup)) throw new NotFoundException();
+			$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_CREATE);
+		}
+
 		if(empty(trim($name))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
@@ -130,26 +159,41 @@ class CoreLogic {
 		return $insertId;
 	}
 	public function renameComputerGroup($id, $newName) {
+		$computerGroup = $this->db->getComputerGroup($id);
+		if(empty($computerGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
+
 		if(empty(trim($newName))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
-		$this->db->renameComputerGroup($id, $newName);
+		$this->db->renameComputerGroup($computerGroup->id, $newName);
 	}
 	public function addComputerToGroup($computerId, $groupId) {
-		if($this->db->getComputerGroup($groupId) == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		if(count($this->db->getComputerByComputerAndGroup($computerId, $groupId)) == 0) {
-			$this->db->addComputerToGroup($computerId, $groupId);
+		$computer = $this->db->getComputer($computerId);
+		if(empty($computer)) throw new NotFoundException();
+		$computerGroup = $this->db->getComputerGroup($groupId);
+		if(empty($computerGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($computer, PermissionManager::METHOD_WRITE);
+		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
+
+		if(count($this->db->getComputerByComputerAndGroup($computer->id, $computerGroup->id)) == 0) {
+			$this->db->addComputerToGroup($computer->id, $computerGroup->id);
 		}
 	}
 	public function removeComputerFromGroup($computerId, $groupId) {
-		if($this->db->getComputerGroup($groupId) == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		$this->db->removeComputerFromGroup($computerId, $groupId);
+		$computer = $this->db->getComputer($computerId);
+		if(empty($computer)) throw new NotFoundException();
+		$computerGroup = $this->db->getComputerGroup($groupId);
+		if(empty($computerGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
+
+		$this->db->removeComputerFromGroup($computer->id, $computerGroup->id);
 	}
 	public function removeComputerGroup($id, $force=false) {
+		$computerGroup = $this->db->getComputerGroup($id);
+		if(empty($computerGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_DELETE);
+
 		if(!$force) {
 			$subgroups = $this->db->getAllComputerGroup($id);
 			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
@@ -160,10 +204,73 @@ class CoreLogic {
 	}
 
 	/*** Package Operations ***/
+	public function getPackages(Object $filterRessource=null) {
+		if($filterRessource === null) {
+			$packagesFiltered = [];
+			foreach($this->db->getAllPackage() as $package) {
+				if($this->systemUser->checkPermission($package, PermissionManager::METHOD_READ, false))
+					$packagesFiltered[] = $package;
+			}
+			return $packagesFiltered;
+		} elseif($filterRessource instanceof PackageFamily) {
+			$family = $this->db->getPackageFamily($filterRessource->id);
+			if(empty($family)) throw new NotFoundException();
+			$this->systemUser->checkPermission($family, PermissionManager::METHOD_READ);
+			return $this->db->getPackageByFamily($family->id);
+		} elseif($filterRessource instanceof PackageGroup) {
+			$group = $this->db->getPackageGroup($filterRessource->id);
+			if(empty($group)) throw new NotFoundException();
+			$this->systemUser->checkPermission($group, PermissionManager::METHOD_READ);
+			return $this->db->getPackageByGroup($group->id);
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function getPackageGroups($parentId=null) {
+		$packageGroupsFiltered = [];
+		foreach($this->db->getAllPackageGroup($parentId) as $packageGroup) {
+			if($this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_READ, false))
+				$packageGroupsFiltered[] = $packageGroup;
+		}
+		return $packageGroupsFiltered;
+	}
+	public function getPackageFamilies(Object $filterRessource=null, $binaryAsBase64=false) {
+		if($filterRessource === null) {
+			$packageFamiliesFiltered = [];
+			foreach($this->db->getAllPackageFamily($binaryAsBase64) as $packageFamily) {
+				if($this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_READ, false))
+					$packageFamiliesFiltered[] = $packageFamily;
+			}
+			return $packageFamiliesFiltered;
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function getPackage($id) {
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_READ);
+		return $package;
+	}
+	public function getPackageGroup($id) {
+		$packageGroup = $this->db->getPackageGroup($id);
+		if(empty($packageGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_READ);
+		return $packageGroup;
+	}
+	public function getPackageFamily($id) {
+		$packageFamily = $this->db->getPackageFamily($id);
+		if(empty($packageFamily)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_READ);
+		return $packageFamily;
+	}
 	public function createPackage($name, $version, $description, $author,
 		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction,
 		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction,
 		$compatibleOs, $compatibleOsVersion, $tmpFilePath, $fileName=null) {
+
+		$this->systemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE);
+
 		if($fileName == null && $tmpFilePath != null) {
 			$fileName = basename($tmpFilePath);
 		}
@@ -191,8 +298,15 @@ class CoreLogic {
 		// insert into database
 		$packageFamilyId = null;
 		$existingPackageFamily = $this->db->getPackageFamilyByName($name);
-		if($existingPackageFamily === null) $packageFamilyId = $this->db->addPackageFamily($name, '');
-		else $packageFamilyId = $existingPackageFamily->id;
+		if($existingPackageFamily === null) {
+			$this->systemUser->checkPermission(new PackageFamily(), PermissionManager::METHOD_CREATE);
+
+			$packageFamilyId = $this->db->addPackageFamily($name, '');
+		} else {
+			$this->systemUser->checkPermission($existingPackageFamily, PermissionManager::METHOD_CREATE);
+
+			$packageFamilyId = $existingPackageFamily->id;
+		}
 		if(!$packageFamilyId) {
 			throw new Exception(LANG['database_error']);
 		}
@@ -225,22 +339,30 @@ class CoreLogic {
 		return $insertId;
 	}
 	public function addPackageToGroup($packageId, $groupId) {
-		if($this->db->getPackageGroup($groupId) == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		if(count($this->db->getPackageByPackageAndGroup($packageId, $groupId)) == 0) {
-			$this->db->addPackageToGroup($packageId, $groupId);
+		$package = $this->db->getPackage($packageId);
+		if(empty($package)) throw new NotFoundException();
+		$packageGroup = $this->db->getPackageGroup($groupId);
+		if(empty($packageGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
+
+		if(count($this->db->getPackageByPackageAndGroup($package->id, $packageGroup->id)) == 0) {
+			$this->db->addPackageToGroup($package->id, $packageGroup->id);
 		}
 	}
 	public function removePackageFromGroup($packageId, $groupId) {
-		if($this->db->getPackageGroup($groupId) == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		$this->db->removePackageFromGroup($packageId, $groupId);
+		$package = $this->db->getPackage($packageId);
+		if(empty($package)) throw new NotFoundException();
+		$packageGroup = $this->db->getPackageGroup($groupId);
+		if(empty($packageGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
+
+		$this->db->removePackageFromGroup($package->id, $packageGroup->id);
 	}
 	public function removePackage($id, $force=false) {
 		$package = $this->db->getPackage($id);
 		if(empty($package)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
 			$jobs = $this->db->getPendingJobsForPackageDetailPage($id);
@@ -258,6 +380,10 @@ class CoreLogic {
 		return $result;
 	}
 	public function removePackageFamily($id) {
+		$packageFamily = $this->db->getPackageFamily($id);
+		if(empty($packageFamily)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_DELETE);
+
 		$packages = $this->db->getPackageByFamily($id);
 		if(count($packages) > 0) throw new Exception(LANG['delete_failed_package_family_contains_packages']);
 
@@ -266,14 +392,26 @@ class CoreLogic {
 		return $result;
 	}
 	public function createPackageGroup($name, $parentGroupId=null) {
+		if($parentGroupId == null) {
+			$this->systemUser->checkPermission(new PackageGroup(), PermissionManager::METHOD_CREATE);
+		} else {
+			$packageGroup = $this->db->getPackageGroup($parentGroupId);
+			if(empty($packageGroup)) throw new NotFoundException();
+			$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_CREATE);
+		}
+
 		if(empty(trim($name))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
-		$insertId = $this->db->addPackageGroup($name, $parentGroupId);
+		$insertId = $this->db->addPackageGroup($name, $packageGroup->id);
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
 		return $insertId;
 	}
 	public function removePackageGroup($id, $force=false) {
+		$packageGroup = $this->db->getPackageGroup($id);
+		if(empty($packageGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_DELETE);
+
 		if(!$force) {
 			$subgroups = $this->db->getAllPackageGroup($id);
 			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
@@ -284,112 +422,186 @@ class CoreLogic {
 		return $result;
 	}
 	public function renamePackageFamily($id, $newName) {
+		$packageFamily = $this->db->getPackageFamily($id);
+		if(empty($packageFamily)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
+
 		if(empty(trim($newName))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
-		$pf = $this->db->getPackageFamily($id);
-		if($pf == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		$this->db->updatePackageFamily($pf->id, $newName, $pf->notes, $pf->icon);
+		$this->db->updatePackageFamily($packageFamily->id, $newName, $packageFamily->notes, $packageFamily->icon);
 	}
 	public function updatePackageFamilyNotes($id, $notes) {
-		$pf = $this->db->getPackageFamily($id);
-		if($pf == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		$this->db->updatePackageFamily($pf->id, $pf->name, $notes, $pf->icon);
+		$packageFamily = $this->db->getPackageFamily($id);
+		if(empty($packageFamily)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
+
+		$this->db->updatePackageFamily($packageFamily->id, $packageFamily->name, $notes, $packageFamily->icon);
 	}
 	public function updatePackageFamilyIcon($id, $icon) {
-		$pf = $this->db->getPackageFamily($id);
-		if($pf == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		$this->db->updatePackageFamily($pf->id, $pf->name, $pf->notes, $icon);
+		$packageFamily = $this->db->getPackageFamily($id);
+		if(empty($packageFamily)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
+
+		$this->db->updatePackageFamily($packageFamily->id, $packageFamily->name, $packageFamily->notes, $icon);
 	}
 	public function addPackageDependency($packageId, $dependentPackageId) {
-		if($this->db->getPackage($packageId) == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		if($this->db->getPackage($dependentPackageId) == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		$this->db->addPackageDependency($packageId, $dependentPackageId);
+		$package = $this->db->getPackage($packageId);
+		if(empty($package)) throw new NotFoundException();
+		$dependentPackage = $this->db->getPackage($dependentPackageId);
+		if(empty($dependentPackage)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+		$this->systemUser->checkPermission($dependentPackage, PermissionManager::METHOD_WRITE);
+
+		$this->db->addPackageDependency($package->id, $dependentPackage->id);
 	}
 	public function removePackageDependency($packageId, $dependentPackageId) {
-		if($this->db->getPackage($packageId) == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		if($this->db->getPackage($dependentPackageId) == null) {
-			throw new Exception(LANG['not_found']);
-		}
-		$this->db->removePackageDependency($packageId, $dependentPackageId);
+		$package = $this->db->getPackage($packageId);
+		if(empty($package)) throw new NotFoundException();
+		$dependentPackage = $this->db->getPackage($dependentPackageId);
+		if(empty($dependentPackage)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+		$this->systemUser->checkPermission($dependentPackage, PermissionManager::METHOD_WRITE);
+
+		$this->db->removePackageDependency($package->id, $dependentPackage->id);
 	}
 	public function updatePackageVersion($id, $newValue) {
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
 		if(empty(trim($newValue))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
-		$this->db->updatePackageVersion($id, $newValue);
+		$this->db->updatePackageVersion($package->id, $newValue);
 	}
 	public function updatePackageNote($id, $newValue) {
-		$this->db->updatePackageNote($id, $newValue);
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
+		$this->db->updatePackageNote($package->id, $newValue);
 	}
 	public function updatePackageInstallProcedure($id, $newValue) {
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
 		if(empty(trim($newValue))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
-		$this->db->updatePackageInstallProcedure($id, $newValue);
+		$this->db->updatePackageInstallProcedure($package->id, $newValue);
 	}
 	public function updatePackageInstallProcedureSuccessReturnCodes($id, $newValue) {
-		$this->db->updatePackageInstallProcedureSuccessReturnCodes($id, $newValue);
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
+		$this->db->updatePackageInstallProcedureSuccessReturnCodes($package->id, $newValue);
 	}
 	public function updatePackageInstallProcedurePostAction($id, $newValue) {
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
 		if(is_numeric($newValue)
 		&& in_array($newValue, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN, Package::POST_ACTION_EXIT])) {
-			$this->db->updatePackageInstallProcedurePostAction($id, $newValue);
+			$this->db->updatePackageInstallProcedurePostAction($package->id, $newValue);
 		} else {
 			throw new Exception(LANG['invalid_input']);
 		}
 	}
 	public function updatePackageUninstallProcedure($id, $newValue) {
-		$this->db->updatePackageUninstallProcedure($id, $newValue);
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
+		$this->db->updatePackageUninstallProcedure($package->id, $newValue);
 	}
 	public function updatePackageUninstallProcedureSuccessReturnCodes($id, $newValue) {
-		$this->db->updatePackageUninstallProcedureSuccessReturnCodes($id, $newValue);
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
+		$this->db->updatePackageUninstallProcedureSuccessReturnCodes($package->id, $newValue);
 	}
 	public function updatePackageUninstallProcedurePostAction($id, $newValue) {
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
 		if(is_numeric($newValue)
 		&& in_array($newValue, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN])) {
-			$this->db->updatePackageUninstallProcedurePostAction($id, $newValue);
+			$this->db->updatePackageUninstallProcedurePostAction($package->id, $newValue);
 		} else {
 			throw new Exception(LANG['invalid_input']);
 		}
 	}
 	public function updatePackageDownloadForUninstall($id, $newValue) {
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
 		if(intval($newValue) === 0 || intval($newValue) === 1) {
-			$this->db->updatePackageDownloadForUninstall($_POST['update_package_id'], intval($newValue));
+			$this->db->updatePackageDownloadForUninstall($package->id, intval($newValue));
 		} else {
 			throw new Exception(LANG['invalid_input']);
 		}
 	}
 	public function updatePackageCompatibleOs($id, $newValue) {
-		$this->db->updatePackageCompatibleOs($id, $newValue);
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
+		$this->db->updatePackageCompatibleOs($package->id, $newValue);
 	}
 	public function updatePackageCompatibleOsVersion($id, $newValue) {
-		$this->db->updatePackageCompatibleOsVersion($id, $newValue);
+		$package = $this->db->getPackage($id);
+		if(empty($package)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
+		$this->db->updatePackageCompatibleOsVersion($package->id, $newValue);
 	}
 	public function reorderPackageInGroup($groupId, $oldPos, $newPos) {
-		$this->db->reorderPackageInGroup($groupId, $oldPos, $newPos);
+		$packageGroup = $this->db->getPackageGroup($groupId);
+		if(empty($packageGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
+
+		$this->db->reorderPackageInGroup($packageGroup->id, $oldPos, $newPos);
 	}
 	public function renamePackageGroup($id, $newName) {
+		$packageGroup = $this->db->getPackageGroup($id);
+		if(empty($packageGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_DELETE);
+
 		if(empty(trim($newName))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
-		$this->db->renamePackageGroup($id, $newName);
+		$this->db->renamePackageGroup($packageGroup->id, $newName);
 	}
 
 	/*** Deployment / Job Container Operations ***/
+	public function getJobContainers(Object $filterRessource=null) {
+		if($filterRessource === null) {
+			$jobContainersFiltered = [];
+			foreach($this->db->getAllJobContainer() as $jobContainer) {
+				if($this->systemUser->checkPermission($jobContainer, PermissionManager::METHOD_READ, false))
+					$jobContainersFiltered[] = $jobContainer;
+			}
+			return $jobContainersFiltered;
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function getJobContainer($id) {
+		$jobContainer = $this->db->getJobContainer($id);
+		if(empty($jobContainer)) throw new NotFoundException();
+		$this->systemUser->checkPermission($jobContainer, PermissionManager::METHOD_READ);
+		return $jobContainer;
+	}
 	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority) {
+		$this->systemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE);
+
 		// check user input
 		if(empty(trim($name))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -416,22 +628,34 @@ class CoreLogic {
 		$computer_group_ids = [];
 		$package_group_ids = [];
 		if(!empty($computerIds)) foreach($computerIds as $computer_id) {
-			if($this->db->getComputer($computer_id) !== null) $computer_ids[$computer_id] = $computer_id;
+			$tmpComputer = $this->db->getComputer($computer_id);
+			if($tmpComputer == null) continue;
+			if(!$this->systemUser->checkPermission($tmpComputer, PermissionManager::METHOD_DEPLOY, false)) continue;
+
+			$computer_ids[$computer_id] = $computer_id;
 		}
 		if(!empty($computerGroupIds)) foreach($computerGroupIds as $computer_group_id) {
-			if($this->db->getComputerGroup($computer_group_id) !== null) $computer_group_ids[] = $computer_group_id;
+			$tmpComputerGroup = $this->db->getComputerGroup($computer_group_id);
+			if($tmpComputerGroup == null) continue;
+			
+			$computer_group_ids[] = $computer_group_id;
 		}
 
 		if(!empty($packageIds)) foreach($packageIds as $package_id) {
 			$packages = $packages + $this->compileDeployPackageArray($package_id);
 		}
 		if(!empty($packageGroupIds)) foreach($packageGroupIds as $package_group_id) {
-			if($this->db->getPackageGroup($package_group_id) !== null) $package_group_ids[] = $package_group_id;
+			$tmpPackageGroup = $this->db->getPackageGroup($package_group_id);
+			if($tmpPackageGroup == null) continue;
+			
+			$package_group_ids[] = $package_group_id;
 		}
 
 		// if multiple groups selected: add all group members
 		if(count($computer_group_ids) > 1) foreach($computer_group_ids as $computer_group_id) {
 			foreach($this->db->getComputerByGroup($computer_group_id) as $c) {
+				if(!$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
+
 				$computer_ids[$c->id] = $c->id;
 			}
 		}
@@ -525,7 +749,7 @@ class CoreLogic {
 						if(!empty($autoCreateUninstallJobs)) {
 							// uninstall it, if it is from the same package family ...
 							if($cp->package_family_id === $package['package_family_id']) {
-								$cpp = $this->db->getPackage($cp->package_id);
+								$cpp = $this->db->getPackage($cp->package_id, null);
 								if($cpp == null) continue;
 								// ... but not, if it is another package family version and autoCreateUninstallJobs flag is set
 								if($cp->package_id !== strval($pid) && empty($autoCreateUninstallJobs)) continue;
@@ -570,8 +794,9 @@ class CoreLogic {
 		$packages = [];
 
 		// check if id exists
-		$p = $this->db->getPackage($packageId);
+		$p = $this->db->getPackage($packageId, null);
 		if($p == null) return [];
+		if(!$this->systemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) return [];
 
 		// recursive dependency resolver
 		foreach($this->db->getDependentPackages($p->id) as $p2) {
@@ -594,6 +819,8 @@ class CoreLogic {
 		return $packages;
 	}
 	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0) {
+		$this->systemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE);
+
 		// check user input
 		if(empty(trim($name))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -619,6 +846,10 @@ class CoreLogic {
 		foreach($installationIds as $id) {
 			$ap = $this->db->getComputerAssignedPackage($id);
 			if(empty($ap)) continue;
+			$tmpComputer = $this->db->getComputer($ap->computer_id);
+			if(empty($tmpComputer)) continue;
+			if(!$this->systemUser->checkPermission($tmpComputer, PermissionManager::METHOD_DEPLOY, false)) continue;
+
 			$computer_ids[] = $ap->computer_id;
 		}
 		$wolSent = -1;
@@ -651,9 +882,13 @@ class CoreLogic {
 			$description, $wolSent, $shutdownWakedAfterCompletion, $sequenceMode, $priority
 		);
 		foreach($installationIds as $id) {
-			$ap = $this->db->getComputerAssignedPackage($id);
-			if(empty($ap)) continue;
-			$p = $this->db->getPackage($ap->package_id);
+			$ap = $this->db->getComputerAssignedPackage($id); if(empty($ap)) continue;
+			$p = $this->db->getPackage($ap->package_id); if(empty($p)) continue;
+			$c = $this->db->getComputer($ap->computer_id); if(empty($c)) continue;
+
+			if(!$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
+			if(!$this->systemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
+
 			$this->db->addJob($jcid, $ap->computer_id,
 				$ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes,
 				1/*is_uninstall*/, $p->download_for_uninstall,
@@ -667,11 +902,26 @@ class CoreLogic {
 		}
 	}
 	public function removeComputerAssignedPackage($id) {
+		$computerPackageAssignment = $this->db->getComputerAssignedPackage($id);
+		if(!$computerPackageAssignment) throw new Exception(LANG['not_found']);
+		$computer = $this->db->getComputer($computerPackageAssignment->computer_id);
+		if(!$computer) throw new Exception(LANG['not_found']);
+		$package = $this->db->getComputer($computerPackageAssignment->package_id);
+		if(!$package) throw new Exception(LANG['not_found']);
+
+		$this->systemUser->checkPermission($computer, PermissionManager::METHOD_WRITE);
+		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
 		$result = $this->db->removeComputerAssignedPackage($id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
 	public function renewFailedJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
+		$jc = $this->db->getJobContainer($renewContainerId);
+		if(!$jc) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
+		$this->systemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE);
+
 		// check user input
 		if(empty(trim($name))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -766,59 +1016,59 @@ class CoreLogic {
 	}
 	public function updateJobContainerNotes($id, $notes) {
 		$jc = $this->db->getJobContainer($id);
-		if($jc == null) {
-			throw new Exception(LANG['not_found']);
-		}
+		if(empty($jc)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
+
 		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
 	}
 	public function renameJobContainer($id, $newName) {
+		$jc = $this->db->getJobContainer($id);
+		if(empty($jc)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
+
 		if(empty(trim($newName))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
-		}
-		$jc = $this->db->getJobContainer($id);
-		if($jc == null) {
-			throw new Exception(LANG['not_found']);
 		}
 		$this->db->updateJobContainer($jc->id, $newName, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
 	}
 	public function updateJobContainerPriority($id, $priority) {
+		$jc = $this->db->getJobContainer($id);
+		if(empty($jc)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
+
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
 			throw new Exception(LANG['invalid_input']);
-		}
-		$jc = $this->db->getJobContainer($id);
-		if($jc == null) {
-			throw new Exception(LANG['not_found']);
 		}
 		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, intval($priority));
 	}
 	public function updateJobContainerSequenceMode($id, $sequenceMode) {
+		$jc = $this->db->getJobContainer($id);
+		if(empty($jc)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
+
 		if(!is_numeric($sequenceMode)
 		|| !in_array($sequenceMode, [JobContainer::SEQUENCE_MODE_IGNORE_FAILED, JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
 			throw new Exception(LANG['invalid_input']);
 		}
-		$jc = $this->db->getJobContainer($id);
-		if($jc == null) {
-			throw new Exception(LANG['not_found']);
-		}
 		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, intval($sequenceMode), $jc->priority);
 	}
 	public function updateJobContainerStart($id, $newStart) {
+		$jc = $this->db->getJobContainer($id);
+		if(empty($jc)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
+
 		if(DateTime::createFromFormat('Y-m-d H:i:s', $newStart) === false) {
 			throw new Exception(LANG['date_parse_error']);
-		}
-		$jc = $this->db->getJobContainer($id);
-		if($jc == null) {
-			throw new Exception(LANG['not_found']);
 		}
 		$this->db->updateJobContainer($jc->id, $jc->name, $newStart, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
 	}
 	public function updateJobContainerEnd($id, $newEnd) {
+		$jc = $this->db->getJobContainer($id);
+		if(empty($jc)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
+
 		if(!empty($newEnd) && DateTime::createFromFormat('Y-m-d H:i:s', $newEnd) === false) {
 			throw new Exception(LANG['date_parse_error']);
-		}
-		$jc = $this->db->getJobContainer($id);
-		if($jc == null) {
-			throw new Exception(LANG['not_found']);
 		}
 		if(empty($newEnd)) {
 			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, null, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
@@ -830,18 +1080,72 @@ class CoreLogic {
 		}
 	}
 	public function removeJobContainer($id) {
+		$jc = $this->db->getJobContainer($id);
+		if(empty($jc)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_DELETE);
+
 		$result = $this->db->removeJobContainer($id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
 	public function removeJob($id) {
+		$job = $this->db->getJob($id);
+		if(empty($job)) throw new Exception(LANG['not_found']);
+		$jc = $this->db->getJobContainer($job->job_container_id);
+		if(empty($jc)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_DELETE);
+
 		$result = $this->db->removeJob($id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
 
 	/*** Report Operations ***/
+	public function getReports(Object $filterRessource=null) {
+		if($filterRessource === null) {
+			$reportsFiltered = [];
+			foreach($this->db->getAllReport() as $report) {
+				if($this->systemUser->checkPermission($report, PermissionManager::METHOD_READ, false))
+					$reportsFiltered[] = $report;
+			}
+			return $reportsFiltered;
+		} elseif($filterRessource instanceof ReportGroup) {
+			$group = $this->db->getReportGroup($filterRessource->id);
+			if(empty($group)) throw new NotFoundException();
+			$this->systemUser->checkPermission($group, PermissionManager::METHOD_READ);
+			return $this->db->getAllReportByGroup($group->id);
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function getReportGroups($parentId=null) {
+		$reportGroupsFiltered = [];
+		foreach($this->db->getAllReportGroup($parentId) as $reportGroup) {
+			if($this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_READ, false))
+				$reportGroupsFiltered[] = $reportGroup;
+		}
+		return $reportGroupsFiltered;
+	}
+	public function getReport($id) {
+		$report = $this->db->getReport($id);
+		if(empty($report)) throw new NotFoundException();
+		$this->systemUser->checkPermission($report, PermissionManager::METHOD_READ);
+		return $report;
+	}
+	public function getReportGroup($id) {
+		$reportGroup = $this->db->getReportGroup($id);
+		if(empty($reportGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_READ);
+		return $reportGroup;
+	}
 	public function createReport($name, $notes, $query, $groupId=0) {
+		$this->systemUser->checkPermission(new Report(), PermissionManager::METHOD_CREATE);
+		if(!empty($groupId)) {
+			$reportGroup = $this->db->getReportGroup($groupId);
+			if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+			$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
+		}
+
 		if(empty(trim($name)) || empty(trim($query))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
@@ -851,9 +1155,9 @@ class CoreLogic {
 	}
 	public function updateReport($id, $name, $notes, $query) {
 		$report = $this->db->getReport($id);
-		if($report === null) {
-			throw new Exception(LANG['not_found']);
-		}
+		if(empty($report)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($report, PermissionManager::METHOD_WRITE);
+
 		if(empty(trim($name)) || empty(trim($query))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
@@ -861,20 +1165,32 @@ class CoreLogic {
 	}
 	public function moveReportToGroup($reportId, $groupId) {
 		$report = $this->db->getReport($reportId);
-		if($report === null) {
-			throw new Exception(LANG['not_found']);
-		}
-		if($this->db->getReportGroup($groupId) == null) {
-			throw new Exception(LANG['not_found']);
-		}
+		if(empty($report)) throw new Exception(LANG['not_found']);
+		$reportGroup = $this->db->getReportGroup($groupId);
+		if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($report, PermissionManager::METHOD_WRITE);
+		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
+
 		$this->db->updateReport($report->id, intval($groupId), $report->name, $report->notes, $report->query);
 	}
 	public function removeReport($id) {
-		$result = $this->db->removeReport($id);
+		$report = $this->db->getReport($id);
+		if(empty($report)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($report, PermissionManager::METHOD_DELETE);
+
+		$result = $this->db->removeReport($report->id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
 	public function createReportGroup($name, $parentGroupId=null) {
+		if($parentGroupId == null) {
+			$this->systemUser->checkPermission(new ReportGroup(), PermissionManager::METHOD_CREATE);
+		} else {
+			$reportGroup = $this->db->getReportGroup($parentGroupId);
+			if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+			$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_CREATE);
+		}
+
 		if(empty(trim($name))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
@@ -883,28 +1199,73 @@ class CoreLogic {
 		return $insertId;
 	}
 	public function renameReportGroup($id, $newName) {
+		$reportGroup = $this->db->getReportGroup($id);
+		if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
+
 		if(empty(trim($newName))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
-		$this->db->renameReportGroup($id, $newName);
+		$this->db->renameReportGroup($reportGroup->id, $newName);
 	}
 	public function removeReportGroup($id, $force=false) {
+		$reportGroup = $this->db->getReportGroup($id);
+		if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_DELETE);
+
 		if(!$force) {
 			$subgroups = $this->db->getAllReportGroup($id);
 			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
 		}
-		$result = $this->db->removeReportGroup($id);
+		$result = $this->db->removeReportGroup($reportGroup->id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
 
 	/*** Domain User Operations ***/
+	public function getDomainUsers(Object $filterRessource=null) {
+		if($filterRessource === null) {
+			$this->systemUser->checkPermission(new DomainUser(), PermissionManager::METHOD_READ);
+			return $this->db->getAllDomainUser();
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function getDomainUser($id) {
+		$this->systemUser->checkPermission(new DomainUser(), PermissionManager::METHOD_READ);
+
+		$domainUser = $this->db->getDomainUser($id);
+		if(empty($domainUser)) throw new NotFoundException();
+		return $domainUser;
+	}
 	public function removeDomainUser($id) {
+		$this->systemUser->checkPermission(new DomainUser(), PermissionManager::METHOD_DELETE);
+
 		return $this->db->removeDomainUser($id);
 	}
 
 	/*** System User Operations ***/
-	public function createSystemUser($username, $fullname, $description, $password) {
+	public function getSystemUsers(Object $filterRessource=null) {
+		if($filterRessource === null) {
+			$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+			return $this->db->getAllSystemUser();
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function getSystemUserRoles() {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+		return $this->db->getAllSystemUserRole();
+	}
+	public function getSystemUser($id) {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+		$systemUser = $this->db->getSystemUser($id);
+		if(empty($systemUser)) throw new NotFoundException();
+		return $systemUser;
+	}
+	public function createSystemUser($username, $fullname, $description, $password, $roleId) {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+
 		if(empty(trim($username))
 		|| empty(trim($fullname))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
@@ -915,15 +1276,18 @@ class CoreLogic {
 		if($this->db->getSystemUserByLogin($username) !== null) {
 			throw new Exception(LANG['username_already_exists']);
 		}
+
 		$insertId = $this->db->addSystemUser(
 			$username, $fullname,
 			password_hash($password, PASSWORD_DEFAULT),
-			0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, $description, 0/*locked*/
+			0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, $description, 0/*locked*/, $roleId
 		);
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
 		return $insertId;
 	}
-	public function updateSystemUser($id, $username, $fullname, $description, $password) {
+	public function updateSystemUser($id, $username, $fullname, $description, $password, $roleId) {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+
 		$u = $this->db->getSystemUser($id);
 		if($u === null) throw new Exception(LANG['not_found']);
 		if(!empty($u->ldap)) throw new Exception(LANG['ldap_accounts_cannot_be_modified']);
@@ -945,22 +1309,29 @@ class CoreLogic {
 
 		$this->db->updateSystemUser(
 			$u->id, trim($username), $fullname, $newPassword,
-			$u->ldap, $u->email, $u->phone, $u->mobile, $description, $u->locked
+			$u->ldap, $u->email, $u->phone, $u->mobile, $description, $u->locked, $roleId
 		);
 	}
 	public function updateSystemUserLocked($id, $locked) {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+
 		$u = $this->db->getSystemUser($id);
 		if($u === null) throw new Exception(LANG['not_found']);
 
 		$this->db->updateSystemUser(
 			$u->id, $u->username, $u->fullname, $u->password,
-			$u->ldap, $u->email, $u->phone, $u->mobile, $u->description, $locked
+			$u->ldap, $u->email, $u->phone, $u->mobile, $u->description, $locked, $u->system_user_role_id
 		);
 	}
 	public function removeSystemUser($id) {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+
 		$result = $this->db->removeSystemUser($id);
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
 
 }
+
+class NotFoundException extends Exception {}
+class InvalidRequestException extends Exception {}

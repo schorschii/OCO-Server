@@ -1602,12 +1602,13 @@ function unlockSelectedSystemUser(checkboxName) {
 function showDialogCreateSystemUser() {
 	showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-create.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)
 }
-function createSystemUser(username, fullname, description, password) {
+function createSystemUser(username, fullname, description, password, roleId) {
 	var params = [];
 	params.push({'key':'create_system_user', 'value':username});
 	params.push({'key':'fullname', 'value':fullname});
 	params.push({'key':'description', 'value':description});
 	params.push({'key':'password', 'value':password});
+	params.push({'key':'role_id', 'value':roleId});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
 		hideDialog();
@@ -1615,21 +1616,23 @@ function createSystemUser(username, fullname, description, password) {
 		emitMessage(L__USER_CREATED, username, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditSystemUser(id, username, fullname, description) {
+function showDialogEditSystemUser(id, username, fullname, description, roleId) {
 	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
 		txtEditSystemUserId.value = id;
 		txtEditSystemUserUsername.value = username;
 		txtEditSystemUserFullname.value = fullname;
 		txtEditSystemUserDescription.value = description;
+		sltEditSystemUserRole.value = roleId;
 	});
 }
-function editSystemUser(id, username, fullname, description, password) {
+function editSystemUser(id, username, fullname, description, password, roleId) {
 	var params = [];
 	params.push({'key':'update_system_user_id', 'value':id});
 	params.push({'key':'username', 'value':username});
 	params.push({'key':'fullname', 'value':fullname});
 	params.push({'key':'description', 'value':description});
 	params.push({'key':'password', 'value':password});
+	params.push({'key':'role_id', 'value':roleId});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
 		hideDialog();

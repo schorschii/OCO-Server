@@ -350,6 +350,7 @@ const LANG = [
 	'group_deleted' => 'Group deleted',
 	'object_removed_from_group' => 'Object(s) removed from group',
 	'create_system_user' => 'Create System User',
+	'create_report' => 'Create Report',
 	'edit_report' => 'Edit Report',
 	'edit_user' => 'Edit User',
 	'help' => 'Help',
@@ -358,6 +359,10 @@ const LANG = [
 	'ldap_accounts_cannot_be_modified' => 'LDAP can only be edited using your directory service',
 	'update_available' => 'Update available!',
 	'prerelease_note' => '(Prerelease)',
+	'permission_denied' => 'Permission denied. You do not have the necessary rights.',
+	'web_interface_login_not_allowed' => 'User is not allowed to login on the web interface',
+	'api_login_not_allowed' => 'User is not allowed to login on the API',
+	'role' => 'Role',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

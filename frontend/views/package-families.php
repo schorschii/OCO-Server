@@ -3,16 +3,25 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-$families = $db->getAllPackageFamily();
-echo "<h1><img src='img/package.dyn.svg'><span id='page-title'>".LANG['package_families']."</span></h1>";
-
-echo "<div class='controls'>";
-echo "<button onclick='refreshContentPackageNew()'><img src='img/add.svg'>&nbsp;".LANG['new_package']."</button> ";
-echo "<button onclick='createPackageGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
-echo "<span class='fillwidth'></span> ";
-echo "<span><a ".explorerLink('views/packages.php').">".LANG['all_packages']."</a></span>";
-echo "</div>";
+$families = [];
+try {
+	$families = $cl->getPackageFamilies();
+} catch(NotFoundException $e) {
+	die("<div class='alert warning'>".LANG['not_found']."</div>");
+} catch(PermissionException $e) {
+	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+} catch(InvalidRequestException $e) {
+	die("<div class='alert error'>".$e->getMessage()."</div>");
+}
 ?>
+
+<h1><img src='img/package.dyn.svg'><span id='page-title'><?php echo LANG['package_families']; ?></span></h1>
+<div class='controls'>
+<button onclick='refreshContentPackageNew()'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_package']; ?></button> 
+<button onclick='createPackageGroup()'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button> 
+<span class='fillwidth'></span> 
+<span><a <?php echo explorerLink('views/packages.php'); ?>><?php echo LANG['all_packages']; ?></a></span>
+</div>
 
 <div class='details-abreast'>
 	<div>

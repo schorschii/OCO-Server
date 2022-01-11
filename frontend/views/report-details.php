@@ -3,14 +3,22 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-$report = $db->getReport($_GET['id'] ?? -1);
-if($report === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
+// ----- prepare view -----
+try {
+	$report = $cl->getReport($_GET['id'] ?? -1);
+} catch(NotFoundException $e) {
+	die("<div class='alert warning'>".LANG['not_found']."</div>");
+} catch(PermissionException $e) {
+	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+} catch(InvalidRequestException $e) {
+	die("<div class='alert error'>".$e->getMessage()."</div>");
+}
 
 $results = [];
 $error = null;
 try {
 	$results = $db->executeReport($report->id);
-} catch (Exception $e) {
+} catch(Exception $e) {
 	$error = 'SQL-Error: '.$e->getMessage();
 }
 ?>

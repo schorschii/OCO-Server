@@ -10,7 +10,7 @@ require_once('../session.php');
 
 <div class='node'>
 	<a <?php echo explorerLink('views/computers.php'); ?>><img src='img/computer.dyn.svg'><?php echo LANG['computer']; ?></a>
-	<?php echoComputerGroups($db); ?>
+	<?php echoComputerGroups($cl); ?>
 </div>
 
 <div class='node'>
@@ -24,14 +24,14 @@ require_once('../session.php');
 
 <div class='node'>
 	<a <?php echo explorerLink('views/package-families.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
-	<?php echoPackageGroups($db); ?>
+	<?php echoPackageGroups($cl); ?>
 </div>
 
 <div class='node'>
 	<a <?php echo explorerLink('views/job-containers.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG['jobs']; ?></a>
 	<div class='subnode'>
 		<?php
-		foreach($db->getAllJobContainer() as $container) {
+		foreach($cl->getJobContainers() as $container) {
 			echo "<a ".explorerLink('views/job-containers.php?id='.$container->id)."><img src='img/".$db->getJobContainerIcon($container->id).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
 		}
 		?>
@@ -40,7 +40,7 @@ require_once('../session.php');
 
 <div class='node'>
 	<a <?php echo explorerLink('views/reports.php'); ?>><img src='img/report.dyn.svg'><?php echo LANG['reports']; ?></a>
-	<?php echoReportGroups($db); ?>
+	<?php echoReportGroups($cl); ?>
 </div>
 
 <?php
@@ -51,27 +51,27 @@ foreach(glob(__DIR__.'/tree.d/*.php') as $filename) {
 ?>
 
 <?php
-function echoComputerGroups($db, $parent=null) {
+function echoComputerGroups(CoreLogic $cl, $parent=null) {
 	echo "<div class='subnode'>";
-	foreach($db->getAllComputerGroup($parent) as $group) {
+	foreach($cl->getComputerGroups($parent) as $group) {
 		echo "<a ".explorerLink('views/computers.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
-		echoComputerGroups($db, $group->id);
+		echoComputerGroups($cl, $group->id);
 	}
 	echo "</div>";
 }
-function echoPackageGroups($db, $parent=null) {
+function echoPackageGroups(CoreLogic $cl, $parent=null) {
 	echo "<div class='subnode'>";
-	foreach($db->getAllPackageGroup($parent) as $group) {
+	foreach($cl->getPackageGroups($parent) as $group) {
 		echo "<a ".explorerLink('views/packages.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
-		echoPackageGroups($db, $group->id);
+		echoPackageGroups($cl, $group->id);
 	}
 	echo "</div>";
 }
-function echoReportGroups($db, $parent=null) {
+function echoReportGroups(CoreLogic $cl, $parent=null) {
 	echo "<div class='subnode'>";
-	foreach($db->getAllReportGroup($parent) as $group) {
+	foreach($cl->getReportGroups($parent) as $group) {
 		echo "<a ".explorerLink('views/reports.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
-		echoReportGroups($db, $group->id);
+		echoReportGroups($cl, $group->id);
 	}
 	echo "</div>";
 }

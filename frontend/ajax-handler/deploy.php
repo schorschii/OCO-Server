@@ -10,23 +10,9 @@ try {
 	$select_package_ids = [];
 	if(!empty($_GET['computer_id']) && is_array($_GET['computer_id'])) {
 		$select_computer_ids = $_GET['computer_id'];
-		// compile job name
-		foreach($select_computer_ids as $id) {
-			$c = $db->getComputer($id);
-			if($c == null) continue;
-			if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$c->hostname;
-			else $default_job_container_name .= ', '.$c->hostname;
-		}
 	}
 	if(!empty($_GET['package_id']) && is_array($_GET['package_id'])) {
 		$select_package_ids = $_GET['package_id'];
-		// compile job name
-		foreach($select_package_ids as $id) {
-			$p = $db->getPackage($id);
-			if($p == null) continue;
-			if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$p->package_family_name;
-			else $default_job_container_name .= ', '.$p->package_family_name;
-		}
 	}
 	if(isset($_GET['get_computer_group_members'])) {
 		$group = $db->getComputerGroup($_GET['get_computer_group_members']);
@@ -34,6 +20,8 @@ try {
 		if(empty($group)) $computers = $db->getAllComputer();
 		else $computers = $db->getComputerByGroup($group->id);
 		foreach($computers as $c) {
+			if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
+
 			$selected = '';
 			if(!empty($group) || in_array($c->id, $select_computer_ids)) $selected = 'selected';
 			echo "<option value='".$c->id."' ".$selected.">".htmlspecialchars($c->hostname)."</option>";
@@ -46,6 +34,8 @@ try {
 		if(empty($group)) $packages = $db->getAllPackage(true);
 		else $packages = $db->getPackageByGroup($group->id);
 		foreach($packages as $p) {
+			if(!$currentSystemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
+
 			$selected = '';
 			if(!empty($group) || in_array($p->id, $select_package_ids)) $selected = 'selected';
 			echo "<option value='".$p->id."' ".$selected.">".htmlspecialchars($p->name)." (".htmlspecialchars($p->version).")"."</option>";
@@ -113,6 +103,9 @@ try {
 		die();
 	}
 
+} catch(PermissionException $e) {
+	header('HTTP/1.1 403 Forbidden');
+	die(LANG['permission_denied']);
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
 	die($e->getMessage());

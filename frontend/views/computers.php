@@ -4,29 +4,34 @@ require_once('../../lib/Loader.php');
 require_once('../session.php');
 
 $group = null;
-$computer = [];
-if(empty($_GET['id'])) {
-	$computer = $db->getAllComputer();
-	echo "<h1><img src='img/computer.dyn.svg'><span id='page-title'>".LANG['all_computer']."</span></h1>";
-
-	echo "<div class='controls'>";
-	echo "<button onclick='createComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button> ";
-	echo "<button onclick='createComputerGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
-	echo "<span class='fillwidth'></span> ";
-	echo "<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='".LANG['agent_download_description']."'>".LANG['agent_download']."</a></span> ";
-	echo "</div>";
-} else {
-	$computer = $db->getComputerByGroup($_GET['id']);
-	$group = $db->getComputerGroup($_GET['id']);
-	if($group === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
-	echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</span><span id='spnComputerGroupName' class='rawvalue'>".htmlspecialchars($group->name)."</span></h1>";
-
-	echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
-	echo "<button onclick='createComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
-	echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_for_all']."</button> ";
-	echo "<button onclick='renameComputerGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
-	echo "<button onclick='confirmRemoveComputerGroup([".$group->id."], event, spnComputerGroupName.innerText)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
-	echo "</div>";
+$computers = [];
+try {
+	if(!empty($_GET['id'])) {
+		$group = $cl->getComputerGroup($_GET['id']);
+		$computers = $cl->getComputers($group);
+		echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</span><span id='spnComputerGroupName' class='rawvalue'>".htmlspecialchars($group->name)."</span></h1>";
+		echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
+		echo "<button onclick='createComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
+		echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_for_all']."</button> ";
+		echo "<button onclick='renameComputerGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
+		echo "<button onclick='confirmRemoveComputerGroup([".$group->id."], event, spnComputerGroupName.innerText)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
+		echo "</div>";
+	} else {
+		$computers = $cl->getComputers();
+		echo "<h1><img src='img/computer.dyn.svg'><span id='page-title'>".LANG['all_computer']."</span></h1>";
+		echo "<div class='controls'>";
+		echo "<button onclick='createComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button> ";
+		echo "<button onclick='createComputerGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
+		echo "<span class='fillwidth'></span> ";
+		echo "<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='".LANG['agent_download_description']."'>".LANG['agent_download']."</a></span> ";
+		echo "</div>";
+	}
+} catch(NotFoundException $e) {
+	die("<div class='alert warning'>".LANG['not_found']."</div>");
+} catch(PermissionException $e) {
+	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+} catch(InvalidRequestException $e) {
+	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
 ?>
 
@@ -51,7 +56,7 @@ if(empty($_GET['id'])) {
 <tbody>
 <?php
 $counter = 0;
-foreach($computer as $c) {
+foreach($computers as $c) {
 	$counter ++;
 	$ip_addresses = [];
 	$mac_addresses = [];

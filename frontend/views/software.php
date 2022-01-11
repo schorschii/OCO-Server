@@ -2,6 +2,9 @@
 $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
+
+if(!$currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false))
+	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
 ?>
 
 <?php
