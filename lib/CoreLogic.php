@@ -637,7 +637,7 @@ class CoreLogic {
 		if(!empty($computerGroupIds)) foreach($computerGroupIds as $computer_group_id) {
 			$tmpComputerGroup = $this->db->getComputerGroup($computer_group_id);
 			if($tmpComputerGroup == null) continue;
-			
+
 			$computer_group_ids[] = $computer_group_id;
 		}
 
@@ -647,7 +647,7 @@ class CoreLogic {
 		if(!empty($packageGroupIds)) foreach($packageGroupIds as $package_group_id) {
 			$tmpPackageGroup = $this->db->getPackageGroup($package_group_id);
 			if($tmpPackageGroup == null) continue;
-			
+
 			$package_group_ids[] = $package_group_id;
 		}
 
