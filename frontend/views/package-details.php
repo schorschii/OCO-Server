@@ -25,15 +25,15 @@ try {
 	<div>
 		<h2><?php echo LANG['general']; ?></h2>
 		<div class='controls'>
-			<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+			<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);' <?php if(!$currentSystemUser->checkPermission($package, PermissionManager::METHOD_DEPLOY, false)) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 			<button onclick='window.open("payloadprovider.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize()) echo "disabled"; ?>><img src='img/download.svg'>&nbsp;<?php echo LANG['download']; ?></button>
-			<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg'>
+			<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg' <?php if(!$currentSystemUser->checkPermission($package, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>>
 				&nbsp;<?php echo LANG['add_to']; ?>
 				<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
 					<?php echoPackageGroupOptions($db); ?>
 				</select>
 			</button>
-			<button onclick='currentExplorerContentUrl="views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='currentExplorerContentUrl="views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")")' <?php if(!$currentSystemUser->checkPermission($package, PermissionManager::METHOD_DELETE, false)) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 		<table class='list metadata'>
 			<tr>

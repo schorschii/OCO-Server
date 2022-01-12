@@ -9,22 +9,8 @@ try {
 	if(!empty($_GET['id'])) {
 		$group = $cl->getComputerGroup($_GET['id']);
 		$computers = $cl->getComputers($group);
-		echo "<h1><img src='img/folder.dyn.svg'><span id='page-title'>".htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id))."</span><span id='spnComputerGroupName' class='rawvalue'>".htmlspecialchars($group->name)."</span></h1>";
-		echo "<div class='controls'><span>".LANG['group'].":&nbsp;</span>";
-		echo "<button onclick='createComputerGroup(".$group->id.")'><img src='img/folder-new.svg'>&nbsp;".LANG['new_subgroup']."</button> ";
-		echo "<button onclick='refreshContentDeploy([],[],[],[".$group->id."])'><img src='img/deploy.svg'>&nbsp;".LANG['deploy_for_all']."</button> ";
-		echo "<button onclick='renameComputerGroup(".$group->id.", this.getAttribute(\"oldName\"))' oldName='".htmlspecialchars($group->name,ENT_QUOTES)."'><img src='img/edit.svg'>&nbsp;".LANG['rename_group']."</button> ";
-		echo "<button onclick='confirmRemoveComputerGroup([".$group->id."], event, spnComputerGroupName.innerText)'><img src='img/delete.svg'>&nbsp;".LANG['delete_group']."</button> ";
-		echo "</div>";
 	} else {
 		$computers = $cl->getComputers();
-		echo "<h1><img src='img/computer.dyn.svg'><span id='page-title'>".LANG['all_computer']."</span></h1>";
-		echo "<div class='controls'>";
-		echo "<button onclick='createComputer()'><img src='img/add.svg'>&nbsp;".LANG['new_computer']."</button> ";
-		echo "<button onclick='createComputerGroup()'><img src='img/folder-new.svg'>&nbsp;".LANG['new_group']."</button> ";
-		echo "<span class='fillwidth'></span> ";
-		echo "<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='".LANG['agent_download_description']."'>".LANG['agent_download']."</a></span> ";
-		echo "</div>";
 	}
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG['not_found']."</div>");
@@ -34,6 +20,24 @@ try {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
 ?>
+
+<?php if($group === null) { ?>
+	<h1><img src='img/computer.dyn.svg'><span id='page-title'><?php echo LANG['all_computer']; ?></span></h1>
+	<div class='controls'>
+		<button onclick='createComputer()'><img src='img/add.svg' <?php if(!$currentSystemUser->checkPermission(new Computer(), PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>>&nbsp;<?php echo LANG['new_computer']; ?></button> 
+		<button onclick='createComputerGroup()'><img src='img/folder-new.svg' <?php if(!$currentSystemUser->checkPermission(new ComputerGroup(), PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>>&nbsp;<?php echo LANG['new_group']; ?></button> 
+		<span class='fillwidth'></span> 
+		<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='<?php echo LANG['agent_download_description']; ?>'><?php echo LANG['agent_download']; ?></a></span> 
+	</div>
+<?php } else { ?>
+	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id)); ?></span><span id='spnComputerGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
+	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
+		<button onclick='createComputerGroup(<?php echo $group->id; ?>)' <?php if(!$currentSystemUser->checkPermission($group, PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button> 
+		<button onclick='refreshContentDeploy([],[],[],[<?php echo $group->id; ?>])' <?php if(empty($computers) || !$currentSystemUser->checkPermission($computers[0], PermissionManager::METHOD_DEPLOY, false)) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy_for_all']; ?></button> 
+		<button onclick='renameComputerGroup(<?php echo $group->id; ?>, this.getAttribute(\"oldName\"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button> 
+		<button onclick='confirmRemoveComputerGroup([<?php echo $group->id; ?>], event, spnComputerGroupName.innerText)' <?php if(!$currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false)) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button> 
+	</div>
+<?php } ?>
 
 <table id='tblComputerData' class='list searchable sortable savesort'>
 <thead>

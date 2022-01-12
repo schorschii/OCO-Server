@@ -17,10 +17,10 @@ try {
 
 <h1><img src='img/package.dyn.svg'><span id='page-title'><?php echo LANG['package_families']; ?></span></h1>
 <div class='controls'>
-<button onclick='refreshContentPackageNew()'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_package']; ?></button> 
-<button onclick='createPackageGroup()'><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button> 
-<span class='fillwidth'></span> 
-<span><a <?php echo explorerLink('views/packages.php'); ?>><?php echo LANG['all_packages']; ?></a></span>
+	<button onclick='refreshContentPackageNew()' <?php if(!$currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_package']; ?></button> 
+	<button onclick='createPackageGroup()' <?php if(!$currentSystemUser->checkPermission(new PackageGroup(), PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button> 
+	<span class='fillwidth'></span> 
+	<span><a <?php echo explorerLink('views/packages.php'); ?>><?php echo LANG['all_packages']; ?></a></span>
 </div>
 
 <div class='details-abreast'>

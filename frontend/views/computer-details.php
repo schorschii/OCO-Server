@@ -18,16 +18,16 @@ try {
 <div class='details-header'>
 	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline() ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-		<button onclick='renameComputer(<?php echo $computer->id; ?>, spnComputerName.innerText)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-		<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
+		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);' <?php if(!$currentSystemUser->checkPermission($computer, PermissionManager::METHOD_DEPLOY, false)) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$currentSystemUser->checkPermission($computer, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
+		<button onclick='renameComputer(<?php echo $computer->id; ?>, spnComputerName.innerText)' <?php if(!$currentSystemUser->checkPermission($computer, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)' <?php if(!$currentSystemUser->checkPermission($computer, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>><img src='img/folder-insert-into.svg'>
 			&nbsp;<?php echo LANG['add_to']; ?>
 			<select id='sltNewGroup' onclick='event.stopPropagation()'>
 				<?php echoComputerGroupOptions($db); ?>
 			</select>
 		</button>
-		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)' <?php if(!$currentSystemUser->checkPermission($computer, PermissionManager::METHOD_DELETE, false)) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		<?php
 		if(count(COMPUTER_COMMANDS) > 0) echo "<span class='vl'></span>";
 		foreach(COMPUTER_COMMANDS as $c) {
