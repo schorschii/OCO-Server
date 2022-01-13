@@ -92,8 +92,8 @@ if(!empty($_GET['id'])) {
 					<?php
 					if(!empty($container->constraints)) {
 						$constraintData = json_decode($container->constraints, true);
-						if(!empty($constraintData['ip_range'])) {
-							echo LANG['agent_ip_range'].': '.htmlspecialchars($constraintData['ip_range']);
+						if(!empty($constraintData['ip_ranges']) && is_array($constraintData['ip_ranges'])) {
+							echo LANG['agent_ip_range'].': '.htmlspecialchars(implode(', ', $constraintData['ip_ranges']));
 						}
 					}
 					?>

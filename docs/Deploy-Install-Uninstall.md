@@ -23,6 +23,12 @@ If a user is logged in and a package requires a restart, the OCO agent will wait
 ## Agent IP Range Constraint
 You can add an IP range condition to the job container, so that the jobs will only be executed if the agent has an IP address is inside the given range. This can be useful if you do not want to execute some jobs if the computer is in your VPN network but if the computer is connected to your local company network (e.g. for very big software packages, which should only be installed if the employee is on his work place in your company, but not in home office).
 
+You can specify even multiple IP ranges (comma separated) in the appropriate text field on the deployment assistant. Negations are also possible using `!` in front of the range. Please note that the order of the ranges is important. If a negated range matches, the job will instantly be ignored.
+
+**Example: `10.2.0.0/16,!192.168.2.3/32,192.168.2.0/24`**
+- allow all clients inside `10.2.0.0/16`
+- allow all clients inside `192.168.2.0/24` except `!192.168.2.3/32`
+
 # Uninstall Packages
 You can create uninstall jobs from within the computer or package detail page. Check the checkbox of the package you want to uninstall (on the table 'Installed Packages') and click on 'Uninstall Package'.
 

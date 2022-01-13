@@ -45,11 +45,30 @@ try {
 
 	// ----- create install jobs if requested -----
 	if(isset($_POST['create_install_job_container'])) {
+		// compile constraints
 		$constraints = [];
 		if(!empty($_POST['constraint_ip_range'])) {
-			isIpInRange('0.0.0.0', $_POST['constraint_ip_range']); // for IP syntax check only (throws error if invalid)
-			$constraints['ip_range'] = $_POST['constraint_ip_range'];
+			$ranges = [];
+			if(is_string($_POST['constraint_ip_range'])) {
+				$ranges[] = $_POST['constraint_ip_range'];
+			}
+			elseif(is_array($_POST['constraint_ip_range'])) {
+				$ranges = $_POST['constraint_ip_range'];
+			}
+			foreach($ranges as $range) {
+				if(empty(trim($range))) continue;
+				// for IP syntax check only (throws error if invalid)
+				if(startsWith($range, '!')) {
+					isIpInRange('0.0.0.0', ltrim(trim($range), '!'));
+				} else {
+					isIpInRange('0.0.0.0', trim($range);
+				}
+				// add to IP range constraint array
+				if(!isset($constraints['ip_ranges'])) $constraints['ip_ranges'] = [];
+				$constraints['ip_ranges'][] = trim($range);
+			}
 		}
+		// create container + jobs
 		$jcid = $cl->deploy(
 			$_POST['create_install_job_container'], $_POST['description'], $_SESSION['oco_username'],
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [],

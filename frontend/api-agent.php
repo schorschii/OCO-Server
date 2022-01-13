@@ -153,8 +153,24 @@ switch($srcdata['method']) {
 				// constraint check
 				if(!empty($pj['constraints'])) {
 					$constraintData = json_decode($pj['constraints'], true);
-					if(!empty($constraintData['ip_range']) && !isIpInRange($_SERVER['REMOTE_ADDR'], $constraintData['ip_range'])) {
-						continue;
+					if(!empty($constraintData['ip_ranges']) && is_array($constraintData['ip_ranges'])) {
+						$continue = true;
+						foreach($constraintData['ip_ranges'] as $range) {
+							if(startsWith($range, '!')) {
+								if(isIpInRange($_SERVER['REMOTE_ADDR'], ltrim($range, '!'))) {
+									// agent IP is in that range but should not be - ignore this job
+									continue 2;
+								}
+							} else {
+								if(isIpInRange($_SERVER['REMOTE_ADDR'], $range)) {
+									// agent IP is in desired range - abort check and send job to agent
+									$continue = false;
+									break;
+								}
+							}
+						}
+						// continue if agent is not in one of the desired IP ranges
+						if($continue) continue;
 					}
 				}
 				// set post action

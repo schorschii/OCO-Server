@@ -1267,7 +1267,10 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	formData.append('restart_timeout', restartTimeout);
 	formData.append('sequence_mode', sequenceMode);
 	formData.append('priority', priority);
-	formData.append('constraint_ip_range', constraintIpRange);
+	var ipRanges = constraintIpRange.split(',');
+	for(var i = 0; i < ipRanges.length; i++) {
+		formData.append('constraint_ip_range[]', ipRanges[i]);
+	}
 	getSelectValues(sltPackage).forEach(function(entry) {
 		formData.append('package_id[]', entry);
 	});
