@@ -444,14 +444,14 @@ CREATE TABLE `system_user` (
 CREATE TABLE `system_user_role` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
-  `rights` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
+  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
 ) ;
 
 --
 -- Daten für Tabelle `system_user_role`
 --
 
-INSERT INTO `system_user_role` (`id`, `name`, `rights`) VALUES
+INSERT INTO `system_user_role` (`id`, `name`, `permissions`) VALUES
 (1, 'Superadmin', '{\"client_api_allowed\": true, \"package_management\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"computer_management\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"domain_user_management\": {\"read\": true, \"delete\": true}, \"system_user_management\": true, \"report_management\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"report_group_management\": {\"*\": {\"read\": true, \"items\": {}, \"write\": true, \"create\": true, \"delete\": true}}, \"job_container_management\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": false}, \"package_group_management\": {\"*\": {\"read\": true, \"items\": {}, \"write\": true, \"create\": true, \"delete\": true}}, \"recognised_software_view\": true, \"computer_group_management\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"package_family_management\": {\"*\": {\"read\": true, \"items\": {}, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"client_web_frontend_allowed\": true}');
 
 -- --------------------------------------------------------
@@ -916,7 +916,7 @@ ALTER TABLE `system_user`
 -- Constraints der Tabelle `system_user_role`
 --
 ALTER TABLE `system_user_role`
-  ADD CONSTRAINT `check_json_role` CHECK(JSON_VALID(rights));
+  ADD CONSTRAINT `check_json_role` CHECK(JSON_VALID(permissions));
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

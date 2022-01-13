@@ -1512,7 +1512,7 @@ class DatabaseController {
 	}
 	public function getAllSystemUser() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT su.*, sur.name AS "system_user_role_name", sur.rights AS "system_user_role_rights"
+			'SELECT su.*, sur.name AS "system_user_role_name", sur.permissions AS "system_user_role_permissions"
 			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
 			ORDER BY username ASC'
 		);
@@ -1521,7 +1521,7 @@ class DatabaseController {
 	}
 	public function getSystemUser($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT su.*, sur.name AS "system_user_role_name", sur.rights AS "system_user_role_rights"
+			'SELECT su.*, sur.name AS "system_user_role_name", sur.permissions AS "system_user_role_permissions"
 			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
 			WHERE su.id = :id'
 		);
@@ -1532,7 +1532,7 @@ class DatabaseController {
 	}
 	public function getSystemUserByLogin($username) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT su.*, sur.name AS "system_user_role_name", sur.rights AS "system_user_role_rights"
+			'SELECT su.*, sur.name AS "system_user_role_name", sur.permissions AS "system_user_role_permissions"
 			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
 			WHERE su.username = :username'
 		);

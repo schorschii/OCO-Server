@@ -362,7 +362,7 @@ class SystemUser {
 	public $system_user_role_id;
 	// joined system user role attributes
 	public $system_user_role_name;
-	public $system_user_role_rights;
+	public $system_user_role_permissions;
 	// permission implementation
 	private $pm;
 	function checkPermission($ressource, String $method, Bool $throw=true) {
@@ -375,7 +375,7 @@ class SystemUser {
 class SystemUserRole {
 	public $id;
 	public $name;
-	public $rights;
+	public $permissions;
 }
 class Software {
 	public $id;

@@ -35,11 +35,11 @@ class PermissionManager {
 	private $db;
 
 	function __construct(DatabaseController $db, SystemUser $systemUser) {
-		if(empty($systemUser->system_user_role_rights)) {
+		if(empty($systemUser->system_user_role_permissions)) {
 			throw new Exception('No permission definition data found for this system user!');
 		}
 		$this->systemUser = $systemUser;
-		$this->permData = json_decode($systemUser->system_user_role_rights, true);
+		$this->permData = json_decode($systemUser->system_user_role_permissions, true);
 		$this->db = $db;
 	}
 
@@ -160,7 +160,7 @@ class PermissionManager {
 
 	private function checkRessourcePermission(String $ressourceType, String $ressourceGroupType=null, Array $assignedGroups=null, Object $ressource, String $method): bool {
 		if(isset($this->permData[$ressourceType])) {
-			// check rights defined in array root if no specific object was given
+			// check permissions defined in array root if no specific object was given
 			if(empty($ressource->id)) {
 				if(!isset($this->permData[$ressourceType][$method])) return false;
 				return ((bool) $this->permData[$ressourceType][$method]);
