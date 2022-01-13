@@ -1102,10 +1102,10 @@ class DatabaseController {
 	}
 
 	// Job Operations
-	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority) {
+	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $constraints) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority)
-			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority)'
+			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority, constraints)
+			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority, :constraints)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
@@ -1117,6 +1117,7 @@ class DatabaseController {
 			':shutdown_waked_after_completion' => $shutdown_waked_after_completion,
 			':sequence_mode' => $sequence_mode,
 			':priority' => $priority,
+			':constraints' => $constraints,
 		]);
 		return $this->dbh->lastInsertId();
 	}
@@ -1202,7 +1203,7 @@ class DatabaseController {
 	}
 	public function getPendingJobsForComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", jc.sequence_mode AS "sequence_mode"
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", jc.sequence_mode AS "sequence_mode", jc.constraints AS "constraints"
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
@@ -1328,10 +1329,10 @@ class DatabaseController {
 		}
 		return true;
 	}
-	public function updateJobContainer($id, $name, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority) {
+	public function updateJobContainer($id, $name, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $constraints) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container
-			SET name = :name, start_time = :start_time, end_time = :end_time, notes = :notes, wol_sent = :wol_sent, shutdown_waked_after_completion = :shutdown_waked_after_completion, sequence_mode = :sequence_mode, priority = :priority
+			SET name = :name, start_time = :start_time, end_time = :end_time, notes = :notes, wol_sent = :wol_sent, shutdown_waked_after_completion = :shutdown_waked_after_completion, sequence_mode = :sequence_mode, priority = :priority, constraints = :constraints
 			WHERE id = :id'
 		);
 		return $this->stmt->execute([
@@ -1343,7 +1344,8 @@ class DatabaseController {
 			':wol_sent' => $wol_sent,
 			':shutdown_waked_after_completion' => $shutdown_waked_after_completion,
 			':sequence_mode' => $sequence_mode,
-			':priority' => $priority
+			':priority' => $priority,
+			':constraints' => $constraints,
 		]);
 	}
 	public function getJobContainerIcon($id) {

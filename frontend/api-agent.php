@@ -150,6 +150,14 @@ switch($srcdata['method']) {
 
 			// get pending jobs
 			foreach($db->getPendingJobsForComputer($computer->id) as $pj) {
+				// constraint check
+				if(!empty($pj['constraints'])) {
+					$constraintData = json_decode($pj['constraints'], true);
+					if(!empty($constraintData['ip_range']) && !isIpInRange($_SERVER['REMOTE_ADDR'], $constraintData['ip_range'])) {
+						continue;
+					}
+				}
+				// set post action
 				$restart = null; $shutdown = null; $exit = null;
 				if($pj['post_action'] == Package::POST_ACTION_RESTART)
 					$restart = intval($pj['post_action_timeout'] ?? 1);
@@ -157,6 +165,7 @@ switch($srcdata['method']) {
 					$shutdown = intval($pj['post_action_timeout'] ?? 1);
 				if($pj['post_action'] == Package::POST_ACTION_EXIT)
 					$exit = intval($pj['post_action_timeout'] ?? 1);
+				// add job to list
 				$jobs[] = [
 					'id' => $pj['id'],
 					'container-id' => $pj['job_container_id'],

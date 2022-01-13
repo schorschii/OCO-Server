@@ -87,6 +87,19 @@ if(!empty($_GET['id'])) {
 				</td>
 			</tr>
 			<tr>
+				<th><?php echo LANG['constraints']; ?></th>
+				<td>
+					<?php
+					if(!empty($container->constraints)) {
+						$constraintData = json_decode($container->constraints, true);
+						if(!empty($constraintData['ip_range'])) {
+							echo LANG['agent_ip_range'].': '.htmlspecialchars($constraintData['ip_range']);
+						}
+					}
+					?>
+				</td>
+			</tr>
+			<tr>
 				<th><?php echo LANG['description']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnJobContainerDescription'><?php echo htmlspecialchars($container->notes); ?></span>

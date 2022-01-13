@@ -363,6 +363,9 @@ const LANG = [
 	'web_interface_login_not_allowed' => 'User is not allowed to login on the web interface',
 	'api_login_not_allowed' => 'User is not allowed to login on the API',
 	'role' => 'Role',
+	'constraints' => 'Constraints',
+	'agent_ip_range' => 'Agent IP range',
+	'invalid_ip_address' => 'Invalid IP address',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

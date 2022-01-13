@@ -82,6 +82,22 @@ function shorter($text, $charsLimit=40, $dots=true) {
 	}
 }
 
+function isIpInRange($ip, $range) {
+	if(strpos( $range, '/' ) == false) {
+		$range .= '/32';
+	}
+	// $range is in IP/CIDR format eg 127.0.0.1/24
+	list( $range, $netmask ) = explode( '/', $range, 2 );
+	$range_decimal = ip2long( $range );
+	$ip_decimal = ip2long( $ip );
+	if($range_decimal === false || $ip_decimal === false) {
+		throw new Exception(LANG['invalid_ip_address']);
+	}
+	$wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
+	$netmask_decimal = ~ $wildcard_decimal;
+	return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
+}
+
 function wol($macs, $debugOutput=true) {
 	// create socket for sending local WOL packets
 	$s = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);

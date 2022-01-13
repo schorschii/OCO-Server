@@ -45,13 +45,18 @@ try {
 
 	// ----- create install jobs if requested -----
 	if(isset($_POST['create_install_job_container'])) {
+		$constraints = [];
+		if(!empty($_POST['constraint_ip_range'])) {
+			isIpInRange('0.0.0.0', $_POST['constraint_ip_range']); // for IP syntax check only (throws error if invalid)
+			$constraints['ip_range'] = $_POST['constraint_ip_range'];
+		}
 		$jcid = $cl->deploy(
 			$_POST['create_install_job_container'], $_POST['description'], $_SESSION['oco_username'],
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
 			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['force_install_same_version'] ?? 0,
-			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0
+			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, json_encode($constraints)
 		);
 		die(strval(intval($jcid)));
 	}

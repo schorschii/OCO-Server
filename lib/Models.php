@@ -232,6 +232,7 @@ class JobContainer {
 	public $shutdown_waked_after_completion;
 	public $sequence_mode;
 	public $priority;
+	public $constraints;
 	public $created;
 	// aggregated values
 	public $last_update;

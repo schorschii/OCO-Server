@@ -114,6 +114,15 @@ if(empty($default_job_container_name)) {
 			</div>
 		</td>
 	</tr>
+	<tr>
+		<th colspan='4'><h3><?php echo LANG['constraints']; ?></h3></th>
+	</tr>
+	<tr>
+		<th><?php echo LANG['agent_ip_range']; ?></th>
+		<td>
+			<input type='text' id='txtConstraintIpRange' placeholder='192.168.2.0/24'></input>
+		</td>
+	</tr>
 </table>
 
 <h2><img src='img/computer.dyn.svg'><?php echo LANG['target_computer']; ?></h2>
@@ -155,7 +164,7 @@ if(empty($default_job_container_name)) {
 	<div><label><input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty(DEFAULTS['default-force-install-same-version'])) echo 'checked'; ?>>&nbsp;<?php echo LANG['force_installation_of_same_version']; ?></label></div>
 </div>
 <div class='controls'>
-	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value, txtConstraintIpRange.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<?php echo progressBar(100, 'prgDeploy', 'prgDeployContainer', 'prgDeployText', 'width:180px;display:none;', false, true); ?>
 </div>
 

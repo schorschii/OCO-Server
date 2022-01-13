@@ -1249,7 +1249,7 @@ function editJobContainerNotes(id, oldValue) {
 		});
 	}
 }
-function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority) {
+function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, constraintIpRange) {
 	setInputsDisabled(frmDeploy, true);
 	btnDeploy.style.display = 'none';
 	prgDeployContainer.style.display = 'flex';
@@ -1267,6 +1267,7 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	formData.append('restart_timeout', restartTimeout);
 	formData.append('sequence_mode', sequenceMode);
 	formData.append('priority', priority);
+	formData.append('constraint_ip_range', constraintIpRange);
 	getSelectValues(sltPackage).forEach(function(entry) {
 		formData.append('package_id[]', entry);
 	});

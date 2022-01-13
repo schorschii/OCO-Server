@@ -20,6 +20,9 @@ Job containers with higher priority will be executed first, even if they are cre
 ## Timeout For Restart
 If a user is logged in and a package requires a restart, the OCO agent will wait that long so that the user can save his work.
 
+## Agent IP Range Constraint
+You can add an IP range condition to the job container, so that the jobs will only be executed if the agent has an IP address is inside the given range. This can be useful if you do not want to execute some jobs if the computer is in your VPN network but if the computer is connected to your local company network (e.g. for very big software packages, which should only be installed if the employee is on his work place in your company, but not in home office).
+
 # Uninstall Packages
 You can create uninstall jobs from within the computer or package detail page. Check the checkbox of the package you want to uninstall (on the table 'Installed Packages') and click on 'Uninstall Package'.
 

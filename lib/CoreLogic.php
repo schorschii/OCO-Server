@@ -599,7 +599,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($jobContainer, PermissionManager::METHOD_READ);
 		return $jobContainer;
 	}
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority) {
+	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraints='{}') {
 		$this->systemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -695,7 +695,7 @@ class CoreLogic {
 			empty($dateEnd) ? null : $dateEnd,
 			$description,
 			$wolSent, $shutdownWakedAfterCompletion,
-			$sequenceMode, $priority
+			$sequenceMode, $priority, $constraints
 		)) {
 			foreach($computer_ids as $computer_id) {
 
@@ -818,7 +818,7 @@ class CoreLogic {
 
 		return $packages;
 	}
-	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0) {
+	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0, $constraints='{}') {
 		$this->systemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -879,7 +879,7 @@ class CoreLogic {
 			$name, $author,
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
-			$description, $wolSent, $shutdownWakedAfterCompletion, $sequenceMode, $priority
+			$description, $wolSent, $shutdownWakedAfterCompletion, $sequenceMode, $priority, $constraints
 		);
 		foreach($installationIds as $id) {
 			$ap = $this->db->getComputerAssignedPackage($id); if(empty($ap)) continue;
@@ -916,7 +916,7 @@ class CoreLogic {
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
-	public function renewFailedJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
+	public function renewFailedJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0, $constraints='{}') {
 		$jc = $this->db->getJobContainer($renewContainerId);
 		if(!$jc) throw new Exception(LANG['not_found']);
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
@@ -980,7 +980,7 @@ class CoreLogic {
 			$name, $author,
 			$dateStart, empty($dateEnd) ? null : $dateEnd,
 			$description, $wolSent, $shutdownWakedAfterCompletion,
-			$sequenceMode, $priority
+			$sequenceMode, $priority, $constraints
 		)) {
 			$count = 0;
 			foreach($this->db->getAllJobByContainer($container->id) as $job) {
@@ -1019,7 +1019,7 @@ class CoreLogic {
 		if(empty($jc)) throw new Exception(LANG['not_found']);
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 	}
 	public function renameJobContainer($id, $newName) {
 		$jc = $this->db->getJobContainer($id);
@@ -1029,7 +1029,7 @@ class CoreLogic {
 		if(empty(trim($newName))) {
 			throw new Exception(LANG['name_cannot_be_empty']);
 		}
-		$this->db->updateJobContainer($jc->id, $newName, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+		$this->db->updateJobContainer($jc->id, $newName, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 	}
 	public function updateJobContainerPriority($id, $priority) {
 		$jc = $this->db->getJobContainer($id);
@@ -1039,7 +1039,7 @@ class CoreLogic {
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
 			throw new Exception(LANG['invalid_input']);
 		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, intval($priority));
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, intval($priority), $jc->constraints);
 	}
 	public function updateJobContainerSequenceMode($id, $sequenceMode) {
 		$jc = $this->db->getJobContainer($id);
@@ -1050,7 +1050,7 @@ class CoreLogic {
 		|| !in_array($sequenceMode, [JobContainer::SEQUENCE_MODE_IGNORE_FAILED, JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
 			throw new Exception(LANG['invalid_input']);
 		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, intval($sequenceMode), $jc->priority);
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, intval($sequenceMode), $jc->priority, $jc->constraints);
 	}
 	public function updateJobContainerStart($id, $newStart) {
 		$jc = $this->db->getJobContainer($id);
@@ -1060,7 +1060,7 @@ class CoreLogic {
 		if(DateTime::createFromFormat('Y-m-d H:i:s', $newStart) === false) {
 			throw new Exception(LANG['date_parse_error']);
 		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $newStart, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+		$this->db->updateJobContainer($jc->id, $jc->name, $newStart, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 	}
 	public function updateJobContainerEnd($id, $newEnd) {
 		$jc = $this->db->getJobContainer($id);
@@ -1071,12 +1071,12 @@ class CoreLogic {
 			throw new Exception(LANG['date_parse_error']);
 		}
 		if(empty($newEnd)) {
-			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, null, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, null, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 		} else {
 			if(strtotime($jc->start_time) > strtotime($newEnd)) {
 				throw new Exception(LANG['end_time_before_start_time']);
 			}
-			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $newEnd, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority);
+			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $newEnd, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 		}
 	}
 	public function removeJobContainer($id) {

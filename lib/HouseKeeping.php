@@ -62,6 +62,7 @@ foreach($db->getAllJobContainer() as $container) {
 				$container->shutdown_waked_after_completion,
 				$container->sequence_mode,
 				$container->priority,
+				$container->constraints
 			);
 		}
 	}
