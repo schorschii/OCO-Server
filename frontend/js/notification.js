@@ -45,7 +45,7 @@ function checkNotification(newNotificationInfo) {
 			notificationInfo['job_container'].forEach(function(item2) {
 				if(item1.id == item2.id && item1.state != item2.state) {
 					notify('['+item1.state_description+'] '+item1.name, L__JOB_CONTAINER_STATUS_CHANGED, 'img/job.dyn.svg',
-						'index.php?explorer-content='+encodeURIComponent('views/job-containers.php?id='+item1.id),
+						'index.php?view=job-containers&id='+encodeURIComponent(item1.id),
 						'job#'+item1.id+'#'+item1.state
 					);
 				}
