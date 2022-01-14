@@ -4,7 +4,7 @@ class PermissionManager {
 
 	/*
 		 Class PermissionManager
-		 Checks Permissions
+		 Checks permissions of a given system user
 
 		 "Darf er das?" ~ Chris Tall
 	*/
@@ -30,17 +30,17 @@ class PermissionManager {
 	const SPECIAL_PERMISSION_CLIENT_API             = 'client_api_allowed';
 	const SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND    = 'client_web_frontend_allowed';
 
-	private $systemUser;
-	private $permData;
-	private $db;
+	private DatabaseController $db;
+	private SystemUser $systemUser;
+	private Array $permData;
 
 	function __construct(DatabaseController $db, SystemUser $systemUser) {
 		if(empty($systemUser->system_user_role_permissions)) {
 			throw new Exception('No permission definition data found for this system user!');
 		}
+		$this->db = $db;
 		$this->systemUser = $systemUser;
 		$this->permData = json_decode($systemUser->system_user_role_permissions, true);
-		$this->db = $db;
 	}
 
 	public function hasPermission($ressource, String $method): bool {
@@ -160,29 +160,29 @@ class PermissionManager {
 
 	private function checkRessourcePermission(String $ressourceType, String $ressourceGroupType=null, Array $assignedGroups=null, Object $ressource, String $method): bool {
 		if(isset($this->permData[$ressourceType])) {
-			// check permissions defined in array root if no specific object was given
+			// 1st try: check permissions defined in array root if no specific object was given (e.g. create permissions)
 			if(empty($ressource->id)) {
 				if(!isset($this->permData[$ressourceType][$method])) return false;
 				return ((bool) $this->permData[$ressourceType][$method]);
 			}
 
-			// 1st try: check if specific ressource ID is defined in access list
+			// 2nd try: check if specific ressource ID is defined in access list
 			foreach($this->permData[$ressourceType] as $key => $item) {
 				if($key === intval($ressource->id) && isset($item[$method]))
 					return ((bool) $item[$method]);
 			}
 
-			// 2nd try: check if `own` rules are applicable (currently only implemented for job containers)
+			// 3rd try: check if `own` rules are applicable (currently only implemented for job containers)
 			if(isset($this->permData[$ressourceType]['own'][$method])
 			&& property_exists($ressource, 'author') && $ressource->author === $this->systemUser->username)
 				return ((bool) $this->permData[$ressourceType]['own'][$method]);
 
-			// 3rd try: check general permissions for this ressource type
+			// 4th try: check general permissions for this ressource type
 			if(isset($this->permData[$ressourceType]['*'][$method]))
 				return ((bool) $this->permData[$ressourceType]['*'][$method]);
 		}
 
-		// 4th try: check inherited group permissions
+		// 5th try: check inherited group permissions
 		if(!empty($ressourceGroupType)
 		&& isset($this->permData[$ressourceGroupType])
 		&& !empty($assignedGroups)) {
