@@ -61,7 +61,7 @@ try {
 				if(startsWith($range, '!')) {
 					isIpInRange('0.0.0.0', ltrim(trim($range), '!'));
 				} else {
-					isIpInRange('0.0.0.0', trim($range);
+					isIpInRange('0.0.0.0', trim($range));
 				}
 				// add to IP range constraint array
 				if(!isset($constraints['ip_ranges'])) $constraints['ip_ranges'] = [];
