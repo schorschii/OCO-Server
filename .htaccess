@@ -1,0 +1,5 @@
+Options -Indexes
+
+RewriteEngine on
+RewriteCond %{THE_REQUEST} /(.git|.htaccess)/.+ [NC]
+RewriteRule ^ - [R=403,L]

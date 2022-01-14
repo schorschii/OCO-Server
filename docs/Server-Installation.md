@@ -5,8 +5,15 @@
    ```
    apt install php php-dom mariadb-server apache2 libapache2-mod-php
    ```
-1. Download the [latest release](https://github.com/schorschii/oco-server/releases), copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.
-2. Import the database schema (use the newest version, e.g. `lib/sql/v1.0.sql`) into an empty database.
+1. Configure your Apache webserver
+   - make sure that in your Apache config `AllowOverride All` is set (for at least the OCO directory `/var/www/oco`) so that the `.htaccess` files work
+   - make sure that the `rewrite` module is installed and enabled
+     ```
+     a2enmod rewrite
+     service apache2 restart
+     ```
+2. Download the [latest release](https://github.com/schorschii/oco-server/releases), copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.
+3. Import the database schema (use the newest version, e.g. `lib/sql/v1.0.sql`) into an empty database.
    ```
    root@ocoserver:/# mysql
    mysql> CREATE DATABASE oco DEFAULT CHARACTER SET utf8mb4;
@@ -16,10 +23,10 @@
    mysql> EXIT;
    root@ocoserver:/# mysql oco < /var/www/oco/lib/sql/v1.x.sql
    ```
-3. Enter your MySQL credentials in `conf.php` (create this file by copying the template `conf.example.php`).  
+4. Enter your MySQL credentials in `conf.php` (create this file by copying the template `conf.example.php`).  
    (Use a separate user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.)
-4. Make sure the in `conf.php` defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
-5. **Important:** please set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
+5. Make sure the in `conf.php` defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
+6. **Important:** please set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
    - It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any software packages to your client!!!
    - Redirect all HTTP requests to HTTPS using appropriate rewrite rules.  
      <details>
@@ -47,10 +54,10 @@
      ```
      </details>
    - The next section describes in detail how to obtain a LetsEncrypt certificate. It is also possible to use a self-signed certificate if necessary. Then, you have to import your own CA certificate into the trust store of every agent's operating system.
-6. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size  
+7. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size  
   (pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size` and `max_execution_time`).
-7. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
-8. Set up a cron job executing `lib/HouseKeeping.php` every 10 minutes as webserver user (`www-data`).
+8. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
+9. Set up a cron job executing `lib/HouseKeeping.php` every 10 minutes as webserver user (`www-data`).
    ```
    */10 *  * * *  www-data  cd /var/www/oco/lib && php HouseKeeping.php
    ```
