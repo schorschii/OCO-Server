@@ -807,7 +807,7 @@ function showDialogAddPackageDependency(id) {
 		refreshDeployComputerAndPackages(null, sltPackage.value);
 	});
 }
-function showDialogAddPDependentPackage(id) {
+function showDialogAddDependentPackage(id) {
 	showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
 		txtSetAsDependentPackage.value = "1";
 		txtEditPackageId.value = id;
