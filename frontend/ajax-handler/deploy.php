@@ -46,26 +46,13 @@ try {
 	// ----- create install jobs if requested -----
 	if(isset($_POST['create_install_job_container'])) {
 		// compile constraints
-		$constraints = [];
+		$constraintIpRanges = [];
 		if(!empty($_POST['constraint_ip_range'])) {
-			$ranges = [];
 			if(is_string($_POST['constraint_ip_range'])) {
-				$ranges[] = $_POST['constraint_ip_range'];
+				$constraintIpRanges[] = $_POST['constraint_ip_range'];
 			}
 			elseif(is_array($_POST['constraint_ip_range'])) {
-				$ranges = $_POST['constraint_ip_range'];
-			}
-			foreach($ranges as $range) {
-				if(empty(trim($range))) continue;
-				// for IP syntax check only (throws error if invalid)
-				if(startsWith($range, '!')) {
-					isIpInRange('0.0.0.0', ltrim(trim($range), '!'));
-				} else {
-					isIpInRange('0.0.0.0', trim($range));
-				}
-				// add to IP range constraint array
-				if(!isset($constraints['ip_ranges'])) $constraints['ip_ranges'] = [];
-				$constraints['ip_ranges'][] = trim($range);
+				$constraintIpRanges = $_POST['constraint_ip_range'];
 			}
 		}
 		// create container + jobs
@@ -75,7 +62,7 @@ try {
 			$_POST['date_start'], $_POST['date_end'] ?? null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
 			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['force_install_same_version'] ?? 0,
-			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, json_encode($constraints)
+			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, $constraintIpRanges
 		);
 		die(strval(intval($jcid)));
 	}

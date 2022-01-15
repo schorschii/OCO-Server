@@ -599,7 +599,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($jobContainer, PermissionManager::METHOD_READ);
 		return $jobContainer;
 	}
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraints='{}') {
+	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraintIpRanges=[]) {
 		$this->systemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -687,6 +687,9 @@ class CoreLogic {
 				$wolSent = 0;
 			}
 		}
+
+		// compile constraints
+		$constraints = $this->compileConstraints($constraintIpRanges);
 
 		// create jobs
 		if($jcid = $this->db->addJobContainer(
@@ -790,6 +793,28 @@ class CoreLogic {
 
 		return $jcid;
 	}
+	private function compileConstraints($constraintIpRanges) {
+		$constraints = [];
+		if(!empty($constraintIpRanges) && is_array($constraintIpRanges)) {
+			foreach($constraintIpRanges as $range) {
+				if(!is_string($range)) continue;
+				$trimmedRange = trim($range);
+				if(empty($trimmedRange)) continue;
+
+				// for IP syntax check only (throws error if invalid)
+				if(startsWith($trimmedRange, '!')) {
+					isIpInRange('0.0.0.0', ltrim($trimmedRange, '!'));
+				} else {
+					isIpInRange('0.0.0.0', $trimmedRange);
+				}
+
+				// add to IP range constraint array
+				if(!isset($constraints['ip_ranges'])) $constraints['ip_ranges'] = [];
+				$constraints['ip_ranges'][] = trim($range);
+			}
+		}
+		return json_encode($constraints);
+	}
 	private function compileDeployPackageArray($packageId, $isDependency=false) {
 		$packages = [];
 
@@ -818,7 +843,7 @@ class CoreLogic {
 
 		return $packages;
 	}
-	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0, $constraints='{}') {
+	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0, $constraintIpRanges=[]) {
 		$this->systemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -874,6 +899,9 @@ class CoreLogic {
 			throw new Exception(LANG['no_jobs_created']);
 		}
 
+		// compile constraints
+		$constraints = $this->compileConstraints($constraintIpRanges);
+
 		// create jobs
 		$jcid = $this->db->addJobContainer(
 			$name, $author,
@@ -916,7 +944,7 @@ class CoreLogic {
 		if(!$result) throw new Exception(LANG['not_found']);
 		return $result;
 	}
-	public function renewFailedJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0, $constraints='{}') {
+	public function renewFailedJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
 		$jc = $this->db->getJobContainer($renewContainerId);
 		if(!$jc) throw new Exception(LANG['not_found']);
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
@@ -980,7 +1008,7 @@ class CoreLogic {
 			$name, $author,
 			$dateStart, empty($dateEnd) ? null : $dateEnd,
 			$description, $wolSent, $shutdownWakedAfterCompletion,
-			$sequenceMode, $priority, $constraints
+			$sequenceMode, $priority, $container->constraints
 		)) {
 			$count = 0;
 			foreach($this->db->getAllJobByContainer($container->id) as $job) {

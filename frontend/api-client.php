@@ -198,7 +198,7 @@ switch($srcdata['method']) {
 			$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
 			$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5,
 			$data['auto_create_uninstall_jobs'] ?? 1, $data['force_install_same_version'] ?? 0,
-			$data['sequence_mode'] ?? 0, $data['priority'] ?? 0
+			$data['sequence_mode'] ?? 0, $data['priority'] ?? 0, $data['constraint_ip_ranges'] ?? []
 		);
 		$resdata['error'] = null;
 		$resdata['result'] = [
@@ -211,7 +211,8 @@ switch($srcdata['method']) {
 			$data['name'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
 			$data['installation_ids'] ?? [],
 			$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
-			$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5
+			$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5,
+			$data['sequence_mode'] ?? 0, $data['priority'] ?? 0, $data['constraint_ip_ranges'] ?? []
 		);
 		$resdata['error'] = null;
 		$resdata['result'] = [

@@ -687,6 +687,7 @@ no parameters
 - `force_install_same_version` - (optional - default 0) force installation even if the same package was already installed
 - `sequence_mode` - (optional - default 0) sequence mode: 0 - ignore failed jobs, 1 - abort after failed job
 - `priority` - (optional - default 0) job container with higher priority will be executed first
+- `constraint_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
 ### Example
 ```
 {
@@ -710,7 +711,8 @@ no parameters
 			"auto_create_uninstall_jobs": 1,
 			"force_install_same_version": 0,
 			"sequence_mode": 0,
-			"priority": 0
+			"priority": 0,
+			"constraint_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"]
 		}
 	}
 }
@@ -738,6 +740,9 @@ no parameters
 - `use_wol` - (optional - default 1) enable or disable WOL
 - `shutdown_waked_after_completion` - (optional - default 0) decide if computers which were waked via WOL should be shutted down after jobs finished
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
+- `sequence_mode` - (optional - default 0) sequence mode: 0 - ignore failed jobs, 1 - abort after failed job
+- `priority` - (optional - default 0) job container with higher priority will be executed first
+- `constraint_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
 ### Example
 ```
 {
@@ -754,7 +759,10 @@ no parameters
 			"date_end": null,
 			"use_wol": 1,
 			"shutdown_waked_after_completion": 0,
-			"restart_timeout": 5
+			"restart_timeout": 5,
+			"sequence_mode": 0,
+			"priority": 0,
+			"constraint_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"]
 		}
 	}
 }
