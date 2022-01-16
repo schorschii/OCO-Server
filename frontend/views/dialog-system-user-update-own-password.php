@@ -7,7 +7,7 @@ require_once('../session.php');
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG['old_password']; ?></th>
-		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtEditOwnSystemUserOldPassword'></input></td>
+		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtEditOwnSystemUserOldPassword' autofocus='true'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['new_password']; ?></th>
