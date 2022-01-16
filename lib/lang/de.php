@@ -3,7 +3,7 @@ const LANG = [
 	'app_name' => 'OCO IT Client Manager',
 	'project_name' => 'Open Computer Orchestration',
 	'app_subtitle' => 'Client inventory and software delivery made simple',
-	'app_copyright' => '© <a href="https://georg-sieber.de" target="_blank">Georg Sieber</a> 2020-2021 | <a href="https://github.com/schorschii/oco-server" target="_blank">OCO-Projekt auf Github</a>',
+	'app_copyright' => '© <a href="https://georg-sieber.de" target="_blank">Georg Sieber</a> 2020-2022 | <a href="https://github.com/schorschii/oco-server" target="_blank">OCO-Projekt auf Github</a>',
 	'welcome_text' => 'Willkommen in der OCO-Webkonsole!',
 	'welcome_description' => 'Danke, dass Sie sich für OCO entschieden haben.',
 	'requested_view_does_not_exist' => 'Die angeforderte Ansicht existiert nicht',
