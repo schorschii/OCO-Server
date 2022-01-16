@@ -361,6 +361,9 @@ const LANG = [
 	'constraints' => 'Beschränkungen',
 	'agent_ip_range' => 'Agenten-IP-Bereich',
 	'invalid_ip_address' => 'Ungültige IP-Adresse',
+	'change_password' => 'Passwort ändern',
+	'old_password' => 'Altes Passwort',
+	'old_password_is_not_correct' => 'Das alte Passwort ist nicht korrekt',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

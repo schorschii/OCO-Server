@@ -1313,6 +1313,28 @@ class CoreLogic {
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
 		return $insertId;
 	}
+	public function updateOwnSystemUserPassword($oldPassword, $newPassword) {#
+		if($this->systemUser->ldap) throw new Exception('Password of LDAP account cannot be modified');
+
+		if(empty(trim($newPassword))) {
+			throw new Exception(LANG['password_cannot_be_empty']);
+		}
+
+		try {
+			$authControl = new AuthenticationController($this->db);
+			if(!$authControl->login($this->systemUser->username, $oldPassword)) {
+				throw new AuthenticationException();
+			}
+		} catch(AuthenticationException $e) {
+			throw new Exception(LANG['old_password_is_not_correct']);
+		}
+
+		$newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+		$this->db->updateSystemUser(
+			$this->systemUser->id, $this->systemUser->username, $this->systemUser->fullname, $newPasswordHash,
+			$this->systemUser->ldap, $this->systemUser->email, $this->systemUser->phone, $this->systemUser->mobile, $this->systemUser->description, $this->systemUser->locked, $this->systemUser->system_user_role_id
+		);
+	}
 	public function updateSystemUser($id, $username, $fullname, $description, $password, $roleId) {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
@@ -1332,6 +1354,9 @@ class CoreLogic {
 		}
 		$newPassword = $u->password;
 		if(!empty($password)) {
+			if(empty(trim($password))) {
+				throw new Exception(LANG['password_cannot_be_empty']);
+			}
 			$newPassword = password_hash($password, PASSWORD_DEFAULT);
 		}
 

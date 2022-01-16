@@ -51,6 +51,9 @@ require_once('../session.php');
 	</div>
 	<div>
 		<h2><?php echo LANG['user_settings']; ?></h2>
+		<?php if(!$currentSystemUser->ldap) { ?>
+			<button onclick='showDialogEditOwnSystemUserPassword()'><img src='img/password.svg'>&nbsp;<?php echo LANG['change_password']; ?></button>
+		<?php } ?>
 		<button onclick='askNotificationPermission()'><img src='img/notification.svg'>&nbsp;<?php echo LANG['enable_notifications']; ?></button>
 	</div>
 </div>

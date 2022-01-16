@@ -1620,6 +1620,24 @@ function createSystemUser(username, fullname, description, password, roleId) {
 		emitMessage(L__USER_CREATED, username, MESSAGE_TYPE_SUCCESS);
 	});
 }
+function showDialogEditOwnSystemUserPassword() {
+	showDialogAjax(
+		L__CHANGE_PASSWORD,
+		"views/dialog-system-user-update-own-password.php",
+		DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO
+	);
+}
+function editOwnSystemUserPassword(oldPassword, newPassword) {
+	var params = [];
+	params.push({'key':'update_own_system_user_password', 'value':newPassword});
+	params.push({'key':'old_password', 'value':oldPassword});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		hideDialog();
+		refreshContent();
+		emitMessage(L__SAVED, "", MESSAGE_TYPE_SUCCESS);
+	});
+}
 function showDialogEditSystemUser(id, username, fullname, description, roleId) {
 	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
 		txtEditSystemUserId.value = id;

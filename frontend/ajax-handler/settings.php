@@ -17,6 +17,14 @@ try {
 		)));
 	}
 
+	if(!empty($_POST['update_own_system_user_password'])
+	&& isset($_POST['old_password'])) {
+		$cl->updateOwnSystemUserPassword(
+			$_POST['old_password'], $_POST['update_own_system_user_password']
+		);
+		die();
+	}
+
 	if(!empty($_POST['update_system_user_id'])
 	&& isset($_POST['username'])
 	&& isset($_POST['fullname'])

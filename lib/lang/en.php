@@ -366,6 +366,9 @@ const LANG = [
 	'constraints' => 'Constraints',
 	'agent_ip_range' => 'Agent IP range',
 	'invalid_ip_address' => 'Invalid IP address',
+	'change_password' => 'Change Password',
+	'old_password' => 'Old Password',
+	'old_password_is_not_correct' => 'Old password is not correct',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
