@@ -68,10 +68,10 @@ class CoreLogic {
 
 		$finalHostname = trim($hostname);
 		if(empty($finalHostname)) {
-			throw new Exception(LANG['hostname_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['hostname_cannot_be_empty']);
 		}
 		if($this->db->getComputerByName($finalHostname) !== null) {
-			throw new Exception(LANG['hostname_already_exists']);
+			throw new InvalidRequestException(LANG['hostname_already_exists']);
 		}
 		$result = $this->db->addComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, ''/*Agent Key*/, ''/*Server Key*/);
 		if(!$result) throw new Exception(LANG['unknown_error']);
@@ -84,10 +84,10 @@ class CoreLogic {
 
 		$finalHostname = trim($newName);
 		if(empty($finalHostname)) {
-			throw new Exception(LANG['hostname_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['hostname_cannot_be_empty']);
 		}
 		if($this->db->getComputerByName($finalHostname) !== null) {
-			throw new Exception(LANG['hostname_already_exists']);
+			throw new InvalidRequestException(LANG['hostname_already_exists']);
 		}
 		$result = $this->db->updateComputerHostname($computer->id, $finalHostname);
 		if(!$result) throw new Exception(LANG['unknown_error']);
@@ -136,10 +136,10 @@ class CoreLogic {
 
 		if(!$force) {
 			$jobs = $this->db->getPendingJobsForComputerDetailPage($id);
-			if(count($jobs) > 0) throw new Exception(LANG['delete_failed_active_jobs']);
+			if(count($jobs) > 0) throw new InvalidRequestException(LANG['delete_failed_active_jobs']);
 		}
 		$result = $this->db->removeComputer($computer->id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function createComputerGroup($name, $parentGroupId=null) {
@@ -152,7 +152,7 @@ class CoreLogic {
 		}
 
 		if(empty(trim($name))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$insertId = $this->db->addComputerGroup($name, $parentGroupId);
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
@@ -164,7 +164,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newName))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$this->db->renameComputerGroup($computerGroup->id, $newName);
 	}
@@ -196,10 +196,10 @@ class CoreLogic {
 
 		if(!$force) {
 			$subgroups = $this->db->getAllComputerGroup($id);
-			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
+			if(count($subgroups) > 0) throw new InvalidRequestException(LANG['delete_failed_subgroups']);
 		}
 		$result = $this->db->removeComputerGroup($id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 
@@ -275,10 +275,10 @@ class CoreLogic {
 			$fileName = basename($tmpFilePath);
 		}
 		if(empty($name) || empty($installProcedure) || empty($version)) {
-			throw new Exception(LANG['please_fill_required_fields']);
+			throw new InvalidRequestException(LANG['please_fill_required_fields']);
 		}
 		if(!empty($this->db->getPackageByNameVersion($name, $version))) {
-			throw new Exception(LANG['package_exists_with_version']);
+			throw new InvalidRequestException(LANG['package_exists_with_version']);
 		}
 		// decide what to do with uploaded file
 		if($tmpFilePath != null && file_exists($tmpFilePath)) {
@@ -361,15 +361,15 @@ class CoreLogic {
 	}
 	public function removePackage($id, $force=false) {
 		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new Exception(LANG['not_found']);
+		if(empty($package)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
 			$jobs = $this->db->getPendingJobsForPackageDetailPage($id);
-			if(count($jobs) > 0) throw new Exception(LANG['delete_failed_active_jobs']);
+			if(count($jobs) > 0) throw new InvalidRequestException(LANG['delete_failed_active_jobs']);
 
 			$dependentPackages = $this->db->getDependentForPackages($id);
-			if(count($dependentPackages) > 0) throw new Exception(LANG['delete_failed_dependent_packages']);
+			if(count($dependentPackages) > 0) throw new InvalidRequestException(LANG['delete_failed_dependent_packages']);
 		}
 
 		$path = $package->getFilePath();
@@ -385,10 +385,10 @@ class CoreLogic {
 		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_DELETE);
 
 		$packages = $this->db->getPackageByFamily($id);
-		if(count($packages) > 0) throw new Exception(LANG['delete_failed_package_family_contains_packages']);
+		if(count($packages) > 0) throw new InvalidRequestException(LANG['delete_failed_package_family_contains_packages']);
 
 		$result = $this->db->removePackageFamily($id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function createPackageGroup($name, $parentGroupId=null) {
@@ -401,7 +401,7 @@ class CoreLogic {
 		}
 
 		if(empty(trim($name))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$insertId = $this->db->addPackageGroup($name, $packageGroup->id);
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
@@ -414,11 +414,11 @@ class CoreLogic {
 
 		if(!$force) {
 			$subgroups = $this->db->getAllPackageGroup($id);
-			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
+			if(count($subgroups) > 0) throw new InvalidRequestException(LANG['delete_failed_subgroups']);
 		}
 
 		$result = $this->db->removePackageGroup($id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function renamePackageFamily($id, $newName) {
@@ -427,7 +427,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newName))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$this->db->updatePackageFamily($packageFamily->id, $newName, $packageFamily->notes, $packageFamily->icon);
 	}
@@ -471,7 +471,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newValue))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$this->db->updatePackageVersion($package->id, $newValue);
 	}
@@ -488,7 +488,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newValue))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$this->db->updatePackageInstallProcedure($package->id, $newValue);
 	}
@@ -508,7 +508,7 @@ class CoreLogic {
 		&& in_array($newValue, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN, Package::POST_ACTION_EXIT])) {
 			$this->db->updatePackageInstallProcedurePostAction($package->id, $newValue);
 		} else {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 	}
 	public function updatePackageUninstallProcedure($id, $newValue) {
@@ -534,7 +534,7 @@ class CoreLogic {
 		&& in_array($newValue, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN])) {
 			$this->db->updatePackageUninstallProcedurePostAction($package->id, $newValue);
 		} else {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 	}
 	public function updatePackageDownloadForUninstall($id, $newValue) {
@@ -545,7 +545,7 @@ class CoreLogic {
 		if(intval($newValue) === 0 || intval($newValue) === 1) {
 			$this->db->updatePackageDownloadForUninstall($package->id, intval($newValue));
 		} else {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 	}
 	public function updatePackageCompatibleOs($id, $newValue) {
@@ -575,7 +575,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_DELETE);
 
 		if(empty(trim($newName))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$this->db->renamePackageGroup($packageGroup->id, $newName);
 	}
@@ -604,22 +604,22 @@ class CoreLogic {
 
 		// check user input
 		if(empty(trim($name))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		if(empty($restartTimeout) || empty($dateStart) || strtotime($dateStart) === false) {
-			throw new Exception(LANG['please_fill_required_fields']);
+			throw new InvalidRequestException(LANG['please_fill_required_fields']);
 		}
 		if(!empty($dateEnd) // check end date if not empty
 		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
 		) {
-			throw new Exception(LANG['end_time_before_start_time']);
+			throw new InvalidRequestException(LANG['end_time_before_start_time']);
 		}
 		if($sequenceMode != JobContainer::SEQUENCE_MODE_IGNORE_FAILED
 		&& $sequenceMode != JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 		if($priority < -100 || $priority > 100) {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 
 		// check if given IDs exists and add them to a consolidated array
@@ -667,7 +667,7 @@ class CoreLogic {
 
 		// check if there are any computer & packages
 		if(count($computer_ids) == 0 || count($packages) == 0) {
-			throw new Exception(LANG['no_jobs_created']);
+			throw new InvalidRequestException(LANG['no_jobs_created']);
 		}
 
 		// wol handling
@@ -848,22 +848,22 @@ class CoreLogic {
 
 		// check user input
 		if(empty(trim($name))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		if(empty($restartTimeout) || empty($dateStart) || strtotime($dateStart) === false) {
-			throw new Exception(LANG['please_fill_required_fields']);
+			throw new InvalidRequestException(LANG['please_fill_required_fields']);
 		}
 		if(!empty($dateEnd) // check end date if not empty
 		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
 		) {
-			throw new Exception(LANG['end_time_before_start_time']);
+			throw new InvalidRequestException(LANG['end_time_before_start_time']);
 		}
 		if($sequenceMode != JobContainer::SEQUENCE_MODE_IGNORE_FAILED
 		&& $sequenceMode != JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 		if($priority < -100 || $priority > 100) {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 
 		// wol handling
@@ -896,7 +896,7 @@ class CoreLogic {
 
 		// check if there are any computer & packages
 		if(count($computer_ids) == 0) {
-			throw new Exception(LANG['no_jobs_created']);
+			throw new InvalidRequestException(LANG['no_jobs_created']);
 		}
 
 		// compile constraints
@@ -931,49 +931,49 @@ class CoreLogic {
 	}
 	public function removeComputerAssignedPackage($id) {
 		$computerPackageAssignment = $this->db->getComputerAssignedPackage($id);
-		if(!$computerPackageAssignment) throw new Exception(LANG['not_found']);
+		if(!$computerPackageAssignment) throw new NotFoundException();
 		$computer = $this->db->getComputer($computerPackageAssignment->computer_id);
-		if(!$computer) throw new Exception(LANG['not_found']);
+		if(!$computer) throw new NotFoundException();
 		$package = $this->db->getComputer($computerPackageAssignment->package_id);
-		if(!$package) throw new Exception(LANG['not_found']);
+		if(!$package) throw new NotFoundException();
 
 		$this->systemUser->checkPermission($computer, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 
 		$result = $this->db->removeComputerAssignedPackage($id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function renewFailedJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
 		$jc = $this->db->getJobContainer($renewContainerId);
-		if(!$jc) throw new Exception(LANG['not_found']);
+		if(!$jc) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
 		if(empty(trim($name))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		if(empty($dateStart) || strtotime($dateStart) === false) {
-			throw new Exception(LANG['please_fill_required_fields']);
+			throw new InvalidRequestException(LANG['please_fill_required_fields']);
 		}
 		if(!empty($dateEnd) // check end date if not empty
 		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
 		) {
-			throw new Exception(LANG['end_time_before_start_time']);
+			throw new InvalidRequestException(LANG['end_time_before_start_time']);
 		}
 		if($sequenceMode != JobContainer::SEQUENCE_MODE_IGNORE_FAILED
 		&& $sequenceMode != JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 		if($priority < -100 || $priority > 100) {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 
 		// get old job container
 		$container = $this->db->getJobContainer($renewContainerId);
 		if($container === null) {
-			throw new Exception(LANG['not_found']);
+			throw new NotFoundException();
 		}
 
 		// wol handling
@@ -1033,7 +1033,7 @@ class CoreLogic {
 			// check if there are any computer & packages
 			if($count == 0) {
 				$this->db->removeJobContainer($jcid);
-				throw new Exception(LANG['no_jobs_created']);
+				throw new InvalidRequestException(LANG['no_jobs_created']);
 			}
 
 			// if instant WOL: check if computers are currently online (to know if we should shut them down after all jobs are done)
@@ -1044,87 +1044,87 @@ class CoreLogic {
 	}
 	public function updateJobContainerNotes($id, $notes) {
 		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new Exception(LANG['not_found']);
+		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
 		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 	}
 	public function renameJobContainer($id, $newName) {
 		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new Exception(LANG['not_found']);
+		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newName))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$this->db->updateJobContainer($jc->id, $newName, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 	}
 	public function updateJobContainerPriority($id, $priority) {
 		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new Exception(LANG['not_found']);
+		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, intval($priority), $jc->constraints);
 	}
 	public function updateJobContainerSequenceMode($id, $sequenceMode) {
 		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new Exception(LANG['not_found']);
+		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
 		if(!is_numeric($sequenceMode)
 		|| !in_array($sequenceMode, [JobContainer::SEQUENCE_MODE_IGNORE_FAILED, JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
-			throw new Exception(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG['invalid_input']);
 		}
 		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, intval($sequenceMode), $jc->priority, $jc->constraints);
 	}
 	public function updateJobContainerStart($id, $newStart) {
 		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new Exception(LANG['not_found']);
+		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
 		if(DateTime::createFromFormat('Y-m-d H:i:s', $newStart) === false) {
-			throw new Exception(LANG['date_parse_error']);
+			throw new InvalidRequestException(LANG['date_parse_error']);
 		}
 		$this->db->updateJobContainer($jc->id, $jc->name, $newStart, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 	}
 	public function updateJobContainerEnd($id, $newEnd) {
 		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new Exception(LANG['not_found']);
+		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
 		if(!empty($newEnd) && DateTime::createFromFormat('Y-m-d H:i:s', $newEnd) === false) {
-			throw new Exception(LANG['date_parse_error']);
+			throw new InvalidRequestException(LANG['date_parse_error']);
 		}
 		if(empty($newEnd)) {
 			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, null, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 		} else {
 			if(strtotime($jc->start_time) > strtotime($newEnd)) {
-				throw new Exception(LANG['end_time_before_start_time']);
+				throw new InvalidRequestException(LANG['end_time_before_start_time']);
 			}
 			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $newEnd, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->constraints);
 		}
 	}
 	public function removeJobContainer($id) {
 		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new Exception(LANG['not_found']);
+		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_DELETE);
 
 		$result = $this->db->removeJobContainer($id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function removeJob($id) {
 		$job = $this->db->getJob($id);
-		if(empty($job)) throw new Exception(LANG['not_found']);
+		if(empty($job)) throw new NotFoundException();
 		$jc = $this->db->getJobContainer($job->job_container_id);
-		if(empty($jc)) throw new Exception(LANG['not_found']);
+		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_DELETE);
 
 		$result = $this->db->removeJob($id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 
@@ -1170,12 +1170,12 @@ class CoreLogic {
 		$this->systemUser->checkPermission(new Report(), PermissionManager::METHOD_CREATE);
 		if(!empty($groupId)) {
 			$reportGroup = $this->db->getReportGroup($groupId);
-			if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+			if(empty($reportGroup)) throw new NotFoundException();
 			$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
 		}
 
 		if(empty(trim($name)) || empty(trim($query))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$insertId = $this->db->addReport($groupId, $name, $notes, $query);
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
@@ -1183,19 +1183,19 @@ class CoreLogic {
 	}
 	public function updateReport($id, $name, $notes, $query) {
 		$report = $this->db->getReport($id);
-		if(empty($report)) throw new Exception(LANG['not_found']);
+		if(empty($report)) throw new NotFoundException();
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($name)) || empty(trim($query))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$this->db->updateReport($report->id, $report->report_group_id, $name, $notes, $query);
 	}
 	public function moveReportToGroup($reportId, $groupId) {
 		$report = $this->db->getReport($reportId);
-		if(empty($report)) throw new Exception(LANG['not_found']);
+		if(empty($report)) throw new ENotFoundxception();
 		$reportGroup = $this->db->getReportGroup($groupId);
-		if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+		if(empty($reportGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
 
@@ -1203,11 +1203,11 @@ class CoreLogic {
 	}
 	public function removeReport($id) {
 		$report = $this->db->getReport($id);
-		if(empty($report)) throw new Exception(LANG['not_found']);
+		if(empty($report)) throw new NotFoundException();
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_DELETE);
 
 		$result = $this->db->removeReport($report->id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 	public function createReportGroup($name, $parentGroupId=null) {
@@ -1215,12 +1215,12 @@ class CoreLogic {
 			$this->systemUser->checkPermission(new ReportGroup(), PermissionManager::METHOD_CREATE);
 		} else {
 			$reportGroup = $this->db->getReportGroup($parentGroupId);
-			if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+			if(empty($reportGroup)) throw new NotFoundException();
 			$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_CREATE);
 		}
 
 		if(empty(trim($name))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$insertId = $this->db->addReportGroup($name, $parentGroupId);
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
@@ -1228,25 +1228,25 @@ class CoreLogic {
 	}
 	public function renameReportGroup($id, $newName) {
 		$reportGroup = $this->db->getReportGroup($id);
-		if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+		if(empty($reportGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newName))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		$this->db->renameReportGroup($reportGroup->id, $newName);
 	}
 	public function removeReportGroup($id, $force=false) {
 		$reportGroup = $this->db->getReportGroup($id);
-		if(empty($reportGroup)) throw new Exception(LANG['not_found']);
+		if(empty($reportGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
 			$subgroups = $this->db->getAllReportGroup($id);
-			if(count($subgroups) > 0) throw new Exception(LANG['delete_failed_subgroups']);
+			if(count($subgroups) > 0) throw new InvalidRequestException(LANG['delete_failed_subgroups']);
 		}
 		$result = $this->db->removeReportGroup($reportGroup->id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 
@@ -1296,13 +1296,13 @@ class CoreLogic {
 
 		if(empty(trim($username))
 		|| empty(trim($fullname))) {
-			throw new Exception(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		if(empty(trim($password))) {
-			throw new Exception(LANG['password_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['password_cannot_be_empty']);
 		}
 		if($this->db->getSystemUserByLogin($username) !== null) {
-			throw new Exception(LANG['username_already_exists']);
+			throw new InvalidRequestException(LANG['username_already_exists']);
 		}
 
 		$insertId = $this->db->addSystemUser(
@@ -1317,7 +1317,7 @@ class CoreLogic {
 		if($this->systemUser->ldap) throw new Exception('Password of LDAP account cannot be modified');
 
 		if(empty(trim($newPassword))) {
-			throw new Exception(LANG['password_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['password_cannot_be_empty']);
 		}
 
 		try {
@@ -1326,7 +1326,7 @@ class CoreLogic {
 				throw new AuthenticationException();
 			}
 		} catch(AuthenticationException $e) {
-			throw new Exception(LANG['old_password_is_not_correct']);
+			throw new InvalidRequestException(LANG['old_password_is_not_correct']);
 		}
 
 		$newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
@@ -1339,23 +1339,23 @@ class CoreLogic {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
 		$u = $this->db->getSystemUser($id);
-		if($u === null) throw new Exception(LANG['not_found']);
-		if(!empty($u->ldap)) throw new Exception(LANG['ldap_accounts_cannot_be_modified']);
+		if($u === null) throw new NotFoundException();
+		if(!empty($u->ldap)) throw new InvalidRequestException(LANG['ldap_accounts_cannot_be_modified']);
 
 		if(empty(trim($username))) {
-			throw new Exception(LANG['username_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['username_cannot_be_empty']);
 		}
 		$checkUser = $this->db->getSystemUserByLogin($username);
 		if($checkUser !== null && $checkUser->id !== $u->id) {
-			throw new Exception(LANG['username_already_exists']);
+			throw new InvalidRequestException(LANG['username_already_exists']);
 		}
 		if(empty(trim($fullname))) {
-			throw new Exception(LANG['username_cannot_be_empty']);
+			throw new InvalidRequestException(LANG['username_cannot_be_empty']);
 		}
 		$newPassword = $u->password;
 		if(!empty($password)) {
 			if(empty(trim($password))) {
-				throw new Exception(LANG['password_cannot_be_empty']);
+				throw new InvalidRequestException(LANG['password_cannot_be_empty']);
 			}
 			$newPassword = password_hash($password, PASSWORD_DEFAULT);
 		}
@@ -1369,7 +1369,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
 		$u = $this->db->getSystemUser($id);
-		if($u === null) throw new Exception(LANG['not_found']);
+		if($u === null) throw new NotFoundException();
 
 		$this->db->updateSystemUser(
 			$u->id, $u->username, $u->fullname, $u->password,
@@ -1379,8 +1379,11 @@ class CoreLogic {
 	public function removeSystemUser($id) {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
+		$u = $this->db->getSystemUser($id);
+		if($u === null) throw new NotFoundException();
+
 		$result = $this->db->removeSystemUser($id);
-		if(!$result) throw new Exception(LANG['not_found']);
+		if(!$result) throw new Exception(LANG['unknown_error']);
 		return $result;
 	}
 
