@@ -780,7 +780,7 @@ class DatabaseController {
 	}
 	public function getPackageByPackageAndGroup($pid, $gid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name" FROM package_group_member pgm
+			'SELECT p.*, pf.name AS "package_family_name" FROM package_group_member pgm
 			INNER JOIN package p ON p.id = pgm.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pgm.package_id = :pid AND pgm.package_group_id = :gid'
@@ -790,7 +790,7 @@ class DatabaseController {
 	}
 	public function getPackageByFamily($fid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name" FROM package p
+			'SELECT p.*, pf.name AS "package_family_name" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE p.package_family_id = :package_family_id'
 		);
@@ -799,7 +799,7 @@ class DatabaseController {
 	}
 	public function getDependentPackages($pid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name" FROM package_dependency pd
+			'SELECT p.*, pf.name AS "package_family_name" FROM package_dependency pd
 			INNER JOIN package p ON p.id = pd.dependent_package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pd.package_id = :package_id'
@@ -809,7 +809,7 @@ class DatabaseController {
 	}
 	public function getDependentForPackages($pid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name" FROM package_dependency pd
+			'SELECT p.*, pf.name AS "package_family_name" FROM package_dependency pd
 			INNER JOIN package p ON p.id = pd.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pd.dependent_package_id = :package_id'
@@ -819,7 +819,7 @@ class DatabaseController {
 	}
 	public function getConflictPackages($pid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name" FROM package_conflict pc
+			'SELECT p.*, pf.name AS "package_family_name" FROM package_conflict pc
 			INNER JOIN package p ON p.id = pc.conflict_package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pc.package_id = :package_id'
@@ -829,7 +829,7 @@ class DatabaseController {
 	}
 	public function getAllPackage($orderByCreated=false) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name" FROM package p
+			'SELECT p.*, pf.name AS "package_family_name" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id'
 			.($orderByCreated ? ' ORDER BY p.created DESC' : ' ORDER BY pf.name ASC')
 		);
@@ -915,7 +915,7 @@ class DatabaseController {
 	}
 	public function getPackageByNameVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name" FROM package p
+			'SELECT p.*, pf.name AS "package_family_name" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pf.name = :name AND p.version = :version'
 		);
@@ -978,7 +978,7 @@ class DatabaseController {
 	}
 	public function getPackageByGroup($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "name", pgm.sequence AS "package_group_member_sequence"
+			'SELECT p.*, pf.name AS "package_family_name", pgm.sequence AS "package_group_member_sequence"
 			FROM package p
 			INNER JOIN package_group_member pgm ON p.id = pgm.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id

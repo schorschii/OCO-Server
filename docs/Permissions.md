@@ -62,7 +62,6 @@ You can create your own roles by adding a new role record in the database with a
 
     "package_family_management": {
         "create": false,                   <-- disallows the user to create new package families
-        "delete": false,
         "*": {
             "create": false,               <-- disallows the user to create new versions for all package families
             "read": true,

@@ -38,7 +38,7 @@ try {
 
 			$selected = '';
 			if(!empty($group) || in_array($p->id, $select_package_ids)) $selected = 'selected';
-			echo "<option value='".$p->id."' ".$selected.">".htmlspecialchars($p->name)." (".htmlspecialchars($p->version).")"."</option>";
+			echo "<option value='".$p->id."' ".$selected.">".htmlspecialchars($p->package_family_name)." (".htmlspecialchars($p->version).")"."</option>";
 		}
 		die();
 	}

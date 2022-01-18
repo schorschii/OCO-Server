@@ -370,6 +370,7 @@ no parameters
 			{
 				"id": "108",
 				"package_family_id": "3",
+				"package_family_name": "CDBurnerXP",
 				"version": "4.5.8.7128",
 				"notes": "",
 				"author": "root",
@@ -382,12 +383,12 @@ no parameters
 				"uninstall_procedure_post_action": "0",
 				"created": "2021-04-24 18:13:12",
 				"last_update": "2021-06-15 23:44:02",
-				"package_group_member_sequence": null,
-				"name": "CDBurnerXP"
+				"package_group_member_sequence": null
 			},
 			{
 				"id": "109",
 				"package_family_id": "3",
+				"package_family_name": "CDBurnerXP",
 				"version": "4.5.0.3661",
 				"notes": "",
 				"author": "root",
@@ -400,8 +401,7 @@ no parameters
 				"uninstall_procedure_post_action": "0",
 				"created": "2021-04-24 18:15:51",
 				"last_update": "2021-04-24 18:15:51",
-				"package_group_member_sequence": null,
-				"name": "CDBurnerXP"
+				"package_group_member_sequence": null
 			}
 		]
 	}
@@ -499,7 +499,7 @@ no parameters
 
 ## `oco.package.create` - Create New Package
 ### Parameters
-- `name` - package family name (will be created if not exists)
+- `package_family_name` - package family name (will be created if not exists)
 - `version` - package version
 - `description` - package description (optional)
 - `install_procedure` - install procedure (install command)
@@ -522,7 +522,7 @@ no parameters
 	"params": {
 		"api_key": "🌈💜👆🚧🛸💩",
 		"data": {
-			"name": "My Test App",
+			"package_family_name": "My Test App",
 			"version": "1.1",
 			"description": "For internal tests only",
 			"install_procedure": "msiexec /quiet /i test.msi",

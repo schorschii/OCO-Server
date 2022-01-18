@@ -157,7 +157,7 @@ switch($srcdata['method']) {
 			file_put_contents($tmpFilePath, $fileContent);
 		}
 		// insert into database
-		$insertId = $cl->createPackage($data['name'] ?? '', $data['version'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+		$insertId = $cl->createPackage($data['package_family_name'] ?? '', $data['version'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
 			$data['install_procedure'] ?? '', $data['install_procedure_success_return_codes'] ?? '0', $data['install_procedure_post_action'] ?? 0,
 			$data['uninstall_procedure'] ?? '', $data['uninstall_procedure_success_return_codes'] ?? '0', $data['download_for_uninstall'] ?? 0, $data['uninstall_procedure_post_action'] ?? 0,
 			$data['compatible_os'] ?? '', $data['compatible_os_version'] ?? '', $tmpFilePath, $data['file_name'] ?? 'file'
