@@ -6,6 +6,8 @@ require_once('../session.php');
 // ----- prepare view -----
 try {
 	$report = $cl->getReport($_GET['id'] ?? -1);
+	$permissionWrite  = $currentSystemUser->checkPermission($report, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $currentSystemUser->checkPermission($report, PermissionManager::METHOD_DELETE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG['not_found']."</div>");
 } catch(PermissionException $e) {
@@ -26,8 +28,8 @@ try {
 <div class='details-header'>
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><span id='spnReportName'><?php echo htmlspecialchars($report->name); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='showDialogEditReport("<?php echo $report->id; ?>", spnReportName.innerText, spnReportNotes.innerText, spnReportQuery.innerText)' <?php if(!$currentSystemUser->checkPermission($report, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
-		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText)' <?php if(!$currentSystemUser->checkPermission($report, PermissionManager::METHOD_DELETE, false)) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='showDialogEditReport("<?php echo $report->id; ?>", spnReportName.innerText, spnReportNotes.innerText, spnReportQuery.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
+		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 </div>
 

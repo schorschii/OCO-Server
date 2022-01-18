@@ -403,7 +403,7 @@ class CoreLogic {
 		if(empty(trim($name))) {
 			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
-		$insertId = $this->db->addPackageGroup($name, $packageGroup->id);
+		$insertId = $this->db->addPackageGroup($name, $parentGroupId);
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
 		return $insertId;
 	}

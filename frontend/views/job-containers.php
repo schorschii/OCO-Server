@@ -7,6 +7,9 @@ if(!empty($_GET['id'])) {
 
 	try {
 		$container = $cl->getJobContainer($_GET['id'] ?? -1);
+		$permissionCreate = $currentSystemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE, false);
+		$permissionWrite  = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_WRITE, false);
+		$permissionDelete = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_DELETE, false);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG['not_found']."</div>");
 	} catch(PermissionException $e) {
@@ -31,9 +34,9 @@ if(!empty($_GET['id'])) {
 	<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 
 	<div class='controls'>
-		<button onclick='renameJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText)' <?php if(!$currentSystemUser->checkPermission($container, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-		<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>")' <?php if($failed==0 || !$currentSystemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE, false) || !$currentSystemUser->checkPermission($container, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
-		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$currentSystemUser->checkPermission($container, PermissionManager::METHOD_DELETE, false)) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='renameJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>")' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
+		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 
 	<div class='details-abreast margintop marginbottom'>
@@ -52,7 +55,9 @@ if(!empty($_GET['id'])) {
 				<td class='subbuttons'>
 					<span id='spnJobContainerStartTime'><?php echo htmlspecialchars($container->start_time); ?></span>
 					<?php if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; if($container->shutdown_waked_after_completion > 0) echo ' ('.LANG['shutdown_waked_computers'].')'; ?>
-					<button onclick='event.stopPropagation();editJobContainerStart(<?php echo $container->id; ?>, spnJobContainerStartTime.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editJobContainerStart(<?php echo $container->id; ?>, spnJobContainerStartTime.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -60,7 +65,9 @@ if(!empty($_GET['id'])) {
 				<td class='subbuttons'>
 					<?php echo htmlspecialchars($container->end_time ?? "-"); ?>
 					<span id='spnJobContainerEndTime' class='rawvalue'><?php echo htmlspecialchars($container->end_time ?? ""); ?></span>
-					<button onclick='event.stopPropagation();editJobContainerEnd(<?php echo $container->id; ?>, spnJobContainerEndTime.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editJobContainerEnd(<?php echo $container->id; ?>, spnJobContainerEndTime.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -76,14 +83,18 @@ if(!empty($_GET['id'])) {
 						case(JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED): echo LANG['abort_after_failed']; break;
 						default: echo htmlspecialchars($container->sequence_mode);
 					} ?>
-					<button onclick='event.stopPropagation();editJobContainerSequenceMode(<?php echo $container->id; ?>, spnJobContainerSequenceMode.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editJobContainerSequenceMode(<?php echo $container->id; ?>, spnJobContainerSequenceMode.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['priority']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnJobContainerPriority'><?php echo htmlspecialchars($container->priority); ?></span>
-					<button onclick='event.stopPropagation();editJobContainerPriority(<?php echo $container->id; ?>, spnJobContainerPriority.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editJobContainerPriority(<?php echo $container->id; ?>, spnJobContainerPriority.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -103,7 +114,9 @@ if(!empty($_GET['id'])) {
 				<th><?php echo LANG['description']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnJobContainerDescription'><?php echo htmlspecialchars($container->notes); ?></span>
-					<button onclick='event.stopPropagation();editJobContainerNotes(<?php echo $container->id; ?>, spnJobContainerDescription.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editJobContainerNotes(<?php echo $container->id; ?>, spnJobContainerDescription.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -170,15 +183,17 @@ if(!empty($_GET['id'])) {
 		</table>
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedJob("job_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 	</div>
 	</div>
 
 <?php
 } else {
+
 	try {
 		$containers = $cl->getJobContainers();
+		$permissionCreate = $currentSystemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE, false);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG['not_found']."</div>");
 	} catch(PermissionException $e) {
@@ -191,7 +206,7 @@ if(!empty($_GET['id'])) {
 	<h1><img src='img/job.dyn.svg'><span id='page-title'><?php echo LANG['job_container']; ?></span></h1>
 
 	<div class='controls'>
-		<button onclick='refreshContentDeploy()' <?php if(!$currentSystemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_deployment_job']; ?></button>
+		<button onclick='refreshContentDeploy()' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_deployment_job']; ?></button>
 	</div>
 
 	<div class='details-abreast'>

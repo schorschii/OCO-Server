@@ -21,21 +21,29 @@ try {
 }
 ?>
 
-<?php if($group === null) { ?>
+<?php if($group === null) {
+	$permissionCreateComputer = $currentSystemUser->checkPermission(new Computer(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup    = $currentSystemUser->checkPermission(new ComputerGroup(), PermissionManager::METHOD_CREATE, false);
+?>
 	<h1><img src='img/computer.dyn.svg'><span id='page-title'><?php echo LANG['all_computer']; ?></span></h1>
 	<div class='controls'>
-		<button onclick='createComputer()'><img src='img/add.svg' <?php if(!$currentSystemUser->checkPermission(new Computer(), PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>>&nbsp;<?php echo LANG['new_computer']; ?></button>
-		<button onclick='createComputerGroup()'><img src='img/folder-new.svg' <?php if(!$currentSystemUser->checkPermission(new ComputerGroup(), PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>>&nbsp;<?php echo LANG['new_group']; ?></button>
+		<button onclick='createComputer()'><img src='img/add.svg' <?php if(!$permissionCreateComputer) echo 'disabled'; ?>>&nbsp;<?php echo LANG['new_computer']; ?></button>
+		<button onclick='createComputerGroup()'><img src='img/folder-new.svg' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>>&nbsp;<?php echo LANG['new_group']; ?></button>
 		<span class='fillwidth'></span>
 		<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='<?php echo LANG['agent_download_description']; ?>'><?php echo LANG['agent_download']; ?></a></span>
 	</div>
-<?php } else { ?>
+<?php } else {
+	$permissionCreate = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_CREATE, false);
+	$permissionDeploy = !empty($computers) && $currentSystemUser->checkPermission($computers[0], PermissionManager::METHOD_DEPLOY, false);
+	$permissionWrite  = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false);
+?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id)); ?></span><span id='spnComputerGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
 	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
-		<button onclick='createComputerGroup(<?php echo $group->id; ?>)' <?php if(!$currentSystemUser->checkPermission($group, PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
-		<button onclick='refreshContentDeploy([],[],[],[<?php echo $group->id; ?>])' <?php if(empty($computers) || !$currentSystemUser->checkPermission($computers[0], PermissionManager::METHOD_DEPLOY, false)) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy_for_all']; ?></button>
-		<button onclick='renameComputerGroup(<?php echo $group->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
-		<button onclick='confirmRemoveComputerGroup([<?php echo $group->id; ?>], event, spnComputerGroupName.innerText)' <?php if(!$currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false)) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
+		<button onclick='createComputerGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
+		<button onclick='refreshContentDeploy([],[],[],[<?php echo $group->id; ?>])' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy_for_all']; ?></button>
+		<button onclick='renameComputerGroup(<?php echo $group->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
+		<button onclick='confirmRemoveComputerGroup([<?php echo $group->id; ?>], event, spnComputerGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>
 <?php } ?>
 

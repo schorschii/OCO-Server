@@ -7,7 +7,12 @@ require_once('../session.php');
 try {
 	$package = $cl->getPackage($_GET['id'] ?? -1);
 	$packageFamily = $db->getPackageFamily($package->package_family_id);
-	if($packageFamily === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
+	if($packageFamily === null) throw new NotFoundException();
+
+	$permissionCreate = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
+	$permissionDeploy = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DEPLOY, false);
+	$permissionWrite  = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DELETE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG['not_found']."</div>");
 } catch(PermissionException $e) {
@@ -25,15 +30,15 @@ try {
 	<div>
 		<h2><?php echo LANG['general']; ?></h2>
 		<div class='controls'>
-			<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);' <?php if(!$currentSystemUser->checkPermission($package, PermissionManager::METHOD_DEPLOY, false)) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+			<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 			<button onclick='window.open("payloadprovider.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize()) echo "disabled"; ?>><img src='img/download.svg'>&nbsp;<?php echo LANG['download']; ?></button>
-			<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)'><img src='img/folder-insert-into.svg' <?php if(!$currentSystemUser->checkPermission($package, PermissionManager::METHOD_WRITE, false)) echo 'disabled'; ?>>
+			<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.svg'>
 				&nbsp;<?php echo LANG['add_to']; ?>
 				<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
 					<?php echoPackageGroupOptions($db); ?>
 				</select>
 			</button>
-			<button onclick='currentExplorerContentUrl="views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")")' <?php if(!$currentSystemUser->checkPermission($package, PermissionManager::METHOD_DELETE, false)) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='currentExplorerContentUrl="views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 		<table class='list metadata'>
 			<tr>
@@ -44,7 +49,9 @@ try {
 				<th><?php echo LANG['version']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnPackageVersion'><?php echo htmlspecialchars($package->version); ?></span>
-					<button onclick='event.stopPropagation();editPackageVersion(<?php echo $package->id; ?>, spnPackageVersion.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageVersion(<?php echo $package->id; ?>, spnPackageVersion.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -55,14 +62,18 @@ try {
 				<th><?php echo LANG['install_procedure']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnPackageInstallProcedure'><?php echo htmlspecialchars($package->install_procedure); ?></span>
-					<button onclick='event.stopPropagation();editPackageInstallProcedure(<?php echo $package->id; ?>, spnPackageInstallProcedure.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageInstallProcedure(<?php echo $package->id; ?>, spnPackageInstallProcedure.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['success_return_codes']; ?></th>
 				<td class='subbuttons'>
-				<span id='spnPackageInstallProcedureSuccessReturnCodes'><?php echo htmlspecialchars($package->install_procedure_success_return_codes); ?></span>
-					<button onclick='event.stopPropagation();editPackageInstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, spnPackageInstallProcedureSuccessReturnCodes.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<span id='spnPackageInstallProcedureSuccessReturnCodes'><?php echo htmlspecialchars($package->install_procedure_success_return_codes); ?></span>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageInstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, spnPackageInstallProcedureSuccessReturnCodes.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -78,21 +89,27 @@ try {
 					}
 					echo htmlspecialchars($info);
 					?>
-					<button onclick='event.stopPropagation();editPackageInstallProcedureAction(<?php echo $package->id; ?>, spnPackageInstallProcedurePostAction.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageInstallProcedureAction(<?php echo $package->id; ?>, spnPackageInstallProcedurePostAction.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['uninstall_procedure']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnPackageUninstallProcedure'><?php echo htmlspecialchars($package->uninstall_procedure); ?></span>
-					<button onclick='event.stopPropagation();editPackageUninstallProcedure(<?php echo $package->id; ?>, spnPackageUninstallProcedure.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageUninstallProcedure(<?php echo $package->id; ?>, spnPackageUninstallProcedure.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['success_return_codes']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnPackageUninstallProcedureSuccessReturnCodes'><?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes); ?></span>
-					<button onclick='event.stopPropagation();editPackageUninstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, spnPackageUninstallProcedureSuccessReturnCodes.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageUninstallProcedureSuccessReturnCodes(<?php echo $package->id; ?>, spnPackageUninstallProcedureSuccessReturnCodes.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -107,7 +124,9 @@ try {
 					}
 					echo htmlspecialchars($info);
 					?>
-					<button onclick='event.stopPropagation();editPackageUninstallProcedureAction(<?php echo $package->id; ?>, spnPackageUninstallProcedurePostAction.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageUninstallProcedureAction(<?php echo $package->id; ?>, spnPackageUninstallProcedurePostAction.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -115,21 +134,27 @@ try {
 				<td class='subbuttons'>
 					<span id='spnPackageDownloadForUninstall' class='rawvalue'><?php echo htmlspecialchars($package->download_for_uninstall); ?></span>
 					<?php $info = ''; if($package->download_for_uninstall) $info = LANG['yes']; else $info = LANG['no']; echo htmlspecialchars($info); ?>
-					<button onclick='event.stopPropagation();editPackageDownloadForUninstall(<?php echo $package->id; ?>, spnPackageDownloadForUninstall.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageDownloadForUninstall(<?php echo $package->id; ?>, spnPackageDownloadForUninstall.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['compatible_os']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnPackageCompatibleOs'><?php echo htmlspecialchars($package->compatible_os); ?></span>
-					<button onclick='event.stopPropagation();editPackageCompatibleOs(<?php echo $package->id; ?>, spnPackageCompatibleOs.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageCompatibleOs(<?php echo $package->id; ?>, spnPackageCompatibleOs.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['compatible_os_version']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnPackageCompatibleOsVersion'><?php echo htmlspecialchars($package->compatible_os_version); ?></span>
-					<button onclick='event.stopPropagation();editPackageCompatibleOsVersion(<?php echo $package->id; ?>, spnPackageCompatibleOsVersion.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageCompatibleOsVersion(<?php echo $package->id; ?>, spnPackageCompatibleOsVersion.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 			<tr>
@@ -172,7 +197,9 @@ try {
 				<th><?php echo LANG['description']; ?></th>
 				<td class='subbuttons'>
 					<span id='spnPackageDescription'><?php echo htmlspecialchars($package->notes); ?></span>
-					<button onclick='event.stopPropagation();editPackageNotes(<?php echo $package->id; ?>, spnPackageDescription.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editPackageNotes(<?php echo $package->id; ?>, spnPackageDescription.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
 				</td>
 			</tr>
 		</table>
@@ -181,7 +208,7 @@ try {
 	<div>
 		<h2><?php echo LANG['other_packages_from_this_family']; ?></h2>
 		<div class='controls'>
-			<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)'><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
+			<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
 			<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.svg'>&nbsp;<?php echo LANG['details']; ?></button>
 		</div>
 		<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $package->package_family_id; ?>, this.files[0])'></input>
@@ -253,10 +280,10 @@ try {
 			</tfoot>
 		</table>
 		<div class='controls'>
-			<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+			<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 		</div>
 	</div>
 
@@ -293,10 +320,10 @@ try {
 			</tfoot>
 		</table>
 		<div class='controls'>
-			<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+			<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 		</div>
 	</div>
 </div>
@@ -345,8 +372,8 @@ try {
 					<?php echoComputerGroupOptions($db); ?>
 				</select>
 			</button>
-			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")'><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-			<button onclick='showDialogUninstall()'><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+			<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 		</div>
 	</div>
 

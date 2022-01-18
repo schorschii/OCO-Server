@@ -48,7 +48,7 @@ You can create your own roles by adding a new role record in the database with a
                 "delete": true
             }
         },
-        "*": {
+        "*": {                             <-- note: "items" is not valid inside "*" - use "computer_management" for general computer permissions
             "create": true,
             "read": true,
             "write": true,
@@ -62,7 +62,7 @@ You can create your own roles by adding a new role record in the database with a
 
     "package_family_management": {
         "create": false,                   <-- disallows the user to create new package families
-        "*": {
+        "*": {                             <-- note: "items" is not valid inside "*" - use "package_management" for general package permissions
             "create": false,               <-- disallows the user to create new versions for all package families
             "read": true,
             "write": false,
@@ -84,7 +84,7 @@ You can create your own roles by adding a new role record in the database with a
 
     "package_group_management": {
         "create": true,
-        "*": {
+        "*": {                              <-- note: "items" is not valid inside "*" - use "package_management" for general package permissions
             "create": true,
             "read": true,
             "write": true,

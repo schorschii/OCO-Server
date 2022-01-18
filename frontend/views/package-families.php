@@ -3,9 +3,12 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-$families = [];
+$permissionCreatePackage = false;
+$permissionCreateGroup   = false;
 try {
 	$families = $cl->getPackageFamilies();
+	$permissionCreatePackage = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new PackageFamily(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup   = $currentSystemUser->checkPermission(new PackageGroup(), PermissionManager::METHOD_CREATE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG['not_found']."</div>");
 } catch(PermissionException $e) {
@@ -17,8 +20,8 @@ try {
 
 <h1><img src='img/package.dyn.svg'><span id='page-title'><?php echo LANG['package_families']; ?></span></h1>
 <div class='controls'>
-	<button onclick='refreshContentPackageNew()' <?php if(!$currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_package']; ?></button>
-	<button onclick='createPackageGroup()' <?php if(!$currentSystemUser->checkPermission(new PackageGroup(), PermissionManager::METHOD_CREATE, false)) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
+	<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_package']; ?></button>
+	<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
 	<span class='fillwidth'></span>
 	<span><a <?php echo explorerLink('views/packages.php'); ?>><?php echo LANG['all_packages']; ?></a></span>
 </div>
