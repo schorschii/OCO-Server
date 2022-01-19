@@ -46,13 +46,13 @@ try {
 	// ----- create install jobs if requested -----
 	if(isset($_POST['create_install_job_container'])) {
 		// compile constraints
-		$constraintIpRanges = [];
+		$agentIpRanges = [];
 		if(!empty($_POST['constraint_ip_range'])) {
 			if(is_string($_POST['constraint_ip_range'])) {
-				$constraintIpRanges[] = $_POST['constraint_ip_range'];
+				$agentIpRanges[] = $_POST['constraint_ip_range'];
 			}
 			elseif(is_array($_POST['constraint_ip_range'])) {
-				$constraintIpRanges = $_POST['constraint_ip_range'];
+				$agentIpRanges = $_POST['constraint_ip_range'];
 			}
 		}
 		// create container + jobs
@@ -62,7 +62,7 @@ try {
 			$_POST['date_start'], $_POST['date_end'] ?? null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
 			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['force_install_same_version'] ?? 0,
-			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, $constraintIpRanges
+			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, $agentIpRanges
 		);
 		die(strval(intval($jcid)));
 	}

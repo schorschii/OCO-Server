@@ -243,7 +243,7 @@ CREATE TABLE `job_container` (
   `shutdown_waked_after_completion` tinyint(4) NOT NULL DEFAULT 0,
   `sequence_mode` tinyint(4) NOT NULL DEFAULT 0,
   `priority` tinyint(4) NOT NULL DEFAULT 0,
-  `constraints` longtext NOT NULL,
+  `agent_ip_ranges` text DEFAULT NULL,
   `created` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
