@@ -30,9 +30,9 @@ class PermissionManager {
 	const SPECIAL_PERMISSION_CLIENT_API             = 'client_api_allowed';
 	const SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND    = 'client_web_frontend_allowed';
 
-	private DatabaseController $db;
-	private SystemUser $systemUser;
-	private Array $permData;
+	private /*DatabaseController*/ $db;
+	private /*SystemUser*/ $systemUser;
+	private /*Array*/ $permData;
 
 	function __construct(DatabaseController $db, SystemUser $systemUser) {
 		if(empty($systemUser->system_user_role_permissions)) {
