@@ -1638,13 +1638,20 @@ function editOwnSystemUserPassword(oldPassword, newPassword) {
 		emitMessage(L__SAVED, "", MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditSystemUser(id, username, fullname, description, roleId) {
+function showDialogEditSystemUser(id, username, fullname, description, roleId, ldap) {
 	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
 		txtEditSystemUserId.value = id;
 		txtEditSystemUserUsername.value = username;
 		txtEditSystemUserFullname.value = fullname;
 		txtEditSystemUserDescription.value = description;
 		sltEditSystemUserRole.value = roleId;
+		if(ldap) {
+			txtEditSystemUserUsername.readOnly = true;
+			txtEditSystemUserFullname.readOnly = true;
+			txtEditSystemUserDescription.readOnly = true;
+			txtEditSystemUserNewPassword.readOnly = true;
+			txtEditSystemUserConfirmNewPassword.readOnly = true;
+		}
 	});
 }
 function editSystemUser(id, username, fullname, description, password, roleId) {

@@ -1306,7 +1306,7 @@ class CoreLogic {
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
 		return $insertId;
 	}
-	public function updateOwnSystemUserPassword($oldPassword, $newPassword) {#
+	public function updateOwnSystemUserPassword($oldPassword, $newPassword) {
 		if($this->systemUser->ldap) throw new Exception('Password of LDAP account cannot be modified');
 
 		if(empty(trim($newPassword))) {
@@ -1333,7 +1333,12 @@ class CoreLogic {
 
 		$u = $this->db->getSystemUser($id);
 		if($u === null) throw new NotFoundException();
-		if(!empty($u->ldap)) throw new InvalidRequestException(LANG['ldap_accounts_cannot_be_modified']);
+		if(!empty($u->ldap)) {
+			// on ldap accounts, only the role should be changed
+			if($u->username !== $username || $u->fullname !== $fullname || $u->description !== $description || !empty($password)) {
+				throw new InvalidRequestException(LANG['ldap_accounts_cannot_be_modified']);
+			}
+		}
 
 		if(empty(trim($username))) {
 			throw new InvalidRequestException(LANG['username_cannot_be_empty']);

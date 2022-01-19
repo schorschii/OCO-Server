@@ -87,7 +87,7 @@ require_once('../session.php');
 			echo "<td id='spnSystemUserFullname".$u->id."'>".htmlspecialchars($u->fullname)."</td>";
 			echo "<td id='spnSystemUserRole".$u->id."' rawvalue='".$u->system_user_role_id."'>".htmlspecialchars($u->system_user_role_name)."</td>";
 			echo "<td id='spnSystemUserDescription".$u->id."'>".htmlspecialchars($u->description)."</td>";
-			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUsername".$u->id.".innerText, spnSystemUserFullname".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"))'><img src='img/edit.svg'></button></td>";
+			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUsername".$u->id.".innerText, spnSystemUserFullname".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"), ".$u->ldap.")'><img src='img/edit.svg'></button></td>";
 			echo "</tr>";
 		}
 		?>
