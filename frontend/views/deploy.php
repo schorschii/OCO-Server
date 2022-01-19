@@ -120,7 +120,7 @@ if(empty($default_job_container_name)) {
 	<tr>
 		<th><?php echo LANG['agent_ip_range']; ?></th>
 		<td>
-			<input type='text' id='txtConstraintIpRange' placeholder='192.168.2.0/24, 10.0.0.0/8'></input>
+			<input type='text' id='txtConstraintIpRange' placeholder='<?php echo LANG['example'].':'; ?> 192.168.2.0/24, 10.0.0.0/8'></input>
 		</td>
 	</tr>
 </table>
