@@ -27,8 +27,10 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		$_SESSION['oco_last_login'] = $user->last_login;
 		$_SESSION['oco_username'] = $user->username;
 		$_SESSION['oco_user_id'] = $user->id;
-		header('Location: index.php');
-		die();
+
+		$redirect = 'index.php';
+		if(!empty($_SESSION['oco_login_redirect'])) $redirect = $_SESSION['oco_login_redirect'];
+		header('Location: '.$redirect); die('Welcome to the enchanting world of OCO!');
 	} catch(AuthenticationException $e) {
 		$db->addLogEntry(Log::LEVEL_WARNING, $_POST['username'], 'oco.webfrontend.authentication', 'Login Failed');
 

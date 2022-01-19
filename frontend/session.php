@@ -19,6 +19,8 @@ function redirectToLogin($forceLogout=false) {
 	global $SUBVIEW;
 	header('HTTP/1.1 401 Not Authorized');
 	if(empty($SUBVIEW)) {
+		if(!empty($_SERVER['REQUEST_URI']) && startsWith($_SERVER['REQUEST_URI'], '/'))
+			$_SESSION['oco_login_redirect'] = $_SERVER['REQUEST_URI'];
 		header('Location: login.php'.($forceLogout ? '?logout=1' : ''));
 	}
 	die();
