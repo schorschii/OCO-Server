@@ -43,7 +43,7 @@ try {
 	$cl = new CoreLogic($db, $user);
 	$db->addLogEntry(Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], 'oco.clientapi.authentication', 'Authentication Successful');
 } catch(AuthenticationException $e) {
-	$db->addLogEntry(Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'], 'oco.clientapi.authentication', 'Authentication Failed');
+	$db->addLogEntry(Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', 'oco.clientapi.authentication', 'Authentication Failed');
 
 	header('HTTP/1.1 401 Client Not Authorized');
 	error_log('api-agent: authentication failure');
