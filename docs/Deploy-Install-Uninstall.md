@@ -21,7 +21,7 @@ Job containers with higher priority will be executed first, even if they are cre
 If a user is logged in and a package requires a restart, the OCO agent will wait that long so that the user can save his work.
 
 ## Agent IP Range Constraint
-You can add an IP range condition to the job container, so that the jobs will only be executed if the agent has an IP address is inside the given range. This can be useful if you do not want to execute some jobs if the computer is in your VPN network but if the computer is connected to your local company network (e.g. for very big software packages, which should only be installed if the employee is on his work place in your company, but not in home office).
+You can add an IP range condition to the job container, so that the related jobs will only be executed if the agent has an IP address inside the given range. This can be useful if you do not want to execute some jobs if the computer is in your VPN network (e.g. for very big software packages, which should only be installed if the employee is on his work place in your company, but not in home office).
 
 You can specify even multiple IP ranges (comma separated) in the appropriate text field on the deployment assistant. Negations are also possible using `!` in front of the range. Please note that the order of the ranges is important. If a negated range matches, the job will instantly be ignored.
 
@@ -52,7 +52,7 @@ The following status codes are not real return codes from your (un)installation 
 
 ### Job Fails With Status Code `-9999`
 The status code `-9999` indicates an agent error. Possible reasons are:
-- package download aborted beacause the network connection was lost
+- package download aborted because the network connection was lost
   - you can try to reschedule the job
 - unable to execute installation command
   - check if your installation command works by executing it manually on the command line
