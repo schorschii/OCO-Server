@@ -110,6 +110,8 @@ const LOGIN_SCREEN_QUOTES = [
 	"Packets cannot feel. They are created for the purpose of moving data from one system to another. However, it is clear that in specific situations some measure of emotion can be inferred or added. ~ RFC 5841",
 	"An HTJP request MUST be an HTTP response message. An HTJP response message MUST be an HTTP request message that, if issued to the appropriate HTTP server, would elicit the HTTP response specified by the HTJP request being replied to. ~ RFC 8568",
 	"Some applications hand-craft their own packets. If these packets are part of an attack, the application MUST set the evil bit by itself. Devices such as firewalls MUST drop all inbound packets that have the evil bit set. ~ RFC 3514",
+	"Don't drink and code.",
+	"10 HOME<br>20 SWEET<br>30 GOTO 10",
 ];
 
 const MOTD = 'default_motd';
