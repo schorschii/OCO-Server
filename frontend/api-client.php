@@ -66,6 +66,32 @@ if(!empty(CLIENT_API_KEY) && CLIENT_API_KEY !== ($params['api_key'] ?? '')) {
 
 try {
 
+// handle BREW requests
+if(isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) == 'BREW') {
+	header('HTTP/1.1 200 Brewer Informed');
+	die(
+		'The local brewing personnel was informed about your coffee request.'."\n".
+		'Please be patient while the CPU is heating up to brew your coffee.'."\n".
+		'Meanwhile, here is an ASCII cup for you. Attention: Hot!'."\n".
+		"\n".
+		"         {"."\n".
+		"      {   }"."\n".
+		"       }_{ __{"."\n".
+		"    .-{   }   }-."."\n".
+		"   (   }     {   )"."\n".
+		"   |`-.._____..-'|"."\n".
+		"   |             ;--."."\n".
+		"   |            (__  \\"."\n".
+		"   |             | )  )"."\n".
+		"   |             |/  /"."\n".
+		"   |             /  /    -Felix Lee-"."\n".
+		"   |            (  /"."\n".
+		"   \             y'"."\n".
+		"    `-.._____..-'"."\n".
+		"\n"
+	);
+}
+
 // handle method
 switch($srcdata['method']) {
 	case 'oco.computer.list':

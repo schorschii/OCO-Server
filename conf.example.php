@@ -1,33 +1,29 @@
 <?php
 
 ///// GENERAL CONFIGURATION /////
-const PACKAGE_PATH                = '/var/www/oco/depot';
-const COMPUTER_OFFLINE_SECONDS    = 125;
-const WOL_SHUTDOWN_EXPIRY_SECONDS = 3600;
+const PACKAGE_PATH                    = '/var/www/oco/depot';
+const COMPUTER_OFFLINE_SECONDS        = 125;
+const WOL_SHUTDOWN_EXPIRY_SECONDS     = 3600;
 
 const DO_HOUSEKEEPING_BY_WEB_REQUESTS = false;
 
-const CLIENT_API_ENABLED       = false;
-const CLIENT_API_KEY           = 'Ungah2oo';
+const CLIENT_API_ENABLED              = false;
+const CLIENT_API_KEY                  = 'Ungah2oo';
 
 const AGENT_SELF_REGISTRATION_ENABLED = false;
 const AGENT_REGISTRATION_KEY          = 'ernesto';
 const AGENT_UPDATE_INTERVAL           = 3600; // 1 hour
 
-const PURGE_SUCCEEDED_JOBS_AFTER = 14400;  // 4 hours
-const PURGE_FAILED_JOBS_AFTER    = 172800; // 2 days
+const PURGE_SUCCEEDED_JOBS_AFTER      = 14400;  // 4 hours
+const PURGE_FAILED_JOBS_AFTER         = 172800; // 2 days
 
-const PURGE_DOMAIN_USER_LOGONS_AFTER = 31536000; // 1 year
+const PURGE_DOMAIN_USER_LOGONS_AFTER  = 31536000; // 1 year
 
-const CHECK_UPDATE = true;
+const CHECK_UPDATE                    = true;
 
-const PURGE_LOGS_AFTER  = 172800; // 2 days
-const LOG_LEVEL         = 2;
-// 0 -> DEBUG
-// 1 -> INFO
-// 2 -> WARNING
-// 3 -> ERROR
-// 4 -> NO LOGGING
+const PURGE_LOGS_AFTER                = 172800; // 2 days
+const LOG_LEVEL                       = 2; // 0 -> DEBUG, 1 -> INFO, 2 -> WARNING, 3 -> ERROR, 4 -> NO LOGGING
+
 
 ///// MySQL CONFIGURATION /////
 const DB_TYPE = 'mysql';
@@ -36,6 +32,7 @@ const DB_HOST = 'localhost';
 const DB_NAME = 'oco';
 const DB_USER = 'oco';
 const DB_PASS = 'PASSWORD';
+
 
 ///// LDAP CONFIGURATION (optional) /////
 /*
@@ -65,6 +62,7 @@ const LDAP_SYNC_GROUP = null;
 // Default: Role ID 1 = Superadmin. It is recommended to set this to a role with not too much permission. The role can be changed later in the web frontend.
 const LDAP_SYNC_DEFAULT_ROLE_ID = 1;
 
+
 ///// SATELLITE WOL CONFIGURATION (optional) /////
 /*
  If you want to use Wake On Lan (WOL) on foreign networks (networks, in which your OCO server
@@ -86,6 +84,7 @@ const SATELLITE_WOL_SERVER = [
 	// more server here...
 ];
 
+
 ///// ADDITIONAL CONFIGURATION /////
 const COMPUTER_COMMANDS = [
 	['icon'=>'img/screen-access.svg', 'name'=>'VNC', 'description'=>'client_extension_note', 'command'=>'vnc://$$TARGET$$', 'new_tab'=>false],
@@ -104,6 +103,13 @@ const LOGIN_SCREEN_QUOTES = [
 	"Software is like sex; it's better when it's free. ~ Torvalds, Linus",
 	"Now, most of you are probably going to be totally bored out of your minds on Christmas day, and here's the perfect distraction. Test 2.6.15-rc7. All the stores will be closed, and there's really nothing better to do in between meals. ~ Torvalds, Linus",
 	"If you didn't get angry and mad and frustrated, that means you don't care about the end result, and are doing something wrong. ~ Kroah-Hartman, Greg",
+	"Coffee pots heat water using electronic mechanisms, so there is no fire. Thus, no firewalls are necessary, and firewall control policy is irrelevant. ~ RFC 2324",
+	"Future versions of this protocol may include extensions for espresso machines and similar devices. ~ RFC 2324",
+	"Implementers should be aware that excessive use of the Sugar addition may cause the BREW request to exceed the segment size allowed by the transport layer, causing fragmentation and a delay in brewing. ~ RFC 7168",
+	"It has been observed that some users of blended teas have an occasional preference for teas brewed as an emulsion of cane sugar with hints of water. ~ RFC 7168",
+	"Packets cannot feel. They are created for the purpose of moving data from one system to another. However, it is clear that in specific situations some measure of emotion can be inferred or added. ~ RFC 5841",
+	"An HTJP request MUST be an HTTP response message. An HTJP response message MUST be an HTTP request message that, if issued to the appropriate HTTP server, would elicit the HTTP response specified by the HTJP request being replied to. ~ RFC 8568",
+	"Some applications hand-craft their own packets. If these packets are part of an attack, the application MUST set the evil bit by itself. Devices such as firewalls MUST drop all inbound packets that have the evil bit set. ~ RFC 3514",
 ];
 
 const MOTD = 'default_motd';
