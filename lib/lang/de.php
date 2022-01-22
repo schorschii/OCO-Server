@@ -358,7 +358,6 @@ const LANG = [
 	'web_interface_login_not_allowed' => 'Es ist diesem Benutzer nicht gestattet sich am Web Interface anzumelden',
 	'api_login_not_allowed' => 'Es ist diesem Benutzer nicht gestattet sich an der API anzumelden',
 	'role' => 'Rolle',
-	'constraints' => 'Beschränkungen',
 	'agent_ip_range' => 'Agenten-IP-Bereich',
 	'invalid_ip_address' => 'Ungültige IP-Adresse',
 	'change_password' => 'Passwort ändern',

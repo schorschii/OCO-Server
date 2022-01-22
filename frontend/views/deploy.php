@@ -115,9 +115,6 @@ if(empty($default_job_container_name)) {
 		</td>
 	</tr>
 	<tr>
-		<th colspan='4'><h3><?php echo LANG['constraints']; ?></h3></th>
-	</tr>
-	<tr>
 		<th><?php echo LANG['agent_ip_range']; ?></th>
 		<td>
 			<input type='text' id='txtConstraintIpRange' placeholder='<?php echo LANG['example'].':'; ?> 192.168.2.0/24, 10.0.0.0/8'></input>

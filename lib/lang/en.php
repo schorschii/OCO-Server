@@ -363,7 +363,6 @@ const LANG = [
 	'web_interface_login_not_allowed' => 'User is not allowed to login on the web interface',
 	'api_login_not_allowed' => 'User is not allowed to login on the API',
 	'role' => 'Role',
-	'constraints' => 'Constraints',
 	'agent_ip_range' => 'Agent IP range',
 	'invalid_ip_address' => 'Invalid IP address',
 	'change_password' => 'Change Password',
