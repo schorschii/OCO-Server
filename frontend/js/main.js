@@ -17,6 +17,19 @@ function getCheckedRadioValue(name) {
 		}
 	}
 }
+function toggleSidebar(force=null) {
+	if(force == null) {
+		obj('explorer').classList.toggle('nosidebar');
+		return;
+	}
+	if(window.innerWidth < 750 /*as defined in CSS*/) {
+		if(!force)
+			obj('explorer').classList.add('nosidebar');
+		else
+			obj('explorer').classList.remove('nosidebar');
+		return;
+	}
+}
 
 function rewriteUrlContentParameter(ajaxRequestUrl) {
 	// compile parameters to replace from ajax request URL

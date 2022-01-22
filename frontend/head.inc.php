@@ -20,5 +20,5 @@ foreach(glob(__DIR__.'/css/css.d/*.css') as $filename) {
 }
 ?>
 
-<meta name='viewport' content='width=720'>
+<meta name='viewport' content='width=device-width'>
 <meta name='author' content='Georg Sieber'>

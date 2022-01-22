@@ -42,6 +42,7 @@ if(!empty($_GET['view'])) {
 
 	<div id='header'>
 		<span class='left'>
+			<button id='btnSidebar' class='noprint' onclick='toggleSidebar()' title='<?php echo LANG['show_hide_sidebar']; ?>'><img src='img/menu.light.svg'></button>
 			<a href='index.php' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' class='title'><?php echo LANG['app_name']; ?></a>
 			<span class='separator space'></span>
 		</span>
@@ -70,7 +71,7 @@ if(!empty($_GET['view'])) {
 	</div>
 
 	<div id='explorer'>
-		<div id='explorer-tree' onclick='closeSearchResults()'>
+		<div id='explorer-tree' onclick='toggleSidebar(false);closeSearchResults()'>
 		</div>
 		<div id='explorer-content' onclick='closeSearchResults()'>
 			<?php if($initialExplorerContent == null) { ?>
@@ -104,6 +105,7 @@ if(!empty($_GET['view'])) {
 	<button id='btnHidden' onclick='toggleEquip()'></button>
 
 	<script>
+	toggleSidebar(false);
 	refreshSidebar();
 	refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
 

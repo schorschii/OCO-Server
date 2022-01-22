@@ -202,6 +202,12 @@ h3 {
 	align-items: stretch;
 	height: calc(100% - 62px);
 }
+#explorer.nosidebar #explorer-tree {
+	display: none;
+}
+#explorer.nosidebar #explorer-content {
+	flex-basis: 100%;
+}
 #explorer-tree {
 	position: relative;
 	flex-grow: 1;
@@ -552,9 +558,14 @@ input:not([type=file]):read-only, textarea:read-only {
 button {
 	cursor: pointer;
 	background-color: rgb(238,238,238);
+	color: black;
 }
 button:disabled {
 	cursor: not-allowed;
+	color: rgba(0,0,0,0.2);
+}
+button:disabled > img {
+	opacity: 0.2;
 }
 button > img {
 	vertical-align: middle;
@@ -984,6 +995,39 @@ div.details-abreast > div > table {
 	.controls > * {
 		margin-top: 4px;
 		margin-bottom: 4px;
+	}
+}
+@media (max-width: 750px) {
+	#header {
+		justify-content: center;
+		flex-direction: column;
+		height: 108px;
+	}
+	#header .separator.space {
+		display: none;
+	}
+	#header > .search {
+		width: 280px;
+	}
+	#explorer,
+	#login {
+		display: block;
+		height: auto;
+		overflow: auto;
+	}
+	#explorer #explorer-tree,
+	#login #login-form {
+		width: 100%;
+		height: 100%;
+		max-width: none;
+		min-width: auto;
+		border: none;
+	}
+	#explorer:not(.nosidebar) #explorer-content {
+		display: none;
+	}
+	#login #login-bg {
+		display: none;
 	}
 }
 
