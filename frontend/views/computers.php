@@ -27,8 +27,8 @@ try {
 ?>
 	<h1><img src='img/computer.dyn.svg'><span id='page-title'><?php echo LANG['all_computer']; ?></span></h1>
 	<div class='controls'>
-		<button onclick='createComputer()'><img src='img/add.svg' <?php if(!$permissionCreateComputer) echo 'disabled'; ?>>&nbsp;<?php echo LANG['new_computer']; ?></button>
-		<button onclick='createComputerGroup()'><img src='img/folder-new.svg' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>>&nbsp;<?php echo LANG['new_group']; ?></button>
+		<button onclick='createComputer()' <?php if(!$permissionCreateComputer) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_computer']; ?></button>
+		<button onclick='createComputerGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
 		<span class='fillwidth'></span>
 		<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='<?php echo LANG['agent_download_description']; ?>'><?php echo LANG['agent_download']; ?></a></span>
 	</div>
