@@ -24,6 +24,7 @@ You can create your own roles by adding a new role record in the database with a
             "read": true,
             "write": false,
             "deploy": false,
+            "wol": true,
             "delete": false
         },
         "110": {                           <-- refers to computer with id 110
@@ -57,7 +58,14 @@ You can create your own roles by adding a new role record in the database with a
     },
 
     "package_management": {
-        "create": true                     <-- allows the user to create new packages
+        "create": true,                    <-- allows the user to create new packages
+        "*": {
+            "read": true,
+            "write": false,                <-- do not allow the user to edit all packages
+            "download": false,             <-- do not allow the user to download all packages (via the web frontend)
+            "deploy": false,               <-- do not allow the user to deploy all packages
+            "delete": false                <-- do not allow the user to delete all packages
+        }
     },
 
     "package_family_management": {

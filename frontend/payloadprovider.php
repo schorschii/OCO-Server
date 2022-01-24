@@ -27,6 +27,12 @@ if(!empty($_GET['id'])) {
 		header('HTTP/1.1 404 Not Found'); die();
 	}
 
+	if(isset($currentSystemUser)) {
+		if(!$currentSystemUser->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false)) {
+			header('HTTP/1.1 403 Forbidden'); die();
+		}
+	}
+
 	$path = PACKAGE_PATH.'/'.intval($package->id).'.zip';
 	if(!file_exists($path)) {
 

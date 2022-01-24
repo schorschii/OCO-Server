@@ -116,7 +116,7 @@ class CoreLogic {
 		foreach($ids as $id) {
 			$computer = $this->db->getComputer($id);
 			if(empty($computer)) throw new NotFoundException();
-			$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
+			$this->checkPermission($computer, PermissionManager::METHOD_WOL);
 
 			foreach($this->db->getComputerNetwork($computer->id) as $n) {
 				if(empty($n->mac) || $n->mac == '-' || $n->mac == '?') continue;

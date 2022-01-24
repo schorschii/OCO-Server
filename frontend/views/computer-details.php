@@ -7,6 +7,7 @@ require_once('../session.php');
 try {
 	$computer = $cl->getComputer($_GET['id'] ?? -1);
 	$permissionDeploy = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_DEPLOY, false);
+	$permissionWol    = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_WOL, false);
 	$permissionWrite  = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_WRITE, false);
 	$permissionDelete = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_DELETE, false);
 } catch(NotFoundException $e) {
@@ -22,7 +23,7 @@ try {
 	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline() ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
+		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
 		<button onclick='renameComputer(<?php echo $computer->id; ?>, spnComputerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
 		<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.svg'>
 			&nbsp;<?php echo LANG['add_to']; ?>

@@ -9,11 +9,13 @@ class PermissionManager {
 		 "Darf er das?" ~ Chris Tall
 	*/
 
-	const METHOD_CREATE = 'create';
-	const METHOD_READ   = 'read';
-	const METHOD_WRITE  = 'write';
-	const METHOD_DEPLOY = 'deploy';
-	const METHOD_DELETE = 'delete';
+	const METHOD_CREATE   = 'create';
+	const METHOD_READ     = 'read';
+	const METHOD_WOL      = 'wol';
+	const METHOD_WRITE    = 'write';
+	const METHOD_DEPLOY   = 'deploy';
+	const METHOD_DOWNLOAD = 'download';
+	const METHOD_DELETE   = 'delete';
 
 	const RESSOURCE_TYPE_COMPUTER       = 'computer_management';
 	const RESSOURCE_TYPE_COMPUTER_GROUP = 'computer_group_management';

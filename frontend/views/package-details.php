@@ -9,10 +9,11 @@ try {
 	$packageFamily = $db->getPackageFamily($package->package_family_id);
 	if($packageFamily === null) throw new NotFoundException();
 
-	$permissionCreate = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
-	$permissionDeploy = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DEPLOY, false);
-	$permissionWrite  = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_WRITE, false);
-	$permissionDelete = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DELETE, false);
+	$permissionCreate   = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
+	$permissionDeploy   = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DEPLOY, false);
+	$permissionDownload = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false);
+	$permissionWrite    = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete   = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DELETE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG['not_found']."</div>");
 } catch(PermissionException $e) {
@@ -31,7 +32,7 @@ try {
 		<h2><?php echo LANG['general']; ?></h2>
 		<div class='controls'>
 			<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-			<button onclick='window.open("payloadprovider.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize()) echo "disabled"; ?>><img src='img/download.svg'>&nbsp;<?php echo LANG['download']; ?></button>
+			<button onclick='window.open("payloadprovider.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.svg'>&nbsp;<?php echo LANG['download']; ?></button>
 			<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.svg'>
 				&nbsp;<?php echo LANG['add_to']; ?>
 				<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
