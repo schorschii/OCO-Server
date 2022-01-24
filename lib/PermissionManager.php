@@ -55,7 +55,7 @@ class PermissionManager {
 			$groups = $this->db->getGroupByComputer($ressource->id);
 			$parentGroups = [];
 			foreach($groups as $group) {
-				$parentGroups = $parentGroups + $this->getParentGroupsRecursively($group);
+				$parentGroups = array_merge($parentGroups, $this->getParentGroupsRecursively($group));
 			}
 			return $this->checkRessourcePermission(
 				self::RESSOURCE_TYPE_COMPUTER, self::RESSOURCE_TYPE_COMPUTER_GROUP, $parentGroups, $ressource, $method
@@ -72,7 +72,7 @@ class PermissionManager {
 			$groups = $this->db->getGroupByPackage($ressource->id);
 			$parentGroups = [];
 			foreach($groups as $group) {
-				$parentGroups = $parentGroups + $this->getParentGroupsRecursively($group);
+				$parentGroups = array_merge($parentGroups, $this->getParentGroupsRecursively($group));
 			}
 			if($this->checkRessourcePermission(
 				self::RESSOURCE_TYPE_PACKAGE, self::RESSOURCE_TYPE_PACKAGE_GROUP, $parentGroups, $ressource, $method
