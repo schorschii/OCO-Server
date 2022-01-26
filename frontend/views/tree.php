@@ -13,6 +13,7 @@ require_once('../session.php');
 	<?php echoComputerGroups($cl); ?>
 </div>
 
+<?php if($currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
 <div class='node'>
 	<a <?php echo explorerLink('views/software.php'); ?>><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></a>
 	<div class='subnode'>
@@ -21,6 +22,7 @@ require_once('../session.php');
 		<a <?php echo explorerLink('views/software.php?os=windows'); ?>><img src='img/windows.dyn.svg'><?php echo LANG['windows']; ?></a>
 	</div>
 </div>
+<?php } ?>
 
 <div class='node'>
 	<a <?php echo explorerLink('views/package-families.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
