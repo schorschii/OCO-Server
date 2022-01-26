@@ -9,7 +9,7 @@ You can create your own roles by adding a new role record in the database with a
 - to create new packages, the user needs `create` permissions for packages in general and for the corresponding package family
 - to create deployment jobs, the user needs `create` permissions for job containers in general and `deploy` permissions for the corresponding computer and package
 - item (allow) permissions are inherited recursively through the group tree
-  - example: a user can see all computers under a specific group he has `"item":{"read":true}` permissions for, even if the computer is inside a subgroup where he has no `read` permissions for
+  - example: a user can see all computers below a group he has `"item":{"read":true}` permissions for, even if the computer is inside a subgroup where he has no `read` permissions for (unless `"item":{"read":false}` is set)
 
 ```
 {
