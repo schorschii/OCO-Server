@@ -3,7 +3,9 @@ require_once('../lib/Loader.php');
 
 // check content type
 if(!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] != 'application/json') {
-	header('HTTP/1.1 400 Content Type Mismatch'); die();
+	errorExit('400 Content Type Mismatch',
+		'invalid content type: '.$_SERVER['CONTENT_TYPE']
+	);
 }
 
 // get body
@@ -15,7 +17,9 @@ $db->addLogEntry(Log::LEVEL_DEBUG, '', 'oco.agentapi.rawrequest', $body);
 
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
-	header('HTTP/1.1 400 Payload Corrupt'); die();
+	errorExit('400 Payload Corrupt',
+		'invalid JSON data'
+	);
 }
 
 $resdata = ['id' => $srcdata['id']];
@@ -25,27 +29,37 @@ switch($srcdata['method']) {
 		$data = $params['data'];
 
 		// check parameter
-		if(!isset($data['job-id']) || !isset($data['state']) || !isset($data['return-code']) || !isset($data['message'])) {
-			header('HTTP/1.1 400 Parameter Mismatch'); die();
+		if(!isset($params['hostname']) || !isset($params['agent-key']) || !isset($data['job-id']) || !isset($data['state']) || !isset($data['return-code']) || !isset($data['message'])) {
+			errorExit('400 Parameter Mismatch',
+				'oco.update_deploy_status: invalid JSON data'
+			);
 		}
 
 		// check authorization
 		$computer = $db->getComputerByName($params['hostname']);
 		if($computer === null) {
-			header('HTTP/1.1 404 Computer Not Found'); die();
+			errorExit('404 Computer Not Found',
+				'oco.update_deploy_status: computer »'.$params['hostname'].'« not found'
+			);
 		}
 		if($params['agent-key'] !== $computer->agent_key) {
-			authErrorExit();
+			errorExit('401 Client Not Authorized',
+				'oco.update_deploy_status: computer »'.$params['hostname'].'« found but agent key mismatch: '.$params['agent-key']
+			);
 		}
 
 		// get job details
 		$state = $data['state'];
 		$job = $db->getJob($data['job-id']);
 		if($job === null) {
-			header('HTTP/1.1 400 Job Not Found'); die();
+			errorExit('404 Job Not Found',
+				'oco.update_deploy_status: job »'.$params['job-id'].'« not found'
+			);
 		}
 		if($job->computer_id !== $computer->id) {
-			header('HTTP/1.1 403 Forbidden'); die();
+			errorExit('403 Forbidden',
+				'oco.update_deploy_status: computer »'.$computer->id.'« not allowed to update job »'.$job->id.'«'
+			);
 		}
 
 		// if job finished, we need to check the return code
@@ -89,12 +103,22 @@ switch($srcdata['method']) {
 
 	case 'oco.agent_hello':
 		$data = $params['data'];
+
+		// check parameter
+		if(!isset($params['hostname']) || !isset($params['agent-key'])) {
+			errorExit('400 Parameter Mismatch',
+				'oco.agent_hello: invalid JSON data'
+			);
+		}
+
 		$computer = $db->getComputerByName($params['hostname']);
 		$jobs = []; $update = 0; $server_key = null; $agent_key = null; $success = false;
 
 		if($computer == null) {
 			if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
-				authErrorExit();
+				errorExit('401 Client Not Authorized',
+					'oco.agent_hello: computer »'.$params['hostname'].'« not found and agent registration key mismatch: '.$params['agent-key']
+				);
 			}
 
 			if(AGENT_SELF_REGISTRATION_ENABLED) {
@@ -112,13 +136,17 @@ switch($srcdata['method']) {
 					$success = true;
 				}
 			} else {
-				header('HTTP/1.1 403 Client Self-Registration Disabled'); die();
+				errorExit('403 Client Self-Registration Disabled',
+					'oco.agent_hello: computer »'.$params['hostname'].'« not found and agent self-registration disabled'
+				);
 			}
 		} else {
 			if(empty($computer->agent_key)) {
 				// computer was pre-registered in the web frontend: check global key and generate individual key
 				if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
-					authErrorExit();
+					errorExit('401 Client Not Authorized',
+						'oco.agent_hello: computer »'.$params['hostname'].'« is pre-registered but agent registration key mismatch: '.$params['agent-key']
+					);
 				} else {
 					$agent_key = randomString();
 					$db->updateComputerAgentkey($computer->id, $agent_key);
@@ -126,7 +154,9 @@ switch($srcdata['method']) {
 			} else {
 				// check individual agent key
 				if($params['agent-key'] !== $computer->agent_key) {
-					authErrorExit();
+					errorExit('401 Client Not Authorized',
+						'oco.agent_hello: computer »'.$params['hostname'].'« found but agent key mismatch: '.$params['agent-key']
+					);
 				}
 			}
 
@@ -208,79 +238,94 @@ switch($srcdata['method']) {
 
 		break;
 
-		case 'oco.agent_update':
-			$data = $params['data'];
-			$computer = $db->getComputerByName($params['hostname']);
-			if($params['agent-key'] !== $computer->agent_key) {
-				authErrorExit();
+	case 'oco.agent_update':
+		$data = $params['data'];
+
+		// check parameter
+		if(!isset($params['hostname']) || !isset($params['agent-key'])) {
+			errorExit('400 Parameter Mismatch',
+				'oco.agent_update: invalid JSON data'
+			);
+		}
+
+		// check authorization
+		$computer = $db->getComputerByName($params['hostname']);
+		if($computer === null) {
+			errorExit('404 Computer Not Found',
+				'oco.agent_update: computer »'.$params['hostname'].'« not found'
+			);
+		}
+		if($params['agent-key'] !== $computer->agent_key) {
+			errorExit('401 Client Not Authorized',
+				'oco.agent_update: computer »'.$params['hostname'].'« found but agent key mismatch: '.$params['agent-key']
+			);
+		}
+
+		// execute update
+		$success = false;
+		$db->updateComputerPing($computer->id);
+		if((time() - strtotime($computer->last_update) > AGENT_UPDATE_INTERVAL || !empty($computer->force_update))
+		&& !empty($data)) {
+			// convert login timestamps to local time,
+			// because other timestamps in the database are also in local time
+			$logins = [];
+			if(!empty($data['logins'])) foreach($data['logins'] as $login) {
+				try {
+					$date = new DateTime($login['timestamp'], new DateTimeZone('UTC'));
+					$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+					$logins[] = [
+						'username' => $login['username'],
+						'console' => $login['console'],
+						'timestamp' => $date->format('Y-m-d H:i:s'),
+					];
+				} catch(Exception $e) {}
 			}
+			// update inventory data now
+			$success = $db->updateComputer(
+				$computer->id,
+				$params['hostname'],
+				$data['os'],
+				$data['os_version'],
+				$data['os_license'] ?? '-',
+				$data['os_language'] ?? '-',
+				$data['kernel_version'],
+				$data['architecture'],
+				$data['cpu'],
+				$data['gpu'],
+				$data['ram'],
+				$data['agent_version'],
+				$_SERVER['REMOTE_ADDR'],
+				$data['serial'],
+				$data['manufacturer'],
+				$data['model'],
+				$data['bios_version'],
+				intval($data['uptime'] ?? 0),
+				$data['boot_type'],
+				$data['secure_boot'],
+				$data['domain'] ?? '',
+				$data['networks'] ?? [],
+				$data['screens'] ?? [],
+				$data['printers'] ?? [],
+				$data['partitions'] ?? [],
+				$data['software'] ?? [],
+				$logins
+			);
+		}
 
-			$success = false;
-			if($computer !== null) {
-				$success = true;
-				$db->updateComputerPing($computer->id);
-				if((time() - strtotime($computer->last_update) > AGENT_UPDATE_INTERVAL || !empty($computer->force_update))
-				&& !empty($data)) {
-					// convert login timestamps to local time,
-					// because other timestamps in the database are also in local time
-					$logins = [];
-					if(!empty($data['logins'])) foreach($data['logins'] as $login) {
-						try {
-							$date = new DateTime($login['timestamp'], new DateTimeZone('UTC'));
-							$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
-							$logins[] = [
-								'username' => $login['username'],
-								'console' => $login['console'],
-								'timestamp' => $date->format('Y-m-d H:i:s'),
-							];
-						} catch(Exception $e) {}
-					}
-					// update inventory data now
-					$db->updateComputer(
-						$computer->id,
-						$params['hostname'],
-						$data['os'],
-						$data['os_version'],
-						$data['os_license'] ?? '-',
-						$data['os_language'] ?? '-',
-						$data['kernel_version'],
-						$data['architecture'],
-						$data['cpu'],
-						$data['gpu'],
-						$data['ram'],
-						$data['agent_version'],
-						$_SERVER['REMOTE_ADDR'],
-						$data['serial'],
-						$data['manufacturer'],
-						$data['model'],
-						$data['bios_version'],
-						intval($data['uptime'] ?? 0),
-						$data['boot_type'],
-						$data['secure_boot'],
-						$data['domain'] ?? '',
-						$data['networks'] ?? [],
-						$data['screens'] ?? [],
-						$data['printers'] ?? [],
-						$data['partitions'] ?? [],
-						$data['software'] ?? [],
-						$logins
-					);
-				}
-			}
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => $success,
+			'params' => [
+				'server-key' => $computer->server_key,
+			]
+		];
 
-			$resdata['error'] = null;
-			$resdata['result'] = [
-				'success' => $success,
-				'params' => [
-					'server-key' => $computer->server_key,
-				]
-			];
-
-			break;
+		break;
 
 	default:
-		$resdata['result'] = null;
-		$resdata['error'] = 'Unknown Method';
+		errorExit('400 Unknown Method',
+			'unknown method: '.$srcdata['method']
+		);
 }
 
 // return response
@@ -288,8 +333,13 @@ header('Content-Type: application/json');
 echo json_encode($resdata);
 
 
-function authErrorExit() {
-	header('HTTP/1.1 401 Client Not Authorized');
+function errorExit($httpCode, $message) {
+	global $db;
+
+	header('HTTP/1.1 '.$httpCode);
 	error_log('api-agent: authentication failure');
+	if($message) {
+		$db->addLogEntry(Log::LEVEL_WARNING, '', 'oco.agentapi.error', $message);
+	}
 	die();
 }
