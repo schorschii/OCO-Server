@@ -927,7 +927,7 @@ class CoreLogic {
 		if(!$computerPackageAssignment) throw new NotFoundException();
 		$computer = $this->db->getComputer($computerPackageAssignment->computer_id);
 		if(!$computer) throw new NotFoundException();
-		$package = $this->db->getComputer($computerPackageAssignment->package_id);
+		$package = $this->db->getPackage($computerPackageAssignment->package_id);
 		if(!$package) throw new NotFoundException();
 
 		$this->systemUser->checkPermission($computer, PermissionManager::METHOD_WRITE);
