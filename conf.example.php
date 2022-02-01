@@ -21,8 +21,9 @@ const PURGE_DOMAIN_USER_LOGONS_AFTER  = 31536000; // 1 year
 
 const CHECK_UPDATE                    = true;
 
+// Available Log Levels: 0 -> DEBUG, 1 -> INFO, 2 -> WARNING, 3 -> ERROR, 4 -> NO LOGGING
+const LOG_LEVEL                       = 2;
 const PURGE_LOGS_AFTER                = 172800; // 2 days
-const LOG_LEVEL                       = 2; // 0 -> DEBUG, 1 -> INFO, 2 -> WARNING, 3 -> ERROR, 4 -> NO LOGGING
 
 
 ///// MySQL CONFIGURATION /////
