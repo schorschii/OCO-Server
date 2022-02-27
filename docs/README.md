@@ -31,6 +31,7 @@ Please refer to the [README.md in the OCO Agent repo](https://github.com/schorsc
 - [Reports](Reports.md)
 - [Web Application ("OCO Client")](WebApplication.md)
 - [Permissions](Permissions.md)
+- [Logging](Logging.md)
 - [Extensions](Extensions.md)
 
 ## Developer Documentation

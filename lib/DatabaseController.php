@@ -1875,17 +1875,19 @@ class DatabaseController {
 	}
 
 	// Log Operations
-	public function addLogEntry($level, $user, $realm, $message) {
+	public function addLogEntry($level, $user, $object_id, $action, $data) {
 		if($level < LOG_LEVEL) return;
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO log (level, host, user, realm, message) VALUES (:level, :host, :user, :realm, :message)'
+			'INSERT INTO log (level, host, user, object_id, action, data)
+			VALUES (:level, :host, :user, :object_id, :action, :data)'
 		);
 		$this->stmt->execute([
 			':level' => $level,
 			':host' => $_SERVER['REMOTE_ADDR'] ?? 'local',
 			':user' => $user,
-			':realm' => $realm,
-			':message' => $message,
+			':object_id' => $object_id,
+			':action' => $action,
+			':data' => is_array($data) ? json_encode($data) : $data,
 		]);
 		return $this->dbh->lastInsertId();
 	}

@@ -16,7 +16,7 @@ $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
 
 // log complete request
-$db->addLogEntry(Log::LEVEL_DEBUG, '', 'oco.clientapi.rawrequest', $body);
+$db->addLogEntry(Log::LEVEL_DEBUG, null, null, Log::ACTION_CLIENT_API_RAW, $body);
 
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
@@ -41,9 +41,9 @@ try {
 
 	// login successful
 	$cl = new CoreLogic($db, $user);
-	$db->addLogEntry(Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], 'oco.clientapi.authentication', 'Authentication Successful');
+	$db->addLogEntry(Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], null, Log::ACTION_CLIENT_API, json_encode(['authenticated'=>true]));
 } catch(AuthenticationException $e) {
-	$db->addLogEntry(Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', 'oco.clientapi.authentication', 'Authentication Failed');
+	$db->addLogEntry(Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', null, Log::ACTION_CLIENT_API, json_encode(['authenticated'=>false]));
 
 	header('HTTP/1.1 401 Client Not Authorized');
 	error_log('api-agent: authentication failure');

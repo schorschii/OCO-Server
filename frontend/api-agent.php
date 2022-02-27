@@ -3,7 +3,7 @@ require_once('../lib/Loader.php');
 
 // check content type
 if(!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] != 'application/json') {
-	errorExit('400 Content Type Mismatch', '', 'invalid content type: '.$_SERVER['CONTENT_TYPE']);
+	errorExit('400 Content Type Mismatch', null, null, 'oco.agent', 'invalid content type: '.$_SERVER['CONTENT_TYPE']);
 }
 
 // get body
@@ -11,36 +11,38 @@ $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
 
 // log complete request
-$db->addLogEntry(Log::LEVEL_DEBUG, '', 'oco.agentapi.rawrequest', $body);
+$db->addLogEntry(Log::LEVEL_DEBUG, null, null, Log::ACTION_CLIENT_API_RAW, $body);
 
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
-	errorExit('400 Payload Corrupt', '', 'invalid JSON data');
+	errorExit('400 Payload Corrupt', null, null, 'oco.agent', 'invalid JSON data');
 }
 
 $resdata = ['id' => $srcdata['id']];
 $params = $srcdata['params'];
 switch($srcdata['method']) {
+	case 'oco.agent.update_deploy_status':
 	case 'oco.update_deploy_status':
 		$data = $params['data'];
 
 		// check parameter
-		if(!isset($params['hostname']) || !isset($params['agent-key']) || !isset($data['job-id']) || !isset($data['state']) || !isset($data['return-code']) || !isset($data['message'])) {
-			errorExit('400 Parameter Mismatch', '',
-				'oco.update_deploy_status: invalid JSON data'
-			);
+		if(!isset($params['hostname'])
+			|| !isset($params['agent-key'])
+			|| !isset($data['job-id'])
+			|| !isset($data['state'])
+			|| !isset($data['return-code'])
+			|| !isset($data['message'])) {
+			errorExit('400 Parameter Mismatch', null, null, $srcdata['method'], 'invalid JSON data');
 		}
 
 		// check authorization
 		$computer = $db->getComputerByName($params['hostname']);
 		if($computer === null) {
-			errorExit('404 Computer Not Found', $params['hostname'],
-				'oco.update_deploy_status: computer not found'
-			);
+			errorExit('404 Computer Not Found', $params['hostname'], null, $srcdata['method'], 'computer not found');
 		}
 		if($params['agent-key'] !== $computer->agent_key) {
-			errorExit('401 Client Not Authorized', $params['hostname'],
-				'oco.update_deploy_status: computer found but agent key mismatch: '.$params['agent-key']
+			errorExit('401 Client Not Authorized', $params['hostname'], $computer, $srcdata['method'],
+				'computer found but agent key mismatch: '.$params['agent-key']
 			);
 		}
 
@@ -48,13 +50,13 @@ switch($srcdata['method']) {
 		$state = $data['state'];
 		$job = $db->getJob($data['job-id']);
 		if($job === null) {
-			errorExit('404 Job Not Found', $params['hostname'],
-				'oco.update_deploy_status: job »'.$params['job-id'].'« not found'
+			errorExit('404 Job Not Found', $params['hostname'], $computer, $srcdata['method'],
+				'job »'.$params['job-id'].'« not found'
 			);
 		}
 		if($job->computer_id !== $computer->id) {
-			errorExit('403 Forbidden', $params['hostname'],
-				'oco.update_deploy_status: computer not allowed to update job »'.$job->id.'«'
+			errorExit('403 Forbidden', $params['hostname'], $computer, $srcdata['method'],
+				'computer not allowed to update job »'.$job->id.'«'
 			);
 		}
 
@@ -79,7 +81,9 @@ switch($srcdata['method']) {
 
 		// update job state in database
 		$db->updateJobState($data['job-id'], $state, intval($data['return-code']), $data['message']);
-		$db->addLogEntry(Log::LEVEL_INFO, $params['hostname'], 'oco.agentapi.update_deploy_status', 'deploy status updated, job id: '.$data['job-id']);
+		$db->addLogEntry(Log::LEVEL_INFO, $params['hostname'], $computer->id, $srcdata['method'],
+			['job_id'=>$data['job-id'], 'return_code'=>intval($data['return-code']), 'message'=>$data['message']]
+		);
 		// update computer-package assignment if job was successful
 		if($state === Job::STATUS_SUCCEEDED) {
 			if($job->is_uninstall == 0) {
@@ -98,12 +102,15 @@ switch($srcdata['method']) {
 		];
 		break;
 
+	case 'oco.agent.hello':
 	case 'oco.agent_hello':
 		$data = $params['data'];
 
 		// check parameter
 		if(!isset($params['hostname']) || !isset($params['agent-key'])) {
-			errorExit('400 Parameter Mismatch', '', 'oco.agent_hello: invalid JSON data');
+			errorExit('400 Parameter Mismatch', null, null, $srcdata['method'],
+				'invalid JSON data'
+			);
 		}
 
 		$computer = $db->getComputerByName($params['hostname']);
@@ -111,8 +118,8 @@ switch($srcdata['method']) {
 
 		if($computer == null) {
 			if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
-				errorExit('401 Client Not Authorized', $params['hostname'],
-					'oco.agent_hello: computer not found and agent registration key mismatch: '.$params['agent-key']
+				errorExit('401 Client Not Authorized', $params['hostname'], null, $srcdata['method'],
+					'computer not found and agent registration key mismatch: '.$params['agent-key']
 				);
 			}
 
@@ -131,16 +138,16 @@ switch($srcdata['method']) {
 					$success = true;
 				}
 			} else {
-				errorExit('403 Client Self-Registration Disabled', $params['hostname'],
-					'oco.agent_hello: computer not found and agent self-registration disabled'
+				errorExit('403 Client Self-Registration Disabled', $params['hostname'], null, $srcdata['method'],
+					'computer not found and agent self-registration disabled'
 				);
 			}
 		} else {
 			if(empty($computer->agent_key)) {
 				// computer was pre-registered in the web frontend: check global key and generate individual key
 				if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
-					errorExit('401 Client Not Authorized', $params['hostname'],
-						'oco.agent_hello: computer is pre-registered but agent registration key mismatch: '.$params['agent-key']
+					errorExit('401 Client Not Authorized', $params['hostname'], $computer, $srcdata['method'],
+						'computer is pre-registered but agent registration key mismatch: '.$params['agent-key']
 					);
 				} else {
 					$agent_key = randomString();
@@ -149,8 +156,8 @@ switch($srcdata['method']) {
 			} else {
 				// check individual agent key
 				if($params['agent-key'] !== $computer->agent_key) {
-					errorExit('401 Client Not Authorized', $params['hostname'],
-						'oco.agent_hello: computer found but agent key mismatch: '.$params['agent-key']
+					errorExit('401 Client Not Authorized', $params['hostname'], $computer, $srcdata['method'],
+						'computer found but agent key mismatch: '.$params['agent-key']
 					);
 				}
 			}
@@ -217,7 +224,9 @@ switch($srcdata['method']) {
 				];
 			}
 
-			$db->addLogEntry(Log::LEVEL_DEBUG, $params['hostname'], 'oco.agentapi.agent_hello', 'agent hello sent');
+			$db->addLogEntry(Log::LEVEL_DEBUG, $params['hostname'], $computer->id, $srcdata['method'],
+				['update'=>$update, 'software_jobs'=>$jobs]
+			);
 			$success = true;
 		}
 
@@ -234,26 +243,27 @@ switch($srcdata['method']) {
 
 		break;
 
+	case 'oco.agent.update':
 	case 'oco.agent_update':
 		$data = $params['data'];
 
 		// check parameter
 		if(!isset($params['hostname']) || !isset($params['agent-key'])) {
-			errorExit('400 Parameter Mismatch', '',
-				'oco.agent_update: invalid JSON data'
+			errorExit('400 Parameter Mismatch', null, null, $srcdata['method'],
+				'invalid JSON data'
 			);
 		}
 
 		// check authorization
 		$computer = $db->getComputerByName($params['hostname']);
 		if($computer === null) {
-			errorExit('404 Computer Not Found', $params['hostname'],
-				'oco.agent_update: computer not found'
+			errorExit('404 Computer Not Found', $params['hostname'], null, $srcdata['method'],
+				'computer not found'
 			);
 		}
 		if($params['agent-key'] !== $computer->agent_key) {
-			errorExit('401 Client Not Authorized', $params['hostname'],
-				'oco.agent_update: computer found but agent key mismatch: '.$params['agent-key']
+			errorExit('401 Client Not Authorized', $params['hostname'], $computer, $srcdata['method'],
+				'computer found but agent key mismatch: '.$params['agent-key']
 			);
 		}
 
@@ -306,10 +316,12 @@ switch($srcdata['method']) {
 				$data['software'] ?? [],
 				$logins
 			);
-			$db->addLogEntry(Log::LEVEL_INFO, $params['hostname'], 'oco.agentapi.agent_update', 'computer updated');
+			$db->addLogEntry(Log::LEVEL_INFO, $params['hostname'], $computer->id, $srcdata['method'],
+				['updated'=>true]
+			);
 		} else {
-			errorExit('400 Update Not Necessary', $params['hostname'],
-				'oco.agent_update: computer should not update now'
+			errorExit('400 Update Not Necessary', $params['hostname'], $computer, $srcdata['method'],
+				'computer should not update now'
 			);
 		}
 
@@ -324,8 +336,8 @@ switch($srcdata['method']) {
 		break;
 
 	default:
-		errorExit('400 Unknown Method', '',
-			'unknown method: '.$srcdata['method']
+		errorExit('400 Unknown Method', null, null, $srcdata['method'],
+			'unknown method'
 		);
 }
 
@@ -334,16 +346,14 @@ header('Content-Type: application/json');
 echo json_encode($resdata);
 
 
-function errorExit($httpCode, $hostname, $message) {
+function errorExit($httpCode, $hostname, $computer, $action, $message) {
 	global $db;
 
 	// log into webserver log for fail2ban
 	error_log('api-agent: authentication failure');
 
 	// log into database
-	if($message) {
-		$db->addLogEntry(Log::LEVEL_WARNING, $hostname, 'oco.agentapi.error', $message);
-	}
+	$db->addLogEntry(Log::LEVEL_WARNING, $hostname, $computer ? $computer->id : null, $action, json_encode(['error'=>$message]));
 
 	// exit with error code
 	header('HTTP/1.1 '.$httpCode);

@@ -259,8 +259,9 @@ CREATE TABLE `log` (
   `level` tinyint(4) NOT NULL,
   `host` text NOT NULL,
   `user` text DEFAULT NULL,
-  `realm` text NOT NULL,
-  `message` longtext NOT NULL
+  `object_id` int(11) DEFAULT NULL,
+  `action` text NOT NULL,
+  `data` longtext NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
