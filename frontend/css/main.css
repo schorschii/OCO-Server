@@ -958,21 +958,23 @@ div.details-abreast > div > table {
 	height: 140px;
 	overflow-y: scroll;
 	margin-bottom: 10px;
+	padding: 0px;
+}
+#divComputerList input[type=checkbox], #divComputerGroupList input[type=checkbox],
+#divPackageList input[type=checkbox], #divPackageGroupList input[type=checkbox] {
+	margin-right: 8px;
 }
 .listSearch {
 	position: relative;
 }
-.listSearch img {
-	pointer-events: none;
+.listSearch input[type=checkbox] {
 	position: absolute;
 	top: 5px;
-	left: 5px;
-	height: 19px;
-	opacity: 0.4;
+	left: 3px;
 }
-.listSearch input {
+.listSearch input[type=text] {
 	display: block;
-	padding-left: 28px;
+	padding-left: 27px;
 	width: 100%;
 }
 .box {

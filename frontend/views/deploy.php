@@ -127,7 +127,7 @@ if(empty($default_job_container_name)) {
 	<div>
 		<h3><?php echo LANG['computer_groups']; ?> (<span id='spnSelectedComputerGroups'>0</span>/<span id='spnTotalComputerGroups'>0</span>)</h3>
 		<div class='listSearch'>
-			<img src='img/search.dyn.svg'>
+			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerGroupList, this.checked);refreshDeployComputerList()'>
 			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divComputerGroupList, this.value)'>
 		</div>
 		<div id='divComputerGroupList' class='box'>
@@ -137,7 +137,7 @@ if(empty($default_job_container_name)) {
 	<div>
 		<h3><?php echo LANG['computer']; ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</h3>
 		<div class='listSearch'>
-			<img src='img/search.dyn.svg'>
+			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerList, this.checked)'>
 			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divComputerList, this.value)'>
 		</div>
 		<div id='divComputerList' class='box'>
@@ -151,7 +151,7 @@ if(empty($default_job_container_name)) {
 	<div>
 		<h3><?php echo LANG['package_groups']; ?> (<span id='spnSelectedPackageGroups'>0</span>/<span id='spnTotalPackageGroups'>0</span>)</h3>
 		<div class='listSearch'>
-			<img src='img/search.dyn.svg'>
+			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageGroupList, this.checked);refreshDeployPackageList()'>
 			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divPackageGroupList, this.value)'>
 		</div>
 		<div id='divPackageGroupList' class='box'>
@@ -161,7 +161,7 @@ if(empty($default_job_container_name)) {
 	<div>
 		<h3><?php echo LANG['packages']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
 		<div class='listSearch'>
-			<img src='img/search.dyn.svg'>
+			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked)'>
 			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divPackageList, this.value)'>
 		</div>
 		<div id='divPackageList' class='box'>

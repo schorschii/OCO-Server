@@ -248,6 +248,19 @@ function showLoader2(state) {
 	}
 }
 
+function toggleCheckboxesInContainer(container, checked) {
+	let labels = container.getElementsByTagName('label');
+	for(var i = 0; i < labels.length; i++) {
+		if(labels[i].style.display == 'none') continue;
+		let inputs = labels[i].getElementsByTagName("input");
+		for(var n = 0; n < inputs.length; n++) {
+			if(inputs[n].type == 'checkbox') {
+				inputs[n].checked = checked;
+			}
+		}
+	}
+	refreshDeployCount();
+}
 function getSelectedCheckBoxValues(checkboxName) {
 	var values = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
