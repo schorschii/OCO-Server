@@ -126,16 +126,23 @@ if(empty($default_job_container_name)) {
 <div class='gallery'>
 	<div>
 		<h3><?php echo LANG['computer_groups']; ?> (<span id='spnSelectedComputerGroups'>0</span>/<span id='spnTotalComputerGroups'>0</span>)</h3>
-		<select id='sltComputerGroup' size='10' multiple='true' onchange='if(getSelectValues(this).length > 1) { sltComputer.innerHTML="";sltComputer.disabled=true;refreshDeployCount(); }else{ sltComputer.disabled=false;refreshDeployComputerAndPackages(this.value, null); }'>
-			<option value='-1'><?php echo LANG['all_computer']; ?></option>
+		<div class='listSearch'>
+			<img src='img/search.dyn.svg'>
+			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divComputerGroupList, this.value)'>
+		</div>
+		<div id='divComputerGroupList' class='box'>
 			<?php echoTargetComputerGroupOptions($select_computer_group_ids); ?>
-		</select>
+		</div>
 	</div>
 	<div>
 		<h3><?php echo LANG['computer']; ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</h3>
-		<select id='sltComputer' size='10' multiple='true' onchange='refreshDeployCount()'>
+		<div class='listSearch'>
+			<img src='img/search.dyn.svg'>
+			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divComputerList, this.value)'>
+		</div>
+		<div id='divComputerList' class='box'>
 			<!-- filled by JS -->
-		</select>
+		</div>
 	</div>
 </div>
 
@@ -143,16 +150,23 @@ if(empty($default_job_container_name)) {
 <div class='gallery'>
 	<div>
 		<h3><?php echo LANG['package_groups']; ?> (<span id='spnSelectedPackageGroups'>0</span>/<span id='spnTotalPackageGroups'>0</span>)</h3>
-		<select id='sltPackageGroup' size='10' multiple='true' onchange='if(getSelectValues(this).length > 1) { sltPackage.innerHTML="";sltPackage.disabled=true;refreshDeployCount(); }else{ sltPackage.disabled=false;refreshDeployComputerAndPackages(null, this.value) }'>
-			<option value='-1'><?php echo LANG['all_packages']; ?></option>
+		<div class='listSearch'>
+			<img src='img/search.dyn.svg'>
+			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divPackageGroupList, this.value)'>
+		</div>
+		<div id='divPackageGroupList' class='box'>
 			<?php echoTargetPackageGroupOptions($select_package_group_ids); ?>
-		</select>
+		</div>
 	</div>
 	<div>
 		<h3><?php echo LANG['packages']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
-		<select id='sltPackage' size='10' multiple='true' onchange='refreshDeployCount()'>
+		<div class='listSearch'>
+			<img src='img/search.dyn.svg'>
+			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divPackageList, this.value)'>
+		</div>
+		<div id='divPackageList' class='box'>
 			<!-- filled by JS -->
-		</select>
+		</div>
 	</div>
 </div>
 
@@ -161,7 +175,7 @@ if(empty($default_job_container_name)) {
 	<div><label><input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty(DEFAULTS['default-force-install-same-version'])) echo 'checked'; ?>>&nbsp;<?php echo LANG['force_installation_of_same_version']; ?></label></div>
 </div>
 <div class='controls'>
-	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value, txtConstraintIpRange.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, getSelectedCheckBoxValues("computers"), getSelectedCheckBoxValues("computer_groups"), getSelectedCheckBoxValues("packages"), getSelectedCheckBoxValues("package_groups"), chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value, txtConstraintIpRange.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<?php echo progressBar(100, 'prgDeploy', 'prgDeployContainer', 'prgDeployText', 'width:180px;display:none;', false, true); ?>
 </div>
 
@@ -177,8 +191,8 @@ function echoTargetComputerGroupOptions($select_computer_group_ids, $parent=null
 		&& !$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 		$selected = '';
-		if(in_array($cg->id, $select_computer_group_ids)) $selected = 'selected';
-		echo "<option value='".htmlspecialchars($cg->id)."' ".$selected.">".trim(str_repeat("‒",$indent)." ".htmlspecialchars($cg->name))."</option>";
+		if(in_array($cg->id, $select_computer_group_ids)) $selected = 'checked';
+		echo "<label class='block'><input type='checkbox' onchange='refreshDeployComputerList()' name='computer_groups' value='".htmlspecialchars($cg->id)."' ".$selected." />".trim(str_repeat("‒",$indent)." ".htmlspecialchars($cg->name))."</label>";
 		echoTargetComputerGroupOptions($select_computer_group_ids, $cg->id, $indent+1);
 	}
 }
@@ -191,8 +205,8 @@ function echoTargetPackageGroupOptions($select_package_group_ids, $parent=null, 
 		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 		$selected = '';
-		if(in_array($pg->id, $select_package_group_ids)) $selected = 'selected';
-		echo "<option value='".htmlspecialchars($pg->id)."' ".$selected.">".trim(str_repeat("‒",$indent)." ".htmlspecialchars($pg->name))."</option>";
+		if(in_array($pg->id, $select_package_group_ids)) $selected = 'checked';
+		echo "<label class='block'><input type='checkbox' onchange='refreshDeployPackageList()' name='package_groups' value='".htmlspecialchars($pg->id)."' ".$selected." />".trim(str_repeat("‒",$indent)." ".htmlspecialchars($pg->name))."</label>";
 		echoTargetPackageGroupOptions($select_package_group_ids, $pg->id, $indent+1);
 	}
 }

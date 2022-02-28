@@ -23,8 +23,8 @@ try {
 			if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 			$selected = '';
-			if(!empty($group) || in_array($c->id, $select_computer_ids)) $selected = 'selected';
-			echo "<option value='".$c->id."' ".$selected.">".htmlspecialchars($c->hostname)."</option>";
+			if(!empty($group) || in_array($c->id, $select_computer_ids)) $selected = 'checked';
+			echo "<label class='block'><input type='checkbox' name='computers' onchange='refreshDeployCount()' value='".$c->id."' ".$selected." />".htmlspecialchars($c->hostname)."</label>";
 		}
 		die();
 	}
@@ -37,8 +37,8 @@ try {
 			if(!$currentSystemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 			$selected = '';
-			if(!empty($group) || in_array($p->id, $select_package_ids)) $selected = 'selected';
-			echo "<option value='".$p->id."' ".$selected.">".htmlspecialchars($p->package_family_name)." (".htmlspecialchars($p->version).")"."</option>";
+			if(!empty($group) || in_array($p->id, $select_package_ids)) $selected = 'checked';
+			echo "<label class='block'><input type='checkbox' name='packages' onchange='refreshDeployCount()' value='".$p->id."' ".$selected." />".htmlspecialchars($p->package_family_name)." (".htmlspecialchars($p->version).")"."</label>";
 		}
 		die();
 	}

@@ -106,8 +106,8 @@ h3 {
 }
 #header #search-glass {
 	background-color: #B3B9BE;
-	-webkit-mask: url('../img/search.svg') no-repeat center;
-	mask: url('../img/search.svg') no-repeat center;
+	-webkit-mask: url('../img/search.dyn.svg') no-repeat center;
+	mask: url('../img/search.dyn.svg') no-repeat center;
 	width: 24px;
 	height: 24px;
 	position: absolute;
@@ -223,19 +223,29 @@ h3 {
 	white-space: nowrap;
 }
 #explorer-tree a,
-#header #search-results a {
+#header #search-results a,
+label.block {
 	display: block;
 	text-decoration: none;
 	color: inherit;
 	padding: 5px;
 	border-radius: 4px;
 }
+label.block {
+	padding: 2px;
+}
+label.block > * {
+	vertical-align: text-top;
+}
 #explorer-tree a:focus,
 #explorer-tree a:hover,
 #explorer-tree a:active,
 #header #search-results a:focus,
 #header #search-results a:hover,
-#header #search-results a:active {
+#header #search-results a:active,
+label.block:focus,
+label.block:hover,
+label.block:active {
 	background-color: #eeeeee;
 }
 #explorer-tree a img,
@@ -551,7 +561,7 @@ input, select, textarea, button {
 	padding: 4px;
 	background-color: white;
 }
-input:disabled, select:disabled, textarea:disabled,
+input:disabled, select:disabled, textarea:disabled, .disabled,
 input:not([type=file]):read-only, textarea:read-only {
 	background-color: rgb(240, 240, 240);
 	background-image: repeating-linear-gradient(45deg, rgb(255,255,255), rgb(255,255,255) 10px, rgb(240, 240, 240) 10px, rgb(240, 240, 240) 20px);
@@ -941,10 +951,48 @@ div.details-abreast > div > table {
 	100% {background-color: teal;}
 }
 
-#sltComputer, #sltComputerGroup,
-#sltPackage, #sltPackageGroup {
+#divComputerList, #divComputerGroupList,
+#divPackageList, #divPackageGroupList {
 	resize: vertical;
-	min-height: 100px;
+	min-height: 120px;
+	overflow-y: scroll;
+	margin-bottom: 10px;
+}
+.listSearch {
+	position: relative;
+}
+.listSearch img {
+	pointer-events: none;
+	position: absolute;
+	top: 5px;
+	left: 5px;
+	height: 19px;
+	opacity: 0.4;
+}
+.listSearch input {
+	display: block;
+	padding-left: 28px;
+	width: 100%;
+}
+.box {
+	box-sizing: border-box;
+	background-color: white;
+	border-radius: 2px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.08);
+	padding: 10px;
+}
+.box > *:first-child {
+	margin-top: 0px;
+}
+.box > *:last-child {
+	margin-bottom: 0px;
+}
+@media (prefers-color-scheme: dark) {
+	.box {
+		background-color: #22343C;
+		border: 1px solid #485764;
+	}
 }
 
 .bold {
@@ -1052,7 +1100,10 @@ div.details-abreast > div > table {
 	#explorer-tree a:active,
 	#header #search-results a:focus,
 	#header #search-results a:hover,
-	#header #search-results a:active {
+	#header #search-results a:active,
+	label.block:focus,
+	label.block:hover,
+	label.block:active {
 		background-color: #324F61;
 	}
 	#header input:focus {
@@ -1103,7 +1154,7 @@ div.details-abreast > div > table {
 		border-radius: 0px;
 		box-shadow: none;
 	}
-	input:disabled, select:disabled, textarea:disabled,
+	input:disabled, select:disabled, textarea:disabled, .disabled,
 	input:not([type=file]):read-only, textarea:read-only {
 		background-color: rgb(240, 240, 240, 0.1);
 		background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(240, 240, 240, 0.1) 10px, rgb(240, 240, 240, 0.1) 20px);

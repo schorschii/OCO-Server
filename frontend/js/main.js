@@ -248,17 +248,21 @@ function showLoader2(state) {
 	}
 }
 
-function getSelectValues(select, except=null) {
-	var result = [];
-	var options = select && select.options;
-	var opt;
-	for(var i=0, iLen=options.length; i<iLen; i++) {
-		opt = options[i];
-		if(opt.selected && opt.value != except) {
-			result.push(opt.value || opt.text);
+function getSelectedCheckBoxValues(checkboxName) {
+	var values = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			values.push(entry.value);
 		}
-	}
-	return result;
+	});
+	return values;
+}
+function getAllCheckBoxValues(checkboxName) {
+	var values = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		values.push(entry.value);
+	});
+	return values;
 }
 function setInputsDisabled(rootElement, disabled) {
 	var elements = rootElement.querySelectorAll('input, select, textarea, button');
@@ -328,21 +332,18 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 }
 function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids=[], computer_group_ids=[]) {
 	var params = [];
-	package_ids.forEach(function(entry) {
-		params.push({'key':'package_id[]', 'value':entry});
-	});
 	package_group_ids.forEach(function(entry) {
 		params.push({'key':'package_group_id[]', 'value':entry});
-	});
-	computer_ids.forEach(function(entry) {
-		params.push({'key':'computer_id[]', 'value':entry});
 	});
 	computer_group_ids.forEach(function(entry) {
 		params.push({'key':'computer_group_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequest('views/deploy.php?'+paramString, 'explorer-content', function(){
-		refreshDeployComputerAndPackages(sltComputerGroup.value, sltPackageGroup.value, computer_ids, package_ids);
+	ajaxRequest('views/deploy.php?'+urlencodeArray(params), 'explorer-content', function(){
+		refreshDeployComputerAndPackages(
+			getSelectedCheckBoxValues('computer_groups'),
+			getSelectedCheckBoxValues('package_groups'),
+			computer_ids, package_ids
+		);
 	});
 }
 
@@ -817,14 +818,14 @@ function addPackageToGroup(packageId, groupId) {
 function showDialogAddPackageDependency(id) {
 	showDialogAjax(L__ADD_DEPENDENCY, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
 		txtEditPackageId.value = id;
-		refreshDeployComputerAndPackages(null, sltPackage.value);
+		refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
 	});
 }
 function showDialogAddDependentPackage(id) {
 	showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
 		txtSetAsDependentPackage.value = "1";
 		txtEditPackageId.value = id;
-		refreshDeployComputerAndPackages(null, sltPackage.value);
+		refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
 	});
 }
 function addPackageDependency(packageId, dependencyPackageId) {
@@ -899,8 +900,7 @@ function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshP
 		preselectComputerIds.forEach(function(entry) {
 			params.push({'key':'computer_id[]', 'value':entry});
 		});
-		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'sltComputer', function(){ refreshDeployCount() });
-		if(refreshComputersGroupId < 1) sltComputerGroup.value = -1;
+		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'divComputerList', refreshDeployCount);
 	}
 	if(refreshPackagesGroupId != null) {
 		var params = [];
@@ -908,37 +908,63 @@ function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshP
 		preselectPackageIds.forEach(function(entry) {
 			params.push({'key':'package_id[]', 'value':entry});
 		});
-		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'sltPackage', function(){ refreshDeployCount() });
-		if(refreshPackagesGroupId < 1) sltPackageGroup.value = -1;
+		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'divPackageList', refreshDeployCount);
+	}
+}
+function refreshDeployComputerList() {
+	var values = getSelectedCheckBoxValues('computer_groups');
+	if(values.length > 1) {
+		divComputerList.innerHTML = '';
+		divComputerList.classList.add('disabled');
+		refreshDeployCount();
+	} else if(values.length == 1) {
+		divComputerList.classList.remove('disabled');
+		refreshDeployComputerAndPackages(values[0], null);
+	} else {
+		divComputerList.classList.remove('disabled');
+		refreshDeployComputerAndPackages(-1, null);
+	}
+}
+function refreshDeployPackageList() {
+	var values = getSelectedCheckBoxValues('package_groups');
+	if(values.length > 1) {
+		divPackageList.innerHTML = '';
+		divPackageList.classList.add('disabled');
+		refreshDeployCount();
+	} else if(values.length == 1) {
+		divPackageList.classList.remove('disabled');
+		refreshDeployComputerAndPackages(null, values[0]);
+	} else {
+		divPackageList.classList.remove('disabled');
+		refreshDeployComputerAndPackages(null, -1);
 	}
 }
 function refreshDeployCount() {
-	if(obj('sltComputer')) {
-		spnSelectedComputers.innerHTML = getSelectValues(sltComputer).length;
-		spnTotalComputers.innerHTML = sltComputer.options.length;
+	if(obj('spnSelectedComputers')) {
+		spnSelectedComputers.innerHTML = getSelectedCheckBoxValues('computers').length;
+		spnTotalComputers.innerHTML = getAllCheckBoxValues('computers').length;
 	}
-	if(obj('sltPackage')) {
-		spnSelectedPackages.innerHTML = getSelectValues(sltPackage).length;
-		spnTotalPackages.innerHTML = sltPackage.options.length;
+	if(obj('spnSelectedPackages')) {
+		spnSelectedPackages.innerHTML = getSelectedCheckBoxValues('packages').length;
+		spnTotalPackages.innerHTML = getAllCheckBoxValues('packages').length;
 	}
-
-	if(obj('sltComputerGroup')) {
-		let computerGroupCount = getSelectValues(sltComputerGroup, -1).length;
-
-		// computer ids have priority - if only one group is selected, we evaluate the selected computers instead of the whole group
-		if(computerGroupCount == 1) spnSelectedComputerGroups.innerHTML = '0';
-		else spnSelectedComputerGroups.innerHTML = computerGroupCount;
-
-		spnTotalComputerGroups.innerHTML = sltComputerGroup.options.length;
+	if(obj('spnSelectedComputerGroups')) {
+		spnSelectedComputerGroups.innerHTML = getSelectedCheckBoxValues('computer_groups').length;
+		spnTotalComputerGroups.innerHTML = getAllCheckBoxValues('computer_groups').length;
 	}
-	if(obj('sltPackageGroup')) {
-		let packageGroupCount = getSelectValues(sltPackageGroup, -1).length;
-
-		// package ids have priority - if only one group is selected, we evaluate the selected packages instead of the whole group
-		if(packageGroupCount == 1) spnSelectedPackageGroups.innerHTML = '0';
-		else spnSelectedPackageGroups.innerHTML = packageGroupCount;
-
-		spnTotalPackageGroups.innerHTML = sltPackageGroup.options.length;
+	if(obj('spnSelectedPackageGroups')) {
+		spnSelectedPackageGroups.innerHTML = getSelectedCheckBoxValues('package_groups').length;
+		spnTotalPackageGroups.innerHTML = getAllCheckBoxValues('package_groups').length;
+	}
+}
+function searchLabels(container, search) {
+	search = search.toUpperCase();
+	var childs = container.querySelectorAll('label');
+	for(var i = 0; i < childs.length; i++) {
+		if(search == '' || childs[i].innerText.toUpperCase().includes(search))
+			childs[i].style.display = 'block';
+		else
+			childs[i].style.display = 'none';
 	}
 }
 
@@ -1262,7 +1288,7 @@ function editJobContainerNotes(id, oldValue) {
 		});
 	}
 }
-function deploy(title, start, end, description, sltComputer, sltComputerGroup, sltPackage, sltPackageGroup, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, constraintIpRange) {
+function deploy(title, start, end, description, computers, computerGroups, packages, packageGroups, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, constraintIpRange) {
 	setInputsDisabled(frmDeploy, true);
 	btnDeploy.style.display = 'none';
 	prgDeployContainer.style.display = 'flex';
@@ -1284,16 +1310,16 @@ function deploy(title, start, end, description, sltComputer, sltComputerGroup, s
 	for(var i = 0; i < ipRanges.length; i++) {
 		formData.append('constraint_ip_range[]', ipRanges[i]);
 	}
-	getSelectValues(sltPackage).forEach(function(entry) {
+	packages.forEach(function(entry) {
 		formData.append('package_id[]', entry);
 	});
-	getSelectValues(sltPackageGroup).forEach(function(entry) {
+	packageGroups.forEach(function(entry) {
 		formData.append('package_group_id[]', entry);
 	});
-	getSelectValues(sltComputer).forEach(function(entry) {
+	computers.forEach(function(entry) {
 		formData.append('computer_id[]', entry);
 	});
-	getSelectValues(sltComputerGroup).forEach(function(entry) {
+	computerGroups.forEach(function(entry) {
 		formData.append('computer_group_id[]', entry);
 	});
 	req.open('POST', 'ajax-handler/deploy.php');
