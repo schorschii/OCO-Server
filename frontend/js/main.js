@@ -900,7 +900,14 @@ function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshP
 		preselectComputerIds.forEach(function(entry) {
 			params.push({'key':'computer_id[]', 'value':entry});
 		});
-		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'divComputerList', refreshDeployCount);
+		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'divComputerList', function() {
+			refreshDeployCount();
+			// scroll to first checked checkbox
+			var childs = divComputerList.querySelectorAll('input[type=checkbox]');
+			for(var i = 0; i < childs.length; i++) {
+				if(childs[i].checked) {childs[i].scrollIntoView(); break;}
+			}
+		});
 	}
 	if(refreshPackagesGroupId != null) {
 		var params = [];
@@ -908,7 +915,14 @@ function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshP
 		preselectPackageIds.forEach(function(entry) {
 			params.push({'key':'package_id[]', 'value':entry});
 		});
-		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'divPackageList', refreshDeployCount);
+		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'divPackageList', function() {
+			refreshDeployCount();
+			// scroll to first checked checkbox
+			var childs = divPackageList.querySelectorAll('input[type=checkbox]');
+			for(var i = 0; i < childs.length; i++) {
+				if(childs[i].checked) {childs[i].scrollIntoView(); break;}
+			}
+		});
 	}
 }
 function refreshDeployComputerList() {
