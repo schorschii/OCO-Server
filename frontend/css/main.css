@@ -954,7 +954,8 @@ div.details-abreast > div > table {
 #divComputerList, #divComputerGroupList,
 #divPackageList, #divPackageGroupList {
 	resize: vertical;
-	min-height: 120px;
+	min-height: 100px;
+	height: 140px;
 	overflow-y: scroll;
 	margin-bottom: 10px;
 }
