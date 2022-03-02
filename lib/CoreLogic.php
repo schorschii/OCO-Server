@@ -687,15 +687,15 @@ class CoreLogic {
 			$package_group_ids[] = $package_group_id;
 		}
 
-		// if multiple groups selected: add all group members
-		if(count($computer_group_ids) > 1) foreach($computer_group_ids as $computer_group_id) {
+		// add all group members
+		foreach($computer_group_ids as $computer_group_id) {
 			foreach($this->db->getComputerByGroup($computer_group_id) as $c) {
 				if(!$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 				$computer_ids[$c->id] = $c->id;
 			}
 		}
-		if(count($package_group_ids) > 1) foreach($package_group_ids as $package_group_id) {
+		foreach($package_group_ids as $package_group_id) {
 			foreach($this->db->getPackageByGroup($package_group_id) as $p) {
 				$packages = $packages + $this->compileDeployPackageArray($p->id);
 			}

@@ -249,10 +249,10 @@ function showLoader2(state) {
 }
 
 function toggleCheckboxesInContainer(container, checked) {
-	let labels = container.getElementsByTagName('label');
-	for(var i = 0; i < labels.length; i++) {
-		if(labels[i].style.display == 'none') continue;
-		let inputs = labels[i].getElementsByTagName("input");
+	let items = container.children;
+	for(var i = 0; i < items.length; i++) {
+		if(items[i].style.display == 'none') continue;
+		let inputs = items[i].getElementsByTagName("input");
 		for(var n = 0; n < inputs.length; n++) {
 			if(inputs[n].type == 'checkbox') {
 				inputs[n].checked = checked;
@@ -938,32 +938,26 @@ function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshP
 		});
 	}
 }
-function refreshDeployComputerList() {
+function refreshDeployComputerList(groupId) {
 	var values = getSelectedCheckBoxValues('computer_groups');
-	if(values.length > 1) {
+	if(values.length > 0) {
 		divComputerList.innerHTML = '';
 		divComputerList.classList.add('disabled');
 		refreshDeployCount();
-	} else if(values.length == 1) {
-		divComputerList.classList.remove('disabled');
-		refreshDeployComputerAndPackages(values[0], null);
 	} else {
 		divComputerList.classList.remove('disabled');
-		refreshDeployComputerAndPackages(-1, null);
+		refreshDeployComputerAndPackages(groupId, null);
 	}
 }
-function refreshDeployPackageList() {
+function refreshDeployPackageList(groupId) {
 	var values = getSelectedCheckBoxValues('package_groups');
-	if(values.length > 1) {
+	if(values.length > 0) {
 		divPackageList.innerHTML = '';
 		divPackageList.classList.add('disabled');
 		refreshDeployCount();
-	} else if(values.length == 1) {
-		divPackageList.classList.remove('disabled');
-		refreshDeployComputerAndPackages(null, values[0]);
 	} else {
 		divPackageList.classList.remove('disabled');
-		refreshDeployComputerAndPackages(null, -1);
+		refreshDeployComputerAndPackages(null, groupId);
 	}
 }
 function refreshDeployCount() {
@@ -984,14 +978,14 @@ function refreshDeployCount() {
 		spnTotalPackageGroups.innerHTML = getAllCheckBoxValues('package_groups').length;
 	}
 }
-function searchLabels(container, search) {
+function searchItems(container, search) {
 	search = search.toUpperCase();
-	var childs = container.querySelectorAll('label');
-	for(var i = 0; i < childs.length; i++) {
-		if(search == '' || childs[i].innerText.toUpperCase().includes(search))
-			childs[i].style.display = 'block';
+	var items = container.children;
+	for(var i = 0; i < items.length; i++) {
+		if(search == '' || items[i].innerText.toUpperCase().includes(search))
+			items[i].style.display = 'block';
 		else
-			childs[i].style.display = 'none';
+			items[i].style.display = 'none';
 	}
 }
 

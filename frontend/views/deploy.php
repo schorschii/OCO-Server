@@ -128,9 +128,10 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['computer_groups']; ?> (<span id='spnSelectedComputerGroups'>0</span>/<span id='spnTotalComputerGroups'>0</span>)</h3>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerGroupList, this.checked);refreshDeployComputerList()'>
-			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divComputerGroupList, this.value)'>
+			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerGroupList, this.value)'>
 		</div>
 		<div id='divComputerGroupList' class='box'>
+			<a class='blockListItem' onclick='refreshDeployComputerList(-1)'><input type='checkbox' style='visibility:hidden' /><?php echo LANG['all_computer']; ?></a>
 			<?php echoTargetComputerGroupOptions($select_computer_group_ids); ?>
 		</div>
 	</div>
@@ -138,7 +139,7 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['computer']; ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</h3>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerList, this.checked)'>
-			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divComputerList, this.value)'>
+			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerList, this.value)'>
 		</div>
 		<div id='divComputerList' class='box'>
 			<!-- filled by JS -->
@@ -152,9 +153,10 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['package_groups']; ?> (<span id='spnSelectedPackageGroups'>0</span>/<span id='spnTotalPackageGroups'>0</span>)</h3>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageGroupList, this.checked);refreshDeployPackageList()'>
-			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divPackageGroupList, this.value)'>
+			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageGroupList, this.value)'>
 		</div>
 		<div id='divPackageGroupList' class='box'>
+			<a class='blockListItem' onclick='refreshDeployPackageList(-1)'><input type='checkbox' style='visibility:hidden' /><?php echo LANG['all_packages']; ?></a>
 			<?php echoTargetPackageGroupOptions($select_package_group_ids); ?>
 		</div>
 	</div>
@@ -162,7 +164,7 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['packages']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked)'>
-			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchLabels(divPackageList, this.value)'>
+			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
 		</div>
 		<div id='divPackageList' class='box'>
 			<!-- filled by JS -->
@@ -192,7 +194,7 @@ function echoTargetComputerGroupOptions($select_computer_group_ids, $parent=null
 
 		$selected = '';
 		if(in_array($cg->id, $select_computer_group_ids)) $selected = 'checked';
-		echo "<label class='block'><input type='checkbox' onchange='refreshDeployComputerList()' name='computer_groups' value='".htmlspecialchars($cg->id)."' ".$selected." />".trim(str_repeat("‒",$indent)." ".htmlspecialchars($cg->name))."</label>";
+		echo "<a class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.")'><input type='checkbox' name='computer_groups' value='".$cg->id."' ".$selected." />".trim(str_repeat("‒",$indent)." ".htmlspecialchars($cg->name))."</a>";
 		echoTargetComputerGroupOptions($select_computer_group_ids, $cg->id, $indent+1);
 	}
 }
@@ -206,7 +208,7 @@ function echoTargetPackageGroupOptions($select_package_group_ids, $parent=null, 
 
 		$selected = '';
 		if(in_array($pg->id, $select_package_group_ids)) $selected = 'checked';
-		echo "<label class='block'><input type='checkbox' onchange='refreshDeployPackageList()' name='package_groups' value='".htmlspecialchars($pg->id)."' ".$selected." />".trim(str_repeat("‒",$indent)." ".htmlspecialchars($pg->name))."</label>";
+		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'><input type='checkbox' name='package_groups' value='".$pg->id."' ".$selected." />".trim(str_repeat("‒",$indent)." ".htmlspecialchars($pg->name))."</a>";
 		echoTargetPackageGroupOptions($select_package_group_ids, $pg->id, $indent+1);
 	}
 }

@@ -24,7 +24,7 @@ try {
 
 			$selected = '';
 			if(in_array($c->id, $select_computer_ids)) $selected = 'checked';
-			echo "<label class='block'><input type='checkbox' name='computers' onchange='refreshDeployCount()' value='".$c->id."' ".$selected." />".htmlspecialchars($c->hostname)."</label>";
+			echo "<label class='blockListItem'><input type='checkbox' name='computers' onchange='refreshDeployCount()' value='".$c->id."' ".$selected." />".htmlspecialchars($c->hostname)."</label>";
 		}
 		die();
 	}
@@ -38,7 +38,7 @@ try {
 
 			$selected = '';
 			if(in_array($p->id, $select_package_ids)) $selected = 'checked';
-			echo "<label class='block'><input type='checkbox' name='packages' onchange='refreshDeployCount()' value='".$p->id."' ".$selected." />".htmlspecialchars($p->package_family_name)." (".htmlspecialchars($p->version).")"."</label>";
+			echo "<label class='blockListItem'><input type='checkbox' name='packages' onchange='refreshDeployCount()' value='".$p->id."' ".$selected." />".htmlspecialchars($p->package_family_name)." (".htmlspecialchars($p->version).")"."</label>";
 		}
 		die();
 	}

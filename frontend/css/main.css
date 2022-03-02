@@ -224,17 +224,17 @@ h3 {
 }
 #explorer-tree a,
 #header #search-results a,
-label.block {
+.blockListItem {
 	display: block;
 	text-decoration: none;
 	color: inherit;
 	padding: 5px;
 	border-radius: 4px;
 }
-label.block {
+.blockListItem {
 	padding: 2px;
 }
-label.block > * {
+.blockListItem > * {
 	vertical-align: text-top;
 }
 #explorer-tree a:focus,
@@ -243,9 +243,9 @@ label.block > * {
 #header #search-results a:focus,
 #header #search-results a:hover,
 #header #search-results a:active,
-label.block:focus,
-label.block:hover,
-label.block:active {
+.blockListItem:focus,
+.blockListItem:hover,
+.blockListItem:active {
 	background-color: #eeeeee;
 	cursor: pointer;
 }
@@ -1105,9 +1105,9 @@ div.details-abreast > div > table {
 	#header #search-results a:focus,
 	#header #search-results a:hover,
 	#header #search-results a:active,
-	label.block:focus,
-	label.block:hover,
-	label.block:active {
+	.blockListItem:focus,
+	.blockListItem:hover,
+	.blockListItem:active {
 		background-color: #324F61;
 	}
 	#header input:focus {
