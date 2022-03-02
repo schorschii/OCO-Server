@@ -247,6 +247,7 @@ label.block:focus,
 label.block:hover,
 label.block:active {
 	background-color: #eeeeee;
+	cursor: pointer;
 }
 #explorer-tree a img,
 #header #search-results a img {
