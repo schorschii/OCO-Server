@@ -282,6 +282,11 @@ function setInputsDisabled(rootElement, disabled) {
 	for(var i = 0; i < elements.length; i++) {
 		elements[i].disabled = disabled;
 	}
+	elements = rootElement.querySelectorAll('.box');
+	for(var i = 0; i < elements.length; i++) {
+		if(disabled) elements[i].classList.add('disabled');
+		else elements[i].classList.remove('disabled');
+	}
 }
 
 // ======== CONTENT REFRESH FUNCTIONS ========

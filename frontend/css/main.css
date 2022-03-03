@@ -992,12 +992,6 @@ div.details-abreast > div > table {
 .box > *:last-child {
 	margin-bottom: 0px;
 }
-@media (prefers-color-scheme: dark) {
-	.box {
-		background-color: #22343C;
-		border: 1px solid #485764;
-	}
-}
 
 .bold {
 	font-weight: bold;
@@ -1149,6 +1143,10 @@ div.details-abreast > div > table {
 	table.list tr th:last-child,
 	table.list tr td:last-child {
 		border-right: 1px solid #485764;
+	}
+	.box {
+		background-color: #22343C;
+		border: 1px solid #485764;
 	}
 	input:not([type=range]):not([type=radio]):not([type=checkbox]), select, textarea {
 		color: white;
