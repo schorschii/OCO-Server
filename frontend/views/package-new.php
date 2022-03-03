@@ -55,25 +55,34 @@ require_once('../session.php');
 </datalist>
 
 <table id='frmNewPackage' class='form'>
+	<tr><td colspan='2'><h2><?php echo LANG['general']; ?></h2></td></tr>
 	<tr class='nospace'>
-		<th><?php echo LANG['package_family']; ?></th>
+		<th><?php echo LANG['package_family_name']; ?></th>
 		<td><input type='text' id='txtName' list='lstPackageNames' value='<?php echo htmlspecialchars($_GET['name']??'',ENT_QUOTES); ?>'></td>
-	</tr>
-	<tr class='nospace'>
 		<th><?php echo LANG['version']; ?></th>
 		<td><input type='text' id='txtVersion' value='<?php echo htmlspecialchars($_GET['version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['description']; ?></th>
-		<td><textarea id='txtDescription' placeholder='<?php echo LANG['optional_hint']; ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea></td>
+		<th><?php echo LANG['compatible_os']; ?></th>
+		<td><input type='text' id='txtCompatibleOs' list='lstOs' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['compatible_os']??'',ENT_QUOTES); ?>'></td>
+		<th><?php echo LANG['compatible_os_version']; ?></th>
+		<td><input type='text' id='txtCompatibleOsVersion' list='lstOsVersion' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['compatible_os_version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['zip_archive']; ?></th>
 		<td><input type='file' id='fleArchive' onchange='updatePackageProcedureTemplates()'></td>
 	</tr>
+	<tr>
+		<th><?php echo LANG['description']; ?></th>
+		<td><textarea id='txtDescription' placeholder='<?php echo LANG['optional_hint']; ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea></td>
+	</tr>
+
+	<tr><td colspan='2'><h2><?php echo LANG['installation']; ?></h2></td></tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['install_procedure']; ?></th>
-		<td><input type='text' id='txtInstallProcedure' list='lstInstallProcedures' value='<?php echo htmlspecialchars($_GET['install_procedure']??'',ENT_QUOTES); ?>'></td>
+		<td colspan='3'><input type='text' id='txtInstallProcedure' list='lstInstallProcedures' value='<?php echo htmlspecialchars($_GET['install_procedure']??'',ENT_QUOTES); ?>'></td>
+	</tr>
+	<tr class='nospace'>
 		<th><?php echo LANG['success_return_codes']; ?></th>
 		<td><input type='text' id='txtInstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='<?php echo htmlspecialchars($_GET['install_procedure_success_return_codes']??'0',ENT_QUOTES); ?>'></td>
 	</tr>
@@ -86,9 +95,13 @@ require_once('../session.php');
 			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_EXIT; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 3) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart_agent']; ?></label>
 		</td>
 	</tr>
+
+	<tr><td colspan='2'><h2><?php echo LANG['uninstallation']; ?></h2></td></tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
-		<td><input type='text' id='txtUninstallProcedure' list='lstUninstallProcedures' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['uninstall_procedure']??'',ENT_QUOTES); ?>'></td>
+		<td colspan='3'><input type='text' id='txtUninstallProcedure' list='lstUninstallProcedures' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['uninstall_procedure']??'',ENT_QUOTES); ?>'></td>
+	</tr>
+	<tr class='nospace'>
 		<th><?php echo LANG['success_return_codes']; ?></th>
 		<td><input type='text' id='txtUninstallProcedureSuccessReturnCodes' title='<?php echo LANG['success_return_codes_comma_separated']; ?>' value='<?php echo htmlspecialchars($_GET['uninstall_procedure_success_return_codes']??'0',ENT_QUOTES); ?>'></td>
 	</tr>
@@ -103,12 +116,6 @@ require_once('../session.php');
 	<tr>
 		<th></th>
 		<td><label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' <?php if($_GET['download_for_uninstall']??true) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['download_for_uninstall']; ?></label></td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['compatible_os']; ?></th>
-		<td><input type='text' id='txtCompatibleOs' list='lstOs' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['compatible_os']??'',ENT_QUOTES); ?>'></td>
-		<th><?php echo LANG['compatible_os_version']; ?></th>
-		<td><input type='text' id='txtCompatibleOsVersion' list='lstOsVersion' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['compatible_os_version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr>
 		<th></th>
