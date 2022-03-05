@@ -390,8 +390,8 @@ const LANG = [
 				<li>MSI uninstallation for Windows: <code>msiexec /quiet /x package.msi</code> or <code>{PRODUCT-GUID}</code></li>
 				<li>DEB package for Linux: <code>gdebi -n package.deb</code></li>
 				<li>DEB package for Linux uninstallation: <code>apt remove -y packagename</code></li>
-				<li>.app directory for macOS from DMG file: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/myprogram</code></li>
-				<li>.app directory for macOS uninstallation: <code>rm -R /Applications/program.app</code></li>
+				<li>.app directory for macOS from DMG file: <code>hdiutil attach myprogram.dmg && cp -R /Volumes/myprogram/myprogram.app /Applications && hdiutil detach /Volumes/myprogram</code></li>
+				<li>.app directory for macOS uninstallation: <code>rm -R /Applications/myprogram.app</code></li>
 				<li>.pkg package for macOS: <code>installer -pkg package.pkg -target /</code> (no uninstallation support)</li>
 				<li>Own Batch/Shell script: <code>myscript.bat</code> or <code>myscript.sh</code></li>
 			</ul>
