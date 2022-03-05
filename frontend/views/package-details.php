@@ -62,7 +62,7 @@ try {
 			<tr>
 				<th><?php echo LANG['install_procedure']; ?></th>
 				<td class='subbuttons'>
-					<span id='spnPackageInstallProcedure'><?php echo htmlspecialchars($package->install_procedure); ?></span>
+					<span id='spnPackageInstallProcedure' class='monospace'><?php echo nl2br(htmlspecialchars($package->install_procedure)); ?></span>
 					<?php if($permissionWrite) { ?>
 						<button onclick='event.stopPropagation();editPackageInstallProcedure(<?php echo $package->id; ?>, spnPackageInstallProcedure.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 					<?php } ?>
@@ -98,7 +98,7 @@ try {
 			<tr>
 				<th><?php echo LANG['uninstall_procedure']; ?></th>
 				<td class='subbuttons'>
-					<span id='spnPackageUninstallProcedure'><?php echo htmlspecialchars($package->uninstall_procedure); ?></span>
+					<span id='spnPackageUninstallProcedure' class='monospace'><?php echo nl2br(htmlspecialchars($package->uninstall_procedure)); ?></span>
 					<?php if($permissionWrite) { ?>
 						<button onclick='event.stopPropagation();editPackageUninstallProcedure(<?php echo $package->id; ?>, spnPackageUninstallProcedure.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
 					<?php } ?>
