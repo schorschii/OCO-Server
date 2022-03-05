@@ -30,6 +30,14 @@ function toggleSidebar(force=null) {
 		return;
 	}
 }
+function replaceElement(element) {
+	var newElement = document.createElement('textarea');
+	newElement.id = element.id;
+	newElement.classList = element.classList;
+	newElement.value = element.value;
+	newElement.placeholder = element.placeholder;
+	element.replaceWith(newElement);
+}
 
 function rewriteUrlContentParameter(ajaxRequestUrl) {
 	// compile parameters to replace from ajax request URL
