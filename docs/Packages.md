@@ -108,7 +108,7 @@ Where `oemsetup.inf` is the name of your driver's `.inf` file. Important: the ZI
 - PKG package on macOS: `sudo installer -pkg package.pkg -target /`
   - The macOS `.pkg` package format does not have uninstallation support. Yes, this is no joke. WTF, Apple.
   - You can remove the corresponding .app directory using `rm -R /Applications/myapp.app`, but this may leave files installed in system directories behind.
-- .app directory on macOS: `hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/myprogram`
+- .app directory on macOS: `hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program`
 - .app directory on macOS uninstallation: `rm -R /Applications/GIMP-2.10.app`
 
 #### Own Scripts
