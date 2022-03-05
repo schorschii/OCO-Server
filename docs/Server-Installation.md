@@ -62,6 +62,7 @@
    ```
    */10 *  * * *  www-data  cd /var/www/oco/lib && php HouseKeeping.php
    ```
+10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
 
 ### Obtaining A Let’s Encrypt Certificate
 1. Enable the Apache SSL module: `a2enmod ssl`
