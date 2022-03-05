@@ -1,5 +1,5 @@
 # Open Computer Orchestration
-**Desktop and Server Inventory, Management & Software Deployment**
+**Self Hosted / On Premise Desktop and Server Inventory, Management & Software Deployment**
 
 The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines using a comfortable web interface. Additionally, it provides software deployment features, a user-computer logon overview, lists software packages installed on all computers ("recognised software") and features a fine-grained permission/role system. It focuses on easy usability (GUI) and simplicity.
 
@@ -24,12 +24,12 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
 - Apache2 or an other PHP-capable web server
 - PHP 7.0 or newer
 
-### Client
+### (Admin) Client
 - Chromium-based Web Browser (Chrome/Chromium v80 or newer, Opera etc.)
 - Firefox (v80 or newer)
 - (optional) OCO Client Extensions (for opening RDP, VNC, SSH sessions from the web interface)
 
-### Agent
+### Agent (For Managed Computers)
 - please refer to [OCO Agent](https://github.com/schorschii/oco-agent)
 
 ## Translations & Contributions Welcome!
