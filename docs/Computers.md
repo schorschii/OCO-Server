@@ -1,13 +1,15 @@
 # OCO: Computers
 
 ## Register New Computers
+After you have installed the agent on the client computer, you have to set the server URL and agent key in the agent config file (`oco-agent.ini`). If you do not specify a server URL in the agent config file, the agent will query your DNS for the SRV record `_oco._tcp` to get the server address (DNS auto discovery). If you want to set your server address manually, please note that the server address is defined twice in the agent config file: the setting `api-url` should point to `api-agent.php` on your server and `payload-url` to `payloadprovider.php`.
+
 There are 2 methods for registering new computers:
 
 ### 1. Agent Self-Registration
-This feature must be activated first in the config file `conf.php` by setting `AGENT_SELF_REGISTRATION_ENABLED` to `true`. Then, every agent knowing the correct agent key (defined in the config file) can registrate itself on the server. During the first communication with the server, a unique agent key will be set for the new computer.
+This feature must be activated first in the config file `conf.php` by setting `AGENT_SELF_REGISTRATION_ENABLED` to `true`. Then, every agent knowing the correct agent key (defined in the server config file) can registrate itself on the server. During the first communication with the server, a unique agent key will be set for the new computer.
 
 ### 2. Manual (Pre-)Registration
-For this method, a new computer object must be created first in the web frontend or using the client API. The name which you enter on the dialog must exactly match the new computers hostname. Then, the computer is able update its inventory values using the global agent key (defined in the config file). During the first communication with the server, a unique agent key will be set for the new computer.
+For this method, a new computer object must be created first in the web frontend or using the client API. The name which you enter on the dialog must exactly match the new computers hostname. Then, the computer is able update its inventory values using the global agent key (defined in the server config file; key can also be set to an empty string - this allows you to install and use the agent without further configuration on the client computer). During the first communication with the server, a unique agent key will be set for the new computer.
 
 ## Group Computers
 You can create computer groups e.g. to group all computers of specific locations inside your company, or to group computers which should get special software packages installed.
