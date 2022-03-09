@@ -69,12 +69,14 @@ require_once('../session.php');
 		<td><input type='text' id='txtCompatibleOsVersion' list='lstOsVersion' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['compatible_os_version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['zip_archive']; ?></th>
-		<td><input type='file' id='fleArchive' onchange='updatePackageProcedureTemplates()'></td>
-	</tr>
-	<tr>
 		<th><?php echo LANG['description']; ?></th>
-		<td><textarea id='txtDescription' placeholder='<?php echo LANG['optional_hint']; ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea></td>
+		<td colspan='3'><textarea id='txtDescription' placeholder='<?php echo LANG['optional_hint']; ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea></td>
+	</tr>
+
+	<tr><td colspan='2'><h2><?php echo LANG['package_content']; ?></h2></td></tr>
+	<tr>
+		<th><?php echo LANG['zip_archive']; ?></th>
+		<td colspan='3'><input type='file' id='fleArchive' onchange='updatePackageProcedureTemplates()'></td>
 	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG['installation']; ?></h2></td></tr>
