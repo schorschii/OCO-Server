@@ -1278,9 +1278,9 @@ class DatabaseController {
 			':sequence' => $sequence,
 		])) return false;
 	}
-	public function removeWolShutdownJobInContainer($job_container_id, $job_id) {
+	public function removeWolShutdownJobInContainer($job_container_id, $job_id, $post_action) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE job SET post_action = '.Package::POST_ACTION_NONE.','
+			'UPDATE job SET post_action = :post_action,'
 			.' wol_shutdown_set = NULL'
 			.' WHERE job_container_id = :job_container_id'
 			.' AND id = :id'
@@ -1289,6 +1289,7 @@ class DatabaseController {
 		if(!$this->stmt->execute([
 			':job_container_id' => $job_container_id,
 			':id' => $job_id,
+			':post_action' => $post_action,
 		])) return false;
 	}
 	public function updateJobState($id, $state, $return_code, $message) {

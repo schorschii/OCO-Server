@@ -10,13 +10,13 @@ foreach($db->getAllJobContainer() as $container) {
 	$icon = $db->getJobContainerIcon($container->id);
 	if($icon == JobContainer::STATUS_SUCCEEDED) {
 		if(time() - strtotime($container->last_update) > PURGE_SUCCEEDED_JOBS_AFTER) {
-			if($cliMode) echo('Remove Succeeded Job Container #'.$container->id.' ('.$container->name.')'."\n");
+			if($cliMode) echo('Remove succeeded job container #'.$container->id.' ('.$container->name.')'."\n");
 			$db->removeJobContainer($container->id);
 		}
 	}
 	elseif($icon == JobContainer::STATUS_FAILED) {
 		if(time() - strtotime($container->last_update) > PURGE_FAILED_JOBS_AFTER) {
-			if($cliMode) echo('Remove Failed Job Container #'.$container->id.' ('.$container->name.')'."\n");
+			if($cliMode) echo('Remove failed job container #'.$container->id.' ('.$container->name.')'."\n");
 			$db->removeJobContainer($container->id);
 		}
 	}
@@ -25,7 +25,7 @@ foreach($db->getAllJobContainer() as $container) {
 	if($container->end_time !== null && strtotime($container->end_time) < time()) {
 		foreach($db->getAllJobByContainer($container->id) as $job) {
 			if($job->state == Job::STATUS_WAITING_FOR_CLIENT || $job->state == Job::STATUS_DOWNLOAD_STARTED || $job->state == Job::STATUS_EXECUTION_STARTED) {
-				if($cliMode) echo('Set Job #'.$job->id.' (Container #'.$container->id.', '.$container->name.') state to EXPIRED'."\n");
+				if($cliMode) echo('Set job #'.$job->id.' (container #'.$container->id.', '.$container->name.') state to EXPIRED'."\n");
 				$db->updateJobState($job->id, Job::STATUS_EXPIRED, NULL, '');
 			}
 		}
@@ -36,7 +36,7 @@ foreach($db->getAllJobContainer() as $container) {
 foreach($db->getAllJobContainer() as $container) {
 	if($container->wol_sent == 0) {
 		if(strtotime($container->start_time) <= time()) {
-			if($cliMode) echo('Execute WOL for Job Container #'.$container->id.' ('.$container->name.')'."\n");
+			if($cliMode) echo('Execute WOL for job container #'.$container->id.' ('.$container->name.')'."\n");
 			// check if computers are currently online (to know if we should shut them down after all jobs are done)
 			if(!empty($container->shutdown_waked_after_completion)) {
 				if($cliMode) echo('   Check if computers are online for possible shutdown after completion'."\n");
@@ -45,7 +45,7 @@ foreach($db->getAllJobContainer() as $container) {
 			// collect MAC addresses for WOL
 			$wolMacAddresses = [];
 			foreach($db->getComputerMacByContainer($container->id) as $c) {
-				if($cliMode) echo('   Found MAC Address '.$c->computer_network_mac."\n");
+				if($cliMode) echo('   Found MAC address '.$c->computer_network_mac."\n");
 				$wolMacAddresses[] = $c->computer_network_mac;
 			}
 			// send WOL packet
@@ -67,14 +67,23 @@ foreach($db->getAllJobContainer() as $container) {
 		}
 	}
 
-	// check if WOL shutdown should be removed
-	// If the computer does not came up with WOL after a certain time, WOL didn't work -> remove the shutdown.
-	// It is likely that a user has now manually powered on the machine. Then, an automatic shutdown is not desired anymore.
+	// check WOL status (for shutting it down later)
 	if(!empty($container->shutdown_waked_after_completion)) {
 		foreach($db->getAllJobByContainer($container->id) as $j) {
-			if(!empty($j->wol_shutdown_set) && time() - strtotime($j->wol_shutdown_set) > WOL_SHUTDOWN_EXPIRY_SECONDS) {
-				if($cliMode) echo('Remove Expired WOL Shutdown for Job #'.$j->id.' (in Container #'.$container->id.' '.$container->name.')'."\n");
-				$db->removeWolShutdownJobInContainer($container->id, $j->id);
+			if(!empty($j->wol_shutdown_set)) {
+				$c = $db->getComputer($j->computer_id); if(!$c) continue;
+				// The computer came up in the defined time range, this means WOL worked.
+				// Remove the "WOL Shutdown Set" flag to keep the shutdown forever.
+				if($c->isOnline() && time() - strtotime($j->wol_shutdown_set) < WOL_SHUTDOWN_EXPIRY_SECONDS) {
+					if($cliMode) echo('Host came up before WOL shutdown expiry. Keep shutdown of job #'.$j->id.' (in container #'.$container->id.' '.$container->name.') forever'."\n");
+					$db->removeWolShutdownJobInContainer($container->id, $j->id, Package::POST_ACTION_SHUTDOWN);
+				}
+				// If the computer does not came up with WOL after a certain time, WOL didn't work -> remove the shutdown.
+				// It is likely that a user has now manually powered on the machine. Then, an automatic shutdown is not desired anymore.
+				if(time() - strtotime($j->wol_shutdown_set) > WOL_SHUTDOWN_EXPIRY_SECONDS) {
+					if($cliMode) echo('Remove expired WOL shutdown for job #'.$j->id.' (in container #'.$container->id.' '.$container->name.')'."\n");
+					$db->removeWolShutdownJobInContainer($container->id, $j->id, Package::POST_ACTION_NONE);
+				}
 			}
 		}
 	}
@@ -82,11 +91,11 @@ foreach($db->getAllJobContainer() as $container) {
 
 ///// Logon Entries Housekeeping /////
 $result = $db->removeDomainUserLogonOlderThan(PURGE_DOMAIN_USER_LOGONS_AFTER);
-if($cliMode) echo('Purged '.intval($result).' Domain User Logons older than '.intval(PURGE_DOMAIN_USER_LOGONS_AFTER).' seconds'."\n");
+if($cliMode) echo('Purged '.intval($result).' domain user logons older than '.intval(PURGE_DOMAIN_USER_LOGONS_AFTER).' seconds'."\n");
 
 ///// Log Housekeeping /////
 $result = $db->removeLogEntryOlderThan(PURGE_LOGS_AFTER);
-if($cliMode) echo('Purged '.intval($result).' Log Entries older than '.intval(PURGE_LOGS_AFTER).' seconds'."\n");
+if($cliMode) echo('Purged '.intval($result).' log entries older than '.intval(PURGE_LOGS_AFTER).' seconds'."\n");
 
 
 if($cliMode) echo('Housekeeping Done.'."\n");

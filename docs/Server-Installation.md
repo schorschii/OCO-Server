@@ -58,9 +58,9 @@
 7. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size  
   (pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size` and `max_execution_time`).
 8. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
-9. Set up a cron job executing `lib/HouseKeeping.php` every 10 minutes as webserver user (`www-data`).
+9. Set up a cron job executing `lib/HouseKeeping.php` every 2 minutes as webserver user (`www-data`).
    ```
-   */10 *  * * *  www-data  cd /var/www/oco/lib && php HouseKeeping.php
+   */2 *  * * *  www-data  cd /var/www/oco/lib && php HouseKeeping.php
    ```
 10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
 

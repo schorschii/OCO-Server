@@ -3,7 +3,7 @@
 ///// GENERAL CONFIGURATION /////
 const PACKAGE_PATH                    = '/var/www/oco/depot';
 const COMPUTER_OFFLINE_SECONDS        = 125;
-const WOL_SHUTDOWN_EXPIRY_SECONDS     = 3600;
+const WOL_SHUTDOWN_EXPIRY_SECONDS     = 300;
 
 const DO_HOUSEKEEPING_BY_WEB_REQUESTS = false;
 
