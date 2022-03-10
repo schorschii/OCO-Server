@@ -105,7 +105,7 @@ Where `oemsetup.inf` is the name of your driver's `.inf` file. Important: the ZI
 - DEB package uninstallation: `apt remove -y packagename`
 
 #### macOS
-- PKG package on macOS: `sudo installer -pkg package.pkg -target /`
+- PKG package on macOS: `installer -pkg package.pkg -target /`
   - The macOS `.pkg` package format does not have uninstallation support. Yes, this is no joke. WTF, Apple.
   - You can remove the corresponding .app directory using `rm -R /Applications/myapp.app`, but this may leave files installed in system directories behind.
 - .app directory on macOS: `hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program`
@@ -118,15 +118,15 @@ You can run own scripts which may contain multiple commands or more complex logi
 
 ### Specific Examples
 #### Example: Create OCO Windows Agent Update Package
-Please update the agent package regularily with this procedure for Windows: `oco-agent.exe /SILENT` or this procedure for Debian/Ubuntu Linux: `gdebi -n oco-agent.deb` and the action after installation: "Restart Agent".
+Please keep the agent on your managed computers always up-to-date. It can be easily updated with regular installation procedures, e.g. on Windows: `oco-agent.exe /SILENT` or for Debian/Ubuntu Linux: `gdebi -n oco-agent.deb` or on macOS: `installer -pkg oco-agent.pkg -target /`. Set the action after installation: "Restart Agent" to instantly use the new version.
 
-The agent installer does not overwrite an existing config file. After agent update installation, a restart is required in order to load the new agent binary.
+The agent installer does not overwrite an existing config file. After (manual) agent update installation, a restart is required in order to load the new agent binary.
 
 #### Example: Windows-Upgrade
 It is possible to even update your Windows installation to a newer build using a OCO software job!
 1. Extract the contents of the new Windows `.iso` file and add them into a `.zip` file. Upload this `.zip` file on the OCO web console.
 2. Choose the following command line as installation procedure: `setup.exe /auto upgrade /showoobe None /noreboot`
-3. Choose `Reboot` as action after package installation.
+3. Choose "Reboot" as action after package installation.
 
 ### Example: Java Installation on Windows
 Oracle provides an EXE setup for installing Java. This EXE contains a MSI file, which is automatically extracted into `C:\Users\%username%\AppData\LocalLow\Oracle\Java\` when starting the EXE file. You should use this MSI file for creating a package in OCO because of the easy uninstallation with `msiexec /x`.
