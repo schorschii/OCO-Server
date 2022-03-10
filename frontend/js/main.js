@@ -30,12 +30,15 @@ function toggleSidebar(force=null) {
 		return;
 	}
 }
-function replaceElement(element) {
-	var newElement = document.createElement('textarea');
+function toggleTextBoxMultiLine(element) {
+	var newTagName = 'input';
+	if(element.tagName.toLowerCase() == 'input') newTagName = 'textarea';
+	var newElement = document.createElement(newTagName);
 	newElement.id = element.id;
 	newElement.classList = element.classList;
 	newElement.value = element.value;
 	newElement.placeholder = element.placeholder;
+	newElement.ondblclick = function() {toggleTextBoxMultiLine(newElement)};
 	element.replaceWith(newElement);
 }
 
