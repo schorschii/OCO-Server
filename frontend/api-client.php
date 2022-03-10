@@ -41,9 +41,9 @@ try {
 
 	// login successful
 	$cl = new CoreLogic($db, $user);
-	$db->addLogEntry(Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], null, Log::ACTION_CLIENT_API, json_encode(['authenticated'=>true]));
+	$db->addLogEntry(Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], null, Log::ACTION_CLIENT_API, ['authenticated'=>true]);
 } catch(AuthenticationException $e) {
-	$db->addLogEntry(Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', null, Log::ACTION_CLIENT_API, json_encode(['authenticated'=>false]));
+	$db->addLogEntry(Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', null, Log::ACTION_CLIENT_API, ['authenticated'=>false]);
 
 	header('HTTP/1.1 401 Client Not Authorized');
 	error_log('api-agent: authentication failure');
