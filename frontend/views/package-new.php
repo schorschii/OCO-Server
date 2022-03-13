@@ -82,7 +82,7 @@ require_once('../session.php');
 	<tr><td colspan='2'><h2><?php echo LANG['installation']; ?></h2></td></tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['install_procedure']; ?></th>
-		<td colspan='3'><input type='text' id='txtInstallProcedure' class='monospace' list='lstInstallProcedures' ondblclick='toggleTextBoxMultiLine(this)' value='<?php echo htmlspecialchars($_GET['install_procedure']??'',ENT_QUOTES); ?>'></td>
+		<td colspan='3' class='inputwithbutton'><input type='text' id='txtInstallProcedure' class='monospace' list='lstInstallProcedures' value='<?php echo htmlspecialchars($_GET['install_procedure']??'',ENT_QUOTES); ?>'><button onclick='toggleTextBoxMultiLine(txtInstallProcedure)' title='<?php echo LANG['toggle_multi_line']; ?>'><img src='img/textbox.svg'></button></td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['success_return_codes']; ?></th>
@@ -101,7 +101,7 @@ require_once('../session.php');
 	<tr><td colspan='2'><h2><?php echo LANG['uninstallation']; ?></h2></td></tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['uninstall_procedure']; ?></th>
-		<td colspan='3'><input type='text' id='txtUninstallProcedure' class='monospace' list='lstUninstallProcedures' placeholder='<?php echo LANG['optional_hint']; ?>' ondblclick='toggleTextBoxMultiLine(this)' value='<?php echo htmlspecialchars($_GET['uninstall_procedure']??'',ENT_QUOTES); ?>'></td>
+		<td colspan='3' class='inputwithbutton'><input type='text' id='txtUninstallProcedure' class='monospace' list='lstUninstallProcedures' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['uninstall_procedure']??'',ENT_QUOTES); ?>'><button onclick='toggleTextBoxMultiLine(txtUninstallProcedure)' title='<?php echo LANG['toggle_multi_line']; ?>'><img src='img/textbox.svg'></button></td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG['success_return_codes']; ?></th>

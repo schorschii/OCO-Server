@@ -38,7 +38,6 @@ function toggleTextBoxMultiLine(element) {
 	newElement.classList = element.classList;
 	newElement.value = element.value;
 	newElement.placeholder = element.placeholder;
-	newElement.ondblclick = function() {toggleTextBoxMultiLine(newElement)};
 	element.replaceWith(newElement);
 }
 
