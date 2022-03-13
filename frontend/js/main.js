@@ -857,19 +857,22 @@ function showDialogAddDependentPackage(id) {
 	});
 }
 function addPackageDependency(packageId, dependencyPackageId) {
-	if(packageId == '' || dependencyPackageId == '') {
+	if(packageId.length == 0 || dependencyPackageId.length == 0) {
 		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
 		return;
 	}
-	var params = [];
-	params.push({'key':'update_package_id', 'value':packageId});
-	params.push({'key':'add_dependency_package_id', 'value':dependencyPackageId});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
-		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
-	});
+	for(var i = 0; i < packageId.length; i++) {
+		for(var n = 0; n < dependencyPackageId.length; n++) {
+			var params = [];
+			params.push({'key':'update_package_id', 'value':packageId[i]});
+			params.push({'key':'add_dependency_package_id', 'value':dependencyPackageId[n]});
+			ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
+				hideDialog();
+				refreshContent();
+				emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+			});
+		}
+	}
 }
 function removeSelectedPackageDependency(checkboxName, packageId) {
 	var ids = [];
