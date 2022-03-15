@@ -966,6 +966,7 @@ function refreshDeployComputerList(groupId) {
 		divComputerList.classList.remove('disabled');
 		refreshDeployComputerAndPackages(groupId, null);
 	}
+	txtDeploySearchComputers.value = '';
 }
 function refreshDeployPackageList(groupId) {
 	var values = getSelectedCheckBoxValues('package_groups');
@@ -977,6 +978,7 @@ function refreshDeployPackageList(groupId) {
 		divPackageList.classList.remove('disabled');
 		refreshDeployComputerAndPackages(null, groupId);
 	}
+	txtDeploySearchPackages.value = '';
 }
 function refreshDeployCount() {
 	if(obj('spnSelectedComputers')) {

@@ -128,7 +128,7 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['computer_groups']; ?> (<span id='spnSelectedComputerGroups'>0</span>/<span id='spnTotalComputerGroups'>0</span>)</h3>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerGroupList, this.checked);refreshDeployComputerList()'>
-			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerGroupList, this.value)'>
+			<input type='text' id='txtDeploySearchComputerGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerGroupList, this.value)'>
 		</div>
 		<div id='divComputerGroupList' class='box'>
 			<a class='blockListItem' onclick='refreshDeployComputerList(-1)'><input type='checkbox' style='visibility:hidden' /><?php echo LANG['all_computer']; ?></a>
@@ -139,7 +139,7 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['computer']; ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</h3>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerList, this.checked)'>
-			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerList, this.value)'>
+			<input type='text' id='txtDeploySearchComputers' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerList, this.value)'>
 		</div>
 		<div id='divComputerList' class='box'>
 			<!-- filled by JS -->
@@ -153,7 +153,7 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['package_groups']; ?> (<span id='spnSelectedPackageGroups'>0</span>/<span id='spnTotalPackageGroups'>0</span>)</h3>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageGroupList, this.checked);refreshDeployPackageList()'>
-			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageGroupList, this.value)'>
+			<input type='text' id='txtDeploySearchPackageGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageGroupList, this.value)'>
 		</div>
 		<div id='divPackageGroupList' class='box'>
 			<a class='blockListItem' onclick='refreshDeployPackageList(-1)'><input type='checkbox' style='visibility:hidden' /><?php echo LANG['all_packages']; ?></a>
@@ -164,7 +164,7 @@ if(empty($default_job_container_name)) {
 		<h3><?php echo LANG['packages']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked)'>
-			<input type='text' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
+			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
 		</div>
 		<div id='divPackageList' class='box'>
 			<!-- filled by JS -->
