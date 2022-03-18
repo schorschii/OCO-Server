@@ -108,6 +108,7 @@ CREATE TABLE `computer_package` (
   `computer_id` int(11) NOT NULL,
   `package_id` int(11) NOT NULL,
   `installed_procedure` text NOT NULL,
+  `installed_by` text NOT NULL,
   `installed` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

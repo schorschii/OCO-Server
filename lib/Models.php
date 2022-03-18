@@ -6,13 +6,6 @@ class Stat {
 	public $job_containers;
 	public $reports;
 }
-class ComputerCommand {
-	public $id;
-	public $icon;
-	public $name;
-	public $description;
-	public $command;
-}
 class Computer {
 	public $id;
 	public $hostname;
@@ -109,6 +102,7 @@ class ComputerPackage {
 	public $id;
 	public $computer_id;
 	public $package_id;
+	public $installed_by;
 	public $installed_procedure;
 	public $installed;
 	// joined computer attributes
@@ -269,6 +263,7 @@ class Job {
 	public $package_version;
 	// joined job container attributes
 	public $job_container_start_time = 0;
+	public $job_container_author;
 	// constants
 	public const STATUS_WAITING_FOR_CLIENT = 0;
 	public const STATUS_FAILED = -1;

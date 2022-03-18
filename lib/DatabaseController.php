@@ -127,7 +127,7 @@ class DatabaseController {
 	}
 	public function getComputerPackage($cid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_family_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
+			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_family_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN package p ON p.id = cp.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
@@ -753,16 +753,17 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':compatible_os_version' => $newValue]);
 	}
-	public function addPackageToComputer($pid, $cid, $procedure) {
+	public function addPackageToComputer($pid, $cid, $author, $procedure) {
 		$this->dbh->beginTransaction();
 		$this->removeComputerAssignedPackageByIds($cid, $pid);
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_package (package_id, computer_id, installed_procedure)
-			VALUES (:package_id, :computer_id, :installed_procedure)'
+			'INSERT INTO computer_package (package_id, computer_id, installed_by, installed_procedure)
+			VALUES (:package_id, :computer_id, :installed_by, :installed_procedure)'
 		);
 		$this->stmt->execute([
 			':package_id' => $pid,
 			':computer_id' => $cid,
+			':installed_by' => $author,
 			':installed_procedure' => $procedure,
 		]);
 		$this->dbh->commit();
@@ -770,7 +771,7 @@ class DatabaseController {
 	}
 	public function getPackageComputer($pid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed AS "installed"
+			'SELECT cp.id AS "id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN computer c ON c.id = cp.computer_id
 			WHERE cp.package_id = :pid'
@@ -1167,7 +1168,7 @@ class DatabaseController {
 	}
 	public function getJob($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.*, jc.start_time AS "job_container_start_time" FROM job j
+			'SELECT j.*, jc.start_time AS "job_container_start_time", jc.author AS "job_container_author" FROM job j
 			INNER JOIN job_container jc ON jc.id = j.job_container_id
 			WHERE j.id = :id'
 		);
