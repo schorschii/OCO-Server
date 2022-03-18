@@ -337,7 +337,6 @@ try {
 				<tr>
 					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageAssignedComputersData, this.checked)'></th>
 					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['installation_date']; ?></th>
 				</tr>
 			</thead>
@@ -349,7 +348,6 @@ try {
 					echo '<tr>';
 					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
 					echo '<td><a '.explorerLink('views/computer-details.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
-					echo '<td title="'.htmlspecialchars($p->installed_procedure, ENT_QUOTES).'" class="monospace">'.htmlspecialchars(shorter($p->installed_procedure)).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
 					echo '</tr>';
 				}
