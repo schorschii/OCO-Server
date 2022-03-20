@@ -20,8 +20,8 @@ try {
 
 <h1><img src='img/package.dyn.svg'><span id='page-title'><?php echo LANG['package_families']; ?></span></h1>
 <div class='controls'>
-	<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_package']; ?></button>
-	<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
+	<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_package']; ?></button>
+	<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
 	<span class='fillwidth'></span>
 	<span><a <?php echo explorerLink('views/packages.php'); ?>><?php echo LANG['all_packages']; ?></a></span>
 </div>
@@ -67,7 +67,7 @@ try {
 		</table>
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedPackageFamily("package_family_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='removeSelectedPackageFamily("package_family_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 	</div>
 </div>

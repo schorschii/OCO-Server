@@ -26,7 +26,7 @@ function echoTargetPackageGroupOptions($parent=null, $indent=0) {
 			<input type='checkbox' disabled='true' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageGroupList, this.checked);refreshDeployPackageList()'>
 			<input type='text' id='txtDeploySearchPackageGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageGroupList, this.value)'>
 		</div>
-		<div id='divPackageGroupList' class='box'>
+		<div id='divPackageGroupList' class='box listSearchList'>
 			<a class='blockListItem' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?></a>
 			<?php echoTargetPackageGroupOptions(); ?>
 		</div>
@@ -37,12 +37,12 @@ function echoTargetPackageGroupOptions($parent=null, $indent=0) {
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked)'>
 			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
 		</div>
-		<div id='divPackageList' class='box'>
+		<div id='divPackageList' class='box listSearchList'>
 			<!-- filled by JS -->
 		</div>
 	</div>
 </div>
 
 <div class='controls'>
-	<button class='fullwidth' onclick='if(txtSetAsDependentPackage.value=="1") addPackageDependency(getSelectedCheckBoxValues("packages"), [txtEditPackageId.value]); else addPackageDependency([txtEditPackageId.value], getSelectedCheckBoxValues("packages"));'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+	<button class='fullwidth' onclick='if(txtSetAsDependentPackage.value=="1") addPackageDependency(getSelectedCheckBoxValues("packages"), [txtEditPackageId.value]); else addPackageDependency([txtEditPackageId.value], getSelectedCheckBoxValues("packages"));'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 </div>

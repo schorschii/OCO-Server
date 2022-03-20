@@ -27,8 +27,8 @@ try {
 ?>
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><?php echo LANG['reports']; ?></span></h1>
 	<div class='controls'>
-		<button onclick='showDialogCreateReport()' <?php if(!$permissionCreateReport) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
-		<button onclick='createReportGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
+		<button onclick='showDialogCreateReport()' <?php if(!$permissionCreateReport) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
+		<button onclick='createReportGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
 		<span class='fillwidth'></span>
 		<span><a target='_blank' href='img/dbschema.png' title='<?php echo LANG['database_schema_description']; ?>'><?php echo LANG['database_schema']; ?></a></span>
 	</div>
@@ -40,10 +40,10 @@ try {
 ?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getReportGroupBreadcrumbString($group->id)); ?></span><span id='spnReportGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
 	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
-		<button onclick='showDialogCreateReport("<?php echo $group->id; ?>")' <?php if(!$permissionCreateReport) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
-		<button onclick='createReportGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
-		<button onclick='renameReportGroup(<?php echo $group->id; ?>, spnReportGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
-		<button onclick='confirmRemoveReportGroup([<?php echo $group->id; ?>], event, spnReportGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
+		<button onclick='showDialogCreateReport("<?php echo $group->id; ?>")' <?php if(!$permissionCreateReport) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
+		<button onclick='createReportGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
+		<button onclick='renameReportGroup(<?php echo $group->id; ?>, spnReportGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
+		<button onclick='confirmRemoveReportGroup([<?php echo $group->id; ?>], event, spnReportGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>
 <?php } ?>
 
@@ -78,13 +78,13 @@ try {
 		</table>
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='moveSelectedReportToGroup("report_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
+			<button onclick='moveSelectedReportToGroup("report_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.dyn.svg'>
 				&nbsp;<?php echo LANG['move_to']; ?>
 				<select id='sltNewGroup' onclick='event.stopPropagation()'>
 					<?php echoReportGroupOptions($db); ?>
 				</select>
 			</button>
-			<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 	</div>
 </div>

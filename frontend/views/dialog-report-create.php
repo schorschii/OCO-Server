@@ -20,6 +20,6 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td><button class='fullwidth' onclick='createReport(txtCreateReportName.value, txtCreateReportNotes.value, txtCreateReportQuery.value, txtCreateReportGroup.value)'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button></td>
+		<td><button class='fullwidth' onclick='createReport(txtCreateReportName.value, txtCreateReportNotes.value, txtCreateReportQuery.value, txtCreateReportGroup.value)'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button></td>
 	</tr>
 </table>

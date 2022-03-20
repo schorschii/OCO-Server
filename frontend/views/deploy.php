@@ -130,7 +130,7 @@ if(empty($default_job_container_name)) {
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerGroupList, this.checked);refreshDeployComputerList()'>
 			<input type='text' id='txtDeploySearchComputerGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerGroupList, this.value)'>
 		</div>
-		<div id='divComputerGroupList' class='box'>
+		<div id='divComputerGroupList' class='box listSearchList'>
 			<a class='blockListItem' onclick='refreshDeployComputerList(-1)'><input type='checkbox' style='visibility:hidden' /><?php echo LANG['all_computer']; ?></a>
 			<?php echoTargetComputerGroupOptions($select_computer_group_ids); ?>
 		</div>
@@ -141,7 +141,7 @@ if(empty($default_job_container_name)) {
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerList, this.checked)'>
 			<input type='text' id='txtDeploySearchComputers' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerList, this.value)'>
 		</div>
-		<div id='divComputerList' class='box'>
+		<div id='divComputerList' class='box listSearchList'>
 			<!-- filled by JS -->
 		</div>
 	</div>
@@ -155,7 +155,7 @@ if(empty($default_job_container_name)) {
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageGroupList, this.checked);refreshDeployPackageList()'>
 			<input type='text' id='txtDeploySearchPackageGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageGroupList, this.value)'>
 		</div>
-		<div id='divPackageGroupList' class='box'>
+		<div id='divPackageGroupList' class='box listSearchList'>
 			<a class='blockListItem' onclick='refreshDeployPackageList(-1)'><input type='checkbox' style='visibility:hidden' /><?php echo LANG['all_packages']; ?></a>
 			<?php echoTargetPackageGroupOptions($select_package_group_ids); ?>
 		</div>
@@ -166,7 +166,7 @@ if(empty($default_job_container_name)) {
 			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked)'>
 			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
 		</div>
-		<div id='divPackageList' class='box'>
+		<div id='divPackageList' class='box listSearchList'>
 			<!-- filled by JS -->
 		</div>
 	</div>
@@ -177,7 +177,7 @@ if(empty($default_job_container_name)) {
 	<div><label><input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty(DEFAULTS['default-force-install-same-version'])) echo 'checked'; ?>>&nbsp;<?php echo LANG['force_installation_of_same_version']; ?></label></div>
 </div>
 <div class='controls'>
-	<button id='btnDeploy' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, getSelectedCheckBoxValues("computers"), getSelectedCheckBoxValues("computer_groups"), getSelectedCheckBoxValues("packages"), getSelectedCheckBoxValues("package_groups"), chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value, txtConstraintIpRange.value)'><img src='img/send.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button id='btnDeploy' class='primary' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, getSelectedCheckBoxValues("computers"), getSelectedCheckBoxValues("computer_groups"), getSelectedCheckBoxValues("packages"), getSelectedCheckBoxValues("package_groups"), chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value, txtConstraintIpRange.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<?php echo progressBar(100, 'prgDeploy', 'prgDeployContainer', 'prgDeployText', 'width:180px;display:none;', false, true); ?>
 </div>
 

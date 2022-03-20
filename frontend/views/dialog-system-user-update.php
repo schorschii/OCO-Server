@@ -38,6 +38,6 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td><button id='btnCreateUser' class='fullwidth' onclick='if(txtEditSystemUserNewPassword.value!=txtEditSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editSystemUser(txtEditSystemUserId.value, txtEditSystemUserUsername.value, txtEditSystemUserFullname.value, txtEditSystemUserDescription.value, txtEditSystemUserNewPassword.value, sltEditSystemUserRole.value)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['change']; ?></button></td>
+		<td><button id='btnCreateUser' class='fullwidth' onclick='if(txtEditSystemUserNewPassword.value!=txtEditSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editSystemUser(txtEditSystemUserId.value, txtEditSystemUserUsername.value, txtEditSystemUserFullname.value, txtEditSystemUserDescription.value, txtEditSystemUserNewPassword.value, sltEditSystemUserRole.value)'><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['change']; ?></button></td>
 	</tr>
 </table>

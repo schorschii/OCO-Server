@@ -19,6 +19,6 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td><button id='btnEditUser' class='fullwidth' onclick='if(txtEditOwnSystemUserNewPassword.value!=txtEditOwnSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editOwnSystemUserPassword(txtEditOwnSystemUserOldPassword.value, txtEditOwnSystemUserNewPassword.value)'><img src='img/edit.svg'>&nbsp;<?php echo LANG['change']; ?></button></td>
+		<td><button id='btnEditUser' class='fullwidth' onclick='if(txtEditOwnSystemUserNewPassword.value!=txtEditOwnSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editOwnSystemUserPassword(txtEditOwnSystemUserOldPassword.value, txtEditOwnSystemUserNewPassword.value)'><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['change']; ?></button></td>
 	</tr>
 </table>

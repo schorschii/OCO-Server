@@ -34,9 +34,9 @@ if(!empty($_GET['id'])) {
 	<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 
 	<div class='controls'>
-		<button onclick='renameJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-		<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>")' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
-		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='renameJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>")' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
+		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 
 	<div class='details-abreast margintop marginbottom'>
@@ -176,7 +176,7 @@ if(!empty($_GET['id'])) {
 		</table>
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 	</div>
 	</div>
@@ -199,7 +199,7 @@ if(!empty($_GET['id'])) {
 	<h1><img src='img/job.dyn.svg'><span id='page-title'><?php echo LANG['job_container']; ?></span></h1>
 
 	<div class='controls'>
-		<button onclick='refreshContentDeploy()' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_deployment_job']; ?></button>
+		<button onclick='refreshContentDeploy()' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_deployment_job']; ?></button>
 	</div>
 
 	<div class='details-abreast'>
@@ -259,7 +259,7 @@ if(!empty($_GET['id'])) {
 		</table>
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 	</div>
 	</div>

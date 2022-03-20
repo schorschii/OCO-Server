@@ -86,7 +86,7 @@ if(!empty($_SESSION['oco_username'])) {
 					<?php } ?>
 					<input id='txtUsername' type='text' name='username' placeholder='<?php echo LANG['username']; ?>' autofocus='true'>
 					<input id='txtPassword' type='password' name='password' placeholder='<?php echo LANG['password']; ?>'>
-					<button id='btnLogin'><?php echo LANG['log_in']; ?></button>
+					<button id='btnLogin' class='primary'><?php echo LANG['log_in']; ?></button>
 				</form>
 				<img src='img/logo.dyn.svg'>
 			<?php } ?>

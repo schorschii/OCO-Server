@@ -12,7 +12,7 @@
    width="24"
    version="1.1"
    id="svg6"
-   sodipodi:docname="copy.svg"
+   sodipodi:docname="refresh.svg"
    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
   <metadata
      id="metadata12">
@@ -25,8 +25,16 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <defs
-     id="defs10" />
+  <style>
+     path, g {
+        fill: #000000;
+     }
+     @media (prefers-color-scheme: dark) {
+        path, g {
+           fill: #E9ECEF;
+        }
+     }
+  </style>
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -36,25 +44,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1346"
-     inkscape:window-height="957"
+     inkscape:window-width="1560"
+     inkscape:window-height="945"
      id="namedview8"
      showgrid="false"
-     inkscape:zoom="9.8333333"
-     inkscape:cx="13.234581"
-     inkscape:cy="18.926502"
+     inkscape:zoom="4.9166667"
+     inkscape:cx="-65.666431"
+     inkscape:cy="21.736283"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg6" />
   <path
-     d="M 1.3220342,1.3220338 H 22.677966 V 22.677966 H 1.3220342 Z"
-     id="path2"
-     inkscape:connector-curvature="0"
-     style="fill:none;stroke-width:0.88983053" />
-  <path
-     d="M 15.559322,2.2118643 H 4.8813563 c -0.9788137,0 -1.7796611,0.8008475 -1.7796611,1.779661 V 16.449152 H 4.8813563 V 3.9915253 H 15.559322 Z m 2.669491,3.559322 H 8.4406783 c -0.9788136,0 -1.7796611,0.8008475 -1.7796611,1.7796611 V 20.008475 c 0,0.978813 0.8008475,1.779661 1.7796611,1.779661 h 9.7881347 c 0.978814,0 1.779662,-0.800848 1.779662,-1.779661 V 7.5508474 c 0,-0.9788136 -0.800848,-1.7796611 -1.779662,-1.7796611 z m 0,14.2372887 H 8.4406783 V 7.5508474 h 9.7881347 z"
-     id="path4"
-     inkscape:connector-curvature="0"
-     style="stroke-width:0.88983053" />
+     d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" />
 </svg>

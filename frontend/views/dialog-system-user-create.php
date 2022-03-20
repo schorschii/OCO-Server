@@ -37,6 +37,6 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td><button id='btnCreateUser' class='fullwidth' onclick='if(txtCreateSystemUserPasswordPassword.value!=txtCreateSystemUserConfirmPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} createSystemUser(txtCreateSystemUserUsername.value, txtCreateSystemUserFullname.value, txtCreateSystemUserDescription.value, txtCreateSystemUserPasswordPassword.value, sltCreateSystemUserRole.value)'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button></td>
+		<td><button id='btnCreateUser' class='fullwidth' onclick='if(txtCreateSystemUserPasswordPassword.value!=txtCreateSystemUserConfirmPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} createSystemUser(txtCreateSystemUserUsername.value, txtCreateSystemUserFullname.value, txtCreateSystemUserDescription.value, txtCreateSystemUserPasswordPassword.value, sltCreateSystemUserRole.value)'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button></td>
 	</tr>
 </table>

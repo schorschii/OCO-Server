@@ -31,15 +31,15 @@ try {
 	<div>
 		<h2><?php echo LANG['general']; ?></h2>
 		<div class='controls'>
-			<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-			<button onclick='window.open("payloadprovider.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.svg'>&nbsp;<?php echo LANG['download']; ?></button>
-			<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.svg'>
+			<button onclick='refreshContentDeploy([<?php echo $package->id; ?>]);' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+			<button onclick='window.open("payloadprovider.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG['download']; ?></button>
+			<button onclick='addPackageToGroup(<?php echo $package->id; ?>, sltNewPackageGroup.value)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>
 				&nbsp;<?php echo LANG['add_to']; ?>
 				<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
 					<?php echoPackageGroupOptions($db); ?>
 				</select>
 			</button>
-			<button onclick='currentExplorerContentUrl="views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='currentExplorerContentUrl="views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>");confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 		<table class='list metadata'>
 			<tr>
@@ -209,8 +209,8 @@ try {
 	<div>
 		<h2><?php echo LANG['other_packages_from_this_family']; ?></h2>
 		<div class='controls'>
-			<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
-			<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.svg'>&nbsp;<?php echo LANG['details']; ?></button>
+			<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageDescription.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
+			<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.dyn.svg'>&nbsp;<?php echo LANG['details']; ?></button>
 		</div>
 		<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $package->package_family_id; ?>, this.files[0])'></input>
 		<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
@@ -281,10 +281,10 @@ try {
 			</tfoot>
 		</table>
 		<div class='controls'>
-			<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+			<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 		</div>
 	</div>
 
@@ -321,10 +321,10 @@ try {
 			</tfoot>
 		</table>
 		<div class='controls'>
-			<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+			<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 		</div>
 	</div>
 </div>
@@ -366,15 +366,15 @@ try {
 		</table>
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-			<button onclick='addSelectedComputerToGroup("package_id[]", sltNewComputerGroup.value, "computer_id")'><img src='img/folder-insert-into.svg'>
+			<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+			<button onclick='addSelectedComputerToGroup("package_id[]", sltNewComputerGroup.value, "computer_id")'><img src='img/folder-insert-into.dyn.svg'>
 				&nbsp;<?php echo LANG['add_to']; ?>
 				<select id='sltNewComputerGroup' onclick='event.stopPropagation()'>
 					<?php echoComputerGroupOptions($db); ?>
 				</select>
 			</button>
-			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-			<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+			<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 		</div>
 	</div>
 

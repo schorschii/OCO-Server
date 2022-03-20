@@ -52,9 +52,9 @@ require_once('../session.php');
 	<div>
 		<h2><?php echo LANG['user_settings']; ?></h2>
 		<?php if(!$currentSystemUser->ldap) { ?>
-			<button onclick='showDialogEditOwnSystemUserPassword()'><img src='img/password.svg'>&nbsp;<?php echo LANG['change_password']; ?></button>
+			<button onclick='showDialogEditOwnSystemUserPassword()'><img src='img/password.dyn.svg'>&nbsp;<?php echo LANG['change_password']; ?></button>
 		<?php } ?>
-		<button onclick='askNotificationPermission()'><img src='img/notification.svg'>&nbsp;<?php echo LANG['enable_notifications']; ?></button>
+		<button onclick='askNotificationPermission()'><img src='img/notification.dyn.svg'>&nbsp;<?php echo LANG['enable_notifications']; ?></button>
 	</div>
 </div>
 
@@ -87,7 +87,7 @@ require_once('../session.php');
 			echo "<td id='spnSystemUserFullname".$u->id."'>".htmlspecialchars($u->fullname)."</td>";
 			echo "<td id='spnSystemUserRole".$u->id."' rawvalue='".$u->system_user_role_id."'>".htmlspecialchars($u->system_user_role_name)."</td>";
 			echo "<td id='spnSystemUserDescription".$u->id."'>".htmlspecialchars($u->description)."</td>";
-			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUsername".$u->id.".innerText, spnSystemUserFullname".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"), ".$u->ldap.")'><img src='img/edit.svg'></button></td>";
+			echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUsername".$u->id.".innerText, spnSystemUserFullname".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"), ".$u->ldap.")'><img src='img/edit.dyn.svg'></button></td>";
 			echo "</tr>";
 		}
 		?>
@@ -102,12 +102,12 @@ require_once('../session.php');
 		</table>
 
 		<div class='controls'>
-			<button onclick='showDialogCreateSystemUser()'><img src='img/add.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+			<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 			<span class='vl'></span>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
-			<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
-			<button onclick='confirmRemoveSelectedSystemUser("system_user_id[]")'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.dyn.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
+			<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.dyn.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
+			<button onclick='confirmRemoveSelectedSystemUser("system_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 	</div>
 </div>

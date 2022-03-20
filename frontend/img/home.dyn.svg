@@ -12,8 +12,8 @@
    width="24"
    version="1.1"
    id="svg6"
-   sodipodi:docname="folder-insert-into.svg"
-   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+   sodipodi:docname="home.light.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
   <metadata
      id="metadata12">
     <rdf:RDF>
@@ -25,8 +25,16 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <defs
-     id="defs10" />
+  <style>
+     path, g {
+        fill: #000000;
+     }
+     @media (prefers-color-scheme: dark) {
+        path, g {
+           fill: #E9ECEF;
+        }
+     }
+  </style>
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -36,24 +44,17 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1391"
-     inkscape:window-height="799"
+     inkscape:window-width="1469"
+     inkscape:window-height="958"
      id="namedview8"
      showgrid="false"
-     inkscape:zoom="13.906433"
-     inkscape:cx="0.85044674"
-     inkscape:cy="18.195613"
+     inkscape:zoom="9.8333333"
+     inkscape:cx="-15.152542"
+     inkscape:cy="12"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg6" />
   <path
-     d="m 9.17,8 2,2 H 20 V 20 H 4 V 8 H 9.17 M 10,6 H 4 C 2.9,6 2.01,6.9 2.01,8 L 2,20 c 0,1.1 0.9,2 2,2 h 16 c 1.1,0 2,-0.9 2,-2 V 10 C 22,8.9 21.1,8 20,8 h -8 z"
-     id="path4"
-     inkscape:connector-curvature="0" />
-  <path
-     inkscape:connector-curvature="0"
-     d="m 12.228564,1.4176205 4.424727,4.4247272 4.424726,-4.4247272 z"
-     id="path840"
-     style="stroke-width:0.88494533" />
+     d="M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z" />
 </svg>

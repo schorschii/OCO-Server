@@ -28,8 +28,8 @@ try {
 <div class='details-header'>
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><span id='spnReportName'><?php echo htmlspecialchars($report->name); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='showDialogEditReport("<?php echo $report->id; ?>", spnReportName.innerText, spnReportNotes.innerText, spnReportQuery.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
-		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='showDialogEditReport("<?php echo $report->id; ?>", spnReportName.innerText, spnReportNotes.innerText, spnReportQuery.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
+		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 	</div>
 </div>
 
@@ -120,28 +120,28 @@ try {
 		<?php if($hasComputerIds) { ?>
 			<div class='controls'>
 				<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-				<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-				<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-				<button onclick='addSelectedComputerToGroup("id[]", sltNewComputerGroup.value, "computer_id")'><img src='img/folder-insert-into.svg'>
+				<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+				<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
+				<button onclick='addSelectedComputerToGroup("id[]", sltNewComputerGroup.value, "computer_id")'><img src='img/folder-insert-into.dyn.svg'>
 					&nbsp;<?php echo LANG['add_to']; ?>
 					<select id='sltNewComputerGroup' onclick='event.stopPropagation()'>
 						<?php echoComputerGroupOptions($db); ?>
 					</select>
 				</button>
-				<button onclick='removeSelectedComputer("id[]", "computer_id", event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+				<button onclick='removeSelectedComputer("id[]", "computer_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 			</div>
 		<?php } ?>
 		<?php if($hasPackageIds) { ?>
 			<div class='controls'>
 				<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-				<button onclick='deploySelectedPackage("id[]", "package_id")'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-				<button onclick='addSelectedPackageToGroup("id[]", sltNewPackageGroup.value, "package_id")'><img src='img/folder-insert-into.svg'>
+				<button onclick='deploySelectedPackage("id[]", "package_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+				<button onclick='addSelectedPackageToGroup("id[]", sltNewPackageGroup.value, "package_id")'><img src='img/folder-insert-into.dyn.svg'>
 					&nbsp;<?php echo LANG['add_to']; ?>
 					<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
 						<?php echoPackageGroupOptions($db); ?>
 					</select>
 				</button>
-				<button onclick='removeSelectedPackage("id[]", "package_id", event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+				<button onclick='removeSelectedPackage("id[]", "package_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 			</div>
 		<?php } ?>
 

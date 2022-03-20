@@ -22,16 +22,16 @@ try {
 <div class='details-header'>
 	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline() ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-		<button onclick='renameComputer(<?php echo $computer->id; ?>, spnComputerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-		<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.svg'>
+		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
+		<button onclick='renameComputer(<?php echo $computer->id; ?>, spnComputerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='addComputerToGroup(<?php echo $computer->id; ?>, sltNewGroup.value)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>
 			&nbsp;<?php echo LANG['add_to']; ?>
 			<select id='sltNewGroup' onclick='event.stopPropagation()'>
 				<?php echoComputerGroupOptions($db); ?>
 			</select>
 		</button>
-		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		<?php
 		if(count(COMPUTER_COMMANDS) > 0) echo "<span class='vl'></span>";
 		foreach(COMPUTER_COMMANDS as $c) {
@@ -361,8 +361,8 @@ try {
 		</table>
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-			<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+			<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 		</div>
 	</div>
 

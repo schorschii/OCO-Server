@@ -49,6 +49,6 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td><button class='fullwidth' onclick='renewFailedJobsInContainer(txtRenewJobContainerId.value, txtRenewJobContainerName.value, txtRenewJobContainerNotes.value, txtRenewJobContainerStartDate.value+" "+txtRenewJobContainerStartTime.value, (txtRenewJobContainerEndDate.value+" "+txtRenewJobContainerEndTime.value).trim(), chkRenewWol.checked, chkRenewShutdownWakedAfterCompletion.checked, sldRenewPriority.value)'><img src='img/refresh.svg'>&nbsp;<?php echo LANG['renew']; ?></button></td>
+		<td><button class='fullwidth' onclick='renewFailedJobsInContainer(txtRenewJobContainerId.value, txtRenewJobContainerName.value, txtRenewJobContainerNotes.value, txtRenewJobContainerStartDate.value+" "+txtRenewJobContainerStartTime.value, (txtRenewJobContainerEndDate.value+" "+txtRenewJobContainerEndTime.value).trim(), chkRenewWol.checked, chkRenewShutdownWakedAfterCompletion.checked, sldRenewPriority.value)'><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG['renew']; ?></button></td>
 	</tr>
 </table>

@@ -33,10 +33,10 @@ try {
 ?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id)); ?></span><span id='spnPackageGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
 	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
-		<button onclick='createPackageGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
-		<button onclick='refreshContentDeploy([],[<?php echo $group->id; ?>])' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy_all']; ?></button>
-		<button onclick='renamePackageGroup(<?php echo $group->id; ?>, spnPackageGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
-		<button onclick='confirmRemovePackageGroup([<?php echo $group->id; ?>], event, spnPackageGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
+		<button onclick='createPackageGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
+		<button onclick='refreshContentDeploy([],[<?php echo $group->id; ?>])' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy_all']; ?></button>
+		<button onclick='renamePackageGroup(<?php echo $group->id; ?>, spnPackageGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
+		<button onclick='confirmRemovePackageGroup([<?php echo $group->id; ?>], event, spnPackageGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>
 <?php } elseif($family !== null) {
 	$permissionCreate = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($family, PermissionManager::METHOD_CREATE, false);
@@ -45,14 +45,14 @@ try {
 ?>
 	<h1><img src='<?php echo $family->getIcon(); ?>'><span id='page-title'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($family->name); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentPackageNew("<?php echo htmlspecialchars($family->name,ENT_QUOTES); ?>")' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
-		<button onclick='renamePackageFamily(<?php echo $family->id; ?>, spnPackageFamilyName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-		<button onclick='editPackageFamilyNotes(<?php echo $family->id; ?>, spnPackageFamilyNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.svg'>&nbsp;<?php echo LANG['edit_description']; ?></button>
-		<button class='<?php echo (!empty($family->icon)?'nomarginright':''); ?>' onclick='fleIcon.click()' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-add.svg'>&nbsp;<?php echo LANG['change_icon']; ?></button>
+		<button onclick='refreshContentPackageNew("<?php echo htmlspecialchars($family->name,ENT_QUOTES); ?>")' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_version']; ?></button>
+		<button onclick='renamePackageFamily(<?php echo $family->id; ?>, spnPackageFamilyName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='editPackageFamilyNotes(<?php echo $family->id; ?>, spnPackageFamilyNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['edit_description']; ?></button>
+		<button class='<?php echo (!empty($family->icon)?'nomarginright':''); ?>' onclick='fleIcon.click()' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-add.dyn.svg'>&nbsp;<?php echo LANG['change_icon']; ?></button>
 		<?php if(!empty($family->icon)) { ?>
-			<button onclick='removePackageFamilyIcon(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-remove.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
+			<button onclick='removePackageFamilyIcon(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-remove.dyn.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
 		<?php } ?>
-		<button onclick='currentExplorerContentUrl="views/package-families.php";confirmRemovePackageFamily([<?php echo htmlspecialchars($family->id,ENT_QUOTES); ?>], spnPackageFamilyName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete_package_family']; ?></button>
+		<button onclick='currentExplorerContentUrl="views/package-families.php";confirmRemovePackageFamily([<?php echo htmlspecialchars($family->id,ENT_QUOTES); ?>], spnPackageFamilyName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_package_family']; ?></button>
 		<span class='fillwidth'></span>
 		<span><a <?php echo explorerLink('views/package-families.php'); ?>><?php echo LANG['package_families']; ?></a></span>
 	</div>
@@ -68,8 +68,8 @@ try {
 ?>
 	<h1><img src='img/package.dyn.svg'><span id='page-title'><?php echo LANG['complete_package_library']; ?></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.svg'>&nbsp;<?php echo LANG['new_package']; ?></button>
-		<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
+		<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_package']; ?></button>
+		<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
 		<span class='fillwidth'></span>
 		<span><a <?php echo explorerLink('views/package-families.php'); ?>><?php echo LANG['package_families']; ?></a></span>
 	</div>
@@ -131,17 +131,17 @@ try {
 		</table>
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-			<button onclick='addSelectedPackageToGroup("package_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.svg'>
+			<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+			<button onclick='addSelectedPackageToGroup("package_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.dyn.svg'>
 				&nbsp;<?php echo LANG['add_to']; ?>
 				<select id='sltNewGroup' onclick='event.stopPropagation()'>
 					<?php echoPackageGroupOptions($db); ?>
 				</select>
 			</button>
 			<?php if($group !== null) { ?>
-				<button onclick='removeSelectedPackageFromGroup("package_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
+				<button onclick='removeSelectedPackageFromGroup("package_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
 			<?php } ?>
-			<button onclick='removeSelectedPackage("package_id[]", null, event)'><img src='img/delete.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='removeSelectedPackage("package_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 	</div>
 </div>

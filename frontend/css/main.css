@@ -64,6 +64,7 @@ h3 {
 	border: none;
 	box-shadow: none;
 	color: #B3B9BE;
+	text-transform: none;
 }
 #header button.active * {
 	filter: drop-shadow(0px 0px 4px white);
@@ -126,7 +127,7 @@ h3 {
 	padding: 10px;
 	color: black;
 	background-color: white;
-	box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+	box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
 	border-radius: 4px;
 	z-index: 99;
 }
@@ -166,7 +167,7 @@ h3 {
 #login-form button {
 	font-weight: bold;
 }
-#login-form img {
+#login-form > img {
 	opacity: 0.2;
 }
 #login-bg {
@@ -547,46 +548,43 @@ table.aligned tr > *:last-child {
 	width: 100%;
 	resize: vertical;
 }
-table.list, .boxshadow,
-input:not([type=range]):not([type=radio]):not([type=checkbox]), select, button, textarea {
+table.list, .boxshadow {
 	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.08);
+}
+
+/*** INPUTS & BUTTONS ***/
+.box {
+	box-sizing: border-box;
+	background-color: white;
+	padding: 10px;
+	border: 2px solid #DBDBDB;
+	border-radius: 3px;
+}
+.box > *:first-child {
+	margin-top: 0px;
+}
+.box > *:last-child {
+	margin-bottom: 0px;
 }
 input, select, button, textarea {
 	box-sizing: border-box;
 	font-family: inherit;
 	font-size: inherit;
-	border: 1px solid rgba(0,0,0,0.2);
-	border-radius: 2px;
+	border: 2px solid #DBDBDB;
+	border-radius: 3px;
+	padding: 5px;
+	outline: none;
 }
 input, select, textarea, button {
-	padding: 4px;
 	background-color: white;
+}
+input:focus, select:focus, textarea:focus {
+	border-color: #C4C4C4;
 }
 input:disabled, select:disabled, textarea:disabled, .disabled,
 input:not([type=file]):read-only, textarea:read-only {
 	background-color: rgb(240, 240, 240);
 	background-image: repeating-linear-gradient(45deg, rgb(255,255,255), rgb(255,255,255) 10px, rgb(240, 240, 240) 10px, rgb(240, 240, 240) 20px);
-}
-button {
-	cursor: pointer;
-	background-color: rgb(238,238,238);
-	color: black;
-}
-button:disabled {
-	cursor: not-allowed;
-	color: rgba(0,0,0,0.2);
-}
-button:disabled > img {
-	opacity: 0.2;
-}
-button > img {
-	vertical-align: middle;
-}
-button > select {
-	padding: 1px;
-}
-button#btnChangePassword > input {
-	width: 140px;
 }
 input.tableSearch {
 	width: 100%;
@@ -606,20 +604,51 @@ table.form th:not(:first-child) {
 table.form tr:not(.nospace) th, table.form tr:not(.nospace) td {
 	padding-bottom: 10px;
 }
-button:focus, button:hover,
-input:not([type=range]):not([type=radio]):not([type=checkbox]):focus, input:not([type=range]):not([type=radio]):not([type=checkbox]):hover,
-textarea:focus, textarea:hover,
-select:focus, select:hover {
-	outline: none;
-	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15);
+/* default button */
+button {
+	cursor: pointer;
+	color: #4C4C4C;
+	background-color: #E4E4E4;
+	letter-spacing: 0.2px;
+	border: none;
+	text-transform: uppercase;
+	text-decoration: none;
+	padding: 8px;
+	border: 1px solid transparent;
 }
-button:active,
-input:not([type=range]):not([type=radio]):not([type=checkbox]):active,
-textarea:active,
-select:active {
-	outline: none;
-	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.15) inset;
+button:hover,
+button:focus {
+	background-color: #EDEDED;
 }
+button:active:not(:disabled) {
+	box-shadow: 0px 0px 10px rgba(0,0,0,0.4) inset;
+}
+button:disabled {
+	color: #C0C0C0 !important;
+	cursor: not-allowed !important;
+	background-color: #EDEDED !important;
+}
+button:disabled > img {
+	opacity: 0.2;
+}
+button > img {
+	vertical-align: middle;
+	margin-bottom: 1px;
+}
+button > select {
+	padding: 1px;
+}
+/* primary button */
+button.primary {
+	color: white;
+	font-weight: bold;
+	background-color: #007CBB;
+}
+button.primary:hover,
+button.primary:focus {
+	background-color: #004a70;
+}
+
 .drag {
 	text-align: center;
 	cursor: move;
@@ -710,8 +739,8 @@ table.metadata tr th:first-child {
 }
 
 table.list .sortbutton {
-	width:100%;
-	height:100%;
+	width: 100%;
+	height: 100%;
 	border: none;
 	background-color: transparent;
 	font: inherit;
@@ -720,6 +749,7 @@ table.list .sortbutton {
 	padding: 0;
 	cursor: pointer;
 	box-shadow: none;
+	text-transform: none;
 }
 table.list .sortsymbol::after {
 	display: inline-block;
@@ -763,7 +793,7 @@ table.fixed {
 	padding: 0px;
 	border: none;
 	background: transparent;
-	background-color: transparent;
+	background-color: transparent !important;
 	box-shadow: none;
 }
 .subbuttons .subbutton {
@@ -782,6 +812,10 @@ a.subbuttons > button {
 }
 .subbuttons:hover > button,
 .subbuttons:hover .subbutton {
+	opacity: 0.85;
+}
+.subbuttons:hover > button:hover,
+.subbuttons:hover .subbutton:hover {
 	opacity: 1;
 }
 .subbuttons:hover .subbutton {
@@ -849,6 +883,7 @@ div.details-abreast > div > table {
 .vl {
 	display: inline-block;
 	width: 2px;
+	min-width: 2px;
 	background-color: #DDDDDD;
 }
 .fullwidth {
@@ -965,6 +1000,11 @@ div.details-abreast > div > table {
 #divPackageList input[type=checkbox], #divPackageGroupList input[type=checkbox] {
 	margin-right: 8px;
 }
+
+.bold {
+	font-weight: bold;
+}
+
 .listSearch {
 	position: relative;
 }
@@ -977,26 +1017,14 @@ div.details-abreast > div > table {
 	display: block;
 	padding-left: 27px;
 	width: 100%;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
 }
-.box {
-	box-sizing: border-box;
-	background-color: white;
-	border-radius: 2px;
-	border: 1px solid rgba(0, 0, 0, 0.2);
-	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.08);
-	padding: 10px;
+.box.listSearchList {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-top-width: 0px;
 }
-.box > *:first-child {
-	margin-top: 0px;
-}
-.box > *:last-child {
-	margin-bottom: 0px;
-}
-
-.bold {
-	font-weight: bold;
-}
-
 .inputwithbutton {
 	position: relative;
 }
@@ -1093,9 +1121,12 @@ div.details-abreast > div > table {
 }
 
 @media (prefers-color-scheme: dark) {
-	html, #explorer-tree, #explorer-content, #login-form,
-	#dialog-container #dialog-box, #header #search-results {
-		background-color: #1B2A32;
+	html, #explorer-content {
+		background-color: #0d1117;
+	}
+	#explorer-tree, #login-form, #dialog-container #dialog-box, #header #search-results {
+		background-color: #161b22;
+		border-color: rgba(255,255,255,0.1);
 	}
 	#dialog-container.active {
 		background-color: rgba(0,0,0,0.45);
@@ -1115,11 +1146,11 @@ div.details-abreast > div > table {
 	.blockListItem:focus,
 	.blockListItem:hover,
 	.blockListItem:active {
-		background-color: #324F61;
+		background-color: #30363d;
 	}
 	#header input:focus {
 		color: white;
-		background-color: #1B2A32;
+		background-color: #141414;
 	}
 	#header input:focus::placeholder {
 		color: gray;
@@ -1137,29 +1168,28 @@ div.details-abreast > div > table {
 		color: #E9ECEF;
 	}
 	code.block {
-		border: 1px solid #485764;
+		border: 1px solid rgba(255,255,255,0.1);
 	}
-	table.list, code {
-		background-color: #22343C;
+	table.list, code, .box {
+		background-color: #161b22;
 	}
 	table.list tr th, table.list tr td {
-		border-bottom: 1px solid #485764;
+		border-bottom: 1px solid rgba(255,255,255,0.1);
 	}
 	table.list tr:first-child th,
 	table.list tr:first-child td {
-		border-top: 1px solid #485764;
+		border-top: 1px solid rgba(255,255,255,0.1);
 	}
 	table.list tr th:first-child,
 	table.list tr td:first-child {
-		border-left: 1px solid #485764;
+		border-left: 1px solid rgba(255,255,255,0.1);
 	}
 	table.list tr th:last-child,
 	table.list tr td:last-child {
-		border-right: 1px solid #485764;
+		border-right: 1px solid rgba(255,255,255,0.1);
 	}
 	.box {
-		background-color: #22343C;
-		border: 1px solid #485764;
+		border: 2px solid rgba(255,255,255,0.1);
 	}
 	input:not([type=range]):not([type=radio]):not([type=checkbox]), select, textarea {
 		color: white;
@@ -1186,8 +1216,25 @@ div.details-abreast > div > table {
 		border-bottom: 1px solid rgba(255,255,255,0.6);
 		box-shadow: none;
 	}
-	button > select {
-		color: black;
+	button {
+		color: white;
+		background-color: #21262d;
+		border: 1px solid rgba(255,255,255,0.1);
+	}
+	button.primary {
+		background-color: #006193;
+	}
+	button.primary:hover,
+	button.primary:focus {
+		background-color: #004a70;
+	}
+	button:hover,
+	button:focus {
+		background-color: #30363d;
+	}
+	button:disabled {
+		color: #484f58 !important;
+		background-color: #21262d !important;
 	}
 	.progressbar {
 		background-color: #324650;
@@ -1214,6 +1261,9 @@ div.details-abreast > div > table {
 		background: #882d31;
 		color: #e9ecef;
 		border: 1px solid transparent
+	}
+	.vl {
+		background-color: #515253;
 	}
 }
 
