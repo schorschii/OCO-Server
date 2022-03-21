@@ -614,7 +614,7 @@ button {
 	text-transform: uppercase;
 	text-decoration: none;
 	padding: 8px;
-	border: 1px solid transparent;
+	border: 1px solid rgba(0,0,0,0.1);
 }
 button:hover,
 button:focus {
