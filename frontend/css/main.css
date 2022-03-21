@@ -791,7 +791,7 @@ table.fixed {
 	border: none;
 	background: transparent;
 	background-color: transparent !important;
-	box-shadow: none;
+	box-shadow: none !important;
 }
 .subbuttons .subbutton {
 	opacity: 0;
