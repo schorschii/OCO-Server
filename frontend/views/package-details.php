@@ -337,7 +337,7 @@ try {
 				<tr>
 					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageAssignedComputersData, this.checked)'></th>
 					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['author']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['initiator']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['installation_date']; ?></th>
 				</tr>
 			</thead>

@@ -370,6 +370,7 @@ const LANG = [
 	'uninstallation' => 'Deinstallation',
 	'package_content' => 'Paketinhalt',
 	'toggle_multi_line' => 'Mehrzeiliges Textfeld umschalten',
+	'initiator' => 'Initiator',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
