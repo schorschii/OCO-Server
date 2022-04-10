@@ -36,7 +36,7 @@ if(!empty($_GET['view'])) {
 		PS. Obacht! Heute ist der <?php echo date("N"); ?>. Tag der Woche und die Woche zieht sich schon wieder!!!
 	-->
 </head>
-<body onkeydown='handleRefresh(event)'>
+<body>
 
 <div id='container'>
 
@@ -47,9 +47,9 @@ if(!empty($_GET['view'])) {
 			<span class='separator space'></span>
 		</span>
 		<span class='search'>
-			<input type='text' autocomplete='new-password' placeholder='<?php echo LANG['search_computer_packages_job_container']; ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults()} else if(event.keyCode==40) {focusNextSearchResult()} else {doSearch(this.value)}' onpaste='doSearch(this.value)'></input>
+			<input type='text' id='txtGlobalSearch' autocomplete='new-password' placeholder='<?php echo LANG['search_computer_packages_job_container']; ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults()} else if(event.keyCode==40) {focusNextSearchResult()} else {doSearch(this.value)}' onpaste='doSearch(this.value)'></input>
 			<div id='search-glass'></div>
-			<div id='search-results' style='display:none'>
+			<div id='search-results'>
 				<div class='search-result'>
 					<?php echo LANG['no_search_results']; ?>
 				</div>

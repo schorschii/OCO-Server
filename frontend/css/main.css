@@ -120,6 +120,7 @@ h3 {
 	background-color: gray;
 }
 #header #search-results {
+	display: none;
 	position: absolute;
 	top: 40px;
 	left: 0px;
@@ -127,9 +128,12 @@ h3 {
 	padding: 10px;
 	color: black;
 	background-color: white;
-	box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+	box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
 	border-radius: 4px;
 	z-index: 99;
+}
+#header #search-results.visible {
+	display: block;
 }
 
 #login {
@@ -200,6 +204,9 @@ h3 {
 	flex-direction: row;
 	align-items: stretch;
 	height: calc(100% - 62px);
+}
+#explorer.diffuse {
+	opacity: 0.4;
 }
 #explorer.nosidebar #explorer-tree {
 	display: none;
