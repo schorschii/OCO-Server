@@ -881,6 +881,7 @@ div.details-abreast > div > table {
 	display: inline-block;
 	width: 2px;
 	min-width: 2px;
+	border-radius: 2px;
 	background-color: #DDDDDD;
 }
 .fullwidth {
@@ -1260,7 +1261,7 @@ div.details-abreast > div > table {
 		border: 1px solid transparent
 	}
 	.vl {
-		background-color: #515253;
+		background-color: rgba(255,255,255,0.2);
 	}
 }
 
