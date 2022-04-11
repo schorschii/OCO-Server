@@ -494,6 +494,9 @@ body.loading2 #loader-container {
 	align-items: stretch;
 	justify-content: space-between;
 }
+.controls.right {
+	justify-content: right;
+}
 .controls > * {
 	display: inline-block;
 	vertical-align: middle;

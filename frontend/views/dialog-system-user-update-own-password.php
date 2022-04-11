@@ -17,8 +17,9 @@ require_once('../session.php');
 		<th><?php echo LANG['confirm_password']; ?></th>
 		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtEditOwnSystemUserConfirmNewPassword'></input></td>
 	</tr>
-	<tr>
-		<th></th>
-		<td><button id='btnEditUser' class='fullwidth' onclick='if(txtEditOwnSystemUserNewPassword.value!=txtEditOwnSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editOwnSystemUserPassword(txtEditOwnSystemUserOldPassword.value, txtEditOwnSystemUserNewPassword.value)'><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['change']; ?></button></td>
-	</tr>
 </table>
+
+<div class='controls right'>
+	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
+	<button id='btnEditUser' class='primary' onclick='if(txtEditOwnSystemUserNewPassword.value!=txtEditOwnSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editOwnSystemUserPassword(txtEditOwnSystemUserOldPassword.value, txtEditOwnSystemUserNewPassword.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['change']; ?></button>
+</div>

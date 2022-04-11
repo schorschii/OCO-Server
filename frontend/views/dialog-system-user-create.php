@@ -35,8 +35,9 @@ require_once('../session.php');
 		<th><?php echo LANG['confirm_password']; ?></th>
 		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtCreateSystemUserConfirmPassword'></input></td>
 	</tr>
-	<tr>
-		<th></th>
-		<td><button id='btnCreateUser' class='fullwidth' onclick='if(txtCreateSystemUserPasswordPassword.value!=txtCreateSystemUserConfirmPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} createSystemUser(txtCreateSystemUserUsername.value, txtCreateSystemUserFullname.value, txtCreateSystemUserDescription.value, txtCreateSystemUserPasswordPassword.value, sltCreateSystemUserRole.value)'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button></td>
-	</tr>
 </table>
+
+<div class='controls right'>
+	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
+	<button id='btnCreateUser' class='primary' onclick='if(txtCreateSystemUserPasswordPassword.value!=txtCreateSystemUserConfirmPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} createSystemUser(txtCreateSystemUserUsername.value, txtCreateSystemUserFullname.value, txtCreateSystemUserDescription.value, txtCreateSystemUserPasswordPassword.value, sltCreateSystemUserRole.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+</div>

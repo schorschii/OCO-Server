@@ -859,13 +859,13 @@ function addPackageToGroup(packageId, groupId) {
 	});
 }
 function showDialogAddPackageDependency(id) {
-	showDialogAjax(L__ADD_DEPENDENCY, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__ADD_DEPENDENCY, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditPackageId.value = id;
 		refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
 	});
 }
 function showDialogAddDependentPackage(id) {
-	showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtSetAsDependentPackage.value = "1";
 		txtEditPackageId.value = id;
 		refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
@@ -1396,7 +1396,7 @@ function deploy(title, start, end, description, computers, computerGroups, packa
 	};
 }
 function showDialogUninstall() {
-	showDialogAjax(L__UNINSTALL_PACKAGES, "views/dialog-uninstall.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+	showDialogAjax(L__UNINSTALL_PACKAGES, "views/dialog-uninstall.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function uninstall(checkboxName, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, restartTimeout, priority) {
 	var ids = [];
@@ -1452,7 +1452,7 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 	}
 }
 function showDialogRenewFailedJobs(id, defaultName) {
-	showDialogAjax(L__RENEW_FAILED_JOBS, "views/dialog-jobs-renew.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__RENEW_FAILED_JOBS, "views/dialog-jobs-renew.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtRenewJobContainerId.value = id;
 		txtRenewJobContainerName.value = defaultName;
 	});
@@ -1537,7 +1537,7 @@ function confirmRemoveReportGroup(ids, event=null, infoText='') {
 	}
 }
 function showDialogCreateReport(group_id=0) {
-	showDialogAjax(L__CREATE_REPORT, "views/dialog-report-create.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(L__CREATE_REPORT, "views/dialog-report-create.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtCreateReportGroup.value = group_id
 	});
 }
@@ -1555,7 +1555,7 @@ function createReport(name, notes, query, group_id=0) {
 	});
 }
 function showDialogEditReport(id, name, notes, query) {
-	showDialogAjax(L__EDIT_REPORT, "views/dialog-report-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(L__EDIT_REPORT, "views/dialog-report-update.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditReportId.value = id;
 		txtEditReportName.value = name;
 		txtEditReportNotes.value = notes;
@@ -1699,7 +1699,7 @@ function unlockSelectedSystemUser(checkboxName) {
 	});
 }
 function showDialogCreateSystemUser() {
-	showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-create.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)
+	showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-create.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO)
 }
 function createSystemUser(username, fullname, description, password, roleId) {
 	var params = [];
@@ -1719,7 +1719,7 @@ function showDialogEditOwnSystemUserPassword() {
 	showDialogAjax(
 		L__CHANGE_PASSWORD,
 		"views/dialog-system-user-update-own-password.php",
-		DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO
+		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO
 	);
 }
 function editOwnSystemUserPassword(oldPassword, newPassword) {
@@ -1734,7 +1734,7 @@ function editOwnSystemUserPassword(oldPassword, newPassword) {
 	});
 }
 function showDialogEditSystemUser(id, username, fullname, description, roleId, ldap) {
-	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditSystemUserId.value = id;
 		txtEditSystemUserUsername.value = username;
 		txtEditSystemUserFullname.value = fullname;

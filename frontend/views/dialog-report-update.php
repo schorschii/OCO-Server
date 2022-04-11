@@ -18,8 +18,9 @@ require_once('../session.php');
 		<th><?php echo LANG['query']; ?></th>
 		<td><textarea class='fullwidth monospace' rows='4' id='txtEditReportQuery'></textarea></td>
 	</tr>
-	<tr>
-		<th></th>
-		<td><button class='fullwidth' onclick='editReport(txtEditReportId.value, txtEditReportName.value, txtEditReportNotes.value, txtEditReportQuery.value)'><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['edit']; ?></button></td>
-	</tr>
 </table>
+
+<div class='controls right'>
+	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
+	<button class='primary' onclick='editReport(txtEditReportId.value, txtEditReportName.value, txtEditReportNotes.value, txtEditReportQuery.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
+</div>

@@ -43,6 +43,7 @@ function echoTargetPackageGroupOptions($parent=null, $indent=0) {
 	</div>
 </div>
 
-<div class='controls'>
-	<button class='fullwidth' onclick='if(txtSetAsDependentPackage.value=="1") addPackageDependency(getSelectedCheckBoxValues("packages"), [txtEditPackageId.value]); else addPackageDependency([txtEditPackageId.value], getSelectedCheckBoxValues("packages"));'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+<div class='controls right'>
+	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
+	<button class='primary' onclick='if(txtSetAsDependentPackage.value=="1") addPackageDependency(getSelectedCheckBoxValues("packages"), [txtEditPackageId.value]); else addPackageDependency([txtEditPackageId.value], getSelectedCheckBoxValues("packages"));'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 </div>

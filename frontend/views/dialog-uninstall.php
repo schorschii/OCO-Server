@@ -55,8 +55,9 @@ require_once('../session.php');
 			</div>
 		</td>
 	</tr>
-	<tr>
-		<th></th>
-		<td><button class='fullwidth' onclick='uninstall("package_id[]", txtUninstallJobContainerName.value, txtUninstallJobContainerNotes.value, txtUninstallJobContainerStartDate.value+" "+txtUninstallJobContainerStartTime.value, (txtUninstallJobContainerEndDate.value+" "+txtUninstallJobContainerEndTime.value).trim(), chkUninstallWol.checked, chkUninstallShutdownWakedAfterCompletion.checked, txtUninstallRestartTimeout.value, sldUninstallPriority.value)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button></td>
-	</tr>
 </table>
+
+<div class='controls right'>
+	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
+	<button class='primary' onclick='uninstall("package_id[]", txtUninstallJobContainerName.value, txtUninstallJobContainerNotes.value, txtUninstallJobContainerStartDate.value+" "+txtUninstallJobContainerStartTime.value, (txtUninstallJobContainerEndDate.value+" "+txtUninstallJobContainerEndTime.value).trim(), chkUninstallWol.checked, chkUninstallShutdownWakedAfterCompletion.checked, txtUninstallRestartTimeout.value, sldUninstallPriority.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button>
+</div>
