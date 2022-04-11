@@ -206,7 +206,7 @@ h3 {
 	height: calc(100% - 62px);
 }
 #explorer.diffuse {
-	opacity: 0.4;
+	opacity: 0.5;
 }
 #explorer.nosidebar #explorer-tree {
 	display: none;

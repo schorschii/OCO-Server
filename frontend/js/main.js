@@ -77,10 +77,12 @@ window.onpopstate = function(event) {
 window.onkeydown = function(event) {
 	// F1 - Help
 	if((event.which || event.keyCode) == 112) {
+		event.preventDefault();
 		refreshContentExplorer('views/docs.php');
 	}
 	// F3 - Search
 	if((event.which || event.keyCode) == 114) {
+		event.preventDefault();
 		txtGlobalSearch.focus();
 	}
 	// F5 - Reload Explorer Content
