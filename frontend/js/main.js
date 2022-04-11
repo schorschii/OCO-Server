@@ -854,8 +854,14 @@ function addPackageToGroup(packageId, groupId) {
 	params.push({'key':'add_to_group_package_id[]', 'value':packageId});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
+		hideDialog();
 		refreshContent();
 		emitMessage(L__PACKAGES_ADDED, '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogAddPackageToGroup(id) {
+	showDialogAjax(L__PACKAGE_GROUPS, "views/dialog-package-group-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtEditPackageId.value = id;
 	});
 }
 function showDialogAddPackageDependency(id) {
@@ -1224,8 +1230,14 @@ function addComputerToGroup(computerId, groupId) {
 	params.push({'key':'add_to_group_computer_id[]', 'value':computerId});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
+		hideDialog();
 		refreshContent();
 		emitMessage(L__COMPUTER_ADDED, '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogAddComputerToGroup(id) {
+	showDialogAjax(L__COMPUTER_GROUPS, "views/dialog-computer-group-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtEditComputerId.value = id;
 	});
 }
 

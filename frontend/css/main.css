@@ -1009,6 +1009,9 @@ div.details-abreast > div > table {
 	margin-right: 8px;
 }
 
+.resizeVertical {
+	resize: vertical;
+}
 .bold {
 	font-weight: bold;
 }
