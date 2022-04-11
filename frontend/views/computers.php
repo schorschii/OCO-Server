@@ -114,12 +114,7 @@ foreach($computers as $c) {
 	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 	<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 	<button onclick='wolSelectedComputer("computer_id[]")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-	<button onclick='addSelectedComputerToGroup("computer_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.dyn.svg'>
-		&nbsp;<?php echo LANG['add_to']; ?>
-		<select id='sltNewGroup' onclick='event.stopPropagation()'>
-			<?php echoComputerGroupOptions($db); ?>
-		</select>
-	</button>
+	<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("computer_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 	<?php if($group !== null) { ?>
 		<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
 	<?php } ?>

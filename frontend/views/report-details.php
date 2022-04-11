@@ -122,12 +122,7 @@ try {
 				<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 				<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 				<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-				<button onclick='addSelectedComputerToGroup("id[]", sltNewComputerGroup.value, "computer_id")'><img src='img/folder-insert-into.dyn.svg'>
-					&nbsp;<?php echo LANG['add_to']; ?>
-					<select id='sltNewComputerGroup' onclick='event.stopPropagation()'>
-						<?php echoComputerGroupOptions($db); ?>
-					</select>
-				</button>
+				<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 				<button onclick='removeSelectedComputer("id[]", "computer_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 			</div>
 		<?php } ?>
@@ -135,12 +130,7 @@ try {
 			<div class='controls'>
 				<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 				<button onclick='deploySelectedPackage("id[]", "package_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-				<button onclick='addSelectedPackageToGroup("id[]", sltNewPackageGroup.value, "package_id")'><img src='img/folder-insert-into.dyn.svg'>
-					&nbsp;<?php echo LANG['add_to']; ?>
-					<select id='sltNewPackageGroup' onclick='event.stopPropagation()'>
-						<?php echoPackageGroupOptions($db); ?>
-					</select>
-				</button>
+				<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 				<button onclick='removeSelectedPackage("id[]", "package_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 			</div>
 		<?php } ?>

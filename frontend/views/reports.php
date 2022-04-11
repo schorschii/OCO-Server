@@ -78,12 +78,7 @@ try {
 		</table>
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='moveSelectedReportToGroup("report_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.dyn.svg'>
-				&nbsp;<?php echo LANG['move_to']; ?>
-				<select id='sltNewGroup' onclick='event.stopPropagation()'>
-					<?php echoReportGroupOptions($db); ?>
-				</select>
-			</button>
+			<button onclick='showDialogMoveReportToGroup(getSelectedCheckBoxValues("report_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['move_to']; ?></button>
 			<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</div>
 	</div>

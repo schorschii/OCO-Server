@@ -284,13 +284,21 @@ function toggleCheckboxesInContainer(container, checked) {
 	}
 	refreshDeployCount();
 }
-function getSelectedCheckBoxValues(checkboxName) {
+function getSelectedCheckBoxValues(checkboxName, attributeName=null, warnIfEmpty=false) {
 	var values = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
-			values.push(entry.value);
+			if(attributeName == null) {
+				values.push(entry.value);
+			} else {
+				values.push(entry.getAttribute(attributeName));
+			}
 		}
 	});
+	if(warnIfEmpty && values.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return false;
+	}
 	return values;
 }
 function getAllCheckBoxValues(checkboxName) {
@@ -823,35 +831,12 @@ function confirmRemovePackageGroup(ids, event=null, infoText='') {
 		});
 	}
 }
-function addSelectedPackageToGroup(checkboxName, groupId, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	var params = [];
-	params.push({'key':'add_to_group_id', 'value':groupId});
-	ids.forEach(function(entry) {
-		params.push({'key':'add_to_group_package_id[]', 'value':entry});
-	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
-		emitMessage(L__PACKAGES_ADDED, '', MESSAGE_TYPE_SUCCESS);
-	});
-}
 function addPackageToGroup(packageId, groupId) {
 	var params = [];
 	params.push({'key':'add_to_group_id', 'value':groupId});
-	params.push({'key':'add_to_group_package_id[]', 'value':packageId});
+	packageId.split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_package_id[]', 'value':entry});
+	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
 		hideDialog();
@@ -860,6 +845,7 @@ function addPackageToGroup(packageId, groupId) {
 	});
 }
 function showDialogAddPackageToGroup(id) {
+	if(!id) return;
 	showDialogAjax(L__PACKAGE_GROUPS, "views/dialog-package-group-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditPackageId.value = id;
 	});
@@ -1199,35 +1185,12 @@ function confirmRemoveComputerGroup(ids, event=null, infoText='') {
 		});
 	}
 }
-function addSelectedComputerToGroup(checkboxName, groupId, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	var params = [];
-	params.push({'key':'add_to_group_id', 'value':groupId});
-	ids.forEach(function(entry) {
-		params.push({'key':'add_to_group_computer_id[]', 'value':entry});
-	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
-		emitMessage(L__COMPUTER_ADDED, '', MESSAGE_TYPE_SUCCESS);
-	});
-}
 function addComputerToGroup(computerId, groupId) {
 	var params = [];
 	params.push({'key':'add_to_group_id', 'value':groupId});
-	params.push({'key':'add_to_group_computer_id[]', 'value':computerId});
+	computerId.split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_computer_id[]', 'value':entry});
+	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
 		hideDialog();
@@ -1236,6 +1199,7 @@ function addComputerToGroup(computerId, groupId) {
 	});
 }
 function showDialogAddComputerToGroup(id) {
+	if(!id) return;
 	showDialogAjax(L__COMPUTER_GROUPS, "views/dialog-computer-group-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditComputerId.value = id;
 	});
@@ -1617,30 +1581,23 @@ function confirmRemoveReport(ids, infoText='') {
 		});
 	}
 }
-function moveSelectedReportToGroup(checkboxName, groupId, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
-		return;
-	}
+function moveReportToGroup(reportId, groupId) {
 	var params = [];
 	params.push({'key':'move_to_group_id', 'value':groupId});
-	ids.forEach(function(entry) {
+	reportId.split(',').forEach(function(entry) {
 		params.push({'key':'move_to_group_report_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/reports.php', paramString, null, function() {
+		hideDialog();
 		refreshContent();
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogMoveReportToGroup(id) {
+	if(!id) return;
+	showDialogAjax(L__REPORT_GROUPS, "views/dialog-report-group-move.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtEditReportId.value = id;
 	});
 }
 

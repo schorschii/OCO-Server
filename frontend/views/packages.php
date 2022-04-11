@@ -132,12 +132,7 @@ try {
 		<div class='controls'>
 			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
 			<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-			<button onclick='addSelectedPackageToGroup("package_id[]", sltNewGroup.value)'><img src='img/folder-insert-into.dyn.svg'>
-				&nbsp;<?php echo LANG['add_to']; ?>
-				<select id='sltNewGroup' onclick='event.stopPropagation()'>
-					<?php echoPackageGroupOptions($db); ?>
-				</select>
-			</button>
+			<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("package_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 			<?php if($group !== null) { ?>
 				<button onclick='removeSelectedPackageFromGroup("package_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
 			<?php } ?>

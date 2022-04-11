@@ -60,6 +60,7 @@ var L__UPDATE_AVAILABLE = "<?php echo LANG['update_available']; ?>";
 var L__CHANGE_PASSWORD = "<?php echo LANG['change_password']; ?>";
 var L__PACKAGE_GROUPS = "<?php echo LANG['package_groups']; ?>";
 var L__COMPUTER_GROUPS = "<?php echo LANG['computer_groups']; ?>";
+var L__REPORT_GROUPS = "<?php echo LANG['report_groups']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";
