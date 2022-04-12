@@ -20,5 +20,12 @@ foreach(glob(__DIR__.'/css/css.d/*.css') as $filename) {
 }
 ?>
 
+<link rel='prefetch' as='image' href='img/expand.dyn.svg'>
+<link rel='prefetch' as='image' href='img/collapse.dyn.svg'>
+<link rel='prefetch' as='image' href='img/info.message.svg'>
+<link rel='prefetch' as='image' href='img/tick.message.svg'>
+<link rel='prefetch' as='image' href='img/warning.message.svg'>
+<link rel='prefetch' as='image' href='img/error.message.svg'>
+
 <meta name='viewport' content='width=device-width'>
 <meta name='author' content='Georg Sieber'>
