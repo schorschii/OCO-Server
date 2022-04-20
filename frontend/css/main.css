@@ -647,11 +647,10 @@ button {
 	color: #4C4C4C;
 	background-color: #E4E4E4;
 	letter-spacing: 0.2px;
-	border: none;
 	text-transform: uppercase;
 	text-decoration: none;
 	padding: 6px 7px;
-	border: 1px solid rgba(0,0,0,0.1);
+	border-color: rgba(0,0,0,0.1);
 }
 button:hover,
 button:focus {
@@ -1260,7 +1259,7 @@ div.details-abreast > div > table {
 	button {
 		color: white;
 		background-color: #21262d;
-		border: 1px solid rgba(255,255,255,0.1);
+		border-color: rgba(255,255,255,0.1);
 	}
 	button.primary {
 		background-color: #006193;
