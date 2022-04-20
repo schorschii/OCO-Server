@@ -344,7 +344,7 @@ function getCookie(cookieName, defaultValue) {
 }
 
 // ======== CONTENT REFRESH FUNCTIONS ========
-const REFRESH_SIDEBAR_TIMEOUT = 10000;
+const REFRESH_SIDEBAR_TIMEOUT = 12000;
 const REFRESH_CONTENT_TIMEOUT = 2000;
 const COOKIE_SIDEBAR_STATE    = 'sidebar-state';
 var refreshContentTimer = null;
@@ -352,7 +352,7 @@ var refreshSidebarTimer = null;
 var refreshSidebarState = JSON.parse(getCookie(COOKIE_SIDEBAR_STATE, '{}'));
 function refreshSidebar(callback=null, handleAutoRefresh=false) {
 	// save node expand states
-	elements = obj('explorer-tree').querySelectorAll('.node, .subnode');
+	var elements = obj('explorer-tree').querySelectorAll('.node, .subnode');
 	for(var i = 0; i < elements.length; i++) {
 		if(elements[i].id) {
 			refreshSidebarState[elements[i].id] = elements[i].classList.contains('expanded');
@@ -369,7 +369,6 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 			subnodes = node.querySelectorAll(':scope > .subnode');
 			for(var n = 0; n < subnodes.length; n++) {
 				isExpanded = subnodes[n].classList.contains('expanded');
-				break;
 			}
 			imgs = node.querySelectorAll(':scope > a > img');
 			for(var n = 0; n < imgs.length; n++) {
@@ -384,7 +383,7 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 			updateExpandIcon(e.target.parentElement);
 		}
 		var hideExpandIcon = function(e) {
-			children = e.target.querySelectorAll(':scope > img');
+			var children = e.target.querySelectorAll(':scope > img');
 			for(var n = 0; n < children.length; n++) {
 				children[n].src = children[n].getAttribute('originalSrc');
 			}
@@ -393,15 +392,20 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 			var node = e.target;
 			if(e.target.tagName == 'A') node = e.target.parentElement;
 			if(e.target.tagName == 'IMG') node = e.target.parentElement.parentElement;
-			children = node.querySelectorAll(':scope > .subnode');
+			var isExpanded = null;
+			var children = node.querySelectorAll(':scope > .subnode');
 			for(var n = 0; n < children.length; n++) {
-				children[n].classList.toggle('expanded');
+				isExpanded = children[n].classList.contains('expanded');;
+			}
+			for(var n = 0; n < children.length; n++) {
+				if(isExpanded) children[n].classList.remove('expanded');
+				else children[n].classList.add('expanded');
 			}
 			updateExpandIcon(node);
 			e.preventDefault();
 			e.stopPropagation();
 		}
-		elements = obj('explorer-tree').querySelectorAll('.node > a, .subnode > a');
+		var elements = obj('explorer-tree').querySelectorAll('.node > a, .subnode > a');
 		for(var i = 0; i < elements.length; i++) {
 			elements[i].onmouseenter = showExpandIcon;
 			elements[i].onfocus = showExpandIcon;
@@ -421,7 +425,21 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 		// restore previous expand states
 		for(var key in refreshSidebarState) {
 			if(refreshSidebarState[key]) {
-				obj(key).classList.add('expanded');
+				var node = obj(key);
+				if(node) node.classList.add('expanded');
+			}
+		}
+		// correct corrupt expand states (mixed expanded and collapsed in the same subnode, can occur if user adds/deletes a group)
+		var nodes = obj('explorer-tree').querySelectorAll('.node > .subnode, .subnode > .subnode');
+		for(var i = 0; i < nodes.length; i++) {
+			var isExpanded = false;
+			var subnodes = nodes[i].querySelectorAll(':scope > .subnode');
+			for(var n = 0; n < subnodes.length; n++) {
+				isExpanded = subnodes[n].classList.contains('expanded');
+			}
+			for(var n = 0; n < subnodes.length; n++) {
+				if(isExpanded) subnodes[n].classList.add('expanded');
+				else subnodes[n].classList.remove('expanded');
 			}
 		}
 	}, false);

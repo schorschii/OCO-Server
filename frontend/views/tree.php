@@ -16,7 +16,7 @@ require_once('../session.php');
 <?php if($currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
 <div id='divNodeSoftware' class='node expandable'>
 	<a <?php echo explorerLink('views/software.php'); ?>><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></a>
-	<div class='subnode'>
+	<div id='divSubnodeSoftware' class='subnode'>
 		<a <?php echo explorerLink('views/software.php?os=other'); ?>><img src='img/linux.dyn.svg'><?php echo LANG['linux']; ?></a>
 		<a <?php echo explorerLink('views/software.php?os=macos'); ?>><img src='img/apple.dyn.svg'><?php echo LANG['macos']; ?></a>
 		<a <?php echo explorerLink('views/software.php?os=windows'); ?>><img src='img/windows.dyn.svg'><?php echo LANG['windows']; ?></a>
@@ -31,7 +31,7 @@ require_once('../session.php');
 
 <div id='divNodeJobs' class='node expandable'>
 	<a <?php echo explorerLink('views/job-containers.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG['jobs']; ?></a>
-	<div class='subnode'>
+	<div id='divSubnodeJobs' class='subnode'>
 		<?php
 		foreach($cl->getJobContainers() as $container) {
 			echo "<a ".explorerLink('views/job-containers.php?id='.$container->id)."><img src='img/".$db->getJobContainerIcon($container->id).".dyn.svg'>".htmlspecialchars($container->name)."</a>";

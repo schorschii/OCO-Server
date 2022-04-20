@@ -107,7 +107,7 @@ if(!empty($_GET['view'])) {
 	<script>
 	toggleSidebar(false);
 	refreshSidebar();
-	//refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
+	refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
 
 	<?php if($initialExplorerContent != null) { ?>
 		ajaxRequest("<?php echo htmlspecialchars($initialExplorerContent.'?'.$initialExplorerContentParameter); ?>", "explorer-content");
