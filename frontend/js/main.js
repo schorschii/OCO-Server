@@ -430,7 +430,7 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 			}
 		}
 		// correct corrupt expand states (mixed expanded and collapsed in the same subnode, can occur if user adds/deletes a group)
-		var nodes = obj('explorer-tree').querySelectorAll('.node > .subnode, .subnode > .subnode');
+		var nodes = obj('explorer-tree').querySelectorAll('.node, .subnode');
 		for(var i = 0; i < nodes.length; i++) {
 			var isExpanded = false;
 			var subnodes = nodes[i].querySelectorAll(':scope > .subnode');
