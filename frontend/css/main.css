@@ -236,6 +236,9 @@ h3 {
 	padding: 5px;
 	border-radius: 4px;
 }
+#explorer-tree .node > a {
+	border-radius: 0px;
+}
 .blockListItem {
 	padding: 2px;
 }
@@ -261,8 +264,35 @@ h3 {
 	margin-bottom: 2px;
 	vertical-align: middle;
 }
+#explorer-tree .node {
+	border-left: 5px solid transparent;
+}
+#explorer-tree .node:hover {
+	border-color: #0079B8;
+}
+#explorer-tree .node > a {
+	padding: 15px 10px 15px 10px;
+	margin-left: -5px;
+	border-left: 5px solid transparent;
+}
+#explorer-tree .node:hover > a {
+	border-color: #0079B8;
+}
 #explorer-tree .subnode {
-	margin-left: 25px;
+	max-height: 0px;
+	overflow: hidden;
+	margin-left: 16px;
+	padding-left: 9px;
+}
+#explorer-tree .node.expanded,
+#explorer-tree .subnode.expanded {
+	max-height: none;
+	overflow: visible;
+}
+#explorer-tree .subnode {
+	margin-left: 13px;
+	padding-left: 12px;
+	border-left: 1px dashed rgb(150,150,150,0.4);
 }
 #explorer-content {
 	position: relative;

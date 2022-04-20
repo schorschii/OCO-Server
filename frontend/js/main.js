@@ -320,18 +320,109 @@ function setInputsDisabled(rootElement, disabled) {
 	}
 }
 
+// ======== COOKIE HANDLING ========
+function setCookie(cookieName, value) {
+	const d = new Date();
+	d.setTime(d.getTime() + (365*24*60*60*1000));
+	let expires = 'expires=' + d.toUTCString();
+	document.cookie = cookieName + '=' + value + ';' + expires + ';path=/';
+}
+function getCookie(cookieName, defaultValue) {
+	let name = cookieName + '=';
+	let decodedCookie = decodeURIComponent(document.cookie);
+	let ca = decodedCookie.split(';');
+	for(let i = 0; i < ca.length; i++) {
+		let c = ca[i];
+		while(c.charAt(0) == ' ') {
+			c = c.substring(1);
+		}
+		if(c.indexOf(name) == 0) {
+			return c.substring(name.length, c.length);
+		}
+	}
+	return defaultValue;
+}
+
 // ======== CONTENT REFRESH FUNCTIONS ========
 const REFRESH_SIDEBAR_TIMEOUT = 10000;
 const REFRESH_CONTENT_TIMEOUT = 2000;
+const COOKIE_SIDEBAR_STATE    = 'sidebar-state';
 var refreshContentTimer = null;
 var refreshSidebarTimer = null;
+var refreshSidebarState = JSON.parse(getCookie(COOKIE_SIDEBAR_STATE, '{}'));
 function refreshSidebar(callback=null, handleAutoRefresh=false) {
+	// save node expand states
+	elements = obj('explorer-tree').querySelectorAll('.node, .subnode');
+	for(var i = 0; i < elements.length; i++) {
+		if(elements[i].id) {
+			refreshSidebarState[elements[i].id] = elements[i].classList.contains('expanded');
+		}
+	}
+	setCookie(COOKIE_SIDEBAR_STATE, JSON.stringify(refreshSidebarState));
+	// do refresh
 	ajaxRequest('views/tree.php', 'explorer-tree', function() {
 		// execute custom callback
 		if(callback != undefined && typeof callback == 'function') callback(text);
+		// register events for expand/collapse
+		var updateExpandIcon = function(node) {
+			var isExpanded = false;
+			subnodes = node.querySelectorAll(':scope > .subnode');
+			for(var n = 0; n < subnodes.length; n++) {
+				isExpanded = subnodes[n].classList.contains('expanded');
+				break;
+			}
+			imgs = node.querySelectorAll(':scope > a > img');
+			for(var n = 0; n < imgs.length; n++) {
+				if(node.classList.contains('expandable')) {
+					imgs[n].title = window.L__EXPAND_COLLAPSE_TREE;
+					if(isExpanded) imgs[n].src = 'img/collapse.dyn.svg';
+					else imgs[n].src = 'img/expand.dyn.svg';
+				}
+			}
+		}
+		var showExpandIcon = function(e) {
+			updateExpandIcon(e.target.parentElement);
+		}
+		var hideExpandIcon = function(e) {
+			children = e.target.querySelectorAll(':scope > img');
+			for(var n = 0; n < children.length; n++) {
+				children[n].src = children[n].getAttribute('originalSrc');
+			}
+		}
+		var expandOrCollapse = function(e) {
+			var node = e.target;
+			if(e.target.tagName == 'A') node = e.target.parentElement;
+			if(e.target.tagName == 'IMG') node = e.target.parentElement.parentElement;
+			children = node.querySelectorAll(':scope > .subnode');
+			for(var n = 0; n < children.length; n++) {
+				children[n].classList.toggle('expanded');
+			}
+			updateExpandIcon(node);
+			e.preventDefault();
+			e.stopPropagation();
+		}
+		elements = obj('explorer-tree').querySelectorAll('.node > a, .subnode > a');
+		for(var i = 0; i < elements.length; i++) {
+			elements[i].onmouseenter = showExpandIcon;
+			elements[i].onfocus = showExpandIcon;
+			elements[i].onmouseleave = hideExpandIcon;
+			elements[i].onblur = hideExpandIcon;
+			elements[i].ondblclick = expandOrCollapse;
+			children = elements[i].querySelectorAll(':scope > img');
+			for(var n = 0; n < children.length; n++) {
+				children[n].onclick = expandOrCollapse;
+				children[n].setAttribute('originalSrc', children[n].src);
+			}
+		}
 		// schedule next refresh after loading finished
 		if(handleAutoRefresh && refreshSidebarTimer != null) {
 			refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
+		}
+		// restore previous expand states
+		for(var key in refreshSidebarState) {
+			if(refreshSidebarState[key]) {
+				obj(key).classList.add('expanded');
+			}
 		}
 	}, false);
 }
