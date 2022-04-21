@@ -365,6 +365,7 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 		if(callback != undefined && typeof callback == 'function') callback(text);
 		// register events for expand/collapse
 		var updateExpandIcon = function(node) {
+			var isExpandable = false;
 			var isExpanded = false;
 			subnodes = node.querySelectorAll(':scope > .subnode');
 			for(var n = 0; n < subnodes.length; n++) {
@@ -373,11 +374,13 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 			imgs = node.querySelectorAll(':scope > a > img');
 			for(var n = 0; n < imgs.length; n++) {
 				if(node.classList.contains('expandable')) {
+					isExpandable = true;
 					imgs[n].title = window.L__EXPAND_COLLAPSE_TREE;
 					if(isExpanded) imgs[n].src = 'img/collapse.dyn.svg';
 					else imgs[n].src = 'img/expand.dyn.svg';
 				}
 			}
+			return isExpandable;
 		}
 		var showExpandIcon = function(e) {
 			updateExpandIcon(e.target.parentElement);
@@ -401,9 +404,10 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 				if(isExpanded) children[n].classList.remove('expanded');
 				else children[n].classList.add('expanded');
 			}
-			updateExpandIcon(node);
-			e.preventDefault();
-			e.stopPropagation();
+			if(updateExpandIcon(node)) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
 		}
 		var elements = obj('explorer-tree').querySelectorAll('.node > a, .subnode > a');
 		for(var i = 0; i < elements.length; i++) {
