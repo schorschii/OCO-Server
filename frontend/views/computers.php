@@ -51,8 +51,8 @@ try {
 
 <?php if(!empty($subGroups)) { ?>
 <div class='controls subfolders'>
-	<?php foreach($subGroups as $group) { ?>
-		<a class='box' <?php echo explorerLink('views/computers.php?id='.$group->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($group->name); ?></a>
+	<?php foreach($subGroups as $g) { ?>
+		<a class='box' <?php echo explorerLink('views/computers.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>
 </div>
 <?php } ?>
@@ -113,20 +113,16 @@ foreach($computers as $c) {
 	<tr>
 		<td colspan='999'>
 			<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-			<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
-			<a href='#' onclick='event.preventDefault();downloadTableCsv("tblComputerData")'><?php echo LANG['csv']; ?></a>
+			<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+			<button onclick='event.preventDefault();downloadTableCsv("tblComputerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+			<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+			<button onclick='wolSelectedComputer("computer_id[]")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
+			<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("computer_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
+			<?php if($group !== null) { ?>
+				<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
+			<?php } ?>
+			<button onclick='removeSelectedComputer("computer_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		</td>
 	</tr>
 </tfoot>
 </table>
-
-<div class='controls'>
-	<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-	<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-	<button onclick='wolSelectedComputer("computer_id[]")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-	<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("computer_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
-	<?php if($group !== null) { ?>
-		<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
-	<?php } ?>
-	<button onclick='removeSelectedComputer("computer_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-</div>

@@ -51,8 +51,8 @@ try {
 
 <?php if(!empty($subGroups)) { ?>
 <div class='controls subfolders'>
-	<?php foreach($subGroups as $group) { ?>
-		<a class='box' <?php echo explorerLink('views/reports.php?id='.$group->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($group->name); ?></a>
+	<?php foreach($subGroups as $g) { ?>
+		<a class='box' <?php echo explorerLink('views/reports.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>
 </div>
 <?php } ?>
@@ -80,16 +80,13 @@ try {
 			<tr>
 				<td colspan='999'>
 					<span class='counter'><?php echo count($reports); ?></span> <?php echo LANG['elements']; ?>,
-					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
-					<a href='#' onclick='event.preventDefault();downloadTableCsv("tblReportData")'><?php echo LANG['csv']; ?></a>
+					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+					<button onclick='event.preventDefault();downloadTableCsv("tblReportData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+					<button onclick='showDialogMoveReportToGroup(getSelectedCheckBoxValues("report_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['move_to']; ?></button>
+					<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 				</td>
 			</tr>
 		</tfoot>
 		</table>
-		<div class='controls'>
-			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='showDialogMoveReportToGroup(getSelectedCheckBoxValues("report_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['move_to']; ?></button>
-			<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-		</div>
 	</div>
 </div>

@@ -657,6 +657,14 @@ button {
 	padding: 6px 7px;
 	border-color: rgba(0,0,0,0.1);
 }
+button.small,
+tfoot button {
+	padding: 2px 3px;
+}
+button.small img,
+tfoot button img {
+	height: 16px !important;
+}
 button:hover,
 button:focus {
 	background-color: #EDEDED;

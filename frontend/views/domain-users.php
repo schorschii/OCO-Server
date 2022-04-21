@@ -46,8 +46,8 @@ if(!empty($_GET['id'])) {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblDomainUserDetailData")'><?php echo LANG['csv']; ?></a>
+						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+						<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserDetailData")'><?php echo LANG['csv']; ?></button>
 					</td>
 				</tr>
 			</tfoot>
@@ -77,8 +77,8 @@ if(!empty($_GET['id'])) {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblDomainUserHistoryData")'><?php echo LANG['csv']; ?></a>
+						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+						<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserHistoryData")'><?php echo LANG['csv']; ?></button>
 					</td>
 				</tr>
 			</tfoot>
@@ -133,16 +133,13 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<td colspan='999'>
 					<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
-					<a href='#' onclick='event.preventDefault();downloadTableCsv("tblDomainUserData")'><?php echo LANG['csv']; ?></a>
+					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+					<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+					<button onclick='confirmRemoveSelectedDomainUser("domain_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 				</td>
 			</tr>
 		</tfoot>
 		</table>
-		<div class='controls'>
-			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='confirmRemoveSelectedDomainUser("domain_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-		</div>
 	</div>
 </div>
 

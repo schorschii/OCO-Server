@@ -42,8 +42,8 @@ try {
 	</div>
 	<?php if(!empty($subGroups)) { ?>
 	<div class='controls subfolders'>
-		<?php foreach($subGroups as $group) { ?>
-			<a class='box' <?php echo explorerLink('views/packages.php?id='.$group->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($group->name); ?></a>
+		<?php foreach($subGroups as $g) { ?>
+			<a class='box' <?php echo explorerLink('views/packages.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 		<?php } ?>
 	</div>
 	<?php } ?>
@@ -85,8 +85,8 @@ try {
 	</div>
 	<?php if(!empty($subGroups)) { ?>
 	<div class='controls subfolders'>
-		<?php foreach($subGroups as $group) { ?>
-			<a class='box' <?php echo explorerLink('views/packages.php?id='.$group->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($group->name); ?></a>
+		<?php foreach($subGroups as $g) { ?>
+			<a class='box' <?php echo explorerLink('views/packages.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 		<?php } ?>
 	</div>
 	<?php } ?>
@@ -140,20 +140,17 @@ try {
 			<tr>
 				<td colspan='999'>
 					<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
-					<a href='#' onclick='event.preventDefault();downloadTableCsv("tblPackageData")'><?php echo LANG['csv']; ?></a>
+					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+					<button onclick='event.preventDefault();downloadTableCsv("tblPackageData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+					<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+					<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("package_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
+					<?php if($group !== null) { ?>
+						<button onclick='removeSelectedPackageFromGroup("package_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
+					<?php } ?>
+					<button onclick='removeSelectedPackage("package_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 				</td>
 			</tr>
 		</tfoot>
 		</table>
-		<div class='controls'>
-			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-			<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("package_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
-			<?php if($group !== null) { ?>
-				<button onclick='removeSelectedPackageFromGroup("package_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
-			<?php } ?>
-			<button onclick='removeSelectedPackage("package_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-		</div>
 	</div>
 </div>

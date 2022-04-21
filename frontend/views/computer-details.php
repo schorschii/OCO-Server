@@ -350,15 +350,12 @@ try {
 					<td colspan='999'>
 						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+						<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+						<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
 					</td>
 				</tr>
 			</tfoot>
 		</table>
-		<div class='controls'>
-			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-			<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
-		</div>
 	</div>
 
 	<div>
@@ -427,7 +424,10 @@ try {
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan='999'><span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?></td>
+					<td colspan='999'>
+						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+						<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+					</td>
 				</tr>
 			</tfoot>
 		</table>

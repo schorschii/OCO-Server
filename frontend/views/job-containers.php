@@ -168,16 +168,13 @@ if(!empty($_GET['id'])) {
 				<tr>
 					<td colspan='999'>
 						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
-						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblJobData")'><?php echo LANG['csv']; ?></a>
+						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+						<button onclick='event.preventDefault();downloadTableCsv("tblJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+						<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 					</td>
 				</tr>
 			</tfoot>
 		</table>
-		<div class='controls'>
-			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-		</div>
 	</div>
 	</div>
 
@@ -251,16 +248,13 @@ if(!empty($_GET['id'])) {
 				<tr>
 					<td colspan='999'>
 						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>,
-						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblJobcontainerData")'><?php echo LANG['csv']; ?></a>
+						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+						<button onclick='event.preventDefault();downloadTableCsv("tblJobcontainerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+						<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 					</td>
 				</tr>
 			</tfoot>
 		</table>
-		<div class='controls'>
-			<span><?php echo LANG['selected_elements']; ?>:&nbsp;</span>
-			<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-		</div>
 	</div>
 	</div>
 

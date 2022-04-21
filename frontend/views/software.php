@@ -45,8 +45,8 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData1")'><?php echo LANG['csv']; ?></a>
+						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
+						<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData1")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 					</td>
 				</tr>
 			</tfoot>
@@ -88,8 +88,8 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-						<a href='#' onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData2")'><?php echo LANG['csv']; ?></a>
+						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
+						<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData2")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 					</td>
 				</tr>
 			</tfoot>
@@ -141,8 +141,8 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 		<tfoot>
 			<tr>
 				<td colspan='999'>
-					<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-					<a href='#' onclick='event.preventDefault();downloadTableCsv("tblSoftwareData")'><?php echo LANG['csv']; ?></a>
+					<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
+					<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 				</td>
 			</tr>
 		</tfoot>
