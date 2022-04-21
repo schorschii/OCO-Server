@@ -240,7 +240,8 @@ h3 {
 	border-radius: 0px;
 }
 .blockListItem {
-	padding: 2px;
+	/* smaller padding because it contains a checkbox */
+	padding: 3px;
 }
 .blockListItem > * {
 	vertical-align: text-top;
