@@ -131,7 +131,7 @@ if(empty($default_job_container_name)) {
 			<input type='text' id='txtDeploySearchComputerGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerGroupList, this.value)'>
 		</div>
 		<div id='divComputerGroupList' class='box listSearchList'>
-			<a class='blockListItem' onclick='refreshDeployComputerList(-1)'><input type='checkbox' style='visibility:hidden' /><?php echo LANG['all_computer']; ?></a>
+			<a class='blockListItem' onclick='refreshDeployComputerList(-1)'><input type='checkbox' disabled='true' /><?php echo LANG['all_computer']; ?></a>
 			<?php echoTargetComputerGroupOptions($select_computer_group_ids); ?>
 		</div>
 	</div>
@@ -156,7 +156,7 @@ if(empty($default_job_container_name)) {
 			<input type='text' id='txtDeploySearchPackageGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageGroupList, this.value)'>
 		</div>
 		<div id='divPackageGroupList' class='box listSearchList'>
-			<a class='blockListItem' onclick='refreshDeployPackageList(-1)'><input type='checkbox' style='visibility:hidden' /><?php echo LANG['all_packages']; ?></a>
+			<a class='blockListItem' onclick='refreshDeployPackageList(-1)'><input type='checkbox' disabled='true' /><?php echo LANG['all_packages']; ?></a>
 			<?php echoTargetPackageGroupOptions($select_package_group_ids); ?>
 		</div>
 	</div>
@@ -184,7 +184,7 @@ if(empty($default_job_container_name)) {
 </div>
 
 <?php
-function echoTargetComputerGroupOptions($select_computer_group_ids, $parent=null, $indent=0) {
+function echoTargetComputerGroupOptions($select_computer_group_ids, $parent=null) {
 	global $db;
 	global $currentSystemUser;
 
@@ -194,11 +194,13 @@ function echoTargetComputerGroupOptions($select_computer_group_ids, $parent=null
 
 		$selected = '';
 		if(in_array($cg->id, $select_computer_group_ids)) $selected = 'checked';
-		echo "<a class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.")'><input type='checkbox' name='computer_groups' value='".$cg->id."' ".$selected." />".trim(str_repeat("‒",$indent)." ".htmlspecialchars($cg->name))."</a>";
-		echoTargetComputerGroupOptions($select_computer_group_ids, $cg->id, $indent+1);
+		echo "<a class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.")'><input type='checkbox' name='computer_groups' value='".$cg->id."' ".$selected." />".htmlspecialchars($cg->name)."</a>";
+		echo "<div class='subgroup'>";
+		echoTargetComputerGroupOptions($select_computer_group_ids, $cg->id);
+		echo "</div>";
 	}
 }
-function echoTargetPackageGroupOptions($select_package_group_ids, $parent=null, $indent=0) {
+function echoTargetPackageGroupOptions($select_package_group_ids, $parent=null) {
 	global $db;
 	global $currentSystemUser;
 
@@ -208,7 +210,9 @@ function echoTargetPackageGroupOptions($select_package_group_ids, $parent=null, 
 
 		$selected = '';
 		if(in_array($pg->id, $select_package_group_ids)) $selected = 'checked';
-		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'><input type='checkbox' name='package_groups' value='".$pg->id."' ".$selected." />".trim(str_repeat("‒",$indent)." ".htmlspecialchars($pg->name))."</a>";
-		echoTargetPackageGroupOptions($select_package_group_ids, $pg->id, $indent+1);
+		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'><input type='checkbox' name='package_groups' value='".$pg->id."' ".$selected." />".htmlspecialchars($pg->name)."</a>";
+		echo "<div class='subgroup'>";
+		echoTargetPackageGroupOptions($select_package_group_ids, $pg->id);
+		echo "</div>";
 	}
 }

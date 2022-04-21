@@ -3,7 +3,7 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-function echoTargetPackageGroupOptions($parent=null, $indent=0) {
+function echoTargetPackageGroupOptions($parent=null) {
 	global $db;
 	global $currentSystemUser;
 
@@ -11,8 +11,10 @@ function echoTargetPackageGroupOptions($parent=null, $indent=0) {
 		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
 		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($pg->name))."</a>";
-		echoTargetPackageGroupOptions($pg->id, $indent+1);
+		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'>".htmlspecialchars($pg->name)."</a>";
+		echo "<div class='subgroup'>";
+		echoTargetPackageGroupOptions($pg->id);
+		echo "</div>";
 	}
 }
 ?>

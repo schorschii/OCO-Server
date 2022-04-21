@@ -608,6 +608,9 @@ table.list, .boxshadow {
 .box > *:last-child {
 	margin-bottom: 0px;
 }
+.box .subgroup {
+	margin-left: 22px;
+}
 input, select, button, textarea {
 	box-sizing: border-box;
 	font-family: inherit;
