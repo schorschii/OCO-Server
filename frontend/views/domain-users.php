@@ -51,7 +51,7 @@ if(!empty($_GET['id'])) {
 								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
 							</div>
 							<div>
-								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserDetailData")'><?php echo LANG['csv']; ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserDetailData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 							</div>
 						</div>
 					</td>
@@ -88,7 +88,7 @@ if(!empty($_GET['id'])) {
 								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
 							</div>
 							<div>
-								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserHistoryData")'><?php echo LANG['csv']; ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserHistoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 							</div>
 						</div>
 					</td>
