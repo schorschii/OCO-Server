@@ -546,10 +546,14 @@ body.loading2 #loader-container {
 .controls select {
 	max-width: 200px;
 }
+.controls.subfolders {
+	flex-wrap: wrap;
+}
 .controls.subfolders a {
 	display: inline-flex;
 	align-items: center;
 	text-decoration: none;
+	margin-top: 4px;
 }
 .fillwidth {
 	flex-grow: 1;
