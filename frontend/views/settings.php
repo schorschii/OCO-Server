@@ -94,13 +94,19 @@ require_once('../session.php');
 		<tfoot>
 			<tr>
 				<td colspan='999'>
-					<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-					<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
-					<span class='vl'></span>
-					<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.dyn.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
-					<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.dyn.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
-					<button onclick='confirmRemoveSelectedSystemUser("system_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+					<div class='spread'>
+						<div>
+							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+						</div>
+						<div>
+							<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+							<span class='vl'></span>
+							<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.dyn.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
+							<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.dyn.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
+							<button onclick='confirmRemoveSelectedSystemUser("system_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+						</div>
+					</div>
 				</td>
 			</tr>
 		</tfoot>

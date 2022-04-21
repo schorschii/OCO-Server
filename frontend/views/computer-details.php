@@ -348,10 +348,16 @@ try {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-						<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-						<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button>
+						<div class='spread'>
+							<div>
+								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+							</div>
+							<div>
+								<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+								<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button>
+							</div>
+						</div>
 					</td>
 				</tr>
 			</tfoot>
@@ -425,8 +431,14 @@ try {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
-						<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+						<div class='spread'>
+							<div>
+								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+							</div>
+							<div>
+								<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+							</div>
+						</div>
 					</td>
 				</tr>
 			</tfoot>

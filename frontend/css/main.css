@@ -667,7 +667,7 @@ button {
 }
 button.small,
 tfoot button {
-	padding: 2px 3px;
+	padding: 3px 4px;
 }
 button.small img,
 tfoot button img {
@@ -825,6 +825,11 @@ table.list .sortsymbol.sorteddesc::after {
 table.list .sortsymbol.unsorted::after {
 	display: inline;
 	content: "△▽";
+}
+table.list tfoot .spread {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 img.small,

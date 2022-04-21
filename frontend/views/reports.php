@@ -79,11 +79,17 @@ try {
 		<tfoot>
 			<tr>
 				<td colspan='999'>
-					<span class='counter'><?php echo count($reports); ?></span> <?php echo LANG['elements']; ?>,
-					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-					<button onclick='event.preventDefault();downloadTableCsv("tblReportData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
-					<button onclick='showDialogMoveReportToGroup(getSelectedCheckBoxValues("report_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['move_to']; ?></button>
-					<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+					<div class='spread'>
+						<div>
+							<span class='counter'><?php echo count($reports); ?></span> <?php echo LANG['elements']; ?>,
+							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+						</div>
+						<div>
+							<button onclick='event.preventDefault();downloadTableCsv("tblReportData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+							<button onclick='showDialogMoveReportToGroup(getSelectedCheckBoxValues("report_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['move_to']; ?></button>
+							<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+						</div>
+					</div>
 				</td>
 			</tr>
 		</tfoot>

@@ -268,11 +268,17 @@ try {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-						<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
-						<span class='vl'></span>
-						<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+						<div class='spread'>
+							<div>
+								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+							</div>
+							<div>
+								<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+								<span class='vl'></span>
+								<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+							</div>
+						</div>
 					</td>
 				</tr>
 			</tfoot>
@@ -305,11 +311,17 @@ try {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-						<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
-						<span class='vl'></span>
-						<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+						<div class='spread'>
+							<div>
+								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+							</div>
+							<div>
+								<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+								<span class='vl'></span>
+								<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+							</div>
+						</div>
 					</td>
 				</tr>
 			</tfoot>
@@ -346,12 +358,18 @@ try {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-						<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-						<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("package_id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
-						<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-						<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button>
+						<div class='spread'>
+							<div>
+								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+							</div>
+							<div>
+								<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+								<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("package_id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
+								<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
+								<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button>
+							</div>
+						</div>
 					</td>
 				</tr>
 			</tfoot>

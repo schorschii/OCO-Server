@@ -167,10 +167,16 @@ if(!empty($_GET['id'])) {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-						<button onclick='event.preventDefault();downloadTableCsv("tblJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
-						<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+						<div class='spread'>
+							<div>
+								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+							</div>
+							<div>
+								<button onclick='event.preventDefault();downloadTableCsv("tblJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+								<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+							</div>
+						</div>
 					</td>
 				</tr>
 			</tfoot>
@@ -247,10 +253,16 @@ if(!empty($_GET['id'])) {
 			<tfoot>
 				<tr>
 					<td colspan='999'>
-						<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-						<button onclick='event.preventDefault();downloadTableCsv("tblJobcontainerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
-						<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+						<div class='spread'>
+							<div>
+								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+							</div>
+							<div>
+								<button onclick='event.preventDefault();downloadTableCsv("tblJobcontainerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+								<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+							</div>
+						</div>
 					</td>
 				</tr>
 			</tfoot>

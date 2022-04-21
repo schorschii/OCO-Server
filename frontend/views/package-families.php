@@ -68,10 +68,16 @@ try {
 		<tfoot>
 			<tr>
 				<td colspan='999'>
-					<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-					<button onclick='event.preventDefault();downloadTableCsv("tblPackageFamilyData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
-					<button onclick='removeSelectedPackageFamily("package_family_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+					<div class='spread'>
+						<div>
+							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
+							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+						</div>
+						<div>
+							<button onclick='event.preventDefault();downloadTableCsv("tblPackageFamilyData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+							<button onclick='removeSelectedPackageFamily("package_family_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+						</div>
+					</div>
 				</td>
 			</tr>
 		</tfoot>
