@@ -351,7 +351,7 @@ try {
 						<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 						<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 						<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-						<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+						<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button>
 					</td>
 				</tr>
 			</tfoot>

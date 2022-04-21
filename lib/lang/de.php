@@ -145,7 +145,6 @@ const LANG = [
 	'computer_added' => 'Computer wurden hinzugefügt',
 	'packages_added' => 'Pakete wurden hinzugefügt',
 	'remove_assignment' => 'Zuweisung entfernen',
-	'uninstall_package' => 'Paket deinstallieren',
 	'uninstall' => 'Deinstallieren',
 	'install' => 'Installieren',
 	'settings' => 'Einstellungen',

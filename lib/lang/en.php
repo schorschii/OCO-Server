@@ -150,7 +150,6 @@ const LANG = [
 	'computer_added' => 'Computers have been added',
 	'packages_added' => 'Packages have been added',
 	'remove_assignment' => 'Remove Assignment',
-	'uninstall_package' => 'Uninstall Package',
 	'uninstall' => 'Uninstall',
 	'install' => 'Install',
 	'settings' => 'Settings',

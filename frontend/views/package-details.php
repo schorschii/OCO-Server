@@ -351,7 +351,7 @@ try {
 						<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 						<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("package_id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 						<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-						<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall_package']; ?></button>
+						<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button>
 					</td>
 				</tr>
 			</tfoot>
