@@ -5,6 +5,7 @@ require_once('../session.php');
 
 $group = null;
 $computers = [];
+$subGroups = [];
 try {
 	if(!empty($_GET['id'])) {
 		$group = $cl->getComputerGroup($_GET['id']);
@@ -12,6 +13,7 @@ try {
 	} else {
 		$computers = $cl->getComputers();
 	}
+	$subGroups = $cl->getComputerGroups(empty($group) ? null : $group->id);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG['not_found']."</div>");
 } catch(PermissionException $e) {
@@ -45,6 +47,14 @@ try {
 		<button onclick='renameComputerGroup(<?php echo $group->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
 		<button onclick='confirmRemoveComputerGroup([<?php echo $group->id; ?>], event, spnComputerGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>
+<?php } ?>
+
+<?php if(!empty($subGroups)) { ?>
+<div class='controls subfolders'>
+	<?php foreach($subGroups as $group) { ?>
+		<a class='box' <?php echo explorerLink('views/computers.php?id='.$group->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($group->name); ?></a>
+	<?php } ?>
+</div>
 <?php } ?>
 
 <table id='tblComputerData' class='list searchable sortable savesort'>

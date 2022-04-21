@@ -3,10 +3,12 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
+$subGroups = [];
 $permissionCreatePackage = false;
 $permissionCreateGroup   = false;
 try {
 	$families = $cl->getPackageFamilies();
+	$subGroups = $cl->getPackageGroups(null);
 	$permissionCreatePackage = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new PackageFamily(), PermissionManager::METHOD_CREATE, false);
 	$permissionCreateGroup   = $currentSystemUser->checkPermission(new PackageGroup(), PermissionManager::METHOD_CREATE, false);
 } catch(NotFoundException $e) {
@@ -25,6 +27,14 @@ try {
 	<span class='fillwidth'></span>
 	<span><a <?php echo explorerLink('views/packages.php'); ?>><?php echo LANG['all_packages']; ?></a></span>
 </div>
+
+<?php if(!empty($subGroups)) { ?>
+<div class='controls subfolders'>
+	<?php foreach($subGroups as $group) { ?>
+		<a class='box' <?php echo explorerLink('views/packages.php?id='.$group->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($group->name); ?></a>
+	<?php } ?>
+</div>
+<?php } ?>
 
 <div class='details-abreast'>
 	<div>

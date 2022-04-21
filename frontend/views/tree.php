@@ -59,7 +59,7 @@ function getComputerGroupsHtml(CoreLogic $cl, $parentId=null) {
 	if(count($subgroups) == 0) return false;
 	foreach($subgroups as $group) {
 		$subHtml = getComputerGroupsHtml($cl, $group->id);
-		$html .= "<div id='cg".($group->id)."' class='subnode ".($subHtml!==False ? 'expandable' : '')."'>";
+		$html .= "<div id='divNodeComputerGroup".($group->id)."' class='subnode ".($subHtml!==False ? 'expandable' : '')."'>";
 		$html .= "<a ".explorerLink('views/computers.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
 		$html .= $subHtml;
 		$html .= "</div>";
@@ -72,7 +72,7 @@ function getPackageGroupsHtml(CoreLogic $cl, $parentId=null) {
 	if(count($subgroups) == 0) return false;
 	foreach($subgroups as $group) {
 		$subHtml = getPackageGroupsHtml($cl, $group->id);
-		$html .= "<div id='pg".($group->id)."' class='subnode ".($subHtml!==False ? 'expandable' : '')."'>";
+		$html .= "<div id='divNodePackageGroup".($group->id)."' class='subnode ".($subHtml!==False ? 'expandable' : '')."'>";
 		$html .= "<a ".explorerLink('views/packages.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
 		$html .= $subHtml;
 		$html .= "</div>";
@@ -85,7 +85,7 @@ function getReportGroupsHtml(CoreLogic $cl, $parentId=null) {
 	if(count($subgroups) == 0) return false;
 	foreach($subgroups as $group) {
 		$subHtml = getReportGroupsHtml($cl, $group->id);
-		$html .= "<div id='rg".($group->id)."' class='subnode ".($subHtml!==False ? 'expandable' : '')."'>";
+		$html .= "<div id='divNodeReportGroup".($group->id)."' class='subnode ".($subHtml!==False ? 'expandable' : '')."'>";
 		$html .= "<a ".explorerLink('views/reports.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
 		$html .= $subHtml;
 		$html .= "</div>";

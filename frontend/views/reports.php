@@ -5,6 +5,7 @@ require_once('../session.php');
 
 $group = null;
 $reports = [];
+$subGroups = [];
 try {
 	if(!empty($_GET['id'])) {
 		$group = $cl->getReportGroup($_GET['id']);
@@ -12,6 +13,7 @@ try {
 	} else {
 		$reports = $cl->getReports();
 	}
+	$subGroups = $cl->getReportGroups(empty($group) ? null : $group->id);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG['not_found']."</div>");
 } catch(PermissionException $e) {
@@ -45,6 +47,14 @@ try {
 		<button onclick='renameReportGroup(<?php echo $group->id; ?>, spnReportGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
 		<button onclick='confirmRemoveReportGroup([<?php echo $group->id; ?>], event, spnReportGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>
+<?php } ?>
+
+<?php if(!empty($subGroups)) { ?>
+<div class='controls subfolders'>
+	<?php foreach($subGroups as $group) { ?>
+		<a class='box' <?php echo explorerLink('views/reports.php?id='.$group->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($group->name); ?></a>
+	<?php } ?>
+</div>
 <?php } ?>
 
 <div class='details-abreast'>

@@ -6,6 +6,7 @@ require_once('../session.php');
 $group = null;
 $family = null;
 $packages = [];
+$subGroups = [];
 try {
 	if(!empty($_GET['id'])) {
 		$group = $cl->getPackageGroup($_GET['id']);
@@ -26,6 +27,7 @@ try {
 ?>
 
 <?php if($group !== null) {
+	$subGroups = $cl->getPackageGroups($group->id);
 	$permissionCreate = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_CREATE, false);
 	$permissionDeploy = !empty($packages) && $currentSystemUser->checkPermission($packages[0], PermissionManager::METHOD_DEPLOY, false);
 	$permissionWrite  = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false);
@@ -38,6 +40,13 @@ try {
 		<button onclick='renamePackageGroup(<?php echo $group->id; ?>, spnPackageGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
 		<button onclick='confirmRemovePackageGroup([<?php echo $group->id; ?>], event, spnPackageGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>
+	<?php if(!empty($subGroups)) { ?>
+	<div class='controls subfolders'>
+		<?php foreach($subGroups as $group) { ?>
+			<a class='box' <?php echo explorerLink('views/packages.php?id='.$group->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($group->name); ?></a>
+		<?php } ?>
+	</div>
+	<?php } ?>
 <?php } elseif($family !== null) {
 	$permissionCreate = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($family, PermissionManager::METHOD_CREATE, false);
 	$permissionWrite  = $currentSystemUser->checkPermission($family, PermissionManager::METHOD_WRITE, false);
@@ -63,6 +72,7 @@ try {
 	<?php } ?>
 	</span>
 <?php } else {
+	$subGroups = $cl->getPackageGroups(null);
 	$permissionCreatePackage = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new PackageFamily(), PermissionManager::METHOD_CREATE, false);
 	$permissionCreateGroup   = $currentSystemUser->checkPermission(new PackageGroup(), PermissionManager::METHOD_CREATE, false);
 ?>
@@ -73,6 +83,13 @@ try {
 		<span class='fillwidth'></span>
 		<span><a <?php echo explorerLink('views/package-families.php'); ?>><?php echo LANG['package_families']; ?></a></span>
 	</div>
+	<?php if(!empty($subGroups)) { ?>
+	<div class='controls subfolders'>
+		<?php foreach($subGroups as $group) { ?>
+			<a class='box' <?php echo explorerLink('views/packages.php?id='.$group->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($group->name); ?></a>
+		<?php } ?>
+	</div>
+	<?php } ?>
 <?php } ?>
 
 <div class='details-abreast'>
