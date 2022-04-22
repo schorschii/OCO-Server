@@ -34,19 +34,22 @@ try {
 	$permissionDelete = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false);
 ?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id)); ?></span><span id='spnPackageGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
-	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
+	<div class='controls'>
 		<button onclick='createPackageGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
 		<button onclick='refreshContentDeploy([],[<?php echo $group->id; ?>])' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy_all']; ?></button>
 		<button onclick='renamePackageGroup(<?php echo $group->id; ?>, spnPackageGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
 		<button onclick='confirmRemovePackageGroup([<?php echo $group->id; ?>], event, spnPackageGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>
-	<?php if(!empty($subGroups)) { ?>
 	<div class='controls subfolders'>
+		<?php if($group->parent_package_group_id == null) { ?>
+			<a class='box' <?php echo explorerLink('views/package-families.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG['package_families']; ?></a>
+		<?php } else { $subGroup = $cl->getPackageGroup($group->parent_package_group_id); ?>
+			<a class='box' <?php echo explorerLink('views/packages.php?id='.$group->parent_package_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
+		<?php } ?>
 		<?php foreach($subGroups as $g) { ?>
 			<a class='box' <?php echo explorerLink('views/packages.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 		<?php } ?>
 	</div>
-	<?php } ?>
 <?php } elseif($family !== null) {
 	$permissionCreate = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($family, PermissionManager::METHOD_CREATE, false);
 	$permissionWrite  = $currentSystemUser->checkPermission($family, PermissionManager::METHOD_WRITE, false);

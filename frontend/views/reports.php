@@ -41,7 +41,7 @@ try {
 	$permissionDelete = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false);
 ?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getReportGroupBreadcrumbString($group->id)); ?></span><span id='spnReportGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
-	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
+	<div class='controls'>
 		<button onclick='showDialogCreateReport("<?php echo $group->id; ?>")' <?php if(!$permissionCreateReport) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_report']; ?></button>
 		<button onclick='createReportGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
 		<button onclick='renameReportGroup(<?php echo $group->id; ?>, spnReportGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
@@ -49,8 +49,15 @@ try {
 	</div>
 <?php } ?>
 
-<?php if(!empty($subGroups)) { ?>
+<?php if(!empty($subGroups) || $group != null) { ?>
 <div class='controls subfolders'>
+	<?php if($group != null) { ?>
+		<?php if($group->parent_report_group_id == null) { ?>
+			<a class='box' <?php echo explorerLink('views/reports.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG['reports']; ?></a>
+		<?php } else { $subGroup = $cl->getReportGroup($group->parent_report_group_id); ?>
+			<a class='box' <?php echo explorerLink('views/reports.php?id='.$group->parent_report_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
+		<?php } ?>
+	<?php } ?>
 	<?php foreach($subGroups as $g) { ?>
 		<a class='box' <?php echo explorerLink('views/reports.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>

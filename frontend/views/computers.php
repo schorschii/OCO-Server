@@ -41,7 +41,7 @@ try {
 	$permissionDelete = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false);
 ?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id)); ?></span><span id='spnComputerGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
-	<div class='controls'><span><?php echo LANG['group']; ?>:&nbsp;</span>
+	<div class='controls'>
 		<button onclick='createComputerGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
 		<button onclick='refreshContentDeploy([],[],[],[<?php echo $group->id; ?>])' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy_for_all']; ?></button>
 		<button onclick='renameComputerGroup(<?php echo $group->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
@@ -49,8 +49,15 @@ try {
 	</div>
 <?php } ?>
 
-<?php if(!empty($subGroups)) { ?>
+<?php if(!empty($subGroups) || $group != null) { ?>
 <div class='controls subfolders'>
+	<?php if($group != null) { ?>
+		<?php if($group->parent_computer_group_id == null) { ?>
+			<a class='box' <?php echo explorerLink('views/computers.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG['all_computer']; ?></a>
+		<?php } else { $subGroup = $cl->getComputerGroup($group->parent_computer_group_id); ?>
+			<a class='box' <?php echo explorerLink('views/computers.php?id='.$group->parent_computer_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
+		<?php } ?>
+	<?php } ?>
 	<?php foreach($subGroups as $g) { ?>
 		<a class='box' <?php echo explorerLink('views/computers.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>
