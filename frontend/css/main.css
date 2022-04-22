@@ -279,21 +279,21 @@ h3 {
 #explorer-tree .node:hover > a {
 	border-color: #0079B8;
 }
+#explorer-tree .node > .subnode {
+	margin-left: 15px;
+	padding-left: 10px;
+}
 #explorer-tree .subnode {
 	max-height: 0px;
 	overflow: hidden;
-	margin-left: 16px;
-	padding-left: 9px;
+	margin-left: 12px;
+	padding-left: 13px;
+	border-left: 1px dashed rgb(150,150,150,0.4);
 }
 #explorer-tree .node.expanded,
 #explorer-tree .subnode.expanded {
 	max-height: none;
 	overflow: visible;
-}
-#explorer-tree .subnode {
-	margin-left: 13px;
-	padding-left: 12px;
-	border-left: 1px dashed rgb(150,150,150,0.4);
 }
 #explorer-content {
 	position: relative;
