@@ -140,7 +140,7 @@ class PackageFamily {
 		if(!empty($this->icon)) {
 			return 'data:image/png;base64,'.base64_encode($this->icon);
 		}
-		return 'img/package.dyn.svg';
+		return 'img/package-family.dyn.svg';
 	}
 }
 class Package {
