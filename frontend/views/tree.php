@@ -8,15 +8,17 @@ require_once('../session.php');
 	<a <?php echo explorerLink('views/domain-users.php'); ?>><img src='img/users.dyn.svg'><?php echo LANG['users']; ?></a>
 </div>
 
-<div id='divNodeComputers' class='node expandable'>
+<div class='node expandable'>
 	<a <?php echo explorerLink('views/computers.php'); ?>><img src='img/computer.dyn.svg'><?php echo LANG['computer']; ?></a>
-	<?php echo getComputerGroupsHtml($cl); ?>
+	<div id='divNodeComputers' class='subitems'>
+		<?php echo getComputerGroupsHtml($cl); ?>
+	</div>
 </div>
 
 <?php if($currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
 <div id='divNodeSoftware' class='node expandable'>
 	<a <?php echo explorerLink('views/software.php'); ?>><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></a>
-	<div id='divSubnodeSoftware' class='subnode'>
+	<div id='divSubnodeSoftware' class='subitems'>
 		<a <?php echo explorerLink('views/software.php?os=other'); ?>><img src='img/linux.dyn.svg'><?php echo LANG['linux']; ?></a>
 		<a <?php echo explorerLink('views/software.php?os=macos'); ?>><img src='img/apple.dyn.svg'><?php echo LANG['macos']; ?></a>
 		<a <?php echo explorerLink('views/software.php?os=windows'); ?>><img src='img/windows.dyn.svg'><?php echo LANG['windows']; ?></a>
@@ -24,14 +26,16 @@ require_once('../session.php');
 </div>
 <?php } ?>
 
-<div id='divNodePackages' class='node expandable'>
+<div class='node expandable'>
 	<a <?php echo explorerLink('views/package-families.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
-	<?php echo getPackageGroupsHtml($cl); ?>
+	<div id='divNodePackages' class='subitems'>
+		<?php echo getPackageGroupsHtml($cl); ?>
+	</div>
 </div>
 
 <div id='divNodeJobs' class='node expandable'>
 	<a <?php echo explorerLink('views/job-containers.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG['jobs']; ?></a>
-	<div id='divSubnodeJobs' class='subnode'>
+	<div id='divSubnodeJobs' class='subitems'>
 		<?php
 		foreach($cl->getJobContainers() as $container) {
 			echo "<a ".explorerLink('views/job-containers.php?id='.$container->id)."><img src='img/".$db->getJobContainerIcon($container->id).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
@@ -42,7 +46,9 @@ require_once('../session.php');
 
 <div id='divNodeReports' class='node expandable'>
 	<a <?php echo explorerLink('views/reports.php'); ?>><img src='img/report.dyn.svg'><?php echo LANG['reports']; ?></a>
-	<?php echo getReportGroupsHtml($cl); ?>
+	<div id='divNodePackages' class='subitems'>
+		<?php echo getReportGroupsHtml($cl); ?>
+	</div>
 </div>
 
 <?php
@@ -59,9 +65,11 @@ function getComputerGroupsHtml(CoreLogic $cl, $parentId=null) {
 	if(count($subgroups) == 0) return false;
 	foreach($subgroups as $group) {
 		$subHtml = getComputerGroupsHtml($cl, $group->id);
-		$html .= "<div id='divNodeComputerGroup".($group->id)."' class='subnode ".($subHtml!==False ? 'expandable' : '')."'>";
+		$html .= "<div class='subnode ".(empty($subHtml) ? '' : 'expandable')."'>";
 		$html .= "<a ".explorerLink('views/computers.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+		$html .= "<div id='divNodeComputerGroup".($group->id)."' class='subitems'>";
 		$html .= $subHtml;
+		$html .= "</div>";
 		$html .= "</div>";
 	}
 	return $html;
@@ -72,9 +80,11 @@ function getPackageGroupsHtml(CoreLogic $cl, $parentId=null) {
 	if(count($subgroups) == 0) return false;
 	foreach($subgroups as $group) {
 		$subHtml = getPackageGroupsHtml($cl, $group->id);
-		$html .= "<div id='divNodePackageGroup".($group->id)."' class='subnode ".($subHtml!==False ? 'expandable' : '')."'>";
+		$html .= "<div class='subnode ".(empty($subHtml) ? '' : 'expandable')."'>";
 		$html .= "<a ".explorerLink('views/packages.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+		$html .= "<div id='divNodePackageGroup".($group->id)."' class='subitems'>";
 		$html .= $subHtml;
+		$html .= "</div>";
 		$html .= "</div>";
 	}
 	return $html;
@@ -85,9 +95,11 @@ function getReportGroupsHtml(CoreLogic $cl, $parentId=null) {
 	if(count($subgroups) == 0) return false;
 	foreach($subgroups as $group) {
 		$subHtml = getReportGroupsHtml($cl, $group->id);
-		$html .= "<div id='divNodeReportGroup".($group->id)."' class='subnode ".($subHtml!==False ? 'expandable' : '')."'>";
+		$html .= "<div class='subnode ".(empty($subHtml) ? '' : 'expandable')."'>";
 		$html .= "<a ".explorerLink('views/reports.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+		$html .= "<div id='divNodeReportGroup".($group->id)."' class='subitems'>";
 		$html .= $subHtml;
+		$html .= "</div>";
 		$html .= "</div>";
 	}
 	return $html;

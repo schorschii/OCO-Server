@@ -279,18 +279,17 @@ h3 {
 #explorer-tree .node:hover > a {
 	border-color: #0079B8;
 }
-#explorer-tree .node > .subnode {
+#explorer-tree .node > .subitems {
 	margin-left: 17px;
 }
-#explorer-tree .subnode {
+#explorer-tree .subitems {
 	max-height: 0px;
 	overflow: hidden;
 	margin-left: 12px;
 	padding-left: 8px;
 	border-left: 1px dashed rgb(150,150,150,0.4);
 }
-#explorer-tree .node.expanded,
-#explorer-tree .subnode.expanded {
+#explorer-tree .subitems.expanded {
 	max-height: none;
 	overflow: visible;
 }

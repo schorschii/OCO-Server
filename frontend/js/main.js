@@ -352,7 +352,7 @@ var refreshSidebarTimer = null;
 var refreshSidebarState = JSON.parse(getCookie(COOKIE_SIDEBAR_STATE, '{}'));
 function refreshSidebar(callback=null, handleAutoRefresh=false) {
 	// save node expand states
-	var elements = obj('explorer-tree').querySelectorAll('.node, .subnode');
+	var elements = obj('explorer-tree').querySelectorAll('.subitems');
 	for(var i = 0; i < elements.length; i++) {
 		if(elements[i].id) {
 			refreshSidebarState[elements[i].id] = elements[i].classList.contains('expanded');
@@ -367,7 +367,7 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 		var updateExpandIcon = function(node) {
 			var isExpandable = false;
 			var isExpanded = false;
-			subnodes = node.querySelectorAll(':scope > .subnode');
+			subnodes = node.querySelectorAll(':scope > .subitems');
 			for(var n = 0; n < subnodes.length; n++) {
 				isExpanded = subnodes[n].classList.contains('expanded');
 			}
@@ -396,7 +396,7 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 			if(e.target.tagName == 'A') node = e.target.parentElement;
 			if(e.target.tagName == 'IMG') node = e.target.parentElement.parentElement;
 			var isExpanded = null;
-			var children = node.querySelectorAll(':scope > .subnode');
+			var children = node.querySelectorAll(':scope > .subitems');
 			for(var n = 0; n < children.length; n++) {
 				isExpanded = children[n].classList.contains('expanded');;
 			}
@@ -431,19 +431,6 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 			if(refreshSidebarState[key]) {
 				var node = obj(key);
 				if(node) node.classList.add('expanded');
-			}
-		}
-		// correct corrupt expand states (mixed expanded and collapsed in the same subnode, can occur if user adds/deletes a group)
-		var nodes = obj('explorer-tree').querySelectorAll('.node, .subnode');
-		for(var i = 0; i < nodes.length; i++) {
-			var isExpanded = false;
-			var subnodes = nodes[i].querySelectorAll(':scope > .subnode');
-			for(var n = 0; n < subnodes.length; n++) {
-				isExpanded = subnodes[n].classList.contains('expanded');
-			}
-			for(var n = 0; n < subnodes.length; n++) {
-				if(isExpanded) subnodes[n].classList.add('expanded');
-				else subnodes[n].classList.remove('expanded');
 			}
 		}
 	}, false);
