@@ -913,6 +913,7 @@ code.block.hscroll {
 div.details-abreast {
 	display: flex;
 	align-items: flex-start;
+	column-gap: 25px;
 }
 div.details-abreast > div h1,
 div.details-abreast > div h2,
@@ -928,9 +929,6 @@ div.details-abreast > div {
 	/* to preserve table box shadow */
 	padding: 4px;
 	margin: -4px;
-}
-div.details-abreast > div:not(:last-child) {
-	margin-right: 25px;
 }
 div.details-abreast > div > table {
 	width: 100%;
@@ -1137,9 +1135,7 @@ div.details-abreast > div > table {
 		width: 100%;
 		overflow: visible;
 		padding: 0px;
-	}
-	div.details-abreast > div:not(:last-child) {
-		margin-right: -4px;
+		margin: 0px;
 	}
 	.controls {
 		flex-wrap: wrap;

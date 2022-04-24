@@ -64,78 +64,80 @@ try {
 </div>
 <?php } ?>
 
-<table id='tblComputerData' class='list searchable sortable savesort'>
-<thead>
-	<tr>
-		<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblComputerData, this.checked)'></th>
-		<th class='searchable sortable'><?php echo LANG['hostname']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['os']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['version']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['ram']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['ip_addresses']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['mac_addresses']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['model']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['serial_no']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['agent']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['notes']; ?></th>
-		<th class='searchable sortable'><?php echo LANG['last_seen']; ?></th>
-	</tr>
-</thead>
-
-<tbody>
-<?php
-$counter = 0;
-foreach($computers as $c) {
-	$counter ++;
-	$ip_addresses = [];
-	$mac_addresses = [];
-	$cnetwork = $db->getComputerNetwork($c->id);
-	foreach($cnetwork as $n) {
-		if(!(empty($n->addr) || $n->addr == '-' || $n->addr == '?')) $ip_addresses[] = $n->addr;
-		if(!(empty($n->mac) || $n->mac == '-' || $n->mac == '?')) $mac_addresses[] = $n->mac;
-	}
-	$online = $c->isOnline();
-	echo "<tr>";
-	echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
-	echo "<td>";
-	echo  "<img src='".$c->getIcon()."' class='".($online ? 'online' : 'offline')."' title='".($online ? LANG['online'] : LANG['offline'])."'>&nbsp;";
-	echo  "<a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a>";
-	echo "</td>";
-	echo "<td>".htmlspecialchars($c->os)."</td>";
-	echo "<td>".htmlspecialchars($c->os_version)."</td>";
-	echo "<td sort_key='".htmlspecialchars($c->ram)."'>".htmlspecialchars(niceSize($c->ram, true, 0))."</td>";
-	echo "<td>".htmlspecialchars(implode($ip_addresses,', '))."</td>";
-	echo "<td>".htmlspecialchars(implode($mac_addresses,', '))."</td>";
-	echo "<td>".htmlspecialchars($c->manufacturer.' '.$c->model)."</td>";
-	echo "<td>".htmlspecialchars($c->serial)."</td>";
-	echo "<td>".htmlspecialchars($c->agent_version)."</td>";
-	echo "<td>".htmlspecialchars(shorter($c->notes))."</td>";
-	echo "<td>".htmlspecialchars($c->last_ping)."</td>";
-	echo "</tr>";
-}
-?>
-</tbody>
-
-<tfoot>
-	<tr>
-		<td colspan='999'>
-			<div class='spread'>
-				<div>
-					<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-					<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
-				</div>
-				<div>
-					<button onclick='event.preventDefault();downloadTableCsv("tblComputerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
-					<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-					<button onclick='wolSelectedComputer("computer_id[]")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-					<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("computer_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
-					<?php if($group !== null) { ?>
-						<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
-					<?php } ?>
-					<button onclick='removeSelectedComputer("computer_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
-				</div>
-			</div>
-		</td>
-	</tr>
-</tfoot>
-</table>
+<div class='details-abreast'>
+	<div>
+		<table id='tblComputerData' class='list searchable sortable savesort'>
+		<thead>
+			<tr>
+				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblComputerData, this.checked)'></th>
+				<th class='searchable sortable'><?php echo LANG['hostname']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['os']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['version']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['ram']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['ip_addresses']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['mac_addresses']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['model']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['serial_no']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['agent']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['notes']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['last_seen']; ?></th>
+			</tr>
+		</thead>
+		<tbody>
+		<?php
+		$counter = 0;
+		foreach($computers as $c) {
+			$counter ++;
+			$ip_addresses = [];
+			$mac_addresses = [];
+			$cnetwork = $db->getComputerNetwork($c->id);
+			foreach($cnetwork as $n) {
+				if(!(empty($n->addr) || $n->addr == '-' || $n->addr == '?')) $ip_addresses[] = $n->addr;
+				if(!(empty($n->mac) || $n->mac == '-' || $n->mac == '?')) $mac_addresses[] = $n->mac;
+			}
+			$online = $c->isOnline();
+			echo "<tr>";
+			echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
+			echo "<td>";
+			echo  "<img src='".$c->getIcon()."' class='".($online ? 'online' : 'offline')."' title='".($online ? LANG['online'] : LANG['offline'])."'>&nbsp;";
+			echo  "<a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a>";
+			echo "</td>";
+			echo "<td>".htmlspecialchars($c->os)."</td>";
+			echo "<td>".htmlspecialchars($c->os_version)."</td>";
+			echo "<td sort_key='".htmlspecialchars($c->ram)."'>".htmlspecialchars(niceSize($c->ram, true, 0))."</td>";
+			echo "<td>".htmlspecialchars(implode($ip_addresses,', '))."</td>";
+			echo "<td>".htmlspecialchars(implode($mac_addresses,', '))."</td>";
+			echo "<td>".htmlspecialchars($c->manufacturer.' '.$c->model)."</td>";
+			echo "<td>".htmlspecialchars($c->serial)."</td>";
+			echo "<td>".htmlspecialchars($c->agent_version)."</td>";
+			echo "<td>".htmlspecialchars(shorter($c->notes))."</td>";
+			echo "<td>".htmlspecialchars($c->last_ping)."</td>";
+			echo "</tr>";
+		}
+		?>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan='999'>
+					<div class='spread'>
+						<div>
+							<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
+							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+						</div>
+						<div>
+							<button onclick='event.preventDefault();downloadTableCsv("tblComputerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+							<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+							<button onclick='wolSelectedComputer("computer_id[]")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
+							<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("computer_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
+							<?php if($group !== null) { ?>
+								<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG['remove_from_group']; ?></button>
+							<?php } ?>
+							<button onclick='removeSelectedComputer("computer_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</tfoot>
+		</table>
+	</div>
+</div>
