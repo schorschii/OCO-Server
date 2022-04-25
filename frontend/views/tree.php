@@ -16,7 +16,7 @@ require_once('../session.php');
 </div>
 
 <?php if($currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
-<div id='divNodeSoftware' class='node expandable'>
+<div class='node expandable'>
 	<a <?php echo explorerLink('views/software.php'); ?>><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></a>
 	<div id='divSubnodeSoftware' class='subitems'>
 		<a <?php echo explorerLink('views/software.php?os=other'); ?>><img src='img/linux.dyn.svg'><?php echo LANG['linux']; ?></a>
@@ -44,9 +44,9 @@ require_once('../session.php');
 	</div>
 </div>
 
-<div id='divNodeReports' class='node expandable'>
+<div class='node expandable'>
 	<a <?php echo explorerLink('views/reports.php'); ?>><img src='img/report.dyn.svg'><?php echo LANG['reports']; ?></a>
-	<div id='divNodePackages' class='subitems'>
+	<div id='divSubnodeReports' class='subitems'>
 		<?php echo getReportGroupsHtml($cl); ?>
 	</div>
 </div>
