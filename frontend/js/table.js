@@ -341,6 +341,7 @@ function downloadTableCsv(table_id, separator = ';') {
 	var firstRow = true;
 	var csv = [];
 	for(var i = 0; i < rows.length; i++) {
+		if(rows[i].style.display == 'none') continue; // do not export invisible (filtered) lines
 		var firstColumn = true;
 		var row = [], cols = rows[i].querySelectorAll('td, th');
 		for(var j = 0; j < cols.length; j++) {
