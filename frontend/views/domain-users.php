@@ -22,7 +22,7 @@ if(!empty($_GET['id'])) {
 	<h1><img src='img/user.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($domainUser->username); ?></span></h1>
 </div>
 <div class='details-abreast'>
-	<div>
+	<div class='stickytable'>
 		<h2><?php echo LANG['aggregated_logins']; ?></h2>
 		<table id='tblDomainUserDetailData' class='list searchable sortable savesort'>
 			<thead>
@@ -59,7 +59,7 @@ if(!empty($_GET['id'])) {
 			</tfoot>
 		</table>
 	</div>
-	<div>
+	<div class='stickytable'>
 		<h2><?php echo LANG['history']; ?></h2>
 		<table id='tblDomainUserHistoryData' class='list searchable sortable savesort'>
 			<thead>
@@ -117,7 +117,7 @@ if(!empty($_GET['id'])) {
 	<h1><img src='img/users.dyn.svg'><span id='page-title'><?php echo LANG['all_domain_user']; ?></span></h1>
 </div>
 <div class='details-abreast margintop'>
-	<div>
+	<div class='stickytable'>
 		<table id='tblDomainUserData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>

@@ -122,7 +122,7 @@ if(!empty($_GET['id'])) {
 	</div>
 
 	<div class='details-abreast'>
-	<div>
+	<div class='stickytable'>
 		<table id='tblJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
@@ -206,7 +206,7 @@ if(!empty($_GET['id'])) {
 	</div>
 
 	<div class='details-abreast'>
-	<div>
+	<div class='stickytable'>
 		<table id='tblJobcontainerData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>

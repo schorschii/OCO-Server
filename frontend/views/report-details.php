@@ -49,7 +49,7 @@ try {
 </div>
 
 <div class='details-abreast'>
-	<div>
+	<div class='stickytable'>
 		<h2><?php echo LANG['results']; ?></h2>
 
 		<?php if($error !== null) { ?>

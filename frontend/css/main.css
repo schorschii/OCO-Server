@@ -829,6 +829,9 @@ table.list tfoot .spread {
 	justify-content: space-between;
 	align-items: center;
 }
+table.list tfoot .spread > div:last-child {
+	text-align: right;
+}
 
 img.small,
 table tr th > img,
@@ -932,6 +935,21 @@ div.details-abreast > div {
 }
 div.details-abreast > div > table {
 	width: 100%;
+}
+div.details-abreast > div.stickytable {
+	overflow: visible;
+}
+div.details-abreast > div.stickytable > table.list thead,
+div.details-abreast > div.stickytable > table.list tfoot {
+	position: sticky;
+	background-color: white;
+	z-index: 2;
+}
+div.details-abreast > div.stickytable > table.list thead {
+	inset-block-start: -20px;
+}
+div.details-abreast > div.stickytable > table.list tfoot {
+	inset-block-end: -20px;
 }
 
 .offline {

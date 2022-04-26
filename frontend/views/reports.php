@@ -65,7 +65,7 @@ try {
 <?php } ?>
 
 <div class='details-abreast'>
-	<div>
+	<div class='stickytable'>
 		<table id='tblReportData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
