@@ -345,6 +345,7 @@ h3 {
 	bottom: 0px;
 	background-color: transparent;
 	transition: background-color 0.1s ease;
+	z-index: 888;
 }
 #loader-container img {
 	height: 90px;
