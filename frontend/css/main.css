@@ -1249,7 +1249,9 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	code.block {
 		border: 1px solid rgba(255,255,255,0.1);
 	}
-	table.list, code, .box {
+	table.list, code, .box,
+	div.details-abreast > div.stickytable > table.list thead,
+	div.details-abreast > div.stickytable > table.list tfoot {
 		background-color: #161b22;
 	}
 	table.list tr th, table.list tr td {
