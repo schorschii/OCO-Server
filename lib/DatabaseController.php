@@ -45,6 +45,7 @@ class DatabaseController {
 			(SELECT count(id) FROM domain_user) AS "domain_users",
 			(SELECT count(id) FROM computer) AS "computers",
 			(SELECT count(id) FROM package) AS "packages",
+			(SELECT count(id) FROM job) AS "jobs",
 			(SELECT count(id) FROM job_container) AS "job_containers",
 			(SELECT count(id) FROM report) AS "reports"
 			FROM DUAL'
