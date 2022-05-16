@@ -96,7 +96,7 @@ rg \\ /
   :linux
     kernel /linux-live/LinuxMint20.1_amd64/casper/vmlinuz
     initrd /linux-live/LinuxMint20.1_amd64/casper/initrd.lz
-    imgargs vmlinuz initrd=initrd.lz root=/dev/nfs boot=casper ip=dhcp netboot=nfs nfsroot=10.0.1.3:/srv/tftp/linux-live/LinuxMint20.1_amd64/ toram -- automatic-ubiquity file=/cdrom/preseed/myconfig.cfg
+    imgargs vmlinuz initrd=initrd.lz root=/dev/nfs boot=casper hostname=${hostname} ip=dhcp netboot=nfs nfsroot=10.0.1.3:/srv/tftp/linux-live/LinuxMint20.1_amd64/ toram -- automatic-ubiquity file=/cdrom/preseed/myconfig.cfg
     boot
   ```
   - The files/paths in this example (`/iso-windows` and `/linux-live`) will be created in the following steps 4 and 5.
@@ -110,7 +110,8 @@ rg \\ /
     /srv/tftp/linux-live/LinuxMint20.1_amd64 0.0.0.0/0.0.0.0(ro,no_root_squash,sync,no_subtree_check)
     ```
   - Restart the NFS server.
-- Create preseed file for automatic installation: `/srv/tftp/linux-live/LinuxMint20.1_amd64/preseed/myconfig.cfg` (see `examples/mint.cfg` for examples)
+- Create preseed file for automatic installation: `/srv/tftp/linux-live/LinuxMint20.1_amd64/preseed/myconfig.cfg` (see `examples/mint.cfg` for examples).
+  - In contrast to Windows, it is not necessary to create separate config files for every computer, because the Ubuntu setup will take the hostname given as kernel parameter from iPXE (`hostname=${hostname}`).
 - Remaster Linux squashfs live filesystem (`/srv/tftp/linux-live/LinuxMint20.1_amd64/casper/filesystem.squashfs`) in order to integrate the OCO agent (and other software), so you don't have to manually install it after OS installation finished.
   - https://help.ubuntu.com/community/LiveCDCustomization
 
@@ -205,7 +206,7 @@ At this point, the ISO file can already be used to boot machines and install Win
 
 More information can be found in the official wimboot documentation: https://ipxe.org/howto/winpe
 
-To make fully unattended installations, you can now place some XML files into `/srv/smb/images/preseed` with the name of the MAC address of your computer, e.g. `00-50-56-aa-bb-cc.xml`. There are several tools out there to create such Windows setup answer files, e.g. https://www.windowsafg.com/win10x86_x64_uefi.html.
+To make fully unattended installations, you can now place some XML files into `/srv/smb/images/preseed` with the name of the MAC address of your computer, e.g. `00-50-56-aa-bb-cc.xml` (separate config files per computer are necessary under Windows in order to give every computer the desired hostname). There are several tools out there to create such Windows setup answer files, e.g. https://www.windowsafg.com/win10x86_x64_uefi.html.
 
 ¹ You can simply install it on Ubuntu or derived distros using `apt install wimtools mkisofs cdrkit`.
 
