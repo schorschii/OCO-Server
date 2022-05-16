@@ -98,6 +98,15 @@ pnputil -i -a oemsetup.inf
 ```
 Where `oemsetup.inf` is the name of your driver's `.inf` file. Important: the ZIP archive must contain all necessary driver files, not only the `.inf` metadata file!
 
+##### Update Programs Which Are Currently Running
+Under Windows, an executable file cannot be deleted if the program is currently open. This can cause problems (e.g. MSI exit code 3010) when installing a new version of a package.
+
+To overcome this situation you can do two things:
+- add a restart after the uninstallation procedure, so that the following installation procedure of the new package version can overwrite all files without errors
+- add a kill command before the installation command, e.g. `taskkill /F /IM myprogram.exe /T & msiexec /quiet /i MyProgram.msi`
+
+In both cases, make sure to inform the user that a reboot or program termination will be forced.
+
 #### Debian/Ubuntu Linux: `apt`/`gdebi`
 - package from official repository: `apt install -y gimp`
 - package from official repository uninstallation: `apt remove -y gimp`
