@@ -3,10 +3,13 @@ You can use additional software to extend your OCO server for (unattended) OS in
 
 ## 1. Install Server Software
 Install the necessary packages on your Debian server:
-- isc-dhcp-server
-- tftp-hpa
+- General: `apt install isc-dhcp-server tftp-hpa`
+- For Linux installation: `apt install nfs-kernel-server`
+- For Windows installation: `apt install samba wimtools mkisofs cdrkit`
 
 ## 2. Configure DHCP/TFTP Server
+Create the necessary configuration files from the following examples. Adjust your DHCP configuration for your environment (especially the subnet declaration).
+
 ```
 *** /etc/dhcp/dhcpd.conf ***
 
@@ -54,6 +57,8 @@ host NOTEBOOK01 {
   fixed-address 10.0.2.10;
 }
 # more hosts here...
+
+# you can use the OCO ISC DHCP server reservation editor extension to edit this file in the web UI (https://github.com/schorschii/oco-server-extensions)
 
 # or: define an address pool in subnet declaration
 ```
@@ -104,7 +109,7 @@ rg \\ /
 
 ## 4. Set Up Linux Installation
 - For example, extract a Linux Mint 20.1 `.iso` file into `/srv/tftp/linux-live/LinuxMint20.1_amd64/` (this also works with Ubuntu or other derived distros)
-- Install the NFS server using `apt install nfs-kernel-server`
+- Configure the NFS server:
   - Share the Mint/Ubuntu sources with your client computers by adding the following line into `/etc/exports`:
     ```
     /srv/tftp/linux-live/LinuxMint20.1_amd64 0.0.0.0/0.0.0.0(ro,no_root_squash,sync,no_subtree_check)
@@ -118,7 +123,7 @@ rg \\ /
 ## 5. Set Up Windows Installation
 - Download the iPXE wimboot module: https://ipxe.org/wimboot
   - move it to `/srv/tftp/efi/wimboot`
-- Install the Samba server using `apt install samba`
+- Configure the Samba server:
   - Create a directory for your Windows images, e.g. `/srv/smb/images`.
   - Share the Windows sources with your client computers by adding the following into `/etc/samba/smb.conf`:
     ```
@@ -132,7 +137,7 @@ rg \\ /
   - Restart the Samba server.
 - Create a directory for your current Windows version, e.g. `/srv/smb/images/Windows10`
   - Extract your Windows `.iso` file into this folder
-- Create a minimal Windows setup environment ("WinPE") `.iso` using the Linux command line tool `mkwinpeimg`¹.
+- Create a minimal Windows setup environment ("WinPE") `.iso` using the Linux command line tool `mkwinpeimg`.
   - Create a start script `/tmp/startnet.cmd` for your Windows setup (this script will be integrated into your WinPE `.iso`). This example script checks if there exists a XML file with the mac address of the client. If yes, it starts the setup with this XML file for unattended installation. If not, it starts the setup in normal (user-interactive) mode.
     ```
     @echo off
@@ -207,8 +212,6 @@ At this point, the ISO file can already be used to boot machines and install Win
 More information can be found in the official wimboot documentation: https://ipxe.org/howto/winpe
 
 To make fully unattended installations, you can now place some XML files into `/srv/smb/images/preseed` with the name of the MAC address of your computer, e.g. `00-50-56-aa-bb-cc.xml` (separate config files per computer are necessary under Windows in order to give every computer the desired hostname). There are several tools out there to create such Windows setup answer files, e.g. https://www.windowsafg.com/win10x86_x64_uefi.html.
-
-¹ You can simply install it on Ubuntu or derived distros using `apt install wimtools mkisofs cdrkit`.
 
 ## 6. Boot!
 Boot your client device via PXE. Maybe you need to enter your BIOS/UEFI settings and set the network card as first boot device.
