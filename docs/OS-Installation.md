@@ -80,15 +80,17 @@ rg \\ /
   #!ipxe
 
   menu Open Computer Orchestration PXE
+    item --gap ${hostname}  ${ip}  ${mac}  via ${net0/next-server}
+    item --gap
     item windows Windows Installation Bootloader via SMB
     item linux Linux Installation Bootloader via NFS
     choose os && goto ${os}
 
   :windows
     kernel /efi/wimboot
-    initrd /Boot/BCD         BCD
-    initrd /Boot/boot.sdi    boot.sdi
-    initrd /Boot/winpe_x64.wim boot.wim
+    initrd /iso-windows/W10/BCD           BCD
+    initrd /iso-windows/W10/boot.sdi      boot.sdi
+    initrd /iso-windows/W10/boot.wim      boot.wim
     boot
 
   :linux
@@ -97,19 +99,119 @@ rg \\ /
     imgargs vmlinuz initrd=initrd.lz root=/dev/nfs boot=casper ip=dhcp netboot=nfs nfsroot=10.0.1.3:/srv/tftp/linux-live/LinuxMint20.1_amd64/ toram -- automatic-ubiquity file=/cdrom/preseed/myconfig.cfg
     boot
   ```
+  - The files/paths in this example (`/iso-windows` and `/linux-live`) will be created in the following steps 4 and 5.
+  - For the Ubuntu setup, replace `nfsroot=10.0.1.3` with your server's IP address (the NFS server will be installed in the Linux section, step 4).
 
 ## 4. Set Up Linux Installation
-- For example, unzip a Linux Mint 20.1 `.iso` file into `/srv/tftp/linux-live/LinuxMint20.1_amd64/` (this also works with Ubuntu or other derived distros)
+- For example, extract a Linux Mint 20.1 `.iso` file into `/srv/tftp/linux-live/LinuxMint20.1_amd64/` (this also works with Ubuntu or other derived distros)
+- Install the NFS server using `apt install nfs-kernel-server`
+  - Share the Mint/Ubuntu sources with your client computers by adding the following line into `/etc/exports`:
+    ```
+    /srv/tftp/linux-live/LinuxMint20.1_amd64 0.0.0.0/0.0.0.0(ro,no_root_squash,sync,no_subtree_check)
+    ```
+  - Restart the NFS server.
 - Create preseed file for automatic installation: `/srv/tftp/linux-live/LinuxMint20.1_amd64/preseed/myconfig.cfg` (see `examples/mint.cfg` for examples)
-- Remaster Linux squashfs live filesystem in order to integrate the OCO agent (and other software), so you don't have to manually install it after OS installation finished.
+- Remaster Linux squashfs live filesystem (`/srv/tftp/linux-live/LinuxMint20.1_amd64/casper/filesystem.squashfs`) in order to integrate the OCO agent (and other software), so you don't have to manually install it after OS installation finished.
   - https://help.ubuntu.com/community/LiveCDCustomization
 
 ## 5. Set Up Windows Installation
-- https://ipxe.org/howto/winpe
+- Download the iPXE wimboot module: https://ipxe.org/wimboot
+  - move it to `/srv/tftp/efi/wimboot`
+- Install the Samba server using `apt install samba`
+  - Create a directory for your Windows images, e.g. `/srv/smb/images`.
+  - Share the Windows sources with your client computers by adding the following into `/etc/samba/smb.conf`:
+    ```
+    [images]
+    path = /srv/smb/images
+    guest ok = yes
+    comment=installation files
+    usershare_acl=S-1-1-0:F
+    read only = yes
+    ```
+  - Restart the Samba server.
+- Create a directory for your current Windows version, e.g. `/srv/smb/images/Windows10`
+  - Extract your Windows `.iso` file into this folder
+- Create a minimal Windows setup environment ("WinPE") `.iso` using the Linux command line tool `mkwinpeimg`¹.
+  - Create a start script `/tmp/startnet.cmd` for your Windows setup (this script will be integrated into your WinPE `.iso`). This example script checks if there exists a XML file with the mac address of the client. If yes, it starts the setup with this XML file for unattended installation. If not, it starts the setup in normal (user-interactive) mode.
+    ```
+    @echo off
+
+    REM ==============================
+    REM OPEN COMPUTER ORCHESTRATION
+    REM startnet.cmd
+    REM Windows Setup Bootstrap Script
+    REM ------------------------------
+    REM (c) 2020-2022 Georg Sieber
+    REM ==============================
+
+    REM ==============================
+    REM Variables
+    REM ------------------------------
+    set IMAGE_SHARE=\\YOUROCOSERVER.example.com\images
+    set SETUP_EXE=Windows10\setup.exe
+    set PRESEED_DIR=preseed
+    REM ==============================
+
+    echo OPEN COMPUTER ORCHESTRATION (OCO)
+    echo Initializing Windows Setup. Please wait...
+
+    REM init setup environment
+    wpeinit
+
+    REM wait for some NICs to come up (Fujitsu Qs)
+    ping 127.0.0.1 -n 6 > nul
+
+    REM print ipconfig for debugging
+    ipconfig
+
+    REM get mac address
+    for /F "tokens=*" %%a in ('ipconfig /all') DO (
+    	for /F "tokens=1,2 delims=:" %%b in ('echo %%a') DO (
+    		if "%%b" == "Physische Adresse . . . . . . . . " (
+    			SET mac=%%c
+    		)
+    	)
+    )
+    SET "mac=%mac: =%"
+
+    REM print mac address for debugging
+    echo.
+    echo Meine MAC-Adresse: %mac%
+
+    REM mount SMB share with windows sources
+    echo Mount I: -> %IMAGE_SHARE%
+    net use I: %IMAGE_SHARE% /user:dummy dummy
+
+    REM start setup with specific unattended config
+    if exist I:\%PRESEED_DIR%\%mac%.xml (
+    	echo Starting setup with config file: I:\\%PRESEED_DIR%\\%mac%.xml ...
+    	I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%mac%.xml
+    ) else (
+    	echo Could not find an unattended installation answer file. We recommend a Linux installation instead.
+    	I:\%SETUP_EXE%
+    )
+
+    REM fallback: start shell if setup could not be started
+    cmd.exe
+    pause
+    ```
+  - Replace `YOUROCOSERVER.example.com` with your server address.
+  - Execute `mkwinpeimg --iso --start-script=/tmp/startnet.cmd --windows-dir=/srv/smb/images/Windows10 /srv/tftp/iso-windows/Windows10.iso` to create the WinPE `.iso` file.
+
+At this point, the ISO file can already be used to boot machines and install Windows systems with the sources and unattended configuration from your Samba server. Next, we configure EFI PXE boot.
+
+- Create a directory for your current Windows version, e.g. `/srv/tftp/iso-windows/W10`
+  - Extract the files `BCD`, `boot.sdi` and `boot.wim` from your WinPE `/srv/tftp/iso-windows/Windows10.iso` into this directory.
+
+More information can be found in the official wimboot documentation: https://ipxe.org/howto/winpe
+
+To make fully unattended installations, you can now place some XML files into `/srv/smb/images/preseed` with the name of the MAC address of your computer, e.g. `00-50-56-aa-bb-cc.xml`. There are several tools out there to create such Windows setup answer files, e.g. https://www.windowsafg.com/win10x86_x64_uefi.html.
+
+¹ You can simply install it on Ubuntu or derived distros using `apt install wimtools mkisofs cdrkit`.
 
 ## 6. Boot!
 Boot your client device via PXE. Maybe you need to enter your BIOS/UEFI settings and set the network card as first boot device.
 
-Disable "CSM (Compatibility Support Module)" if it exists in the BIOS/UEFI of your computer, this will ensure your UEFI starts the OS in EFI mode, not in legacy BIOS mode.
+Make sure that you boot in EFI mode. For that, disable CSM (Compatibility Support Module) in the BIOS/UEFI settings of your computer.
 
 You also need to disable Secure Boot in order to load iPXE. After installation, you can turn it on again.
