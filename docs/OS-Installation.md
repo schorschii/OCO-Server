@@ -115,10 +115,46 @@ rg \\ /
     /srv/tftp/linux-live/LinuxMint20.1_amd64 0.0.0.0/0.0.0.0(ro,no_root_squash,sync,no_subtree_check)
     ```
   - Restart the NFS server.
-- Create preseed file for automatic installation: `/srv/tftp/linux-live/LinuxMint20.1_amd64/preseed/myconfig.cfg` (see `examples/mint.cfg` for examples).
-  - In contrast to Windows, it is not necessary to create separate config files for every computer, because the Ubuntu setup will take the hostname given as kernel parameter from iPXE (`hostname=${hostname}`).
-- Remaster Linux squashfs live filesystem (`/srv/tftp/linux-live/LinuxMint20.1_amd64/casper/filesystem.squashfs`) in order to integrate the OCO agent (and other software), so you don't have to manually install it after OS installation finished.
-  - https://help.ubuntu.com/community/LiveCDCustomization
+- Remaster the Linux squashfs live filesystem (`/srv/tftp/linux-live/LinuxMint20.1_amd64/casper/filesystem.squashfs`) in order to integrate the OCO agent (and other software), so you don't have to manually install it after the OS installation finished. The procedure is described in detail [here](https://help.ubuntu.com/community/LiveCDCustomization). The most important steps are:
+  ```
+  # extract the squashfs and copy odo-agent.deb in place
+  cd /srv/tftp/linux-live/LinuxMint20.1_amd64/casper/
+  unsquashfs filesystem.squashfs
+  mv squashfs-root edit
+
+  # mount the special file systems (in order to work with apt etc.) and dive into chroot
+  mount --bind /run/ edit/run
+  mount --bind /dev/ edit/dev
+  chroot edit
+  mount -t proc none /proc
+  mount -t sysfs none /sys
+  mount -t devpts none /dev/pts
+
+  # do the customizations you like
+  cd /tmp
+  wget https://github.com/schorschii/OCO-Agent/releases/download/vX.X.X/oco-agent.deb
+  gdebi -n oco-agent.deb
+
+  # clean up and leave chroot
+  umount /proc || umount -lf /proc
+  umount /sys
+  umount /dev/pts
+  umount /dev
+  exit
+
+  # create new squashfs
+  rm filesystem.squashfs
+  mksquashfs edit filesystem.squashfs
+  ```
+
+### Unattended Installation
+You can now create preseed file `/srv/tftp/linux-live/LinuxMint20.1_amd64/preseed/myconfig.cfg` for automatic installation (see `examples/mint.cfg` for examples).
+
+In contrast to Windows, it is not necessary to create separate config files for every computer, because the Ubuntu setup will take the hostname given as kernel parameter from iPXE (`hostname=${hostname}`).
+
+Notice that the NFS share is readable for everyone. Therefore, you should not put any plaintext password in it. Instead, store an appropriate password hash in the preseed file.
+
+In addition to that, can use dynamic administrator passwords by using [LAPS](https://github.com/schorschii/LAPS4LINUX).
 
 ## 5. Set Up Windows Installation
 - Download the iPXE wimboot module: https://ipxe.org/wimboot
@@ -203,15 +239,38 @@ rg \\ /
     ```
   - Replace `YOUROCOSERVER.example.com` with your server address.
   - Execute `mkwinpeimg --iso --start-script=/tmp/startnet.cmd --windows-dir=/srv/smb/images/Windows10 /srv/tftp/iso-windows/Windows10.iso` to create the WinPE `.iso` file.
-
-At this point, the ISO file can already be used to boot machines and install Windows systems with the sources and unattended configuration from your Samba server. Next, we configure EFI PXE boot.
-
 - Create a directory for your current Windows version, e.g. `/srv/tftp/iso-windows/W10`
   - Extract the files `BCD`, `boot.sdi` and `boot.wim` from your WinPE `/srv/tftp/iso-windows/Windows10.iso` into this directory.
+- Add the OCO agent setup to the Windows sources for automatic installation.
+  - Insert the setup `.exe` into `/srv/smb/images/Windows10/sources/$OEM$/$$/Setup/Files`.
+  - Create `/srv/smb/images/Windows10/sources/$OEM$/$$/Setup/Scripts/SetupComplete.cmd` with the following content:
+    ```
+    @echo off
+    
+    echo "OCO-Agent-Installation..." >> C:\Windows\installation.log
+    "%WINDIR%\Setup\Files\oco-agent.exe" /SILENT >> C:\Windows\installation.log
+    net stop oco-agent >> C:\Windows\installation.log
+
+    echo "Temporäre Setup-Dateien löschen..." >> C:\Windows\installation.log
+    rd /q /s "%WINDIR%\Setup\Files" >> C:\Windows\installation.log
+
+    echo "Reboot tut gut..." >> C:\Windows\installation.log
+    shutdown /r /f /t 5 >> C:\Windows\installation.log
+    del /q /f "%0" >> C:\Windows\installation.log
+    ```
 
 More information can be found in the official wimboot documentation: https://ipxe.org/howto/winpe
 
-To make fully unattended installations, you can now place some XML files into `/srv/smb/images/preseed` with the name of the MAC address of your computer, e.g. `00-50-56-aa-bb-cc.xml` (separate config files per computer are necessary under Windows in order to give every computer the desired hostname). There are several tools out there to create such Windows setup answer files, e.g. https://www.windowsafg.com/win10x86_x64_uefi.html.
+### Unattended Installation
+To make fully unattended installations, you can now place some XML files into `/srv/smb/images/preseed` with the name of the MAC address of your computer, e.g. `00-50-56-aa-bb-cc.xml` (separate config files per computer are necessary under Windows in order to give every computer the desired hostname). Of course, this file creation should be automated with some kind of user interface and own scripts in your specific device deployment workflow.
+
+There are several tools out there to create such Windows setup answer files, e.g. https://www.windowsafg.com/win10x86_x64_uefi.html.
+
+Notice that the Samba share is readable for everyone. Therefore, you should not set an administrator password in your unattended `.xml`, as it is only stored Base64 encoded. This can simply be decoded into plaintext!
+
+Instead, you can use a technique described [here](https://georg-sieber.de/?page=blog-windows-hash) to put a password hash into the `.xml` file (as known from Linux preseed files) instead of a plaintext password.
+
+In addition to that, can use dynamic administrator passwords by using [LAPS](https://www.microsoft.com/en-us/download/details.aspx?id=46899).
 
 ## 6. Boot!
 Boot your client device via PXE. Maybe you need to enter your BIOS/UEFI settings and set the network card as first boot device.
