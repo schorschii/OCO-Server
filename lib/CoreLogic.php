@@ -1405,8 +1405,13 @@ class CoreLogic {
 		$u = $this->db->getSystemUser($id);
 		if($u === null) throw new NotFoundException();
 		if(!empty($u->ldap)) {
+			$checkDescription = $u->description;
+			if($checkDescription === null) $checkDescription = '';
 			// on ldap accounts, only the role should be changed
-			if($u->username !== $username || $u->fullname !== $fullname || $u->description !== $description || !empty($password)) {
+			if($u->username !== $username
+			|| $u->fullname !== $fullname
+			|| $checkDescription !== $description
+			|| !empty($password)) {
 				throw new InvalidRequestException(LANG['ldap_accounts_cannot_be_modified']);
 			}
 		}
