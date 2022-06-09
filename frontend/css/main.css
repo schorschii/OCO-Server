@@ -1,3 +1,13 @@
+/*** Fonts ***/
+@font-face {
+	font-family: 'Quicksand';
+	src: url('../fonts/Quicksand-VariableFont_wght.ttf');
+}
+@font-face {
+	font-family: 'SourceCodePro';
+	src: url('../fonts/SourceCodePro-VariableFont_wght.ttf');
+}
+
 /*** Main ***/
 body, html {
 	height: 100%;
@@ -403,7 +413,7 @@ body.loading2 #loader-container {
 	margin-top: 15px;
 }
 #dialog-container #dialog-box #dialog-text.monospace {
-	font-family: monospace;
+	font-family: 'SourceCodePro';
 	white-space: pre-wrap;
 	border-left: 2px solid rgb(200,200,200);
 	padding: 10px;
@@ -890,7 +900,7 @@ a.subbuttons > button {
 	font-size: 90%;
 }
 .monospace {
-	font-family: monospace;
+	font-family: 'SourceCodePro';
 }
 .rawvalue {
 	display: none;
