@@ -1047,29 +1047,41 @@ class CoreLogic {
 			$description, $wolSent, $shutdownWakedAfterCompletion,
 			$sequenceMode, $priority, $container->agent_ip_ranges
 		)) {
-			$count = 0;
 			foreach($this->db->getAllJobByContainer($container->id) as $job) {
 				if($job->state == Job::STATUS_FAILED
 				|| $job->state == Job::STATUS_EXPIRED
 				|| $job->state == Job::STATUS_OS_INCOMPATIBLE
 				|| $job->state == Job::STATUS_PACKAGE_CONFLICT) {
-					$jobs[] = $job;
-					if($this->db->addJob($jcid,
-						$job->computer_id, $job->package_id,
-						$job->package_procedure, $job->success_return_codes,
-						$job->is_uninstall, $job->download,
-						$job->post_action, $job->post_action_timeout,
-						$job->sequence
+
+					// use the current package procedure, return codes, post action
+					$package = $this->db->getPackage($job->package_id);
+					$newJob = new Job();
+					$newJob->job_container_id = $jcid;
+					$newJob->computer_id = $job->computer_id;
+					$newJob->package_id = $job->package_id;
+					$newJob->package_procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
+					$newJob->success_return_codes = empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes;
+					$newJob->is_uninstall = $job->is_uninstall;
+					$newJob->download = $package->getFilePath() ? true : false;
+					$newJob->post_action = empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action;
+					$newJob->post_action_timeout = $job->post_action_timeout;
+					$newJob->sequence = $job->sequence;
+
+					if($this->db->addJob($newJob->job_container_id,
+						$newJob->computer_id, $newJob->package_id,
+						$newJob->package_procedure, $newJob->success_return_codes,
+						$newJob->is_uninstall, $newJob->download,
+						$newJob->post_action, $newJob->post_action_timeout,
+						$newJob->sequence
 					)) {
-						if($this->db->removeJob($job->id)) {
-							$count ++;
-						}
+						$jobs[] = $newJob;
+						$this->db->removeJob($job->id);
 					}
 				}
 			}
 
 			// check if there are any computer & packages
-			if($count == 0) {
+			if(count($jobs) == 0) {
 				$this->db->removeJobContainer($jcid);
 				throw new InvalidRequestException(LANG['no_jobs_created']);
 			}
