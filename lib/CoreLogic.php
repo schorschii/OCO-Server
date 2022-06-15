@@ -1062,7 +1062,7 @@ class CoreLogic {
 					$newJob->package_procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
 					$newJob->success_return_codes = empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes;
 					$newJob->is_uninstall = $job->is_uninstall;
-					$newJob->download = $package->getFilePath() ? true : false;
+					$newJob->download = $package->getFilePath() ? 1 : 0;
 					$newJob->post_action = empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action;
 					$newJob->post_action_timeout = $job->post_action_timeout;
 					$newJob->sequence = $job->sequence;
