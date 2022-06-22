@@ -337,7 +337,7 @@ try {
 				foreach($db->getComputerPackage($computer->id) as $p) {
 					$counter ++;
 					echo '<tr>';
-					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
+					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" package_id="'.$p->package_id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
 					echo '<td><a '.explorerLink('views/package-details.php?id='.$p->package_id).'>'.htmlspecialchars($p->package_family_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 					echo '<td>'.htmlspecialchars($p->installed_by).'</td>';
 					echo '<td>'.htmlspecialchars($p->installed).'</td>';
@@ -354,6 +354,8 @@ try {
 								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 							</div>
 							<div>
+								<button onclick='deploySelectedPackage("package_id[]", "package_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+								<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("package_id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 								<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 								<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button>
 							</div>
