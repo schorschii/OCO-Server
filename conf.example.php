@@ -14,11 +14,10 @@ const CLIENT_API_KEY                  = 'Ungah2oo'; // key for using the API - g
 
 const AGENT_SELF_REGISTRATION_ENABLED = false;      // enable/disable automatic agent registration
 const AGENT_REGISTRATION_KEY          = 'ernesto';  // agent registration key - generate your own!
-const AGENT_UPDATE_INTERVAL           = 3600;       // 1 hour
+const AGENT_UPDATE_INTERVAL           = 3600;       // update computer details every 1 hour
 
 const PURGE_SUCCEEDED_JOBS_AFTER      = 14400;      // 4 hours
 const PURGE_FAILED_JOBS_AFTER         = 172800;     // 2 days
-
 const PURGE_DOMAIN_USER_LOGONS_AFTER  = 31536000;   // 1 year
 
 const CHECK_UPDATE                    = true;       // check for new OCO versions
@@ -45,7 +44,7 @@ const DB_PASS = 'PASSWORD';
  If you want to use LDAP user sync and login, please fill the following config lines.
  Otherwise, please set LDAP_SERVER to »null«.
 
- To sync LDAP users with the OCO system user database, please execute "php lib/ldapsync.php" (via Cron)
+ To sync LDAP users with the OCO system user database, please execute `php lib/ldapsync.php` (via cron).
 
  Set LDAP_SYNC_GROUP to »null« if you want to sync all users inside LDAP_QUERY_ROOT.
  Otherwise, insert the LDAP path of the group.
@@ -96,7 +95,7 @@ const SATELLITE_WOL_SERVER = [
 ////////////////////////////////////
 ///// ADDITIONAL CONFIGURATION /////
 ////////////////////////////////////
-// (custom) computer actions, mainly intended to start remote sessions
+/* (custom) computer actions, mainly intended to start remote sessions */
 const COMPUTER_COMMANDS = [
 	['icon'=>'img/screen-access.dyn.svg', 'name'=>'VNC', 'description'=>'client_extension_note', 'command'=>'vnc://$$TARGET$$', 'new_tab'=>false],
 	['icon'=>'img/screen-access.dyn.svg', 'name'=>'RDP', 'description'=>'client_extension_note', 'command'=>'rdp://$$TARGET$$', 'new_tab'=>false],
@@ -105,7 +104,7 @@ const COMPUTER_COMMANDS = [
 	['icon'=>'img/portscan.dyn.svg', 'name'=>'Nmap', 'description'=>'client_extension_note', 'command'=>'nmap://$$TARGET$$', 'new_tab'=>false],
 ];
 
-// strings randomly shown on the login page
+/* strings randomly shown on the login page */
 const LOGIN_SCREEN_QUOTES = [
 	"Have you tried turning it off and on again?",
 	"The fact that ACPI was designed by a group of monkeys high on LSD, and is some of the worst designs in the industry obviously makes running it at any point pretty damn ugly. ~ Torvalds, Linus",
@@ -126,10 +125,10 @@ const LOGIN_SCREEN_QUOTES = [
 	"10 HOME<br>20 SWEET<br>30 GOTO 10",
 ];
 
-// message on the home page (use 'default_motd' for the vendor default text)
+/* message on the home page (use 'default_motd' for the vendor default text) */
 const MOTD = 'default_motd';
 
-// various UI default settings
+/* various UI default settings */
 const DEFAULTS = [
 	// deployment page defaults
 	'default-use-wol' => false,
