@@ -221,7 +221,7 @@ CREATE TABLE `job` (
   `post_action_timeout` int(11) DEFAULT NULL,
   `sequence` int(11) NOT NULL DEFAULT 0,
   `state` int(11) NOT NULL DEFAULT 0,
-  `return_code` int(11) DEFAULT NULL,
+  `return_code` bigint(11) DEFAULT NULL,
   `message` longtext NOT NULL,
   `wol_shutdown_set` datetime DEFAULT NULL,
   `last_update` datetime NOT NULL DEFAULT current_timestamp()
