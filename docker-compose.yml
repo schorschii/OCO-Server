@@ -5,8 +5,9 @@ services:
     ports:
       - 8088:80
     volumes:
-      # You need to copy the conf.example.php to conf.php and change db-parameters to the ones
-      # used below
+      # You need to copy the conf.example.php to conf.php
+      # and change db parameters to the ones used below
+      # (DB_HOST = 'oco-db')
       - ./conf.php:/var/www/oco/conf.php
   oco-db:
     image: mariadb
