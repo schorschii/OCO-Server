@@ -1,32 +1,35 @@
 <?php
 
+/////////////////////////////////
 ///// GENERAL CONFIGURATION /////
-const PACKAGE_PATH                    = '/var/www/oco/depot';
-const COMPUTER_OFFLINE_SECONDS        = 125;
-const WOL_SHUTDOWN_EXPIRY_SECONDS     = 300;
+/////////////////////////////////
+const PACKAGE_PATH                    = '/var/www/oco/depot';  // path for uploaded software packages
+const COMPUTER_OFFLINE_SECONDS        = 125;        // assume computer as offline after 2 minutes
+const WOL_SHUTDOWN_EXPIRY_SECONDS     = 300;        // assume WOL did not worked after 5 minutes
 
-const DO_HOUSEKEEPING_BY_WEB_REQUESTS = false;
+const DO_HOUSEKEEPING_BY_WEB_REQUESTS = false;      // db cleanup - normally done via cron job but can be done on every web request (not recommended)
 
-const CLIENT_API_ENABLED              = false;
-const CLIENT_API_KEY                  = 'Ungah2oo';
+const CLIENT_API_ENABLED              = false;      // enable/disable the api-client.php
+const CLIENT_API_KEY                  = 'Ungah2oo'; // key for using the API - generate your own!
 
-const AGENT_SELF_REGISTRATION_ENABLED = false;
-const AGENT_REGISTRATION_KEY          = 'ernesto';
-const AGENT_UPDATE_INTERVAL           = 3600; // 1 hour
+const AGENT_SELF_REGISTRATION_ENABLED = false;      // enable/disable automatic agent registration
+const AGENT_REGISTRATION_KEY          = 'ernesto';  // agent registration key - generate your own!
+const AGENT_UPDATE_INTERVAL           = 3600;       // 1 hour
 
-const PURGE_SUCCEEDED_JOBS_AFTER      = 14400;  // 4 hours
-const PURGE_FAILED_JOBS_AFTER         = 172800; // 2 days
+const PURGE_SUCCEEDED_JOBS_AFTER      = 14400;      // 4 hours
+const PURGE_FAILED_JOBS_AFTER         = 172800;     // 2 days
 
-const PURGE_DOMAIN_USER_LOGONS_AFTER  = 31536000; // 1 year
+const PURGE_DOMAIN_USER_LOGONS_AFTER  = 31536000;   // 1 year
 
-const CHECK_UPDATE                    = true;
+const CHECK_UPDATE                    = true;       // check for new OCO versions
 
-// Available Log Levels: 0 -> DEBUG, 1 -> INFO, 2 -> WARNING, 3 -> ERROR, 4 -> NO LOGGING
-const LOG_LEVEL                       = 2;
-const PURGE_LOGS_AFTER                = 172800; // 2 days
+const LOG_LEVEL                       = 2;          // available levels: 0->DEBUG, 1->INFO, 2->WARNING, 3->ERROR, 4->NO LOGGING
+const PURGE_LOGS_AFTER                = 172800;     // 2 days
 
 
+///////////////////////////////
 ///// MySQL CONFIGURATION /////
+///////////////////////////////
 const DB_TYPE = 'mysql';
 const DB_PORT = '3306';
 const DB_HOST = 'localhost';
@@ -35,7 +38,9 @@ const DB_USER = 'oco';
 const DB_PASS = 'PASSWORD';
 
 
+/////////////////////////////////////////
 ///// LDAP CONFIGURATION (optional) /////
+/////////////////////////////////////////
 /*
  If you want to use LDAP user sync and login, please fill the following config lines.
  Otherwise, please set LDAP_SERVER to »null«.
@@ -64,7 +69,9 @@ const LDAP_SYNC_GROUP = null;
 const LDAP_SYNC_DEFAULT_ROLE_ID = 1;
 
 
+//////////////////////////////////////////////////
 ///// SATELLITE WOL CONFIGURATION (optional) /////
+//////////////////////////////////////////////////
 /*
  If you want to use Wake On Lan (WOL) on foreign networks (networks, in which your OCO server
  does not have a network card) you can configure the satellite WOL technology.
@@ -74,19 +81,22 @@ const LDAP_SYNC_DEFAULT_ROLE_ID = 1;
  Please make sure that the remote server can be accessed with the defined SSH key and that "wakeonlan" ist installed.
 */
 const SATELLITE_WOL_SERVER = [
-	#[
-	#	'ADDRESS' => 'remoteserver01',
-	#	'PORT' => 22,
-	#	'USER' => 'root',
-	#	'PRIVKEY' => '/path/to/id_rsa',
-	#	'PUBKEY' => '/path/to/id_rsa.pub',
-	#	'COMMAND' => null, // if »null« OCO uses the default command "wakeonlan"
-	#],
+	# [
+	# 	'ADDRESS' => 'remoteserver01',
+	# 	'PORT' => 22,
+	# 	'USER' => 'root',
+	# 	'PRIVKEY' => '/path/to/id_rsa',
+	# 	'PUBKEY' => '/path/to/id_rsa.pub',
+	# 	'COMMAND' => null, // if »null« OCO uses the default command "wakeonlan"
+	# ],
 	// more server here...
 ];
 
 
+////////////////////////////////////
 ///// ADDITIONAL CONFIGURATION /////
+////////////////////////////////////
+// (custom) computer actions, mainly intended to start remote sessions
 const COMPUTER_COMMANDS = [
 	['icon'=>'img/screen-access.dyn.svg', 'name'=>'VNC', 'description'=>'client_extension_note', 'command'=>'vnc://$$TARGET$$', 'new_tab'=>false],
 	['icon'=>'img/screen-access.dyn.svg', 'name'=>'RDP', 'description'=>'client_extension_note', 'command'=>'rdp://$$TARGET$$', 'new_tab'=>false],
@@ -95,6 +105,7 @@ const COMPUTER_COMMANDS = [
 	['icon'=>'img/portscan.dyn.svg', 'name'=>'Nmap', 'description'=>'client_extension_note', 'command'=>'nmap://$$TARGET$$', 'new_tab'=>false],
 ];
 
+// strings randomly shown on the login page
 const LOGIN_SCREEN_QUOTES = [
 	"Have you tried turning it off and on again?",
 	"The fact that ACPI was designed by a group of monkeys high on LSD, and is some of the worst designs in the industry obviously makes running it at any point pretty damn ugly. ~ Torvalds, Linus",
@@ -115,8 +126,10 @@ const LOGIN_SCREEN_QUOTES = [
 	"10 HOME<br>20 SWEET<br>30 GOTO 10",
 ];
 
+// message on the home page (use 'default_motd' for the vendor default text)
 const MOTD = 'default_motd';
 
+// various UI default settings
 const DEFAULTS = [
 	// deployment page defaults
 	'default-use-wol' => false,
