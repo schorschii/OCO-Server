@@ -1,4 +1,3 @@
-
 <?php
 $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
