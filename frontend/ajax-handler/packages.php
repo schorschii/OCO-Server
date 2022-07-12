@@ -146,9 +146,11 @@ try {
 		die();
 	}
 
-	if(isset($_POST['add_to_group_id']) && isset($_POST['add_to_group_package_id']) && is_array($_POST['add_to_group_package_id'])) {
+	if(isset($_POST['add_to_group_id']) && is_array($_POST['add_to_group_id']) && isset($_POST['add_to_group_package_id']) && is_array($_POST['add_to_group_package_id'])) {
 		foreach($_POST['add_to_group_package_id'] as $pid) {
-			$cl->addPackageToGroup($pid, $_POST['add_to_group_id']);
+			foreach($_POST['add_to_group_id'] as $gid) {
+				$cl->addPackageToGroup($pid, $gid);
+			}
 		}
 		die();
 	}

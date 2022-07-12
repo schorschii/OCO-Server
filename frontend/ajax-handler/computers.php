@@ -61,9 +61,11 @@ try {
 		die();
 	}
 
-	if(isset($_POST['add_to_group_id']) && isset($_POST['add_to_group_computer_id']) && is_array($_POST['add_to_group_computer_id'])) {
+	if(isset($_POST['add_to_group_id']) && is_array($_POST['add_to_group_id']) && isset($_POST['add_to_group_computer_id']) && is_array($_POST['add_to_group_computer_id'])) {
 		foreach($_POST['add_to_group_computer_id'] as $cid) {
-			$cl->addComputerToGroup($cid, $_POST['add_to_group_id']);
+			foreach($_POST['add_to_group_id'] as $gid) {
+				$cl->addComputerToGroup($cid, $gid);
+			}
 		}
 		die();
 	}

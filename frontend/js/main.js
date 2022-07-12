@@ -308,6 +308,20 @@ function getAllCheckBoxValues(checkboxName) {
 	});
 	return values;
 }
+function getSelectedSelectBoxValues(selectBoxId, warnIfEmpty=false) {
+	var selected = [];
+	var items = document.getElementById(selectBoxId);
+	for(var i = 0; i < items.length; i++) {
+		if(items[i].selected) {
+			selected.push(items[i].value);
+		}
+	}
+	if(warnIfEmpty && selected.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return false;
+	}
+	return selected;
+}
 function setInputsDisabled(rootElement, disabled) {
 	var elements = rootElement.querySelectorAll('input, select, textarea, button');
 	for(var i = 0; i < elements.length; i++) {
@@ -932,9 +946,12 @@ function confirmRemovePackageGroup(ids, event=null, infoText='') {
 	}
 }
 function addPackageToGroup(packageId, groupId) {
+	if(groupId === false) return;
 	var params = [];
-	params.push({'key':'add_to_group_id', 'value':groupId});
-	packageId.split(',').forEach(function(entry) {
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_id[]', 'value':entry});
+	});
+	packageId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_package_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
@@ -1286,9 +1303,12 @@ function confirmRemoveComputerGroup(ids, event=null, infoText='') {
 	}
 }
 function addComputerToGroup(computerId, groupId) {
+	if(groupId === false) return;
 	var params = [];
-	params.push({'key':'add_to_group_id', 'value':groupId});
-	computerId.split(',').forEach(function(entry) {
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_id[]', 'value':entry});
+	});
+	computerId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_computer_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);

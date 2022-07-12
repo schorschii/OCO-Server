@@ -7,7 +7,7 @@ require_once('../session.php');
 <input type='hidden' id='txtEditComputerId'></input>
 <div class='gallery'>
 	<div>
-		<select id='sltNewComputerGroup' class='resizeVertical' size='10'>
+		<select id='sltNewComputerGroup' class='resizeVertical' size='10' multiple='true'>
 			<?php echoComputerGroupOptions($db); ?>
 		</select>
 	</div>
@@ -15,5 +15,5 @@ require_once('../session.php');
 
 <div class='controls right'>
 	<button onclick="hideDialog()"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
-	<button class='primary' onclick='addComputerToGroup(txtEditComputerId.value, sltNewComputerGroup.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+	<button class='primary' onclick='addComputerToGroup(txtEditComputerId.value, getSelectedSelectBoxValues("sltNewComputerGroup",true))'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 </div>
