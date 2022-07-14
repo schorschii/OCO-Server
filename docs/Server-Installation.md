@@ -75,15 +75,22 @@
 ### LDAP Sync & Authentication
 If you want to use LDAP to authenticate admin users on the web frontend, please follow this steps.
 
-1. Enter your LDAP details in `conf.php` (`LDAP_SERVER`, `LDAP_USER`, `LDAP_PASS`, `LDAP_DOMAIN`, `LDAP_QUERY_ROOT`, `LDAP_SYNC_GROUP`, `LDAP_SYNC_DEFAULT_ROLE_ID`). Please read the comments in the example config file for more information.
+1. Enter your LDAP details in `conf.php`:
+   - `LDAP_SERVER`: 'ldap://192.168.56.101' (single) or 'ldaps://192.168.56.101' (secure) or 'ldaps://192.168.56.101 ldaps://192.168.56.102' (multiple) or »null« (disabled).
+   - `LDAP_USER`: The username of the LDAP reader user.
+   - `LDAP_PASS`: The password of the LDAP reader user.
+   - `LDAP_DOMAIN`: Your domain, e.g. 'subdomain.domain.tld'.
+   - `LDAP_QUERY_ROOT`: The query root, e.g. 'OU=Benutzer,DC=sieber,DC=systems'.
+   - `LDAP_USER_CLASS`: The class for user objects, e.g. 'user' for ActiveDirectory, 'inetorgperson' for OpenLDAP.
+   - `LDAP_GROUPS`: Array of LDAP groups to sync. The key must me an LDAP group path and the value must be an OCO role ID. Example: `'CN=OcoAdmins,OU=Benutzer,DC=sieber,DC=systems' => 1,`.
+   - `LDAP_DEFAULT_ROLE_ID`
+   - `LDAP_ATTR_UID`, `LDAP_ATTR_USERNAME`, `LDAP_ATTR_FIRST_NAME`, `LDAP_ATTR_LAST_NAME`, `LDAP_ATTR_DISPLAY_NAME`, `LDAP_ATTR_EMAIL`, `LDAP_ATTR_PHONE`, `LDAP_ATTR_MOBILE`, `LDAP_ATTR_DESCRIPTION`: LDAP attributes to query. Set for Active Directory by default; you can adjust it if you are using an other LDAP server like OpenLDAP.
 2. Set up a cron job executing `lib/LdapSync.php` every 30 minutes as webserver user (`www-data`).
    ```
    */10 *  * * *  www-data  cd /var/www/oco/lib && php LdapSync.php
    ```
 3. Start the first sync manually by executing `cd /var/www/oco/lib && php LdapSync.php`.  
    Now you can log in with the synced accounts on the web frontend.
-
-Please not that currently only Microsoft Active Directory is officially supported.
 
 ### Only Provide Agent API On Virtual Host
 Ou may only want to provide the agent api and not the full web interface with client API on a virtual host. In this case, please use `api-agent` as web server root directory (instead of `frontend`).

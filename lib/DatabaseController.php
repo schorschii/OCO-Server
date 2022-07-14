@@ -1546,12 +1546,24 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function addSystemUser($username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
+	public function getSystemUserByUid($uid) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO system_user (username, fullname, password, ldap, email, phone, mobile, description, locked, system_user_role_id)
-			VALUES (:username, :fullname, :password, :ldap, :email, :phone, :mobile, :description, :locked, :system_user_role_id)'
+			'SELECT su.*, sur.name AS "system_user_role_name", sur.permissions AS "system_user_role_permissions"
+			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
+			WHERE su.uid = :uid'
+		);
+		$this->stmt->execute([':uid' => $uid]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser', [$this]) as $row) {
+			return $row;
+		}
+	}
+	public function addSystemUser($uid, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO system_user (uid, username, fullname, password, ldap, email, phone, mobile, description, locked, system_user_role_id)
+			VALUES (:uid, :username, :fullname, :password, :ldap, :email, :phone, :mobile, :description, :locked, :system_user_role_id)'
 		);
 		$this->stmt->execute([
+			':uid' => $uid,
 			':username' => $username,
 			':fullname' => $fullname,
 			':password' => $password,
@@ -1565,12 +1577,13 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updateSystemUser($id, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
+	public function updateSystemUser($id, $uid, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE system_user SET username = :username, fullname = :fullname, password = :password, ldap = :ldap, email = :email, phone = :phone, mobile = :mobile, description = :description, locked = :locked, system_user_role_id = :system_user_role_id WHERE id = :id'
+			'UPDATE system_user SET uid = :uid, username = :username, fullname = :fullname, password = :password, ldap = :ldap, email = :email, phone = :phone, mobile = :mobile, description = :description, locked = :locked, system_user_role_id = :system_user_role_id WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
+			':uid' => $uid,
 			':username' => $username,
 			':fullname' => $fullname,
 			':password' => $password,

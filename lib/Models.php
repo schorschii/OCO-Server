@@ -344,6 +344,7 @@ class SystemUser {
 	}
 	// attributes
 	public $id;
+	public $uid;
 	public $username;
 	public $fullname;
 	public $password;

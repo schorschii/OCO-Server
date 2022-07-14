@@ -24,7 +24,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 	} else {
 		if(
 			$db->addSystemUser(
-				$_POST['username'], $_POST['username'],
+				md5(rand()), $_POST['username'], $_POST['username'],
 				password_hash($_POST['password'], PASSWORD_DEFAULT),
 				0/*ldap flag*/, null, null, null, 'initial admin user', 0/*locked*/, 1/*default role: superadmin*/
 			)

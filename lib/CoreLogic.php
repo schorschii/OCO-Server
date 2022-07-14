@@ -1375,7 +1375,7 @@ class CoreLogic {
 		}
 
 		$insertId = $this->db->addSystemUser(
-			$username, $fullname,
+			md5(rand()), $username, $fullname,
 			password_hash($password, PASSWORD_DEFAULT),
 			0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, $description, 0/*locked*/, $roleId
 		);
@@ -1406,7 +1406,7 @@ class CoreLogic {
 
 		$newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 		$this->db->updateSystemUser(
-			$this->systemUser->id, $this->systemUser->username, $this->systemUser->fullname, $newPasswordHash,
+			$this->systemUser->id, $this->systemUser->uid, $this->systemUser->username, $this->systemUser->fullname, $newPasswordHash,
 			$this->systemUser->ldap, $this->systemUser->email, $this->systemUser->phone, $this->systemUser->mobile, $this->systemUser->description, $this->systemUser->locked, $this->systemUser->system_user_role_id
 		);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $this->systemUser->id, 'oco.system_user.update_password', []);
@@ -1419,10 +1419,10 @@ class CoreLogic {
 		if(!empty($u->ldap)) {
 			$checkDescription = $u->description;
 			if($checkDescription === null) $checkDescription = '';
-			// on ldap accounts, only the role should be changed
 			if($u->username !== $username
 			|| $u->fullname !== $fullname
 			|| $checkDescription !== $description
+			|| $u->system_user_role_id !== $roleId
 			|| !empty($password)) {
 				throw new InvalidRequestException(LANG['ldap_accounts_cannot_be_modified']);
 			}
@@ -1447,7 +1447,7 @@ class CoreLogic {
 		}
 
 		$this->db->updateSystemUser(
-			$u->id, trim($username), $fullname, $newPassword,
+			$u->id, $u->uid, trim($username), $fullname, $newPassword,
 			$u->ldap, $u->email, $u->phone, $u->mobile, $description, $u->locked, $roleId
 		);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.update', [
@@ -1464,7 +1464,7 @@ class CoreLogic {
 		if($u === null) throw new NotFoundException();
 
 		$this->db->updateSystemUser(
-			$u->id, $u->username, $u->fullname, $u->password,
+			$u->id, $u->uid, $u->username, $u->fullname, $u->password,
 			$u->ldap, $u->email, $u->phone, $u->mobile, $u->description, $locked, $u->system_user_role_id
 		);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.lock', ['locked'=>$locked]);

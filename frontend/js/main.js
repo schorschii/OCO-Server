@@ -1835,6 +1835,7 @@ function showDialogEditSystemUser(id, username, fullname, description, roleId, l
 			txtEditSystemUserDescription.readOnly = true;
 			txtEditSystemUserNewPassword.readOnly = true;
 			txtEditSystemUserConfirmNewPassword.readOnly = true;
+			sltEditSystemUserRole.disabled = true;
 		}
 	});
 }

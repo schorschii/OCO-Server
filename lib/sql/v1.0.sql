@@ -424,6 +424,7 @@ CREATE TABLE `software` (
 
 CREATE TABLE `system_user` (
   `id` int(11) NOT NULL,
+  `uid` text NOT NULL,
   `username` text NOT NULL,
   `fullname` text NOT NULL,
   `password` text DEFAULT NULL,
