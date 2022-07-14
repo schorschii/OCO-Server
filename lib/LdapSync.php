@@ -41,7 +41,7 @@ for($i=0; $i<$data["count"]; $i++) {
 	}
 	$uid         = base64_encode($data[$i][LDAP_ATTR_UID][0]);
 	if(array_key_exists($uid, $foundLdapUsers)) {
-		throw new Exception('Duplicate UID!');
+		throw new Exception('Duplicate UID '.$uid.'!');
 	}
 
 	// parse LDAP values
