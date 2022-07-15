@@ -77,7 +77,7 @@ for($i=0; $i<$data["count"]; $i++) {
 			foreach(LDAP_GROUPS as $ldapGroupPath => $roleId) {
 				if($data[$i]["memberof"][$n] == $ldapGroupPath) {
 					$groupCheck = $roleId;
-					continue 2;
+					break 2;
 				}
 			}
 		}

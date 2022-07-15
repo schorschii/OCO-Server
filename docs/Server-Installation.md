@@ -82,7 +82,7 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
    - `LDAP_DOMAIN`: Your domain, e.g. 'subdomain.domain.tld'.
    - `LDAP_QUERY_ROOT`: The query root, e.g. 'OU=Benutzer,DC=sieber,DC=systems'.
    - `LDAP_USER_CLASS`: The class for user objects, e.g. 'user' for ActiveDirectory, 'inetorgperson' for OpenLDAP.
-   - `LDAP_GROUPS`: Array of LDAP groups to sync. The key must me an LDAP group path and the value must be an OCO role ID. Example: `'CN=OcoAdmins,OU=Benutzer,DC=sieber,DC=systems' => 1,`.
+   - `LDAP_GROUPS`: Array of LDAP groups to sync. The key must me an LDAP group path and the value must be an OCO role ID. Example: `'CN=OcoAdmins,OU=Benutzer,DC=sieber,DC=systems' => 1,`. The order of the groups is important: the first matching group is used for determining the role ID.
    - `LDAP_DEFAULT_ROLE_ID`: OCO role ID, which should be assigned to the LDAP users (Role ID 1 = Superadmin). Only used if `LDAP_GROUPS` is empty because otherwise the role IDs are defined there.
    - `LDAP_ATTR_UID`, `LDAP_ATTR_USERNAME`, `LDAP_ATTR_FIRST_NAME`, `LDAP_ATTR_LAST_NAME`, `LDAP_ATTR_DISPLAY_NAME`, `LDAP_ATTR_EMAIL`, `LDAP_ATTR_PHONE`, `LDAP_ATTR_MOBILE`, `LDAP_ATTR_DESCRIPTION`: LDAP attributes to query. Set for Active Directory by default; you can adjust it if you are using an other LDAP server like OpenLDAP.
 2. Set up a cron job executing `lib/LdapSync.php` every 30 minutes as webserver user (`www-data`).
