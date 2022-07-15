@@ -80,7 +80,7 @@ rg \\ /
 - Download iPXE network bootloader files from: https://ipxe.org/download
   - `ipxe.efi` -> `/srv/tftp/efi/ipxe.efi`
   - `undionly.kpxe` -> `/srv/tftp/bios/undionly.kpxe`
-- Create the iPXE configuration file: `/srv/tftp/ipxe.cfg` from the example `examples/ipxe.cfg`.
+- Create the iPXE configuration file: `/srv/tftp/ipxe.cfg` from the example [examples/ipxe.cfg](examples/ipxe.cfg).
   - The files/paths in this example (`/iso-windows` and `/linux-live`) will be created in the following steps 4 and 5.
   - For the Ubuntu setup, replace `nfsroot=10.0.1.3` with your server's IP address (the NFS server will be installed in the Linux section, step 4).
 
@@ -125,7 +125,7 @@ rg \\ /
   ```
 
 ### Unattended Installation
-You can now create preseed file `/srv/tftp/linux-live/LinuxMint20.1_amd64/preseed/myconfig.cfg` for automatic installation (see `examples/mint.cfg` for examples).
+You can now create preseed file `/srv/tftp/linux-live/LinuxMint20.1_amd64/preseed/myconfig.cfg` for automatic installation (see [examples/mint.cfg](examples/mint.cfg) for examples).
 
 In contrast to Windows, it is not necessary to create separate config files for every computer, because the Ubuntu setup will take the hostname given as kernel parameter from iPXE (`hostname=${hostname}`).
 
@@ -151,14 +151,14 @@ In addition to that, can use dynamic administrator passwords by using [LAPS](htt
 - Create a directory for your current Windows version, e.g. `/srv/smb/images/Windows10`
   - Extract your Windows `.iso` file into this folder
 - Create a minimal Windows setup environment ("WinPE") `.iso` using the Linux command line tool `mkwinpeimg`.
-  - Create a start script `/tmp/startnet.cmd` for your Windows setup (this script will be integrated into your WinPE `.iso`). The example script (`examples/startnet.cmd`) checks if there exists a XML file with the mac address of the client. If yes, it starts the setup with this XML file for unattended installation. If not, it starts the setup in normal (user-interactive) mode.
+  - Create a start script `/tmp/startnet.cmd` for your Windows setup (this script will be integrated into your WinPE `.iso`). The example script ([examples/startnet.cmd](examples/startnet.cmd)) checks if there exists a XML file with the mac address of the client. If yes, it starts the setup with this XML file for unattended installation. If not, it starts the setup in normal (user-interactive) mode.
   - Replace `YOUROCOSERVER.example.com` with your server address.
   - Execute `mkwinpeimg --iso --start-script=/tmp/startnet.cmd --windows-dir=/srv/smb/images/Windows10 /srv/tftp/iso-windows/Windows10.iso` to create the WinPE `.iso` file.
 - Create a directory for your current Windows version, e.g. `/srv/tftp/iso-windows/W10`
   - Extract the files `BCD`, `boot.sdi` and `boot.wim` from your WinPE `/srv/tftp/iso-windows/Windows10.iso` into this directory.
 - Add the OCO agent setup to the Windows sources for automatic installation.
   - Insert the setup `.exe` into `/srv/smb/images/Windows10/sources/$OEM$/$$/Setup/Files`.
-  - Create the post-installation script `/srv/smb/images/Windows10/sources/$OEM$/$$/Setup/Scripts/SetupComplete.cmd` from the example file `examples/SetupComplete.cmd`.
+  - Create the post-installation script `/srv/smb/images/Windows10/sources/$OEM$/$$/Setup/Scripts/SetupComplete.cmd` from the example file [examples/SetupComplete.cmd](examples/SetupComplete.cmd).
 
 More information can be found in the official wimboot documentation: https://ipxe.org/howto/winpe
 
