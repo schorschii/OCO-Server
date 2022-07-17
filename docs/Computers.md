@@ -30,4 +30,4 @@ OCO supports sending WOL magic packets. WOL in general only works via Ethernet (
 When using the satellite WOL technology, the OCO server connects to another server via SSH which is located in the foreign network and then executes the `wakeonlan` command. Please make sure that the remote server can be accessed with the defined SSH key and that `wakeonlan` is installed. Please read the instructions in the `conf.example.php` file for example configurations.
 
 ## Remote (Screen) Access
-OCO does not contain a remote access solution as found in some commercial client management systems. OCO doesn't want to reinvent the wheel. Please use a VNC server/client for this and alos have a look at the section "Computer Commands" in [WebApplication.md](WebApplication.md).
+OCO does not contain a remote access solution as found in some commercial client management systems. OCO doesn't want to reinvent the wheel. Please use a VNC server/client for this and also have a look at the section "Computer Commands" in [WebApplication.md](WebApplication.md).
