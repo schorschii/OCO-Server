@@ -34,37 +34,48 @@ function toggleTextBoxMultiLine(element) {
 	element.replaceWith(newElement);
 }
 
-function rewriteUrlContentParameter(ajaxRequestUrl) {
+function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}) {
 	// compile parameters to replace from ajax request URL
-	var paramsToReplace = {};
 	var url = new URL(ajaxRequestUrl, location);
 	paramsToReplace['view'] = url.pathname.split(/[\\/]/).pop().split('.')[0];
+	// replace the params in current URL
+	var parameters = [];
 	for(const [key, value] of url.searchParams) {
-		paramsToReplace[key] = value;
-	}
-	// now replace the parameters in current URL
-	var kvp = []; // kvp looks like ['key1=value1', ...] // document.location.search.substr(1).split('&')
-	for(const [ikey, ivalue] of Object.entries(paramsToReplace)) {
-		key = encodeURIComponent(ikey);
-		value = encodeURIComponent(ivalue);
-		let i = 0;
-		for(; i<kvp.length; i++) {
-			if(kvp[i].startsWith(key + '=')) {
-				let pair = kvp[i].split('=');
-				pair[1] = value;
-				kvp[i] = pair.join('=');
-				break;
-			}
-		}
-		if(i >= kvp.length) {
-			kvp[kvp.length] = [key,value].join('=');
+		if(key in paramsToReplace) {
+			parameters[key] = paramsToReplace[key];
+		} else {
+			parameters[key] = value;
 		}
 	}
+	// add missing additional params
+	Object.keys(paramsToReplace).forEach(function(key) {
+		if(!(key in parameters)) {
+			parameters[key] = paramsToReplace[key];
+		}
+	});
+	// add new entry to browser history
+	var keyValuePairs = [];
+	Object.keys(parameters).forEach(function(key) {
+		keyValuePairs.push(
+			encodeURIComponent(key)+'='+encodeURIComponent(parameters[key])
+		);
+	});
 	window.history.pushState(
 		currentExplorerContentUrl,
 		document.title,
-		document.location.pathname+'?'+kvp.join('&')
+		document.location.pathname+'?'+keyValuePairs.join('&')
 	);
+}
+function openTab(tabControl, tabName) {
+	var childs = tabControl.querySelectorAll('.tabbuttons > a, .tabcontents > div');
+	for(var i = 0; i < childs.length; i++) {
+		if(childs[i].getAttribute('name') == tabName) {
+			childs[i].classList.add('active');
+		} else {
+			childs[i].classList.remove('active');
+		}
+	}
+	rewriteUrlContentParameter(currentExplorerContentUrl, {'tab':tabName});
 }
 
 // ======== EVENT LISTENERS ========

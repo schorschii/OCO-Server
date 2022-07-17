@@ -524,6 +524,17 @@ body.loading2 #loader-container {
 	flex-direction: row;
 	align-items: stretch;
 	margin: 16px 0px;
+	gap: 4px;
+}
+.controls > .controls {
+	margin: 0px;
+}
+.controls.spread {
+	justify-content: space-between;
+	align-items: center;
+}
+.controls h1, .controls h2, .controls h3 {
+	margin: 0px !important;
 }
 .controls:last-child {
 	margin-bottom: 0px;
@@ -537,16 +548,11 @@ body.loading2 #loader-container {
 .controls.right {
 	justify-content: right;
 }
-.controls > * {
+.controls > *:not(.controls):not(span) {
 	display: inline-block;
+}
+.controls > * {
 	vertical-align: middle;
-	margin-right: 4px;
-}
-.controls > *.nomarginright {
-	margin-right: 0px;
-}
-.controls > *:last-child {
-	margin-right: 0px;
 }
 .controls > span,
 .controls label {
@@ -563,7 +569,6 @@ body.loading2 #loader-container {
 	display: inline-flex;
 	align-items: center;
 	text-decoration: none;
-	margin-top: 4px;
 }
 .fillwidth {
 	flex-grow: 1;
@@ -800,6 +805,10 @@ table.list tr:last-child th:last-child,
 table.list tr:last-child td:last-child {
 	border-bottom-right-radius: 2px;
 }
+table.list.actioncolumn tr th:last-child,
+table.list.actioncolumn tr td:last-child {
+	text-align: right;
+}
 table.metadata tr th:first-child {
 	width: 40%;
 }
@@ -893,6 +902,32 @@ a.subbuttons > button {
 	opacity: 1;
 }
 .subbuttons:hover .subbutton {
+	display: block;
+}
+
+.tabbuttons {
+	display: flex;
+	align-items: bottom;
+	gap: 12px;
+	margin: 16px 0px;
+}
+.tabbuttons a {
+	display: inline-block;
+	padding: 8px 0px;
+	text-transform: uppercase;
+	border-bottom: 4px solid transparent;
+	text-decoration: none;
+	color: inherit;
+	letter-spacing: 0.2px;
+}
+.tabbuttons a.active {
+	border-color: #0079B8;
+	color: #0079B8;
+}
+.tabcontents > * {
+	display: none;
+}
+.tabcontents > *.active {
 	display: block;
 }
 
@@ -1168,10 +1203,6 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	}
 	.controls {
 		flex-wrap: wrap;
-	}
-	.controls > * {
-		margin-top: 4px;
-		margin-bottom: 4px;
 	}
 }
 @media (max-width: 750px) {
