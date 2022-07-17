@@ -176,5 +176,3 @@ if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 
 	</div>
 </div>
-
-
