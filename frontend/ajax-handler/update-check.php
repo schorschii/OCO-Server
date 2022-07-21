@@ -15,6 +15,7 @@ function checkUpdate() {
 	$json = json_decode($output, true);
 	if(!$json) return false;
 	foreach($json as $item) {
+		if(empty($item['tag_name'])) continue;
 		$availVersion = ltrim($item['tag_name'], 'v');
 		if(version_compare(APP_VERSION, $availVersion, '<'))
 			return $availVersion.(empty($item['prerelease']) ? '' : ' '.LANG['prerelease_note']);
