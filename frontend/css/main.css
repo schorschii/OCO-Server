@@ -931,6 +931,12 @@ a.subbuttons > button {
 	display: block;
 }
 
+.checkboxWithText {
+	display: flex;
+	align-items: flex-start;
+	gap: 5px;
+}
+
 .small {
 	font-size: 90%;
 }

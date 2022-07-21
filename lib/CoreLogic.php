@@ -775,7 +775,7 @@ class CoreLogic {
 						// ignore if it is an automatically added dependency package and version is the same as already installed
 						if($package['is_dependency'] && strval($pid) === $cp->package_id) continue 2;
 
-						// ignore if the same version is already installed
+						// if the same version is already installed, add a informative job with status STATUS_ALREADY_INSTALLED
 						if($cp->package_id === strval($pid) && empty($forceInstallSameVersion)) {
 							$targetJobState = Job::STATUS_ALREADY_INSTALLED;
 							break;

@@ -173,8 +173,20 @@ if(empty($default_job_container_name)) {
 </div>
 
 <div class='margintop'>
-	<div><label><input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty(DEFAULTS['default-auto-create-uninstall-jobs'])) echo 'checked'; ?>>&nbsp;<?php echo LANG['auto_create_uninstall_jobs']; ?></label></div>
-	<div><label><input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty(DEFAULTS['default-force-install-same-version'])) echo 'checked'; ?>>&nbsp;<?php echo LANG['force_installation_of_same_version']; ?></label></div>
+	<div class='checkboxWithText'>
+		<input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty(DEFAULTS['default-auto-create-uninstall-jobs'])) echo 'checked'; ?>>
+		<label for='chkAutoCreateUninstallJobs'>
+			<b><?php echo LANG['uninstall_old_package_versions']; ?></b>
+			<br><?php echo LANG['auto_create_uninstall_jobs']; ?>
+		</label>
+	</div>
+	<div class='checkboxWithText'>
+		<input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty(DEFAULTS['default-force-install-same-version'])) echo 'checked'; ?>>
+		<label for='chkForceInstallSameVersion'>
+			<b><?php echo LANG['reinstall']; ?></b>
+			<br><?php echo LANG['force_installation_of_same_version']; ?>
+		</label>
+	</div>
 </div>
 <div class='controls'>
 	<button id='btnDeploy' class='primary' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, getSelectedCheckBoxValues("computers"), getSelectedCheckBoxValues("computer_groups"), getSelectedCheckBoxValues("packages"), getSelectedCheckBoxValues("package_groups"), chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value, txtConstraintIpRange.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
