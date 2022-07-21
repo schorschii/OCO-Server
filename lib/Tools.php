@@ -12,8 +12,12 @@ function isIE() {
 }
 
 function niceSize($value, $useBinary=true, $round=1) {
-	if($value === 0) return "0 B";
-	if(empty($value)) return "";
+	if($value === 0) {
+		return "0 B";
+	}
+	if(empty($value)) {
+		return "";
+	}
 	if($useBinary) {
 		if($value < 1024) return $value . " B";
 		else if($value < 1024*1024) return round($value / 1024, $round) . " KiB";
@@ -147,12 +151,17 @@ function wol($macs, $debugOutput=true) {
 		}
 		$program = 'wakeonlan';
 		if(!empty($server['COMMAND'])) $program = $server['COMMAND'];
-		$cmd = $program.' '.implode(' ', $escapedMacs);
-		$stdioStream = ssh2_exec($c, $cmd);
-		if($debugOutput) echo "Satellite WOL ".$server['USER']."@".$server['ADDRESS'].": ".$cmd."\n";
-		stream_set_blocking($stdioStream, true);
-		$cmdOutput = stream_get_contents($stdioStream);
-		if($debugOutput) echo "-> ".$cmdOutput."\n";
+		$chunkCount = 1;
+		// ssh2_exec has a bug which throws "ssh2_exec(): Unable to request command execution on remote host" if the command is longer than 32KB, so we send our MACs in chunks of 1500 MACs which is ~30KB...
+		foreach(array_chunk($escapedMacs, 1500) as $escapedMacChunk) {
+			$cmd = $program.' '.implode(' ', $escapedMacChunk);
+			$stdioStream = ssh2_exec($c, $cmd);
+			if($debugOutput) echo "Satellite WOL ".$server['USER']."@".$server['ADDRESS'].": ".$cmd."\n";
+			stream_set_blocking($stdioStream, true);
+			$cmdOutput = stream_get_contents($stdioStream);
+			if($debugOutput) echo "Chunk ".$chunkCount." -> ".$cmdOutput."\n";
+			$chunkCount ++;
+		}
 	}
 
 	socket_close($s);
