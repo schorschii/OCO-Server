@@ -127,4 +127,6 @@ require_once('../session.php');
 		</td>
 </table>
 
-<?php echo LANG['package_creation_notes']; ?>
+<div class='alert info'>
+	<?php echo LANG['package_creation_notes']; ?>
+</div>

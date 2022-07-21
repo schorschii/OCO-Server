@@ -1163,7 +1163,7 @@ div.details-abreast > div.stickytable > table.list tfoot {
 .inputwithbutton button {
 	position: absolute;
 	box-sizing: border-box;
-	height: calc(100% - 4px);
+	height: calc(100% - 8px);
 }
 .inputwithbutton button img {
 	height: 16px;
@@ -1177,24 +1177,24 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	padding: 8px !important;
 }
 .alert.info {
-	background: #e1f1f6;
-	color: #565656;
-	border: 1px solid #49afd9
+	background: #E1F4FC;
+	color: black;
+	border: 1px solid #0f6082;
 }
 .alert.success {
-	background: #dff0d0;
-	color: #565656;
-	border: 1px solid #60b515
+	background: #D4ECD2;
+	color: black;
+	border: 1px solid #87CA81;
 }
 .alert.warning {
-	background: #feecb5;
-	color: #565656;
-	border: 1px solid #ffdc0b
+	background: #FFEDBF;
+	color: black;
+	border: 1px solid #FFC122;
 }
 .alert.error {
-	background: #f5dbd9;
-	color: #565656;
-	border: 1px solid #ebafa6
+	background: #FBD8DE;
+	color: black;
+	border: 1px solid #EC5870;
 }
 
 @media (max-width: 1050px) {
@@ -1371,24 +1371,24 @@ div.details-abreast > div.stickytable > table.list tfoot {
 		background-color: #49AFD9;
 	}
 	.alert.info {
-		background: #0f6082;
+		background: #0D516E;
 		color: #e9ecef;
-		border: 1px solid transparent
+		border: 1px solid rgba(255,255,255,0.2);
 	}
 	.alert.success {
-		background: #62a420;
+		background: #377531;
 		color: #fff;
-		border: none
+		border: 1px solid rgba(255,255,255,0.2);
 	}
 	.alert.warning {
-		background: #7f6509;
+		background: #A37500;
 		color: #e9ecef;
-		border: 1px solid transparent
+		border: 1px solid rgba(255,255,255,0.2);
 	}
 	.alert.error {
-		background: #882d31;
+		background: #AC142C;
 		color: #e9ecef;
-		border: 1px solid transparent
+		border: 1px solid rgba(255,255,255,0.2);
 	}
 	.vl {
 		background-color: rgba(255,255,255,0.2);
