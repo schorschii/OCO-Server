@@ -80,6 +80,7 @@ switch($srcdata['method']) {
 		}
 
 		// update job state in database
+		$db->updateComputerPing($computer->id);
 		$db->updateJobState($data['job-id'], $state, intval($data['return-code']), $data['message']);
 		$db->addLogEntry(Log::LEVEL_INFO, $params['hostname'], $computer->id, $srcdata['method'],
 			['job_id'=>$data['job-id'], 'return_code'=>intval($data['return-code']), 'message'=>$data['message']]
