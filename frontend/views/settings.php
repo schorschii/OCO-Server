@@ -5,6 +5,8 @@ require_once('../session.php');
 
 $tab = 'own-system-user-settings';
 if(!empty($_GET['tab'])) $tab = $_GET['tab'];
+
+$showSystemUserManagement = $currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT, false);
 ?>
 
 <div class='details-header'>
@@ -14,7 +16,9 @@ if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 <div id='tabControlSettings' class='tabcontainer'>
 	<div class='tabbuttons'>
 		<a href='#' name='own-system-user-settings' class='<?php if($tab=='own-system-user-settings') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['own_system_user_settings']; ?></a>
-		<a href='#' name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['system_user_management']; ?></a>
+		<?php if($showSystemUserManagement) { ?>
+			<a href='#' name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['system_user_management']; ?></a>
+		<?php } ?>
 		<a href='#' name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['configuration_overview']; ?></a>
 	</div>
 	<div class='tabcontents'>
@@ -62,7 +66,7 @@ if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 		</div>
 
 		<div name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>'>
-		<?php if($currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT, false)) { ?>
+		<?php if($showSystemUserManagement) { ?>
 			<div class='details-abreast'>
 				<div>
 					<div class='controls'>
