@@ -298,7 +298,7 @@ class Job {
 		if($this->state == self::STATUS_WAITING_FOR_CLIENT) {
 			$startTimeParsed = strtotime($this->job_container_start_time);
 			if($startTimeParsed !== false && $startTimeParsed > time()) return LANG['waiting_for_start'];
-			return LANG['waiting_for_client'];
+			return LANG['waiting_for_agent'];
 		}
 		elseif($this->state == self::STATUS_FAILED)
 			return LANG['failed'].$returnCodeString;

@@ -11,7 +11,7 @@ foreach($db->getAllJobContainer() as $jc) {
 	$stateDescription = '';
 	$state = $db->getJobContainerIcon($jc->id);
 	if($state == 'schedule') $stateDescription = LANG['waiting_for_start'];
-	if($state == 'wait') $stateDescription = LANG['waiting_for_client'];
+	if($state == 'wait') $stateDescription = LANG['waiting_for_agent'];
 	if($state == 'error') $stateDescription = LANG['failed'];
 	if($state == 'tick') $stateDescription = LANG['succeeded'];
 	$info['job_container'][] = [
