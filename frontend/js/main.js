@@ -60,6 +60,7 @@ function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}) {
 			encodeURIComponent(key)+'='+encodeURIComponent(parameters[key])
 		);
 	});
+	currentExplorerContentUrl = url.pathname+'?'+keyValuePairs.join('&');
 	window.history.pushState(
 		currentExplorerContentUrl,
 		document.title,
