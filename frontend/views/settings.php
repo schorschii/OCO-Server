@@ -3,7 +3,7 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
-$tab = 'OwnSystemUserSettings';
+$tab = 'own-system-user-settings';
 if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 ?>
 
@@ -13,70 +13,20 @@ if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 
 <div id='tabControlSettings' class='tabcontainer'>
 	<div class='tabbuttons'>
-		<a href='#' name='OwnSystemUserSettings' class='<?php if($tab=='OwnSystemUserSettings') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['own_system_user_settings']; ?></a>
-		<a href='#' name='SystemUserManagement' class='<?php if($tab=='SystemUserManagement') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['system_user_management']; ?></a>
-		<a href='#' name='ConfigurationOverview' class='<?php if($tab=='ConfigurationOverview') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['configuration_overview']; ?></a>
+		<a href='#' name='own-system-user-settings' class='<?php if($tab=='own-system-user-settings') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['own_system_user_settings']; ?></a>
+		<a href='#' name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['system_user_management']; ?></a>
+		<a href='#' name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['configuration_overview']; ?></a>
 	</div>
 	<div class='tabcontents'>
 
-		<div name='ConfigurationOverview' class='<?php if($tab=='ConfigurationOverview') echo 'active'; ?>'>
-			<div class='details-abreast'>
-				<div>
-					<p><?php echo LANG['change_settings_in_config_file']; ?></p>
-					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG['client_api_enabled']; ?>:</th>
-							<td><?php if(CLIENT_API_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG['agent_registration_enabled']; ?>:</th>
-							<td><?php if(AGENT_SELF_REGISTRATION_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG['assume_computer_offline_after']; ?>:</th>
-							<td><?php echo htmlspecialchars(niceTime(COMPUTER_OFFLINE_SECONDS)); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG['wol_shutdown_expiry_seconds']; ?>:</th>
-							<td><?php echo htmlspecialchars(niceTime(WOL_SHUTDOWN_EXPIRY_SECONDS)); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG['agent_update_interval']; ?>:</th>
-							<td><?php echo htmlspecialchars(niceTime(AGENT_UPDATE_INTERVAL)); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG['purge_succeeded_jobs_after']; ?>:</th>
-							<td><?php echo htmlspecialchars(niceTime(PURGE_SUCCEEDED_JOBS_AFTER)); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG['purge_failed_jobs_after']; ?>:</th>
-							<td><?php echo htmlspecialchars(niceTime(PURGE_FAILED_JOBS_AFTER)); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG['purge_logs_after']; ?>:</th>
-							<td><?php echo htmlspecialchars(niceTime(PURGE_LOGS_AFTER)); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG['purge_domain_user_logons_after']; ?>:</th>
-							<td><?php echo htmlspecialchars(niceTime(PURGE_DOMAIN_USER_LOGONS_AFTER)); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG['wol_satellites']; ?>:</th>
-							<td><?php foreach(SATELLITE_WOL_SERVER as $s) echo htmlspecialchars($s['ADDRESS'].':'.$s['PORT']).'<br>'; ?></td>
-						</tr>
-					</table>
-				</div>
-			</div>
-		</div>
-
-		<div name='OwnSystemUserSettings' class='<?php if($tab=='OwnSystemUserSettings') echo 'active'; ?>'>
+		<div name='own-system-user-settings' class='<?php if($tab=='own-system-user-settings') echo 'active'; ?>'>
 			<?php $ownSystemUser = $db->getSystemUser($_SESSION['oco_user_id']); ?>
-			<div class='controls'>
-				<button onclick='askNotificationPermission()'><img src='img/notification.dyn.svg'>&nbsp;<?php echo LANG['enable_notifications']; ?></button>
-				<button onclick='showDialogEditOwnSystemUserPassword()' <?php if($currentSystemUser->ldap) echo 'disabled'; ?>><img src='img/password.dyn.svg'>&nbsp;<?php echo LANG['change_password']; ?></button>
-			</div>
 			<div class='details-abreast'>
 				<div>
+					<div class='controls'>
+						<button onclick='askNotificationPermission()'><img src='img/notification.dyn.svg'>&nbsp;<?php echo LANG['enable_notifications']; ?></button>
+						<button onclick='showDialogEditOwnSystemUserPassword()' <?php if($currentSystemUser->ldap) echo 'disabled'; ?>><img src='img/password.dyn.svg'>&nbsp;<?php echo LANG['change_password']; ?></button>
+					</div>
 					<table class='list metadata'>
 						<tr>
 							<th><?php echo LANG['username']; ?>:</th>
@@ -111,13 +61,13 @@ if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 			</div>
 		</div>
 
-		<div name='SystemUserManagement' class='<?php if($tab=='SystemUserManagement') echo 'active'; ?>'>
+		<div name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>'>
 		<?php if($currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT, false)) { ?>
-			<div class='controls'>
-				<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
-			</div>
 			<div class='details-abreast'>
 				<div>
+					<div class='controls'>
+						<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+					</div>
 					<table id='tblSystemUserData' class='list searchable sortable savesort actioncolumn'>
 					<thead>
 						<tr>
@@ -172,6 +122,56 @@ if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 				</div>
 			</div>
 		<?php } ?>
+		</div>
+
+		<div name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>'>
+			<div class='details-abreast'>
+				<div>
+					<p><?php echo LANG['change_settings_in_config_file']; ?></p>
+					<table class='list metadata'>
+						<tr>
+							<th><?php echo LANG['client_api_enabled']; ?>:</th>
+							<td><?php if(CLIENT_API_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG['agent_registration_enabled']; ?>:</th>
+							<td><?php if(AGENT_SELF_REGISTRATION_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG['assume_computer_offline_after']; ?>:</th>
+							<td><?php echo htmlspecialchars(niceTime(COMPUTER_OFFLINE_SECONDS)); ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG['wol_shutdown_expiry_seconds']; ?>:</th>
+							<td><?php echo htmlspecialchars(niceTime(WOL_SHUTDOWN_EXPIRY_SECONDS)); ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG['agent_update_interval']; ?>:</th>
+							<td><?php echo htmlspecialchars(niceTime(AGENT_UPDATE_INTERVAL)); ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG['purge_succeeded_jobs_after']; ?>:</th>
+							<td><?php echo htmlspecialchars(niceTime(PURGE_SUCCEEDED_JOBS_AFTER)); ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG['purge_failed_jobs_after']; ?>:</th>
+							<td><?php echo htmlspecialchars(niceTime(PURGE_FAILED_JOBS_AFTER)); ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG['purge_logs_after']; ?>:</th>
+							<td><?php echo htmlspecialchars(niceTime(PURGE_LOGS_AFTER)); ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG['purge_domain_user_logons_after']; ?>:</th>
+							<td><?php echo htmlspecialchars(niceTime(PURGE_DOMAIN_USER_LOGONS_AFTER)); ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG['wol_satellites']; ?>:</th>
+							<td><?php foreach(SATELLITE_WOL_SERVER as $s) echo htmlspecialchars($s['ADDRESS'].':'.$s['PORT']).'<br>'; ?></td>
+						</tr>
+					</table>
+				</div>
+			</div>
 		</div>
 
 	</div>

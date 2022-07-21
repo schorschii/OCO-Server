@@ -909,7 +909,7 @@ a.subbuttons > button {
 	display: flex;
 	align-items: bottom;
 	gap: 12px;
-	margin: 16px 0px;
+	margin-top: 16px;
 }
 .tabbuttons a {
 	display: inline-block;

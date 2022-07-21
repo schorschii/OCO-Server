@@ -110,7 +110,7 @@ if(!empty($_GET['view'])) {
 	refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
 
 	<?php if($initialExplorerContent != null) { ?>
-		ajaxRequest("<?php echo htmlspecialchars($initialExplorerContent.'?'.$initialExplorerContentParameter); ?>", "explorer-content");
+		ajaxRequest("<?php echo $initialExplorerContent.'?'.$initialExplorerContentParameter; ?>", "explorer-content");
 	<?php } ?>
 	<?php if(empty($_SESSION['oco_last_login'])) {
 		$_SESSION['oco_last_login'] = true;
