@@ -12,7 +12,7 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG['full_name']; ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditSystemUserFullname'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditSystemUserDisplayName'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['description']; ?></th>
@@ -40,5 +40,5 @@ require_once('../session.php');
 
 <div class='controls right'>
 	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
-	<button id='btnCreateUser' class='primary' onclick='if(txtEditSystemUserNewPassword.value!=txtEditSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editSystemUser(txtEditSystemUserId.value, txtEditSystemUserUsername.value, txtEditSystemUserFullname.value, txtEditSystemUserDescription.value, txtEditSystemUserNewPassword.value, sltEditSystemUserRole.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['change']; ?></button>
+	<button id='btnCreateUser' class='primary' onclick='if(txtEditSystemUserNewPassword.value!=txtEditSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editSystemUser(txtEditSystemUserId.value, txtEditSystemUserUsername.value, txtEditSystemUserDisplayName.value, txtEditSystemUserDescription.value, txtEditSystemUserNewPassword.value, sltEditSystemUserRole.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['change']; ?></button>
 </div>

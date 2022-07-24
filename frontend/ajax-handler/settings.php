@@ -6,13 +6,13 @@ require_once('../session.php');
 try {
 
 	if(isset($_POST['create_system_user'])
-	&& isset($_POST['fullname'])
+	&& isset($_POST['display_name'])
 	&& isset($_POST['description'])
 	&& isset($_POST['password'])
 	&& isset($_POST['role_id'])) {
 		die(strval(intval(
 			$cl->createSystemUser(
-				$_POST['create_system_user'], $_POST['fullname'], $_POST['description'], $_POST['password'], $_POST['role_id']
+				$_POST['create_system_user'], $_POST['display_name'], $_POST['description'], $_POST['password'], $_POST['role_id']
 			)
 		)));
 	}
@@ -27,12 +27,12 @@ try {
 
 	if(!empty($_POST['update_system_user_id'])
 	&& isset($_POST['username'])
-	&& isset($_POST['fullname'])
+	&& isset($_POST['display_name'])
 	&& isset($_POST['description'])
 	&& isset($_POST['password'])
 	&& isset($_POST['role_id'])) {
 		$cl->updateSystemUser(
-			$_POST['update_system_user_id'], $_POST['username'], $_POST['fullname'], $_POST['description'], $_POST['password'], $_POST['role_id']
+			$_POST['update_system_user_id'], $_POST['username'], $_POST['display_name'], $_POST['description'], $_POST['password'], $_POST['role_id']
 		);
 		die();
 	}

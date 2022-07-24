@@ -276,15 +276,15 @@ switch($srcdata['method']) {
 			// convert login timestamps to local time,
 			// because other timestamps in the database are also in local time
 			$logins = [];
-			if(!empty($data['logins'])) foreach($data['logins'] as $login) {
+			if(!empty($data['logins'])) {
+				$logins = $data['logins'];
+			}
+			foreach($logins as $key => $login) {
 				try {
+					if(empty($login['timestamp'])) continue;
 					$date = new DateTime($login['timestamp'], new DateTimeZone('UTC'));
 					$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
-					$logins[] = [
-						'username' => $login['username'],
-						'console' => $login['console'],
-						'timestamp' => $date->format('Y-m-d H:i:s'),
-					];
+					$logins[$key]['timestamp'] = $date->format('Y-m-d H:i:s');
 				} catch(Exception $e) {}
 			}
 			// update inventory data now

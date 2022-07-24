@@ -48,7 +48,7 @@ for($i=0; $i<$data["count"]; $i++) {
 	$username    = $data[$i][LDAP_ATTR_USERNAME][0];
 	$firstname   = "?";
 	$lastname    = "?";
-	$fullname    = "?";
+	$displayname = "?";
 	$mail        = null;
 	$phone       = null;
 	$mobile      = null;
@@ -58,7 +58,7 @@ for($i=0; $i<$data["count"]; $i++) {
 	if(isset($data[$i][LDAP_ATTR_LAST_NAME][0]))
 		$lastname = $data[$i][LDAP_ATTR_LAST_NAME][0];
 	if(isset($data[$i][LDAP_ATTR_DISPLAY_NAME][0]))
-		$fullname = $data[$i][LDAP_ATTR_DISPLAY_NAME][0];
+		$displayname = $data[$i][LDAP_ATTR_DISPLAY_NAME][0];
 	if(isset($data[$i][LDAP_ATTR_EMAIL][0]))
 		$mail = $data[$i][LDAP_ATTR_EMAIL][0];
 	if(isset($data[$i][LDAP_ATTR_PHONE][0]))
@@ -102,14 +102,14 @@ for($i=0; $i<$data["count"]; $i++) {
 		echo "--> ".$username.": found in db - update id: ".$id;
 
 		// update into db
-		if($db->updateSystemUser($id, $uid, $username, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, $groupCheck))
+		if($db->updateSystemUser($id, $uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, $groupCheck))
 			echo "  OK\n";
 		else echo "  ERROR: ".$db->getLastStatement()->error."\n";
 	} else {
 		echo "--> ".$username.": not found in db - creating";
 
 		// insert into db
-		if($db->addSystemUser($uid, $username, $fullname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, $groupCheck))
+		if($db->addSystemUser($uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, $groupCheck))
 			echo "  OK\n";
 		else echo "  ERROR: ".$db->getLastStatement()->error."\n";
 	}

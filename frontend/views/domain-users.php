@@ -19,7 +19,7 @@ if(!empty($_GET['id'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/user.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($domainUser->username); ?></span></h1>
+	<h1><img src='img/user.dyn.svg'><span id='page-title'><?php echo empty($domainUser->display_name) ? htmlspecialchars($domainUser->username) : htmlspecialchars($domainUser->display_name).' ('.htmlspecialchars($domainUser->username).')'; ?></span></h1>
 </div>
 <div class='details-abreast'>
 	<div class='stickytable'>
@@ -123,6 +123,7 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDomainUserData, this.checked)'></th>
 				<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
+				<th class='searchable sortable'><?php echo LANG['full_name']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['logons']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['computers']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
@@ -135,6 +136,7 @@ if(!empty($_GET['id'])) {
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblDomainUserData)'></td>";
 			echo "<td><a ".explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a></td>";
+			echo "<td>".htmlspecialchars($u->display_name)."</td>";
 			echo "<td>".htmlspecialchars($u->logon_amount)."</td>";
 			echo "<td>".htmlspecialchars($u->computer_amount)."</td>";
 			echo "<td>".htmlspecialchars($u->timestamp)."</td>";

@@ -43,7 +43,7 @@ $counter = 0;
 	$counter ++;
 ?>
 	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/domain-users.php?id='.$u->id, 'closeSearchResults()'); ?>><img src='img/user.dyn.svg'><?php echo htmlspecialchars($u->username); ?></a>
+		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/domain-users.php?id='.$u->id, 'closeSearchResults()'); ?>><img src='img/user.dyn.svg'><?php echo empty($u->display_name) ? htmlspecialchars($u->username) : htmlspecialchars($u->display_name).' ('.htmlspecialchars($u->username).')'; ?></a>
 	</div>
 <?php } ?>
 

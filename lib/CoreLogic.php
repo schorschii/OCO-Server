@@ -1360,11 +1360,11 @@ class CoreLogic {
 		if(empty($systemUser)) throw new NotFoundException();
 		return $systemUser;
 	}
-	public function createSystemUser($username, $fullname, $description, $password, $roleId) {
+	public function createSystemUser($username, $display_name, $description, $password, $roleId) {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
 		if(empty(trim($username))
-		|| empty(trim($fullname))) {
+		|| empty(trim($display_name))) {
 			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
 		if(empty(trim($password))) {
@@ -1375,14 +1375,14 @@ class CoreLogic {
 		}
 
 		$insertId = $this->db->addSystemUser(
-			md5(rand()), $username, $fullname,
+			md5(rand()), $username, $display_name,
 			password_hash($password, PASSWORD_DEFAULT),
 			0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, $description, 0/*locked*/, $roleId
 		);
 		if(!$insertId) throw new Exception(LANG['unknown_error']);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.system_user.create', [
 			'username'=>$username,
-			'fullname'=>$fullname,
+			'display_name'=>$display_name,
 			'description'=>$description,
 			'system_user_role_id'=>$roleId
 		]);
@@ -1406,12 +1406,12 @@ class CoreLogic {
 
 		$newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
 		$this->db->updateSystemUser(
-			$this->systemUser->id, $this->systemUser->uid, $this->systemUser->username, $this->systemUser->fullname, $newPasswordHash,
+			$this->systemUser->id, $this->systemUser->uid, $this->systemUser->username, $this->systemUser->display_name, $newPasswordHash,
 			$this->systemUser->ldap, $this->systemUser->email, $this->systemUser->phone, $this->systemUser->mobile, $this->systemUser->description, $this->systemUser->locked, $this->systemUser->system_user_role_id
 		);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $this->systemUser->id, 'oco.system_user.update_password', []);
 	}
-	public function updateSystemUser($id, $username, $fullname, $description, $password, $roleId) {
+	public function updateSystemUser($id, $username, $display_name, $description, $password, $roleId) {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
 		$u = $this->db->getSystemUser($id);
@@ -1420,7 +1420,7 @@ class CoreLogic {
 			$checkDescription = $u->description;
 			if($checkDescription === null) $checkDescription = '';
 			if($u->username !== $username
-			|| $u->fullname !== $fullname
+			|| $u->display_name !== $display_name
 			|| $checkDescription !== $description
 			|| $u->system_user_role_id !== $roleId
 			|| !empty($password)) {
@@ -1435,7 +1435,7 @@ class CoreLogic {
 		if($checkUser !== null && $checkUser->id !== $u->id) {
 			throw new InvalidRequestException(LANG['username_already_exists']);
 		}
-		if(empty(trim($fullname))) {
+		if(empty(trim($display_name))) {
 			throw new InvalidRequestException(LANG['username_cannot_be_empty']);
 		}
 		$newPassword = $u->password;
@@ -1447,12 +1447,12 @@ class CoreLogic {
 		}
 
 		$this->db->updateSystemUser(
-			$u->id, $u->uid, trim($username), $fullname, $newPassword,
+			$u->id, $u->uid, trim($username), $display_name, $newPassword,
 			$u->ldap, $u->email, $u->phone, $u->mobile, $description, $u->locked, $roleId
 		);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.update', [
 			'username'=>$username,
-			'fullname'=>$fullname,
+			'display_name'=>$display_name,
 			'description'=>$description,
 			'system_user_role_id'=>$roleId
 		]);
@@ -1464,7 +1464,7 @@ class CoreLogic {
 		if($u === null) throw new NotFoundException();
 
 		$this->db->updateSystemUser(
-			$u->id, $u->uid, $u->username, $u->fullname, $u->password,
+			$u->id, $u->uid, $u->username, $u->display_name, $u->password,
 			$u->ldap, $u->email, $u->phone, $u->mobile, $u->description, $locked, $u->system_user_role_id
 		);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.lock', ['locked'=>$locked]);

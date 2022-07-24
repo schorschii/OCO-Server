@@ -479,6 +479,7 @@ class DatabaseController {
 		// insert new domain user logins
 		$domainUsers = $this->getAllDomainUser();
 		foreach($logins as $index => $l) {
+			if(empty($l['username'])) continue;
 			$domainUser = null;
 			foreach($domainUsers as $du) {
 				if(strtolower($du->username) === strtolower($l['username'])) {
@@ -486,9 +487,11 @@ class DatabaseController {
 				}
 			}
 			if($domainUser === null) {
-				$du_id = $this->addDomainUser($l['username']);
+				$du_id = $this->addDomainUser($l['username'], $l['display_name']??'');
 				$domainUser = $this->getDomainUser($du_id);
 				$domainUsers = $this->getAllDomainUser();
+			} else {
+				$this->updateDomainUser($domainUser->id, $l['username'], $l['display_name']??'');
 			}
 			if($this->getDomainUserLogonByComputerDomainUserConsoleTimestamp($id, $domainUser->id, $l['console'], $l['timestamp']) === null) {
 				$this->stmt = $this->dbh->prepare(
@@ -1394,14 +1397,25 @@ class DatabaseController {
 	}
 
 	// Domain User Operations
-	public function addDomainUser($username) {
+	public function addDomainUser($username, $display_name) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO domain_user (username) VALUES (:username)'
+			'INSERT INTO domain_user (username, display_name) VALUES (:username, :display_name)'
 		);
 		$this->stmt->execute([
 			':username' => $username,
+			':display_name' => $display_name,
 		]);
 		return $this->dbh->lastInsertId();
+	}
+	public function updateDomainUser($id, $username, $display_name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE domain_user SET username = :username, display_name = :display_name WHERE id = :id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':username' => $username,
+			':display_name' => $display_name,
+		]);
 	}
 	public function getAllDomainUser() {
 		$this->stmt = $this->dbh->prepare(
@@ -1417,7 +1431,7 @@ class DatabaseController {
 	}
 	public function getAllDomainUserByName($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM domain_user WHERE username LIKE :username ORDER BY username ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+			'SELECT * FROM domain_user WHERE username LIKE :username OR display_name LIKE :username ORDER BY username ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':username' => '%'.$name.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUser');
@@ -1557,15 +1571,15 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function addSystemUser($uid, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
+	public function addSystemUser($uid, $username, $display_name, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO system_user (uid, username, fullname, password, ldap, email, phone, mobile, description, locked, system_user_role_id)
-			VALUES (:uid, :username, :fullname, :password, :ldap, :email, :phone, :mobile, :description, :locked, :system_user_role_id)'
+			'INSERT INTO system_user (uid, username, display_name, password, ldap, email, phone, mobile, description, locked, system_user_role_id)
+			VALUES (:uid, :username, :display_name, :password, :ldap, :email, :phone, :mobile, :description, :locked, :system_user_role_id)'
 		);
 		$this->stmt->execute([
 			':uid' => $uid,
 			':username' => $username,
-			':fullname' => $fullname,
+			':display_name' => $display_name,
 			':password' => $password,
 			':ldap' => $ldap,
 			':email' => $email,
@@ -1577,15 +1591,15 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updateSystemUser($id, $uid, $username, $fullname, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
+	public function updateSystemUser($id, $uid, $username, $display_name, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE system_user SET uid = :uid, username = :username, fullname = :fullname, password = :password, ldap = :ldap, email = :email, phone = :phone, mobile = :mobile, description = :description, locked = :locked, system_user_role_id = :system_user_role_id WHERE id = :id'
+			'UPDATE system_user SET uid = :uid, username = :username, display_name = :display_name, password = :password, ldap = :ldap, email = :email, phone = :phone, mobile = :mobile, description = :description, locked = :locked, system_user_role_id = :system_user_role_id WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
 			':uid' => $uid,
 			':username' => $username,
-			':fullname' => $fullname,
+			':display_name' => $display_name,
 			':password' => $password,
 			':ldap' => $ldap,
 			':email' => $email,

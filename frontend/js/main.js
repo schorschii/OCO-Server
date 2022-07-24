@@ -1802,10 +1802,10 @@ function unlockSelectedSystemUser(checkboxName) {
 function showDialogCreateSystemUser() {
 	showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-create.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO)
 }
-function createSystemUser(username, fullname, description, password, roleId) {
+function createSystemUser(username, displayName, description, password, roleId) {
 	var params = [];
 	params.push({'key':'create_system_user', 'value':username});
-	params.push({'key':'fullname', 'value':fullname});
+	params.push({'key':'display_name', 'value':displayName});
 	params.push({'key':'description', 'value':description});
 	params.push({'key':'password', 'value':password});
 	params.push({'key':'role_id', 'value':roleId});
@@ -1834,16 +1834,16 @@ function editOwnSystemUserPassword(oldPassword, newPassword) {
 		emitMessage(L__SAVED, "", MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditSystemUser(id, username, fullname, description, roleId, ldap) {
+function showDialogEditSystemUser(id, username, displayName, description, roleId, ldap) {
 	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditSystemUserId.value = id;
 		txtEditSystemUserUsername.value = username;
-		txtEditSystemUserFullname.value = fullname;
+		txtEditSystemUserDisplayName.value = displayName;
 		txtEditSystemUserDescription.value = description;
 		sltEditSystemUserRole.value = roleId;
 		if(ldap) {
 			txtEditSystemUserUsername.readOnly = true;
-			txtEditSystemUserFullname.readOnly = true;
+			txtEditSystemUserDisplayName.readOnly = true;
 			txtEditSystemUserDescription.readOnly = true;
 			txtEditSystemUserNewPassword.readOnly = true;
 			txtEditSystemUserConfirmNewPassword.readOnly = true;
@@ -1851,11 +1851,11 @@ function showDialogEditSystemUser(id, username, fullname, description, roleId, l
 		}
 	});
 }
-function editSystemUser(id, username, fullname, description, password, roleId) {
+function editSystemUser(id, username, displayName, description, password, roleId) {
 	var params = [];
 	params.push({'key':'update_system_user_id', 'value':id});
 	params.push({'key':'username', 'value':username});
-	params.push({'key':'fullname', 'value':fullname});
+	params.push({'key':'display_name', 'value':displayName});
 	params.push({'key':'description', 'value':description});
 	params.push({'key':'password', 'value':password});
 	params.push({'key':'role_id', 'value':roleId});

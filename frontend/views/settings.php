@@ -38,7 +38,7 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 						</tr>
 						<tr>
 							<th><?php echo LANG['name']; ?>:</th>
-							<td><?php echo htmlspecialchars($ownSystemUser->fullname); ?></td>
+							<td><?php echo htmlspecialchars($ownSystemUser->display_name); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG['role']; ?>:</th>
@@ -96,12 +96,12 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 						if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG['locked']."'>&nbsp;";
 						echo  "<span id='spnSystemUserUsername".$u->id."'>".htmlspecialchars($u->username)."</span>";
 						echo "</td>";
-						echo "<td id='spnSystemUserFullname".$u->id."'>".htmlspecialchars($u->fullname)."</td>";
+						echo "<td id='spnSystemUserDisplayName".$u->id."'>".htmlspecialchars($u->display_name)."</td>";
 						echo "<td id='spnSystemUserRole".$u->id."' rawvalue='".$u->system_user_role_id."'>".htmlspecialchars($u->system_user_role_name)."</td>";
 						echo "<td id='spnSystemUserDescription".$u->id."'>".htmlspecialchars($u->description)."</td>";
 						echo "<td>".htmlspecialchars($u->last_login)."</td>";
 						echo "<td>".htmlspecialchars($u->created)."</td>";
-						echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUsername".$u->id.".innerText, spnSystemUserFullname".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"), ".$u->ldap.")'><img src='img/edit.dyn.svg'></button></td>";
+						echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUsername".$u->id.".innerText, spnSystemUserDisplayName".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"), ".$u->ldap.")'><img src='img/edit.dyn.svg'></button></td>";
 						echo "</tr>";
 					}
 					?>

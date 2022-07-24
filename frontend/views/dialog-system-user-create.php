@@ -11,7 +11,7 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG['full_name']; ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtCreateSystemUserFullname'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtCreateSystemUserDisplayName'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['description']; ?></th>
@@ -39,5 +39,5 @@ require_once('../session.php');
 
 <div class='controls right'>
 	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
-	<button id='btnCreateUser' class='primary' onclick='if(txtCreateSystemUserPasswordPassword.value!=txtCreateSystemUserConfirmPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} createSystemUser(txtCreateSystemUserUsername.value, txtCreateSystemUserFullname.value, txtCreateSystemUserDescription.value, txtCreateSystemUserPasswordPassword.value, sltCreateSystemUserRole.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+	<button id='btnCreateUser' class='primary' onclick='if(txtCreateSystemUserPasswordPassword.value!=txtCreateSystemUserConfirmPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} createSystemUser(txtCreateSystemUserUsername.value, txtCreateSystemUserDisplayName.value, txtCreateSystemUserDescription.value, txtCreateSystemUserPasswordPassword.value, sltCreateSystemUserRole.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 </div>

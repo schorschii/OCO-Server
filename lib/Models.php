@@ -322,6 +322,7 @@ class Job {
 class DomainUser {
 	public $id;
 	public $username;
+	public $display_name;
 	// aggregated values
 	public $logon_amount;
 	public $computer_amount;
@@ -346,7 +347,7 @@ class SystemUser {
 	public $id;
 	public $uid;
 	public $username;
-	public $fullname;
+	public $display_name;
 	public $password;
 	public $ldap;
 	public $email;
