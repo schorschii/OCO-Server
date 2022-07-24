@@ -39,7 +39,7 @@ for($i=0; $i<$data["count"]; $i++) {
 	if(empty($data[$i][LDAP_ATTR_UID][0])) {
 		continue;
 	}
-	$uid         = base64_encode($data[$i][LDAP_ATTR_UID][0]);
+	$uid         = GUIDtoStr($data[$i][LDAP_ATTR_UID][0]);
 	if(array_key_exists($uid, $foundLdapUsers)) {
 		throw new Exception('Duplicate UID '.$uid.'!');
 	}
@@ -95,7 +95,10 @@ for($i=0; $i<$data["count"]; $i++) {
 	$checkResult = $db->getSystemUserByUid($uid);
 	if(empty($checkResult)) {
 		// fallback for old DB schema without uid
-		$checkResult = $db->getSystemUserByLogin($username);
+		$tmpCheckResult = $db->getSystemUserByLogin($username);
+		if(!empty($tmpCheckResult) && empty($tmpCheckResult->uid)) {
+			$checkResult = $tmpCheckResult;
+		}
 	}
 	if($checkResult !== null) {
 		$id = $checkResult->id;

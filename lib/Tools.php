@@ -98,6 +98,15 @@ function isIpInRange($ip, $range) {
 	return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
 }
 
+function GUIDtoStr($binary_guid) {
+	$unpacked = unpack('Va/v2b/n2c/Nd', $binary_guid);
+	if(!$unpacked) {
+		// fallback string representation (base64) if we got unexpected input
+		return base64_encode($binary_guid);
+	}
+	return sprintf('%08x-%04x-%04x-%04x-%04x%08x', $unpacked['a'], $unpacked['b1'], $unpacked['b2'], $unpacked['c1'], $unpacked['c2'], $unpacked['d']);
+}
+
 function wol($macs, $debugOutput=true) {
 	// create socket for sending local WOL packets
 	$s = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
