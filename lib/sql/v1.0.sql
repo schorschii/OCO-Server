@@ -185,6 +185,7 @@ CREATE TABLE `computer_software` (
 
 CREATE TABLE `domain_user` (
   `id` int(11) NOT NULL,
+  `uid` text DEFAULT NULL,
   `username` text NOT NULL,
   `display_name` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
