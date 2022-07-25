@@ -326,6 +326,14 @@ class DomainUser {
 	// aggregated values
 	public $logon_amount;
 	public $computer_amount;
+	// functions
+	public function displayNameWithUsername() {
+		if(empty($this->display_name)) {
+			return htmlspecialchars($this->username);
+		} else {
+			return htmlspecialchars($this->display_name).' ('.htmlspecialchars($this->username).')';
+		}
+	}
 }
 class DomainUserLogon {
 	public $id;
@@ -337,6 +345,7 @@ class DomainUserLogon {
 	public $logon_amount;
 	public $computer_hostname;
 	public $domain_user_username;
+	public $domain_user_display_name;
 }
 class SystemUser {
 	private $db;

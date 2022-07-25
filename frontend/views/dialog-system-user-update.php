@@ -11,7 +11,7 @@ require_once('../session.php');
 		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditSystemUserUsername' autofocus='true'></input></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['full_name']; ?></th>
+		<th><?php echo LANG['display_name']; ?></th>
 		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditSystemUserDisplayName'></input></td>
 	</tr>
 	<tr>

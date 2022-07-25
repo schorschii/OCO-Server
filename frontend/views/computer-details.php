@@ -181,6 +181,7 @@ try {
 						<thead>
 							<tr>
 								<th><?php echo LANG['login_name']; ?></th>
+								<th><?php echo LANG['display_name']; ?></th>
 								<th><?php echo LANG['count']; ?></th>
 								<th><?php echo LANG['last_login']; ?></th>
 							</tr>
@@ -190,6 +191,7 @@ try {
 							foreach($db->getDomainUserLogonByComputer($computer->id) as $logon) {
 								echo "<tr>";
 								echo "<td><a ".explorerLink('views/domain-users.php?id='.$logon->domain_user_id).">".htmlspecialchars($logon->domain_user_username)."</a></td>";
+								echo "<td>".htmlspecialchars($logon->domain_user_display_name)."</td>";
 								echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 								echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 								echo "</tr>";

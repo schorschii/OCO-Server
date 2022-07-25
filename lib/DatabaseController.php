@@ -1492,7 +1492,7 @@ class DatabaseController {
 	}
 	public function getDomainUserLogonByComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT du.id AS "domain_user_id", du.username AS "domain_user_username", COUNT(du.username) AS "logon_amount",
+			'SELECT du.id AS "domain_user_id", du.username AS "domain_user_username", du.display_name AS "domain_user_display_name", COUNT(du.username) AS "logon_amount",
 			(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domain_user_id = dl.domain_user_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
 			FROM domain_user_logon dl
 			INNER JOIN domain_user du ON dl.domain_user_id = du.id

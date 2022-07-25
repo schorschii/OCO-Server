@@ -33,11 +33,11 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 					</div>
 					<table class='list metadata'>
 						<tr>
-							<th><?php echo LANG['username']; ?>:</th>
+							<th><?php echo LANG['login_name']; ?>:</th>
 							<td><?php echo htmlspecialchars($ownSystemUser->username); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['name']; ?>:</th>
+							<th><?php echo LANG['display_name']; ?>:</th>
 							<td><?php echo htmlspecialchars($ownSystemUser->display_name); ?></td>
 						</tr>
 						<tr>
@@ -77,7 +77,7 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 						<tr>
 							<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblSystemUserData, this.checked)'></th>
 							<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
-							<th class='searchable sortable'><?php echo LANG['full_name']; ?></th>
+							<th class='searchable sortable'><?php echo LANG['display_name']; ?></th>
 							<th class='searchable sortable'><?php echo LANG['role']; ?></th>
 							<th class='searchable sortable'><?php echo LANG['description']; ?></th>
 							<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
