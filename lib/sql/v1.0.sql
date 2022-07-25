@@ -186,7 +186,7 @@ CREATE TABLE `computer_software` (
 CREATE TABLE `domain_user` (
   `id` int(11) NOT NULL,
   `username` text NOT NULL,
-  `full_name` text NOT NULL
+  `display_name` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -427,7 +427,7 @@ CREATE TABLE `system_user` (
   `id` int(11) NOT NULL,
   `uid` text NOT NULL,
   `username` text NOT NULL,
-  `full_name` text NOT NULL,
+  `display_name` text NOT NULL,
   `password` text DEFAULT NULL,
   `ldap` tinyint(4) NOT NULL DEFAULT 0,
   `email` text DEFAULT NULL,
