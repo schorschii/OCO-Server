@@ -1834,9 +1834,10 @@ function editOwnSystemUserPassword(oldPassword, newPassword) {
 		emitMessage(L__SAVED, "", MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditSystemUser(id, username, displayName, description, roleId, ldap) {
+function showDialogEditSystemUser(id, uid, username, displayName, description, roleId, ldap) {
 	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditSystemUserId.value = id;
+		txtEditSystemUserUid.value = uid;
 		txtEditSystemUserUsername.value = username;
 		txtEditSystemUserDisplayName.value = displayName;
 		txtEditSystemUserDescription.value = description;

@@ -157,6 +157,7 @@ const LANG = [
 	'install' => 'Install',
 	'settings' => 'Settings',
 	'display_name' => 'Display Name',
+	'uid' => 'Unique Identifier',
 	'ldap_account' => 'LDAP Account',
 	'locked' => 'Locked',
 	'lock' => 'Lock',
