@@ -19,7 +19,7 @@ if(!empty($_GET['id'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/user.dyn.svg'><span id='page-title'><?php echo $domainUser->displayNameWithUsername(); ?></span></h1>
+	<h1><img src='img/user.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($domainUser->displayNameWithUsername()); ?></span></h1>
 </div>
 <div class='details-abreast'>
 	<div class='stickytable'>

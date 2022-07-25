@@ -329,9 +329,9 @@ class DomainUser {
 	// functions
 	public function displayNameWithUsername() {
 		if(empty($this->display_name)) {
-			return htmlspecialchars($this->username);
+			return $this->username;
 		} else {
-			return htmlspecialchars($this->display_name).' ('.htmlspecialchars($this->username).')';
+			return $this->display_name.' ('.$this->username.')';
 		}
 	}
 }
