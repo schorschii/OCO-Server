@@ -38,8 +38,7 @@ try {
 
 <div id='tabControlPackage' class='tabcontainer'>
 	<div class='tabbuttons'>
-		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG['general']; ?></a>
-		<a href='#' name='dependencies' class='<?php if($tab=='dependencies') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG['dependencies']; ?></a>
+		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG['general_and_dependencies']; ?></a>
 		<a href='#' name='computers' class='<?php if($tab=='computers') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG['computer_and_jobs']; ?></a>
 	</div>
 	<div class='tabcontents'>
@@ -251,12 +250,13 @@ try {
 					</table>
 				</div>
 			</div>
-		</div>
 
-		<div name='dependencies' class='<?php if($tab=='dependencies') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div>
 					<h2><?php echo LANG['depends_on']; ?></h2>
+					<div class='controls'>
+						<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+					</div>
 					<table id='tblDependencyPackageData' class='list sortable savesort'>
 						<thead>
 							<tr>
@@ -287,7 +287,6 @@ try {
 											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 										</div>
 										<div>
-											<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 											<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 										</div>
 									</div>
@@ -298,6 +297,9 @@ try {
 				</div>
 				<div>
 					<h2><?php echo LANG['dependent_packages']; ?></h2>
+					<div class='controls'>
+						<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+					</div>
 					<table id='tblDependentPackageData' class='list sortable savesort'>
 						<thead>
 							<tr>
@@ -328,7 +330,6 @@ try {
 											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 										</div>
 										<div>
-											<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 											<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 										</div>
 									</div>
@@ -342,7 +343,7 @@ try {
 
 		<div name='computers' class='<?php if($tab=='computers') echo 'active'; ?>'>
 			<div class='details-abreast'>
-				<div>
+				<div class='stickytable'>
 					<h2><?php echo LANG['installed_on']; ?></h2>
 					<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>
 						<thead>
@@ -375,7 +376,7 @@ try {
 											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 										</div>
-										<div>
+										<div class='controls'>
 											<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 											<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("package_id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 											<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
@@ -387,7 +388,7 @@ try {
 						</tfoot>
 					</table>
 				</div>
-				<div>
+				<div class='stickytable'>
 					<h2><?php echo LANG['pending_jobs']; ?></h2>
 					<table id='tblPendingPackageJobsData' class='list searchable sortable savesort'>
 						<thead>

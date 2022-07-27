@@ -545,8 +545,12 @@ body.loading2 #loader-container {
 	align-items: stretch;
 	justify-content: space-between;
 }
-.controls.right {
+.controls.right, tfoot .controls {
 	justify-content: right;
+}
+tfoot .controls {
+	flex-wrap: wrap;
+	margin: 0px;
 }
 .controls > *:not(.controls):not(span) {
 	display: inline-block;

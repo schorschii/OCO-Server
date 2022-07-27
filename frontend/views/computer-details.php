@@ -333,7 +333,7 @@ try {
 
 		<div name='packages' class='<?php if($tab=='packages') echo 'active'; ?>'>
 			<div class='details-abreast'>
-				<div>
+				<div class='stickytable'>
 					<h2><?php echo LANG['installed_packages']; ?></h2>
 					<table id='tblInstalledPackageData' class='list searchable sortable savesort'>
 						<thead>
@@ -366,7 +366,7 @@ try {
 											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 										</div>
-										<div>
+										<div class='controls'>
 											<button onclick='deploySelectedPackage("package_id[]", "package_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 											<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("package_id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 											<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
@@ -378,7 +378,7 @@ try {
 						</tfoot>
 					</table>
 				</div>
-				<div>
+				<div class='stickytable'>
 					<h2><?php echo LANG['pending_jobs']; ?></h2>
 					<table id='tblPendingComputerJobsData' class='list searchable sortable savesort'>
 						<thead>
@@ -421,7 +421,7 @@ try {
 
 		<div name='software' class='<?php if($tab=='software') echo 'active'; ?>'>
 			<div class='details-abreast'>
-				<div>
+				<div class='stickytable'>
 					<h2><?php echo LANG['recognised_software']; ?></h2>
 					<table id='tblSoftwareInventoryData' class='list searchable sortable savesort'>
 						<thead>
@@ -451,7 +451,7 @@ try {
 										<div>
 											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
 										</div>
-										<div>
+										<div class='controls'>
 											<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 										</div>
 									</div>
