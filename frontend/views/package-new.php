@@ -16,6 +16,7 @@ require_once('../session.php');
 	<option>msiexec /quiet /i</option>
 	<option>gdebi -n</option>
 	<option>msiexec /quiet /i [FILENAME]</option>
+	<option>apt install -y ./[FILENAME]</option>
 	<option>gdebi -n [FILENAME]</option>
 </datalist>
 <datalist id='lstUninstallProceduresTemplates'>
