@@ -382,6 +382,7 @@ const LANG = [
 	'initiator' => 'Initiator',
 	'report_groups' => 'Reportgruppen',
 	'expand_or_collapse_tree' => '(Doppel-)Klicken, um Baum aus- oder einzuklappen',
+	'create_package' => 'Paket erstellen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
@@ -391,19 +392,19 @@ const LANG = [
 		</p>
 		<p>
 			Beispiel-Prozeduren:
-			<ul>
-				<li>EXE-Setup unter Windows: <code>installer.exe /S</code>
-				<li>EXE-Deinstallation unter Windows: <code>C:\Program Files\MyProgram\unins000.exe /S</code>
-				<br>Das (De-)Installations-Kommando ist von Software zu Software unterschiedlich, bitte ziehen Sie in Betracht EXE-Setups als MSI-Paket neu zu packen.</li>
-				<li>MSI-Installation unter Windows: <code>msiexec /quiet /i package.msi</code></li>
-				<li>MSI-Deinstallation unter Windows: <code>msiexec /quiet /x package.msi</code> oder <code>{PRODUCT-GUID}</code></li>
-				<li>DEB-Paket unter Linux: <code>gdebi -n package.deb</code></li>
-				<li>DEB-Paket unter Linux deinstallieren: <code>apt remove -y packagename</code></li>
-				<li>.app-Verzeichnis für macOS aus DMG-Datei: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>
-				<li>.app-Verzeichnis für macOS deinstallieren: <code>rm -R /Applications/program.app</code></li>
-				<li>.pkg-Paket für macOS: <code>installer -pkg package.pkg -target /</code> (kein Deinstallations-Support)</li>
-				<li>Eigenes Batch-/Shell-Skript: <code>myscript.bat</code> oder <code>myscript.sh</code></li>
-			</ul>
 		</p>
+		<ul>
+			<li>EXE-Setup unter Windows: <code>installer.exe /S</code>
+			<li>EXE-Deinstallation unter Windows: <code>C:\Program Files\MyProgram\unins000.exe /S</code>
+			<br>Das (De-)Installations-Kommando ist von Software zu Software unterschiedlich, bitte ziehen Sie in Betracht EXE-Setups als MSI-Paket neu zu packen.</li>
+			<li>MSI-Installation unter Windows: <code>msiexec /quiet /i package.msi</code></li>
+			<li>MSI-Deinstallation unter Windows: <code>msiexec /quiet /x package.msi</code> oder <code>msiexec /quiet /x {PRODUCT-GUID}</code></li>
+			<li>DEB-Paket unter Linux: <code>gdebi -n package.deb</code></li>
+			<li>DEB-Paket unter Linux deinstallieren: <code>apt remove -y packagename</code></li>
+			<li>.app-Verzeichnis für macOS aus DMG-Datei: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>
+			<li>.app-Verzeichnis für macOS deinstallieren: <code>rm -R /Applications/program.app</code></li>
+			<li>.pkg-Paket für macOS: <code>installer -pkg package.pkg -target /</code> (kein Deinstallations-Support)</li>
+			<li>Eigenes Batch-/Shell-Skript: <code>myscript.bat</code> oder <code>myscript.sh</code></li>
+		</ul>
 	',
 ];

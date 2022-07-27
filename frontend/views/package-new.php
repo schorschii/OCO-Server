@@ -14,10 +14,13 @@ require_once('../session.php');
 <datalist id='lstInstallProceduresTemplates'>
 	<option>[FILENAME]</option>
 	<option>msiexec /quiet /i</option>
+	<option>apt install -y</option>
 	<option>gdebi -n</option>
+	<option>installer -target / -pkg</option>
 	<option>msiexec /quiet /i [FILENAME]</option>
 	<option>apt install -y ./[FILENAME]</option>
 	<option>gdebi -n [FILENAME]</option>
+	<option>installer -target / -pkg [FILENAME]</option>
 </datalist>
 <datalist id='lstUninstallProceduresTemplates'>
 	<option>[FILENAME]</option>
@@ -28,7 +31,9 @@ require_once('../session.php');
 </datalist>
 <datalist id='lstInstallProcedures'>
 	<option>msiexec /quiet /i</option>
+	<option>apt install -y</option>
 	<option>gdebi -n</option>
+	<option>installer -target / -pkg</option>
 </datalist>
 <datalist id='lstUninstallProcedures'>
 	<option>msiexec /quiet /x</option>
@@ -118,14 +123,19 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td><label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' <?php if($_GET['download_for_uninstall']??true) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['download_for_uninstall']; ?></label></td>
+		<td colspan='3'>
+			<label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' <?php if($_GET['download_for_uninstall']??true) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['download_for_uninstall']; ?></label>
+		</td>
 	</tr>
 	<tr>
-		<th></th>
 		<td colspan='4'>
-			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, getCheckedRadioValue("install_post_action"), txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, getCheckedRadioValue("uninstall_post_action"), txtCompatibleOs.value, txtCompatibleOsVersion.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['send']; ?></button>
-			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadContainer', 'prgPackageUploadText', 'width:180px;display:none;'); ?>
+		<div class='content-foot'>
+			<div class='filler'></div>
+			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadContainer', 'prgPackageUploadText', 'display:none;'); ?>
+			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, getCheckedRadioValue("install_post_action"), txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, getCheckedRadioValue("uninstall_post_action"), txtCompatibleOs.value, txtCompatibleOsVersion.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['create_package']; ?></button>
+		</div>
 		</td>
+	</tr>
 </table>
 
 <div class='alert info'>

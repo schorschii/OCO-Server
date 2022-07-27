@@ -387,6 +387,7 @@ const LANG = [
 	'initiator' => 'Initiator',
 	'report_groups' => 'Report Groups',
 	'expand_or_collapse_tree' => '(Double) click to exapnd or collapse tree',
+	'create_package' => 'Create Package',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
@@ -396,19 +397,19 @@ const LANG = [
 		</p>
 		<p>
 			Example Procedures:
-			<ul>
-				<li>EXE setup for Windows: <code>installer.exe /S</code></li>
-				<li>EXE uninstallation for Windows: <code>C:\Program Files\MyProgram\unins000.exe /S</code>
-				<br>The (un)installation command depends on the specific software, please consider repacking EXE setups as MSI package.</li>
-				<li>MSI setup for Windows: <code>msiexec /quiet /i package.msi</code></li>
-				<li>MSI uninstallation for Windows: <code>msiexec /quiet /x package.msi</code> or <code>{PRODUCT-GUID}</code></li>
-				<li>DEB package for Linux: <code>gdebi -n package.deb</code></li>
-				<li>DEB package for Linux uninstallation: <code>apt remove -y packagename</code></li>
-				<li>.app directory for macOS from DMG file: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>
-				<li>.app directory for macOS uninstallation: <code>rm -R /Applications/program.app</code></li>
-				<li>.pkg package for macOS: <code>installer -pkg package.pkg -target /</code> (no uninstallation support)</li>
-				<li>Own Batch/Shell script: <code>myscript.bat</code> or <code>myscript.sh</code></li>
-			</ul>
 		</p>
+		<ul>
+			<li>EXE setup for Windows: <code>installer.exe /S</code></li>
+			<li>EXE uninstallation for Windows: <code>C:\Program Files\MyProgram\unins000.exe /S</code>
+			<br>The (un)installation command depends on the specific software, please consider repacking EXE setups as MSI package.</li>
+			<li>MSI setup for Windows: <code>msiexec /quiet /i package.msi</code></li>
+			<li>MSI uninstallation for Windows: <code>msiexec /quiet /x package.msi</code> or <code>msiexec /quiet /x {PRODUCT-GUID}</code></li>
+			<li>DEB package for Linux: <code>gdebi -n package.deb</code></li>
+			<li>DEB package for Linux uninstallation: <code>apt remove -y packagename</code></li>
+			<li>.app directory for macOS from DMG file: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>
+			<li>.app directory for macOS uninstallation: <code>rm -R /Applications/program.app</code></li>
+			<li>.pkg package for macOS: <code>installer -pkg package.pkg -target /</code> (no uninstallation support)</li>
+			<li>Own Batch/Shell script: <code>myscript.bat</code> or <code>myscript.sh</code></li>
+		</ul>
 	',
 ];

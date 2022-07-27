@@ -188,11 +188,13 @@ if(empty($default_job_container_name)) {
 		</label>
 	</div>
 </div>
-<div class='controls'>
-	<button id='btnDeploy' class='primary' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, getSelectedCheckBoxValues("computers"), getSelectedCheckBoxValues("computer_groups"), getSelectedCheckBoxValues("packages"), getSelectedCheckBoxValues("package_groups"), chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value, txtConstraintIpRange.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-	<?php echo progressBar(100, 'prgDeploy', 'prgDeployContainer', 'prgDeployText', 'width:180px;display:none;', false, true); ?>
+
 </div>
 
+<div class='content-foot'>
+	<div class='filler'></div>
+	<?php echo progressBar(100, 'prgDeploy', 'prgDeployContainer', 'prgDeployText', 'display:none;', false, true); ?>
+	<button id='btnDeploy' class='primary' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, getSelectedCheckBoxValues("computers"), getSelectedCheckBoxValues("computer_groups"), getSelectedCheckBoxValues("packages"), getSelectedCheckBoxValues("package_groups"), chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value, txtConstraintIpRange.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 </div>
 
 <?php
