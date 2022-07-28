@@ -1051,29 +1051,30 @@ div.details-abreast > div.stickytable > table.list tfoot {
 }
 
 .progressbar-container {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
 	white-space: nowrap;
 	max-width: 100%;
 }
 .progressbar-container.stretch {
-	width: 100%;
+	display: flex;
 }
 .progressbar-container > .progresstext {
 	display: inline-block;
 	min-width: 32px;
-	margin-left: 4px;
 	text-align: right;
 }
 .progressbar {
+	flex-grow: 1;
 	vertical-align: middle;
 	display: inline-block;
-	height: 16px;
+	height: 17px;
 	max-width: 100%;
-	width: 160px;
+	width: 100px;
 	background-color: #EEEEEE;
 	border-radius: 2px;
 	overflow: hidden;
-	margin-bottom: 2px;
 	text-align: left;
 }
 .progressbar > .progress {

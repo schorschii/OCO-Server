@@ -44,10 +44,11 @@ function wrapInSpanIfNotEmpty($text) {
 	return '<span>'.htmlspecialchars($text).'</span>';
 }
 
-function progressBar($percent, $id=null, $cid=null, $tid=null, $style=null, $stretch=false, $animated=false) {
+function progressBar($percent, $id=null, $cid=null, $tid=null, $style=null, $stretch=false, $animated=false, $text='') {
 	$percent = intval($percent);
 	return
 		'<span class="progressbar-container '.($stretch ? 'stretch' : '').'" style="'.(empty($style) ? '' : $style).'" '.($cid==null ? '' : 'id="'.htmlspecialchars($cid).'"').'>'
+			.($text=='' ? '' : '<span>'.htmlspecialchars($text).'</span>')
 			.'<span class="progressbar">'
 				.'<span class="progress '.($animated ? 'animated' : '').'" style="width:'.$percent.'%" '.($id==null ? '' : 'id="'.htmlspecialchars($id).'"').'></span>'
 			.'</span>'
