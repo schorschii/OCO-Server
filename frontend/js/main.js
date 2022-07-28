@@ -607,8 +607,8 @@ function createPackage(name, version, description, archive, install_procedure, i
 	}
 
 	setInputsDisabled(frmNewPackage, true);
-	btnCreatePackage.style.display = 'none';
-	prgPackageUploadContainer.style.display = 'inline-block';
+	btnCreatePackage.classList.add('hidden');
+	prgPackageUpload.classList.remove('hidden');
 
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
@@ -632,17 +632,17 @@ function createPackage(name, version, description, archive, install_procedure, i
 			if(progress == 100) {
 				prgPackageUpload.classList.add('animated');
 				prgPackageUploadText.innerText = L__IN_PROGRESS;
-				prgPackageUpload.style.width = '100%';
+				prgPackageUpload.style.setProperty('--progress', '100%');
 			} else {
 				prgPackageUpload.classList.remove('animated');
-				prgPackageUploadText.innerText = progress + '%';
-				prgPackageUpload.style.width = progress + '%';
+				prgPackageUploadText.innerText = progress+'%';
+				prgPackageUpload.style.setProperty('--progress', progress+'%');
 			}
 		} else {
 			console.warn('form length is not computable');
 			prgPackageUpload.classList.add('animated');
 			prgPackageUploadText.innerText = L__IN_PROGRESS;
-			prgPackageUpload.style.width = '100%';
+			prgPackageUpload.style.setProperty('--progress', '100%');
 		}
 	};
 	req.onreadystatechange = function() {
@@ -655,8 +655,8 @@ function createPackage(name, version, description, archive, install_procedure, i
 			} else {
 				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 				setInputsDisabled(frmNewPackage, false);
-				btnCreatePackage.style.display = 'inline-block';
-				prgPackageUploadContainer.style.display = 'none';
+				btnCreatePackage.classList.remove('hidden');
+				prgPackageUpload.classList.add('hidden');
 			}
 		}
 	};
@@ -1454,8 +1454,8 @@ function editJobContainerNotes(id, oldValue) {
 }
 function deploy(title, start, end, description, computers, computerGroups, packages, packageGroups, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, constraintIpRange) {
 	setInputsDisabled(frmDeploy, true);
-	btnDeploy.style.display = 'none';
-	prgDeployContainer.style.display = 'flex';
+	btnDeploy.classList.add('hidden');
+	prgDeploy.classList.remove('hidden');
 
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
@@ -1497,8 +1497,8 @@ function deploy(title, start, end, description, computers, computerGroups, packa
 			} else {
 				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 				setInputsDisabled(frmDeploy, false);
-				btnDeploy.style.display = 'inline-block';
-				prgDeployContainer.style.display = 'none';
+				btnDeploy.classList.remove('hidden');
+				prgDeploy.classList.add('hidden');
 			}
 		}
 	};

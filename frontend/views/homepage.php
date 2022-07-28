@@ -31,18 +31,20 @@ $used = $total - $free;
 		</tr>
 		<tr>
 			<td class='center' colspan='2' title='<?php echo htmlspecialchars($sysload.' / '.$ncpu); ?>'>
+				<div><?php echo LANG['usage']; ?></div>
 				<?php
 				$percent = round($sysload/$ncpu*100);
-				echo progressBar($percent, null, null, null, 'width:350px', false, false, LANG['usage']).'';
+				echo progressBar($percent, null, null, '', 'width:240px');
 				?>
 			</td>
 			<td class='center'>
 				<?php echo LANG['version'].' '.APP_VERSION.' '.APP_RELEASE; ?>
 			</td>
 			<td class='center' colspan='2' title='<?php echo htmlspecialchars(niceSize($used).' / '.niceSize($total)); ?>'>
+				<div><?php echo LANG['disk_space']; ?></div>
 				<?php
 				$percent = round($used/$total*100);
-				echo progressBar($percent, null, null, null, 'width:350px', false, false, LANG['disk_space']).'';
+				echo progressBar($percent, null, null, '', 'width:240px');
 				?>
 			</td>
 		</tr>

@@ -114,7 +114,7 @@ if(!empty($_GET['id'])) {
 			</tr>
 			<tr>
 				<th><?php echo LANG['progress']; ?></th>
-				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, null, null, true); ?></td>
+				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, 'stretch', ''); ?></td>
 			</tr>
 		</table>
 	</div>
@@ -246,7 +246,7 @@ if(!empty($_GET['id'])) {
 				echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
 				echo "<td>".htmlspecialchars($jc->priority)."</td>";
 				echo "<td>".htmlspecialchars(shorter($jc->notes))."</td>";
-				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, null, null, true)."</td>";
+				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, 'stretch', '')."</td>";
 				echo "</tr>";
 			} ?>
 			</tbody>

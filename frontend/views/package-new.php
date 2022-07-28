@@ -131,7 +131,7 @@ require_once('../session.php');
 		<td colspan='4'>
 		<div class='content-foot'>
 			<div class='filler'></div>
-			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadContainer', 'prgPackageUploadText', 'display:none;'); ?>
+			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadText', 'hidden big'); ?>
 			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, getCheckedRadioValue("install_post_action"), txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, getCheckedRadioValue("uninstall_post_action"), txtCompatibleOs.value, txtCompatibleOsVersion.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['create_package']; ?></button>
 		</div>
 		</td>

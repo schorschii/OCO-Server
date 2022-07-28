@@ -44,15 +44,12 @@ function wrapInSpanIfNotEmpty($text) {
 	return '<span>'.htmlspecialchars($text).'</span>';
 }
 
-function progressBar($percent, $id=null, $cid=null, $tid=null, $style=null, $stretch=false, $animated=false, $text='') {
+function progressBar($percent, $cid=null, $tid=null, $class=''/*hidden big stretch animated*/, $style='') {
 	$percent = intval($percent);
 	return
-		'<span class="progressbar-container '.($stretch ? 'stretch' : '').'" style="'.(empty($style) ? '' : $style).'" '.($cid==null ? '' : 'id="'.htmlspecialchars($cid).'"').'>'
-			.($text=='' ? '' : '<span>'.htmlspecialchars($text).'</span>')
-			.'<span class="progressbar">'
-				.'<span class="progress '.($animated ? 'animated' : '').'" style="width:'.$percent.'%" '.($id==null ? '' : 'id="'.htmlspecialchars($id).'"').'></span>'
-			.'</span>'
-			.'<span class="progresstext" '.($tid==null ? '' : 'id="'.htmlspecialchars($tid).'"').'>'.($animated ? LANG['in_progress'] : $percent.'%').'</span>'
+		'<span class="progressbar-container '.$class.'" style="--progress:'.$percent.'%; '.$style.'" '.($cid==null ? '' : 'id="'.htmlspecialchars($cid).'"').'>'
+			.'<span class="progressbar"><span class="progress"></span></span>'
+			.'<span class="progresstext" '.($tid==null ? '' : 'id="'.htmlspecialchars($tid).'"').'>'.(strpos($class,'animated')!==false ? LANG['in_progress'] : $percent.'%').'</span>'
 		.'</span>';
 }
 

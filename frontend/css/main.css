@@ -21,6 +21,7 @@ body {
 	font-size: 14px;
 	color: #070707;
 	margin: 0px;
+	-webkit-font-smoothing: antialiased;
 }
 h1 {
 	font-size: 24px;
@@ -516,7 +517,7 @@ body.loading2 #loader-container {
 }
 
 .hidden {
-	display: none;
+	display: none !important;
 }
 
 .gallery {
@@ -1056,20 +1057,33 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	gap: 5px;
 	white-space: nowrap;
 	max-width: 100%;
+	height: 17px;
+	position: relative;
+}
+.progressbar-container.big {
+	height: 40px;
+	width: 180px;
 }
 .progressbar-container.stretch {
 	display: flex;
 }
 .progressbar-container > .progresstext {
 	display: inline-block;
-	min-width: 32px;
-	text-align: right;
+	text-align: center;
+	position: absolute;
+	left: 0;
+	right: 0;
+	background: linear-gradient(to right, white var(--progress,0%), black 0);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+	font-weight: bold;
 }
 .progressbar {
 	flex-grow: 1;
 	vertical-align: middle;
 	display: inline-block;
-	height: 17px;
+	height: 100%;
 	max-width: 100%;
 	width: 100px;
 	background-color: #EEEEEE;
@@ -1080,10 +1094,14 @@ div.details-abreast > div.stickytable > table.list tfoot {
 .progressbar > .progress {
 	display: inline-block;
 	height: 100%;
+	width: var(--progress,0%);
 	background-color: #0079B8;
 	border-radius: 2px;
 }
-.progressbar > .progress.animated {
+.progressbar-container.animated {
+	--progress: 100% !important;
+}
+.progressbar-container.animated > .progressbar > .progress {
 	width: 100%;
 	background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.25) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.25) 50%, rgba(255, 255, 255, 0.25) 75%, transparent 75%, transparent);
 	background-size: 1rem 1rem;
@@ -1404,6 +1422,11 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	button:disabled {
 		color: #484f58 !important;
 		background-color: #21262d !important;
+	}
+	.progressbar-container > .progresstext {
+		background: linear-gradient(to right, black var(--progress,0%), white 0);
+		-webkit-background-clip: text;
+		background-clip: text;
 	}
 	.progressbar {
 		background-color: #324650;

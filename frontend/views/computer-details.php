@@ -321,7 +321,7 @@ try {
 								echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($p->free).'">'.htmlspecialchars(niceSize($p->free)).'</td>';
-								echo '<td sort_key="'.htmlspecialchars($percent).'">'.progressBar($percent, null, null, null, null, true).'</td>';
+								echo '<td sort_key="'.htmlspecialchars($percent).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
 								echo '</tr>';
 							}
 							?>
