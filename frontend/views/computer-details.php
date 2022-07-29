@@ -305,7 +305,6 @@ try {
 								<th><?php echo LANG['mountpoint']; ?></th>
 								<th><?php echo LANG['file_system']; ?></th>
 								<th><?php echo LANG['size']; ?></th>
-								<th><?php echo LANG['free']; ?></th>
 								<th><?php echo LANG['used']; ?></th>
 							</tr>
 						</thead>
@@ -320,8 +319,7 @@ try {
 								echo '<td>'.htmlspecialchars($p->mountpoint).'</td>';
 								echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
-								echo '<td sort_key="'.htmlspecialchars($p->free).'">'.htmlspecialchars(niceSize($p->free)).'</td>';
-								echo '<td sort_key="'.htmlspecialchars($percent).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
+								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG['used'].': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG['free'].': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
 								echo '</tr>';
 							}
 							?>
