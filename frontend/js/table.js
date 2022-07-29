@@ -49,7 +49,7 @@ var TableSortUltra = function(tab, startsort) {
 		}
 		var sortbutton = document.createElement("button");
 		sortbutton.innerHTML = tabletitel[col].innerHTML;
-		sortbutton.title = "Sortiere nach " + tabletitel[col].innerHTML;
+		sortbutton.title = L__ORDER_BY + " " + tabletitel[col].innerHTML;
 		sortbutton.className = "sortbutton";
 		sortbutton.type = "button";
 		sortbuttons[col] = sortbutton;
