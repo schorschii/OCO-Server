@@ -147,7 +147,7 @@ try {
 							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 						</div>
-						<div>
+						<div class='controls'>
 							<button onclick='event.preventDefault();downloadTableCsv("tblPackageData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 							<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 							<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("package_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>

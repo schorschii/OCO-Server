@@ -50,7 +50,7 @@ if(!empty($_GET['id'])) {
 							<div>
 								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
 							</div>
-							<div>
+							<div class='controls'>
 								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserDetailData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 							</div>
 						</div>
@@ -87,7 +87,7 @@ if(!empty($_GET['id'])) {
 							<div>
 								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
 							</div>
-							<div>
+							<div class='controls'>
 								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserHistoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 							</div>
 						</div>
@@ -151,7 +151,7 @@ if(!empty($_GET['id'])) {
 							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 						</div>
-						<div>
+						<div class='controls'>
 							<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 							<button onclick='confirmRemoveSelectedDomainUser("domain_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 						</div>

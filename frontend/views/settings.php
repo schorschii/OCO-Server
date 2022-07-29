@@ -114,7 +114,7 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 										<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 										<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 									</div>
-									<div>
+									<div class='controls'>
 										<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.dyn.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
 										<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.dyn.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
 										<button onclick='confirmRemoveSelectedSystemUser("system_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>

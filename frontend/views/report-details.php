@@ -115,7 +115,7 @@ try {
 							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 						</div>
-						<div>
+						<div class='controls'>
 							<button onclick='event.preventDefault();downloadTableCsv("tblReportDetailData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 							<?php if($hasComputerIds) { ?>
 								<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>

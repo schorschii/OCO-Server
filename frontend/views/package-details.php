@@ -286,7 +286,7 @@ try {
 											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 										</div>
-										<div>
+										<div class='controls'>
 											<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 										</div>
 									</div>
@@ -329,7 +329,7 @@ try {
 											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
 											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
 										</div>
-										<div>
+										<div class='controls'>
 											<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
 										</div>
 									</div>

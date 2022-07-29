@@ -49,7 +49,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 							<div>
 								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
 							</div>
-							<div>
+							<div class='controls'>
 								<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData1")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 							</div>
 						</div>
@@ -98,7 +98,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 							<div>
 								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
 							</div>
-							<div>
+							<div class='controls'>
 								<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData2")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 							</div>
 						</div>
@@ -157,7 +157,7 @@ if(!empty($_GET['id']) && !empty($_GET['version'])) {
 						<div>
 							<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
 						</div>
-						<div>
+						<div class='controls'>
 							<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
 						</div>
 					</div>
