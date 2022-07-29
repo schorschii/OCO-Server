@@ -101,7 +101,7 @@ try {
 		<thead>
 			<tr>
 				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageData, this.checked)'></th>
-				<th class='searchable sortable'><?php echo LANG['name']; ?></th>
+				<?php if($family==null) { ?><th class='searchable sortable'><?php echo LANG['name']; ?></th><?php } ?>
 				<th class='searchable sortable'><?php echo LANG['version']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['author']; ?></th>
 				<th class='searchable sortable'><?php echo LANG['size']; ?></th>
@@ -124,7 +124,7 @@ try {
 			if($group !== null) echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)' onkeyup='handlePackageReorderByKeyboard(event, ".$group->id.", ".$p->package_group_member_sequence.")'></td>";
 			else echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)'></td>";
 
-			echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
+			if($family==null) echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
 			echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->version)."</a></td>";
 			echo "<td>".htmlspecialchars($p->author)."</td>";
 			echo "<td sort_key='".htmlspecialchars($size)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG['not_found'])."</td>";
