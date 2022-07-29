@@ -47,7 +47,7 @@ switch($srcdata['method']) {
 		}
 
 		// get job details
-		$state = $data['state'];
+		$state = intval($data['state']);
 		$job = $db->getJob($data['job-id']);
 		if($job === null) {
 			errorExit('404 Job Not Found', $params['hostname'], $computer, $srcdata['method'],
@@ -61,7 +61,7 @@ switch($srcdata['method']) {
 		}
 
 		// if job finished, we need to check the return code
-		if($state == Job::STATUS_SUCCEEDED) {
+		if($state === Job::STATUS_SUCCEEDED) {
 			$successCodes = [];
 			foreach(explode(',', $job->success_return_codes) as $successCode) {
 				if(trim($successCode) === '') continue;
@@ -98,7 +98,7 @@ switch($srcdata['method']) {
 			'success' => true,
 			'params' => [
 				'server-key' => $computer->server_key,
-				'job-succeeded' => ($state == Job::STATUS_SUCCEEDED),
+				'job-succeeded' => ($state === Job::STATUS_SUCCEEDED),
 			]
 		];
 		break;

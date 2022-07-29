@@ -229,7 +229,7 @@ class JobContainer {
 	public $agent_ip_ranges;
 	public $created;
 	// aggregated values
-	public $last_update;
+	public $execution_finished;
 	// constants (= icon names)
 	public const STATUS_SUCCEEDED = 'tick';
 	public const STATUS_FAILED = 'error';
@@ -255,7 +255,9 @@ class Job {
 	public $return_code;
 	public $message;
 	public $wol_shutdown_set;
-	public $last_update;
+	public $download_started;
+	public $execution_started;
+	public $execution_finished;
 	// joined computer attributes
 	public $computer_hostname;
 	// joined package attributes

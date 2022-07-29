@@ -1164,7 +1164,7 @@ class DatabaseController {
 	}
 	public function getAllJobContainer() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT jc.*, (SELECT MAX(last_update) FROM job j WHERE j.job_container_id = jc.id) AS "last_update"
+			'SELECT jc.*, (SELECT MAX(execution_finished) FROM job j WHERE j.job_container_id = jc.id) AS "execution_finished"
 			FROM job_container jc'
 		);
 		$this->stmt->execute();
@@ -1299,7 +1299,7 @@ class DatabaseController {
 	}
 	public function updateJobState($id, $state, $return_code, $message) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE job SET state = :state, return_code = :return_code, message = :message, last_update = CURRENT_TIMESTAMP WHERE id = :id'
+			'UPDATE job SET state = :state, return_code = :return_code, message = :message WHERE id = :id'
 		);
 		if(!$this->stmt->execute([
 			':id' => $id,
@@ -1307,7 +1307,18 @@ class DatabaseController {
 			':return_code' => $return_code,
 			':message' => $message,
 		])) return false;
-		// set all pending jobs to failed if sequence_mode is 'abort after failed'
+		// update job timestamps
+		if($state === Job::STATUS_DOWNLOAD_STARTED) {
+			$this->stmt = $this->dbh->prepare('UPDATE job SET download_started = CURRENT_TIMESTAMP WHERE id = :id');
+			if(!$this->stmt->execute([':id'=>$id])) return false;
+		} elseif($state === Job::STATUS_EXECUTION_STARTED) {
+			$this->stmt = $this->dbh->prepare('UPDATE job SET execution_started = CURRENT_TIMESTAMP WHERE id = :id');
+			if(!$this->stmt->execute([':id'=>$id])) return false;
+		} else {
+			$this->stmt = $this->dbh->prepare('UPDATE job SET execution_finished = CURRENT_TIMESTAMP WHERE id = :id');
+			if(!$this->stmt->execute([':id'=>$id])) return false;
+		}
+		// set all pending jobs of specific computer to failed if sequence_mode is 'abort after failed'
 		if($state == Job::STATUS_FAILED) {
 			$job_container_id = -1;
 			$sequence_mode = JobContainer::SEQUENCE_MODE_IGNORE_FAILED;
@@ -1321,7 +1332,7 @@ class DatabaseController {
 			}
 			if($sequence_mode == JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
 				$this->stmt = $this->dbh->prepare(
-					'UPDATE job SET state = :state, return_code = :return_code, message = :message, last_update = CURRENT_TIMESTAMP
+					'UPDATE job SET state = :state, return_code = :return_code, message = :message, execution_finished = CURRENT_TIMESTAMP
 					WHERE job_container_id = :job_container_id AND state = :old_state'
 				);
 				return $this->stmt->execute([

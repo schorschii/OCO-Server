@@ -132,7 +132,7 @@ if(!empty($_GET['id'])) {
 					<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['order']; ?></th>
 					<th class='searchable sortable'><?php echo LANG['status']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['last_change']; ?></th>
+					<th class='searchable sortable'><?php echo LANG['finished']; ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -160,7 +160,9 @@ if(!empty($_GET['id'])) {
 				} else {
 					echo "<td class='middle'><img src='".$job->getIcon()."'>&nbsp;".$job->getStateString()."</td>";
 				}
-				echo "<td>".htmlspecialchars($job->last_update);
+				$downloadTime = (!empty($job->download_started)&&!empty($job->execution_started)) ? strtotime($job->execution_started)-strtotime($job->download_started) : 0;
+				$executionTime = (!empty($job->execution_started)&&!empty($job->execution_finished)) ? strtotime($job->execution_finished)-strtotime($job->execution_started) : 0;
+				echo "<td title='".LANG['execution_time'].': '.niceTime($downloadTime+$executionTime)."'>".htmlspecialchars($job->execution_finished)."</td>";
 				echo "</tr>";
 			} ?>
 			</tbody>
@@ -223,7 +225,7 @@ if(!empty($_GET['id'])) {
 			</thead>
 			<tbody>
 			<?php $counter = 0;
-			foreach($cl->getJobContainers() as $jc) {
+			foreach($containers as $jc) {
 				$counter ++;
 				$percent = 0;
 				$done = 0;

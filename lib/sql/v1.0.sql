@@ -226,7 +226,9 @@ CREATE TABLE `job` (
   `return_code` bigint(11) DEFAULT NULL,
   `message` longtext NOT NULL,
   `wol_shutdown_set` datetime DEFAULT NULL,
-  `last_update` datetime NOT NULL DEFAULT current_timestamp()
+  `download_started` datetime DEFAULT NULL,
+  `execution_started` datetime DEFAULT NULL,
+  `execution_finished` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
