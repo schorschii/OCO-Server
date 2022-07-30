@@ -71,6 +71,7 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 				<div>
 					<div class='controls'>
 						<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+						<button onclick='ldapSync()' <?php if(empty(LDAP_SERVER)) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG['ldap_sync']; ?></button>
 					</div>
 					<table id='tblSystemUserData' class='list searchable sortable savesort actioncolumn'>
 					<thead>

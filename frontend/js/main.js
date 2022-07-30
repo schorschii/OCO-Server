@@ -1869,6 +1869,15 @@ function editSystemUser(id, username, displayName, description, password, roleId
 }
 
 // ======== SYSTEM OPERATIONS ========
+function ldapSync() {
+	var params = [];
+	params.push({'key':'ldap_sync', 'value':1});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+		refreshContent();
+		emitMessage(L__LDAP_SYNC, text, MESSAGE_TYPE_INFO);
+	});
+}
 function checkUpdate() {
 	ajaxRequestPost('ajax-handler/update-check.php', '', null, function(text) {
 		if(text.trim() != '') {

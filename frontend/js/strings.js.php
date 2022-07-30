@@ -63,6 +63,7 @@ var L__COMPUTER_GROUPS = "<?php echo LANG['computer_groups']; ?>";
 var L__REPORT_GROUPS = "<?php echo LANG['report_groups']; ?>";
 var L__EXPAND_COLLAPSE_TREE = "<?php echo LANG['expand_or_collapse_tree']; ?>";
 var L__ORDER_BY = "<?php echo LANG['order_by']; ?>";
+var L__LDAP_SYNC = "<?php echo LANG['ldap_sync']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";

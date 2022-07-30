@@ -5,6 +5,11 @@ require_once('../session.php');
 
 try {
 
+	if(!empty($_POST['ldap_sync'])) {
+		require('../../lib/LdapSync.php');
+		die();
+	}
+
 	if(isset($_POST['create_system_user'])
 	&& isset($_POST['display_name'])
 	&& isset($_POST['description'])
