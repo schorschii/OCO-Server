@@ -34,7 +34,7 @@ $used = $total - $free;
 				<div><?php echo LANG['usage']; ?></div>
 				<?php
 				$percent = round($sysload/$ncpu*100);
-				echo progressBar($percent, null, null, '', 'width:240px');
+				echo progressBar($percent, null, null, '', 'width:280px');
 				?>
 			</td>
 			<td class='center'>
@@ -44,7 +44,7 @@ $used = $total - $free;
 				<div><?php echo LANG['disk_space']; ?></div>
 				<?php
 				$percent = round($used/$total*100);
-				echo progressBar($percent, null, null, '', 'width:240px');
+				echo progressBar($percent, null, null, '', 'width:280px');
 				?>
 			</td>
 		</tr>
