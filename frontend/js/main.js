@@ -532,7 +532,6 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 }
 function refreshContentDeploy(packages=[], packageGroups=[], computers=[], computerGroups=[]) {
 	ajaxRequest('views/deploy.php', 'explorer-content', function(){
-		// todo
 		addToDeployTarget(computerGroups, divTargetComputerList, "target_computer_groups");
 		addToDeployTarget(computers, divTargetComputerList, "target_computers");
 		addToDeployTarget(packageGroups, divTargetPackageList, "target_package_groups");
@@ -999,16 +998,12 @@ function showDialogAddPackageToGroup(id) {
 function showDialogAddPackageDependency(id) {
 	showDialogAjax(L__ADD_DEPENDENCY, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditPackageId.value = id;
-		// todo
-		//refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
 	});
 }
 function showDialogAddDependentPackage(id) {
 	showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtSetAsDependentPackage.value = "1";
 		txtEditPackageId.value = id;
-		// todo
-		//refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
 	});
 }
 function addPackageDependency(packageId, dependencyPackageId) {
