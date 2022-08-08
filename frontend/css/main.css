@@ -1450,18 +1450,14 @@ div.details-abreast > div.stickytable > table.list tfoot {
 		background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(240, 240, 240, 0.1) 10px, rgb(240, 240, 240, 0.1) 20px);
 	}
 	button:hover, button:focus,
-	input:not([type=range]):not([type=radio]):not([type=checkbox]):focus, input:not([type=range]):not([type=radio]):not([type=checkbox]):hover,
-	textarea:focus, textarea:hover,
-	select:focus, select:hover {
+	input:not([type=range]):not([type=radio]):not([type=checkbox]):focus,
+	textarea:focus, select:focus {
 		background-color: #30363d;
 		box-shadow: none;
-		border-color: rgba(255,255,255,0.2);
 	}
-	input:not([type=range]):not([type=radio]):not([type=checkbox]):active,
-	textarea:active,
-	select:active {
-		border-color: rgba(255,255,255,0.4);
-		box-shadow: none;
+	input:not([type=range]):not([type=radio]):not([type=checkbox]):focus,
+	textarea:focus, select:focus {
+		border-color: rgba(255,255,255,0.2);
 	}
 	button.primary {
 		background-color: #006193;
