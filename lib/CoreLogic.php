@@ -669,7 +669,6 @@ class CoreLogic {
 			$tmpComputer = $this->db->getComputer($computer_id);
 			if($tmpComputer == null) continue;
 			if(!$this->systemUser->checkPermission($tmpComputer, PermissionManager::METHOD_DEPLOY, false)) continue;
-
 			$computer_ids[$computer_id] = $computer_id;
 		}
 		if(!empty($computerGroupIds)) foreach($computerGroupIds as $computer_group_id) {
@@ -718,7 +717,10 @@ class CoreLogic {
 					if(empty($c) || !$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 					$computer_ids[$c->id] = $c->id;
 				}
-			} catch(Exception $ignored) {}
+			} catch(Exception $ignored) {
+				// roll back if report execution failed
+				$this->db->getDbHandle()->rollBack();
+			}
 		}
 		foreach($package_report_ids as $package_report_id) {
 			try { // ignore report with syntax errors
@@ -727,7 +729,10 @@ class CoreLogic {
 					if(empty($p)) continue;
 					$packages = $packages + $this->compileDeployPackageArray($p->id);
 				}
-			} catch(Exception $ignored) {}
+			} catch(Exception $ignored) {
+				// roll back if report execution failed
+				$this->db->getDbHandle()->rollBack();
+			}
 		}
 
 		// check if there are any computer & packages
