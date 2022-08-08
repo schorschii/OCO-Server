@@ -343,6 +343,7 @@ h3 {
 	margin: 15px 0px;
 }
 .filler {
+	align-self: center;
 	height: 1px;
 	background-color: rgb(0,0,0,0.1);
 	flex-grow: 1;
@@ -1065,13 +1066,6 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	opacity: 0.4;
 }
 
-.vl {
-	display: inline-block;
-	width: 2px;
-	min-width: 2px;
-	border-radius: 2px;
-	background-color: #DDDDDD;
-}
 .fullwidth {
 	width: 100%;
 }
@@ -1500,9 +1494,6 @@ div.details-abreast > div.stickytable > table.list tfoot {
 		background: #AC142C;
 		color: #e9ecef;
 		border: 1px solid rgba(255,255,255,0.2);
-	}
-	.vl {
-		background-color: rgba(255,255,255,0.2);
 	}
 }
 

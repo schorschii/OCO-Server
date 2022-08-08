@@ -31,7 +31,7 @@ try {
 		<button onclick='showDialogAddComputerToGroup(<?php echo $computer->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		<?php
-		if(count(COMPUTER_COMMANDS) > 0) echo "<span class='vl'></span>";
+		if(count(COMPUTER_COMMANDS) > 0) echo "<span class='filler'></span>";
 		foreach(COMPUTER_COMMANDS as $c) {
 			echoCommandButton($c, $computer->hostname);
 		}
