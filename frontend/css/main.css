@@ -1231,17 +1231,21 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	border-bottom-right-radius: 0px;
 	border-bottom-width: 0px;
 }
+.box.listSearchList .blockListItem {
+	padding-left: 7px;
+	padding-right: 15px; /* for .dragicon */
+}
 .box.listSearchList .blockListItem.big {
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
 .box.listSearchList .blockListItem > input[type=checkbox] {
-	margin: 3px 5px 0px 0px;
+	margin: 2px 5px 0px 0px;
 }
 .box.listSearchList .headline {
 	display: flex;
 	align-items: center;
-	padding: 5px;
+	padding: 7px;
 	gap: 5px;
 }
 .blockListItem > img {

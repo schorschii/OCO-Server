@@ -13,7 +13,7 @@ function echoTargetPackageGroupOptions($parent=null) {
 
 		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'>";
 		echo htmlspecialchars($pg->name);
-		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";
 		echo "<div class='subgroup'>";
 		echoTargetPackageGroupOptions($pg->id);
@@ -32,11 +32,11 @@ function echoTargetPackageGroupOptions($parent=null) {
 			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
 		</div>
 		<div id='divPackageList' class='box listSearchList'>
-			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 			<?php echoTargetPackageGroupOptions(); ?>
 		</div>
 		<div id='divPackageListHome' class='box listSearchList hidden'>
-			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 			<?php echoTargetPackageGroupOptions(); ?>
 		</div>
 	</div>

@@ -164,7 +164,7 @@ if(empty($default_job_container_name)) {
 				<input type='text' id='txtDeploySearchComputers' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerList, this.value)'>
 			</div>
 			<div id='divComputerList' class='box listSearchList withContextButton'>
-				<a class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1)'><?php echo LANG['all_computer']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+				<a class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1)'><?php echo LANG['all_computer']; ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG['computer_groups']; ?>
 					<div class='filler'></div>
@@ -177,7 +177,7 @@ if(empty($default_job_container_name)) {
 				<?php echoTargetComputerReportOptions(); ?>
 			</div>
 			<div id='divComputerListHome' class='box listSearchList hidden'>
-				<a class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1)'><?php echo LANG['all_computer']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+				<a class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1)'><?php echo LANG['all_computer']; ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG['computer_groups']; ?>
 					<div class='filler'></div>
@@ -212,7 +212,7 @@ if(empty($default_job_container_name)) {
 				<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
 			</div>
 			<div id='divPackageList' class='box listSearchList withContextButton'>
-				<a class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+				<a class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG['package_groups']; ?>
 					<div class='filler'></div>
@@ -225,7 +225,7 @@ if(empty($default_job_container_name)) {
 				<?php echoTargetPackageReportOptions(); ?>
 			</div>
 			<div id='divPackageListHome' class='box listSearchList hidden'>
-				<a class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+				<a class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG['package_groups']; ?>
 					<div class='filler'></div>
@@ -290,7 +290,7 @@ function echoTargetComputerGroupOptions($parent=null) {
 
 		echo "<a class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.")' ondblclick='addToDeployTarget({".$cg->id.": this.innerText}, divTargetComputerList, \"target_computer_groups\")'><input type='checkbox' name='computer_groups' value='".$cg->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
 		echo htmlspecialchars($cg->name);
-		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";
 		echo "<div class='subgroup'>";
 		echoTargetComputerGroupOptions($cg->id);
@@ -308,7 +308,7 @@ function echoTargetComputerReportOptions($parent=null) {
 		if(array_key_exists($displayName, LANG)) $displayName = LANG[$displayName];
 		echo "<a class='blockListItem' onclick='refreshDeployComputerList(null, ".$r->id.")' ondblclick='addToDeployTarget({".$r->id.": this.innerText}, divTargetComputerList, \"target_computer_reports\")'><input type='checkbox' name='computer_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
 		echo htmlspecialchars($displayName);
-		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";
 	}
 }
@@ -322,7 +322,7 @@ function echoTargetPackageGroupOptions($parent=null) {
 
 		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")' ondblclick='addToDeployTarget({".$pg->id.": this.innerText}, divTargetPackageList, \"target_package_groups\")'><input type='checkbox' name='package_groups' value='".$pg->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
 		echo htmlspecialchars($pg->name);
-		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";
 		echo "<div class='subgroup'>";
 		echoTargetPackageGroupOptions($pg->id);
@@ -340,7 +340,7 @@ function echoTargetPackageReportOptions($parent=null) {
 		if(array_key_exists($displayName, LANG)) $displayName = LANG[$displayName];
 		echo "<a class='blockListItem' onclick='refreshDeployPackageList(null, ".$r->id.")' ondblclick='addToDeployTarget({".$r->id.": this.innerText}, divTargetPackageList, \"target_package_reports\")'><input type='checkbox' name='package_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
 		echo htmlspecialchars($displayName);
-		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";
 	}
 }
