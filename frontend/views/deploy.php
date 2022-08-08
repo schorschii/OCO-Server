@@ -3,11 +3,11 @@ $SUBVIEW = 1;
 require_once('../../lib/Loader.php');
 require_once('../session.php');
 
+$tab = 'simple';
+if(!empty($_GET['tab'])) $tab = $_GET['tab'];
+
 $default_job_container_name = '';
-$select_computer_group_ids = [];
-$select_package_group_ids = [];
 if(!empty($_GET['computer_id']) && is_array($_GET['computer_id'])) {
-	// compile job name
 	foreach($_GET['computer_id'] as $id) {
 		$c = $db->getComputer($id);
 		if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
@@ -16,7 +16,6 @@ if(!empty($_GET['computer_id']) && is_array($_GET['computer_id'])) {
 	}
 }
 if(!empty($_GET['package_id']) && is_array($_GET['package_id'])) {
-	// compile job name
 	foreach($_GET['package_id'] as $id) {
 		$p = $db->getPackage($id);
 		if(!$currentSystemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
@@ -25,21 +24,19 @@ if(!empty($_GET['package_id']) && is_array($_GET['package_id'])) {
 	}
 }
 if(!empty($_GET['computer_group_id']) && is_array($_GET['computer_group_id'])) {
-	$select_computer_group_ids = $_GET['computer_group_id'];
-	// compile job name
-	foreach($select_computer_group_ids as $id) {
+	foreach($_GET['computer_group_id'] as $id) {
 		$cg = $db->getComputerGroup($id);
-		if(!$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
+		if(!$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_READ, false)
+		&& !$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
 		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$cg->name;
 		else $default_job_container_name .= ', '.$cg->name;
 	}
 }
 if(!empty($_GET['package_group_id']) && is_array($_GET['package_group_id'])) {
-	$select_package_group_ids = $_GET['package_group_id'];
-	// compile job name
-	foreach($select_package_group_ids as $id) {
+	foreach($_GET['package_group_id'] as $id) {
 		$pg = $db->getPackageGroup($id);
-		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
+		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
+		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 		if(empty($default_job_container_name)) $default_job_container_name = LANG['install'].' '.$pg->name;
 		else $default_job_container_name .= ', '.$pg->name;
 	}
@@ -53,152 +50,237 @@ if(empty($default_job_container_name)) {
 
 <h1><img src='img/deploy.dyn.svg'><span id='page-title'><?php echo LANG['deployment_assistant']; ?></span></h1>
 
-<div id='frmDeploy'>
+<div id='tabControlDeploy' class='tabcontainer'>
+	<div class='tabbuttons'>
+		<a href='#' name='simple' class='<?php if($tab=='simple') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlDeploy,this.getAttribute("name"))'><?php echo LANG['default_view']; ?></a>
+		<a href='#' name='advanced' class='<?php if($tab=='advanced') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlDeploy,this.getAttribute("name"))'><?php echo LANG['advanced_view']; ?></a>
+	</div>
+	<div>
 
-<table class='form'>
-	<tr>
-		<th><?php echo LANG['name']; ?></th>
-		<td>
-			<input type='text' id='txtName' value='<?php echo htmlspecialchars($default_job_container_name); ?>'></input>
-		</td>
-	</tr>
-	<tr class='nospace'>
-		<th><?php echo LANG['start']; ?></th>
-		<td>
-			<input type='date' id='dteStart' value='<?php echo date('Y-m-d'); ?>'></input>
-			<input type='time' id='tmeStart' value='<?php echo date('H:i'); ?>'></input>
-		</td>
+		<table class='form margintop'>
+			<tr>
+				<th><?php echo LANG['name']; ?></th>
+				<td>
+					<input type='text' id='txtName' value='<?php echo htmlspecialchars($default_job_container_name); ?>' autofocus='true'></input>
+				</td>
+			</tr>
+			<tr class='nospace'>
+				<th><?php echo LANG['start']; ?></th>
+				<td class='dualInput'>
+					<input type='date' id='dteStart' value='<?php echo date('Y-m-d'); ?>'></input>
+					<input type='time' id='tmeStart' value='<?php echo date('H:i'); ?>'></input>
+				</td>
 
-		<th><?php echo LANG['end']; ?></th>
-		<td>
-			<input type='date' id='dteEnd' value='' onchange='chkDateEndEnabled.checked=true'></input>
-			<input type='time' id='tmeEnd' value='' onchange='chkDateEndEnabled.checked=true'></input>
-		</td>
-	</tr>
-	<tr>
-		<th></th>
-		<td>
-			<label><input type='checkbox' id='chkWol' onclick='if(this.checked) {chkShutdownWakedAfterCompletion.disabled=false;} else {chkShutdownWakedAfterCompletion.checked=false; chkShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty(DEFAULTS['default-use-wol'])) echo 'checked'; ?>><?php echo LANG['send_wol']; ?></label>
-			<br/>
-			<label title='<?php echo LANG['shutdown_waked_after_completion']; ?>'><input type='checkbox' id='chkShutdownWakedAfterCompletion' <?php if(!empty(DEFAULTS['default-shutdown-waked-after-completion'])) echo 'checked'; else echo 'disabled' ?>><?php echo LANG['shutdown_waked_computers']; ?></label>
-		</td>
-		<th></th>
-		<td>
-			<label><input type='checkbox' id='chkDateEndEnabled'><?php echo LANG['set_end']; ?></label>
-		</td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['description']; ?></th>
-		<td>
-			<textarea id='txtDescription'></textarea>
-		</td>
-		<th><?php echo LANG['sequence_mode']; ?></th>
-		<td>
-			<label><input type='radio' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_IGNORE_FAILED; ?>' checked='true'>&nbsp;<?php echo LANG['ignore_failed']; ?></label><br>
-			<label><input type='radio' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>'>&nbsp;<?php echo LANG['abort_after_failed']; ?></label>
-		</td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['priority']; ?></th>
-		<td>
-			<div class='inputWithLabel' title='<?php echo LANG['priority_description']; ?>'>
-				<input id='sldPriority' type='range' min='-10' max='10' value='0' oninput='lblPriorityPreview.innerText=this.value' onchange='lblPriorityPreview.innerText=this.value'>
-				<div id='lblPriorityPreview'>0</div>
+				<th><?php echo LANG['end']; ?></th>
+				<td class='dualInput'>
+					<input type='date' id='dteEnd' value=''></input>
+					<input type='time' id='tmeEnd' value=''></input>
+					<button class='small' title='<?php echo LANG['remove_end_time']; ?>' onclick='dteEnd.value="";tmeEnd.value=""'><img src='img/close.dyn.svg'></button>
+				</td>
+			</tr>
+			<tr>
+				<th></th>
+				<td>
+					<label><input type='checkbox' id='chkWol' onclick='if(this.checked) {chkShutdownWakedAfterCompletion.disabled=false;} else {chkShutdownWakedAfterCompletion.checked=false; chkShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty(DEFAULTS['default-use-wol'])) echo 'checked'; ?>><?php echo LANG['send_wol']; ?></label>
+					<br/>
+					<label title='<?php echo LANG['shutdown_waked_after_completion']; ?>'><input type='checkbox' id='chkShutdownWakedAfterCompletion' <?php if(!empty(DEFAULTS['default-shutdown-waked-after-completion'])) echo 'checked'; else echo 'disabled' ?>><?php echo LANG['shutdown_waked_computers']; ?></label>
+				</td>
+				<th></th>
+				<td></td>
+			</tr>
+			<tr class='tabadditionals <?php if($tab!='advanced') echo 'hidden'; ?>' tab='advanced'>
+				<th><?php echo LANG['description']; ?></th>
+				<td>
+					<textarea id='txtDescription'></textarea>
+				</td>
+				<th><?php echo LANG['agent_ip_range']; ?></th>
+				<td>
+					<input type='text' id='txtConstraintIpRange' placeholder='<?php echo LANG['example'].':'; ?> 192.168.2.0/24, 10.0.0.0/8'></input>
+				</td>
+			</tr>
+			<tr class='tabadditionals <?php if($tab!='advanced') echo 'hidden'; ?>' tab='advanced'>
+				<th><?php echo LANG['priority']; ?></th>
+				<td>
+					<div class='inputWithLabel' title='<?php echo LANG['priority_description']; ?>'>
+						<input id='sldPriority' type='range' min='-10' max='10' value='0' oninput='lblPriorityPreview.innerText=this.value' onchange='lblPriorityPreview.innerText=this.value'>
+						<div id='lblPriorityPreview'>0</div>
+					</div>
+				</td>
+				<th><?php echo LANG['timeout_for_reboot']; ?></th>
+				<td>
+					<div class='inputWithLabel' title='<?php echo LANG['timeout_for_reboot_description']; ?>'>
+						<input type='number' id='txtRestartTimeout' value='<?php echo htmlspecialchars(DEFAULTS['default-restart-timeout']); ?>' min='-1'></input>
+						<div><?php echo LANG['minutes']; ?></div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th class='top'><?php echo LANG['installation_behaviour']; ?></th>
+				<td colspan='3'>
+					<div>
+						<div class='checkboxWithText'>
+							<input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty(DEFAULTS['default-auto-create-uninstall-jobs'])) echo 'checked'; ?>>
+							<label for='chkAutoCreateUninstallJobs'>
+								<div><?php echo LANG['uninstall_old_package_versions']; ?></div>
+								<div class='hint'><?php echo LANG['auto_create_uninstall_jobs']; ?></div>
+							</label>
+						</div>
+						<div class='checkboxWithText'>
+							<input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty(DEFAULTS['default-force-install-same-version'])) echo 'checked'; ?>>
+							<label for='chkForceInstallSameVersion'>
+								<div><?php echo LANG['reinstall']; ?></div>
+								<div class='hint'><?php echo LANG['force_installation_of_same_version']; ?></div>
+							</label>
+						</div>
+						<div class='checkboxWithText'>
+							<input type='hidden' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_IGNORE_FAILED; ?>' checked='true'>
+							<input type='checkbox' id='chkAbortAfterError' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>' <?php if(!empty(DEFAULTS['default-abort-after-error'])) echo 'checked'; ?>>
+							<label for='chkAbortAfterError'>
+								<div><?php echo LANG['abort_after_failed']; ?></div>
+								<div class='hint'><?php echo LANG['abort_after_error_description']; ?></div>
+							</label>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+
+	</div>
+	<div class='tabcontents'>
+
+		<div id='tabSimple' name='simple' class='<?php if($tab=='simple') echo 'active'; ?>'>
+		</div>
+
+		<div id='tabAdvanced' name='advanced' class='<?php if($tab=='advanced') echo 'active'; ?>'>
+		</div>
+
+	</div>
+
+	<div class='gallery margintop'>
+		<div>
+			<h2><div><?php echo LANG['computer_selection']; ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</div></h2>
+			<div class='listSearch'>
+				<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerList, this.checked);refreshDeployComputerCount()'>
+				<input type='text' id='txtDeploySearchComputers' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerList, this.value)'>
 			</div>
-		</td>
-		<th><?php echo LANG['timeout_for_reboot']; ?></th>
-		<td>
-			<div class='inputWithLabel' title='<?php echo LANG['timeout_for_reboot_description']; ?>'>
-				<input type='number' id='txtRestartTimeout' value='<?php echo htmlspecialchars(DEFAULTS['default-restart-timeout']); ?>' min='-1'></input>
-				<div><?php echo LANG['minutes']; ?></div>
+			<div id='divComputerList' class='box listSearchList withContextButton'>
+				<a class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1)'><?php echo LANG['all_computer']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+				<div class='headline bold'>
+					<?php echo LANG['computer_groups']; ?>
+					<div class='filler'></div>
+				</div>
+				<?php echoTargetComputerGroupOptions(); ?>
+				<div class='headline bold'>
+					<?php echo LANG['reports']; ?>
+					<div class='filler'></div>
+				</div>
+				<?php echoTargetComputerReportOptions(); ?>
 			</div>
-		</td>
-	</tr>
-	<tr>
-		<th><?php echo LANG['agent_ip_range']; ?></th>
-		<td>
-			<input type='text' id='txtConstraintIpRange' placeholder='<?php echo LANG['example'].':'; ?> 192.168.2.0/24, 10.0.0.0/8'></input>
-		</td>
-	</tr>
-</table>
-
-<h2><img src='img/computer.dyn.svg'><?php echo LANG['target_computer']; ?></h2>
-<div class='gallery'>
-	<div>
-		<h3><?php echo LANG['computer_groups']; ?> (<span id='spnSelectedComputerGroups'>0</span>/<span id='spnTotalComputerGroups'>0</span>)</h3>
-		<div class='listSearch'>
-			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerGroupList, this.checked);refreshDeployComputerList()'>
-			<input type='text' id='txtDeploySearchComputerGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerGroupList, this.value)'>
+			<div id='divComputerListHome' class='box listSearchList hidden'>
+				<a class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1)'><?php echo LANG['all_computer']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+				<div class='headline bold'>
+					<?php echo LANG['computer_groups']; ?>
+					<div class='filler'></div>
+				</div>
+				<?php echoTargetComputerGroupOptions(); ?>
+				<div class='headline bold'>
+					<?php echo LANG['reports']; ?>
+					<div class='filler'></div>
+				</div>
+				<?php echoTargetComputerReportOptions(); ?>
+			</div>
+			<button class='small listSearchButton' onclick='addSelectedComputersToDeployTarget()'><?php echo LANG['add_selected']; ?>&nbsp;<img src='img/add2.dyn.svg'></button>
 		</div>
-		<div id='divComputerGroupList' class='box listSearchList'>
-			<a class='blockListItem' onclick='refreshDeployComputerList(-1)'><input type='checkbox' disabled='true' /><?php echo LANG['all_computer']; ?></a>
-			<?php echoTargetComputerGroupOptions($select_computer_group_ids); ?>
-		</div>
-	</div>
-	<div>
-		<h3><?php echo LANG['computer']; ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</h3>
-		<div class='listSearch'>
-			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerList, this.checked)'>
-			<input type='text' id='txtDeploySearchComputers' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerList, this.value)'>
-		</div>
-		<div id='divComputerList' class='box listSearchList'>
-			<!-- filled by JS -->
+		<img src='img/arrow-right.dyn.svg'>
+		<div>
+			<h2><img src='img/computer.dyn.svg'><div><?php echo LANG['target_computer']; ?> (<span id='spnTotalTargetComputers'>0</span>)</div></h2>
+			<div class='listSearch'>
+				<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divTargetComputerList, this.checked)'>
+				<input type='text' id='txtDeploySearchTargetComputers' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divTargetComputerList, this.value)'>
+			</div>
+			<div id='divTargetComputerList' class='box listSearchList withContextButton'>
+				<!-- filled by user -->
+			</div>
+			<button class='small listSearchButton' onclick='removeSelectedTargets(divTargetComputerList)'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG['remove_selected']; ?></button>
 		</div>
 	</div>
-</div>
-
-<h2><img src='img/package.dyn.svg'><?php echo LANG['packages_to_deploy']; ?></h2>
-<div class='gallery'>
-	<div>
-		<h3><?php echo LANG['package_groups']; ?> (<span id='spnSelectedPackageGroups'>0</span>/<span id='spnTotalPackageGroups'>0</span>)</h3>
-		<div class='listSearch'>
-			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageGroupList, this.checked);refreshDeployPackageList()'>
-			<input type='text' id='txtDeploySearchPackageGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageGroupList, this.value)'>
+	<div class='gallery margintop'>
+		<div>
+			<h2><div><?php echo LANG['package_selection']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</div></h2>
+			<div class='listSearch'>
+				<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked);refreshDeployPackageCount()'>
+				<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
+			</div>
+			<div id='divPackageList' class='box listSearchList withContextButton'>
+				<a class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+				<div class='headline bold'>
+					<?php echo LANG['package_groups']; ?>
+					<div class='filler'></div>
+				</div>
+				<?php echoTargetPackageGroupOptions(); ?>
+				<div class='headline bold'>
+					<?php echo LANG['reports']; ?>
+					<div class='filler'></div>
+				</div>
+				<?php echoTargetPackageReportOptions(); ?>
+			</div>
+			<div id='divPackageListHome' class='box listSearchList hidden'>
+				<a class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+				<div class='headline bold'>
+					<?php echo LANG['package_groups']; ?>
+					<div class='filler'></div>
+				</div>
+				<?php echoTargetPackageGroupOptions(); ?>
+				<div class='headline bold'>
+					<?php echo LANG['reports']; ?>
+					<div class='filler'></div>
+				</div>
+				<?php echoTargetPackageReportOptions(); ?>
+			</div>
+			<button class='small listSearchButton' onclick='addSelectedPackagesToDeployTarget()'><?php echo LANG['add_selected']; ?>&nbsp;<img src='img/add2.dyn.svg'></button>
 		</div>
-		<div id='divPackageGroupList' class='box listSearchList'>
-			<a class='blockListItem' onclick='refreshDeployPackageList(-1)'><input type='checkbox' disabled='true' /><?php echo LANG['all_packages']; ?></a>
-			<?php echoTargetPackageGroupOptions($select_package_group_ids); ?>
+		<img src='img/arrow-right.dyn.svg'>
+		<div>
+			<h2><img src='img/package.dyn.svg'><div><?php echo LANG['packages_to_deploy']; ?> (<span id='spnTotalTargetPackages'>0</span>)</div></h2>
+			<div class='listSearch'>
+				<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divTargetPackageList, this.checked)'>
+				<input type='text' id='txtDeploySearchTargetPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divTargetPackageList, this.value)'>
+			</div>
+			<div id='divTargetPackageList' class='box listSearchList withContextButton'>
+				<!-- filled by user -->
+			</div>
+			<button class='small listSearchButton' onclick='removeSelectedTargets(divTargetPackageList)'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG['remove_selected']; ?></button>
 		</div>
 	</div>
-	<div>
-		<h3><?php echo LANG['packages']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
-		<div class='listSearch'>
-			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked)'>
-			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
-		</div>
-		<div id='divPackageList' class='box listSearchList'>
-			<!-- filled by JS -->
-		</div>
-	</div>
-</div>
-
-<div class='margintop'>
-	<div class='checkboxWithText'>
-		<input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty(DEFAULTS['default-auto-create-uninstall-jobs'])) echo 'checked'; ?>>
-		<label for='chkAutoCreateUninstallJobs'>
-			<b><?php echo LANG['uninstall_old_package_versions']; ?></b>
-			<br><?php echo LANG['auto_create_uninstall_jobs']; ?>
-		</label>
-	</div>
-	<div class='checkboxWithText'>
-		<input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty(DEFAULTS['default-force-install-same-version'])) echo 'checked'; ?>>
-		<label for='chkForceInstallSameVersion'>
-			<b><?php echo LANG['reinstall']; ?></b>
-			<br><?php echo LANG['force_installation_of_same_version']; ?>
-		</label>
-	</div>
-</div>
 
 </div>
 
 <div class='content-foot'>
 	<div class='filler'></div>
 	<?php echo progressBar(100, 'prgDeploy', 'prgDeployText', 'hidden animated big'); ?>
-	<button id='btnDeploy' class='primary' onclick='deploy(txtName.value, dteStart.value+" "+tmeStart.value, chkDateEndEnabled.checked ? dteEnd.value+" "+tmeEnd.value : "", txtDescription.value, getSelectedCheckBoxValues("computers"), getSelectedCheckBoxValues("computer_groups"), getSelectedCheckBoxValues("packages"), getSelectedCheckBoxValues("package_groups"), chkWol.checked, chkShutdownWakedAfterCompletion.checked, chkAutoCreateUninstallJobs.checked, chkForceInstallSameVersion.checked, txtRestartTimeout.value, getCheckedRadioValue("sequence_mode"), sldPriority.value, txtConstraintIpRange.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+	<button id='btnDeploy' class='primary' onclick='deploy(
+			txtName.value,
+			dteStart.value+" "+tmeStart.value,
+			dteEnd.value!=""&&tmeEnd.value!="" ? dteEnd.value+" "+tmeEnd.value : "",
+			txtDescription.value,
+			getAllCheckBoxValues("target_computers", null, false, divTargetComputerList),
+			getAllCheckBoxValues("target_computer_groups", null, false, divTargetComputerList),
+			getAllCheckBoxValues("target_computer_reports", null, false, divTargetComputerList),
+			getAllCheckBoxValues("target_packages", null, false, divTargetPackageList),
+			getAllCheckBoxValues("target_package_groups", null, false, divTargetPackageList),
+			getAllCheckBoxValues("target_package_reports", null, false, divTargetPackageList),
+			chkWol.checked,
+			chkShutdownWakedAfterCompletion.checked,
+			chkAutoCreateUninstallJobs.checked,
+			chkForceInstallSameVersion.checked,
+			txtRestartTimeout.value,
+			getCheckedRadioValue("sequence_mode"),
+			sldPriority.value,
+			txtConstraintIpRange.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 </div>
 
 <?php
-function echoTargetComputerGroupOptions($select_computer_group_ids, $parent=null) {
+function echoTargetComputerGroupOptions($parent=null) {
 	global $db;
 	global $currentSystemUser;
 
@@ -206,15 +288,31 @@ function echoTargetComputerGroupOptions($select_computer_group_ids, $parent=null
 		if(!$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_READ, false)
 		&& !$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-		$selected = '';
-		if(in_array($cg->id, $select_computer_group_ids)) $selected = 'checked';
-		echo "<a class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.")'><input type='checkbox' name='computer_groups' value='".$cg->id."' ".$selected." />".htmlspecialchars($cg->name)."</a>";
+		echo "<a class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.")' ondblclick='addToDeployTarget({".$cg->id.": this.innerText}, divTargetComputerList, \"target_computer_groups\")'><input type='checkbox' name='computer_groups' value='".$cg->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
+		echo htmlspecialchars($cg->name);
+		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "</a>";
 		echo "<div class='subgroup'>";
-		echoTargetComputerGroupOptions($select_computer_group_ids, $cg->id);
+		echoTargetComputerGroupOptions($cg->id);
 		echo "</div>";
 	}
 }
-function echoTargetPackageGroupOptions($select_package_group_ids, $parent=null) {
+function echoTargetComputerReportOptions($parent=null) {
+	global $db;
+	global $currentSystemUser;
+
+	foreach($db->getAllReport($parent) as $r) {
+		if(!$currentSystemUser->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+
+		$displayName = $r->name;
+		if(array_key_exists($displayName, LANG)) $displayName = LANG[$displayName];
+		echo "<a class='blockListItem' onclick='refreshDeployComputerList(null, ".$r->id.")' ondblclick='addToDeployTarget({".$r->id.": this.innerText}, divTargetComputerList, \"target_computer_reports\")'><input type='checkbox' name='computer_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
+		echo htmlspecialchars($displayName);
+		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "</a>";
+	}
+}
+function echoTargetPackageGroupOptions($parent=null) {
 	global $db;
 	global $currentSystemUser;
 
@@ -222,11 +320,27 @@ function echoTargetPackageGroupOptions($select_package_group_ids, $parent=null) 
 		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
 		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-		$selected = '';
-		if(in_array($pg->id, $select_package_group_ids)) $selected = 'checked';
-		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'><input type='checkbox' name='package_groups' value='".$pg->id."' ".$selected." />".htmlspecialchars($pg->name)."</a>";
+		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")' ondblclick='addToDeployTarget({".$pg->id.": this.innerText}, divTargetPackageList, \"target_package_groups\")'><input type='checkbox' name='package_groups' value='".$pg->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
+		echo htmlspecialchars($pg->name);
+		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "</a>";
 		echo "<div class='subgroup'>";
-		echoTargetPackageGroupOptions($select_package_group_ids, $pg->id);
+		echoTargetPackageGroupOptions($pg->id);
 		echo "</div>";
+	}
+}
+function echoTargetPackageReportOptions($parent=null) {
+	global $db;
+	global $currentSystemUser;
+
+	foreach($db->getAllReport($parent) as $r) {
+		if(!$currentSystemUser->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+
+		$displayName = $r->name;
+		if(array_key_exists($displayName, LANG)) $displayName = LANG[$displayName];
+		echo "<a class='blockListItem' onclick='refreshDeployPackageList(null, ".$r->id.")' ondblclick='addToDeployTarget({".$r->id.": this.innerText}, divTargetPackageList, \"target_package_reports\")'><input type='checkbox' name='package_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
+		echo htmlspecialchars($displayName);
+		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "</a>";
 	}
 }

@@ -1,14 +1,22 @@
 // ======== GENERAL ========
+var draggedElement;
+var draggedElementBeginIndex;
 function obj(id) {
 	return document.getElementById(id);
 }
+function getChildIndex(node) {
+	return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
+}
 function getCheckedRadioValue(name) {
-	var rates = document.getElementsByName(name);
-	for(var i = 0; i < rates.length; i++) {
-		if(rates[i].checked) {
-			return rates[i].value;
+	// return the LAST checked element (so we can define default via hidden elements)
+	var found = null;
+	var inputs = document.getElementsByName(name);
+	for(var i = 0; i < inputs.length; i++) {
+		if(inputs[i].checked) {
+			found = inputs[i].value;
 		}
 	}
+	return found;
 }
 function toggleSidebar(force=null) {
 	if(force == null) {
@@ -74,6 +82,14 @@ function openTab(tabControl, tabName) {
 			childs[i].classList.add('active');
 		} else {
 			childs[i].classList.remove('active');
+		}
+	}
+	var childs = tabControl.querySelectorAll('.tabadditionals');
+	for(var i = 0; i < childs.length; i++) {
+		if(childs[i].getAttribute('tab') == tabName) {
+			childs[i].classList.remove('hidden');
+		} else {
+			childs[i].classList.add('hidden');
 		}
 	}
 	rewriteUrlContentParameter(currentExplorerContentUrl, {'tab':tabName});
@@ -289,17 +305,16 @@ function toggleCheckboxesInContainer(container, checked) {
 		if(items[i].style.display == 'none') continue;
 		let inputs = items[i].getElementsByTagName("input");
 		for(var n = 0; n < inputs.length; n++) {
-			if(inputs[n].type == 'checkbox') {
+			if(inputs[n].type == 'checkbox' && !inputs[n].disabled) {
 				inputs[n].checked = checked;
 			}
 		}
 	}
-	refreshDeployCount();
 }
-function getSelectedCheckBoxValues(checkboxName, attributeName=null, warnIfEmpty=false) {
+function getSelectedCheckBoxValues(checkboxName, attributeName=null, warnIfEmpty=false, root=document) {
 	var values = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
+	root.querySelectorAll('input').forEach(function(entry) {
+		if(entry.name == checkboxName && entry.checked) {
 			if(attributeName == null) {
 				values.push(entry.value);
 			} else {
@@ -313,11 +328,21 @@ function getSelectedCheckBoxValues(checkboxName, attributeName=null, warnIfEmpty
 	}
 	return values;
 }
-function getAllCheckBoxValues(checkboxName) {
+function getAllCheckBoxValues(checkboxName, attributeName=null, warnIfEmpty=false, root=document) {
 	var values = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		values.push(entry.value);
+	root.querySelectorAll('input').forEach(function(entry) {
+		if(entry.name == checkboxName) {
+			if(attributeName == null) {
+				values.push(entry.value);
+			} else {
+				values.push(entry.getAttribute(attributeName));
+			}
+		}
 	});
+	if(warnIfEmpty && values.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return false;
+	}
 	return values;
 }
 function getSelectedSelectBoxValues(selectBoxId, warnIfEmpty=false) {
@@ -505,20 +530,13 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 		'explorer-content'
 	);
 }
-function refreshContentDeploy(package_ids=[], package_group_ids=[], computer_ids=[], computer_group_ids=[]) {
-	var params = [];
-	package_group_ids.forEach(function(entry) {
-		params.push({'key':'package_group_id[]', 'value':entry});
-	});
-	computer_group_ids.forEach(function(entry) {
-		params.push({'key':'computer_group_id[]', 'value':entry});
-	});
-	ajaxRequest('views/deploy.php?'+urlencodeArray(params), 'explorer-content', function(){
-		refreshDeployComputerAndPackages(
-			getSelectedCheckBoxValues('computer_groups'),
-			getSelectedCheckBoxValues('package_groups'),
-			computer_ids, package_ids
-		);
+function refreshContentDeploy(packages=[], packageGroups=[], computers=[], computerGroups=[]) {
+	ajaxRequest('views/deploy.php', 'explorer-content', function(){
+		// todo
+		addToDeployTarget(computerGroups, divTargetComputerList, "target_computer_groups");
+		addToDeployTarget(computers, divTargetComputerList, "target_computers");
+		addToDeployTarget(packageGroups, divTargetPackageList, "target_package_groups");
+		addToDeployTarget(packages, divTargetPackageList, "target_packages");
 	});
 }
 
@@ -910,17 +928,16 @@ function confirmRemovePackageFamily(ids, infoText='') {
 	}
 }
 function deploySelectedPackage(checkboxName, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
+	var ids = getSelectedCheckBoxValues(checkboxName, attributeName, true);
+	if(!ids) return;
+	// query package display names by IDs
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'get_package_names[]', 'value':entry});
 	});
-	refreshContentDeploy(ids);
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function(text) {
+		refreshContentDeploy(JSON.parse(text));
+	});
 }
 function createPackageGroup(parent_id=null) {
 	var newName = prompt(L__ENTER_NAME);
@@ -982,14 +999,16 @@ function showDialogAddPackageToGroup(id) {
 function showDialogAddPackageDependency(id) {
 	showDialogAjax(L__ADD_DEPENDENCY, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditPackageId.value = id;
-		refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
+		// todo
+		//refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
 	});
 }
 function showDialogAddDependentPackage(id) {
 	showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtSetAsDependentPackage.value = "1";
 		txtEditPackageId.value = id;
-		refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
+		// todo
+		//refreshDeployComputerAndPackages(null, getSelectedCheckBoxValues('packages'));
 	});
 }
 function addPackageDependency(packageId, dependencyPackageId) {
@@ -1060,83 +1079,200 @@ function removeDependentPackages(ids, packageId) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function refreshDeployComputerAndPackages(refreshComputersGroupId=null, refreshPackagesGroupId=null, preselectComputerIds=[], preselectPackageIds=[]) {
-	if(refreshComputersGroupId != null) {
-		var params = [];
-		params.push({'key':'get_computer_group_members', 'value':refreshComputersGroupId});
-		preselectComputerIds.forEach(function(entry) {
-			params.push({'key':'computer_id[]', 'value':entry});
-		});
-		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'divComputerList', function() {
-			refreshDeployCount();
-			// scroll to first checked checkbox
-			var childs = divComputerList.querySelectorAll('input[type=checkbox]');
-			for(var i = 0; i < childs.length; i++) {
-				if(childs[i].checked) {childs[i].scrollIntoView(); break;}
-			}
-		});
-	}
-	if(refreshPackagesGroupId != null) {
-		var params = [];
-		params.push({'key':'get_package_group_members', 'value':refreshPackagesGroupId});
-		preselectPackageIds.forEach(function(entry) {
-			params.push({'key':'package_id[]', 'value':entry});
-		});
-		ajaxRequest("ajax-handler/deploy.php?"+urlencodeArray(params), 'divPackageList', function() {
-			refreshDeployCount();
-			// scroll to first checked checkbox
-			var childs = divPackageList.querySelectorAll('input[type=checkbox]');
-			for(var i = 0; i < childs.length; i++) {
-				if(childs[i].checked) {childs[i].scrollIntoView(); break;}
-			}
-		});
-	}
-}
-function refreshDeployComputerList(groupId) {
-	var values = getSelectedCheckBoxValues('computer_groups');
-	if(values.length > 0) {
-		divComputerList.innerHTML = '';
-		divComputerList.classList.add('disabled');
-		refreshDeployCount();
-	} else {
-		divComputerList.classList.remove('disabled');
-		refreshDeployComputerAndPackages(groupId, null);
-	}
+function refreshDeployComputerList(groupId=null, reportId=null) {
 	txtDeploySearchComputers.value = '';
-}
-function refreshDeployPackageList(groupId) {
-	var values = getSelectedCheckBoxValues('package_groups');
-	if(values.length > 0) {
-		divPackageList.innerHTML = '';
-		divPackageList.classList.add('disabled');
-		refreshDeployCount();
+	var params = [];
+	if(groupId != null) {
+		params.push({'key':'get_computer_group_members', 'value':groupId});
+		ajaxRequest('ajax-handler/deploy.php?'+urlencodeArray(params), 'divComputerList', function(){
+			refreshDeployComputerCount();
+		});
+	}
+	else if(reportId != null) {
+		params.push({'key':'get_computer_report_results', 'value':reportId});
+		ajaxRequest('ajax-handler/deploy.php?'+urlencodeArray(params), 'divComputerList', function(){
+			refreshDeployComputerCount();
+		});
 	} else {
-		divPackageList.classList.remove('disabled');
-		refreshDeployComputerAndPackages(null, groupId);
+		divComputerList.innerHTML = divComputerListHome.innerHTML;
+		refreshDeployComputerCount();
 	}
-	txtDeploySearchPackages.value = '';
 }
-function refreshDeployCount() {
-	if(obj('spnSelectedComputers')) {
-		spnSelectedComputers.innerHTML = getSelectedCheckBoxValues('computers').length;
-		spnTotalComputers.innerHTML = getAllCheckBoxValues('computers').length;
+function refreshDeployComputerCount() {
+	spnTotalComputers.innerText = getAllCheckBoxValues('computer_groups', null, false, divComputerList).length
+		+ getAllCheckBoxValues('computer_reports', null, false, divComputerList).length
+		+ getAllCheckBoxValues('computers', null, false, divComputerList).length;
+	spnSelectedComputers.innerText = getSelectedCheckBoxValues('computer_groups', null, false, divComputerList).length
+		+ getSelectedCheckBoxValues('computer_reports', null, false, divComputerList).length
+		+ getSelectedCheckBoxValues('computers', null, false, divComputerList).length;
+}
+function refreshDeployPackageList(groupId=null, reportId=null) {
+	txtDeploySearchPackages.value = '';
+	var params = [];
+	if(groupId != null) {
+		params.push({'key':'get_package_group_members', 'value':groupId});
+		ajaxRequest('ajax-handler/deploy.php?'+urlencodeArray(params), 'divPackageList', function(){
+			refreshDeployPackageCount();
+		});
 	}
-	if(obj('spnSelectedPackages')) {
-		spnSelectedPackages.innerHTML = getSelectedCheckBoxValues('packages').length;
-		spnTotalPackages.innerHTML = getAllCheckBoxValues('packages').length;
+	else if(reportId != null) {
+		params.push({'key':'get_package_report_results', 'value':reportId});
+		ajaxRequest('ajax-handler/deploy.php?'+urlencodeArray(params), 'divPackageList', function(){
+			refreshDeployPackageCount();
+		});
+	} else {
+		divPackageList.innerHTML = divPackageListHome.innerHTML;
+		refreshDeployPackageCount();
 	}
-	if(obj('spnSelectedComputerGroups')) {
-		spnSelectedComputerGroups.innerHTML = getSelectedCheckBoxValues('computer_groups').length;
-		spnTotalComputerGroups.innerHTML = getAllCheckBoxValues('computer_groups').length;
+}
+function refreshDeployPackageCount() {
+	spnTotalPackages.innerHTML = getAllCheckBoxValues('package_groups', null, false, divPackageList).length
+		+ getAllCheckBoxValues('package_reports', null, false, divPackageList).length
+		+ getAllCheckBoxValues('packages', null, false, divPackageList).length;
+	spnSelectedPackages.innerHTML = getSelectedCheckBoxValues('package_groups', null, false, divPackageList).length
+		+ getSelectedCheckBoxValues('package_reports', null, false, divPackageList).length
+		+ getSelectedCheckBoxValues('packages', null, false, divPackageList).length;
+}
+function getSelectedNodes(root, name=null, warnIfEmpty=false) {
+	var items = [];
+	var elements = root.getElementsByTagName('input')
+	for(var i = 0; i < elements.length; i++) {
+		if(name == null || name == elements[i].name) {
+			if(elements[i].checked) {
+				items[elements[i].value] = elements[i].parentNode.innerText;
+			}
+		}
 	}
-	if(obj('spnSelectedPackageGroups')) {
-		spnSelectedPackageGroups.innerHTML = getSelectedCheckBoxValues('package_groups').length;
-		spnTotalPackageGroups.innerHTML = getAllCheckBoxValues('package_groups').length;
+	if(warnIfEmpty && items.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return false;
+	}
+	return items;
+}
+function addSelectedComputersToDeployTarget() {
+	groupItems = getSelectedNodes(divComputerList, 'computer_groups');
+	reportItems = getSelectedNodes(divComputerList, 'computer_reports');
+	itemItems = getSelectedNodes(divComputerList, 'computers');
+	if(groupItems.length + reportItems.length + itemItems.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+	} else {
+		addToDeployTarget(groupItems, divTargetComputerList, 'target_computer_groups');
+		addToDeployTarget(reportItems, divTargetComputerList, 'target_computer_reports');
+		addToDeployTarget(itemItems, divTargetComputerList, 'target_computers');
+	}
+}
+function addSelectedPackagesToDeployTarget() {
+	groupItems = getSelectedNodes(divPackageList, 'package_groups');
+	reportItems = getSelectedNodes(divPackageList, 'package_reports');
+	itemItems = getSelectedNodes(divPackageList, 'packages');
+	if(groupItems.length + reportItems.length + itemItems.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+	} else {
+		addToDeployTarget(groupItems, divTargetPackageList, 'target_package_groups');
+		addToDeployTarget(reportItems, divTargetPackageList, 'target_package_reports');
+		addToDeployTarget(itemItems, divTargetPackageList, 'target_packages');
+	}
+}
+function addToDeployTarget(items, targetContainer, inputName) {
+	for(var key in items) { // check if it is already in target list
+		var found = false;
+		var elements = targetContainer.getElementsByTagName('input')
+		for(var i = 0; i < elements.length; i++) {
+			if(elements[i].name == inputName && elements[i].value == key) {
+				found = true;
+				emitMessage(L__ELEMENT_ALREADY_EXISTS, items[key], MESSAGE_TYPE_WARNING);
+				break;
+			}
+		}
+		if(!found) { // add to target list
+			var newLabel = document.createElement('label');
+			newLabel.classList.add('blockListItem');
+			var newCheckbox = document.createElement('input');
+			newCheckbox.type = 'checkbox';
+			newCheckbox.name = inputName;
+			newCheckbox.value = key;
+			newLabel.appendChild(newCheckbox);
+			var newIcon = document.createElement('img');
+			newIcon.draggable = false;
+			if(inputName=='target_computer_groups' || inputName=='target_package_groups') {
+				newIcon.src = 'img/folder.dyn.svg';
+			} else if(inputName=='target_computer_reports' || inputName=='target_package_reports') {
+				newIcon.src = 'img/report.dyn.svg';
+			} else if(inputName=='target_computers') {
+				newIcon.src = 'img/computer.dyn.svg';
+			} else if(inputName=='target_packages') {
+				newIcon.src = 'img/package.dyn.svg';
+			} else {
+				newIcon.src = 'img/warning.dyn.svg';
+			}
+			newLabel.appendChild(newIcon);
+			var newContent = document.createTextNode(items[key]);
+			newLabel.appendChild(newContent);
+
+			if(inputName=='target_packages' || inputName=='target_package_groups' || inputName=='target_package_reports') {
+				newLabel.draggable = true;
+				newLabel.ondragstart = function(e) {
+					if(e.target.tagName != 'LABEL') return false;
+					draggedElement = e.target;
+					draggedElementBeginIndex = getChildIndex(e.target);
+					return true;
+				};
+				newLabel.ondragover = function(e) {
+					let children = Array.from(e.target.parentNode.children);
+					if(!draggedElement || draggedElement.contains(e.target)) return;
+					if(children.indexOf(e.target) > children.indexOf(draggedElement)) {
+						e.target.after(draggedElement);
+					} else {
+						e.target.before(draggedElement);
+					}
+					return true;
+				};
+				newLabel.ondragend = function(e) {
+					//console.log('old: '+draggedElementBeginIndex+', new: '+getChildIndex(draggedElement));
+					return true;
+				};
+				var newDragIcon = document.createElement('img');
+				newDragIcon.classList.add('dragicon');
+				newDragIcon.src = 'img/list.dyn.svg';
+				newDragIcon.draggable = false;
+				newLabel.appendChild(newDragIcon);
+				newLabel.title = L__CHANGE_ORDER_VIA_DRAG_AND_DROP;
+			}
+			targetContainer.appendChild(newLabel);
+		}
+	}
+	refreshDeployTargetCount();
+}
+function removeSelectedTargets(root, warnIfEmpty=true) {
+	var count = 0;
+	var elements = root.getElementsByTagName('input')
+	for(var i = elements.length-1; i > -1; i--) {
+		if(elements[i].checked) {
+			elements[i].parentNode.remove();
+			count ++;
+		}
+	}
+	if(warnIfEmpty && count == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return false;
+	}
+	refreshDeployTargetCount();
+}
+function refreshDeployTargetCount() {
+	if(obj('spnTotalTargetComputers')) {
+		spnTotalTargetComputers.innerHTML = getAllCheckBoxValues('target_computers').length
+			+ getAllCheckBoxValues('target_computer_groups').length
+			+ getAllCheckBoxValues('target_computer_reports').length;
+	}
+	if(obj('spnTotalTargetPackages')) {
+		spnTotalTargetPackages.innerHTML = getAllCheckBoxValues('target_packages').length
+			+ getAllCheckBoxValues('target_package_groups').length
+			+ getAllCheckBoxValues('target_package_reports').length;
 	}
 }
 function searchItems(container, search) {
 	search = search.toUpperCase();
-	var items = container.children;
+	var items = container.querySelectorAll('.blockListItem:not(.noSearch)');
 	for(var i = 0; i < items.length; i++) {
 		if(search == '' || items[i].innerText.toUpperCase().includes(search))
 			items[i].style.display = 'block';
@@ -1232,17 +1368,16 @@ function confirmRemoveComputer(ids, event=null, infoText='') {
 	}
 }
 function deploySelectedComputer(checkboxName, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
+	var ids = getSelectedCheckBoxValues(checkboxName, attributeName, true);
+	if(!ids) return;
+	// query computer names by IDs
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'get_computer_names[]', 'value':entry});
 	});
-	refreshContentDeploy([],[],ids);
+	ajaxRequestPost('ajax-handler/computers.php', urlencodeArray(params), null, function(text) {
+		refreshContentDeploy([],[],JSON.parse(text));
+	});
 }
 function renameComputer(id, oldName) {
 	var newValue = prompt(L__ENTER_NEW_HOSTNAME, oldName);
@@ -1452,8 +1587,8 @@ function editJobContainerNotes(id, oldValue) {
 		});
 	}
 }
-function deploy(title, start, end, description, computers, computerGroups, packages, packageGroups, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, constraintIpRange) {
-	setInputsDisabled(frmDeploy, true);
+function deploy(title, start, end, description, computers, computerGroups, computerReports, packages, packageGroups, packageReports, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, constraintIpRange) {
+	setInputsDisabled(tabControlDeploy, true);
 	btnDeploy.classList.add('hidden');
 	prgDeploy.classList.remove('hidden');
 
@@ -1480,11 +1615,17 @@ function deploy(title, start, end, description, computers, computerGroups, packa
 	packageGroups.forEach(function(entry) {
 		formData.append('package_group_id[]', entry);
 	});
+	packageReports.forEach(function(entry) {
+		formData.append('package_report_id[]', entry);
+	});
 	computers.forEach(function(entry) {
 		formData.append('computer_id[]', entry);
 	});
 	computerGroups.forEach(function(entry) {
 		formData.append('computer_group_id[]', entry);
+	});
+	computerReports.forEach(function(entry) {
+		formData.append('computer_report_id[]', entry);
 	});
 	req.open('POST', 'ajax-handler/deploy.php');
 	req.send(formData);
@@ -1496,7 +1637,7 @@ function deploy(title, start, end, description, computers, computerGroups, packa
 				emitMessage(L__JOBS_CREATED, title, MESSAGE_TYPE_SUCCESS);
 			} else {
 				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
-				setInputsDisabled(frmDeploy, false);
+				setInputsDisabled(tabControlDeploy, false);
 				btnDeploy.classList.remove('hidden');
 				prgDeploy.classList.add('hidden');
 			}

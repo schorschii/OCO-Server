@@ -176,6 +176,9 @@ class Package {
 	public const POST_ACTION_SHUTDOWN = 2;
 	public const POST_ACTION_EXIT = 3;
 	// functions
+	function getFullName() {
+		return $this->package_family_name.' ('.$this->version.')';
+	}
 	function getIcon() {
 		if(!empty($this->package_family_icon)) {
 			return 'data:image/png;base64,'.base64_encode($this->package_family_icon);

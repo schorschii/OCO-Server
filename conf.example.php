@@ -137,5 +137,6 @@ const DEFAULTS = [
 	'default-shutdown-waked-after-completion' => false,
 	'default-restart-timeout' => 20,
 	'default-auto-create-uninstall-jobs' => true,
-	'default-force-install-same-version' => false
+	'default-force-install-same-version' => false,
+	'default-abort-after-error' => false,
 ];

@@ -220,7 +220,8 @@ switch($srcdata['method']) {
 	case 'oco.deploy':
 		$insertId = $cl->deploy(
 			$data['name'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
-			$data['computer_ids'] ?? [], $data['computer_group_ids'] ?? [], $data['package_ids'] ?? [], $data['package_group_ids'] ?? [],
+			$data['computer_ids'] ?? [], $data['computer_group_ids'] ?? [], $data['computer_report_ids'] ?? [],
+			$data['package_ids'] ?? [], $data['package_group_ids'] ?? [], $data['package_report_ids'] ?? [],
 			$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
 			$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5,
 			$data['auto_create_uninstall_jobs'] ?? 1, $data['force_install_same_version'] ?? 0,

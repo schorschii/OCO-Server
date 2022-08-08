@@ -5,6 +5,15 @@ require_once('../session.php');
 
 try {
 
+	if(!empty($_POST['get_package_names']) && is_array($_POST['get_package_names'])) {
+		$finalArray = [];
+		foreach($_POST['get_package_names'] as $id) {
+			$p = $cl->getPackage($id);
+			if(!empty($p)) $finalArray[$p->id] = $p->package_family_name.' ('.$p->version.')';
+		}
+		die(json_encode($finalArray));
+	}
+
 	if(!empty($_POST['update_package_family_id']) && isset($_POST['update_name'])) {
 		$cl->renamePackageFamily($_POST['update_package_family_id'], $_POST['update_name']);
 		die();

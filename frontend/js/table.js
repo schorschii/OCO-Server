@@ -396,9 +396,6 @@ function togglePackageDragAndDrop(table_id, state) {
 		}
 	}
 }
-function getChildIndex(node) {
-	return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
-}
 var draggedPackageTableElement;
 var draggedPackageTableElementBeginIndex = 0;
 function dragStartPackageTable(e) {

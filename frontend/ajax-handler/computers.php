@@ -5,6 +5,15 @@ require_once('../session.php');
 
 try {
 
+	if(!empty($_POST['get_computer_names']) && is_array($_POST['get_computer_names'])) {
+		$finalArray = [];
+		foreach($_POST['get_computer_names'] as $id) {
+			$c = $cl->getComputer($id);
+			if(!empty($c)) $finalArray[$c->id] = $c->hostname;
+		}
+		die(json_encode($finalArray));
+	}
+
 	if(!empty($_POST['rename_computer_id']) && isset($_POST['new_name'])) {
 		$cl->renameComputer($_POST['rename_computer_id'], $_POST['new_name']);
 		die();

@@ -43,7 +43,7 @@ try {
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id)); ?></span><span id='spnComputerGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
 	<div class='controls'>
 		<button onclick='createComputerGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_subgroup']; ?></button>
-		<button onclick='refreshContentDeploy([],[],[],[<?php echo $group->id; ?>])' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy_for_all']; ?></button>
+		<button onclick='refreshContentDeploy([],[],[],{<?php echo $group->id; ?>:spnComputerGroupName.innerText})' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy_for_all']; ?></button>
 		<button onclick='renameComputerGroup(<?php echo $group->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
 		<button onclick='confirmRemoveComputerGroup([<?php echo $group->id; ?>], event, spnComputerGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
 	</div>

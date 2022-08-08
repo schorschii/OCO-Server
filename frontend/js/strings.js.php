@@ -64,6 +64,8 @@ var L__REPORT_GROUPS = "<?php echo LANG['report_groups']; ?>";
 var L__EXPAND_COLLAPSE_TREE = "<?php echo LANG['expand_or_collapse_tree']; ?>";
 var L__ORDER_BY = "<?php echo LANG['order_by']; ?>";
 var L__LDAP_SYNC = "<?php echo LANG['ldap_sync']; ?>";
+var L__ELEMENT_ALREADY_EXISTS = "<?php echo LANG['element_already_exists']; ?>";
+var L__CHANGE_ORDER_VIA_DRAG_AND_DROP = "<?php echo LANG['reorder_via_drag_drop']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";

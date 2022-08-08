@@ -676,8 +676,10 @@ no parameters
 - `description` (optional) - name for the new job container
 - `computer_ids` (int array) - IDs of the computers to deploy
 - `computer_group_ids` (int array) - IDs of the computer groups to deploy
+- `computer_report_ids` (int array) - IDs of the computer reports to deploy (`computer_id` column of the report result is used to determine the deployment targets)
 - `package_ids` (int array) - IDs of the packages to deploy
 - `package_group_ids` (int array) - IDs of the package groups to deploy
+- `package_report_ids` (int array) - IDs of the package reports to deploy (`package_id` column of the report result is used to determine the deployment targets)
 - `date_start` - deployment start date
 - `date_end` (null) - deployment end date (unfinished jobs will set to "expired"), null means jobs do not expire
 - `use_wol` - (optional - default 1) enable or disable WOL

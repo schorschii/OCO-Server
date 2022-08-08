@@ -635,7 +635,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($jobContainer, PermissionManager::METHOD_READ);
 		return $jobContainer;
 	}
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $packageIds, $packageGroupIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraintIpRanges=[]) {
+	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $computerReportIds, $packageIds, $packageGroupIds, $packageReportIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraintIpRanges=[]) {
 		$this->systemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -663,6 +663,8 @@ class CoreLogic {
 		$packages = [];
 		$computer_group_ids = [];
 		$package_group_ids = [];
+		$computer_report_ids = [];
+		$package_report_ids = [];
 		if(!empty($computerIds)) foreach($computerIds as $computer_id) {
 			$tmpComputer = $this->db->getComputer($computer_id);
 			if($tmpComputer == null) continue;
@@ -673,8 +675,12 @@ class CoreLogic {
 		if(!empty($computerGroupIds)) foreach($computerGroupIds as $computer_group_id) {
 			$tmpComputerGroup = $this->db->getComputerGroup($computer_group_id);
 			if($tmpComputerGroup == null) continue;
-
 			$computer_group_ids[] = $computer_group_id;
+		}
+		if(!empty($computerReportIds)) foreach($computerReportIds as $computer_report_id) {
+			$tmpComputerReport = $this->db->getReport($computer_report_id);
+			if($tmpComputerReport == null) continue;
+			$computer_report_ids[] = $computer_report_id;
 		}
 
 		if(!empty($packageIds)) foreach($packageIds as $package_id) {
@@ -683,15 +689,18 @@ class CoreLogic {
 		if(!empty($packageGroupIds)) foreach($packageGroupIds as $package_group_id) {
 			$tmpPackageGroup = $this->db->getPackageGroup($package_group_id);
 			if($tmpPackageGroup == null) continue;
-
 			$package_group_ids[] = $package_group_id;
+		}
+		if(!empty($packageReportIds)) foreach($packageReportIds as $package_report_id) {
+			$tmpPackageReport = $this->db->getReport($package_report_id);
+			if($tmpPackageReport == null) continue;
+			$package_report_ids[] = $package_report_id;
 		}
 
 		// add all group members
 		foreach($computer_group_ids as $computer_group_id) {
 			foreach($this->db->getComputerByGroup($computer_group_id) as $c) {
 				if(!$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
-
 				$computer_ids[$c->id] = $c->id;
 			}
 		}
@@ -699,6 +708,26 @@ class CoreLogic {
 			foreach($this->db->getPackageByGroup($package_group_id) as $p) {
 				$packages = $packages + $this->compileDeployPackageArray($p->id);
 			}
+		}
+
+		// add all report results
+		foreach($computer_report_ids as $computer_report_id) {
+			try { // ignore report with syntax errors
+				foreach($this->db->executeReport($computer_report_id) as $row) {
+					$c = $this->db->getComputer($row['computer_id']);
+					if(empty($c) || !$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
+					$computer_ids[$c->id] = $c->id;
+				}
+			} catch(Exception $ignored) {}
+		}
+		foreach($package_report_ids as $package_report_id) {
+			try { // ignore report with syntax errors
+				foreach($this->db->executeReport($package_report_id) as $row) {
+					$p = $this->db->getPackage($row['package_id']);
+					if(empty($p)) continue;
+					$packages = $packages + $this->compileDeployPackageArray($p->id);
+				}
+			} catch(Exception $ignored) {}
 		}
 
 		// check if there are any computer & packages

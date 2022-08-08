@@ -25,7 +25,7 @@ try {
 <div class='details-header'>
 	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline() ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentDeploy([],[],[<?php echo $computer->id; ?>]);' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
+		<button onclick='refreshContentDeploy([],[],{<?php echo $computer->id; ?>:spnComputerName.innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
 		<button onclick='renameComputer(<?php echo $computer->id; ?>, spnComputerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
 		<button onclick='showDialogAddComputerToGroup(<?php echo $computer->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>

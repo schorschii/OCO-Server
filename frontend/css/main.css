@@ -246,13 +246,11 @@ h3 {
 	color: inherit;
 	padding: 5px;
 	border-radius: 4px;
+	user-select: none;
+	position: relative;
 }
 #explorer-tree .node > a {
 	border-radius: 0px;
-}
-.blockListItem {
-	/* smaller padding because it contains a checkbox */
-	padding: 3px;
 }
 .blockListItem > * {
 	vertical-align: text-top;
@@ -525,16 +523,30 @@ body.loading2 #loader-container {
 	flex-direction: row;
 	flex-wrap: nowrap;
 }
-.gallery > * {
+.gallery > *:not(img) {
 	flex-grow: 1;
 	flex-shrink: 1;
 	flex-basis: 0px;
+}
+.gallery > img {
+	margin-top: 45px;
+	opacity: 0.2;
 }
 .gallery > * > * {
 	width: 100%;
 }
 .gallery > * > *:first-child {
 	margin-top: 0px;
+}
+.gallery h2,
+.gallery h3 {
+	display: flex;
+	align-items: center;
+}
+.gallery h2 img,
+.gallery h3 img {
+	width: 18px;
+	margin: 0px 5px 0px 0px;
 }
 
 .controls {
@@ -652,6 +664,12 @@ table.list, .boxshadow {
 .box .subgroup {
 	margin-left: 22px;
 }
+.box h1, .box h2, .box h3 {
+	display: block;
+	margin: 10px;
+	margin-top: 15px;
+	text-align: center;
+}
 input, select, button, textarea {
 	box-sizing: border-box;
 	font-family: inherit;
@@ -678,6 +696,7 @@ input.tableSearch {
 	padding: 2px;
 	border: none !important;
 	box-shadow: none !important;
+	background-color: transparent !important;
 }
 table.form input:not([type=checkbox]):not([type=radio]),
 table.form select,
@@ -690,6 +709,13 @@ table.form th:not(:first-child) {
 table.form tr:not(.nospace) th, table.form tr:not(.nospace) td {
 	padding-bottom: 10px;
 }
+table.form th.top, table.form td.top {
+	vertical-align: top;
+}
+.dualInput {
+	display: flex;
+}
+
 /* default button */
 button {
 	cursor: pointer;
@@ -754,6 +780,14 @@ button.primary:focus {
 }
 .draggable.nodrag .drag img {
 	opacity: 0.4;
+}
+label[draggable=true] {
+	cursor: move !important;
+}
+img.dragicon {
+	position: absolute;
+	right: 0px;
+	pointer-events: none;
 }
 
 .inputWithLabel {
@@ -1156,25 +1190,14 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	100% {background-color: teal;}
 }
 
-#divComputerList, #divComputerGroupList,
-#divPackageList, #divPackageGroupList {
-	resize: vertical;
-	min-height: 100px;
-	height: 140px;
-	overflow-y: scroll;
-	margin-bottom: 10px;
-	padding: 0px;
-}
-#divComputerList input[type=checkbox], #divComputerGroupList input[type=checkbox],
-#divPackageList input[type=checkbox], #divPackageGroupList input[type=checkbox] {
-	margin-right: 8px;
-}
-
 .resizeVertical {
 	resize: vertical;
 }
 .bold {
 	font-weight: bold;
+}
+.hint {
+	opacity: 0.6;
 }
 
 .listSearch {
@@ -1182,8 +1205,8 @@ div.details-abreast > div.stickytable > table.list tfoot {
 }
 .listSearch input[type=checkbox] {
 	position: absolute;
-	top: 5px;
-	left: 3px;
+	top: 6px;
+	left: 5px;
 }
 .listSearch input[type=text] {
 	display: block;
@@ -1192,10 +1215,46 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
 }
+.listSearchButton {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+}
 .box.listSearchList {
+	resize: vertical;
+	min-height: 100px;
+	height: 160px;
+	overflow-y: scroll;
+	padding: 0px;
+
+	/* for search text box above */
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
 	border-top-width: 0px;
+}
+.box.listSearchList.withContextButton {
+	/* for button below */
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-bottom-width: 0px;
+}
+.box.listSearchList .blockListItem.big {
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+.box.listSearchList .blockListItem > input[type=checkbox] {
+	margin: 3px 5px 0px 0px;
+}
+.box.listSearchList .headline {
+	display: flex;
+	align-items: center;
+	padding: 5px;
+	gap: 5px;
+}
+.blockListItem > img {
+	height: 16px;
+	margin-top: 1px;
+	margin-right: 4px;
+	pointer-events: none;
 }
 .inputwithbutton {
 	position: relative;
@@ -1378,12 +1437,11 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	.box {
 		border: 2px solid rgba(255,255,255,0.1);
 	}
+	button,
 	input:not([type=range]):not([type=radio]):not([type=checkbox]), select, textarea {
 		color: white;
-		background-color: transparent;
-		border: none;
-		border-bottom: 1px solid rgba(255,255,255,0.4);
-		border-radius: 0px;
+		background-color: #21262d;
+		border-color: rgba(255,255,255,0.1);
 		box-shadow: none;
 	}
 	input:disabled, select:disabled, textarea:disabled, .disabled,
@@ -1391,22 +1449,19 @@ div.details-abreast > div.stickytable > table.list tfoot {
 		background-color: rgb(240, 240, 240, 0.1);
 		background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(240, 240, 240, 0.1) 10px, rgb(240, 240, 240, 0.1) 20px);
 	}
+	button:hover, button:focus,
 	input:not([type=range]):not([type=radio]):not([type=checkbox]):focus, input:not([type=range]):not([type=radio]):not([type=checkbox]):hover,
 	textarea:focus, textarea:hover,
 	select:focus, select:hover {
-		border-bottom: 1px solid rgba(255,255,255,0.5);
+		background-color: #30363d;
 		box-shadow: none;
+		border-color: rgba(255,255,255,0.2);
 	}
 	input:not([type=range]):not([type=radio]):not([type=checkbox]):active,
 	textarea:active,
 	select:active {
-		border-bottom: 1px solid rgba(255,255,255,0.6);
+		border-color: rgba(255,255,255,0.4);
 		box-shadow: none;
-	}
-	button {
-		color: white;
-		background-color: #21262d;
-		border-color: rgba(255,255,255,0.1);
 	}
 	button.primary {
 		background-color: #006193;
@@ -1414,10 +1469,6 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	button.primary:hover,
 	button.primary:focus {
 		background-color: #004a70;
-	}
-	button:hover,
-	button:focus {
-		background-color: #30363d;
 	}
 	button:disabled {
 		color: #484f58 !important;

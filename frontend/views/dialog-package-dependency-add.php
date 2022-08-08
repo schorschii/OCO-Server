@@ -11,7 +11,10 @@ function echoTargetPackageGroupOptions($parent=null) {
 		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
 		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'>".htmlspecialchars($pg->name)."</a>";
+		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'>";
+		echo htmlspecialchars($pg->name);
+		echo "<img src='img/arrow-forward.dyn.svg' class='dragicon'>";
+		echo "</a>";
 		echo "<div class='subgroup'>";
 		echoTargetPackageGroupOptions($pg->id);
 		echo "</div>";
@@ -23,24 +26,18 @@ function echoTargetPackageGroupOptions($parent=null) {
 <input type='hidden' id='txtSetAsDependentPackage' value='0'></input>
 <div class='gallery'>
 	<div>
-		<h3><?php echo LANG['package_groups']; ?> (<span id='spnSelectedPackageGroups'>0</span>/<span id='spnTotalPackageGroups'>0</span>)</h3>
+		<h3><?php echo LANG['package_selection']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
 		<div class='listSearch'>
-			<input type='checkbox' disabled='true' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageGroupList, this.checked);refreshDeployPackageList()'>
-			<input type='text' id='txtDeploySearchPackageGroups' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageGroupList, this.value)'>
-		</div>
-		<div id='divPackageGroupList' class='box listSearchList'>
-			<a class='blockListItem' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?></a>
-			<?php echoTargetPackageGroupOptions(); ?>
-		</div>
-	</div>
-	<div>
-		<h3><?php echo LANG['packages']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
-		<div class='listSearch'>
-			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked)'>
+			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked);refreshDeployPackageCount()'>
 			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
 		</div>
 		<div id='divPackageList' class='box listSearchList'>
-			<!-- filled by JS -->
+			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+			<?php echoTargetPackageGroupOptions(); ?>
+		</div>
+		<div id='divPackageListHome' class='box listSearchList hidden'>
+			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/arrow-forward.dyn.svg' class='dragicon'></a>
+			<?php echoTargetPackageGroupOptions(); ?>
 		</div>
 	</div>
 </div>
