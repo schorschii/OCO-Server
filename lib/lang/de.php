@@ -398,6 +398,8 @@ const LANG = [
 	'computer_selection' => 'Computer-Auswahl',
 	'package_selection' => 'Paket-Auswahl',
 	'back' => 'Zurück',
+	'runtime' => 'Laufzeit',
+	'state' => 'Status',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

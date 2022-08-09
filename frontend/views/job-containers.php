@@ -31,16 +31,18 @@ if(!empty($_GET['id'])) {
 	$icon = $db->getJobContainerIcon($container->id);
 ?>
 
-	<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
-
-	<div class='controls'>
-		<button onclick='renameJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
-		<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>")' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
-		<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+	<div class='details-header'>
+		<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
+		<div class='controls'>
+			<button onclick='renameJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+			<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>")' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
+			<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		</div>
 	</div>
 
-	<div class='details-abreast margintop marginbottom'>
+	<div class='details-abreast'>
 	<div>
+		<h2><?php echo LANG['general']; ?></h2>
 		<table class='list metadata'>
 			<tr>
 				<th><?php echo LANG['id']; ?></th>
@@ -112,17 +114,44 @@ if(!empty($_GET['id'])) {
 					<?php } ?>
 				</td>
 			</tr>
+		</table>
+	</div>
+	<div>
+		<h2><?php echo LANG['state']; ?></h2>
+		<table class='list metadata'>
 			<tr>
 				<th><?php echo LANG['progress']; ?></th>
 				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, 'stretch', ''); ?></td>
 			</tr>
+			<tr>
+				<th><?php echo LANG['runtime']; ?></th>
+				<td><?php
+				if(strtotime($container->start_time) > time()) {
+					echo htmlspecialchars('-');
+				} else {
+					$flag = '';
+					if($icon != JobContainer::STATUS_SUCCEEDED && $icon != JobContainer::STATUS_FAILED) {
+						$flag = '~ ';
+					}
+					$maxTimeJob = $db->getJobContainerMaxJobExecutionFinished($container->id);
+					if(empty($maxTimeJob)) $maxTime = time();
+					else $maxTime = $maxTimeJob->execution_finished;
+					$timeDiff = strtotime($maxTime)-strtotime($container->start_time);
+					if($timeDiff < 0) {
+						echo htmlspecialchars('-');
+					} else {
+						echo htmlspecialchars($flag.niceTime($timeDiff));
+					}
+				}
+				?></td>
+			</tr>
 		</table>
 	</div>
-	<div></div>
 	</div>
 
 	<div class='details-abreast'>
 	<div class='stickytable'>
+		<h2><?php echo LANG['jobs']; ?></h2>
 		<table id='tblJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
