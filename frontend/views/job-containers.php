@@ -140,18 +140,18 @@ if(!empty($_GET['id'])) {
 				if(strtotime($container->start_time) > time()) {
 					echo htmlspecialchars('-');
 				} else {
-					$flag = '';
-					if($icon != JobContainer::STATUS_SUCCEEDED && $icon != JobContainer::STATUS_FAILED) {
-						$flag = '~ ';
-					}
-					$maxTimeJob = $db->getJobContainerMaxJobExecutionFinished($container->id);
-					if(empty($maxTimeJob)) $maxTime = time();
-					else $maxTime = $maxTimeJob->execution_finished;
-					$timeDiff = strtotime($maxTime)-strtotime($container->start_time);
-					if($timeDiff < 0) {
-						echo htmlspecialchars('-');
+					if($icon == JobContainer::STATUS_SUCCEEDED || $icon == JobContainer::STATUS_FAILED) {
+						$maxTimeJob = $db->getJobContainerMaxJobExecutionFinished($container->id);
+						$maxTime = time(); if(!empty($maxTimeJob)) $maxTime = strtotime($maxTimeJob->execution_finished);
+						$timeDiff = $maxTime-strtotime($container->start_time);
+						if($timeDiff < 0) {
+							echo htmlspecialchars('-');
+						} else {
+							echo htmlspecialchars(niceTime($timeDiff));
+						}
 					} else {
-						echo htmlspecialchars($flag.niceTime($timeDiff));
+						$timeDiff = time()-strtotime($container->start_time);
+						echo htmlspecialchars('~ '.niceTime($timeDiff));
 					}
 				}
 				?></td>
