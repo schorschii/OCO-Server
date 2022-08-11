@@ -219,10 +219,10 @@ try {
 							<?php
 							foreach($db->getComputerNetwork($computer->id) as $n) {
 								echo '<tr>';
-								echo '<td class="subbuttons">';
+								echo '<td class="flyout-container" tabindex="0">';
 								echo  htmlspecialchars($n->addr);
 								if(count(COMPUTER_COMMANDS) > 0) {
-									echo '<div class="subbutton small">';
+									echo '<div class="flyout box">';
 									foreach(COMPUTER_COMMANDS as $c) { echoCommandButton($c, $n->addr, true); echo ' '; }
 									echo '</div>';
 								}

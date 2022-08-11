@@ -962,6 +962,32 @@ a.subbuttons > button {
 	display: block;
 }
 
+.flyout-container {
+	position: relative;
+}
+.flyout-container > .flyout {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 100%;
+	width: 150%;
+	min-width: 250px;
+	padding: 4px;
+	opacity: 0;
+	transform: translateX(-10px);
+	pointer-events: none;
+	transition: all 0.2s ease;
+}
+.flyout-container:hover > .flyout,
+.flyout-container:focus > .flyout {
+	opacity: 1;
+	transform: translateX(0);
+	pointer-events: all;
+}
+
 .tabbuttons {
 	display: flex;
 	align-items: bottom;
