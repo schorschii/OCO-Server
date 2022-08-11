@@ -31,7 +31,7 @@ try {
 	<div class='controls'>
 		<button onclick='createComputer()' <?php if(!$permissionCreateComputer) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_computer']; ?></button>
 		<button onclick='createComputerGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
-		<span class='fillwidth'></span>
+		<span class='filler'></span>
 		<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='<?php echo LANG['agent_download_description']; ?>'><?php echo LANG['agent_download']; ?></a></span>
 	</div>
 <?php } else {

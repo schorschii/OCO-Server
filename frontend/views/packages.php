@@ -39,6 +39,7 @@ try {
 		<button onclick='refreshContentDeploy([],{<?php echo $group->id; ?>:spnPackageGroupName.innerText})' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy_all']; ?></button>
 		<button onclick='renamePackageGroup(<?php echo $group->id; ?>, spnPackageGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename_group']; ?></button>
 		<button onclick='confirmRemovePackageGroup([<?php echo $group->id; ?>], event, spnPackageGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_group']; ?></button>
+		<span class='filler'></span>
 	</div>
 	<div class='controls subfolders'>
 		<?php if($group->parent_package_group_id == null) { ?>
@@ -65,7 +66,7 @@ try {
 			<button onclick='removePackageFamilyIcon(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-remove.dyn.svg'>&nbsp;<?php echo LANG['remove_icon']; ?></button>
 		<?php } ?>
 		<button onclick='currentExplorerContentUrl="views/package-families.php";confirmRemovePackageFamily([<?php echo htmlspecialchars($family->id,ENT_QUOTES); ?>], spnPackageFamilyName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete_package_family']; ?></button>
-		<span class='fillwidth'></span>
+		<span class='filler'></span>
 		<span><a <?php echo explorerLink('views/package-families.php'); ?>><?php echo LANG['package_families']; ?></a></span>
 	</div>
 	<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $family->id; ?>, this.files[0])'></input>
@@ -83,7 +84,7 @@ try {
 	<div class='controls'>
 		<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_package']; ?></button>
 		<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
-		<span class='fillwidth'></span>
+		<span class='filler'></span>
 		<span><a <?php echo explorerLink('views/package-families.php'); ?>><?php echo LANG['package_families']; ?></a></span>
 	</div>
 	<?php if(!empty($subGroups)) { ?>
