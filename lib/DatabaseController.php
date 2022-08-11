@@ -1221,6 +1221,7 @@ class DatabaseController {
 			FROM job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
+			AND jc.enabled = 1
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
 			AND (jc.start_time IS NULL OR jc.start_time < CURRENT_TIMESTAMP)
 			AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
@@ -1239,6 +1240,7 @@ class DatabaseController {
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
+			AND jc.enabled = 1
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
 			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
 		);
@@ -1254,6 +1256,7 @@ class DatabaseController {
 			INNER JOIN computer c ON j.computer_id = c.id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.package_id = :id
+			AND jc.enabled = 1
 			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
 			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
 		);
@@ -1355,15 +1358,16 @@ class DatabaseController {
 		}
 		return true;
 	}
-	public function updateJobContainer($id, $name, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges) {
+	public function updateJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container
-			SET name = :name, start_time = :start_time, end_time = :end_time, notes = :notes, wol_sent = :wol_sent, shutdown_waked_after_completion = :shutdown_waked_after_completion, sequence_mode = :sequence_mode, priority = :priority, agent_ip_ranges = :agent_ip_ranges
+			SET name = :name, enabled = :enabled, start_time = :start_time, end_time = :end_time, notes = :notes, wol_sent = :wol_sent, shutdown_waked_after_completion = :shutdown_waked_after_completion, sequence_mode = :sequence_mode, priority = :priority, agent_ip_ranges = :agent_ip_ranges
 			WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
 			':name' => $name,
+			':enabled' => $enabled,
 			':start_time' => $start_time,
 			':end_time' => $end_time,
 			':notes' => $notes,

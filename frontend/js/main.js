@@ -1537,6 +1537,15 @@ function renameJobContainer(id, oldName) {
 		});
 	}
 }
+function editJobContainerEnabled(id, oldValue) {
+	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
+	if(newValue != null) {
+		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_enabled':newValue}), null, function() {
+			refreshContent();
+			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
 function editJobContainerStart(id, oldValue) {
 	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
 	if(newValue != null) {

@@ -17,6 +17,11 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['edit_container_id']) && isset($_POST['new_enabled'])) {
+		$cl->updateJobContainerEnabled($_POST['edit_container_id'], $_POST['new_enabled']);
+		die();
+	}
+
 	if(!empty($_POST['edit_container_id']) && isset($_POST['new_start'])) {
 		$cl->updateJobContainerStart($_POST['edit_container_id'], $_POST['new_start']);
 		die();

@@ -1133,7 +1133,7 @@ class CoreLogic {
 		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, $jc->end_time, $notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['notes'=>$notes]);
 	}
 	public function renameJobContainer($id, $newName) {
@@ -1144,7 +1144,7 @@ class CoreLogic {
 		if(empty(trim($newName))) {
 			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
-		$this->db->updateJobContainer($jc->id, $newName, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
+		$this->db->updateJobContainer($jc->id, $newName, $jc->enabled, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['name'=>$newName]);
 	}
 	public function updateJobContainerPriority($id, $priority) {
@@ -1155,7 +1155,7 @@ class CoreLogic {
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
 			throw new InvalidRequestException(LANG['invalid_input']);
 		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, intval($priority), $jc->agent_ip_ranges);
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, intval($priority), $jc->agent_ip_ranges);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['priority'=>$priority]);
 	}
 	public function updateJobContainerSequenceMode($id, $sequenceMode) {
@@ -1167,8 +1167,19 @@ class CoreLogic {
 		|| !in_array($sequenceMode, [JobContainer::SEQUENCE_MODE_IGNORE_FAILED, JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
 			throw new InvalidRequestException(LANG['invalid_input']);
 		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, intval($sequenceMode), $jc->priority, $jc->agent_ip_ranges);
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, intval($sequenceMode), $jc->priority, $jc->agent_ip_ranges);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['sequence_mode'=>$sequenceMode]);
+	}
+	public function updateJobContainerEnabled($id, $newEnabled) {
+		$jc = $this->db->getJobContainer($id);
+		if(empty($jc)) throw new NotFoundException();
+		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
+
+		if(!in_array($newEnabled, ['0', '1'])) {
+			throw new InvalidRequestException(LANG['invalid_input']);
+		}
+		$this->db->updateJobContainer($jc->id, $jc->name, $newEnabled, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
+		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['enabled'=>$newEnabled]);
 	}
 	public function updateJobContainerStart($id, $newStart) {
 		$jc = $this->db->getJobContainer($id);
@@ -1178,7 +1189,7 @@ class CoreLogic {
 		if(DateTime::createFromFormat('Y-m-d H:i:s', $newStart) === false) {
 			throw new InvalidRequestException(LANG['date_parse_error']);
 		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $newStart, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
+		$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $newStart, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['start_time'=>$newStart]);
 	}
 	public function updateJobContainerEnd($id, $newEnd) {
@@ -1190,13 +1201,13 @@ class CoreLogic {
 			throw new InvalidRequestException(LANG['date_parse_error']);
 		}
 		if(empty($newEnd)) {
-			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, null, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
+			$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, null, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
 			$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['end_time'=>null]);
 		} else {
 			if(strtotime($jc->start_time) > strtotime($newEnd)) {
 				throw new InvalidRequestException(LANG['end_time_before_start_time']);
 			}
-			$this->db->updateJobContainer($jc->id, $jc->name, $jc->start_time, $newEnd, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
+			$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, $newEnd, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
 			$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['end_time'=>$newEnd]);
 		}
 	}

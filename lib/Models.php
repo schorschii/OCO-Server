@@ -222,6 +222,7 @@ class PackageGroup {
 class JobContainer {
 	public $id;
 	public $name;
+	public $enabled;
 	public $start_time;
 	public $end_time;
 	public $notes;

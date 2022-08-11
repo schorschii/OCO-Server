@@ -32,7 +32,7 @@ if(!empty($_GET['id'])) {
 ?>
 
 	<div class='details-header'>
-		<h1><img src='img/<?php echo $icon; ?>.dyn.svg'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
+		<h1><img src='img/<?php echo $icon; ?>.dyn.svg' class='<?php echo($container->enabled ? 'online' : 'offline'); ?>'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 		<div class='controls'>
 			<button onclick='renameJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
 			<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>")' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
@@ -52,6 +52,16 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG['created']; ?></th>
 				<td><?php echo htmlspecialchars($container->created); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['enabled']; ?></th>
+				<td class='subbuttons'>
+					<?php if($container->enabled=='1') echo LANG['yes']; else echo LANG['no']; ?>
+					<span id='spnJobContainerEnabled' class='rawvalue'><?php echo htmlspecialchars($container->enabled); ?></span>
+					<?php if($permissionWrite) { ?>
+						<button onclick='event.stopPropagation();editJobContainerEnabled(<?php echo $container->id; ?>, spnJobContainerEnabled.innerText)'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
+					<?php } ?>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG['start']; ?></th>
@@ -270,7 +280,7 @@ if(!empty($_GET['id'])) {
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='job_container_id[]' value='".$jc->id."' onchange='refreshCheckedCounter(tblJobcontainerData)'></td>";
 				echo "<td class='middle'>";
-				echo  "<img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg'>&nbsp;";
+				echo  "<img src='img/".$db->getJobContainerIcon($jc->id).".dyn.svg' class='".($jc->enabled?'online':'offline')."'>&nbsp;";
 				echo  "<a ".explorerLink('views/job-containers.php?id='.$jc->id).">".htmlspecialchars($jc->name)."</a>";
 				echo "</td>";
 				echo "<td>".htmlspecialchars($jc->author)."</td>";

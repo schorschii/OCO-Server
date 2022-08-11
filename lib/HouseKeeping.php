@@ -55,6 +55,7 @@ foreach($db->getAllJobContainer() as $container) {
 			$db->updateJobContainer(
 				$container->id,
 				$container->name,
+				$container->enabled,
 				$container->start_time,
 				$container->end_time,
 				$container->notes,
