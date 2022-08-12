@@ -345,6 +345,7 @@ h3 {
 .filler {
 	align-self: center;
 	height: 1px;
+	min-width: 5px;
 	background-color: rgb(0,0,0,0.1);
 	flex-grow: 1;
 }
@@ -694,7 +695,7 @@ input:not([type=file]):read-only, textarea:read-only {
 input.tableSearch {
 	width: 100%;
 	min-width: 80px;
-	padding: 2px;
+	padding: 0px;
 	border: none !important;
 	box-shadow: none !important;
 	background-color: transparent !important;
