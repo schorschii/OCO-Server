@@ -135,13 +135,13 @@ if(!empty($_GET['id'])) {
 				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, 'stretch', ''); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['runtime']; ?></th>
+				<th><?php echo LANG['total_runtime']; ?></th>
 				<td><?php
 				if(strtotime($container->start_time) > time()) {
 					echo htmlspecialchars('-');
 				} else {
 					if($icon == JobContainer::STATUS_SUCCEEDED || $icon == JobContainer::STATUS_FAILED) {
-						$maxTimeJob = $db->getJobContainerMaxJobExecutionFinished($container->id);
+						$maxTimeJob = $db->getJobContainerMaxJobExecution($container->id);
 						$maxTime = time(); if(!empty($maxTimeJob)) $maxTime = strtotime($maxTimeJob->execution_finished);
 						$timeDiff = $maxTime-strtotime($container->start_time);
 						if($timeDiff < 0) {
@@ -153,6 +153,25 @@ if(!empty($_GET['id'])) {
 						$timeDiff = time()-strtotime($container->start_time);
 						echo htmlspecialchars('~ '.niceTime($timeDiff));
 					}
+				}
+				?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG['effective_runtime']; ?></th>
+				<td><?php
+				$minTimeJob = $db->getJobContainerMinJobExecution($container->id);
+				$maxTimeJob = $db->getJobContainerMaxJobExecution($container->id);
+				if(empty($minTimeJob) || empty($maxTimeJob) || empty($minTimeJob->execution_started) || empty($maxTimeJob->execution_finished)) {
+					echo htmlspecialchars('-');
+				} else {
+					$flag = '~ ';
+					if($icon == JobContainer::STATUS_SUCCEEDED || $icon == JobContainer::STATUS_FAILED) {
+						$flag = '';
+					}
+					$minTime = strtotime($minTimeJob->execution_started);
+					$maxTime = strtotime($maxTimeJob->execution_finished);
+					$timeDiff = $maxTime - $minTime;
+					echo htmlspecialchars($flag.niceTime($timeDiff));
 				}
 				?></td>
 			</tr>

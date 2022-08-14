@@ -1170,7 +1170,16 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'JobContainer');
 	}
-	public function getJobContainerMaxJobExecutionFinished($job_container_id) {
+	public function getJobContainerMinJobExecution($job_container_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM job WHERE job_container_id = :job_container_id ORDER BY execution_started ASC LIMIT 1'
+		);
+		$this->stmt->execute([':job_container_id' => $job_container_id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job') as $row) {
+			return $row;
+		}
+	}
+	public function getJobContainerMaxJobExecution($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM job WHERE job_container_id = :job_container_id ORDER BY execution_finished DESC LIMIT 1'
 		);
