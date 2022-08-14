@@ -9,7 +9,7 @@ try {
 		$finalArray = [];
 		foreach($_POST['get_package_names'] as $id) {
 			$p = $cl->getPackage($id);
-			if(!empty($p)) $finalArray[$p->id] = $p->package_family_name.' ('.$p->version.')';
+			if(!empty($p)) $finalArray[$p->id] = $p->getFullName();
 		}
 		die(json_encode($finalArray));
 	}
