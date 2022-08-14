@@ -26,7 +26,7 @@ require_once('../session.php');
 		<td><input class='fullwidth' autocomplete='new-password' id='txtEditPackageCompatibleOsVersion'></input></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG['notes']; ?></th>
+		<th><?php echo LANG['description']; ?></th>
 		<td><textarea class='fullwidth' autocomplete='new-password' id='txtEditPackageNotes'></textarea></td>
 	</tr>
 
@@ -80,7 +80,7 @@ require_once('../session.php');
 
 <div class='controls right'>
 	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
-	<button id='btnCreateUser' class='primary' onclick='editPackage(
+	<button id='btnUpdatePackage' class='primary' onclick='editPackage(
 		txtEditPackageId.value,
 		txtEditPackageVersion.value,
 		txtEditPackageCompatibleOs.value,

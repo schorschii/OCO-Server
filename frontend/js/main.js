@@ -1224,14 +1224,24 @@ function searchItems(container, search) {
 }
 
 // ======== COMPUTER OPERATIONS ========
-function editComputerNotes(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'update_computer_id':id, 'update_note':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function showDialogEditComputer(id, hostname, notes) {
+	showDialogAjax(L__EDIT_PACKAGE, 'views/dialog-computer-update.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditComputerId.value = id;
+		txtEditComputerHostname.value = hostname;
+		txtEditComputerNotes.value = notes;
+	});
+}
+function editComputer(id, hostname, notes) {
+	var params = [];
+	params.push({'key':'update_computer_id', 'value':id});
+	params.push({'key':'hostname', 'value':hostname});
+	params.push({'key':'notes', 'value':notes});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
+		hideDialog();
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function setComputerForceUpdate(id, value) {
 	ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'update_computer_id':id, 'update_force_update':value}), null, function() {
@@ -1320,15 +1330,6 @@ function deploySelectedComputer(checkboxName, attributeName=null) {
 	ajaxRequestPost('ajax-handler/computers.php', urlencodeArray(params), null, function(text) {
 		refreshContentDeploy([],[],JSON.parse(text));
 	});
-}
-function renameComputer(id, oldName) {
-	var newValue = prompt(L__ENTER_NEW_HOSTNAME, oldName);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'rename_computer_id':id, 'new_name':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__OBJECT_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
 }
 function wolSelectedComputer(checkboxName, attributeName=null) {
 	var ids = [];

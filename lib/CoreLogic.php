@@ -78,12 +78,13 @@ class CoreLogic {
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.computer.create', ['hostname'=>$finalHostname, 'notes'=>$notes]);
 		return $insertId;
 	}
-	public function renameComputer($id, $newName) {
+	public function updateComputerHostname($id, $hostname) {
 		$computer = $this->db->getComputer($id);
 		if(empty($computer)) throw new NotFoundException();
 		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
+		if($computer->hostname === $hostname) return;
 
-		$finalHostname = trim($newName);
+		$finalHostname = trim($hostname);
 		if(empty($finalHostname)) {
 			throw new InvalidRequestException(LANG['hostname_cannot_be_empty']);
 		}
@@ -95,14 +96,14 @@ class CoreLogic {
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['hostname'=>$finalHostname]);
 		return $result;
 	}
-	public function updateComputerNote($id, $newValue) {
+	public function updateComputerNotes($id, $notes) {
 		$computer = $this->db->getComputer($id);
 		if(empty($computer)) throw new NotFoundException();
 		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
 
-		$result = $this->db->updateComputerNote($computer->id, $newValue);
+		$result = $this->db->updateComputerNotes($computer->id, $notes);
 		if(!$result) throw new Exception(LANG['unknown_error']);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['notes'=>$newValue]);
+		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['notes'=>$notes]);
 		return $result;
 	}
 	public function updateComputerForceUpdate($id, $newValue) {

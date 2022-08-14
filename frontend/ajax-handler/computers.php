@@ -14,13 +14,11 @@ try {
 		die(json_encode($finalArray));
 	}
 
-	if(!empty($_POST['rename_computer_id']) && isset($_POST['new_name'])) {
-		$cl->renameComputer($_POST['rename_computer_id'], $_POST['new_name']);
-		die();
-	}
-
-	if(!empty($_POST['update_computer_id']) && isset($_POST['update_note'])) {
-		$cl->updateComputerNote($_POST['update_computer_id'], $_POST['update_note']);
+	if(!empty($_POST['update_computer_id'])
+	&& isset($_POST['hostname'])
+	&& isset($_POST['notes'])) {
+		$cl->updateComputerHostname($_POST['update_computer_id'], $_POST['hostname']);
+		$cl->updateComputerNotes($_POST['update_computer_id'], $_POST['notes']);
 		die();
 	}
 

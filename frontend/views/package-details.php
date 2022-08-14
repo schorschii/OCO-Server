@@ -114,7 +114,7 @@ try {
 						<tr>
 							<th><?php echo LANG['description']; ?></th>
 							<td>
-								<span id='spnPackageNotes'><?php echo htmlspecialchars($package->notes); ?></span>
+								<span id='spnPackageNotes'><?php echo nl2br(htmlspecialchars($package->notes)); ?></span>
 							</td>
 						</tr>
 					</table>

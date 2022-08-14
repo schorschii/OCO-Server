@@ -182,7 +182,7 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id]);
 	}
-	public function updateComputerNote($id, $notes) {
+	public function updateComputerNotes($id, $notes) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET notes = :notes WHERE id = :id'
 		);

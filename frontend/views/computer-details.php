@@ -27,7 +27,7 @@ try {
 	<div class='controls'>
 		<button onclick='refreshContentDeploy([],[],{<?php echo $computer->id; ?>:spnComputerName.innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
 		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-		<button onclick='renameComputer(<?php echo $computer->id; ?>, spnComputerName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['rename']; ?></button>
+		<button onclick='showDialogEditComputer(<?php echo $computer->id; ?>, spnComputerName.innerText, spnComputerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
 		<button onclick='showDialogAddComputerToGroup(<?php echo $computer->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
 		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 		<?php
@@ -166,11 +166,8 @@ try {
 						</tr>
 						<tr>
 							<th><?php echo LANG['notes']; ?></th>
-							<td class='subbuttons'>
-								<span id='spnComputerNotes'><?php echo htmlspecialchars($computer->notes); ?></span>
-								<?php if($permissionWrite) { ?>
-									<button onclick='event.stopPropagation();editComputerNotes(<?php echo $computer->id; ?>, spnComputerNotes.innerText);return false'><img class='small' src='img/edit.dyn.svg' title='<?php echo LANG['edit']; ?>'></button>
-								<?php } ?>
+							<td>
+								<span id='spnComputerNotes'><?php echo nl2br(htmlspecialchars($computer->notes)); ?></span>
 							</td>
 						</tr>
 					</table>

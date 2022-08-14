@@ -12,7 +12,6 @@ var L__REPORT_CREATED = "<?php echo LANG['report_created']; ?>";
 var L__USER_CREATED = "<?php echo LANG['user_created']; ?>";
 var L__NO_ELEMENTS_SELECTED = "<?php echo LANG['no_elements_selected']; ?>";
 var L__ENTER_NAME = "<?php echo LANG['enter_name']; ?>";
-var L__ENTER_NEW_HOSTNAME = "<?php echo LANG['enter_new_hostname']; ?>";
 var L__UNINSTALL_PACKAGES = "<?php echo LANG['uninstall_packages']; ?>";
 var L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT = "<?php echo LANG['confirm_remove_package_assignment']; ?>";
 var L__CONFIRM_DELETE = "<?php echo LANG['confirm_delete']; ?>";
