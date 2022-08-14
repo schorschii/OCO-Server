@@ -291,7 +291,6 @@ CREATE TABLE `package` (
   `uninstall_procedure_post_action` tinyint(4) NOT NULL DEFAULT 0,
   `compatible_os` text DEFAULT NULL,
   `compatible_os_version` text DEFAULT NULL,
-  `self_service_enabled` tinyint(4) NOT NULL DEFAULT 0,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_update` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
