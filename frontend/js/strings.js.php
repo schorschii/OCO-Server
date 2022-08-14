@@ -36,8 +36,6 @@ var L__IN_PROGRESS = "<?php echo LANG['in_progress']; ?>";
 var L__CONFIRM_CREATE_EMPTY_PACKAGE = "<?php echo LANG['confirm_create_empty_package']; ?>";
 var L__ENTER_NEW_VALUE = "<?php echo LANG['enter_new_value']; ?>";
 var L__ENTER_START_TIME = "<?php echo LANG['enter_start_time']; ?>";
-var L__ENTER_NEW_PROCEDURE_POST_ACTION = "<?php echo LANG['enter_new_procedure_post_action']; ?>";
-var L__ENTER_NEW_DOWNLOAD_FOR_UNINSTALL_VALUE = "<?php echo LANG['enter_new_download_for_uninstall_action']; ?>";
 var L__FILE_TOO_BIG = "<?php echo LANG['file_too_big']; ?>";
 var L__CHANGE_ICON = "<?php echo LANG['change_icon']; ?>";
 var L__REMOVE_ICON = "<?php echo LANG['remove_icon']; ?>";
@@ -66,6 +64,7 @@ var L__ORDER_BY = "<?php echo LANG['order_by']; ?>";
 var L__LDAP_SYNC = "<?php echo LANG['ldap_sync']; ?>";
 var L__ELEMENT_ALREADY_EXISTS = "<?php echo LANG['element_already_exists']; ?>";
 var L__CHANGE_ORDER_VIA_DRAG_AND_DROP = "<?php echo LANG['reorder_via_drag_drop']; ?>";
+var L__EDIT_PACKAGE = "<?php echo LANG['edit_package']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";

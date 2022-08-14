@@ -488,113 +488,54 @@ class CoreLogic {
 		$this->db->removePackageDependency($package->id, $dependentPackage->id);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_dependency', ['dependent_package_id'=>$dependentPackage->id]);
 	}
-	public function updatePackageVersion($id, $newValue) {
+	public function updatePackage($id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall) {
 		$package = $this->db->getPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 
-		if(empty(trim($newValue))) {
+		if(empty(trim($version))) {
 			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
-		$this->db->updatePackageVersion($package->id, $newValue);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['version'=>$newValue]);
-	}
-	public function updatePackageNote($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
-
-		$this->db->updatePackageNote($package->id, $newValue);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['notes'=>$newValue]);
-	}
-	public function updatePackageInstallProcedure($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
-
-		if(empty(trim($newValue))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
-		}
-		$this->db->updatePackageInstallProcedure($package->id, $newValue);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['install_procedure'=>$newValue]);
-	}
-	public function updatePackageInstallProcedureSuccessReturnCodes($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
-
-		$this->db->updatePackageInstallProcedureSuccessReturnCodes($package->id, $newValue);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['install_procedure_success_return_codes'=>$newValue]);
-	}
-	public function updatePackageInstallProcedurePostAction($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
-
-		if(is_numeric($newValue)
-		&& in_array($newValue, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN, Package::POST_ACTION_EXIT])) {
-			$this->db->updatePackageInstallProcedurePostAction($package->id, $newValue);
-			$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['install_procedure_post_action'=>$newValue]);
-		} else {
+		if(!is_numeric($installProcedurePostAction)
+		|| !in_array($installProcedurePostAction, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN, Package::POST_ACTION_EXIT])) {
 			throw new InvalidRequestException(LANG['invalid_input']);
 		}
-	}
-	public function updatePackageUninstallProcedure($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
-
-		$this->db->updatePackageUninstallProcedure($package->id, $newValue);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['uninstall_procedure'=>$newValue]);
-	}
-	public function updatePackageUninstallProcedureSuccessReturnCodes($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
-
-		$this->db->updatePackageUninstallProcedureSuccessReturnCodes($package->id, $newValue);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['uninstall_procedure_success_return_codes'=>$newValue]);
-	}
-	public function updatePackageUninstallProcedurePostAction($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
-
-		if(is_numeric($newValue)
-		&& in_array($newValue, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN])) {
-			$this->db->updatePackageUninstallProcedurePostAction($package->id, $newValue);
-			$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['uninstall_procedure_post_action'=>$newValue]);
-		} else {
+		if(!is_numeric($uninstallProcedurePostAction)
+		|| !in_array($uninstallProcedurePostAction, [Package::POST_ACTION_NONE, Package::POST_ACTION_RESTART, Package::POST_ACTION_SHUTDOWN])) {
 			throw new InvalidRequestException(LANG['invalid_input']);
 		}
-	}
-	public function updatePackageDownloadForUninstall($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
-
-		if(intval($newValue) === 0 || intval($newValue) === 1) {
-			$this->db->updatePackageDownloadForUninstall($package->id, intval($newValue));
-			$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['download_for_uninstall'=>$newValue]);
-		} else {
+		if(intval($downloadForUninstall) !== 0 && intval($downloadForUninstall) !== 1) {
 			throw new InvalidRequestException(LANG['invalid_input']);
 		}
-	}
-	public function updatePackageCompatibleOs($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 
-		$this->db->updatePackageCompatibleOs($package->id, $newValue);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['compatible_os'=>$newValue]);
-	}
-	public function updatePackageCompatibleOsVersion($id, $newValue) {
-		$package = $this->db->getPackage($id);
-		if(empty($package)) throw new NotFoundException();
-		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
-
-		$this->db->updatePackageCompatibleOsVersion($package->id, $newValue);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', ['compatible_os_version'=>$newValue]);
+		$this->db->updatePackage($package->id,
+			$package->package_family_id,
+			$package->author,
+			$version,
+			$compatibleOs,
+			$compatibleOsVersion,
+			$notes,
+			$installProcedure,
+			$installProcedureSuccessReturnCodes,
+			intval($installProcedurePostAction),
+			$uninstallProcedure,
+			$uninstallProcedureSuccessReturnCodes,
+			intval($uninstallProcedurePostAction),
+			intval($downloadForUninstall),
+		);
+		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', [
+			'version'=>$version,
+			'compatible_os'=>$compatibleOs,
+			'compatible_os_version'=>$compatibleOsVersion,
+			'notes'=>$notes,
+			'install_procedure'=>$installProcedure,
+			'install_procedure_success_return_codes'=>$installProcedureSuccessReturnCodes,
+			'install_procedure_post_action'=>$installProcedurePostAction,
+			'uninstall_procedure'=>$uninstallProcedure,
+			'uninstall_procedure_success_return_codes'=>$uninstallProcedureSuccessReturnCodes,
+			'uninstall_procedure_post_action'=>$uninstallProcedurePostAction,
+			'download_for_uninstall'=>$downloadForUninstall,
+		]);
 	}
 	public function reorderPackageInGroup($groupId, $oldPos, $newPos) {
 		$packageGroup = $this->db->getPackageGroup($groupId);

@@ -6,7 +6,7 @@ require_once('../session.php');
 
 <input type='hidden' id='txtEditSystemUserId'></input>
 <table class='fullwidth aligned'>
-<tr>
+	<tr>
 		<th><?php echo LANG['uid']; ?></th>
 		<td><input type='text' class='fullwidth' id='txtEditSystemUserUid' disabled='true'></input></td>
 	</tr>

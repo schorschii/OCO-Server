@@ -18,6 +18,14 @@ function getCheckedRadioValue(name) {
 	}
 	return found;
 }
+function setCheckedRadioValue(name, value) {
+	var inputs = document.getElementsByName(name);
+	for(var i = 0; i < inputs.length; i++) {
+		if(inputs[i].value == value) {
+			inputs[i].checked = true;
+		}
+	}
+}
 function toggleSidebar(force=null) {
 	if(force == null) {
 		obj('explorer').classList.toggle('nosidebar');
@@ -731,104 +739,43 @@ function editPackageFamilyNotes(id, oldValue) {
 		});
 	}
 }
-function editPackageVersion(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_version':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function showDialogEditPackage(id, package_family_name, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+	showDialogAjax(L__EDIT_PACKAGE, 'views/dialog-package-update.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditPackageId.value = id;
+		txtEditPackageFamilyName.value = package_family_name;
+		txtEditPackageVersion.value = version;
+		txtEditPackageCompatibleOs.value = compatible_os;
+		txtEditPackageCompatibleOsVersion.value = compatible_os_version;
+		txtEditPackageNotes.value = notes;
+		txtEditPackageInstallProcedure.value = install_procedure;
+		txtEditPackageInstallProcedureSuccessReturnCodes.value = install_procedure_success_return_codes;
+		setCheckedRadioValue('edit_package_install_procedure_post_action', install_procedure_post_action);
+		txtEditPackageUninstallProcedure.value = uninstall_procedure;
+		txtEditPackageUninstallProcedureSuccessReturnCodes.value = uninstall_procedure_success_return_codes;
+		setCheckedRadioValue('edit_package_uninstall_procedure_post_action', uninstall_procedure_post_action);
+		chkEditPackageDownloadForUninstall.checked = download_for_uninstall=='1';
+	});
 }
-function editPackageInstallProcedure(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_install_procedure':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editPackageInstallProcedureSuccessReturnCodes(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_success_return_codes':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editPackageInstallProcedureAction(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_PROCEDURE_POST_ACTION, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_install_procedure_action':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editPackageUninstallProcedure(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editPackageUninstallProcedureSuccessReturnCodes(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_success_return_codes':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editPackageUninstallProcedureAction(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_PROCEDURE_POST_ACTION, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_uninstall_procedure_action':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editPackageDownloadForUninstall(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_DOWNLOAD_FOR_UNINSTALL_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_download_for_uninstall':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editPackageNotes(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_note':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editPackageCompatibleOs(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_compatible_os':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editPackageCompatibleOsVersion(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_id':id, 'update_compatible_os_version':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function editPackage(id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+	var params = [];
+	params.push({'key':'update_package_id', 'value':id});
+	params.push({'key':'version', 'value':version});
+	params.push({'key':'compatible_os', 'value':compatible_os});
+	params.push({'key':'compatible_os_version', 'value':compatible_os_version});
+	params.push({'key':'notes', 'value':notes});
+	params.push({'key':'install_procedure', 'value':install_procedure});
+	params.push({'key':'install_procedure_success_return_codes', 'value':install_procedure_success_return_codes});
+	params.push({'key':'install_procedure_post_action', 'value':install_procedure_post_action});
+	params.push({'key':'uninstall_procedure', 'value':uninstall_procedure});
+	params.push({'key':'uninstall_procedure_success_return_codes', 'value':uninstall_procedure_success_return_codes});
+	params.push({'key':'uninstall_procedure_post_action', 'value':uninstall_procedure_post_action});
+	params.push({'key':'download_for_uninstall', 'value':download_for_uninstall?'1':'0'});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function(text) {
+		hideDialog();
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function reorderPackageInGroup(groupId, oldPos, newPos) {
 	var params = [];

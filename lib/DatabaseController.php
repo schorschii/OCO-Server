@@ -691,71 +691,26 @@ class DatabaseController {
 		$this->stmt->bindParam(':icon', $icon, PDO::PARAM_LOB);
 		return $this->stmt->execute();
 	}
-	public function updatePackageVersion($id, $newValue) {
+	public function updatePackage($id, $package_family_id, $author, $version, $compatible_os, $compatible_os_version, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, version = :version WHERE id = :id'
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, author = :author, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id, ':version' => $newValue]);
-	}
-	public function updatePackageNote($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, notes = :notes WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':notes' => $newValue]);
-	}
-	public function updatePackageInstallProcedure($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure = :install_procedure WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':install_procedure' => $newValue]);
-	}
-	public function updatePackageInstallProcedureSuccessReturnCodes($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_success_return_codes = :install_procedure_success_return_codes WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':install_procedure_success_return_codes' => $newValue]);
-	}
-	public function updatePackageInstallProcedurePostAction($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, install_procedure_post_action = :install_procedure_post_action WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':install_procedure_post_action' => $newValue]);
-	}
-	public function updatePackageUninstallProcedure($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure = :uninstall_procedure WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':uninstall_procedure' => $newValue]);
-	}
-	public function updatePackageUninstallProcedureSuccessReturnCodes($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_success_return_codes' => $newValue]);
-	}
-	public function updatePackageUninstallProcedurePostAction($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, uninstall_procedure_post_action = :uninstall_procedure_post_action WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':uninstall_procedure_post_action' => $newValue]);
-	}
-	public function updatePackageDownloadForUninstall($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, download_for_uninstall = :download_for_uninstall WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':download_for_uninstall' => $newValue]);
-	}
-	public function updatePackageCompatibleOs($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, compatible_os = :compatible_os WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':compatible_os' => $newValue]);
-	}
-	public function updatePackageCompatibleOsVersion($id, $newValue) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, compatible_os_version = :compatible_os_version WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':compatible_os_version' => $newValue]);
+		return $this->stmt->execute([
+			':id' => $id,
+			':package_family_id' => $package_family_id,
+			':author' => $author,
+			':version' => $version,
+			':compatible_os' => $compatible_os,
+			':compatible_os_version' => $compatible_os_version,
+			':notes' => $notes,
+			':install_procedure' => $install_procedure,
+			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
+			':install_procedure_post_action' => $install_procedure_post_action,
+			':uninstall_procedure' => $uninstall_procedure,
+			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
+			':uninstall_procedure_post_action' => $uninstall_procedure_post_action,
+			':download_for_uninstall' => $download_for_uninstall,
+		]);
 	}
 	public function addPackageToComputer($pid, $cid, $author, $procedure) {
 		$this->dbh->beginTransaction();

@@ -150,9 +150,11 @@ class Package {
 	}
 	// attributes
 	public $id;
-	public $version;
-	public $notes;
 	public $author;
+	public $version;
+	public $compatible_os;
+	public $compatible_os_version;
+	public $notes;
 	public $install_procedure;
 	public $install_procedure_success_return_codes;
 	public $install_procedure_post_action;
@@ -160,8 +162,6 @@ class Package {
 	public $uninstall_procedure_success_return_codes;
 	public $download_for_uninstall;
 	public $uninstall_procedure_post_action;
-	public $compatible_os;
-	public $compatible_os_version;
 	public $created;
 	public $last_update;
 	// joined package group attributes

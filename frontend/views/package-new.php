@@ -68,7 +68,7 @@ require_once('../session.php');
 		<th><?php echo LANG['version']; ?></th>
 		<td><input type='text' id='txtVersion' value='<?php echo htmlspecialchars($_GET['version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
-	<tr>
+	<tr class='nospace'>
 		<th><?php echo LANG['compatible_os']; ?></th>
 		<td><input type='text' id='txtCompatibleOs' list='lstOs' placeholder='<?php echo LANG['optional_hint']; ?>' value='<?php echo htmlspecialchars($_GET['compatible_os']??'',ENT_QUOTES); ?>'></td>
 		<th><?php echo LANG['compatible_os_version']; ?></th>

@@ -56,58 +56,31 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_version'])) {
-		$cl->updatePackageVersion($_POST['update_package_id'], $_POST['update_version']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_note'])) {
-		$cl->updatePackageNote($_POST['update_package_id'], $_POST['update_note']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_install_procedure'])) {
-		$cl->updatePackageInstallProcedure($_POST['update_package_id'], $_POST['update_install_procedure']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_install_procedure_success_return_codes'])) {
-		$cl->updatePackageInstallProcedureSuccessReturnCodes($_POST['update_package_id'], $_POST['update_install_procedure_success_return_codes']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_install_procedure_action'])) {
-		$cl->updatePackageInstallProcedurePostAction($_POST['update_package_id'], $_POST['update_install_procedure_action']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_uninstall_procedure'])) {
-		$cl->updatePackageUninstallProcedure($_POST['update_package_id'], $_POST['update_uninstall_procedure']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_uninstall_procedure_success_return_codes'])) {
-		$cl->updatePackageUninstallProcedureSuccessReturnCodes($_POST['update_package_id'], $_POST['update_uninstall_procedure_success_return_codes']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_uninstall_procedure_action'])) {
-		$cl->updatePackageUninstallProcedurePostAction($_POST['update_package_id'], $_POST['update_uninstall_procedure_action']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_download_for_uninstall'])) {
-		$cl->updatePackageDownloadForUninstall($_POST['update_package_id'], $_POST['update_download_for_uninstall']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_compatible_os'])) {
-		$cl->updatePackageCompatibleOs($_POST['update_package_id'], $_POST['update_compatible_os']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_id']) && isset($_POST['update_compatible_os_version'])) {
-		$cl->updatePackageCompatibleOsVersion($_POST['update_package_id'], $_POST['update_compatible_os_version']);
+	if(!empty($_POST['update_package_id'])
+	&& isset($_POST['version'])
+	&& isset($_POST['compatible_os'])
+	&& isset($_POST['compatible_os_version'])
+	&& isset($_POST['notes'])
+	&& isset($_POST['install_procedure'])
+	&& isset($_POST['install_procedure_success_return_codes'])
+	&& isset($_POST['install_procedure_post_action'])
+	&& isset($_POST['uninstall_procedure'])
+	&& isset($_POST['uninstall_procedure_success_return_codes'])
+	&& isset($_POST['uninstall_procedure_post_action'])
+	&& isset($_POST['download_for_uninstall'])) {
+		$cl->updatePackage($_POST['update_package_id'],
+			$_POST['version'],
+			$_POST['compatible_os'],
+			$_POST['compatible_os_version'],
+			$_POST['notes'],
+			$_POST['install_procedure'],
+			$_POST['install_procedure_success_return_codes'],
+			$_POST['install_procedure_post_action'],
+			$_POST['uninstall_procedure'],
+			$_POST['uninstall_procedure_success_return_codes'],
+			$_POST['uninstall_procedure_post_action'],
+			$_POST['download_for_uninstall']
+		);
 		die();
 	}
 

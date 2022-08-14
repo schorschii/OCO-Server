@@ -404,10 +404,13 @@ body.loading2 #loader-container {
 	background-color: rgba(0,0,0,0.3);
 }
 #dialog-container #dialog-box {
+	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
 	width: auto;
+	max-width: 100%;
 	height: auto;
+	max-height: 100%;
 	padding: 25px;
 	background-color: white;
 	border-radius: 4px;
@@ -441,6 +444,9 @@ body.loading2 #loader-container {
 }
 #dialog-contents {
 	display: none;
+}
+.first {
+	margin-top: 0px;
 }
 
 #message-container {
