@@ -653,28 +653,28 @@ class CoreLogic {
 
 		// add all report results
 		foreach($computer_report_ids as $computer_report_id) {
-			try { // ignore report with syntax errors
-				foreach($this->db->executeReport($computer_report_id) as $row) {
+			//try { // ignore report with syntax errors
+				foreach($this->executeReport($computer_report_id) as $row) {
 					$c = $this->db->getComputer($row['computer_id']);
 					if(empty($c) || !$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 					$computer_ids[$c->id] = $c->id;
 				}
-			} catch(Exception $ignored) {
-				// roll back if report execution failed
-				$this->db->getDbHandle()->rollBack();
-			}
+			//} catch(Exception $ignored) {
+			//	// in case of execption we have a pending transaction
+			//	$this->db->getDbHandle()->rollBack();
+			//}
 		}
 		foreach($package_report_ids as $package_report_id) {
-			try { // ignore report with syntax errors
-				foreach($this->db->executeReport($package_report_id) as $row) {
+			//try { // ignore report with syntax errors
+				foreach($this->executeReport($package_report_id) as $row) {
 					$p = $this->db->getPackage($row['package_id']);
 					if(empty($p)) continue;
 					$packages = $packages + $this->compileDeployPackageArray($p->id);
 				}
-			} catch(Exception $ignored) {
-				// roll back if report execution failed
-				$this->db->getDbHandle()->rollBack();
-			}
+			//} catch(Exception $ignored) {
+			//	// in case of execption we have a pending transaction
+			//	$this->db->getDbHandle()->rollBack();
+			//}
 		}
 
 		// check if there are any computer & packages
@@ -1207,6 +1207,12 @@ class CoreLogic {
 		if(empty($report)) throw new NotFoundException();
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_READ);
 		return $report;
+	}
+	public function executeReport($id) {
+		$report = $this->db->getReport($id);
+		if(empty($report)) throw new NotFoundException();
+		$this->systemUser->checkPermission($report, PermissionManager::METHOD_READ);
+		return $this->db->executeReport($report->id);
 	}
 	public function getReportGroup($id) {
 		$reportGroup = $this->db->getReportGroup($id);

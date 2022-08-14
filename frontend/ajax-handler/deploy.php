@@ -21,9 +21,7 @@ try {
 		die();
 	}
 	if(isset($_GET['get_computer_report_results'])) {
-		$report = $db->getReport($_GET['get_computer_report_results']);
-		if(empty($report) || !$currentSystemUser->checkPermission($report, PermissionManager::METHOD_READ, false)) die();
-		$reportResult = $db->executeReport($report->id);
+		$reportResult = $cl->executeReport($_GET['get_computer_report_results']);
 
 		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG['back']."</a>";
 		foreach($reportResult as $row) {
@@ -50,9 +48,7 @@ try {
 		die();
 	}
 	if(isset($_GET['get_package_report_results'])) {
-		$report = $db->getReport($_GET['get_package_report_results']);
-		if(empty($report) || !$currentSystemUser->checkPermission($report, PermissionManager::METHOD_READ, false)) die();
-		$reportResult = $db->executeReport($report->id);
+		$reportResult = $cl->executeReport($_GET['get_package_report_results']);
 
 		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG['back']."</a>";
 		foreach($reportResult as $row) {

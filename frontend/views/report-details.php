@@ -19,7 +19,7 @@ try {
 $results = [];
 $error = null;
 try {
-	$results = $db->executeReport($report->id);
+	$results = $cl->executeReport($report->id);
 } catch(Exception $e) {
 	$error = 'SQL-Error: '.$e->getMessage();
 }

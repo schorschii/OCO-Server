@@ -272,10 +272,9 @@ switch($srcdata['method']) {
 		break;
 
 	case 'oco.report.execute':
-		$report = $cl->getReport(intval($data['id'] ?? 0));
 		$resdata['error'] = null;
 		$resdata['result'] = [
-			'success' => true, 'data' => $db->executeReport($report->id)
+			'success' => true, 'data' => $cl->executeReport(intval($data['id'] ?? 0))
 		];
 		break;
 
