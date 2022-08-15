@@ -25,6 +25,6 @@ require_once('../session.php');
 </table>
 
 <div class='controls right'>
-	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
+	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG['close']; ?></button>
 	<button id='btnUpdateComputer' class='primary' onclick='editComputer(txtEditComputerId.value, txtEditComputerHostname.value, txtEditComputerNotes.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['change']; ?></button>
 </div>

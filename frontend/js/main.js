@@ -1421,6 +1421,28 @@ function showDialogAddComputerToGroup(id) {
 }
 
 // ======== JOB OPERATIONS ========
+function showDialogMoveJobToContainer(id) {
+	if(!id) return;
+	showDialogAjax(L__COMPUTER_GROUPS, "views/dialog-jobs-move.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtEditJobId.value = id;
+	});
+}
+function moveJobToContainer(jobId, containerId) {
+	if(containerId === false) return;
+	var params = [];
+	containerId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'move_to_container_id[]', 'value':entry});
+	});
+	jobId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'move_to_container_job_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
+		hideDialog();
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
+}
 function removeSelectedJobContainer(checkboxName, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {

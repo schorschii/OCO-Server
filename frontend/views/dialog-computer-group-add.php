@@ -14,6 +14,6 @@ require_once('../session.php');
 </div>
 
 <div class='controls right'>
-	<button onclick="hideDialog()"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
+	<button onclick='hideDialog()'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG['close']; ?></button>
 	<button class='primary' onclick='addComputerToGroup(txtEditComputerId.value, getSelectedSelectBoxValues("sltNewComputerGroup",true))'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['add']; ?></button>
 </div>

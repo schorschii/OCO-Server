@@ -1130,6 +1130,24 @@ class CoreLogic {
 			'agent_ip_ranges'=>$agent_ip_ranges,
 		]);
 	}
+	public function moveJobToContainer($jobId, $containerId) {
+		$job = $this->db->getJob($jobId);
+		if(empty($job)) throw new NotFoundException();
+		$oldContainer = $this->db->getJobContainer($job->job_container_id);
+		if(empty($oldContainer)) throw new NotFoundException();
+		$newContainer = $this->db->getJobContainer($containerId);
+		if(empty($newContainer)) throw new NotFoundException();
+		$this->systemUser->checkPermission($oldContainer, PermissionManager::METHOD_DELETE);
+		$this->systemUser->checkPermission($oldContainer, PermissionManager::METHOD_WRITE);
+		$this->systemUser->checkPermission($newContainer, PermissionManager::METHOD_WRITE);
+
+		$this->db->moveJobToContainer($job->id, $newContainer->id);
+		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $newContainer->id, 'oco.job_container.move_jobs', [
+			'old_container_id'=>$oldContainer->id,
+			'new_container_id'=>$newContainer->id,
+			'job_id'=>$job->id,
+		]);
+	}
 	public function removeJobContainer($id) {
 		$jc = $this->db->getJobContainer($id);
 		if(empty($jc)) throw new NotFoundException();

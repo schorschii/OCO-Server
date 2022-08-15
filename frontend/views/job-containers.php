@@ -217,6 +217,7 @@ if(!empty($_GET['id'])) {
 							</div>
 							<div class='controls'>
 								<button onclick='event.preventDefault();downloadTableCsv("tblJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+								<button onclick='showDialogMoveJobToContainer(getSelectedCheckBoxValues("job_id[]", null, true))' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/job-move.dyn.svg'>&nbsp;<?php echo LANG['move']; ?></button>
 								<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
 							</div>
 						</div>

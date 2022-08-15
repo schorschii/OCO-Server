@@ -41,6 +41,15 @@ try {
 		die();
 	}
 
+	if(isset($_POST['move_to_container_id']) && is_array($_POST['move_to_container_id']) && isset($_POST['move_to_container_job_id']) && is_array($_POST['move_to_container_job_id'])) {
+		foreach($_POST['move_to_container_job_id'] as $cid) {
+			foreach($_POST['move_to_container_id'] as $gid) {
+				$cl->moveJobToContainer($cid, $gid);
+			}
+		}
+		die();
+	}
+
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
 	die(LANG['permission_denied']);

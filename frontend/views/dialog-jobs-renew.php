@@ -54,6 +54,6 @@ require_once('../session.php');
 </table>
 
 <div class='controls right'>
-	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
+	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG['close']; ?></button>
 	<button class='primary' onclick='renewFailedJobsInContainer(txtRenewJobContainerId.value, txtRenewJobContainerName.value, txtRenewJobContainerNotes.value, txtRenewJobContainerStartDate.value+" "+txtRenewJobContainerStartTime.value, (txtRenewJobContainerEndDate.value+" "+txtRenewJobContainerEndTime.value).trim(), chkRenewWol.checked, chkRenewShutdownWakedAfterCompletion.checked, sldRenewPriority.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['renew']; ?></button>
 </div>

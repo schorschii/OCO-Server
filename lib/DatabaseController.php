@@ -1342,6 +1342,12 @@ class DatabaseController {
 			':agent_ip_ranges' => $agent_ip_ranges,
 		]);
 	}
+	public function moveJobToContainer($jid, $cid) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job SET job_container_id = :cid WHERE id = :jid'
+		);
+		return $this->stmt->execute([':jid' => $jid, ':cid' => $cid]);
+	}
 	public function getJobContainerIcon($id) {
 		$container = $this->getJobContainer($id);
 		$jobs = $this->getAllJobByContainer($id);

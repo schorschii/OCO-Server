@@ -20,6 +20,6 @@ require_once('../session.php');
 </table>
 
 <div class='controls right'>
-	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
+	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG['close']; ?></button>
 	<button id='btnEditUser' class='primary' onclick='if(txtEditOwnSystemUserNewPassword.value!=txtEditOwnSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editOwnSystemUserPassword(txtEditOwnSystemUserOldPassword.value, txtEditOwnSystemUserNewPassword.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['change']; ?></button>
 </div>
