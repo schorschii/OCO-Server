@@ -1070,88 +1070,61 @@ class CoreLogic {
 			$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jcid, 'oco.job_container.create', ['name'>=$name, 'jobs'=>$jobs]);
 		}
 	}
-	public function updateJobContainerNotes($id, $notes) {
+	public function updateJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $sequence_mode, $priority, $agent_ip_ranges) {
 		$jc = $this->db->getJobContainer($id);
 		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, $jc->end_time, $notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['notes'=>$notes]);
-	}
-	public function renameJobContainer($id, $newName) {
-		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new NotFoundException();
-		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
-
-		if(empty(trim($newName))) {
+		if(empty(trim($name))) {
 			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
 		}
-		$this->db->updateJobContainer($jc->id, $newName, $jc->enabled, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['name'=>$newName]);
-	}
-	public function updateJobContainerPriority($id, $priority) {
-		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new NotFoundException();
-		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
-
-		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
+		if(!in_array($enabled, ['0', '1'])) {
 			throw new InvalidRequestException(LANG['invalid_input']);
 		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, intval($priority), $jc->agent_ip_ranges);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['priority'=>$priority]);
-	}
-	public function updateJobContainerSequenceMode($id, $sequenceMode) {
-		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new NotFoundException();
-		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
-
-		if(!is_numeric($sequenceMode)
-		|| !in_array($sequenceMode, [JobContainer::SEQUENCE_MODE_IGNORE_FAILED, JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
-			throw new InvalidRequestException(LANG['invalid_input']);
-		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, intval($sequenceMode), $jc->priority, $jc->agent_ip_ranges);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['sequence_mode'=>$sequenceMode]);
-	}
-	public function updateJobContainerEnabled($id, $newEnabled) {
-		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new NotFoundException();
-		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
-
-		if(!in_array($newEnabled, ['0', '1'])) {
-			throw new InvalidRequestException(LANG['invalid_input']);
-		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $newEnabled, $jc->start_time, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['enabled'=>$newEnabled]);
-	}
-	public function updateJobContainerStart($id, $newStart) {
-		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new NotFoundException();
-		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
-
-		if(DateTime::createFromFormat('Y-m-d H:i:s', $newStart) === false) {
+		if(DateTime::createFromFormat('Y-m-d H:i:s', $start_time) === false) {
 			throw new InvalidRequestException(LANG['date_parse_error']);
 		}
-		$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $newStart, $jc->end_time, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['start_time'=>$newStart]);
-	}
-	public function updateJobContainerEnd($id, $newEnd) {
-		$jc = $this->db->getJobContainer($id);
-		if(empty($jc)) throw new NotFoundException();
-		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
-
-		if(!empty($newEnd) && DateTime::createFromFormat('Y-m-d H:i:s', $newEnd) === false) {
+		if(!empty($end_time) && DateTime::createFromFormat('Y-m-d H:i:s', $end_time) === false) {
 			throw new InvalidRequestException(LANG['date_parse_error']);
 		}
-		if(empty($newEnd)) {
-			$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, null, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
-			$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['end_time'=>null]);
+		if(empty($end_time)) {
+			$end_time = null;
 		} else {
-			if(strtotime($jc->start_time) > strtotime($newEnd)) {
+			if(strtotime($jc->start_time) > strtotime($end_time)) {
 				throw new InvalidRequestException(LANG['end_time_before_start_time']);
 			}
-			$this->db->updateJobContainer($jc->id, $jc->name, $jc->enabled, $jc->start_time, $newEnd, $jc->notes, $jc->wol_sent, $jc->shutdown_waked_after_completion, $jc->sequence_mode, $jc->priority, $jc->agent_ip_ranges);
-			$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', ['end_time'=>$newEnd]);
 		}
+		if(!is_numeric($sequence_mode)
+		|| !in_array($sequence_mode, [JobContainer::SEQUENCE_MODE_IGNORE_FAILED, JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
+			throw new InvalidRequestException(LANG['invalid_input']);
+		}
+		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
+			error_log($priority);
+			throw new InvalidRequestException(LANG['invalid_input']);
+		}
+
+		$this->db->updateJobContainer($jc->id,
+			$name,
+			$enabled,
+			$start_time,
+			$end_time,
+			$notes,
+			$jc->wol_sent,
+			$jc->shutdown_waked_after_completion,
+			$sequence_mode,
+			$priority,
+			$agent_ip_ranges
+		);
+		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', [
+			'name'=>$name,
+			'enabled'=>$enabled,
+			'start_time'=>$start_time,
+			'end_time'=>$end_time,
+			'notes'=>$notes,
+			'sequence_mode'=>$sequence_mode,
+			'priority'=>$priority,
+			'agent_ip_ranges'=>$agent_ip_ranges,
+		]);
 	}
 	public function removeJobContainer($id) {
 		$jc = $this->db->getJobContainer($id);

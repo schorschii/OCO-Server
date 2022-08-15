@@ -12,37 +12,25 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['edit_container_id']) && isset($_POST['new_name'])) {
-		$cl->renameJobContainer($_POST['edit_container_id'], $_POST['new_name']);
-		die();
-	}
-
-	if(!empty($_POST['edit_container_id']) && isset($_POST['new_enabled'])) {
-		$cl->updateJobContainerEnabled($_POST['edit_container_id'], $_POST['new_enabled']);
-		die();
-	}
-
-	if(!empty($_POST['edit_container_id']) && isset($_POST['new_start'])) {
-		$cl->updateJobContainerStart($_POST['edit_container_id'], $_POST['new_start']);
-		die();
-	}
-
-	if(!empty($_POST['edit_container_id']) && isset($_POST['new_end'])) {
-		$cl->updateJobContainerEnd($_POST['edit_container_id'], $_POST['new_end']);
-	}
-
-	if(!empty($_POST['edit_container_id']) && isset($_POST['new_sequence_mode'])) {
-		$cl->updateJobContainerSequenceMode($_POST['edit_container_id'], $_POST['new_sequence_mode']);
-		die();
-	}
-
-	if(!empty($_POST['edit_container_id']) && isset($_POST['new_priority'])) {
-		$cl->updateJobContainerPriority($_POST['edit_container_id'], $_POST['new_priority']);
-		die();
-	}
-
-	if(!empty($_POST['edit_container_id']) && isset($_POST['new_notes'])) {
-		$cl->updateJobContainerNotes($_POST['edit_container_id'], $_POST['new_notes']);
+	if(!empty($_POST['edit_job_container_id'])
+	&& isset($_POST['name'])
+	&& isset($_POST['enabled'])
+	&& isset($_POST['start'])
+	&& isset($_POST['end'])
+	&& isset($_POST['sequence_mode'])
+	&& isset($_POST['priority'])
+	&& isset($_POST['agent_ip_ranges'])
+	&& isset($_POST['notes'])) {
+		$cl->updateJobContainer($_POST['edit_job_container_id'],
+			$_POST['name'],
+			$_POST['enabled'],
+			$_POST['start'],
+			$_POST['end'],
+			$_POST['notes'],
+			$_POST['sequence_mode'],
+			$_POST['priority'],
+			$_POST['agent_ip_ranges']
+		);
 		die();
 	}
 

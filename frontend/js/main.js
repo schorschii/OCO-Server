@@ -1240,7 +1240,7 @@ function editComputer(id, hostname, notes) {
 	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
 		hideDialog();
 		refreshContent();
-		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+		emitMessage(L__SAVED, hostname, MESSAGE_TYPE_SUCCESS);
 	});
 }
 function setComputerForceUpdate(id, value) {
@@ -1476,68 +1476,48 @@ function confirmRemoveJob(ids) {
 		});
 	}
 }
-function renameJobContainer(id, oldName) {
-	var newValue = prompt(L__ENTER_NAME, oldName);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_name':newValue}), null, function() {
-			refreshContent(); refreshSidebar();
-			emitMessage(L__OBJECT_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, notes) {
+	showDialogAjax(L__EDIT_JOB_CONTAINER, 'views/dialog-job-container-update.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditJobContainerId.value = id;
+		txtEditJobContainerName.value = name;
+		chkEditJobContainerEnabled.checked = enabled=='1';
+		try {
+			let parts = start.split(' ');
+			if(parts.length == 2) {
+				dteEditJobContainerStart.value = parts[0];
+				tmeEditJobContainerStart.value = parts[1];
+			}
+		} catch(ignored) {}
+		try {
+			let parts = end.split(' ');
+			if(parts.length == 2) {
+				dteEditJobContainerEnd.value = parts[0];
+				tmeEditJobContainerEnd.value = parts[1];
+			}
+		} catch(ignored) {}
+		chkEditJobContainerSequenceMode.checked = sequence_mode=='1';
+		sldEditJobContainerPriority.value = priority;
+		lblEditJobContainerPriorityPreview.innerText = priority;
+		txtEditJobContainerAgentIpRanges.value = agent_ip_ranges;
+		txtEditJobContainerNotes.value = notes;
+	});
 }
-function editJobContainerEnabled(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_enabled':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editJobContainerStart(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_start':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editJobContainerEnd(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_end':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editJobContainerSequenceMode(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_sequence_mode':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editJobContainerPriority(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_priority':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function editJobContainerNotes(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({'edit_container_id':id, 'new_notes':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function editJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, notes) {
+	var params = [];
+	params.push({'key':'edit_job_container_id', 'value':id});
+	params.push({'key':'name', 'value':name});
+	params.push({'key':'enabled', 'value':enabled?'1':'0'});
+	params.push({'key':'start', 'value':start});
+	params.push({'key':'end', 'value':end});
+	params.push({'key':'sequence_mode', 'value':sequence_mode?'1':'0'});
+	params.push({'key':'priority', 'value':priority});
+	params.push({'key':'agent_ip_ranges', 'value':agent_ip_ranges});
+	params.push({'key':'notes', 'value':notes});
+	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
+		hideDialog();
+		refreshContent(); refreshSidebar();
+		emitMessage(L__SAVED, name, MESSAGE_TYPE_SUCCESS);
+	});
 }
 function deploy(title, start, end, description, computers, computerGroups, computerReports, packages, packageGroups, packageReports, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, constraintIpRange) {
 	setInputsDisabled(tabControlDeploy, true);

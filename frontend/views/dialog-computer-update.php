@@ -13,7 +13,7 @@ require_once('../session.php');
 	<tr>
 		<th></th>
 		<td>
-			<div class='alert warning' style='max-width:350px'>
+			<div class='alert warning' style='margin-top:0px;width:350px'>
 				<?php echo LANG['new_hostname_warning']; ?>
 			</div>
 		</td>
