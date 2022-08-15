@@ -739,26 +739,31 @@ function editPackageFamilyNotes(id, oldValue) {
 		});
 	}
 }
-function showDialogEditPackage(id, package_family_name, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+function showDialogEditPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	showDialogAjax(L__EDIT_PACKAGE, 'views/dialog-package-update.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditPackageId.value = id;
-		txtEditPackageFamilyName.value = package_family_name;
+		sltEditPackagePackageFamily.value = package_family_id;
 		txtEditPackageVersion.value = version;
 		txtEditPackageCompatibleOs.value = compatible_os;
 		txtEditPackageCompatibleOsVersion.value = compatible_os_version;
 		txtEditPackageNotes.value = notes;
+
+		if(install_procedure.includes("\n")) toggleTextBoxMultiLine(txtEditPackageInstallProcedure);
 		txtEditPackageInstallProcedure.value = install_procedure;
 		txtEditPackageInstallProcedureSuccessReturnCodes.value = install_procedure_success_return_codes;
 		setCheckedRadioValue('edit_package_install_procedure_post_action', install_procedure_post_action);
+
+		if(uninstall_procedure.includes("\n")) toggleTextBoxMultiLine(txtEditPackageUninstallProcedure);
 		txtEditPackageUninstallProcedure.value = uninstall_procedure;
 		txtEditPackageUninstallProcedureSuccessReturnCodes.value = uninstall_procedure_success_return_codes;
 		setCheckedRadioValue('edit_package_uninstall_procedure_post_action', uninstall_procedure_post_action);
 		chkEditPackageDownloadForUninstall.checked = download_for_uninstall=='1';
 	});
 }
-function editPackage(id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	var params = [];
 	params.push({'key':'update_package_id', 'value':id});
+	params.push({'key':'package_family_id', 'value':package_family_id});
 	params.push({'key':'version', 'value':version});
 	params.push({'key':'compatible_os', 'value':compatible_os});
 	params.push({'key':'compatible_os_version', 'value':compatible_os_version});

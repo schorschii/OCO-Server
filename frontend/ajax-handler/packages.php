@@ -57,6 +57,7 @@ try {
 	}
 
 	if(!empty($_POST['update_package_id'])
+	&& isset($_POST['package_family_id'])
 	&& isset($_POST['version'])
 	&& isset($_POST['compatible_os'])
 	&& isset($_POST['compatible_os_version'])
@@ -69,6 +70,7 @@ try {
 	&& isset($_POST['uninstall_procedure_post_action'])
 	&& isset($_POST['download_for_uninstall'])) {
 		$cl->updatePackage($_POST['update_package_id'],
+			$_POST['package_family_id'],
 			$_POST['version'],
 			$_POST['compatible_os'],
 			$_POST['compatible_os_version'],

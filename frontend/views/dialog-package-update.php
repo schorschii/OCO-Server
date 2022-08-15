@@ -11,7 +11,13 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG['package_family_name']; ?></th>
-		<td><input type='text' class='fullwidth' id='txtEditPackageFamilyName' disabled='true'></input></td>
+		<td>
+			<select class='fullwidth' id='sltEditPackagePackageFamily'>
+				<?php foreach($cl->getPackageFamilies() as $family) { ?>
+					<option value='<?php echo $family->id; ?>'><?php echo htmlspecialchars($family->name); ?></option>
+				<?php } ?>
+			</select>
+		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['version']; ?></th>
@@ -35,7 +41,10 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG['procedure']; ?></th>
-		<td><input class='fullwidth' autocomplete='new-password' id='txtEditPackageInstallProcedure'></input></td>
+		<td class='inputwithbutton'>
+			<input class='fullwidth' autocomplete='new-password' id='txtEditPackageInstallProcedure'></input>
+			<button onclick='toggleTextBoxMultiLine(txtEditPackageInstallProcedure)' title='<?php echo LANG['toggle_multi_line']; ?>'><img src='img/textbox.dyn.svg'></button>
+		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['success_return_codes']; ?></th>
@@ -56,7 +65,10 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG['procedure']; ?></th>
-		<td><input class='fullwidth' autocomplete='new-password' id='txtEditPackageUninstallProcedure'></input></td>
+		<td class='inputwithbutton'>
+			<input class='fullwidth' autocomplete='new-password' id='txtEditPackageUninstallProcedure'></input>
+			<button onclick='toggleTextBoxMultiLine(txtEditPackageUninstallProcedure)' title='<?php echo LANG['toggle_multi_line']; ?>'><img src='img/textbox.dyn.svg'></button>
+		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG['success_return_codes']; ?></th>
@@ -82,6 +94,7 @@ require_once('../session.php');
 	<button onclick="hideDialog();showLoader(false);showLoader2(false);"><img src="img/close.dyn.svg">&nbsp;<?php echo LANG['close']; ?></button>
 	<button id='btnUpdatePackage' class='primary' onclick='editPackage(
 		txtEditPackageId.value,
+		sltEditPackagePackageFamily.value,
 		txtEditPackageVersion.value,
 		txtEditPackageCompatibleOs.value,
 		txtEditPackageCompatibleOsVersion.value,

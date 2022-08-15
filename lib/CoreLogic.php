@@ -489,10 +489,14 @@ class CoreLogic {
 		$this->db->removePackageDependency($package->id, $dependentPackage->id);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_dependency', ['dependent_package_id'=>$dependentPackage->id]);
 	}
-	public function updatePackage($id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall) {
+	public function updatePackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall) {
 		$package = $this->db->getPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
+
+		$package_family = $this->db->getPackageFamily($package_family_id);
+		if(empty($package_family)) throw new NotFoundException();
+		$this->systemUser->checkPermission($package_family, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($version))) {
 			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
@@ -510,7 +514,7 @@ class CoreLogic {
 		}
 
 		$this->db->updatePackage($package->id,
-			$package->package_family_id,
+			$package_family_id,
 			$package->author,
 			$version,
 			$compatibleOs,
