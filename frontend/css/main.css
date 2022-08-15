@@ -974,6 +974,7 @@ a.subbuttons > button {
 }
 .flyout-container > .flyout {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: 5px;
 	position: absolute;
@@ -982,11 +983,12 @@ a.subbuttons > button {
 	left: 100%;
 	width: 150%;
 	min-width: 250px;
-	padding: 4px;
+	padding: 2px 4px;
 	opacity: 0;
 	transform: translateX(-10px);
 	pointer-events: none;
 	transition: all 0.2s ease;
+	overflow: auto;
 }
 .flyout-container:hover > .flyout,
 .flyout-container:focus > .flyout {
