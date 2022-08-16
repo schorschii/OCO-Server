@@ -288,7 +288,7 @@ switch($srcdata['method']) {
 				} catch(Exception $e) {}
 			}
 			// update inventory data now
-			$success = $db->updateComputer(
+			$success = $db->updateComputerInventoryValues(
 				$computer->id,
 				$params['hostname'],
 				$data['os'],

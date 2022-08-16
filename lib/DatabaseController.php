@@ -176,29 +176,23 @@ class DatabaseController {
 
 		return $cid;
 	}
+	public function updateComputer($id, $hostname, $notes) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer SET hostname = :hostname, notes = :notes WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname, ':notes' => $notes]);
+	}
 	public function updateComputerPing($id) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET last_ping = CURRENT_TIMESTAMP WHERE id = :id'
 		);
 		return $this->stmt->execute([':id' => $id]);
 	}
-	public function updateComputerNotes($id, $notes) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer SET notes = :notes WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':notes' => $notes]);
-	}
 	public function updateComputerForceUpdate($id, $force_update) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET force_update = :force_update WHERE id = :id'
 		);
 		return $this->stmt->execute([':id' => $id, ':force_update' => intval($force_update)]);
-	}
-	public function updateComputerHostname($id, $hostname) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer SET hostname = :hostname WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname]);
 	}
 	public function updateComputerAgentkey($id, $agent_key) {
 		$this->stmt = $this->dbh->prepare(
@@ -212,7 +206,7 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':server_key' => $server_key]);
 	}
-	public function updateComputer($id, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins) {
+	public function updateComputerInventoryValues($id, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins) {
 		$this->dbh->beginTransaction();
 
 		// update general info

@@ -78,32 +78,22 @@ class CoreLogic {
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.computer.create', ['hostname'=>$finalHostname, 'notes'=>$notes]);
 		return $insertId;
 	}
-	public function updateComputerHostname($id, $hostname) {
+	public function updateComputer($id, $hostname, $notes) {
 		$computer = $this->db->getComputer($id);
 		if(empty($computer)) throw new NotFoundException();
 		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
-		if($computer->hostname === $hostname) return;
 
 		$finalHostname = trim($hostname);
 		if(empty($finalHostname)) {
 			throw new InvalidRequestException(LANG['hostname_cannot_be_empty']);
 		}
-		if($this->db->getComputerByName($finalHostname) !== null) {
+		$checkComputer = $this->db->getComputerByName($finalHostname);
+		if($checkComputer !== null && intval($checkComputer->id) !== intval($id)) {
 			throw new InvalidRequestException(LANG['hostname_already_exists']);
 		}
-		$result = $this->db->updateComputerHostname($computer->id, $finalHostname);
+		$result = $this->db->updateComputer($computer->id, $finalHostname, $notes);
 		if(!$result) throw new Exception(LANG['unknown_error']);
 		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['hostname'=>$finalHostname]);
-		return $result;
-	}
-	public function updateComputerNotes($id, $notes) {
-		$computer = $this->db->getComputer($id);
-		if(empty($computer)) throw new NotFoundException();
-		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
-
-		$result = $this->db->updateComputerNotes($computer->id, $notes);
-		if(!$result) throw new Exception(LANG['unknown_error']);
-		$this->db->addLogEntry(Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['notes'=>$notes]);
 		return $result;
 	}
 	public function updateComputerForceUpdate($id, $newValue) {

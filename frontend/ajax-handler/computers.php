@@ -17,8 +17,7 @@ try {
 	if(!empty($_POST['update_computer_id'])
 	&& isset($_POST['hostname'])
 	&& isset($_POST['notes'])) {
-		$cl->updateComputerHostname($_POST['update_computer_id'], $_POST['hostname']);
-		$cl->updateComputerNotes($_POST['update_computer_id'], $_POST['notes']);
+		$cl->updateComputer($_POST['update_computer_id'], $_POST['hostname'], $_POST['notes']);
 		die();
 	}
 
