@@ -525,6 +525,10 @@ body.loading2 #loader-container {
 .hidden {
 	display: none !important;
 }
+.invisible {
+	opacity: 0 !important;
+	pointer-events: none;
+}
 
 .gallery {
 	display: flex;

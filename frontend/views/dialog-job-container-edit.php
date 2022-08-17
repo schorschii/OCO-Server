@@ -19,6 +19,7 @@ require_once('../session.php');
 		<td class='dualInput'>
 			<input type='date' class='fullwidth' id='dteEditJobContainerStart'></input>
 			<input type='time' class='fullwidth' id='tmeEditJobContainerStart' step='1'></input>
+			<button class='small invisible' disabled='true' title='<?php echo LANG['remove_end_time']; ?>' onclick='dteEditJobContainerStart.value="";tmeEditJobContainerStart.value=""'><img src='img/close.dyn.svg'></button>
 		</td>
 	</tr>
 	<tr>
