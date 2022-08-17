@@ -243,7 +243,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 			showLoader2(false);
 		}
 	};
-	xhttp.open("GET", url, true);
+	xhttp.open('GET', url, true);
 	xhttp.send();
 }
 function ajaxRequestPost(url, body, objID, callback, errorCallback) {
@@ -268,26 +268,26 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 			}
 		}
 	};
-	xhttp.open("POST", url, true);
+	xhttp.open('POST', url, true);
 	xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhttp.send(body);
 }
 function urlencodeObject(srcjson) {
-	if(typeof srcjson !== "object") return null;
-	var urljson = "";
+	if(typeof srcjson !== 'object') return null;
+	var urljson = '';
 	var keys = Object.keys(srcjson);
 	for(var i=0; i <keys.length; i++){
-		urljson += encodeURIComponent(keys[i]) + "=" + encodeURIComponent(srcjson[keys[i]]);
-		if(i < (keys.length-1)) urljson+="&";
+		urljson += encodeURIComponent(keys[i]) + '=' + encodeURIComponent(srcjson[keys[i]]);
+		if(i < (keys.length-1)) urljson+='&';
 	}
 	return urljson;
 }
 function urlencodeArray(src) {
 	if(!Array.isArray(src)) return null;
-	var urljson = "";
+	var urljson = '';
 	for(var i=0; i <src.length; i++){
-		urljson += encodeURIComponent(src[i]['key']) + "=" + encodeURIComponent(src[i]['value']);
-		if(i < (src.length-1)) urljson+="&";
+		urljson += encodeURIComponent(src[i]['key']) + '=' + encodeURIComponent(src[i]['value']);
+		if(i < (src.length-1)) urljson+='&';
 	}
 	return urljson;
 }
@@ -311,7 +311,7 @@ function toggleCheckboxesInContainer(container, checked) {
 	let items = container.children;
 	for(var i = 0; i < items.length; i++) {
 		if(items[i].style.display == 'none') continue;
-		let inputs = items[i].getElementsByTagName("input");
+		let inputs = items[i].getElementsByTagName('input');
 		for(var n = 0; n < inputs.length; n++) {
 			if(inputs[n].type == 'checkbox' && !inputs[n].disabled) {
 				inputs[n].checked = checked;
@@ -540,10 +540,10 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 }
 function refreshContentDeploy(packages=[], packageGroups=[], computers=[], computerGroups=[]) {
 	ajaxRequest('views/deploy.php', 'explorer-content', function(){
-		addToDeployTarget(computerGroups, divTargetComputerList, "target_computer_groups");
-		addToDeployTarget(computers, divTargetComputerList, "target_computers");
-		addToDeployTarget(packageGroups, divTargetPackageList, "target_package_groups");
-		addToDeployTarget(packages, divTargetPackageList, "target_packages");
+		addToDeployTarget(computerGroups, divTargetComputerList, 'target_computer_groups');
+		addToDeployTarget(computers, divTargetComputerList, 'target_computers');
+		addToDeployTarget(packageGroups, divTargetPackageList, 'target_package_groups');
+		addToDeployTarget(packages, divTargetPackageList, 'target_packages');
 	});
 }
 
@@ -740,7 +740,7 @@ function editPackageFamilyNotes(id, oldValue) {
 	}
 }
 function showDialogEditPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
-	showDialogAjax(L__EDIT_PACKAGE, 'views/dialog-package-update.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(L__EDIT_PACKAGE, 'views/dialog-package-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditPackageId.value = id;
 		sltEditPackagePackageFamily.value = package_family_id;
 		txtEditPackageVersion.value = version;
@@ -943,18 +943,18 @@ function addPackageToGroup(packageId, groupId) {
 }
 function showDialogAddPackageToGroup(id) {
 	if(!id) return;
-	showDialogAjax(L__PACKAGE_GROUPS, "views/dialog-package-group-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__PACKAGE_GROUPS, 'views/dialog-package-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditPackageId.value = id;
 	});
 }
 function showDialogAddPackageDependency(id) {
-	showDialogAjax(L__ADD_DEPENDENCY, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__ADD_DEPENDENCY, 'views/dialog-package-dependency-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditPackageId.value = id;
 	});
 }
 function showDialogAddDependentPackage(id) {
-	showDialogAjax(L__ADD_DEPENDENT_PACKAGE, "views/dialog-package-dependency-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtSetAsDependentPackage.value = "1";
+	showDialogAjax(L__ADD_DEPENDENT_PACKAGE, 'views/dialog-package-dependency-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtSetAsDependentPackage.value = '1';
 		txtEditPackageId.value = id;
 	});
 }
@@ -1230,7 +1230,7 @@ function searchItems(container, search) {
 
 // ======== COMPUTER OPERATIONS ========
 function showDialogEditComputer(id, hostname, notes) {
-	showDialogAjax(L__EDIT_PACKAGE, 'views/dialog-computer-update.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(L__EDIT_PACKAGE, 'views/dialog-computer-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditComputerId.value = id;
 		txtEditComputerHostname.value = hostname;
 		txtEditComputerNotes.value = notes;
@@ -1415,7 +1415,7 @@ function addComputerToGroup(computerId, groupId) {
 }
 function showDialogAddComputerToGroup(id) {
 	if(!id) return;
-	showDialogAjax(L__COMPUTER_GROUPS, "views/dialog-computer-group-add.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__COMPUTER_GROUPS, 'views/dialog-computer-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditComputerId.value = id;
 	});
 }
@@ -1423,7 +1423,7 @@ function showDialogAddComputerToGroup(id) {
 // ======== JOB OPERATIONS ========
 function showDialogMoveJobToContainer(id) {
 	if(!id) return;
-	showDialogAjax(L__COMPUTER_GROUPS, "views/dialog-jobs-move.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__COMPUTER_GROUPS, 'views/dialog-jobs-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditJobId.value = id;
 	});
 }
@@ -1504,7 +1504,7 @@ function confirmRemoveJob(ids) {
 	}
 }
 function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, notes) {
-	showDialogAjax(L__EDIT_JOB_CONTAINER, 'views/dialog-job-container-update.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(L__EDIT_JOB_CONTAINER, 'views/dialog-job-container-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditJobContainerId.value = id;
 		txtEditJobContainerName.value = name;
 		chkEditJobContainerEnabled.checked = enabled=='1';
@@ -1604,7 +1604,7 @@ function deploy(title, start, end, description, computers, computerGroups, compu
 	};
 }
 function showDialogUninstall() {
-	showDialogAjax(L__UNINSTALL_PACKAGES, "views/dialog-uninstall.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(L__UNINSTALL_PACKAGES, 'views/dialog-uninstall.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function uninstall(checkboxName, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, restartTimeout, priority) {
 	var ids = [];
@@ -1660,7 +1660,7 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 	}
 }
 function showDialogRenewFailedJobs(id, defaultName) {
-	showDialogAjax(L__RENEW_FAILED_JOBS, "views/dialog-jobs-renew.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__RENEW_FAILED_JOBS, 'views/dialog-jobs-renew.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtRenewJobContainerId.value = id;
 		txtRenewJobContainerName.value = defaultName;
 	});
@@ -1745,7 +1745,7 @@ function confirmRemoveReportGroup(ids, event=null, infoText='') {
 	}
 }
 function showDialogCreateReport(group_id=0) {
-	showDialogAjax(L__CREATE_REPORT, "views/dialog-report-create.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(L__CREATE_REPORT, 'views/dialog-report-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtCreateReportGroup.value = group_id
 	});
 }
@@ -1763,7 +1763,7 @@ function createReport(name, notes, query, group_id=0) {
 	});
 }
 function showDialogEditReport(id, name, notes, query) {
-	showDialogAjax(L__EDIT_REPORT, "views/dialog-report-update.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(L__EDIT_REPORT, 'views/dialog-report-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditReportId.value = id;
 		txtEditReportName.value = name;
 		txtEditReportNotes.value = notes;
@@ -1828,7 +1828,7 @@ function moveReportToGroup(reportId, groupId) {
 }
 function showDialogMoveReportToGroup(id) {
 	if(!id) return;
-	showDialogAjax(L__REPORT_GROUPS, "views/dialog-report-group-move.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__REPORT_GROUPS, 'views/dialog-report-group-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditReportId.value = id;
 	});
 }
@@ -1900,7 +1900,7 @@ function unlockSelectedSystemUser(checkboxName) {
 	});
 }
 function showDialogCreateSystemUser() {
-	showDialogAjax(L__CREATE_SYSTEM_USER, "views/dialog-system-user-create.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO)
+	showDialogAjax(L__CREATE_SYSTEM_USER, 'views/dialog-system-user-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO)
 }
 function createSystemUser(username, displayName, description, password, roleId) {
 	var params = [];
@@ -1917,11 +1917,7 @@ function createSystemUser(username, displayName, description, password, roleId) 
 	});
 }
 function showDialogEditOwnSystemUserPassword() {
-	showDialogAjax(
-		L__CHANGE_PASSWORD,
-		"views/dialog-system-user-update-own-password.php",
-		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO
-	);
+	showDialogAjax(L__CHANGE_PASSWORD, 'views/dialog-system-user-edit-own-password.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editOwnSystemUserPassword(oldPassword, newPassword) {
 	var params = [];
@@ -1931,11 +1927,11 @@ function editOwnSystemUserPassword(oldPassword, newPassword) {
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
 		hideDialog();
 		refreshContent();
-		emitMessage(L__SAVED, "", MESSAGE_TYPE_SUCCESS);
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
 function showDialogEditSystemUser(id, uid, username, displayName, description, roleId, ldap) {
-	showDialogAjax(L__EDIT_USER, "views/dialog-system-user-update.php", DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__EDIT_USER, 'views/dialog-system-user-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditSystemUserId.value = id;
 		txtEditSystemUserUid.value = uid;
 		txtEditSystemUserUsername.value = username;
