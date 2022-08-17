@@ -27,9 +27,9 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
   - Apache2 or an other PHP-capable web server
   - PHP 7.0 or newer
 - Hardware Recommendations for ~600 Managed Computers
-  - 4 CPUs
+  - 4 CPU cores
   - 8GB RAM
-  - 20GB HDD + Storage for your packages, depending on what you want to deploy
+  - 20GB HDD + storage for your packages, depending on what you want to deploy
   - for WOL & OS installation via network: network card in every network where your client computers are
 
 ### (Admin) Client
