@@ -354,6 +354,7 @@ const LANG = [
 	'create_report' => 'Report erstellen',
 	'edit_report' => 'Report bearbeiten',
 	'edit_user' => 'Benutzer bearbeiten',
+	'edit_computer' => 'Computer bearbeiten',
 	'edit_package' => 'Paket bearbeiten',
 	'edit_job_container' => 'Jobcontainer bearbeiten',
 	'help' => 'Hilfe',

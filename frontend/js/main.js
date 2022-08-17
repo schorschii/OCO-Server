@@ -1230,7 +1230,7 @@ function searchItems(container, search) {
 
 // ======== COMPUTER OPERATIONS ========
 function showDialogEditComputer(id, hostname, notes) {
-	showDialogAjax(L__EDIT_PACKAGE, 'views/dialog-computer-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(L__EDIT_COMPUTER, 'views/dialog-computer-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditComputerId.value = id;
 		txtEditComputerHostname.value = hostname;
 		txtEditComputerNotes.value = notes;
