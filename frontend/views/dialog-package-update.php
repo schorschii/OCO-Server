@@ -42,7 +42,7 @@ require_once('../session.php');
 	<tr>
 		<th><?php echo LANG['procedure']; ?></th>
 		<td class='inputwithbutton'>
-			<input class='fullwidth' autocomplete='new-password' id='txtEditPackageInstallProcedure'></input>
+			<input class='fullwidth monospace' autocomplete='new-password' id='txtEditPackageInstallProcedure'></input>
 			<button onclick='toggleTextBoxMultiLine(txtEditPackageInstallProcedure)' title='<?php echo LANG['toggle_multi_line']; ?>'><img src='img/textbox.dyn.svg'></button>
 		</td>
 	</tr>
@@ -66,7 +66,7 @@ require_once('../session.php');
 	<tr>
 		<th><?php echo LANG['procedure']; ?></th>
 		<td class='inputwithbutton'>
-			<input class='fullwidth' autocomplete='new-password' id='txtEditPackageUninstallProcedure'></input>
+			<input class='fullwidth monospace' autocomplete='new-password' id='txtEditPackageUninstallProcedure'></input>
 			<button onclick='toggleTextBoxMultiLine(txtEditPackageUninstallProcedure)' title='<?php echo LANG['toggle_multi_line']; ?>'><img src='img/textbox.dyn.svg'></button>
 		</td>
 	</tr>
