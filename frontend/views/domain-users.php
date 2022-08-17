@@ -8,6 +8,10 @@ require_once('../session.php');
 if(!empty($_GET['id'])) {
 	try {
 		$domainUser = $cl->getDomainUser($_GET['id']);
+
+		$historyLimit = null;
+		$permissionEntry = $currentSystemUser->getPermissionEntry(PermissionManager::RESSOURCE_TYPE_DOMAIN_USER, PermissionManager::METHOD_READ);
+		if(isset($permissionEntry['history_limit'])) $historyLimit = intval($permissionEntry['history_limit']);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG['not_found']."</div>");
 	} catch(PermissionException $e) {
@@ -78,6 +82,10 @@ if(!empty($_GET['id'])) {
 				echo "<td>".htmlspecialchars($logon->console)."</td>";
 				echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 				echo "</tr>";
+				if(!empty($historyLimit) && $counter >= $historyLimit) {
+					echo "<tr><td colspan='999'><div class='alert warning'>".LANG['restricted_view']."</div></td></tr>";
+					break;
+				}
 			}
 			?>
 			<tfoot>

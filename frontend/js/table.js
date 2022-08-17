@@ -86,6 +86,7 @@ var TableSortUltra = function(tab, startsort) {
 	} // initTableHead
 
 	var getCellData = function(ele, col) {
+		if(!ele) return "";
 		var val = ele.textContent;
 		if(ele.getAttribute("sort_key")) val = ele.getAttribute("sort_key");
 		if(isNaN(val)) sorttype[col] = "s";
@@ -270,7 +271,7 @@ function tableSearch(table) {
 		tds = trs[i].getElementsByTagName("td");
 		if(!tds || tds.length == 0) continue;
 		for(var n = 0; n < tds.length; n++) {
-			txtValue = tds[n].textContent || tds[n].innerText;
+			txtValue = tds[n].textContent || tds[n].textContent;
 			if(!active || !(n in conditions) || conditions[n] == ""
 				|| txtValue.toUpperCase().includes(conditions[n])
 			) {
@@ -291,7 +292,7 @@ function tableSearch(table) {
 	if(tfoot && tfoot.length == 1) {
 		spnCount = tfoot[0].querySelectorAll("span.counter");
 		if(spnCount || spnCount.length > 0) {
-			spnCount[0].innerText = String(count);
+			spnCount[0].textContent = String(count);
 		}
 	}
 }
@@ -328,7 +329,7 @@ function refreshCheckedCounter(table) {
 	if(tfoot && tfoot.length == 1) {
 		spnCount = tfoot[0].querySelectorAll("span.counter-checked");
 		if(spnCount && spnCount.length > 0) {
-			spnCount[0].innerText = String(counter);
+			spnCount[0].textContent = String(counter);
 		}
 	}
 }

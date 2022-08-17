@@ -384,6 +384,10 @@ class SystemUser {
 		if(!$checkResult && $throw) throw new PermissionException();
 		return $checkResult;
 	}
+	public function getPermissionEntry($ressource, String $method) {
+		if($this->pm === null) $this->pm = new PermissionManager($this->db, $this);
+		return $this->pm->getPermissionEntry($ressource, $method);
+	}
 }
 class SystemUserRole {
 	public $id;

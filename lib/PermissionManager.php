@@ -45,6 +45,11 @@ class PermissionManager {
 		$this->permData = json_decode($systemUser->system_user_role_permissions, true);
 	}
 
+	public function getPermissionEntry($ressource, String $method=null) {
+		if(!isset($this->permData[$ressource])) return false;
+		return $this->permData[$ressource];
+	}
+
 	public function hasPermission($ressource, String $method): bool {
 		// check special permissions defined in array root if no object was given
 		if(empty($ressource)) {
