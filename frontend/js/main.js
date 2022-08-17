@@ -1221,7 +1221,7 @@ function searchItems(container, search) {
 	search = search.toUpperCase();
 	var items = container.querySelectorAll('.blockListItem:not(.noSearch)');
 	for(var i = 0; i < items.length; i++) {
-		if(search == '' || items[i].innerText.toUpperCase().includes(search))
+		if(search == '' || items[i].textContent.toUpperCase().includes(search))
 			items[i].style.display = 'block';
 		else
 			items[i].style.display = 'none';
