@@ -63,6 +63,7 @@ var L__ELEMENT_ALREADY_EXISTS = "<?php echo LANG['element_already_exists']; ?>";
 var L__CHANGE_ORDER_VIA_DRAG_AND_DROP = "<?php echo LANG['reorder_via_drag_drop']; ?>";
 var L__EDIT_PACKAGE = "<?php echo LANG['edit_package']; ?>";
 var L__EDIT_JOB_CONTAINER = "<?php echo LANG['edit_job_container']; ?>";
+var L__JOB_CONTAINERS = "<?php echo LANG['job_container']; ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG['desktop_notifications_not_supported']; ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG['desktop_notifications_denied']; ?>";

@@ -1423,7 +1423,7 @@ function showDialogAddComputerToGroup(id) {
 // ======== JOB OPERATIONS ========
 function showDialogMoveJobToContainer(id) {
 	if(!id) return;
-	showDialogAjax(L__COMPUTER_GROUPS, 'views/dialog-jobs-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(L__JOB_CONTAINERS, 'views/dialog-jobs-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditJobId.value = id;
 	});
 }
