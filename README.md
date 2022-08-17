@@ -1,7 +1,9 @@
 # Open Computer Orchestration
 **Self Hosted / On Premise Desktop and Server Inventory, Management & Software Deployment**
 
-The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines using a comfortable web interface. Additionally, it provides software deployment features, a user-computer logon overview, lists software packages installed on all computers ("recognised software") and features a fine-grained permission/role system. It focuses on easy usability (good GUI/UX), simplicity (assessable code with minimal external dependencies) and performance (you can manage many computers with minimal server resources).
+The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines using a comfortable web interface. Additionally, it provides software deployment features, a user-computer logon overview, lists software packages installed on all computers ("recognised software") and features a fine-grained permission/role system.
+
+It focuses on easy usability (good GUI/UX), simplicity (assessable code with minimal external dependencies) and performance (you can manage many computers with minimal server resources).
 
 - [OCO Server](https://github.com/schorschii/oco-server)
 - [OCO Server Extensions](https://github.com/schorschii/oco-server-extensions)
@@ -19,10 +21,16 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
 
 ## System Requirements
 ### Server
-- Linux Server
-- MySQL/MariaDB Database Server
-- Apache2 or an other PHP-capable web server
-- PHP 7.0 or newer
+- Software
+  - Linux Server
+  - MySQL/MariaDB Database Server
+  - Apache2 or an other PHP-capable web server
+  - PHP 7.0 or newer
+- Hardware Recommendations for ~600 Client Computers
+  - 4 CPUs
+  - 8GB RAM
+  - 20GB HDD + Storage for your packages, depending on what you want to deploy
+  - for WOL & OS installation via network: network card in every network where your client computers are
 
 ### (Admin) Client
 - Chromium-based Web Browser (Chrome/Chromium v80 or newer, Opera etc.)
