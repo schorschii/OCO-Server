@@ -7,7 +7,7 @@ require_once('../session.php');
 <input type='hidden' id='txtEditJobId'></input>
 <div class='gallery'>
 	<div>
-		<select id='sltNewJobContainer' class='resizeVertical' size='10' multiple='true'>
+		<select id='sltNewJobContainer' class='resizeVertical' size='10'>
 			<?php
 			foreach($cl->getJobContainers() as $container) {
 				if(!$currentSystemUser->checkPermission($container, PermissionManager::METHOD_WRITE, false)) continue;
