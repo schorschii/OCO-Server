@@ -26,7 +26,7 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
   - MySQL/MariaDB Database Server
   - Apache2 or an other PHP-capable web server
   - PHP 7.0 or newer
-- Hardware Recommendations for ~600 Client Computers
+- Hardware Recommendations for ~600 Managed Computers
   - 4 CPUs
   - 8GB RAM
   - 20GB HDD + Storage for your packages, depending on what you want to deploy
