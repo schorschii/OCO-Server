@@ -158,7 +158,7 @@ if(empty($default_job_container_name)) {
 
 	<div class='gallery margintop'>
 		<div>
-			<h2><div><?php echo LANG['computer_selection']; ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</div></h2>
+			<h2><img src='img/computer.dyn.svg'><div><?php echo LANG['computer_selection']; ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</div></h2>
 			<div class='listSearch'>
 				<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divComputerList, this.checked);refreshDeployComputerCount()'>
 				<input type='text' id='txtDeploySearchComputers' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divComputerList, this.value)'>
@@ -193,7 +193,7 @@ if(empty($default_job_container_name)) {
 		</div>
 		<img src='img/arrow-right.dyn.svg'>
 		<div>
-			<h2><img src='img/computer.dyn.svg'><div><?php echo LANG['target_computer']; ?> (<span id='spnTotalTargetComputers'>0</span>)</div></h2>
+			<h2><div><?php echo LANG['target_computer']; ?> (<span id='spnTotalTargetComputers'>0</span>)</div></h2>
 			<div class='listSearch'>
 				<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divTargetComputerList, this.checked)'>
 				<input type='text' id='txtDeploySearchTargetComputers' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divTargetComputerList, this.value)'>
@@ -206,7 +206,7 @@ if(empty($default_job_container_name)) {
 	</div>
 	<div class='gallery margintop'>
 		<div>
-			<h2><div><?php echo LANG['package_selection']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</div></h2>
+			<h2><img src='img/package.dyn.svg'><div><?php echo LANG['package_selection']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</div></h2>
 			<div class='listSearch'>
 				<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked);refreshDeployPackageCount()'>
 				<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
@@ -241,7 +241,7 @@ if(empty($default_job_container_name)) {
 		</div>
 		<img src='img/arrow-right.dyn.svg'>
 		<div>
-			<h2><img src='img/package.dyn.svg'><div><?php echo LANG['packages_to_deploy']; ?> (<span id='spnTotalTargetPackages'>0</span>)</div></h2>
+			<h2><div><?php echo LANG['packages_to_deploy']; ?> (<span id='spnTotalTargetPackages'>0</span>)</div></h2>
 			<div class='listSearch'>
 				<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divTargetPackageList, this.checked)'>
 				<input type='text' id='txtDeploySearchTargetPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divTargetPackageList, this.value)'>
