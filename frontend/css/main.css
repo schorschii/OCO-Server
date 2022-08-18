@@ -676,11 +676,6 @@ table.list, .boxshadow {
 .box .subgroup {
 	margin-left: 22px;
 }
-.box h1, .box h2, .box h3 {
-	display: block;
-	margin: 10px;
-	margin-top: 15px;
-}
 input, select, button, textarea {
 	box-sizing: border-box;
 	font-family: inherit;
