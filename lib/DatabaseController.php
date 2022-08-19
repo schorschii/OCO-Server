@@ -1674,7 +1674,7 @@ class DatabaseController {
 	}
 	public function getSoftwareByName($name) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM software WHERE name = :name'
+			'SELECT * FROM software WHERE BINARY name = :name'
 		);
 		$this->stmt->execute([':name' => $name]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
