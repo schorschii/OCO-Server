@@ -173,7 +173,6 @@ CREATE TABLE `computer_software` (
   `id` int(11) NOT NULL,
   `computer_id` int(11) NOT NULL,
   `software_id` int(11) NOT NULL,
-  `version` text NOT NULL,
   `installed` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -417,6 +416,7 @@ INSERT INTO `report_group` (`id`, `parent_report_group_id`, `name`) VALUES
 CREATE TABLE `software` (
   `id` int(11) NOT NULL,
   `name` text NOT NULL,
+  `version` text NOT NULL,
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

@@ -432,8 +432,8 @@ try {
 							foreach($db->getComputerSoftware($computer->id) as $s) {
 								$counter ++;
 								echo "<tr>";
-								echo "<td><a ".explorerLink('views/software.php?id='.$s->software_id).">".htmlspecialchars($s->software_name)."</a></td>";
-								echo "<td><a ".explorerLink('views/software.php?id='.$s->software_id.'&version='.$s->version).">".htmlspecialchars($s->version)."</a></td>";
+								echo "<td><a ".explorerLink('views/software.php?name='.urlencode($s->software_name)).">".htmlspecialchars($s->software_name)."</a></td>";
+								echo "<td><a ".explorerLink('views/software.php?id='.$s->software_id).">".htmlspecialchars($s->software_version)."</a></td>";
 								echo "<td>".htmlspecialchars($s->software_description)."</td>";
 								echo "</tr>";
 							}

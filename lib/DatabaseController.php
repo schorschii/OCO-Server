@@ -112,7 +112,7 @@ class DatabaseController {
 	}
 	public function getComputerSoftware($cid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cs.id AS "id", s.id AS "software_id", s.name AS "software_name", s.description AS "software_description", cs.version AS "version", cs.installed AS "installed"
+			'SELECT cs.id AS "id", s.id AS "software_id", s.name AS "software_name", s.version AS "software_version", s.description AS "software_description", cs.installed AS "installed"
 			FROM computer_software cs
 			INNER JOIN software s ON cs.software_id = s.id
 			WHERE cs.computer_id = :cid ORDER BY s.name'
@@ -438,22 +438,18 @@ class DatabaseController {
 		// update software
 		foreach($software as $index => $s) {
 			$sid = null;
-			$existingSoftware = $this->getSoftwareByName($s['name']);
+			$existingSoftware = $this->getSoftwareByNameVersion($s['name'], $s['version']);
 			if($existingSoftware === null) {
-				$sid = $this->addSoftware($s['name'], $s['description']);
+				$sid = $this->addSoftware($s['name'], $s['version'], $s['description']);
 			} else {
 				$sid = $existingSoftware->id;
 			}
-			if($this->getComputerSoftwareByComputerSoftwareVersion($id, $sid, $s['version']) === null) {
+			if($this->getComputerSoftwareByComputerSoftware($id, $sid, $s['version']) === null) {
 				$this->stmt = $this->dbh->prepare(
-					'INSERT INTO computer_software (computer_id, software_id, version)
-					VALUES (:computer_id, :software_id, :version)'
+					'INSERT INTO computer_software (computer_id, software_id)
+					VALUES (:computer_id, :software_id)'
 				);
-				if(!$this->stmt->execute([
-					':computer_id' => $id,
-					':software_id' => $sid,
-					':version' => $s['version'],
-				])) return false;
+				if(!$this->stmt->execute([':computer_id' => $id, ':software_id' => $sid])) return false;
 			}
 		}
 		// remove software, which can not be found in agent output
@@ -461,7 +457,7 @@ class DatabaseController {
 			$found = false;
 			foreach($software as $s2) {
 				if($s->software_name == $s2['name']
-				&& $s->version == $s2['version']) {
+				&& $s->software_version == $s2['version']) {
 					$found = true; break;
 				}
 			}
@@ -550,26 +546,28 @@ class DatabaseController {
 		}
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup');
 	}
-	public function getComputerBySoftware($sid) {
+	public function getComputerBySoftwareName($name) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT c.id AS "id", c.hostname AS "hostname", cs.version AS "software_version"
+			'SELECT c.id AS "id", c.hostname AS "hostname", s.id AS "software_id", s.name AS "software_name", s.version AS "software_version"
 			FROM computer_software cs
 			INNER JOIN computer c ON cs.computer_id = c.id
+			INNER JOIN software s ON cs.software_id = s.id
+			WHERE s.name = :name
+			ORDER BY c.hostname'
+		);
+		$this->stmt->execute([':name' => $name]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
+	}
+	public function getComputerBySoftware($sid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT c.id AS "id", c.hostname AS "hostname", c.os AS "os", c.os_version AS "os_version", s.id AS "software_id", s.name AS "software_name", s.version AS "software_version"
+			FROM computer_software cs
+			INNER JOIN computer c ON cs.computer_id = c.id
+			INNER JOIN software s ON cs.software_id = s.id
 			WHERE cs.software_id = :id
 			ORDER BY c.hostname'
 		);
 		$this->stmt->execute([':id' => $sid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
-	}
-	public function getComputerBySoftwareVersion($sid, $version) {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT c.id AS "id", c.hostname AS "hostname", c.os AS "os", c.os_version AS "os_version", cs.version AS "software_version"
-			FROM computer_software cs
-			INNER JOIN computer c ON cs.computer_id = c.id
-			WHERE cs.software_id = :id AND cs.version = :version
-			ORDER BY c.hostname'
-		);
-		$this->stmt->execute([':id' => $sid, ':version' => $version]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
 	}
 	public function getComputerByGroup($id) {
@@ -1610,55 +1608,55 @@ class DatabaseController {
 	}
 
 	// Software Operations
-	public function getAllSoftware() {
+	public function getAllSoftwareNames() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT s.*, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations"
-			FROM software s ORDER BY name ASC'
+			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
+			FROM software s INNER JOIN computer_software cs ON cs.software_id = s.id GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
 	}
-	public function getAllSoftwareWindows() {
+	public function getAllSoftwareNamesWindows() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT s.*, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations"
-			FROM software s INNER JOIN computer_software cs2 ON cs2.id = (
+			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
+			FROM software s INNER JOIN computer_software cs ON cs.id = (
 				SELECT cs3.id FROM computer_software AS cs3
 				INNER JOIN computer c ON cs3.computer_id = c.id
 				WHERE cs3.software_id = s.id
 				AND c.os LIKE "%Windows%"
 				LIMIT 1
 			)
-			ORDER BY name ASC'
+			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
 	}
-	public function getAllSoftwareMacOS() {
+	public function getAllSoftwareNamesMacOS() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT s.*, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations"
-			FROM software s INNER JOIN computer_software cs2 ON cs2.id = (
+			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
+			FROM software s INNER JOIN computer_software cs ON cs.id = (
 				SELECT cs3.id FROM computer_software AS cs3
 				INNER JOIN computer c ON cs3.computer_id = c.id
 				WHERE cs3.software_id = s.id
 				AND c.os LIKE "%macOS%"
 				LIMIT 1
 			)
-			ORDER BY name ASC'
+			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
 	}
-	public function getAllSoftwareOther() {
+	public function getAllSoftwareNamesOther() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT s.*, (SELECT count(computer_id) FROM computer_software cs WHERE cs.software_id = s.id) AS "installations"
-			FROM software s INNER JOIN computer_software cs2 ON cs2.id = (
+			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
+			FROM software s INNER JOIN computer_software cs ON cs.id = (
 				SELECT cs3.id FROM computer_software AS cs3
 				INNER JOIN computer c ON cs3.computer_id = c.id
 				WHERE cs3.software_id = s.id
 				AND c.os NOT LIKE "%Windows%" AND c.os NOT LIKE "%macOS%"
 				LIMIT 1
 			)
-			ORDER BY name ASC'
+			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
@@ -1672,30 +1670,31 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getSoftwareByName($name) {
+	public function getSoftwareByNameVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM software WHERE BINARY name = :name'
+			'SELECT * FROM software WHERE BINARY name = :name AND version = :version'
 		);
-		$this->stmt->execute([':name' => $name]);
+		$this->stmt->execute([':name' => $name, ':version' => $version]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
 			return $row;
 		}
 	}
-	public function getComputerSoftwareByComputerSoftwareVersion($cid, $sid, $version) {
+	public function getComputerSoftwareByComputerSoftware($cid, $sid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_software WHERE computer_id = :computer_id AND software_id = :software_id AND version = :version'
+			'SELECT * FROM computer_software WHERE computer_id = :computer_id AND software_id = :software_id'
 		);
-		$this->stmt->execute([':computer_id' => $cid, ':software_id' => $sid, ':version' => $version]);
+		$this->stmt->execute([':computer_id' => $cid, ':software_id' => $sid]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
 			return $row;
 		}
 	}
-	public function addSoftware($name, $description) {
+	public function addSoftware($name, $version, $description) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO software (name, description) VALUES (:name, :description)'
+			'INSERT INTO software (name, version, description) VALUES (:name, :version, :description)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
+			':version' => $version,
 			':description' => $description,
 		]);
 		return $this->dbh->lastInsertId();

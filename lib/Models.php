@@ -92,10 +92,10 @@ class ComputerSoftware {
 	public $id;
 	public $computer_id;
 	public $software_id;
-	public $version;
 	public $installed;
 	// joined software attributes
 	public $software_name;
+	public $software_version;
 	public $software_description;
 }
 class ComputerPackage {
@@ -397,6 +397,7 @@ class SystemUserRole {
 class Software {
 	public $id;
 	public $name;
+	public $version;
 	public $description;
 	// aggregated values
 	public $installations;
