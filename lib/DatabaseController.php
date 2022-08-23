@@ -1672,7 +1672,7 @@ class DatabaseController {
 	}
 	public function getSoftwareByNameVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM software WHERE BINARY name = :name AND version = :version'
+			'SELECT * FROM software WHERE BINARY name = :name AND BINARY version = :version'
 		);
 		$this->stmt->execute([':name' => $name, ':version' => $version]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
