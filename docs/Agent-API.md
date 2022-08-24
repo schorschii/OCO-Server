@@ -1,5 +1,5 @@
 # General
-This document describes the JSON-REST-API for the OCO agent provided by the OCO server. By implementing this protocol you can create your own agents.
+This document describes the JSON-REST and package download API for the OCO agent provided by the OCO server. By implementing this protocol you can create your own agents.
 
 # The JSON-RPC Package
 A valid JSON-RPC request is sent via HTTP(S) with the HTTP header `Content-Type: application/json` to the API endpoint `api-agent.php`.
@@ -9,13 +9,13 @@ Within the `params` object, please send the `hostname` with the correct `agent-k
 Please have a look at the following API method documentation for JSON-RPC request/response examples.
 
 # Authentication
-The agent authentication is based on the "trust on first use" (TOFU) principle.
+The agent authentication of the REST-API is based on the "trust on first use" (TOFU) principle.
 
 Before the first agent request, both `agent-key` and `server-key` are empty by default (in the server database and the agent config file). In this case, the server will generate new random keys and send it to the agent during the normal `agent_hello` response. The agent should then save the keys into it's config file. On the next request, the agent only trusts the server if it sends the same `server-key` again. If the `{agent|server}-key` is not empty in the agent config file, the agent should not allow a key update!
 
 The server-agent communcation should be encrypted via HTTPS as mentioned in the installation instructions, otherwise attackers can easily obtain the agent and server key.
 
-# Methods
+# JSON-REST-API Methods
 ## `oco.agent_hello` - Agent Contact Approach
 ### Parameters
 - `agent_version`: the agent version
@@ -219,3 +219,11 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	}
 }
 ```
+
+# Package Download API
+To download the package payload ZIP file, the agent has to contact the API endpoint `api-agent.php` with the following HTTP GET parameter.
+- `id`: the package id to download
+- `hostname`: the hostname of the client
+- `agent-key`: the corresponding agent key
+
+Note: the download will be declined with HTTP code 401 if the agent key is not correct or if there is no active job for the given package and computer.

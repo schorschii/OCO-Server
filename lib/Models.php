@@ -196,6 +196,27 @@ class Package {
 		if(!$path) return false;
 		return filesize($path);
 	}
+	public function download($resumable=false) {
+		$path = $this->getFilePath();
+		if(!$path) throw new NotFoundException();
+		if($resumable) {
+			// use resumable download if requested
+			try {
+				$download = new ResumeDownload($path);
+				$download->process();
+			} catch(Exception $e) {
+				throw new NotFoundException();
+			}
+		} else {
+			// use direct download via readfile() by default because its much faster
+			header('Content-Type: application/octet-stream');
+			header('Content-Transfer-Encoding: Binary');
+			header('Content-disposition: attachment; filename="'.basename($path).'"');
+			header('Content-Length: '.filesize($path));
+			ob_clean(); flush();
+			readfile($path);
+		}
+	}
 	public function getContentListing() {
 		$filePath = $this->getFilePath();
 		if(!$filePath) return '';

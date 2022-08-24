@@ -1,7 +1,7 @@
 # OCO: Computers
 
 ## Register New Computers
-After you have installed the agent on the client computer, you have to set the server URL and agent key in the agent config file (`oco-agent.ini`). If you do not specify a server URL in the agent config file, the agent will query your DNS for the SRV record `_oco._tcp` to get the server address (DNS auto discovery). If you want to set your server address manually, please note that the server address is defined twice in the agent config file: the setting `api-url` should point to `api-agent.php` on your server and `payload-url` to `payloadprovider.php`.
+After you have installed the agent on the client computer, you have to set the server URL and agent key in the agent config file (`oco-agent.ini`). If you do not specify a server URL in the agent config file, the agent will query your DNS for the SRV record `_oco._tcp` to get the server address (DNS auto discovery). You can also set your server address manually. For that, please let `api-url` point to the full URL to `api-agent.php` on your server, e.g. `https://oco.example.com/api-agent.php`.
 
 There are 2 methods for registering new computers:
 

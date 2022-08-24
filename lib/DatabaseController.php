@@ -1071,6 +1071,17 @@ class DatabaseController {
 			return $row;
 		}
 	}
+	public function getActiveJobByComputerPackage($cid, $pid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.* FROM job j
+			WHERE j.computer_id = :computer_id AND j.package_id = :package_id
+			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')'
+		);
+		$this->stmt->execute([':computer_id' => $cid, ':package_id' => $pid]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job') as $row) {
+			return $row;
+		}
+	}
 	public function getComputerMacByContainer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "id", c.hostname AS "hostname", cn.mac AS "computer_network_mac"

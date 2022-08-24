@@ -1,16 +1,38 @@
 <?php
 require_once('../lib/Loader.php');
 
-// check content type
-if(!isset($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] != 'application/json') {
-	errorExit('400 Content Type Mismatch', null, null, 'oco.agent', 'invalid content type: '.$_SERVER['CONTENT_TYPE']);
+
+///// handle package download requests
+if(empty($_SERVER['CONTENT_TYPE']) && !empty($_GET['id'])) {
+	// get package
+	$package = $db->getPackage($_GET['id']);
+	if($package === null || !$package->getFilePath()) {
+		header('HTTP/1.1 404 Not Found'); die();
+	}
+	// check if agent key is correct
+	$computer = $db->getComputerByName($_GET['hostname']??'');
+	if($computer == null || ($_GET['agent-key']??'') !== $computer->agent_key) {
+		header('HTTP/1.1 401 Client Not Authorized'); die();
+	}
+	// allow download only if a job is active
+	if(!$db->getActiveJobByComputerPackage($computer->id, $package->id)) {
+		header('HTTP/1.1 401 No Active Job'); die();
+	}
+	// start download
+	try {
+		$package->download();
+	} catch(Exception $e) {
+		header('HTTP/1.1 500 Internal Server Error'); die();
+	}
 }
 
-// get body
+
+///// handle agent api metadata requests
+elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json') {
+
+// get & log body
 $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
-
-// log complete request
 $db->addLogEntry(Log::LEVEL_DEBUG, null, null, Log::ACTION_CLIENT_API_RAW, $body);
 
 // validate JSON-RPC
@@ -345,6 +367,12 @@ switch($srcdata['method']) {
 // return response
 header('Content-Type: application/json');
 echo json_encode($resdata);
+
+}
+
+else {
+	errorExit('400 Content Type Mismatch', null, null, 'oco.agent', 'invalid content type: '.($_SERVER['CONTENT_TYPE']??''));
+}
 
 
 function errorExit($httpCode, $hostname, $computer, $action, $message) {
