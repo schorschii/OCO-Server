@@ -68,6 +68,7 @@ class ComputerScreen {
 	public $size;
 	public $manufactured;
 	public $serialno;
+	public $active;
 }
 class ComputerPrinter {
 	public $id;

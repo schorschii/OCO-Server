@@ -277,7 +277,9 @@ class DatabaseController {
 		// remove screens which can not be found in agent output
 		list($in_placeholders, $in_params) = self::compileSqlInValues($sids);
 		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM computer_screen WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
+			COMPUTER_KEEP_INACTIVE_SCREENS
+			? 'UPDATE computer_screen SET active=0 WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
+			: 'DELETE FROM computer_screen WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
 		);
 		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
@@ -388,10 +390,10 @@ class DatabaseController {
 	}
 	private function insertOrUpdateComputerScreen($cid, $name, $manufacturer, $type, $resolution, $size, $manufactured, $serialno) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_screen (id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno)
-			(SELECT id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno FROM computer_screen WHERE computer_id=:computer_id AND name=:name AND manufacturer=:manufacturer AND type=:type AND size=:size AND manufactured=:manufactured AND serialno=:serialno
-			UNION SELECT null, :computer_id, :name, :manufacturer, :type, :resolution, :size, :manufactured, :serialno FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), resolution=:resolution'
+			'INSERT INTO computer_screen (id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno, active)
+			(SELECT id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno, active FROM computer_screen WHERE computer_id=:computer_id AND name=:name AND manufacturer=:manufacturer AND type=:type AND size=:size AND manufactured=:manufactured AND serialno=:serialno
+			UNION SELECT null, :computer_id, :name, :manufacturer, :type, :resolution, :size, :manufactured, :serialno, 1 FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), resolution=:resolution, active=1'
 		);
 		$this->stmt->execute([
 			':computer_id' => $cid,
