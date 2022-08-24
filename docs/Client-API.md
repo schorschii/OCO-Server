@@ -138,7 +138,7 @@ no parameters
 				{
 					"id": "1838",
 					"nic_number": "0",
-					"addr": "10.0.2.15",
+					"address": "10.0.2.15",
 					"netmask": "255.255.255.0",
 					"broadcast": "10.0.2.255",
 					"mac": "08:00:27:31:5b:c4",

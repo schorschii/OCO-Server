@@ -117,7 +117,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 			"domain": "example.com",
 			"networks": [
 				{
-					"addr": "10.1.2.3",
+					"address": "10.1.2.3",
 					"netmask": "255.0.0.0",
 					"broadcast": "10.255.255.255",
 					"mac": "00:00:00:00:00:00",

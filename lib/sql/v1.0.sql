@@ -90,7 +90,7 @@ CREATE TABLE `computer_network` (
   `id` int(11) NOT NULL,
   `computer_id` int(11) NOT NULL,
   `nic_number` int(11) NOT NULL,
-  `addr` text NOT NULL,
+  `address` text NOT NULL,
   `netmask` text NOT NULL,
   `broadcast` text DEFAULT NULL,
   `mac` text DEFAULT NULL,

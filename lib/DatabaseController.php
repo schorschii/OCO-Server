@@ -26,6 +26,16 @@ class DatabaseController {
 		}
 	}
 
+	private static function compileSqlInValues($array) {
+		$in_placeholders = ''; $in_params = []; $i = 0;
+		foreach($array as $item) {
+			$key = ':id'.$i++;
+			$in_placeholders .= ($in_placeholders ? ',' : '').$key; // :id0,:id1,:id2
+			$in_params[$key] = $item; // collecting values into a key-value array
+		}
+		return [$in_placeholders, $in_params];
+	}
+
 	public function getDbHandle() {
 		return $this->dbh;
 	}
@@ -120,12 +130,6 @@ class DatabaseController {
 		$this->stmt->execute([':cid' => $cid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerSoftware');
 	}
-	public function removeComputerSoftware($id) {
-		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM computer_software WHERE id = :id'
-		);
-		return $this->stmt->execute([':id' => $id]);
-	}
 	public function getComputerPackage($cid) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_family_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
@@ -157,23 +161,17 @@ class DatabaseController {
 			':server_key' => $server_key,
 		]);
 		$cid = $this->dbh->lastInsertId();
-
 		foreach($networks as $index => $network) {
-			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, interface)
-				VALUES (:computer_id, :nic_number, :addr, :netmask, :broadcast, :mac, :interface)'
+			$this->insertOrUpdateComputerNetwork(
+				$cid,
+				$index,
+				$network['addr'],
+				$network['netmask'],
+				$network['broadcast'],
+				$network['mac'],
+				$network['interface']
 			);
-			$this->stmt->execute([
-				':computer_id' => $cid,
-				':nic_number' => $index,
-				':addr' =>  $network['addr'],
-				':netmask' => $network['netmask'],
-				':broadcast' => $network['broadcast'],
-				':mac' => $network['mac'],
-				':interface' => $network['interface'],
-			]);
 		}
-
 		return $cid;
 	}
 	public function updateComputer($id, $hostname, $notes) {
@@ -237,268 +235,192 @@ class DatabaseController {
 			':domain' => $domain,
 		])) return false;
 
-		// update networks
-		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM computer_network WHERE computer_id = :id'
-		);
-		if(!$this->stmt->execute([':id' => $id])) return false;
+		///// update networks
+		$nids = [];
 		foreach($networks as $index => $network) {
 			if(empty($network['addr'])) continue;
-			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO computer_network (computer_id, nic_number, addr, netmask, broadcast, mac, interface)
-				VALUES (:computer_id, :nic_number, :addr, :netmask, :broadcast, :mac, :interface)'
+			$nid = $this->insertOrUpdateComputerNetwork(
+				$id,
+				$index,
+				$network['addr'],
+				$network['netmask'] ?? '?',
+				$network['broadcast'] ?? '?',
+				$network['mac'] ?? '?',
+				$network['interface'] ?? '?',
 			);
-			if(!$this->stmt->execute([
-				':computer_id' => $id,
-				':nic_number' => $index,
-				':addr' => $network['addr'],
-				':netmask' => $network['netmask'] ?? '?',
-				':broadcast' => $network['broadcast'] ?? '?',
-				':mac' => $network['mac'] ?? '?',
-				':interface' => $network['interface'] ?? '?',
-			])) return false;
+			$nids[] = $nid;
 		}
+		// remove networks which can not be found in agent output
+		list($in_placeholders, $in_params) = self::compileSqlInValues($nids);
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_network WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
+		);
+		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		// update screens
-		foreach($screens as $index => $screen) {
+		///// update screens
+		$sids = [];
+		foreach($screens as $screen) {
 			if(empty($screen['name'])) continue;
-			$this->stmt = $this->dbh->prepare(
-				'SELECT * FROM computer_screen
-				WHERE computer_id = :computer_id AND name = :name AND manufacturer = :manufacturer AND type = :type AND resolution = :resolution AND size = :size AND serialno = :serialno'
+			$sid = $this->insertOrUpdateComputerScreen(
+				$id,
+				$screen['name'],
+				$screen['manufacturer'] ?? '?',
+				$screen['type'] ?? '?',
+				$screen['resolution'] ?? '?',
+				$screen['size'] ?? '?',
+				$screen['manufactured'] ?? '?',
+				$screen['serialno'] ?? '?'
 			);
-			if(!$this->stmt->execute([
-				':computer_id' => $id,
-				':name' => $screen['name'],
-				':manufacturer' => $screen['manufacturer'] ?? '?',
-				':type' => $screen['type'] ?? '?',
-				':resolution' => $screen['resolution'] ?? '?',
-				':size' => $screen['size'] ?? '?',
-				':serialno' => $screen['serialno'] ?? '?',
-			])) return false;
-			if($this->stmt->rowCount() > 0) continue;
-
-			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO computer_screen (computer_id, name, manufacturer, type, resolution, size, manufactured, serialno)
-				VALUES (:computer_id, :name, :manufacturer, :type, :resolution, :size, :manufactured, :serialno)'
-			);
-			if(!$this->stmt->execute([
-				':computer_id' => $id,
-				':name' => $screen['name'],
-				':manufacturer' => $screen['manufacturer'] ?? '?',
-				':type' => $screen['type'] ?? '?',
-				':resolution' => $screen['resolution'] ?? '?',
-				':size' => $screen['size'] ?? '?',
-				':manufactured' => $screen['manufactured'] ?? '?',
-				':serialno' => $screen['serialno'] ?? '?',
-			])) return false;
+			$sids[] = $sid;
 		}
-		// remove screens, which can not be found in agent output
+		// remove screens which can not be found in agent output
+		list($in_placeholders, $in_params) = self::compileSqlInValues($sids);
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_screen WHERE computer_id = :computer_id'
+			'DELETE FROM computer_screen WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
 		);
-		if(!$this->stmt->execute([':computer_id' => $id])) return false;
-		foreach($this->stmt->fetchAll() as $s) {
-			$found = false;
-			foreach($screens as $s2) {
-				if($s['name'] == $s2['name']
-				&& $s['manufacturer'] == $s2['manufacturer']
-				&& $s['type'] == $s2['type']
-				&& $s['resolution'] == $s2['resolution']
-				&& $s['size'] == ($s2['size']??'')
-				&& $s['serialno'] == ($s2['serialno']??'')) {
-					$found = true; break;
-				}
-			}
-			if(!$found) {
-				$this->stmt = $this->dbh->prepare(
-					'DELETE FROM computer_screen WHERE id = :id'
-				);
-				if(!$this->stmt->execute([':id' => $s['id']])) return false;
-			}
-		}
+		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		// update printers
-		foreach($printers as $index => $printer) {
+		///// update printers
+		$pids = [];
+		foreach($printers as $printer) {
 			if(empty($printer['name'])) continue;
-			$this->stmt = $this->dbh->prepare(
-				'SELECT * FROM computer_printer
-				WHERE computer_id = :computer_id AND name = :name AND driver = :driver AND paper = :paper AND dpi = :dpi AND uri = :uri AND status = :status'
+			$pid = $this->insertOrUpdateComputerPrinter(
+				$id,
+				$printer['name'],
+				$printer['driver'] ?? '?',
+				$printer['paper'] ?? '?',
+				$printer['dpi'] ?? '?',
+				$printer['uri'] ?? '?',
+				$printer['status'] ?? '?'
 			);
-			if(!$this->stmt->execute([
-				':computer_id' => $id,
-				':name' => $printer['name'],
-				':driver' => $printer['driver'] ?? '?',
-				':paper' => $printer['paper'] ?? '?',
-				':dpi' => $printer['dpi'] ?? '?',
-				':uri' => $printer['uri'] ?? '?',
-				':status' => $printer['status'] ?? '?',
-			])) return false;
-			if($this->stmt->rowCount() > 0) continue;
-
-			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO computer_printer (computer_id, name, driver, paper, dpi, uri, status)
-				VALUES (:computer_id, :name, :driver, :paper, :dpi, :uri, :status)'
-			);
-			if(!$this->stmt->execute([
-				':computer_id' => $id,
-				':name' => $printer['name'],
-				':driver' => $printer['driver'] ?? '?',
-				':paper' => $printer['paper'] ?? '?',
-				':dpi' => $printer['dpi'] ?? '?',
-				':uri' => $printer['uri'] ?? '?',
-				':status' => $printer['status'] ?? '?',
-			])) return false;
+			$pids[] = $pid;
 		}
-		// remove printers, which can not be found in agent output
+		// remove printers which can not be found in agent output
+		list($in_placeholders, $in_params) = self::compileSqlInValues($pids);
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_printer WHERE computer_id = :computer_id'
+			'DELETE FROM computer_printer WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
 		);
-		if(!$this->stmt->execute([':computer_id' => $id])) return false;
-		foreach($this->stmt->fetchAll() as $p) {
-			$found = false;
-			foreach($printers as $s2) {
-				if($p['name'] == $s2['name']
-				&& $p['driver'] == $s2['driver']
-				&& $p['paper'] == $s2['paper']
-				&& $p['dpi'] == $s2['dpi']
-				&& $p['uri'] == $s2['uri']
-				&& $p['status'] == $s2['status']) {
-					$found = true; break;
-				}
-			}
-			if(!$found) {
-				$this->stmt = $this->dbh->prepare(
-					'DELETE FROM computer_printer WHERE id = :id'
-				);
-				if(!$this->stmt->execute([':id' => $p['id']])) return false;
-			}
-		}
+		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		// update partitions
-		foreach($partitions as $index => $part) {
+		///// update partitions
+		$pids = [];
+		foreach($partitions as $part) {
 			if(empty($part['size'])) continue;
-			$this->stmt = $this->dbh->prepare(
-				'SELECT * FROM computer_partition
-				WHERE computer_id = :computer_id AND device = :device AND mountpoint = :mountpoint AND filesystem = :filesystem'
+			$pid = $this->insertOrUpdateComputerPartition(
+				$id,
+				$part['device'] ?? '?',
+				$part['mountpoint'] ?? '?',
+				$part['filesystem'] ?? '?',
+				intval($part['size']),
+				intval($part['free'])
 			);
-			if(!$this->stmt->execute([
-				':computer_id' => $id,
-				':device' => $part['device'] ?? '?',
-				':mountpoint' => $part['mountpoint'] ?? '?',
-				':filesystem' => $part['filesystem'] ?? '?',
-			])) return false;
-			if($this->stmt->rowCount() > 0) {
-				foreach($this->stmt->fetchAll() as $p) {
-					$this->stmt = $this->dbh->prepare(
-						'UPDATE computer_partition SET size = :size, free = :free WHERE id = :id'
-					);
-					if(!$this->stmt->execute([
-						':id' => $p['id'],
-						':size' => intval($part['size']),
-						':free' => intval($part['free']),
-					])) return false;
-				}
-			} else {
-				$this->stmt = $this->dbh->prepare(
-					'INSERT INTO computer_partition (computer_id, device, mountpoint, filesystem, size, free)
-					VALUES (:computer_id, :device, :mountpoint, :filesystem, :size, :free)'
-				);
-				if(!$this->stmt->execute([
-					':computer_id' => $id,
-					':device' => $part['device'] ?? '?',
-					':mountpoint' => $part['mountpoint'] ?? '?',
-					':filesystem' => $part['filesystem'] ?? '?',
-					':size' => intval($part['size']),
-					':free' => intval($part['free']),
-				])) return false;
-			}
+			$pids[] = $pid;
 		}
-		// remove partitions, which can not be found in agent output
+		// remove partitions which can not be found in agent output
+		list($in_placeholders, $in_params) = self::compileSqlInValues($pids);
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_partition WHERE computer_id = :computer_id'
+			'DELETE FROM computer_partition WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
 		);
-		if(!$this->stmt->execute([':computer_id' => $id])) return false;
-		foreach($this->stmt->fetchAll() as $p) {
-			$found = false;
-			foreach($partitions as $s2) {
-				if($p['device'] == $s2['device']
-				&& $p['mountpoint'] == $s2['mountpoint']
-				&& $p['filesystem'] == $s2['filesystem']) {
-					$found = true; break;
-				}
-			}
-			if(!$found) {
-				$this->stmt = $this->dbh->prepare(
-					'DELETE FROM computer_partition WHERE id = :id'
-				);
-				if(!$this->stmt->execute([':id' => $p['id']])) return false;
-			}
-		}
+		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		// update software
-		foreach($software as $index => $s) {
-			$sid = null;
-			$existingSoftware = $this->getSoftwareByNameVersion($s['name'], $s['version']);
-			if($existingSoftware === null) {
-				$sid = $this->addSoftware($s['name'], $s['version'], $s['description']);
-			} else {
-				$sid = $existingSoftware->id;
-			}
-			if($this->getComputerSoftwareByComputerSoftware($id, $sid, $s['version']) === null) {
-				$this->stmt = $this->dbh->prepare(
-					'INSERT INTO computer_software (computer_id, software_id)
-					VALUES (:computer_id, :software_id)'
-				);
-				if(!$this->stmt->execute([':computer_id' => $id, ':software_id' => $sid])) return false;
-			}
+		///// update software
+		$sids = [];
+		foreach($software as $s) {
+			if(empty($s['name'])) continue;
+			$sid = intval($this->insertOrUpdateSoftware($s['name'], $s['version'], $s['description']??''));
+			$sids[] = $sid;
+			if(!$this->insertOrUpdateComputerSoftware($id, $sid)) return false;
 		}
-		// remove software, which can not be found in agent output
-		foreach($this->getComputerSoftware($id) as $s) {
-			$found = false;
-			foreach($software as $s2) {
-				if($s->software_name == $s2['name']
-				&& $s->software_version == $s2['version']) {
-					$found = true; break;
-				}
-			}
-			if(!$found) {
-				$this->removeComputerSoftware($s->id);
-			}
-		}
+		// remove software which can not be found in agent output
+		list($in_placeholders, $in_params) = self::compileSqlInValues($sids);
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_software WHERE computer_id = :computer_id AND software_id NOT IN ('.$in_placeholders.')'
+		);
+		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		// insert new domain user logins
-		$domainUsers = $this->getAllDomainUser();
-		foreach($logins as $index => $l) {
+		///// insert new domain user logins
+		foreach($logins as $l) {
 			if(empty($l['username'])) continue;
-			$domainUser = null;
-			foreach($domainUsers as $du) {
-				if(strtolower($du->username) === strtolower($l['username'])) {
-					$domainUser = $du; break;
-				}
-			}
-			if($domainUser === null) {
-				$du_id = $this->addDomainUser($l['username'], $l['display_name']??'');
-				$domainUser = $this->getDomainUser($du_id);
-				$domainUsers = $this->getAllDomainUser();
-			} else {
-				$this->updateDomainUser($domainUser->id, $l['username'], $l['display_name']??'');
-			}
-			if($this->getDomainUserLogonByComputerDomainUserConsoleTimestamp($id, $domainUser->id, $l['console'], $l['timestamp']) === null) {
-				$this->stmt = $this->dbh->prepare(
-					'INSERT INTO domain_user_logon (computer_id, domain_user_id, console, timestamp)
-					VALUES (:computer_id, :domain_user_id, :console, :timestamp)'
-				);
-				if(!$this->stmt->execute([
-					':computer_id' => $id,
-					':domain_user_id' => $domainUser->id,
-					':console' => $l['console'],
-					':timestamp' => $l['timestamp'],
-				])) return false;
-			}
+			$did = $this->insertOrUpdateDomainUser($l['username'], $l['display_name']??'');
+			if(!$this->insertOrUpdateDomainUserLogon($id, $did, $l['console'], $l['timestamp'])) return false;
 		}
+		// old logins, which are not present in local client logs anymore, should NOT automatically be deleted
+		// instead, old logins are cleaned up by the server's housekeeping process after a certain amount of time (defined in configuration)
 
 		$this->dbh->commit();
 		return true;
+	}
+	private function insertOrUpdateComputerPartition($cid, $device, $mountpoint, $filesystem, $size, $free) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_partition (id, computer_id, device, mountpoint, filesystem, size, free)
+			(SELECT id, computer_id, device, mountpoint, filesystem, size, free FROM computer_partition WHERE computer_id=:computer_id AND device=:device AND mountpoint=:mountpoint AND filesystem=:filesystem
+			UNION SELECT null, :computer_id, :device, :mountpoint, :filesystem, :size, :free FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), size=:size, free=:free'
+		);
+		$this->stmt->execute([
+			':computer_id' => $cid,
+			':device' => $device,
+			':mountpoint' => $mountpoint,
+			':filesystem' => $filesystem,
+			':size' => $size,
+			':free' => $free,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	private function insertOrUpdateComputerPrinter($cid, $name, $driver, $paper, $dpi, $uri, $status) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_printer (id, computer_id, name, driver, paper, dpi, uri, status)
+			(SELECT id, computer_id, name, driver, paper, dpi, uri, status FROM computer_printer WHERE computer_id=:computer_id AND name=:name AND driver=:driver AND paper=:paper AND dpi=:dpi AND uri=:uri
+			UNION SELECT null, :computer_id, :name, :driver, :paper, :dpi, :uri, :status FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), status=:status'
+		);
+		$this->stmt->execute([
+			':computer_id' => $cid,
+			':name' => $name,
+			':driver' => $driver,
+			':paper' => $paper,
+			':dpi' => $dpi,
+			':uri' => $uri,
+			':status' => $status,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	private function insertOrUpdateComputerScreen($cid, $name, $manufacturer, $type, $resolution, $size, $manufactured, $serialno) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_screen (id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno)
+			(SELECT id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno FROM computer_screen WHERE computer_id=:computer_id AND name=:name AND manufacturer=:manufacturer AND type=:type AND size=:size AND manufactured=:manufactured AND serialno=:serialno
+			UNION SELECT null, :computer_id, :name, :manufacturer, :type, :resolution, :size, :manufactured, :serialno FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), resolution=:resolution'
+		);
+		$this->stmt->execute([
+			':computer_id' => $cid,
+			':name' => $name,
+			':manufacturer' => $manufacturer,
+			':type' => $type,
+			':resolution' => $resolution,
+			':size' => $size,
+			':manufactured' => $manufactured,
+			':serialno' => $serialno,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	private function insertOrUpdateComputerNetwork($cid, $nic_number, $address, $netmask, $broadcast, $mac, $interface) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_network (id, computer_id, nic_number, address, netmask, broadcast, mac, interface)
+			(SELECT id, computer_id, nic_number, address, netmask, broadcast, mac, interface FROM computer_network WHERE computer_id=:computer_id AND nic_number=:nic_number AND mac=:mac AND interface=:interface
+			UNION SELECT null, :computer_id, :nic_number, :address, :netmask, :broadcast, :mac, :interface FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), address=:address, netmask=:netmask, broadcast=:broadcast'
+		);
+		$this->stmt->execute([
+			':computer_id' => $cid,
+			':nic_number' => $nic_number,
+			':address' => $address,
+			':netmask' => $netmask,
+			':broadcast' => $broadcast,
+			':mac' => $mac,
+			':interface' => $interface,
+		]);
+		return $this->dbh->lastInsertId();
 	}
 	public function removeComputer($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1383,14 +1305,15 @@ class DatabaseController {
 	}
 
 	// Domain User Operations
-	public function addDomainUser($username, $display_name) {
+	private function insertOrUpdateDomainUser($username, $display_name) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO domain_user (username, display_name) VALUES (:username, :display_name)'
+			// we cannot use REPLACE INTO here because this internally DELETEs and INSERTs existing rows, which automatically deletes the rows in domain_user_logon
+			'INSERT INTO domain_user (id, username, display_name)
+			(SELECT id, username, display_name FROM domain_user WHERE username=:username AND display_name=:display_name
+			UNION SELECT null, :username, :display_name FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
 		);
-		$this->stmt->execute([
-			':username' => $username,
-			':display_name' => $display_name,
-		]);
+		$this->stmt->execute([':username' => $username, ':display_name' => $display_name]);
 		return $this->dbh->lastInsertId();
 	}
 	public function updateDomainUser($id, $username, $display_name) {
@@ -1433,20 +1356,19 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getDomainUserLogonByComputerDomainUserConsoleTimestamp($cid, $did, $console, $timestamp) {
+	private function insertOrUpdateDomainUserLogon($cid, $did, $console, $timestamp) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM domain_user_logon dl
-			WHERE dl.computer_id = :computer_id AND dl.domain_user_id = :domain_user_id AND dl.console = :console AND dl.timestamp = :timestamp'
+			'INSERT INTO domain_user_logon (id, computer_id, domain_user_id, console, timestamp)
+			(SELECT id, computer_id, domain_user_id, console, timestamp FROM domain_user_logon WHERE computer_id=:computer_id AND domain_user_id=:domain_user_id AND console=:console AND timestamp=:timestamp
+			UNION SELECT null, :computer_id, :domain_user_id, :console, :timestamp FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
 		);
-		$this->stmt->execute([
-			':computer_id' => $cid,
+		$this->stmt->execute([':computer_id' => $cid,
 			':domain_user_id' => $did,
 			':console' => $console,
 			':timestamp' => $timestamp,
 		]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUserLogon') as $row) {
-			return $row;
-		}
+		return $this->dbh->lastInsertId();
 	}
 	public function getDomainUserLogonHistoryByDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1611,7 +1533,7 @@ class DatabaseController {
 	public function getAllSoftwareNames() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
-			FROM software s INNER JOIN computer_software cs ON cs.software_id = s.id GROUP BY s.name ORDER BY s.name ASC'
+			FROM software s LEFT JOIN computer_software cs ON cs.software_id = s.id GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
@@ -1670,33 +1592,26 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getSoftwareByNameVersion($name, $version) {
+	private function insertOrUpdateSoftware($name, $version, $description) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM software WHERE BINARY name = :name AND BINARY version = :version'
+			// we cannot use REPLACE INTO here because this internally DELETEs and INSERTs existing rows, which automatically deletes the rows in computer_software
+			// https://web.archive.org/web/20150925012041/http://mikefenwick.com:80/blog/insert-into-database-or-return-id-of-duplicate-row-in-mysql/
+			'INSERT INTO software (id, name, version, description)
+			(SELECT id, name, version, description FROM software WHERE BINARY name=:name AND BINARY version=:version AND description=:description
+			UNION SELECT null, :name, :version, :description FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
 		);
-		$this->stmt->execute([':name' => $name, ':version' => $version]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
-			return $row;
-		}
+		$this->stmt->execute([':name' => $name, ':version' => $version, ':description' => $description]);
+		return $this->dbh->lastInsertId();
 	}
-	public function getComputerSoftwareByComputerSoftware($cid, $sid) {
+	private function insertOrUpdateComputerSoftware($cid, $sid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_software WHERE computer_id = :computer_id AND software_id = :software_id'
+			'INSERT INTO computer_software (id, computer_id, software_id)
+			(SELECT id, computer_id, software_id FROM computer_software WHERE computer_id=:computer_id AND software_id=:software_id
+			UNION SELECT null, :computer_id, :software_id FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
 		);
 		$this->stmt->execute([':computer_id' => $cid, ':software_id' => $sid]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
-			return $row;
-		}
-	}
-	public function addSoftware($name, $version, $description) {
-		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO software (name, version, description) VALUES (:name, :version, :description)'
-		);
-		$this->stmt->execute([
-			':name' => $name,
-			':version' => $version,
-			':description' => $description,
-		]);
 		return $this->dbh->lastInsertId();
 	}
 

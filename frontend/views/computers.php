@@ -92,7 +92,7 @@ try {
 			$mac_addresses = [];
 			$cnetwork = $db->getComputerNetwork($c->id);
 			foreach($cnetwork as $n) {
-				if(!(empty($n->addr) || $n->addr == '-' || $n->addr == '?')) $ip_addresses[] = $n->addr;
+				if(!(empty($n->address) || $n->address == '-' || $n->address == '?')) $ip_addresses[] = $n->address;
 				if(!(empty($n->mac) || $n->mac == '-' || $n->mac == '?')) $mac_addresses[] = $n->mac;
 			}
 			$online = $c->isOnline();

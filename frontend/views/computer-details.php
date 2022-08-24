@@ -217,10 +217,10 @@ try {
 							foreach($db->getComputerNetwork($computer->id) as $n) {
 								echo '<tr>';
 								echo '<td class="flyout-container" tabindex="0">';
-								echo  htmlspecialchars($n->addr);
+								echo  htmlspecialchars($n->address);
 								if(count(COMPUTER_COMMANDS) > 0) {
 									echo '<div class="flyout box">';
-									foreach(COMPUTER_COMMANDS as $c) { echoCommandButton($c, $n->addr, true); echo ' '; }
+									foreach(COMPUTER_COMMANDS as $c) { echoCommandButton($c, $n->address, true); echo ' '; }
 									echo '</div>';
 								}
 								echo '</td>';
