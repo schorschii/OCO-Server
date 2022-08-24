@@ -251,7 +251,7 @@ try {
 						<tbody>
 							<?php
 							foreach($db->getComputerScreen($computer->id) as $s) {
-								echo '<tr class="'.(empty($s->active)?'offline':'').'">';
+								echo '<tr class="'.(empty($s->active)?'inactive':'').'">';
 								echo '<td>'.htmlspecialchars($s->name).'</a></td>';
 								echo '<td>'.htmlspecialchars($s->manufacturer).'</td>';
 								echo '<td>'.htmlspecialchars($s->type).'</td>';

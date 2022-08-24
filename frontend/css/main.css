@@ -19,7 +19,7 @@ html {
 body {
 	font-family: "Quicksand", sans-serif;
 	font-size: 14px;
-	color: #070707;
+	color: rgb(7,7,7);
 	margin: 0px;
 	-webkit-font-smoothing: antialiased;
 }
@@ -1098,6 +1098,9 @@ div.details-abreast > div.stickytable > table.list tfoot {
 .offline {
 	opacity: 0.4;
 }
+.inactive {
+	color: rgba(7,7,7,0.4);
+}
 
 .fullwidth {
 	width: 100%;
@@ -1437,7 +1440,10 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	#explorer-content .gallery h1,
 	#explorer-content .gallery h2,
 	#explorer-content .gallery h3 {
-		color: #E9ECEF;
+		color: rgb(233,236,239);
+	}
+	.inactive {
+		color: rgba(233,236,239,0.4);
 	}
 	code {
 		background-color: rgba(22, 27, 34, 0.6);
@@ -1514,7 +1520,7 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	}
 	.alert.info {
 		background: #0D516E;
-		color: #e9ecef;
+		color: rgb(233,236,239);
 		border: 1px solid rgba(255,255,255,0.2);
 	}
 	.alert.success {
@@ -1524,12 +1530,12 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	}
 	.alert.warning {
 		background: #A37500;
-		color: #e9ecef;
+		color: rgb(233,236,239);
 		border: 1px solid rgba(255,255,255,0.2);
 	}
 	.alert.error {
 		background: #AC142C;
-		color: #e9ecef;
+		color: rgb(233,236,239);
 		border: 1px solid rgba(255,255,255,0.2);
 	}
 }

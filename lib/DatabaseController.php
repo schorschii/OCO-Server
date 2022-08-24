@@ -102,7 +102,7 @@ class DatabaseController {
 	}
 	public function getComputerScreen($cid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_screen WHERE computer_id = :cid'
+			'SELECT * FROM computer_screen WHERE computer_id = :cid ORDER BY active DESC'
 		);
 		$this->stmt->execute([':cid' => $cid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerScreen');
