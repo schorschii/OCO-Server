@@ -27,6 +27,7 @@ class DatabaseController {
 	}
 
 	private static function compileSqlInValues($array) {
+		if(empty($array)) $array = [-1];
 		$in_placeholders = ''; $in_params = []; $i = 0;
 		foreach($array as $item) {
 			$key = ':id'.$i++;
