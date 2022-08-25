@@ -344,7 +344,7 @@ class DatabaseController {
 		///// insert new domain user logins
 		foreach($logins as $l) {
 			if(empty($l['username'])) continue;
-			$did = $this->insertOrUpdateDomainUser($l['username'], $l['display_name']??'');
+			$did = $this->insertOrUpdateDomainUser($l['guid']??null, $l['username'], $l['display_name']??'');
 			if(!$this->insertOrUpdateDomainUserLogon($id, $did, $l['console'], $l['timestamp'])) return false;
 		}
 		// old logins, which are not present in local client logs anymore, should NOT automatically be deleted
@@ -1321,26 +1321,16 @@ class DatabaseController {
 	}
 
 	// Domain User Operations
-	private function insertOrUpdateDomainUser($username, $display_name) {
+	private function insertOrUpdateDomainUser($uid, $username, $display_name) {
 		$this->stmt = $this->dbh->prepare(
 			// we cannot use REPLACE INTO here because this internally DELETEs and INSERTs existing rows, which automatically deletes the rows in domain_user_logon
-			'INSERT INTO domain_user (id, username, display_name)
-			(SELECT id, username, display_name FROM domain_user WHERE username=:username AND display_name=:display_name
-			UNION SELECT null, :username, :display_name FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
+			'INSERT INTO domain_user (id, uid, username, display_name)
+			(SELECT id, uid, username, display_name FROM domain_user WHERE (uid IS NOT NULL AND uid=:uid) OR (username=:username AND display_name=:display_name)
+			UNION SELECT null, :uid, :username, :display_name FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), username=:username, display_name=:display_name'
 		);
-		$this->stmt->execute([':username' => $username, ':display_name' => $display_name]);
+		$this->stmt->execute([':uid' => $uid, ':username' => $username, ':display_name' => $display_name]);
 		return $this->dbh->lastInsertId();
-	}
-	public function updateDomainUser($id, $username, $display_name) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE domain_user SET username = :username, display_name = :display_name WHERE id = :id'
-		);
-		return $this->stmt->execute([
-			':id' => $id,
-			':username' => $username,
-			':display_name' => $display_name,
-		]);
 	}
 	public function getAllDomainUser() {
 		$this->stmt = $this->dbh->prepare(
