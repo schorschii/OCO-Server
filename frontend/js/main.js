@@ -1971,7 +1971,7 @@ function ldapSync() {
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
 		refreshContent();
-		emitMessage(L__LDAP_SYNC, text, MESSAGE_TYPE_INFO);
+		emitMessage(L__LDAP_SYNC, text, MESSAGE_TYPE_SUCCESS);
 	});
 }
 function checkUpdate() {

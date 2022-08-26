@@ -58,9 +58,9 @@
 7. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size  
   (pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size` and `max_execution_time`).
 8. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
-9. Set up a cron job executing `lib/HouseKeeping.php` every 2 minutes as webserver user (`www-data`).
+9. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
    ```
-   */2 *  * * *  www-data  cd /var/www/oco/lib && php HouseKeeping.php
+   */2 *  * * *  www-data  cd /var/www/oco && php console.php housekeeping
    ```
 10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
 
@@ -85,11 +85,11 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
    - `LDAP_GROUPS`: Array of LDAP groups to sync. The key must me an LDAP group path and the value must be an OCO role ID. Example: `'CN=OcoAdmins,OU=Benutzer,DC=sieber,DC=systems' => 1,`. The order of the groups is important: the first matching group is used for determining the role ID.
    - `LDAP_DEFAULT_ROLE_ID`: OCO role ID, which should be assigned to the LDAP users (Role ID 1 = Superadmin). Only used if `LDAP_GROUPS` is empty because otherwise the role IDs are defined there.
    - `LDAP_ATTR_UID`, `LDAP_ATTR_USERNAME`, `LDAP_ATTR_FIRST_NAME`, `LDAP_ATTR_LAST_NAME`, `LDAP_ATTR_DISPLAY_NAME`, `LDAP_ATTR_EMAIL`, `LDAP_ATTR_PHONE`, `LDAP_ATTR_MOBILE`, `LDAP_ATTR_DESCRIPTION`: LDAP attributes to query. Set for Active Directory by default; you can adjust it if you are using an other LDAP server like OpenLDAP.
-2. Set up a cron job executing `lib/LdapSync.php` every 30 minutes as webserver user (`www-data`).
+2. Set up a cron job executing `php console.php ldapsync` every 30 minutes as webserver user (`www-data`).
    ```
-   */10 *  * * *  www-data  cd /var/www/oco/lib && php LdapSync.php
+   */10 *  * * *  www-data  cd /var/www/oco && php console.php ldapsync
    ```
-3. Start the first sync manually by executing `cd /var/www/oco/lib && php LdapSync.php`.  
+3. Start the first sync manually by executing `cd /var/www/oco && php console.php ldapsync`.  
    Now you can log in with the synced accounts on the web frontend.
 
 ### Only Provide Agent API On Virtual Host

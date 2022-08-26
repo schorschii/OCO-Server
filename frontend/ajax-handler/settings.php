@@ -6,7 +6,13 @@ require_once('../session.php');
 try {
 
 	if(!empty($_POST['ldap_sync'])) {
-		require('../../lib/LdapSync.php');
+		try {
+			$ldapSync = new LdapSync($db, true);
+			$ldapSync->sync();
+		} catch(Exception $e) {
+			header('HTTP/1.1 500 Internal Server Error');
+			die($e->getMessage());
+		}
 		die();
 	}
 
