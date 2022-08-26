@@ -1325,7 +1325,7 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			// we cannot use REPLACE INTO here because this internally DELETEs and INSERTs existing rows, which automatically deletes the rows in domain_user_logon
 			'INSERT INTO domain_user (id, uid, username, display_name)
-			(SELECT id, uid, username, display_name FROM domain_user WHERE (uid IS NOT NULL AND uid=:uid) OR (username=:username AND display_name=:display_name)
+			(SELECT id, uid, username, display_name FROM domain_user WHERE (uid IS NOT NULL AND uid=:uid) OR (username=:username AND display_name=:display_name) OR (username=:username AND display_name="")
 			UNION SELECT null, :uid, :username, :display_name FROM DUAL LIMIT 1)
 			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), uid=IF(:uid IS NULL,uid,:uid), username=:username, display_name=:display_name'
 		);
