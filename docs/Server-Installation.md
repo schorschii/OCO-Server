@@ -13,7 +13,7 @@
      service apache2 restart
      ```
 2. Download the [latest release](https://github.com/schorschii/oco-server/releases), copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.
-3. Import the database schema (use the newest version, e.g. `lib/sql/v1.0.sql`) into an empty database.
+3. Import the database schema (use the newest version, e.g. `/sql/v1.0.sql`) into an empty database.
    ```
    root@ocoserver:/# mysql
    mysql> CREATE DATABASE oco DEFAULT CHARACTER SET utf8mb4;
@@ -21,7 +21,7 @@
    mysql> GRANT ALL PRIVILEGES ON oco.* TO 'oco'@'localhost';
    mysql> FLUSH PRIVILEGES;
    mysql> EXIT;
-   root@ocoserver:/# mysql oco < /var/www/oco/lib/sql/v1.x.sql
+   root@ocoserver:/# mysql oco < /var/www/oco/sql/v1.x.sql
    ```
 4. Enter your MySQL credentials in `conf.php` (create this file by copying the template `conf.example.php`).  
    (Use a separate user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.)
@@ -71,6 +71,9 @@
    This requires that your server is (temporarily) available from the internet, so that LetsEncrypt can contact it.  
    Certificate files (private key + certificate, chain) will be saved in '/etc/letsencrypt/live/example.com'.
 4. Certificate can be renewed using `certbot --apache renew`.
+
+### fail2ban
+You can set up fail2ban for OCO to prevent brute force attacks. Example configuration can be found in the `examples/fail2ban` directory.
 
 ### LDAP Sync & Authentication
 If you want to use LDAP to authenticate admin users on the web frontend, please follow this steps.

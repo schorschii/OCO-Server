@@ -43,7 +43,7 @@ const DB_PASS = 'PASSWORD';
 /////////////////////////////////////////
 /*
  If you want to use LDAP user sync and login, please fill the following config lines. Otherwise, please set LDAP_SERVER to »null«.
- To sync LDAP users with the OCO system user database, please execute `php lib/ldapsync.php` (via cron).
+ To sync LDAP users with the OCO system user database, please execute `php cron.php ldapsync` (via cron).
 */
 const LDAP_SERVER     = null; // Example: 'ldap://192.168.56.101' (single) or 'ldaps://192.168.56.101' (secure) or 'ldaps://192.168.56.101 ldaps://192.168.56.102' (multiple) or »null« (disabled)
 const LDAP_USER       = '';

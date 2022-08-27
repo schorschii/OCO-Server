@@ -185,7 +185,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 ## `oco.update_deploy_status` - Update Job Deployment Status
 ### Parameters
 - `job-id`: ID of the job to update
-- `state`: state of the job, e.g. downloading, executing, finished (integer) - see lib/Models.php for constant definition
+- `state`: state of the job, e.g. downloading, executing, finished (integer) - see const definitions in 'Job' class
 - `return-code`: procedure command return code
 - `message`: procedure command output (stdout & stderr)
 ### Example
