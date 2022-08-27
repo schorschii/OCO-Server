@@ -62,7 +62,7 @@ class DatabaseController {
 			FROM DUAL'
 		);
 		$this->stmt->execute();
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Stat') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
 			return $row;
 		}
 	}
@@ -73,14 +73,14 @@ class DatabaseController {
 			'SELECT * FROM computer WHERE hostname LIKE :hostname ORDER BY hostname ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':hostname' => '%'.$hostname.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
 	public function getComputerByName($hostname) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer WHERE hostname = :hostname'
 		);
 		$this->stmt->execute([':hostname' => $hostname]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer') as $row) {
 			return $row;
 		}
 	}
@@ -89,7 +89,7 @@ class DatabaseController {
 			'SELECT * FROM computer WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer') as $row) {
 			return $row;
 		}
 	}
@@ -98,28 +98,28 @@ class DatabaseController {
 			'SELECT * FROM computer_network WHERE computer_id = :cid'
 		);
 		$this->stmt->execute([':cid' => $cid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerNetwork');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerNetwork');
 	}
 	public function getComputerScreen($cid) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_screen WHERE computer_id = :cid ORDER BY active DESC'
 		);
 		$this->stmt->execute([':cid' => $cid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerScreen');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerScreen');
 	}
 	public function getComputerPrinter($cid) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_printer WHERE computer_id = :cid'
 		);
 		$this->stmt->execute([':cid' => $cid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPrinter');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPrinter');
 	}
 	public function getComputerPartition($cid) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_partition WHERE computer_id = :cid'
 		);
 		$this->stmt->execute([':cid' => $cid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPartition');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPartition');
 	}
 	public function getComputerSoftware($cid) {
 		$this->stmt = $this->dbh->prepare(
@@ -129,7 +129,7 @@ class DatabaseController {
 			WHERE cs.computer_id = :cid ORDER BY s.name'
 		);
 		$this->stmt->execute([':cid' => $cid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerSoftware');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerSoftware');
 	}
 	public function getComputerPackage($cid) {
 		$this->stmt = $this->dbh->prepare(
@@ -140,14 +140,14 @@ class DatabaseController {
 			WHERE cp.computer_id = :cid'
 		);
 		$this->stmt->execute([':cid' => $cid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPackage');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
 	}
 	public function getAllComputer() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer ORDER BY hostname ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
 	public function addComputer($hostname, $agent_version, $networks, $notes, $agent_key, $server_key) {
 		$this->stmt = $this->dbh->prepare(
@@ -453,7 +453,7 @@ class DatabaseController {
 			'SELECT * FROM computer_group WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup') as $row) {
 			return $row;
 		}
 	}
@@ -469,7 +469,7 @@ class DatabaseController {
 			);
 			$this->stmt->execute([':parent_computer_group_id' => $parent_id]);
 		}
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
 	}
 	public function getComputerBySoftwareName($name) {
 		$this->stmt = $this->dbh->prepare(
@@ -481,7 +481,7 @@ class DatabaseController {
 			ORDER BY c.hostname'
 		);
 		$this->stmt->execute([':name' => $name]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
 	public function getComputerBySoftware($sid) {
 		$this->stmt = $this->dbh->prepare(
@@ -493,7 +493,7 @@ class DatabaseController {
 			ORDER BY c.hostname'
 		);
 		$this->stmt->execute([':id' => $sid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
 	public function getComputerByGroup($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -503,7 +503,7 @@ class DatabaseController {
 			ORDER BY c.hostname'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
 	public function getComputerByComputerAndGroup($cid, $gid) {
 		$this->stmt = $this->dbh->prepare(
@@ -512,7 +512,7 @@ class DatabaseController {
 			WHERE cgm.computer_id = :cid AND cgm.computer_group_id = :gid'
 		);
 		$this->stmt->execute([':cid' => $cid, ':gid' => $gid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
 	public function getGroupByComputer($cid) {
 		$this->stmt = $this->dbh->prepare(
@@ -523,7 +523,7 @@ class DatabaseController {
 			ORDER BY cg.name'
 		);
 		$this->stmt->execute([':cid' => $cid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
 	}
 	public function addComputerGroup($name, $parent_id=null) {
 		if(empty($parent_id) || intval($parent_id) < 0) {
@@ -653,7 +653,7 @@ class DatabaseController {
 			WHERE cp.package_id = :pid'
 		);
 		$this->stmt->execute([':pid' => $pid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPackage');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
 	}
 	public function getPackageByPackageAndGroup($pid, $gid) {
 		$this->stmt = $this->dbh->prepare(
@@ -663,7 +663,7 @@ class DatabaseController {
 			WHERE pgm.package_id = :pid AND pgm.package_group_id = :gid'
 		);
 		$this->stmt->execute([':pid' => $pid, ':gid' => $gid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
 	public function getPackageByFamily($fid) {
 		$this->stmt = $this->dbh->prepare(
@@ -672,7 +672,7 @@ class DatabaseController {
 			WHERE p.package_family_id = :package_family_id'
 		);
 		$this->stmt->execute([':package_family_id' => $fid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
 	public function getDependentPackages($pid) {
 		$this->stmt = $this->dbh->prepare(
@@ -682,7 +682,7 @@ class DatabaseController {
 			WHERE pd.package_id = :package_id'
 		);
 		$this->stmt->execute([':package_id' => $pid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
 	public function getDependentForPackages($pid) {
 		$this->stmt = $this->dbh->prepare(
@@ -692,7 +692,7 @@ class DatabaseController {
 			WHERE pd.dependent_package_id = :package_id'
 		);
 		$this->stmt->execute([':package_id' => $pid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
 	public function getConflictPackages($pid) {
 		$this->stmt = $this->dbh->prepare(
@@ -702,7 +702,7 @@ class DatabaseController {
 			WHERE pc.package_id = :package_id'
 		);
 		$this->stmt->execute([':package_id' => $pid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
 	public function getAllPackage($orderByCreated=false) {
 		$this->stmt = $this->dbh->prepare(
@@ -711,7 +711,7 @@ class DatabaseController {
 			.($orderByCreated ? ' ORDER BY p.created DESC' : ' ORDER BY pf.name ASC')
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
 	public function getAllPackageFamily($binaryAsBase64=false) {
 		$this->stmt = $this->dbh->prepare(
@@ -721,19 +721,19 @@ class DatabaseController {
 			FROM package_family pf ORDER BY newest_package_created DESC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily', [$binaryAsBase64]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily', [$binaryAsBase64]);
 	}
 	public function getPackageFamily($id) {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE id = :id');
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily') as $row) {
 			return $row;
 		}
 	}
 	public function getPackageFamilyByName($name) {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE name = :name');
 		$this->stmt->execute([':name' => $name]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily') as $row) {
 			return $row;
 		}
 	}
@@ -746,7 +746,7 @@ class DatabaseController {
 			ORDER BY pg.name'
 		);
 		$this->stmt->execute([':pid' => $pid]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup');
 	}
 	public function getAllPackageGroup($parent_id=null) {
 		if($parent_id === null) {
@@ -760,7 +760,7 @@ class DatabaseController {
 			);
 			$this->stmt->execute([':parent_package_group_id' => $parent_id]);
 		}
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup');
 	}
 	public function getPackage($id, $binaryAsBase64=false) {
 		if($binaryAsBase64 === null) {
@@ -778,7 +778,7 @@ class DatabaseController {
 			);
 		}
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package', [$binaryAsBase64]) as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package', [$binaryAsBase64]) as $row) {
 			return $row;
 		}
 	}
@@ -788,7 +788,7 @@ class DatabaseController {
 			WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageFamily');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily');
 	}
 	public function getPackageByNameVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
@@ -797,14 +797,14 @@ class DatabaseController {
 			WHERE pf.name = :name AND p.version = :version'
 		);
 		$this->stmt->execute([':name' => $name, ':version' => $version]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
 	public function getComputerAssignedPackage($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_package WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'ComputerPackage') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage') as $row) {
 			return $row;
 		}
 	}
@@ -828,7 +828,7 @@ class DatabaseController {
 			'SELECT * FROM package_group WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'PackageGroup') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup') as $row) {
 			return $row;
 		}
 	}
@@ -863,7 +863,7 @@ class DatabaseController {
 			ORDER BY pgm.sequence'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Package');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
 	public function addPackageToGroup($pid, $gid) {
 		$seq = -1;
@@ -1023,7 +1023,7 @@ class DatabaseController {
 			'SELECT * FROM job_container WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'JobContainer') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer') as $row) {
 			return $row;
 		}
 	}
@@ -1032,7 +1032,7 @@ class DatabaseController {
 			'SELECT * FROM job_container WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'JobContainer');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer');
 	}
 	public function getAllJobContainer() {
 		$this->stmt = $this->dbh->prepare(
@@ -1040,14 +1040,14 @@ class DatabaseController {
 			FROM job_container jc'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'JobContainer');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer');
 	}
 	public function getJobContainerMinJobExecution($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM job WHERE job_container_id = :job_container_id ORDER BY execution_started ASC LIMIT 1'
 		);
 		$this->stmt->execute([':job_container_id' => $job_container_id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job') as $row) {
 			return $row;
 		}
 	}
@@ -1056,7 +1056,7 @@ class DatabaseController {
 			'SELECT * FROM job WHERE job_container_id = :job_container_id ORDER BY execution_finished DESC LIMIT 1'
 		);
 		$this->stmt->execute([':job_container_id' => $job_container_id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job') as $row) {
 			return $row;
 		}
 	}
@@ -1067,7 +1067,7 @@ class DatabaseController {
 			WHERE j.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job') as $row) {
 			return $row;
 		}
 	}
@@ -1077,10 +1077,10 @@ class DatabaseController {
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :computer_id AND j.package_id = :package_id
 			AND jc.enabled != 0
-			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')'
+			AND (j.state = '.Models\Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Models\Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATUS_EXECUTION_STARTED.')'
 		);
 		$this->stmt->execute([':computer_id' => $cid, ':package_id' => $pid]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job') as $row) {
 			return $row;
 		}
 	}
@@ -1093,7 +1093,7 @@ class DatabaseController {
 			WHERE j.job_container_id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Computer');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
 	public function getAllJobByContainer($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1107,7 +1107,7 @@ class DatabaseController {
 			ORDER BY j.computer_id, j.sequence'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job');
 	}
 	public function getPendingJobsForComputer($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1116,7 +1116,7 @@ class DatabaseController {
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
 			AND jc.enabled = 1
-			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
+			AND (j.state = '.Models\Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Models\Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATUS_EXECUTION_STARTED.')
 			AND (jc.start_time IS NULL OR jc.start_time < CURRENT_TIMESTAMP)
 			AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
 			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
@@ -1135,11 +1135,11 @@ class DatabaseController {
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :id
 			AND jc.enabled = 1
-			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
+			AND (j.state = '.Models\Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Models\Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATUS_EXECUTION_STARTED.')
 			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job');
 	}
 	public function getPendingJobsForPackageDetailPage($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1151,11 +1151,11 @@ class DatabaseController {
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.package_id = :id
 			AND jc.enabled = 1
-			AND (j.state = '.Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Job::STATUS_EXECUTION_STARTED.')
+			AND (j.state = '.Models\Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Models\Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATUS_EXECUTION_STARTED.')
 			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job');
 	}
 	public function setComputerOnlineStateForWolShutdown($job_container_id) {
 		$tmpJobContainer = $this->getJobContainer($job_container_id);
@@ -1172,16 +1172,16 @@ class DatabaseController {
 			WHERE job_container_id = :job_container_id GROUP BY computer_id'
 		);
 		if(!$this->stmt->execute([':job_container_id' => $job_container_id])) return false;
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Job');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job');
 	}
 	public function setWolShutdownJobInContainer($job_container_id, $computer_id, $sequence) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE job SET post_action = '.Package::POST_ACTION_SHUTDOWN.','
+			'UPDATE job SET post_action = '.Models\Package::POST_ACTION_SHUTDOWN.','
 			.' wol_shutdown_set = CURRENT_TIMESTAMP'
 			.' WHERE job_container_id = :job_container_id'
 			.' AND computer_id = :computer_id'
 			.' AND sequence = :sequence'
-			.' AND (post_action = '.Package::POST_ACTION_NONE.' OR post_action = '.Package::POST_ACTION_EXIT.')'
+			.' AND (post_action = '.Models\Package::POST_ACTION_NONE.' OR post_action = '.Models\Package::POST_ACTION_EXIT.')'
 		);
 		if(!$this->stmt->execute([
 			':job_container_id' => $job_container_id,
@@ -1214,10 +1214,10 @@ class DatabaseController {
 			':message' => $message,
 		])) return false;
 		// update job timestamps
-		if($state === Job::STATUS_DOWNLOAD_STARTED) {
+		if($state === Models\Job::STATUS_DOWNLOAD_STARTED) {
 			$this->stmt = $this->dbh->prepare('UPDATE job SET download_started = CURRENT_TIMESTAMP WHERE id = :id');
 			if(!$this->stmt->execute([':id'=>$id])) return false;
-		} elseif($state === Job::STATUS_EXECUTION_STARTED) {
+		} elseif($state === Models\Job::STATUS_EXECUTION_STARTED) {
 			$this->stmt = $this->dbh->prepare('UPDATE job SET execution_started = CURRENT_TIMESTAMP WHERE id = :id');
 			if(!$this->stmt->execute([':id'=>$id])) return false;
 		} else {
@@ -1225,9 +1225,9 @@ class DatabaseController {
 			if(!$this->stmt->execute([':id'=>$id])) return false;
 		}
 		// set all pending jobs of specific computer to failed if sequence_mode is 'abort after failed'
-		if($state == Job::STATUS_FAILED) {
+		if($state == Models\Job::STATUS_FAILED) {
 			$job_container_id = -1;
-			$sequence_mode = JobContainer::SEQUENCE_MODE_IGNORE_FAILED;
+			$sequence_mode = Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED;
 			$this->stmt = $this->dbh->prepare(
 				'SELECT jc.id AS "job_container_id", jc.sequence_mode FROM job j INNER JOIN job_container jc ON j.job_container_id = jc.id WHERE j.id = :id'
 			);
@@ -1236,16 +1236,16 @@ class DatabaseController {
 				$job_container_id = $row['job_container_id'];
 				$sequence_mode = $row['sequence_mode'];
 			}
-			if($sequence_mode == JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+			if($sequence_mode == Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
 				$this->stmt = $this->dbh->prepare(
 					'UPDATE job SET state = :state, return_code = :return_code, message = :message, execution_finished = CURRENT_TIMESTAMP
 					WHERE job_container_id = :job_container_id AND state = :old_state'
 				);
 				return $this->stmt->execute([
 					':job_container_id' => $job_container_id,
-					':old_state' => Job::STATUS_WAITING_FOR_CLIENT,
-					':state' => Job::STATUS_FAILED,
-					':return_code' => JobContainer::RETURN_CODE_ABORT_AFTER_FAILED,
+					':old_state' => Models\Job::STATUS_WAITING_FOR_CLIENT,
+					':state' => Models\Job::STATUS_FAILED,
+					':return_code' => Models\JobContainer::RETURN_CODE_ABORT_AFTER_FAILED,
 					':message' => LANG['aborted_after_failed'],
 				]);
 			}
@@ -1284,26 +1284,26 @@ class DatabaseController {
 		$waitings = 0;
 		$errors = 0;
 		foreach($jobs as $job) {
-			if($job->state == Job::STATUS_WAITING_FOR_CLIENT
-			|| $job->state == Job::STATUS_DOWNLOAD_STARTED
-			|| $job->state == Job::STATUS_EXECUTION_STARTED) {
+			if($job->state == Models\Job::STATUS_WAITING_FOR_CLIENT
+			|| $job->state == Models\Job::STATUS_DOWNLOAD_STARTED
+			|| $job->state == Models\Job::STATUS_EXECUTION_STARTED) {
 				$waitings ++;
 			}
-			if($job->state == Job::STATUS_FAILED
-			|| $job->state == Job::STATUS_EXPIRED
-			|| $job->state == Job::STATUS_OS_INCOMPATIBLE
-			|| $job->state == Job::STATUS_PACKAGE_CONFLICT) {
+			if($job->state == Models\Job::STATUS_FAILED
+			|| $job->state == Models\Job::STATUS_EXPIRED
+			|| $job->state == Models\Job::STATUS_OS_INCOMPATIBLE
+			|| $job->state == Models\Job::STATUS_PACKAGE_CONFLICT) {
 				$errors ++;
 			}
 		}
 		if($waitings > 0) {
 			$startTimeParsed = strtotime($container->start_time);
 			if($startTimeParsed !== false && $startTimeParsed > time())
-				return JobContainer::STATUS_WAITING_FOR_START;
-			else return JobContainer::STATUS_IN_PROGRESS;
+				return Models\JobContainer::STATUS_WAITING_FOR_START;
+			else return Models\JobContainer::STATUS_IN_PROGRESS;
 		}
-		elseif($errors > 0) return JobContainer::STATUS_FAILED;
-		else return JobContainer::STATUS_SUCCEEDED;
+		elseif($errors > 0) return Models\JobContainer::STATUS_FAILED;
+		else return Models\JobContainer::STATUS_SUCCEEDED;
 	}
 	public function removeJobContainer($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1343,14 +1343,14 @@ class DatabaseController {
 			ORDER BY username ASC'
 		);
 		$this->stmt->execute([]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUser');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser');
 	}
 	public function getAllDomainUserByName($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM domain_user WHERE username LIKE :username OR display_name LIKE :username ORDER BY username ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':username' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUser');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser');
 	}
 	public function getDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1359,7 +1359,7 @@ class DatabaseController {
 			WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUser') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser') as $row) {
 			return $row;
 		}
 	}
@@ -1388,7 +1388,7 @@ class DatabaseController {
 		$this->stmt->execute([
 			':domain_user_id' => $id,
 		]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUserLogon');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserLogon');
 	}
 	public function getDomainUserLogonByDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1403,7 +1403,7 @@ class DatabaseController {
 		$this->stmt->execute([
 			':domain_user_id' => $id,
 		]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUserLogon');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserLogon');
 	}
 	public function getDomainUserLogonByComputer($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1418,7 +1418,7 @@ class DatabaseController {
 		$this->stmt->execute([
 			':computer_id' => $id,
 		]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'DomainUserLogon');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserLogon');
 	}
 	public function removeDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1442,7 +1442,7 @@ class DatabaseController {
 			'SELECT * FROM system_user_role ORDER BY name ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUserRole');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUserRole');
 	}
 	public function getAllSystemUser() {
 		$this->stmt = $this->dbh->prepare(
@@ -1451,7 +1451,7 @@ class DatabaseController {
 			ORDER BY username ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser', [$this]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser', [$this]);
 	}
 	public function getSystemUser($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1460,7 +1460,7 @@ class DatabaseController {
 			WHERE su.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser', [$this]) as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser', [$this]) as $row) {
 			return $row;
 		}
 	}
@@ -1471,7 +1471,7 @@ class DatabaseController {
 			WHERE su.username = :username'
 		);
 		$this->stmt->execute([':username' => $username]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser', [$this]) as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser', [$this]) as $row) {
 			return $row;
 		}
 	}
@@ -1482,7 +1482,7 @@ class DatabaseController {
 			WHERE su.uid = :uid'
 		);
 		$this->stmt->execute([':uid' => $uid]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'SystemUser', [$this]) as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser', [$this]) as $row) {
 			return $row;
 		}
 	}
@@ -1543,7 +1543,7 @@ class DatabaseController {
 			FROM software s LEFT JOIN computer_software cs ON cs.software_id = s.id GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
 	}
 	public function getAllSoftwareNamesWindows() {
 		$this->stmt = $this->dbh->prepare(
@@ -1558,7 +1558,7 @@ class DatabaseController {
 			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
 	}
 	public function getAllSoftwareNamesMacOS() {
 		$this->stmt = $this->dbh->prepare(
@@ -1573,7 +1573,7 @@ class DatabaseController {
 			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
 	}
 	public function getAllSoftwareNamesOther() {
 		$this->stmt = $this->dbh->prepare(
@@ -1588,14 +1588,14 @@ class DatabaseController {
 			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
 	}
 	public function getSoftware($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM software WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Software') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software') as $row) {
 			return $row;
 		}
 	}
@@ -1662,7 +1662,7 @@ class DatabaseController {
 			);
 			$this->stmt->execute([':parent_report_group_id' => $parent_id]);
 		}
-		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'ReportGroup');
+		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup');
 		foreach($reports as $report) {
 			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
 		}
@@ -1676,7 +1676,7 @@ class DatabaseController {
 			'SELECT * FROM report_group WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'ReportGroup') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup') as $row) {
 			if(!empty(LANG[$row->name])) $row->name = LANG[$row->name];
 			return $row;
 		}
@@ -1755,7 +1755,7 @@ class DatabaseController {
 	public function getAllReport() {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM report ORDER BY name');
 		$this->stmt->execute();
-		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
+		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report');
 		foreach($reports as $report) {
 			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
 		}
@@ -1767,7 +1767,7 @@ class DatabaseController {
 	public function getAllReportByName($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM report');
 		$this->stmt->execute();
-		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
+		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report');
 		foreach($reports as $key => $report) {
 			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
 			if(strpos(strtoupper($report->name), strtoupper($name)) === false) unset($reports[$key]);
@@ -1783,7 +1783,7 @@ class DatabaseController {
 		else $sql = 'SELECT * FROM report WHERE report_group_id = :report_group_id ORDER BY name';
 		$this->stmt = $this->dbh->prepare($sql);
 		$this->stmt->execute([':report_group_id' => $groupId]);
-		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report');
+		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report');
 		foreach($reports as $report) {
 			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
 		}
@@ -1797,7 +1797,7 @@ class DatabaseController {
 			'SELECT * FROM report WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Report') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report') as $row) {
 			if(!empty(LANG[$row->name])) $row->name = LANG[$row->name];
 			return $row;
 		}

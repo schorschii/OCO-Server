@@ -1,13 +1,13 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 if(!empty($_GET['id'])) {
 
 	try {
 		$container = $cl->getJobContainer($_GET['id'] ?? -1);
-		$permissionCreate = $currentSystemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE, false);
+		$permissionCreate = $currentSystemUser->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE, false);
 		$permissionWrite  = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_WRITE, false);
 		$permissionDelete = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_DELETE, false);
 	} catch(NotFoundException $e) {
@@ -22,8 +22,8 @@ if(!empty($_GET['id'])) {
 	$done = 0; $failed = 0; $percent = 0;
 	if(count($jobs) > 0) {
 		foreach($jobs as $job) {
-			if($job->state == Job::STATUS_SUCCEEDED || $job->state == Job::STATUS_ALREADY_INSTALLED) $done ++;
-			if($job->state == Job::STATUS_FAILED || $job->state == Job::STATUS_EXPIRED || $job->state == Job::STATUS_OS_INCOMPATIBLE || $job->state == Job::STATUS_PACKAGE_CONFLICT) $failed ++;
+			if($job->state == Models\Job::STATUS_SUCCEEDED || $job->state == Models\Job::STATUS_ALREADY_INSTALLED) $done ++;
+			if($job->state == Models\Job::STATUS_FAILED || $job->state == Models\Job::STATUS_EXPIRED || $job->state == Models\Job::STATUS_OS_INCOMPATIBLE || $job->state == Models\Job::STATUS_PACKAGE_CONFLICT) $failed ++;
 		}
 		$percent = $done/count($jobs)*100;
 	}
@@ -83,8 +83,8 @@ if(!empty($_GET['id'])) {
 				<td>
 					<span id='spnJobContainerSequenceMode' class='rawvalue'><?php echo htmlspecialchars($container->sequence_mode); ?></span>
 					<?php switch($container->sequence_mode) {
-						case(JobContainer::SEQUENCE_MODE_IGNORE_FAILED): echo LANG['ignore_failed']; break;
-						case(JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED): echo LANG['abort_after_failed']; break;
+						case(Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED): echo LANG['ignore_failed']; break;
+						case(Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED): echo LANG['abort_after_failed']; break;
 						default: echo htmlspecialchars($container->sequence_mode);
 					} ?>
 				</td>
@@ -122,7 +122,7 @@ if(!empty($_GET['id'])) {
 				if(strtotime($container->start_time) > time()) {
 					echo htmlspecialchars('-');
 				} else {
-					if($icon == JobContainer::STATUS_SUCCEEDED || $icon == JobContainer::STATUS_FAILED) {
+					if($icon == Models\JobContainer::STATUS_SUCCEEDED || $icon == Models\JobContainer::STATUS_FAILED) {
 						$maxTimeJob = $db->getJobContainerMaxJobExecution($container->id);
 						$maxTime = time(); if(!empty($maxTimeJob)) $maxTime = strtotime($maxTimeJob->execution_finished);
 						$timeDiff = $maxTime-strtotime($container->start_time);
@@ -147,7 +147,7 @@ if(!empty($_GET['id'])) {
 					echo htmlspecialchars('-');
 				} else {
 					$flag = '~ ';
-					if($icon == JobContainer::STATUS_SUCCEEDED || $icon == JobContainer::STATUS_FAILED) {
+					if($icon == Models\JobContainer::STATUS_SUCCEEDED || $icon == Models\JobContainer::STATUS_FAILED) {
 						$flag = '';
 					}
 					$minTime = strtotime($minTimeJob->execution_started);
@@ -188,9 +188,9 @@ if(!empty($_GET['id'])) {
 				if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
 				else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
 				echo htmlspecialchars(shorter($job->package_procedure));
-				if($job->post_action == Package::POST_ACTION_RESTART) echo ' ('.LANG['restart_after'].' '.intval($job->post_action_timeout).' '.LANG['minutes'].')';
-				if($job->post_action == Package::POST_ACTION_SHUTDOWN) echo ' ('.LANG['shutdown_after'].' '.intval($job->post_action_timeout).' '.LANG['minutes'].')';
-				if($job->post_action == Package::POST_ACTION_EXIT) echo ' ('.LANG['restart_agent'].')';
+				if($job->post_action == Models\Package::POST_ACTION_RESTART) echo ' ('.LANG['restart_after'].' '.intval($job->post_action_timeout).' '.LANG['minutes'].')';
+				if($job->post_action == Models\Package::POST_ACTION_SHUTDOWN) echo ' ('.LANG['shutdown_after'].' '.intval($job->post_action_timeout).' '.LANG['minutes'].')';
+				if($job->post_action == Models\Package::POST_ACTION_EXIT) echo ' ('.LANG['restart_agent'].')';
 				echo "</td>";
 				echo "<td>".htmlspecialchars($job->sequence)."</td>";
 				if(!empty($job->message)) {
@@ -233,7 +233,7 @@ if(!empty($_GET['id'])) {
 
 	try {
 		$containers = $cl->getJobContainers();
-		$permissionCreate = $currentSystemUser->checkPermission(new JobContainer(), PermissionManager::METHOD_CREATE, false);
+		$permissionCreate = $currentSystemUser->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE, false);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG['not_found']."</div>");
 	} catch(PermissionException $e) {
@@ -275,7 +275,7 @@ if(!empty($_GET['id'])) {
 				$jobs = $db->getAllJobByContainer($jc->id);
 				if(count($jobs) > 0) {
 					foreach($jobs as $job) {
-						if($job->state == Job::STATUS_SUCCEEDED || $job->state == Job::STATUS_ALREADY_INSTALLED) $done ++;
+						if($job->state == Models\Job::STATUS_SUCCEEDED || $job->state == Models\Job::STATUS_ALREADY_INSTALLED) $done ++;
 					}
 					$percent = $done/count($jobs)*100;
 				}

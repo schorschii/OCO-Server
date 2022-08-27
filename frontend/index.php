@@ -1,7 +1,7 @@
 <?php
 /* KEEP IT SIMPLE */
 
-require_once('../lib/Loader.php');
+require_once('../loader.inc.php');
 require_once('session.php');
 
 $initialExplorerContent = 'views/homepage.php';

@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 $group = null;
@@ -24,8 +24,8 @@ try {
 ?>
 
 <?php if($group === null) {
-	$permissionCreateReport = $currentSystemUser->checkPermission(new Report(), PermissionManager::METHOD_CREATE, false);
-	$permissionCreateGroup  = $currentSystemUser->checkPermission(new ReportGroup(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateReport = $currentSystemUser->checkPermission(new Models\Report(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup  = $currentSystemUser->checkPermission(new Models\ReportGroup(), PermissionManager::METHOD_CREATE, false);
 ?>
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><?php echo LANG['reports']; ?></span></h1>
 	<div class='controls'>
@@ -35,7 +35,7 @@ try {
 		<span><a target='_blank' href='img/dbschema.png' title='<?php echo LANG['database_schema_description']; ?>'><?php echo LANG['database_schema']; ?></a></span>
 	</div>
 <?php } else {
-	$permissionCreateReport = $currentSystemUser->checkPermission(new Report(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false);
+	$permissionCreateReport = $currentSystemUser->checkPermission(new Models\Report(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false);
 	$permissionCreateGroup  = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_CREATE, false);
 	$permissionWrite  = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false);
 	$permissionDelete = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false);

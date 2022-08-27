@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 $group = null;
@@ -24,8 +24,8 @@ try {
 ?>
 
 <?php if($group === null) {
-	$permissionCreateComputer = $currentSystemUser->checkPermission(new Computer(), PermissionManager::METHOD_CREATE, false);
-	$permissionCreateGroup    = $currentSystemUser->checkPermission(new ComputerGroup(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateComputer = $currentSystemUser->checkPermission(new Models\Computer(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup    = $currentSystemUser->checkPermission(new Models\ComputerGroup(), PermissionManager::METHOD_CREATE, false);
 ?>
 	<h1><img src='img/computer.dyn.svg'><span id='page-title'><?php echo LANG['all_computer']; ?></span></h1>
 	<div class='controls'>

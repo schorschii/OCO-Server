@@ -14,12 +14,12 @@ All PHP files inside `frontend/views/tree.d` will be included in the tree view o
 ```
 
 ### Main Web View
-The main view of the extension (as shown in explorer content window) should be placed inside `frontend/views/views.d` (can be multiple files which are linked among themselves). It should include the `Loader.php` for database access and `session.php` for authorization check. You may include additional libraries which are part of your extension (see "Libraries").
+The main view of the extension (as shown in explorer content window) should be placed inside `frontend/views/views.d` (can be multiple files which are linked among themselves). It should include the `loader.inc.php` for database access and `session.php` for authorization check. You may include additional libraries which are part of your extension (see "Libraries").
 Example file:
 ```
 <?php
 $SUBVIEW = 1;
-require_once('../../../lib/Loader.php');
+require_once('../../../loader.inc.php');
 require_once('../../session.php');
 #require_once('../../../lib/lib.d/my-custom-library.php');
 ?>

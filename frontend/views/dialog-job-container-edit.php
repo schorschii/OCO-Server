@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 ?>
 
@@ -53,7 +53,7 @@ require_once('../session.php');
 		<th><?php echo LANG['sequence_mode']; ?></th>
 		<td>
 			<div class='checkboxWithText'>
-				<input type='checkbox' id='chkEditJobContainerSequenceMode' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>' <?php if(!empty(DEFAULTS['default-abort-after-error'])) echo 'checked'; ?>>
+				<input type='checkbox' id='chkEditJobContainerSequenceMode' name='sequence_mode' value='<?php echo Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>' <?php if(!empty(DEFAULTS['default-abort-after-error'])) echo 'checked'; ?>>
 				<label for='chkEditJobContainerSequenceMode'>
 					<div><?php echo LANG['abort_after_failed']; ?></div>
 				</label>

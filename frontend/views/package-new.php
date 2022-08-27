@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 ?>
 
@@ -97,10 +97,10 @@ require_once('../session.php');
 	<tr>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td colspan='3'>
-			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 0) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 1) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 2) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
-			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Package::POST_ACTION_EXIT; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 3) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart_agent']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Models\Package::POST_ACTION_NONE; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 0) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Models\Package::POST_ACTION_RESTART; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 1) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Models\Package::POST_ACTION_SHUTDOWN; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 2) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Models\Package::POST_ACTION_EXIT; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 3) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart_agent']; ?></label>
 		</td>
 	</tr>
 
@@ -116,9 +116,9 @@ require_once('../session.php');
 	<tr class='nospace'>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td colspan='3'>
-			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>' <?php if(($_GET['uninstall_procedure_post_action']??0) == 0) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>' <?php if(($_GET['uninstall_procedure_post_action']??0) == 1) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>' <?php if(($_GET['uninstall_procedure_post_action']??0) == 2) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Models\Package::POST_ACTION_NONE; ?>' <?php if(($_GET['uninstall_procedure_post_action']??0) == 0) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Models\Package::POST_ACTION_RESTART; ?>' <?php if(($_GET['uninstall_procedure_post_action']??0) == 1) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label class='inlineblock'><input type='radio' name='uninstall_post_action' value='<?php echo Models\Package::POST_ACTION_SHUTDOWN; ?>' <?php if(($_GET['uninstall_procedure_post_action']??0) == 2) echo "checked='true'"; ?>>&nbsp;<?php echo LANG['shutdown']; ?></label>
 		</td>
 	</tr>
 	<tr>

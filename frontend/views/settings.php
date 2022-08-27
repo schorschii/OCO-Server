@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 $tab = 'own-system-user-settings';

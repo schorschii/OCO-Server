@@ -1,7 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
-require_once('../../lib/Parsedown.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 const DOCS_DIR = __DIR__.'/../../docs';

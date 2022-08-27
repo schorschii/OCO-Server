@@ -5,7 +5,7 @@ if(php_sapi_name() != 'cli')
 if(!isset($argv[1]))
 	die('Please specify an action as first parameter (housekeeping|ldapsync).'."\n");
 
-require_once(__DIR__.'/lib/Loader.php');
+require_once(__DIR__.'/loader.inc.php');
 
 switch($argv[1]) {
 

@@ -33,10 +33,10 @@ class PermissionManager {
 	const SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND    = 'client_web_frontend_allowed';
 
 	private /*DatabaseController*/ $db;
-	private /*SystemUser*/ $systemUser;
+	private /*Models\SystemUser*/ $systemUser;
 	private /*Array*/ $permData;
 
-	function __construct(DatabaseController $db, SystemUser $systemUser) {
+	function __construct(DatabaseController $db, Models\SystemUser $systemUser) {
 		if(empty($systemUser->system_user_role_permissions)) {
 			throw new Exception('No permission definition data found for this system user!');
 		}
@@ -58,7 +58,7 @@ class PermissionManager {
 		}
 
 		// check specific ressource type permissions
-		if($ressource instanceof Computer) {
+		if($ressource instanceof Models\Computer) {
 			$groups = $this->db->getGroupByComputer($ressource->id);
 			$parentGroups = [];
 			foreach($groups as $group) {
@@ -68,13 +68,13 @@ class PermissionManager {
 				self::RESSOURCE_TYPE_COMPUTER, self::RESSOURCE_TYPE_COMPUTER_GROUP, $parentGroups, $ressource, $method
 			);
 
-		} else if($ressource instanceof ComputerGroup) {
+		} else if($ressource instanceof Models\ComputerGroup) {
 			$parentGroups = $this->getParentGroupsRecursively($ressource);
 			return $this->checkRessourcePermission(
 				self::RESSOURCE_TYPE_COMPUTER_GROUP, self::RESSOURCE_TYPE_COMPUTER_GROUP, $parentGroups, $ressource, $method
 			);
 
-		} else if($ressource instanceof Package) {
+		} else if($ressource instanceof Models\Package) {
 			// check permission in context of package groups
 			$groups = $this->db->getGroupByPackage($ressource->id);
 			$parentGroups = [];
@@ -86,28 +86,28 @@ class PermissionManager {
 			)) return true;
 
 			// check permission in context of package family
-			$family = PackageFamily::__constructWithId($ressource->package_family_id);
+			$family = Models\PackageFamily::__constructWithId($ressource->package_family_id);
 			return $this->checkRessourcePermission(
 				self::RESSOURCE_TYPE_PACKAGE, self::RESSOURCE_TYPE_PACKAGE_FAMILY, [$family], $ressource, $method
 			);
 
-		} else if($ressource instanceof PackageFamily) {
+		} else if($ressource instanceof Models\PackageFamily) {
 			return $this->checkRessourcePermission(
 				self::RESSOURCE_TYPE_PACKAGE_FAMILY, null, null, $ressource, $method
 			);
 
-		} else if($ressource instanceof PackageGroup) {
+		} else if($ressource instanceof Models\PackageGroup) {
 			$parentGroups = $this->getParentGroupsRecursively($ressource);
 			return $this->checkRessourcePermission(
 				self::RESSOURCE_TYPE_PACKAGE_GROUP, self::RESSOURCE_TYPE_PACKAGE_GROUP, $parentGroups, $ressource, $method
 			);
 
-		} else if($ressource instanceof JobContainer) {
+		} else if($ressource instanceof Models\JobContainer) {
 			return $this->checkRessourcePermission(
 				self::RESSOURCE_TYPE_JOB_CONTAINER, null, null, $ressource, $method
 			);
 
-		} else if($ressource instanceof Report) {
+		} else if($ressource instanceof Models\Report) {
 			$parentGroups = [];
 			if($ressource->report_group_id != null) {
 				$group = $this->db->getReportGroup($ressource->report_group_id);
@@ -117,15 +117,15 @@ class PermissionManager {
 				self::RESSOURCE_TYPE_REPORT, self::RESSOURCE_TYPE_REPORT_GROUP, $parentGroups, $ressource, $method
 			);
 
-		} else if($ressource instanceof ReportGroup) {
+		} else if($ressource instanceof Models\ReportGroup) {
 			$parentGroups = $this->getParentGroupsRecursively($ressource);
 			return $this->checkRessourcePermission(
 				self::RESSOURCE_TYPE_REPORT_GROUP, self::RESSOURCE_TYPE_REPORT_GROUP, $parentGroups, $ressource, $method
 			);
 
-		} else if($ressource instanceof DomainUser) {
+		} else if($ressource instanceof Models\DomainUser) {
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_DOMAIN_USER, null, null, new DomainUser() /*no specific check*/, $method
+				self::RESSOURCE_TYPE_DOMAIN_USER, null, null, new Models\DomainUser() /*no specific check*/, $method
 			);
 
 		} else {
@@ -137,21 +137,21 @@ class PermissionManager {
 	// so we query all parent groups to also check the privileges of them
 	private function getParentGroupsRecursively(Object $groupRessource) {
 		$parentGroups = [$groupRessource];
-		if($groupRessource instanceof ComputerGroup) {
+		if($groupRessource instanceof Models\ComputerGroup) {
 			while($groupRessource->parent_computer_group_id != null) {
 				$parentGroup = $this->db->getComputerGroup($groupRessource->parent_computer_group_id);
 				$parentGroups[] = $parentGroup;
 				$groupRessource = $parentGroup;
 			}
 
-		} else if($groupRessource instanceof PackageGroup) {
+		} else if($groupRessource instanceof Models\PackageGroup) {
 			while($groupRessource->parent_package_group_id != null) {
 				$parentGroup = $this->db->getPackageGroup($groupRessource->parent_package_group_id);
 				$parentGroups[] = $parentGroup;
 				$groupRessource = $parentGroup;
 			}
 
-		} else if($groupRessource instanceof ReportGroup) {
+		} else if($groupRessource instanceof Models\ReportGroup) {
 			while($groupRessource->parent_report_group_id != null) {
 				$parentGroup = $this->db->getReportGroup($groupRessource->parent_report_group_id);
 				$parentGroups[] = $parentGroup;
@@ -197,7 +197,7 @@ class PermissionManager {
 				foreach($this->permData[$ressourceGroupType] as $key => $item) {
 					if($key !== intval($group->id)) continue;
 
-					if($ressource instanceof ComputerGroup || $ressource instanceof PackageGroup || $ressource instanceof ReportGroup) {
+					if($ressource instanceof Models\ComputerGroup || $ressource instanceof Models\PackageGroup || $ressource instanceof Models\ReportGroup) {
 						// if we are checking the permission of a group object, read from the permission method directly inside the $item
 						if(isset($item[$method])) {
 							return ((bool) $item[$method]);
@@ -217,5 +217,3 @@ class PermissionManager {
 	}
 
 }
-
-class PermissionException extends Exception {}

@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 $group = null;
@@ -52,7 +52,7 @@ try {
 		<?php } ?>
 	</div>
 <?php } elseif($family !== null) {
-	$permissionCreate = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($family, PermissionManager::METHOD_CREATE, false);
+	$permissionCreate = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($family, PermissionManager::METHOD_CREATE, false);
 	$permissionWrite  = $currentSystemUser->checkPermission($family, PermissionManager::METHOD_WRITE, false);
 	$permissionDelete = $currentSystemUser->checkPermission($family, PermissionManager::METHOD_DELETE, false);
 ?>
@@ -77,8 +77,8 @@ try {
 	</span>
 <?php } else {
 	$subGroups = $cl->getPackageGroups(null);
-	$permissionCreatePackage = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new PackageFamily(), PermissionManager::METHOD_CREATE, false);
-	$permissionCreateGroup   = $currentSystemUser->checkPermission(new PackageGroup(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreatePackage = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup   = $currentSystemUser->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE, false);
 ?>
 	<h1><img src='img/package.dyn.svg'><span id='page-title'><?php echo LANG['complete_package_library']; ?></span></h1>
 	<div class='controls'>

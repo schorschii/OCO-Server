@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 ?>
 
@@ -53,10 +53,10 @@ require_once('../session.php');
 	<tr>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td>
-			<label><input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>'>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label><input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>'>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label><input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>'>&nbsp;<?php echo LANG['shutdown']; ?></label>
-			<label><input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo Package::POST_ACTION_EXIT; ?>'>&nbsp;<?php echo LANG['restart_agent']; ?></label>
+			<label><input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo Models\Package::POST_ACTION_NONE; ?>'>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label><input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo Models\Package::POST_ACTION_RESTART; ?>'>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label><input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo Models\Package::POST_ACTION_SHUTDOWN; ?>'>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label><input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo Models\Package::POST_ACTION_EXIT; ?>'>&nbsp;<?php echo LANG['restart_agent']; ?></label>
 		</td>
 	</tr>
 
@@ -77,9 +77,9 @@ require_once('../session.php');
 	<tr>
 		<th><?php echo LANG['after_completion']; ?></th>
 		<td>
-			<label><input type='radio' name='edit_package_uninstall_procedure_post_action' value='<?php echo Package::POST_ACTION_NONE; ?>'>&nbsp;<?php echo LANG['no_action']; ?></label>
-			<label><input type='radio' name='edit_package_uninstall_procedure_post_action' value='<?php echo Package::POST_ACTION_RESTART; ?>'>&nbsp;<?php echo LANG['restart']; ?></label>
-			<label><input type='radio' name='edit_package_uninstall_procedure_post_action' value='<?php echo Package::POST_ACTION_SHUTDOWN; ?>'>&nbsp;<?php echo LANG['shutdown']; ?></label>
+			<label><input type='radio' name='edit_package_uninstall_procedure_post_action' value='<?php echo Models\Package::POST_ACTION_NONE; ?>'>&nbsp;<?php echo LANG['no_action']; ?></label>
+			<label><input type='radio' name='edit_package_uninstall_procedure_post_action' value='<?php echo Models\Package::POST_ACTION_RESTART; ?>'>&nbsp;<?php echo LANG['restart']; ?></label>
+			<label><input type='radio' name='edit_package_uninstall_procedure_post_action' value='<?php echo Models\Package::POST_ACTION_SHUTDOWN; ?>'>&nbsp;<?php echo LANG['shutdown']; ?></label>
 		</td>
 	</tr>
 	<tr>

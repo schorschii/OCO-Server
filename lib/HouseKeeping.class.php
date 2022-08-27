@@ -24,13 +24,13 @@ class HouseKeeping {
 		foreach($this->db->getAllJobContainer() as $container) {
 			// purge old jobs
 			$icon = $this->db->getJobContainerIcon($container->id);
-			if($icon == JobContainer::STATUS_SUCCEEDED) {
+			if($icon == Models\JobContainer::STATUS_SUCCEEDED) {
 				if(time() - strtotime($container->execution_finished) > PURGE_SUCCEEDED_JOBS_AFTER) {
 					if($this->debug) echo('Remove succeeded job container #'.$container->id.' ('.$container->name.')'."\n");
 					$this->db->removeJobContainer($container->id);
 				}
 			}
-			elseif($icon == JobContainer::STATUS_FAILED) {
+			elseif($icon == Models\JobContainer::STATUS_FAILED) {
 				if(time() - strtotime($container->execution_finished) > PURGE_FAILED_JOBS_AFTER) {
 					if($this->debug) echo('Remove failed job container #'.$container->id.' ('.$container->name.')'."\n");
 					$this->db->removeJobContainer($container->id);
@@ -40,9 +40,9 @@ class HouseKeeping {
 			// set job state to expired if job container end date reached
 			if($container->end_time !== null && strtotime($container->end_time) < time()) {
 				foreach($this->db->getAllJobByContainer($container->id) as $job) {
-					if($job->state == Job::STATUS_WAITING_FOR_CLIENT || $job->state == Job::STATUS_DOWNLOAD_STARTED || $job->state == Job::STATUS_EXECUTION_STARTED) {
+					if($job->state == Models\Job::STATUS_WAITING_FOR_CLIENT || $job->state == Models\Job::STATUS_DOWNLOAD_STARTED || $job->state == Models\Job::STATUS_EXECUTION_STARTED) {
 						if($this->debug) echo('Set job #'.$job->id.' (container #'.$container->id.', '.$container->name.') state to EXPIRED'."\n");
-						$this->db->updateJobState($job->id, Job::STATUS_EXPIRED, NULL, '');
+						$this->db->updateJobState($job->id, Models\Job::STATUS_EXPIRED, NULL, '');
 					}
 				}
 			}
@@ -67,7 +67,7 @@ class HouseKeeping {
 					}
 					// send WOL packet
 					if($this->debug) echo('   Sending '.count($wolMacAddresses).' WOL Magic Packets'."\n");
-					wol($wolMacAddresses, $this->debug);
+					WakeOnLan::wol($wolMacAddresses, $this->debug);
 					// update WOL sent info in db
 					$this->db->updateJobContainer(
 						$container->id,
@@ -94,13 +94,13 @@ class HouseKeeping {
 						// Remove the "WOL Shutdown Set" flag to keep the shutdown forever.
 						if($c->isOnline() && time() - strtotime($j->wol_shutdown_set) < WOL_SHUTDOWN_EXPIRY_SECONDS) {
 							if($this->debug) echo('Host came up before WOL shutdown expiry. Keep shutdown of job #'.$j->id.' (in container #'.$container->id.' '.$container->name.') forever'."\n");
-							$this->db->removeWolShutdownJobInContainer($container->id, $j->id, Package::POST_ACTION_SHUTDOWN);
+							$this->db->removeWolShutdownJobInContainer($container->id, $j->id, Models\Package::POST_ACTION_SHUTDOWN);
 						}
 						// If the computer does not came up with WOL after a certain time, WOL didn't work -> remove the shutdown.
 						// It is likely that a user has now manually powered on the machine. Then, an automatic shutdown is not desired anymore.
 						if(time() - strtotime($j->wol_shutdown_set) > WOL_SHUTDOWN_EXPIRY_SECONDS) {
 							if($this->debug) echo('Remove expired WOL shutdown for job #'.$j->id.' (in container #'.$container->id.' '.$container->name.')'."\n");
-							$this->db->removeWolShutdownJobInContainer($container->id, $j->id, Package::POST_ACTION_NONE);
+							$this->db->removeWolShutdownJobInContainer($container->id, $j->id, Models\Package::POST_ACTION_NONE);
 						}
 					}
 				}

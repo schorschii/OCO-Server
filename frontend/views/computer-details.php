@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 // ----- prepare view -----
@@ -70,7 +70,7 @@ try {
 						</tr>
 						<tr>
 							<th><?php echo LANG['locale']; ?></th>
-							<td><?php echo htmlspecialchars(getLocaleNameByLcid($computer->os_locale)); ?></td>
+							<td><?php if(empty($computer->os_locale) || $computer->os_locale == '-' || $computer->os_locale == '?') echo htmlspecialchars($computer->os_locale); else echo htmlspecialchars(LangCodes::getLocaleNameByLcid($computer->os_locale)); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG['kernel_version']; ?></th>

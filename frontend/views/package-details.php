@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 // ----- prepare view -----
@@ -12,7 +12,7 @@ try {
 	$packageFamily = $db->getPackageFamily($package->package_family_id);
 	if($packageFamily === null) throw new NotFoundException();
 
-	$permissionCreate   = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
+	$permissionCreate   = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
 	$permissionDeploy   = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DEPLOY, false);
 	$permissionDownload = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false);
 	$permissionWrite    = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_WRITE, false);
@@ -138,9 +138,9 @@ try {
 								<span id='spnPackageInstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->install_procedure_post_action); ?></span>
 								<?php $info = '';
 								switch($package->install_procedure_post_action) {
-									case Package::POST_ACTION_RESTART: $info = LANG['restart']; break;
-									case Package::POST_ACTION_SHUTDOWN: $info = LANG['shutdown']; break;
-									case Package::POST_ACTION_EXIT: $info = LANG['restart_agent']; break;
+									case Models\Package::POST_ACTION_RESTART: $info = LANG['restart']; break;
+									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG['shutdown']; break;
+									case Models\Package::POST_ACTION_EXIT: $info = LANG['restart_agent']; break;
 									default: $info = LANG['no_action']; break;
 								}
 								echo htmlspecialchars($info);
@@ -168,8 +168,8 @@ try {
 								<span id='spnPackageUninstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->uninstall_procedure_post_action); ?></span>
 								<?php $info = '';
 								switch($package->uninstall_procedure_post_action) {
-									case Package::POST_ACTION_RESTART: $info = LANG['restart']; break;
-									case Package::POST_ACTION_SHUTDOWN: $info = LANG['shutdown']; break;
+									case Models\Package::POST_ACTION_RESTART: $info = LANG['restart']; break;
+									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG['shutdown']; break;
 									default: $info = LANG['no_action']; break;
 								}
 								echo htmlspecialchars($info);

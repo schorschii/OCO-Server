@@ -1,5 +1,5 @@
 <?php
-require_once('../lib/Loader.php');
+require_once('../loader.inc.php');
 
 
 ///// handle package download requests
@@ -33,7 +33,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 // get & log body
 $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
-$db->addLogEntry(Log::LEVEL_DEBUG, null, null, Log::ACTION_CLIENT_API_RAW, $body);
+$db->addLogEntry(Models\Log::LEVEL_DEBUG, null, null, Models\Log::ACTION_CLIENT_API_RAW, $body);
 
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
@@ -83,7 +83,7 @@ switch($srcdata['method']) {
 		}
 
 		// if job finished, we need to check the return code
-		if($state === Job::STATUS_SUCCEEDED) {
+		if($state === Models\Job::STATUS_SUCCEEDED) {
 			$successCodes = [];
 			foreach(explode(',', $job->success_return_codes) as $successCode) {
 				if(trim($successCode) === '') continue;
@@ -91,10 +91,10 @@ switch($srcdata['method']) {
 			}
 			// check if return code is a success return code if any valid return code found
 			if(count($successCodes) > 0) {
-				$state = Job::STATUS_FAILED;
+				$state = Models\Job::STATUS_FAILED;
 				foreach($successCodes as $successCode) {
 					if(intval($data['return-code']) === intval($successCode)) {
-						$state = Job::STATUS_SUCCEEDED;
+						$state = Models\Job::STATUS_SUCCEEDED;
 						break;
 					}
 				}
@@ -104,11 +104,11 @@ switch($srcdata['method']) {
 		// update job state in database
 		$db->updateComputerPing($computer->id);
 		$db->updateJobState($data['job-id'], $state, intval($data['return-code']), $data['message']);
-		$db->addLogEntry(Log::LEVEL_INFO, $params['hostname'], $computer->id, $srcdata['method'],
+		$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, $srcdata['method'],
 			['job_id'=>$data['job-id'], 'return_code'=>intval($data['return-code']), 'message'=>$data['message']]
 		);
 		// update computer-package assignment if job was successful
-		if($state === Job::STATUS_SUCCEEDED) {
+		if($state === Models\Job::STATUS_SUCCEEDED) {
 			if($job->is_uninstall == 0) {
 				$db->addPackageToComputer($job->package_id, $job->computer_id, $job->job_container_author, $job->package_procedure);
 			} elseif($job->is_uninstall == 1) {
@@ -120,7 +120,7 @@ switch($srcdata['method']) {
 			'success' => true,
 			'params' => [
 				'server-key' => $computer->server_key,
-				'job-succeeded' => ($state === Job::STATUS_SUCCEEDED),
+				'job-succeeded' => ($state === Models\Job::STATUS_SUCCEEDED),
 			]
 		];
 		break;
@@ -227,11 +227,11 @@ switch($srcdata['method']) {
 				}
 				// set post action
 				$restart = null; $shutdown = null; $exit = null;
-				if($pj['post_action'] == Package::POST_ACTION_RESTART)
+				if($pj['post_action'] == Models\Package::POST_ACTION_RESTART)
 					$restart = intval($pj['post_action_timeout'] ?? 1);
-				if($pj['post_action'] == Package::POST_ACTION_SHUTDOWN)
+				if($pj['post_action'] == Models\Package::POST_ACTION_SHUTDOWN)
 					$shutdown = intval($pj['post_action_timeout'] ?? 1);
-				if($pj['post_action'] == Package::POST_ACTION_EXIT)
+				if($pj['post_action'] == Models\Package::POST_ACTION_EXIT)
 					$exit = intval($pj['post_action_timeout'] ?? 1);
 				// add job to list
 				$jobs[] = [
@@ -247,7 +247,7 @@ switch($srcdata['method']) {
 				];
 			}
 
-			$db->addLogEntry(Log::LEVEL_DEBUG, $params['hostname'], $computer->id, $srcdata['method'],
+			$db->addLogEntry(Models\Log::LEVEL_DEBUG, $params['hostname'], $computer->id, $srcdata['method'],
 				['update'=>$update, 'software_jobs'=>$jobs]
 			);
 			$success = true;
@@ -339,7 +339,7 @@ switch($srcdata['method']) {
 				$data['software'] ?? [],
 				$logins
 			);
-			$db->addLogEntry(Log::LEVEL_INFO, $params['hostname'], $computer->id, $srcdata['method'],
+			$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, $srcdata['method'],
 				['updated'=>true]
 			);
 		} else {
@@ -382,7 +382,7 @@ function errorExit($httpCode, $hostname, $computer, $action, $message) {
 	error_log('api-agent: authentication failure');
 
 	// log into database
-	$db->addLogEntry(Log::LEVEL_WARNING, $hostname, $computer ? $computer->id : null, $action, json_encode(['error'=>$message]));
+	$db->addLogEntry(Models\Log::LEVEL_WARNING, $hostname, $computer ? $computer->id : null, $action, json_encode(['error'=>$message]));
 
 	// exit with error code
 	header('HTTP/1.1 '.$httpCode);

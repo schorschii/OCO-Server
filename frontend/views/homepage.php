@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once(__DIR__.'/../../lib/Loader.php');
+require_once(__DIR__.'/../../loader.inc.php');
 require_once(__DIR__.'/../session.php');
 
 // ----- prepare view -----
@@ -38,7 +38,7 @@ $used = $total - $free;
 				?>
 			</td>
 			<td class='center'>
-				<?php echo LANG['version'].' '.APP_VERSION.' '.APP_RELEASE; ?>
+				<?php echo LANG['version'].' '.OcoServer::APP_VERSION.' '.OcoServer::APP_RELEASE; ?>
 			</td>
 			<td class='center' colspan='2' title='<?php echo htmlspecialchars(niceSize($used).' / '.niceSize($total)); ?>'>
 				<div><?php echo LANG['disk_space']; ?></div>
@@ -49,11 +49,11 @@ $used = $total - $free;
 			</td>
 		</tr>
 		<tr>
-			<td class='center'><img src='img/users.dyn.svg'><br><?php echo $stats->domain_users.' '.LANG['users']; ?></td>
-			<td class='center'><img src='img/computer.dyn.svg'><br><?php echo $stats->computers.' '.LANG['computer']; ?></td>
-			<td class='center'><img src='img/package.dyn.svg'><br><?php echo $stats->packages.' '.LANG['packages']; ?></td>
-			<td class='center'><img src='img/job.dyn.svg'><br><?php echo $stats->jobs.' '.LANG['jobs']; ?></td>
-			<td class='center'><img src='img/report.dyn.svg'><br><?php echo $stats->reports.' '.LANG['reports']; ?></td>
+			<td class='center'><img src='img/users.dyn.svg'><br><?php echo $stats['domain_users'].' '.LANG['users']; ?></td>
+			<td class='center'><img src='img/computer.dyn.svg'><br><?php echo $stats['computers'].' '.LANG['computer']; ?></td>
+			<td class='center'><img src='img/package.dyn.svg'><br><?php echo $stats['packages'].' '.LANG['packages']; ?></td>
+			<td class='center'><img src='img/job.dyn.svg'><br><?php echo $stats['jobs'].' '.LANG['jobs']; ?></td>
+			<td class='center'><img src='img/report.dyn.svg'><br><?php echo $stats['reports'].' '.LANG['reports']; ?></td>
 		</tr>
 		<?php
 		// the message of the day is intentionally not escaped by htmlspecialchars() so you can format the text and insert links

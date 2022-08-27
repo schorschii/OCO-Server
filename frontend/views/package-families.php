@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 $subGroups = [];
@@ -9,8 +9,8 @@ $permissionCreateGroup   = false;
 try {
 	$families = $cl->getPackageFamilies();
 	$subGroups = $cl->getPackageGroups(null);
-	$permissionCreatePackage = $currentSystemUser->checkPermission(new Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new PackageFamily(), PermissionManager::METHOD_CREATE, false);
-	$permissionCreateGroup   = $currentSystemUser->checkPermission(new PackageGroup(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreatePackage = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup   = $currentSystemUser->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG['not_found']."</div>");
 } catch(PermissionException $e) {

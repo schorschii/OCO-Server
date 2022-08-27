@@ -1,6 +1,6 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../lib/Loader.php');
+require_once('../../loader.inc.php');
 require_once('../session.php');
 
 $tab = 'simple';
@@ -133,8 +133,8 @@ if(empty($default_job_container_name)) {
 							</label>
 						</div>
 						<div class='checkboxWithText'>
-							<input type='hidden' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_IGNORE_FAILED; ?>' checked='true'>
-							<input type='checkbox' id='chkAbortAfterError' name='sequence_mode' value='<?php echo JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>' <?php if(!empty(DEFAULTS['default-abort-after-error'])) echo 'checked'; ?>>
+							<input type='hidden' name='sequence_mode' value='<?php echo Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED; ?>' checked='true'>
+							<input type='checkbox' id='chkAbortAfterError' name='sequence_mode' value='<?php echo Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>' <?php if(!empty(DEFAULTS['default-abort-after-error'])) echo 'checked'; ?>>
 							<label for='chkAbortAfterError'>
 								<div><?php echo LANG['abort_after_failed']; ?></div>
 								<div class='hint'><?php echo LANG['abort_after_error_description']; ?></div>

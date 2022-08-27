@@ -59,5 +59,3 @@ class AuthenticationController {
 	}
 
 }
-
-class AuthenticationException extends Exception {}

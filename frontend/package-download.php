@@ -1,5 +1,5 @@
 <?php
-require_once('../lib/Loader.php');
+require_once('../loader.inc.php');
 require_once('session.php');
 
 // do not block other frontend requests

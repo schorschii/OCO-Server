@@ -1,5 +1,5 @@
 <?php
-require_once('../lib/Loader.php');
+require_once('../loader.inc.php');
 
 // check API enabled
 if(!CLIENT_API_ENABLED) {
@@ -16,7 +16,7 @@ $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
 
 // log complete request
-$db->addLogEntry(Log::LEVEL_DEBUG, null, null, Log::ACTION_CLIENT_API_RAW, $body);
+$db->addLogEntry(Models\Log::LEVEL_DEBUG, null, null, Models\Log::ACTION_CLIENT_API_RAW, $body);
 
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
@@ -31,7 +31,7 @@ try {
 	}
 	$authenticator = new AuthenticationController($db);
 	$user = $authenticator->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
-	if($user == null || !$user instanceof SystemUser) {
+	if($user == null || !$user instanceof Models\SystemUser) {
 		throw new AuthenticationException(LANG['unknown_error']);
 	}
 
@@ -41,9 +41,9 @@ try {
 
 	// login successful
 	$cl = new CoreLogic($db, $user);
-	$db->addLogEntry(Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], null, Log::ACTION_CLIENT_API, ['authenticated'=>true]);
+	$db->addLogEntry(Models\Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], null, Models\Log::ACTION_CLIENT_API, ['authenticated'=>true]);
 } catch(AuthenticationException $e) {
-	$db->addLogEntry(Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', null, Log::ACTION_CLIENT_API, ['authenticated'=>false]);
+	$db->addLogEntry(Models\Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', null, Models\Log::ACTION_CLIENT_API, ['authenticated'=>false]);
 
 	header('HTTP/1.1 401 Client Not Authorized');
 	error_log('api-agent: authentication failure');
