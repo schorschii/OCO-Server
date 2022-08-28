@@ -6,7 +6,7 @@ return [
 	'app_copyright' => '© <a href="https://georg-sieber.de" target="_blank">Georg Sieber</a> 2020-2022 | <a href="https://github.com/schorschii/oco-server" target="_blank">OCO-Projekt auf Github</a>',
 	'choose_admin_username' => 'Admin-Benutzername wählen...',
 	'choose_admin_password' => 'Admin-Kennwort wählen...',
-	'confirm_admin_apassword' => 'Admin-Kennwort bestätigen...',
+	'confirm_admin_password' => 'Admin-Kennwort bestätigen...',
 	'welcome_text' => 'Willkommen in der OCO-Webkonsole!',
 	'welcome_description' => 'Danke, dass Sie sich für OCO entschieden haben.',
 	'requested_view_does_not_exist' => 'Die angeforderte Ansicht existiert nicht',
