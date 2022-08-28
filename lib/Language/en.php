@@ -4,11 +4,14 @@
 	- Objects (Computers, Packages, Reports, Groups) are *created* while assignments are *added*
 	- Objects (Computers, Packages, Reports, Groups) are *deleted* while assignments are *removed*
 */
-const LANG = [
+return [
 	'app_name' => 'OCO IT Client Manager',
 	'project_name' => 'Open Computer Orchestration',
 	'app_subtitle' => 'Client inventory and software delivery made simple',
 	'app_copyright' => '© <a href="https://georg-sieber.de" target="_blank">Georg Sieber</a> 2020-2022 | <a href="https://github.com/schorschii/oco-server" target="_blank">OCO Project on Github</a>',
+	'choose_admin_username' => 'Choose admin username...',
+	'choose_admin_password' => 'Choose admin password...',
+	'confirm_admin_apassword' => 'Confirm admin password...',
 	'welcome_text' => 'Welcome to the OCO web console!',
 	'welcome_description' => 'Thank you for using OCO.',
 	'requested_view_does_not_exist' => 'The requested view does not exist',

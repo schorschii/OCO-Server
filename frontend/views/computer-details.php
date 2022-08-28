@@ -14,22 +14,22 @@ try {
 	$permissionWrite  = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_WRITE, false);
 	$permissionDelete = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_DELETE, false);
 } catch(NotFoundException $e) {
-	die("<div class='alert warning'>".LANG['not_found']."</div>");
+	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
-	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 } catch(InvalidRequestException $e) {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline() ? LANG['online'] : LANG['offline']); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
+	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline() ? LANG('online') : LANG('offline')); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentDeploy([],[],{<?php echo $computer->id; ?>:spnComputerName.innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-		<button onclick='showDialogEditComputer(<?php echo $computer->id; ?>, spnComputerName.innerText, spnComputerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
-		<button onclick='showDialogAddComputerToGroup(<?php echo $computer->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
-		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='refreshContentDeploy([],[],{<?php echo $computer->id; ?>:spnComputerName.innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
+		<button onclick='showDialogEditComputer(<?php echo $computer->id; ?>, spnComputerName.innerText, spnComputerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='showDialogAddComputerToGroup(<?php echo $computer->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
+		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<?php
 		if(count(COMPUTER_COMMANDS) > 0) echo "<span class='filler'></span>";
 		foreach(COMPUTER_COMMANDS as $c) {
@@ -41,123 +41,123 @@ try {
 
 <div id='tabControlComputer' class='tabcontainer'>
 	<div class='tabbuttons'>
-		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG['general_and_hardware']; ?></a>
-		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG['packages_and_jobs']; ?></a>
-		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG['recognised_software']; ?></a>
+		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('general_and_hardware'); ?></a>
+		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('packages_and_jobs'); ?></a>
+		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('recognised_software'); ?></a>
 	</div>
 	<div class='tabcontents'>
 
 		<div name='general' class='<?php if($tab=='general') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div>
-					<h2><?php echo LANG['general']; ?></h2>
+					<h2><?php echo LANG('general'); ?></h2>
 					<table class='list metadata'>
 						<tr>
-							<th><?php echo LANG['id']; ?></th>
+							<th><?php echo LANG('id'); ?></th>
 							<td><?php echo htmlspecialchars($computer->id); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['os']; ?></th>
+							<th><?php echo LANG('os'); ?></th>
 							<td><?php echo htmlspecialchars($computer->os); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['version']; ?></th>
+							<th><?php echo LANG('version'); ?></th>
 							<td><?php echo htmlspecialchars($computer->os_version); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['license']; ?></th>
-							<td><?php if($computer->os_license=='1') echo LANG['activated']; elseif($computer->os_license=='0') echo LANG['not_activated']; else echo htmlspecialchars($computer->os_license); ?></td>
+							<th><?php echo LANG('license'); ?></th>
+							<td><?php if($computer->os_license=='1') echo LANG('activated'); elseif($computer->os_license=='0') echo LANG('not_activated'); else echo htmlspecialchars($computer->os_license); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['locale']; ?></th>
-							<td><?php if(empty($computer->os_locale) || $computer->os_locale == '-' || $computer->os_locale == '?') echo htmlspecialchars($computer->os_locale); else echo htmlspecialchars(LangCodes::getLocaleNameByLcid($computer->os_locale)); ?></td>
+							<th><?php echo LANG('locale'); ?></th>
+							<td><?php if(empty($computer->os_locale) || $computer->os_locale == '-' || $computer->os_locale == '?') echo htmlspecialchars($computer->os_locale); else echo htmlspecialchars(LanguageCodes::getLocaleNameByLcid($computer->os_locale)); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['kernel_version']; ?></th>
+							<th><?php echo LANG('kernel_version'); ?></th>
 							<td><?php echo htmlspecialchars($computer->kernel_version); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['architecture']; ?></th>
+							<th><?php echo LANG('architecture'); ?></th>
 							<td><?php echo htmlspecialchars($computer->architecture); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['cpu']; ?></th>
+							<th><?php echo LANG('cpu'); ?></th>
 							<td><?php echo htmlspecialchars($computer->cpu); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['gpu']; ?></th>
+							<th><?php echo LANG('gpu'); ?></th>
 							<td><?php echo htmlspecialchars($computer->gpu); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['ram']; ?></th>
+							<th><?php echo LANG('ram'); ?></th>
 							<td><?php echo niceSize($computer->ram, true, 0); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['serial_no']; ?></th>
+							<th><?php echo LANG('serial_no'); ?></th>
 							<td><?php echo htmlspecialchars($computer->serial); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['vendor']; ?></th>
+							<th><?php echo LANG('vendor'); ?></th>
 							<td><?php echo htmlspecialchars($computer->manufacturer); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['model']; ?></th>
+							<th><?php echo LANG('model'); ?></th>
 							<td><?php echo htmlspecialchars($computer->model); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['bios_version']; ?></th>
+							<th><?php echo LANG('bios_version'); ?></th>
 							<td><?php echo htmlspecialchars($computer->bios_version); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['boot_type']; ?></th>
+							<th><?php echo LANG('boot_type'); ?></th>
 							<td><?php echo htmlspecialchars($computer->boot_type); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['secure_boot']; ?></th>
-							<td><?php if($computer->secure_boot=='1') echo LANG['yes']; elseif($computer->secure_boot=='0') echo LANG['no']; else echo htmlspecialchars($computer->secure_boot); ?></td>
+							<th><?php echo LANG('secure_boot'); ?></th>
+							<td><?php if($computer->secure_boot=='1') echo LANG('yes'); elseif($computer->secure_boot=='0') echo LANG('no'); else echo htmlspecialchars($computer->secure_boot); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['domain']; ?></th>
+							<th><?php echo LANG('domain'); ?></th>
 							<td><?php echo htmlspecialchars($computer->domain); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['agent_version']; ?></th>
+							<th><?php echo LANG('agent_version'); ?></th>
 							<td><?php echo htmlspecialchars($computer->agent_version); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['remote_address']; ?></th>
+							<th><?php echo LANG('remote_address'); ?></th>
 							<td><?php echo htmlspecialchars($computer->remote_address); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['uptime']; ?></th>
+							<th><?php echo LANG('uptime'); ?></th>
 							<td><?php if(!empty($computer->uptime)) echo niceTime($computer->uptime); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['created']; ?></th>
+							<th><?php echo LANG('created'); ?></th>
 							<td><?php echo htmlspecialchars($computer->created); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['last_seen']; ?></th>
+							<th><?php echo LANG('last_seen'); ?></th>
 							<td><?php echo htmlspecialchars($computer->last_ping); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['last_updated']; ?></th>
+							<th><?php echo LANG('last_updated'); ?></th>
 							<td class='subbuttons'>
-								<?php echo htmlspecialchars($computer->last_update.($computer->force_update ? ' ('.LANG['force_update'].')' : '')); ?>
+								<?php echo htmlspecialchars($computer->last_update.($computer->force_update ? ' ('.LANG('force_update').')' : '')); ?>
 								<?php if($permissionWrite) { ?>
-									<button onclick='event.stopPropagation();setComputerForceUpdate(<?php echo $computer->id; ?>, 1);return false'><img class='small' src='img/force-update.dyn.svg' title='<?php echo LANG['force_update']; ?>'></button>
+									<button onclick='event.stopPropagation();setComputerForceUpdate(<?php echo $computer->id; ?>, 1);return false'><img class='small' src='img/force-update.dyn.svg' title='<?php echo LANG('force_update'); ?>'></button>
 								<?php } ?>
 							</td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['assigned_groups']; ?></th>
+							<th><?php echo LANG('assigned_groups'); ?></th>
 							<td>
 								<?php
 								$res = $db->getGroupByComputer($computer->id);
 								$i = 0;
 								foreach($res as $group) {
 									echo "<a class='subbuttons' ".explorerLink('views/computers.php?id='.$group->id).">".wrapInSpanIfNotEmpty($db->getComputerGroupBreadcrumbString($group->id));
-									echo "<button onclick='event.stopPropagation();removeComputerFromGroup([".$computer->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.dyn.svg' title='".LANG['remove_from_group']."'></button>";
+									echo "<button onclick='event.stopPropagation();removeComputerFromGroup([".$computer->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.dyn.svg' title='".LANG('remove_from_group')."'></button>";
 									echo "</a>";
 									if(++$i != count($res)) { echo "<br>"; }
 								}
@@ -165,7 +165,7 @@ try {
 							</td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['notes']; ?></th>
+							<th><?php echo LANG('notes'); ?></th>
 							<td>
 								<span id='spnComputerNotes'><?php echo nl2br(htmlspecialchars($computer->notes)); ?></span>
 							</td>
@@ -173,14 +173,14 @@ try {
 					</table>
 				</div>
 				<div>
-					<h2><?php echo LANG['logins']; ?></h2>
+					<h2><?php echo LANG('logins'); ?></h2>
 					<table id='tblLoginsData' class='list sortable savesort'>
 						<thead>
 							<tr>
-								<th><?php echo LANG['login_name']; ?></th>
-								<th><?php echo LANG['display_name']; ?></th>
-								<th><?php echo LANG['count']; ?></th>
-								<th><?php echo LANG['last_login']; ?></th>
+								<th><?php echo LANG('login_name'); ?></th>
+								<th><?php echo LANG('display_name'); ?></th>
+								<th><?php echo LANG('count'); ?></th>
+								<th><?php echo LANG('last_login'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -201,15 +201,15 @@ try {
 
 			<div class='details-abreast'>
 				<div>
-					<h2><?php echo LANG['network']; ?></h2>
+					<h2><?php echo LANG('network'); ?></h2>
 					<table id='tblNetworkData' class='list sortable savesort'>
 						<thead>
 							<tr>
-								<th><?php echo LANG['ip_address']; ?></th>
-								<th><?php echo LANG['netmask']; ?></th>
-								<th><?php echo LANG['broadcast']; ?></th>
-								<th><?php echo LANG['mac_address']; ?></th>
-								<th><?php echo LANG['interface']; ?></th>
+								<th><?php echo LANG('ip_address'); ?></th>
+								<th><?php echo LANG('netmask'); ?></th>
+								<th><?php echo LANG('broadcast'); ?></th>
+								<th><?php echo LANG('mac_address'); ?></th>
+								<th><?php echo LANG('interface'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -235,17 +235,17 @@ try {
 					</table>
 				</div>
 				<div>
-					<h2><?php echo LANG['screens']; ?></h2>
+					<h2><?php echo LANG('screens'); ?></h2>
 					<table id='tblScreensData' class='list sortable savesort'>
 						<thead>
 							<tr>
-								<th><?php echo LANG['name']; ?></th>
-								<th><?php echo LANG['vendor']; ?></th>
-								<th><?php echo LANG['type']; ?></th>
-								<th><?php echo LANG['resolution']; ?></th>
-								<th><?php echo LANG['size']; ?></th>
-								<th><?php echo LANG['manufactured']; ?></th>
-								<th><?php echo LANG['serial_no']; ?></th>
+								<th><?php echo LANG('name'); ?></th>
+								<th><?php echo LANG('vendor'); ?></th>
+								<th><?php echo LANG('type'); ?></th>
+								<th><?php echo LANG('resolution'); ?></th>
+								<th><?php echo LANG('size'); ?></th>
+								<th><?php echo LANG('manufactured'); ?></th>
+								<th><?php echo LANG('serial_no'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -269,14 +269,14 @@ try {
 
 			<div class='details-abreast'>
 				<div>
-					<h2><?php echo LANG['printers']; ?></h2>
+					<h2><?php echo LANG('printers'); ?></h2>
 					<table id='tblPrinterData' class='list sortable savesort'>
 						<thead>
 							<tr>
-								<th><?php echo LANG['name']; ?></th>
-								<th><?php echo LANG['driver']; ?></th>
-								<th><?php echo LANG['address']; ?></th>
-								<th><?php echo LANG['status']; ?></th>
+								<th><?php echo LANG('name'); ?></th>
+								<th><?php echo LANG('driver'); ?></th>
+								<th><?php echo LANG('address'); ?></th>
+								<th><?php echo LANG('status'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -294,15 +294,15 @@ try {
 					</table>
 				</div>
 				<div>
-					<h2><?php echo LANG['file_systems']; ?></h2>
+					<h2><?php echo LANG('file_systems'); ?></h2>
 					<table id='tblFileSystemsData' class='list sortable savesort'>
 						<thead>
 							<tr>
-								<th><?php echo LANG['device']; ?></th>
-								<th><?php echo LANG['mountpoint']; ?></th>
-								<th><?php echo LANG['file_system']; ?></th>
-								<th><?php echo LANG['size']; ?></th>
-								<th><?php echo LANG['used']; ?></th>
+								<th><?php echo LANG('device'); ?></th>
+								<th><?php echo LANG('mountpoint'); ?></th>
+								<th><?php echo LANG('file_system'); ?></th>
+								<th><?php echo LANG('size'); ?></th>
+								<th><?php echo LANG('used'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -316,7 +316,7 @@ try {
 								echo '<td>'.htmlspecialchars($p->mountpoint).'</td>';
 								echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
-								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG['used'].': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG['free'].': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
+								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG('used').': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG('free').': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
 								echo '</tr>';
 							}
 							?>
@@ -329,14 +329,14 @@ try {
 		<div name='packages' class='<?php if($tab=='packages') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<h2><?php echo LANG['installed_packages']; ?></h2>
+					<h2><?php echo LANG('installed_packages'); ?></h2>
 					<table id='tblInstalledPackageData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
 								<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblInstalledPackageData, this.checked)'></th>
-								<th class='searchable sortable'><?php echo LANG['package']; ?></th>
-								<th class='searchable sortable'><?php echo LANG['initiator']; ?></th>
-								<th class='searchable sortable'><?php echo LANG['installation_date']; ?></th>
+								<th class='searchable sortable'><?php echo LANG('package'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('initiator'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('installation_date'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -358,14 +358,14 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
+											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='deploySelectedPackage("package_id[]", "package_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-											<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("package_id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
-											<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG['remove_assignment']; ?></button>
-											<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['uninstall']; ?></button>
+											<button onclick='deploySelectedPackage("package_id[]", "package_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+											<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("package_id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
+											<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG('remove_assignment'); ?></button>
+											<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
 										</div>
 									</div>
 								</td>
@@ -374,14 +374,14 @@ try {
 					</table>
 				</div>
 				<div class='stickytable'>
-					<h2><?php echo LANG['pending_jobs']; ?></h2>
+					<h2><?php echo LANG('pending_jobs'); ?></h2>
 					<table id='tblPendingComputerJobsData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
 								<!--<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPendingComputerJobsData, this.checked)'></th>-->
-								<th class='searchable sortable'><?php echo LANG['package']; ?></th>
-								<th class='searchable sortable'><?php echo LANG['job_container']; ?></th>
-								<th class='searchable sortable'><?php echo LANG['status']; ?></th>
+								<th class='searchable sortable'><?php echo LANG('package'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('job_container'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -392,8 +392,8 @@ try {
 								echo '<tr>';
 								//echo '<td><input type="checkbox" name="job_id[]" value="'.$j->id.'" onchange="refreshCheckedCounter(tblPendingComputerJobsData)"></td>';
 								echo '<td>';
-								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
-								else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
+								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
+								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
 								echo  '<a '.explorerLink('views/package-details.php?id='.$j->package_id).'>'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
 								echo '</td>';
 								echo '<td><a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
@@ -405,7 +405,7 @@ try {
 						<tfoot>
 							<tr>
 								<td colspan='999'>
-									<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+									<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
 								</td>
 							</tr>
 						</tfoot>
@@ -417,13 +417,13 @@ try {
 		<div name='software' class='<?php if($tab=='software') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<h2><?php echo LANG['recognised_software']; ?></h2>
+					<h2><?php echo LANG('recognised_software'); ?></h2>
 					<table id='tblSoftwareInventoryData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
-								<th class='searchable sortable'><?php echo LANG['name']; ?></th>
-								<th class='searchable sortable'><?php echo LANG['version']; ?></th>
-								<th class='searchable sortable'><?php echo LANG['description']; ?></th>
+								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('version'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('description'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -444,10 +444,10 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+											<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 										</div>
 									</div>
 								</td>
@@ -465,8 +465,7 @@ try {
 function echoCommandButton($c, $target, $link=false) {
 	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
 	$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);
-	$description = $c['description'];
-	if(array_key_exists($c['description'], LANG)) $description = LANG[$c['description']];
+	$description = LANG($c['description']);
 	if($c['new_tab']) {
 		if($link) {
 			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."' target='_blank'>";

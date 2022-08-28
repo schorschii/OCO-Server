@@ -13,13 +13,13 @@ if($db->existsSchema() && count($db->getAllSystemUser()) > 0) {
 // create initial admin user
 if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2'])) {
 	if(empty(trim($_POST['username']))) {
-		$info = LANG['username_cannot_be_empty'];
+		$info = LANG('username_cannot_be_empty');
 		$infoclass = 'error';
 	} elseif(empty(trim($_POST['password']))) {
-		$info = LANG['password_cannot_be_empty'];
+		$info = LANG('password_cannot_be_empty');
 		$infoclass = 'error';
 	} elseif($_POST['password'] !== $_POST['password2']) {
-		$info = LANG['passwords_do_not_match'];
+		$info = LANG('passwords_do_not_match');
 		$infoclass = 'error';
 	} else {
 		if(
@@ -32,7 +32,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 			header('Location: login.php');
 			die();
 		} else {
-			$info = LANG['database_error'];
+			$info = LANG('database_error');
 			$infoclass = 'error';
 		}
 	}
@@ -41,7 +41,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 <!DOCTYPE html>
 <html>
 <head>
-	<title>[<?php echo LANG['setup']; ?>] <?php echo LANG['app_name']; ?></title>
+	<title>[<?php echo LANG('setup'); ?>] <?php echo LANG('app_name'); ?></title>
 	<?php require_once('head.inc.php'); ?>
 </head>
 <body>
@@ -49,7 +49,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 <div id='container'>
 
 	<div id='header'>
-		<span class='left'><span class='title'><?php echo LANG['app_name']; ?></span></span>
+		<span class='left'><span class='title'><?php echo LANG('app_name'); ?></span></span>
 		<span class='right'>
 		</span>
 	</div>
@@ -57,14 +57,14 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 	<div id='login'>
 		<div id='login-form'>
 			<form method='POST' action='setup.php' onsubmit='btnFinish.disabled = true'>
-				<h1><?php echo LANG['setup']; ?></h1>
+				<h1><?php echo LANG('setup'); ?></h1>
 				<?php if($info !== null) { ?>
 					<div class='alert bold <?php echo $infoclass; ?>'><?php echo $info; ?></div>
 				<?php } ?>
-				<input type='text' name='username' placeholder='Admin-Benutzername wählen...' autofocus='true'>
-				<input type='password' name='password' placeholder='Kennwort wählen...'>
-				<input type='password' name='password2' placeholder='Kennwort bestätigen...'>
-				<button id='btnFinish'><?php echo LANG['done']; ?></button>
+				<input type='text' name='username' placeholder='<?php echo LANG('choose_admin_username'); ?>' autofocus='true'>
+				<input type='password' name='password' placeholder='<?php echo LANG('choose_admin_password'); ?>'>
+				<input type='password' name='password2' placeholder='<?php echo LANG('confirm_admin_password'); ?>'>
+				<button id='btnFinish'><?php echo LANG('done'); ?></button>
 			</form>
 			<img src='img/logo.dyn.svg'>
 		</div>

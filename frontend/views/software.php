@@ -4,13 +4,13 @@ require_once('../../loader.inc.php');
 require_once('../session.php');
 
 if(!$currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false))
-	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 ?>
 
 <?php
 if(!empty($_GET['id'])) {
 	$software = $db->getSoftware($_GET['id']);
-	if($software === null) die("<div class='alert warning'>".LANG['not_found']."</div>");
+	if($software === null) die("<div class='alert warning'>".LANG('not_found')."</div>");
 ?>
 
 
@@ -22,13 +22,13 @@ if(!empty($_GET['id'])) {
 <?php } ?>
 <div class='details-abreast'>
 	<div class='stickytable'>
-		<h2><?php echo LANG['installed_on']; ?></h2>
+		<h2><?php echo LANG('installed_on'); ?></h2>
 		<table id='tblSoftwareComputerData1' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th class='searchable sortable'><?php echo LANG['hostname']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['os']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['version']; ?></th>
+					<th class='searchable sortable'><?php echo LANG('hostname'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('os'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('version'); ?></th>
 				</tr>
 			</thead>
 			<?php
@@ -47,10 +47,10 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
+								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData1")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData1")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -71,12 +71,12 @@ if(!empty($_GET['id'])) {
 </div>
 <div class='details-abreast'>
 	<div class='stickytable'>
-		<h2><?php echo LANG['installed_on']; ?></h2>
+		<h2><?php echo LANG('installed_on'); ?></h2>
 		<table id='tblSoftwareComputerData2' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th class='searchable sortable'><?php echo LANG['hostname']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['version']; ?></th>
+					<th class='searchable sortable'><?php echo LANG('hostname'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('version'); ?></th>
 				</tr>
 			</thead>
 			<?php
@@ -94,10 +94,10 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
+								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData2")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareComputerData2")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -112,30 +112,30 @@ if(!empty($_GET['id'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/software.dyn.svg'><span id='page-title'><?php echo LANG['recognised_software']; ?></span></h1>
+	<h1><img src='img/software.dyn.svg'><span id='page-title'><?php echo LANG('recognised_software'); ?></span></h1>
 </div>
 <div class='details-abreast'>
 	<div class='stickytable'>
 		<?php $software = [];
 		if(isset($_GET['os']) && $_GET['os'] == 'windows') {
-			echo "<h2>".LANG['windows']."</h2>";
+			echo "<h2>".LANG('windows')."</h2>";
 			$software = $db->getAllSoftwareNamesWindows();
 		} elseif(isset($_GET['os']) && $_GET['os'] == 'macos') {
-			echo "<h2>".LANG['macos']."</h2>";
+			echo "<h2>".LANG('macos')."</h2>";
 			$software = $db->getAllSoftwareNamesMacOS();
 		} elseif(isset($_GET['os']) && $_GET['os'] == 'other') {
-			echo "<h2>".LANG['linux']."</h2>";
+			echo "<h2>".LANG('linux')."</h2>";
 			$software = $db->getAllSoftwareNamesOther();
 		} else {
-			echo "<h2>".LANG['all_os']."</h2>";
+			echo "<h2>".LANG('all_os')."</h2>";
 			$software = $db->getAllSoftwareNames();
 		}
 		?>
 		<table id='tblSoftwareData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
-				<th class='searchable sortable'><?php echo LANG['name']; ?></th>
-				<th class='searchable sortable'><?php echo LANG['installations']; ?></th>
+				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('installations'); ?></th>
 			</tr>
 		</thead>
 		<?php
@@ -153,10 +153,10 @@ if(!empty($_GET['id'])) {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>
+							<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+							<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 						</div>
 					</div>
 				</td>

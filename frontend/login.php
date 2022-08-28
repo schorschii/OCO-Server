@@ -16,10 +16,10 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 	try {
 		$authenticator = new AuthenticationController($db);
 		$user = $authenticator->login($_POST['username'], $_POST['password']);
-		if($user == null || !$user instanceof Models\SystemUser) throw new Exception(LANG['unknown_error']);
+		if($user == null || !$user instanceof Models\SystemUser) throw new Exception(LANG('unknown_error'));
 
 		if(!$user->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND, false)) {
-			throw new AuthenticationException(LANG['web_interface_login_not_allowed']);
+			throw new AuthenticationException(LANG('web_interface_login_not_allowed'));
 		}
 
 		// login successful
@@ -45,7 +45,7 @@ elseif(isset($_GET['logout'])) {
 		$db->addLogEntry(Models\Log::LEVEL_INFO, $_SESSION['oco_username'], null, Models\Log::ACTION_CLIENT_WEB, ['logout'=>true]);
 		session_unset();
 		session_destroy();
-		$info = LANG['log_out_successful'];
+		$info = LANG('log_out_successful');
 		$infoclass = 'success';
 	}
 }
@@ -59,7 +59,7 @@ if(!empty($_SESSION['oco_username'])) {
 <!DOCTYPE html>
 <html>
 <head>
-	<title>[<?php echo LANG['login']; ?>] <?php echo LANG['app_name']; ?></title>
+	<title>[<?php echo LANG('login'); ?>] <?php echo LANG('app_name'); ?></title>
 	<?php require_once('head.inc.php'); ?>
 </head>
 <body>
@@ -68,7 +68,7 @@ if(!empty($_SESSION['oco_username'])) {
 
 	<div id='header'>
 		<span class='left'>
-			<a href='#' class='title'><?php echo LANG['app_name']; ?></a>
+			<a href='#' class='title'><?php echo LANG('app_name'); ?></a>
 		</span>
 		<span class='right'>
 		</span>
@@ -80,13 +80,13 @@ if(!empty($_SESSION['oco_username'])) {
 				<img src='img/ietroll.png'>
 			<?php } else { ?>
 				<form method='POST' action='login.php' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
-					<h1><?php echo LANG['login']; ?></h1>
+					<h1><?php echo LANG('login'); ?></h1>
 					<?php if($info !== null) { ?>
 						<div class='alert bold <?php echo $infoclass; ?>'><?php echo $info; ?></div>
 					<?php } ?>
-					<input id='txtUsername' type='text' name='username' placeholder='<?php echo LANG['username']; ?>' autofocus='true'>
-					<input id='txtPassword' type='password' name='password' placeholder='<?php echo LANG['password']; ?>'>
-					<button id='btnLogin' class='primary'><?php echo LANG['log_in']; ?></button>
+					<input id='txtUsername' type='text' name='username' placeholder='<?php echo LANG('username'); ?>' autofocus='true'>
+					<input id='txtPassword' type='password' name='password' placeholder='<?php echo LANG('password'); ?>'>
+					<button id='btnLogin' class='primary'><?php echo LANG('log_in'); ?></button>
 				</form>
 				<img src='img/logo.dyn.svg'>
 			<?php } ?>

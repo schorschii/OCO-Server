@@ -1246,7 +1246,7 @@ class DatabaseController {
 					':old_state' => Models\Job::STATUS_WAITING_FOR_CLIENT,
 					':state' => Models\Job::STATUS_FAILED,
 					':return_code' => Models\JobContainer::RETURN_CODE_ABORT_AFTER_FAILED,
-					':message' => LANG['aborted_after_failed'],
+					':message' => LANG('aborted_after_failed'),
 				]);
 			}
 		}
@@ -1664,7 +1664,7 @@ class DatabaseController {
 		}
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup');
 		foreach($reports as $report) {
-			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
+			$report->name = LANG($report->name);
 		}
 		usort($reports, function($a, $b) {
 			return strnatcmp($a->name, $b->name);
@@ -1677,7 +1677,7 @@ class DatabaseController {
 		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup') as $row) {
-			if(!empty(LANG[$row->name])) $row->name = LANG[$row->name];
+			$row->name = LANG($row->name);
 			return $row;
 		}
 	}
@@ -1757,7 +1757,7 @@ class DatabaseController {
 		$this->stmt->execute();
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report');
 		foreach($reports as $report) {
-			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
+			$report->name = LANG($report->name);
 		}
 		usort($reports, function($a, $b) {
 			return strnatcmp($a->name, $b->name);
@@ -1769,7 +1769,7 @@ class DatabaseController {
 		$this->stmt->execute();
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report');
 		foreach($reports as $key => $report) {
-			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
+			$report->name = LANG($report->name);
 			if(strpos(strtoupper($report->name), strtoupper($name)) === false) unset($reports[$key]);
 		}
 		usort($reports, function($a, $b) {
@@ -1785,7 +1785,7 @@ class DatabaseController {
 		$this->stmt->execute([':report_group_id' => $groupId]);
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report');
 		foreach($reports as $report) {
-			if(!empty(LANG[$report->name])) $report->name = LANG[$report->name];
+			$report->name = LANG($report->name);
 		}
 		usort($reports, function($a, $b) {
 			return strnatcmp($a->name, $b->name);
@@ -1798,7 +1798,7 @@ class DatabaseController {
 		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report') as $row) {
-			if(!empty(LANG[$row->name])) $row->name = LANG[$row->name];
+			$row->name = LANG($row->name);
 			return $row;
 		}
 	}

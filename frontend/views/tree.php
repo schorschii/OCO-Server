@@ -5,11 +5,11 @@ require_once('../session.php');
 ?>
 
 <div id='divNodeDomainUsers' class='node'>
-	<a <?php echo explorerLink('views/domain-users.php'); ?>><img src='img/users.dyn.svg'><?php echo LANG['users']; ?></a>
+	<a <?php echo explorerLink('views/domain-users.php'); ?>><img src='img/users.dyn.svg'><?php echo LANG('users'); ?></a>
 </div>
 
 <div class='node expandable'>
-	<a <?php echo explorerLink('views/computers.php'); ?>><img src='img/computer.dyn.svg'><?php echo LANG['computer']; ?></a>
+	<a <?php echo explorerLink('views/computers.php'); ?>><img src='img/computer.dyn.svg'><?php echo LANG('computer'); ?></a>
 	<div id='divNodeComputers' class='subitems'>
 		<?php echo getComputerGroupsHtml($cl); ?>
 	</div>
@@ -17,24 +17,24 @@ require_once('../session.php');
 
 <?php if($currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
 <div class='node expandable'>
-	<a <?php echo explorerLink('views/software.php'); ?>><img src='img/software.dyn.svg'><?php echo LANG['recognised_software']; ?></a>
+	<a <?php echo explorerLink('views/software.php'); ?>><img src='img/software.dyn.svg'><?php echo LANG('recognised_software'); ?></a>
 	<div id='divSubnodeSoftware' class='subitems'>
-		<a <?php echo explorerLink('views/software.php?os=other'); ?>><img src='img/linux.dyn.svg'><?php echo LANG['linux']; ?></a>
-		<a <?php echo explorerLink('views/software.php?os=macos'); ?>><img src='img/apple.dyn.svg'><?php echo LANG['macos']; ?></a>
-		<a <?php echo explorerLink('views/software.php?os=windows'); ?>><img src='img/windows.dyn.svg'><?php echo LANG['windows']; ?></a>
+		<a <?php echo explorerLink('views/software.php?os=other'); ?>><img src='img/linux.dyn.svg'><?php echo LANG('linux'); ?></a>
+		<a <?php echo explorerLink('views/software.php?os=macos'); ?>><img src='img/apple.dyn.svg'><?php echo LANG('macos'); ?></a>
+		<a <?php echo explorerLink('views/software.php?os=windows'); ?>><img src='img/windows.dyn.svg'><?php echo LANG('windows'); ?></a>
 	</div>
 </div>
 <?php } ?>
 
 <div class='node expandable'>
-	<a <?php echo explorerLink('views/package-families.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG['packages']; ?></a>
+	<a <?php echo explorerLink('views/package-families.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG('packages'); ?></a>
 	<div id='divNodePackages' class='subitems'>
 		<?php echo getPackageGroupsHtml($cl); ?>
 	</div>
 </div>
 
 <div id='divNodeJobs' class='node expandable'>
-	<a <?php echo explorerLink('views/job-containers.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG['jobs']; ?></a>
+	<a <?php echo explorerLink('views/job-containers.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG('jobs'); ?></a>
 	<div id='divSubnodeJobs' class='subitems'>
 		<?php
 		foreach($cl->getJobContainers() as $container) {
@@ -45,7 +45,7 @@ require_once('../session.php');
 </div>
 
 <div class='node expandable'>
-	<a <?php echo explorerLink('views/reports.php'); ?>><img src='img/report.dyn.svg'><?php echo LANG['reports']; ?></a>
+	<a <?php echo explorerLink('views/reports.php'); ?>><img src='img/report.dyn.svg'><?php echo LANG('reports'); ?></a>
 	<div id='divSubnodeReports' class='subitems'>
 		<?php echo getReportGroupsHtml($cl); ?>
 	</div>

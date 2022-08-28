@@ -2,7 +2,6 @@
 
 // static imports
 require_once(__DIR__.'/conf.php');
-require_once(__DIR__.'/lib/Lang.php');
 require_once(__DIR__.'/lib/Tools.php');
 
 // dynamic class imports

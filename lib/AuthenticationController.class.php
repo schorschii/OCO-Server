@@ -18,7 +18,7 @@ class AuthenticationController {
 		$user = $this->db->getSystemUserByLogin($username);
 		if($user === null) {
 			sleep(2); // delay to avoid brute force attacks
-			throw new AuthenticationException(LANG['user_does_not_exist']);
+			throw new AuthenticationException(LANG('user_does_not_exist'));
 		} else {
 			if(!$user->locked) {
 				if($this->checkPassword($user, $password)) {
@@ -26,11 +26,11 @@ class AuthenticationController {
 					return $user;
 				} else {
 					sleep(2);
-					throw new AuthenticationException(LANG['login_failed']);
+					throw new AuthenticationException(LANG('login_failed'));
 				}
 			} else {
 				sleep(1);
-				throw new AuthenticationException(LANG['user_locked']);
+				throw new AuthenticationException(LANG('user_locked'));
 			}
 		}
 		return false;

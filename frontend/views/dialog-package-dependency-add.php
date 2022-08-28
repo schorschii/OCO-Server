@@ -26,23 +26,23 @@ function echoTargetPackageGroupOptions($parent=null) {
 <input type='hidden' id='txtSetAsDependentPackage' value='0'></input>
 <div class='gallery'>
 	<div>
-		<h3><?php echo LANG['package_selection']; ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
+		<h3><?php echo LANG('package_selection'); ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
 		<div class='listSearch'>
-			<input type='checkbox' title='<?php echo LANG['select_all']; ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked);refreshDeployPackageCount()'>
-			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG['search_placeholder']; ?>' oninput='searchItems(divPackageList, this.value)'>
+			<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked);refreshDeployPackageCount()'>
+			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divPackageList, this.value)'>
 		</div>
 		<div id='divPackageList' class='box listSearchList'>
-			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 			<?php echoTargetPackageGroupOptions(); ?>
 		</div>
 		<div id='divPackageListHome' class='box listSearchList hidden'>
-			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG['all_packages']; ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 			<?php echoTargetPackageGroupOptions(); ?>
 		</div>
 	</div>
 </div>
 
 <div class='controls right'>
-	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG['close']; ?></button>
-	<button class='primary' onclick='if(txtSetAsDependentPackage.value=="1") addPackageDependency(getSelectedCheckBoxValues("packages"), [txtEditPackageId.value]); else addPackageDependency([txtEditPackageId.value], getSelectedCheckBoxValues("packages"));'><img src='img/send.white.svg'>&nbsp;<?php echo LANG['add']; ?></button>
+	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='primary' onclick='if(txtSetAsDependentPackage.value=="1") addPackageDependency(getSelectedCheckBoxValues("packages"), [txtEditPackageId.value]); else addPackageDependency([txtEditPackageId.value], getSelectedCheckBoxValues("packages"));'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 </div>

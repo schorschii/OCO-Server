@@ -12,20 +12,20 @@ try {
 	$permissionCreatePackage = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
 	$permissionCreateGroup   = $currentSystemUser->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE, false);
 } catch(NotFoundException $e) {
-	die("<div class='alert warning'>".LANG['not_found']."</div>");
+	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
-	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 } catch(InvalidRequestException $e) {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
 ?>
 
-<h1><img src='img/package-family.dyn.svg'><span id='page-title'><?php echo LANG['package_families']; ?></span></h1>
+<h1><img src='img/package-family.dyn.svg'><span id='page-title'><?php echo LANG('package_families'); ?></span></h1>
 <div class='controls'>
-	<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_package']; ?></button>
-	<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG['new_group']; ?></button>
+	<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_package'); ?></button>
+	<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
 	<span class='filler'></span>
-	<span><a <?php echo explorerLink('views/packages.php'); ?>><?php echo LANG['all_packages']; ?></a></span>
+	<span><a <?php echo explorerLink('views/packages.php'); ?>><?php echo LANG('all_packages'); ?></a></span>
 </div>
 
 <?php if(!empty($subGroups)) { ?>
@@ -42,11 +42,11 @@ try {
 		<thead>
 			<tr>
 				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageFamilyData, this.checked)'></th>
-				<th class='searchable sortable'><?php echo LANG['name']; ?></th>
-				<th class='searchable sortable'><?php echo LANG['description']; ?></th>
-				<th class='searchable sortable'><?php echo LANG['count']; ?></th>
-				<th class='searchable sortable'><?php echo LANG['newest']; ?></th>
-				<th class='searchable sortable'><?php echo LANG['oldest']; ?></th>
+				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('description'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('count'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('newest'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('oldest'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -70,12 +70,12 @@ try {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
+							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='event.preventDefault();downloadTableCsv("tblPackageFamilyData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
-							<button onclick='removeSelectedPackageFamily("package_family_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+							<button onclick='event.preventDefault();downloadTableCsv("tblPackageFamilyData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button onclick='removeSelectedPackageFamily("package_family_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>

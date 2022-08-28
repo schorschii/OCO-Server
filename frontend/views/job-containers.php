@@ -11,9 +11,9 @@ if(!empty($_GET['id'])) {
 		$permissionWrite  = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_WRITE, false);
 		$permissionDelete = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_DELETE, false);
 	} catch(NotFoundException $e) {
-		die("<div class='alert warning'>".LANG['not_found']."</div>");
+		die("<div class='alert warning'>".LANG('not_found')."</div>");
 	} catch(PermissionException $e) {
-		die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+		die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 	} catch(InvalidRequestException $e) {
 		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
@@ -34,75 +34,75 @@ if(!empty($_GET['id'])) {
 	<div class='details-header'>
 		<h1><img src='img/<?php echo $icon; ?>.dyn.svg' class='<?php echo($container->enabled ? 'online' : 'offline'); ?>'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 		<div class='controls'>
-			<button onclick='showDialogEditJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText, spnJobContainerEnabled.innerText, spnJobContainerStartTime.innerText, spnJobContainerEndTime.innerText, spnJobContainerSequenceMode.innerText, spnJobContainerPriority.innerText, spnJobContainerAgentIpRanges.innerText, spnJobContainerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
-			<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG['renew']; ?>")' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG['renew_failed_jobs']; ?></button>
-			<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+			<button onclick='showDialogEditJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText, spnJobContainerEnabled.innerText, spnJobContainerStartTime.innerText, spnJobContainerEndTime.innerText, spnJobContainerSequenceMode.innerText, spnJobContainerPriority.innerText, spnJobContainerAgentIpRanges.innerText, spnJobContainerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG('renew'); ?>")' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('renew_failed_jobs'); ?></button>
+			<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 			<span class='filler'></span>
 		</div>
 	</div>
 
 	<div class='details-abreast'>
 	<div>
-		<h2><?php echo LANG['general']; ?></h2>
+		<h2><?php echo LANG('general'); ?></h2>
 		<table class='list metadata'>
 			<tr>
-				<th><?php echo LANG['id']; ?></th>
+				<th><?php echo LANG('id'); ?></th>
 				<td><?php echo htmlspecialchars($container->id); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['author']; ?></th>
+				<th><?php echo LANG('author'); ?></th>
 				<td><?php echo htmlspecialchars($container->author); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['created']; ?></th>
+				<th><?php echo LANG('created'); ?></th>
 				<td><?php echo htmlspecialchars($container->created); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['enabled']; ?></th>
+				<th><?php echo LANG('enabled'); ?></th>
 				<td>
-					<?php if($container->enabled=='1') echo LANG['yes']; else echo LANG['no']; ?>
+					<?php if($container->enabled=='1') echo LANG('yes'); else echo LANG('no'); ?>
 					<span id='spnJobContainerEnabled' class='rawvalue'><?php echo htmlspecialchars($container->enabled); ?></span>
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['start']; ?></th>
+				<th><?php echo LANG('start'); ?></th>
 				<td>
 					<span id='spnJobContainerStartTime'><?php echo htmlspecialchars($container->start_time); ?></span>
-					<?php if($container->wol_sent >= 0) echo ' ('.LANG['wol'].')'; if($container->shutdown_waked_after_completion > 0) echo ' ('.LANG['shutdown_waked_computers'].')'; ?>
+					<?php if($container->wol_sent >= 0) echo ' ('.LANG('wol').')'; if($container->shutdown_waked_after_completion > 0) echo ' ('.LANG('shutdown_waked_computers').')'; ?>
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['end']; ?></th>
+				<th><?php echo LANG('end'); ?></th>
 				<td>
 					<?php echo htmlspecialchars($container->end_time ?? "-"); ?>
 					<span id='spnJobContainerEndTime' class='rawvalue'><?php echo htmlspecialchars($container->end_time ?? ""); ?></span>
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['sequence_mode']; ?></th>
+				<th><?php echo LANG('sequence_mode'); ?></th>
 				<td>
 					<span id='spnJobContainerSequenceMode' class='rawvalue'><?php echo htmlspecialchars($container->sequence_mode); ?></span>
 					<?php switch($container->sequence_mode) {
-						case(Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED): echo LANG['ignore_failed']; break;
-						case(Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED): echo LANG['abort_after_failed']; break;
+						case(Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED): echo LANG('ignore_failed'); break;
+						case(Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED): echo LANG('abort_after_failed'); break;
 						default: echo htmlspecialchars($container->sequence_mode);
 					} ?>
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['priority']; ?></th>
+				<th><?php echo LANG('priority'); ?></th>
 				<td>
 					<span id='spnJobContainerPriority'><?php echo htmlspecialchars($container->priority); ?></span>
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['agent_ip_range']; ?></th>
+				<th><?php echo LANG('agent_ip_range'); ?></th>
 				<td>
 					<span id='spnJobContainerAgentIpRanges'><?php echo htmlspecialchars($container->agent_ip_ranges); ?></span>
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['description']; ?></th>
+				<th><?php echo LANG('description'); ?></th>
 				<td>
 					<span id='spnJobContainerNotes'><?php echo nl2br(htmlspecialchars($container->notes)); ?></span>
 				</td>
@@ -110,14 +110,14 @@ if(!empty($_GET['id'])) {
 		</table>
 	</div>
 	<div>
-		<h2><?php echo LANG['state']; ?></h2>
+		<h2><?php echo LANG('state'); ?></h2>
 		<table class='list metadata'>
 			<tr>
-				<th><?php echo LANG['progress']; ?></th>
+				<th><?php echo LANG('progress'); ?></th>
 				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, 'stretch', ''); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['total_runtime']; ?></th>
+				<th><?php echo LANG('total_runtime'); ?></th>
 				<td><?php
 				if(strtotime($container->start_time) > time()) {
 					echo htmlspecialchars('-');
@@ -139,7 +139,7 @@ if(!empty($_GET['id'])) {
 				?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG['effective_runtime']; ?></th>
+				<th><?php echo LANG('effective_runtime'); ?></th>
 				<td><?php
 				$minTimeJob = $db->getJobContainerMinJobExecution($container->id);
 				$maxTimeJob = $db->getJobContainerMaxJobExecution($container->id);
@@ -163,17 +163,17 @@ if(!empty($_GET['id'])) {
 
 	<div class='details-abreast'>
 	<div class='stickytable'>
-		<h2><?php echo LANG['jobs']; ?></h2>
+		<h2><?php echo LANG('jobs'); ?></h2>
 		<table id='tblJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
 					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobData, this.checked)'></th>
-					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['package']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['procedure']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['order']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['status']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['finished']; ?></th>
+					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('package'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('procedure'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('order'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('status'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('finished'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -185,12 +185,12 @@ if(!empty($_GET['id'])) {
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
 				echo "<td><a ".explorerLink('views/package-details.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle monospace' title='".htmlspecialchars($job->package_procedure, ENT_QUOTES)."'>";
-				if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG['install']."'>&nbsp;";
-				else echo "<img src='img/delete.dyn.svg' title='".LANG['uninstall']."'>&nbsp;";
+				if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
+				else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
 				echo htmlspecialchars(shorter($job->package_procedure));
-				if($job->post_action == Models\Package::POST_ACTION_RESTART) echo ' ('.LANG['restart_after'].' '.intval($job->post_action_timeout).' '.LANG['minutes'].')';
-				if($job->post_action == Models\Package::POST_ACTION_SHUTDOWN) echo ' ('.LANG['shutdown_after'].' '.intval($job->post_action_timeout).' '.LANG['minutes'].')';
-				if($job->post_action == Models\Package::POST_ACTION_EXIT) echo ' ('.LANG['restart_agent'].')';
+				if($job->post_action == Models\Package::POST_ACTION_RESTART) echo ' ('.LANG('restart_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
+				if($job->post_action == Models\Package::POST_ACTION_SHUTDOWN) echo ' ('.LANG('shutdown_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
+				if($job->post_action == Models\Package::POST_ACTION_EXIT) echo ' ('.LANG('restart_agent').')';
 				echo "</td>";
 				echo "<td>".htmlspecialchars($job->sequence)."</td>";
 				if(!empty($job->message)) {
@@ -203,7 +203,7 @@ if(!empty($_GET['id'])) {
 				}
 				$downloadTime = (!empty($job->download_started)&&!empty($job->execution_started)) ? strtotime($job->execution_started)-strtotime($job->download_started) : 0;
 				$executionTime = (!empty($job->execution_started)&&!empty($job->execution_finished)) ? strtotime($job->execution_finished)-strtotime($job->execution_started) : 0;
-				echo "<td title='".LANG['execution_time'].': '.niceTime($downloadTime+$executionTime)."'>".htmlspecialchars($job->execution_finished)."</td>";
+				echo "<td title='".LANG('execution_time').': '.niceTime($downloadTime+$executionTime)."'>".htmlspecialchars($job->execution_finished)."</td>";
 				echo "</tr>";
 			} ?>
 			</tbody>
@@ -212,13 +212,13 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>,
+								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
-								<button onclick='showDialogMoveJobToContainer(getSelectedCheckBoxValues("job_id[]", null, true))' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/move.dyn.svg'>&nbsp;<?php echo LANG['move']; ?></button>
-								<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button onclick='showDialogMoveJobToContainer(getSelectedCheckBoxValues("job_id[]", null, true))' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/move.dyn.svg'>&nbsp;<?php echo LANG('move'); ?></button>
+								<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -235,18 +235,18 @@ if(!empty($_GET['id'])) {
 		$containers = $cl->getJobContainers();
 		$permissionCreate = $currentSystemUser->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE, false);
 	} catch(NotFoundException $e) {
-		die("<div class='alert warning'>".LANG['not_found']."</div>");
+		die("<div class='alert warning'>".LANG('not_found')."</div>");
 	} catch(PermissionException $e) {
-		die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+		die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 	} catch(InvalidRequestException $e) {
 		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
 ?>
 
-	<h1><img src='img/job.dyn.svg'><span id='page-title'><?php echo LANG['job_container']; ?></span></h1>
+	<h1><img src='img/job.dyn.svg'><span id='page-title'><?php echo LANG('job_container'); ?></span></h1>
 
 	<div class='controls'>
-		<button onclick='refreshContentDeploy()' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['new_deployment_job']; ?></button>
+		<button onclick='refreshContentDeploy()' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_deployment_job'); ?></button>
 		<span class='filler'></span>
 	</div>
 
@@ -256,14 +256,14 @@ if(!empty($_GET['id'])) {
 			<thead>
 				<tr>
 					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobcontainerData, this.checked)'></th>
-					<th class='searchable sortable'><?php echo LANG['name']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['author']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['created']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['start']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['end']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['priority']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['description']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['progress']; ?></th>
+					<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('author'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('start'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('end'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('priority'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('description'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('progress'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -300,12 +300,12 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG['elements']; ?>,
-								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>,
+								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblJobcontainerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
-								<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblJobcontainerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>
 					</td>

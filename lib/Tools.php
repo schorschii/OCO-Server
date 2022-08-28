@@ -1,5 +1,9 @@
 <?php
 
+function LANG($key) {
+	return LanguageController::getMessage($key);
+}
+
 function startsWith( $haystack, $needle ) {
 	$length = strlen( $needle );
 	return substr( $haystack, 0, $length ) === $needle;
@@ -31,10 +35,10 @@ function niceSize($value, $useBinary=true, $round=1, $echoZeroIfEmpty=false) {
 
 function niceTime($seconds) {
 	if($seconds < 60)
-		return sprintf('%d '.LANG['seconds'], $seconds);
+		return sprintf('%d '.LANG('seconds'), $seconds);
 	elseif($seconds < 60*60*24)
-		return sprintf('%d '.LANG['hours'].', %d '.LANG['minutes'], ($seconds/3600), ($seconds/60%60));
-	else return round($seconds/60/60/24).' '.LANG['days'];
+		return sprintf('%d '.LANG('hours').', %d '.LANG('minutes'), ($seconds/3600), ($seconds/60%60));
+	else return round($seconds/60/60/24).' '.LANG('days');
 }
 
 function wrapInSpanIfNotEmpty($text) {
@@ -47,7 +51,7 @@ function progressBar($percent, $cid=null, $tid=null, $class=''/*hidden big stret
 	return
 		'<span class="progressbar-container '.$class.'" style="--progress:'.$percent.'%; '.$style.'" '.($cid==null ? '' : 'id="'.htmlspecialchars($cid).'"').'>'
 			.'<span class="progressbar"><span class="progress"></span></span>'
-			.'<span class="progresstext" '.($tid==null ? '' : 'id="'.htmlspecialchars($tid).'"').'>'.(strpos($class,'animated')!==false ? LANG['in_progress'] : $percent.'%').'</span>'
+			.'<span class="progresstext" '.($tid==null ? '' : 'id="'.htmlspecialchars($tid).'"').'>'.(strpos($class,'animated')!==false ? LANG('in_progress') : $percent.'%').'</span>'
 		.'</span>';
 }
 
@@ -87,7 +91,7 @@ function isIpInRange($ip, $range) {
 	$range_decimal = ip2long( $range );
 	$ip_decimal = ip2long( $ip );
 	if($range_decimal === false || $ip_decimal === false) {
-		throw new Exception(LANG['invalid_ip_address']);
+		throw new Exception(LANG('invalid_ip_address'));
 	}
 	$wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
 	$netmask_decimal = ~ $wildcard_decimal;

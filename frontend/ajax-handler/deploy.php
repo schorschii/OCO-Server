@@ -12,7 +12,7 @@ try {
 		if(empty($group)) $computers = $db->getAllComputer();
 		else $computers = $db->getComputerByGroup($group->id);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG['back']."</a>";
+		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($computers as $c) {
 			if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
@@ -23,7 +23,7 @@ try {
 	if(isset($_GET['get_computer_report_results'])) {
 		$reportResult = $cl->executeReport($_GET['get_computer_report_results']);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG['back']."</a>";
+		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($reportResult as $row) {
 			if(empty($row['computer_id'])) continue;
 			$c = $db->getComputer($row['computer_id']);
@@ -39,7 +39,7 @@ try {
 		if(empty($group)) $packages = $db->getAllPackage(true);
 		else $packages = $db->getPackageByGroup($group->id);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG['back']."</a>";
+		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($packages as $p) {
 			if(!$currentSystemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
@@ -50,7 +50,7 @@ try {
 	if(isset($_GET['get_package_report_results'])) {
 		$reportResult = $cl->executeReport($_GET['get_package_report_results']);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG['back']."</a>";
+		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($reportResult as $row) {
 			if(empty($row['package_id'])) continue;
 			$p = $db->getPackage($row['package_id']);
@@ -135,11 +135,11 @@ try {
 
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
-	die(LANG['permission_denied']);
+	die(LANG('permission_denied'));
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
 	die($e->getMessage());
 }
 
 header('HTTP/1.1 400 Invalid Request');
-die(LANG['unknown_method']);
+die(LANG('unknown_method'));

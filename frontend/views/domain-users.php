@@ -13,9 +13,9 @@ if(!empty($_GET['id'])) {
 		$permissionEntry = $currentSystemUser->getPermissionEntry(PermissionManager::RESSOURCE_TYPE_DOMAIN_USER, PermissionManager::METHOD_READ);
 		if(isset($permissionEntry['history_limit'])) $historyLimit = intval($permissionEntry['history_limit']);
 	} catch(NotFoundException $e) {
-		die("<div class='alert warning'>".LANG['not_found']."</div>");
+		die("<div class='alert warning'>".LANG('not_found')."</div>");
 	} catch(PermissionException $e) {
-		die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+		die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 	} catch(InvalidRequestException $e) {
 		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
@@ -27,13 +27,13 @@ if(!empty($_GET['id'])) {
 </div>
 <div class='details-abreast'>
 	<div class='stickytable'>
-		<h2><?php echo LANG['aggregated_logins']; ?></h2>
+		<h2><?php echo LANG('aggregated_logins'); ?></h2>
 		<table id='tblDomainUserDetailData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['count']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
+					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('count'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('last_login'); ?></th>
 				</tr>
 			</thead>
 			<?php
@@ -52,10 +52,10 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserDetailData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserDetailData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -64,13 +64,13 @@ if(!empty($_GET['id'])) {
 		</table>
 	</div>
 	<div class='stickytable'>
-		<h2><?php echo LANG['history']; ?></h2>
+		<h2><?php echo LANG('history'); ?></h2>
 		<table id='tblDomainUserHistoryData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th class='searchable sortable'><?php echo LANG['computer']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['console']; ?></th>
-					<th class='searchable sortable'><?php echo LANG['timestamp']; ?></th>
+					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('console'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
 				</tr>
 			</thead>
 			<?php
@@ -83,7 +83,7 @@ if(!empty($_GET['id'])) {
 				echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 				echo "</tr>";
 				if(!empty($historyLimit) && $counter >= $historyLimit) {
-					echo "<tr><td colspan='999'><div class='alert warning'>".LANG['restricted_view']."</div></td></tr>";
+					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
 					break;
 				}
 			}
@@ -93,10 +93,10 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>
+								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserHistoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserHistoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -112,9 +112,9 @@ if(!empty($_GET['id'])) {
 	try {
 		$domainUsers = $cl->getDomainUsers();
 	} catch(NotFoundException $e) {
-		die("<div class='alert warning'>".LANG['not_found']."</div>");
+		die("<div class='alert warning'>".LANG('not_found')."</div>");
 	} catch(PermissionException $e) {
-		die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+		die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 	} catch(InvalidRequestException $e) {
 		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
@@ -122,7 +122,7 @@ if(!empty($_GET['id'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/users.dyn.svg'><span id='page-title'><?php echo LANG['all_domain_user']; ?></span></h1>
+	<h1><img src='img/users.dyn.svg'><span id='page-title'><?php echo LANG('all_domain_user'); ?></span></h1>
 </div>
 <div class='details-abreast margintop'>
 	<div class='stickytable'>
@@ -130,11 +130,11 @@ if(!empty($_GET['id'])) {
 		<thead>
 			<tr>
 				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDomainUserData, this.checked)'></th>
-				<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
-				<th class='searchable sortable'><?php echo LANG['display_name']; ?></th>
-				<th class='searchable sortable'><?php echo LANG['logons']; ?></th>
-				<th class='searchable sortable'><?php echo LANG['computers']; ?></th>
-				<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
+				<th class='searchable sortable'><?php echo LANG('login_name'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('logons'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('computers'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('last_login'); ?></th>
 			</tr>
 		</thead>
 		<?php
@@ -156,12 +156,12 @@ if(!empty($_GET['id'])) {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
+							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
-							<button onclick='confirmRemoveSelectedDomainUser("domain_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+							<button onclick='event.preventDefault();downloadTableCsv("tblDomainUserData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button onclick='confirmRemoveSelectedDomainUser("domain_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>

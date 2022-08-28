@@ -68,13 +68,13 @@ class CoreLogic {
 
 		$finalHostname = trim($hostname);
 		if(empty($finalHostname)) {
-			throw new InvalidRequestException(LANG['hostname_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('hostname_cannot_be_empty'));
 		}
 		if($this->db->getComputerByName($finalHostname) !== null) {
-			throw new InvalidRequestException(LANG['hostname_already_exists']);
+			throw new InvalidRequestException(LANG('hostname_already_exists'));
 		}
 		$insertId = $this->db->addComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, ''/*Agent Key*/, ''/*Server Key*/);
-		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.computer.create', ['hostname'=>$finalHostname, 'notes'=>$notes]);
 		return $insertId;
 	}
@@ -85,14 +85,14 @@ class CoreLogic {
 
 		$finalHostname = trim($hostname);
 		if(empty($finalHostname)) {
-			throw new InvalidRequestException(LANG['hostname_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('hostname_cannot_be_empty'));
 		}
 		$checkComputer = $this->db->getComputerByName($finalHostname);
 		if($checkComputer !== null && intval($checkComputer->id) !== intval($id)) {
-			throw new InvalidRequestException(LANG['hostname_already_exists']);
+			throw new InvalidRequestException(LANG('hostname_already_exists'));
 		}
 		$result = $this->db->updateComputer($computer->id, $finalHostname, $notes);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['hostname'=>$finalHostname]);
 		return $result;
 	}
@@ -102,7 +102,7 @@ class CoreLogic {
 		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
 
 		$result = $this->db->updateComputerForceUpdate($computer->id, $newValue);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['force_update'=>$newValue]);
 		return $result;
 	}
@@ -119,7 +119,7 @@ class CoreLogic {
 			}
 		}
 		if(count($wolMacAdresses) == 0) {
-			throw new Exception(LANG['no_mac_addresses_for_wol']);
+			throw new Exception(LANG('no_mac_addresses_for_wol'));
 		}
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, null, 'oco.computer.wol', $wolMacAdresses);
 		WakeOnLan::wol($wolMacAdresses, $debugOutput);
@@ -132,10 +132,10 @@ class CoreLogic {
 
 		if(!$force) {
 			$jobs = $this->db->getPendingJobsForComputerDetailPage($id);
-			if(count($jobs) > 0) throw new InvalidRequestException(LANG['delete_failed_active_jobs']);
+			if(count($jobs) > 0) throw new InvalidRequestException(LANG('delete_failed_active_jobs'));
 		}
 		$result = $this->db->removeComputer($computer->id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.delete', []);
 		return $result;
 	}
@@ -149,10 +149,10 @@ class CoreLogic {
 		}
 
 		if(empty(trim($name))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$insertId = $this->db->addComputerGroup($name, $parentGroupId);
-		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.computer_group.create', ['name'=>$name, 'parent_computer_group_id'=>$parentGroupId]);
 		return $insertId;
 	}
@@ -162,7 +162,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newName))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$this->db->renameComputerGroup($computerGroup->id, $newName);
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.update', ['name'=>$newName]);
@@ -197,10 +197,10 @@ class CoreLogic {
 
 		if(!$force) {
 			$subgroups = $this->db->getAllComputerGroup($id);
-			if(count($subgroups) > 0) throw new InvalidRequestException(LANG['delete_failed_subgroups']);
+			if(count($subgroups) > 0) throw new InvalidRequestException(LANG('delete_failed_subgroups'));
 		}
 		$result = $this->db->removeComputerGroup($id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.delete', []);
 		return $result;
 	}
@@ -277,10 +277,10 @@ class CoreLogic {
 			$fileName = basename($tmpFilePath);
 		}
 		if(empty($name) || empty($installProcedure) || empty($version)) {
-			throw new InvalidRequestException(LANG['please_fill_required_fields']);
+			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
 		if(!empty($this->db->getPackageByNameVersion($name, $version))) {
-			throw new InvalidRequestException(LANG['package_exists_with_version']);
+			throw new InvalidRequestException(LANG('package_exists_with_version'));
 		}
 		// decide what to do with uploaded file
 		if($tmpFilePath != null && file_exists($tmpFilePath)) {
@@ -290,7 +290,7 @@ class CoreLogic {
 				$newTmpFilePath = '/tmp/ocotmparchive.zip';
 				$zip = new ZipArchive();
 				if(!$zip->open($newTmpFilePath, ZipArchive::CREATE)) {
-					throw new Exception(LANG['cannot_create_zip_file']);
+					throw new Exception(LANG('cannot_create_zip_file'));
 				}
 				$zip->addFile($tmpFilePath, basename($fileName));
 				$zip->close();
@@ -310,7 +310,7 @@ class CoreLogic {
 			$packageFamilyId = $existingPackageFamily->id;
 		}
 		if(!$packageFamilyId) {
-			throw new Exception(LANG['database_error']);
+			throw new Exception(LANG('database_error'));
 		}
 		$insertId = $this->db->addPackage(
 			$packageFamilyId, $version,
@@ -325,7 +325,7 @@ class CoreLogic {
 			$compatibleOs, $compatibleOsVersion
 		);
 		if(!$insertId) {
-			throw new Exception(LANG['database_error']);
+			throw new Exception(LANG('database_error'));
 		}
 		// move file to payload dir
 		if($tmpFilePath != null && file_exists($tmpFilePath)) {
@@ -335,7 +335,7 @@ class CoreLogic {
 			if(!$result) {
 				error_log('Can not move uploaded file to: '.$finalFilePath);
 				$this->db->removePackage($insertId);
-				throw new Exception(LANG['cannot_move_uploaded_file']);
+				throw new Exception(LANG('cannot_move_uploaded_file'));
 			}
 		}
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.package.create', ['package_family_id'=>$packageFamilyId, 'version'=>$version]);
@@ -371,17 +371,17 @@ class CoreLogic {
 
 		if(!$force) {
 			$jobs = $this->db->getPendingJobsForPackageDetailPage($id);
-			if(count($jobs) > 0) throw new InvalidRequestException(LANG['delete_failed_active_jobs']);
+			if(count($jobs) > 0) throw new InvalidRequestException(LANG('delete_failed_active_jobs'));
 
 			$dependentPackages = $this->db->getDependentForPackages($id);
-			if(count($dependentPackages) > 0) throw new InvalidRequestException(LANG['delete_failed_dependent_packages']);
+			if(count($dependentPackages) > 0) throw new InvalidRequestException(LANG('delete_failed_dependent_packages'));
 		}
 
 		$path = $package->getFilePath();
 		if(!empty($path)) unlink($path);
 
 		$result = $this->db->removePackage($package->id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.delete', []);
 		return $result;
 	}
@@ -391,10 +391,10 @@ class CoreLogic {
 		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_DELETE);
 
 		$packages = $this->db->getPackageByFamily($id);
-		if(count($packages) > 0) throw new InvalidRequestException(LANG['delete_failed_package_family_contains_packages']);
+		if(count($packages) > 0) throw new InvalidRequestException(LANG('delete_failed_package_family_contains_packages'));
 
 		$result = $this->db->removePackageFamily($id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.delete', []);
 		return $result;
 	}
@@ -408,10 +408,10 @@ class CoreLogic {
 		}
 
 		if(empty(trim($name))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$insertId = $this->db->addPackageGroup($name, $parentGroupId);
-		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.package_group.create', ['name'=>$name, 'parent_packge_group_id'=>$parentGroupId]);
 		return $insertId;
 	}
@@ -422,11 +422,11 @@ class CoreLogic {
 
 		if(!$force) {
 			$subgroups = $this->db->getAllPackageGroup($id);
-			if(count($subgroups) > 0) throw new InvalidRequestException(LANG['delete_failed_subgroups']);
+			if(count($subgroups) > 0) throw new InvalidRequestException(LANG('delete_failed_subgroups'));
 		}
 
 		$result = $this->db->removePackageGroup($id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.delete', []);
 		return $result;
 	}
@@ -436,7 +436,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newName))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$this->db->updatePackageFamily($packageFamily->id, $newName, $packageFamily->notes, $packageFamily->icon);
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.update', ['name'=>$newName]);
@@ -489,18 +489,18 @@ class CoreLogic {
 		$this->systemUser->checkPermission($package_family, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($version))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		if(!is_numeric($installProcedurePostAction)
 		|| !in_array($installProcedurePostAction, [Models\Package::POST_ACTION_NONE, Models\Package::POST_ACTION_RESTART, Models\Package::POST_ACTION_SHUTDOWN, Models\Package::POST_ACTION_EXIT])) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(!is_numeric($uninstallProcedurePostAction)
 		|| !in_array($uninstallProcedurePostAction, [Models\Package::POST_ACTION_NONE, Models\Package::POST_ACTION_RESTART, Models\Package::POST_ACTION_SHUTDOWN])) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(intval($downloadForUninstall) !== 0 && intval($downloadForUninstall) !== 1) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 
 		$this->db->updatePackage($package->id,
@@ -546,7 +546,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_DELETE);
 
 		if(empty(trim($newName))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$this->db->renamePackageGroup($packageGroup->id, $newName);
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.update', ['name'=>$newName]);
@@ -576,22 +576,22 @@ class CoreLogic {
 
 		// check user input
 		if(empty(trim($name))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		if(empty($restartTimeout) || empty($dateStart) || strtotime($dateStart) === false) {
-			throw new InvalidRequestException(LANG['please_fill_required_fields']);
+			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
 		if(!empty($dateEnd) // check end date if not empty
 		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
 		) {
-			throw new InvalidRequestException(LANG['end_time_before_start_time']);
+			throw new InvalidRequestException(LANG('end_time_before_start_time'));
 		}
 		if($sequenceMode != Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED
 		&& $sequenceMode != Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if($priority < -100 || $priority > 100) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 
 		// check if given IDs exists and add them to a consolidated array
@@ -673,7 +673,7 @@ class CoreLogic {
 
 		// check if there are any computer & packages
 		if(count($computer_ids) == 0 || count($packages) == 0) {
-			throw new InvalidRequestException(LANG['no_jobs_created']);
+			throw new InvalidRequestException(LANG('no_jobs_created'));
 		}
 
 		// wol handling
@@ -852,22 +852,22 @@ class CoreLogic {
 
 		// check user input
 		if(empty(trim($name))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		if(empty($restartTimeout) || empty($dateStart) || strtotime($dateStart) === false) {
-			throw new InvalidRequestException(LANG['please_fill_required_fields']);
+			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
 		if(!empty($dateEnd) // check end date if not empty
 		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
 		) {
-			throw new InvalidRequestException(LANG['end_time_before_start_time']);
+			throw new InvalidRequestException(LANG('end_time_before_start_time'));
 		}
 		if($sequenceMode != Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED
 		&& $sequenceMode != Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if($priority < -100 || $priority > 100) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 
 		// wol handling
@@ -900,7 +900,7 @@ class CoreLogic {
 
 		// check if there are any computer & packages
 		if(count($computer_ids) == 0) {
-			throw new InvalidRequestException(LANG['no_jobs_created']);
+			throw new InvalidRequestException(LANG('no_jobs_created'));
 		}
 
 		// create jobs
@@ -946,7 +946,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 
 		$result = $this->db->removeComputerAssignedPackage($id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_assignment', ['computer_id'=>$computer->id]);
 		return $result;
 	}
@@ -958,22 +958,22 @@ class CoreLogic {
 
 		// check user input
 		if(empty(trim($name))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		if(empty($dateStart) || strtotime($dateStart) === false) {
-			throw new InvalidRequestException(LANG['please_fill_required_fields']);
+			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
 		if(!empty($dateEnd) // check end date if not empty
 		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
 		) {
-			throw new InvalidRequestException(LANG['end_time_before_start_time']);
+			throw new InvalidRequestException(LANG('end_time_before_start_time'));
 		}
 		if($sequenceMode != Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED
 		&& $sequenceMode != Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if($priority < -100 || $priority > 100) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 
 		// get old job container
@@ -1053,7 +1053,7 @@ class CoreLogic {
 			// check if there are any computer & packages
 			if(count($jobs) == 0) {
 				$this->db->removeJobContainer($jcid);
-				throw new InvalidRequestException(LANG['no_jobs_created']);
+				throw new InvalidRequestException(LANG('no_jobs_created'));
 			}
 
 			// if instant WOL: check if computers are currently online (to know if we should shut them down after all jobs are done)
@@ -1070,31 +1070,31 @@ class CoreLogic {
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($name))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		if(!in_array($enabled, ['0', '1'])) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(DateTime::createFromFormat('Y-m-d H:i:s', $start_time) === false) {
-			throw new InvalidRequestException(LANG['date_parse_error']);
+			throw new InvalidRequestException(LANG('date_parse_error'));
 		}
 		if(!empty($end_time) && DateTime::createFromFormat('Y-m-d H:i:s', $end_time) === false) {
-			throw new InvalidRequestException(LANG['date_parse_error']);
+			throw new InvalidRequestException(LANG('date_parse_error'));
 		}
 		if(empty($end_time)) {
 			$end_time = null;
 		} else {
 			if(strtotime($jc->start_time) > strtotime($end_time)) {
-				throw new InvalidRequestException(LANG['end_time_before_start_time']);
+				throw new InvalidRequestException(LANG('end_time_before_start_time'));
 			}
 		}
 		if(!is_numeric($sequence_mode)
 		|| !in_array($sequence_mode, [Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED, Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED])) {
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
 			error_log($priority);
-			throw new InvalidRequestException(LANG['invalid_input']);
+			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 
 		$this->db->updateJobContainer($jc->id,
@@ -1144,7 +1144,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_DELETE);
 
 		$result = $this->db->removeJobContainer($id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.delete', []);
 		return $result;
 	}
@@ -1156,7 +1156,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_DELETE);
 
 		$result = $this->db->removeJob($id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $job->id, 'oco.job.delete', ['job_container_id'=>$jc->id]);
 		return $result;
 	}
@@ -1214,10 +1214,10 @@ class CoreLogic {
 		}
 
 		if(empty(trim($name)) || empty(trim($query))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$insertId = $this->db->addReport($groupId, $name, $notes, $query);
-		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.report.create', ['name'=>$name, 'notes'=>$notes, 'query'=>$query, 'report_group_id'=>$groupId]);
 		return $insertId;
 	}
@@ -1227,7 +1227,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($name)) || empty(trim($query))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$this->db->updateReport($report->id, $report->report_group_id, $name, $notes, $query);
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.update', ['name'=>$name, 'notes'=>$notes, 'query'=>$query]);
@@ -1249,7 +1249,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_DELETE);
 
 		$result = $this->db->removeReport($report->id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.delete', []);
 		return $result;
 	}
@@ -1263,10 +1263,10 @@ class CoreLogic {
 		}
 
 		if(empty(trim($name))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$insertId = $this->db->addReportGroup($name, $parentGroupId);
-		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.report_group.create', ['name'=>$name, 'parent_report_group_id'=>$parentGroupId]);
 		return $insertId;
 	}
@@ -1276,7 +1276,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newName))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$this->db->renameReportGroup($reportGroup->id, $newName);
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $reportGroup->id, 'oco.report_group.update', ['name'=>$newName]);
@@ -1288,10 +1288,10 @@ class CoreLogic {
 
 		if(!$force) {
 			$subgroups = $this->db->getAllReportGroup($id);
-			if(count($subgroups) > 0) throw new InvalidRequestException(LANG['delete_failed_subgroups']);
+			if(count($subgroups) > 0) throw new InvalidRequestException(LANG('delete_failed_subgroups'));
 		}
 		$result = $this->db->removeReportGroup($reportGroup->id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $reportGroup->id, 'oco.report_group.delete', []);
 		return $result;
 	}
@@ -1343,13 +1343,13 @@ class CoreLogic {
 
 		if(empty(trim($username))
 		|| empty(trim($display_name))) {
-			throw new InvalidRequestException(LANG['name_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		if(empty(trim($password))) {
-			throw new InvalidRequestException(LANG['password_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('password_cannot_be_empty'));
 		}
 		if($this->db->getSystemUserByLogin($username) !== null) {
-			throw new InvalidRequestException(LANG['username_already_exists']);
+			throw new InvalidRequestException(LANG('username_already_exists'));
 		}
 
 		$insertId = $this->db->addSystemUser(
@@ -1357,7 +1357,7 @@ class CoreLogic {
 			password_hash($password, PASSWORD_DEFAULT),
 			0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, $description, 0/*locked*/, $roleId
 		);
-		if(!$insertId) throw new Exception(LANG['unknown_error']);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.system_user.create', [
 			'username'=>$username,
 			'display_name'=>$display_name,
@@ -1370,7 +1370,7 @@ class CoreLogic {
 		if($this->systemUser->ldap) throw new Exception('Password of LDAP account cannot be modified');
 
 		if(empty(trim($newPassword))) {
-			throw new InvalidRequestException(LANG['password_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('password_cannot_be_empty'));
 		}
 
 		try {
@@ -1379,7 +1379,7 @@ class CoreLogic {
 				throw new AuthenticationException();
 			}
 		} catch(AuthenticationException $e) {
-			throw new InvalidRequestException(LANG['old_password_is_not_correct']);
+			throw new InvalidRequestException(LANG('old_password_is_not_correct'));
 		}
 
 		$newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
@@ -1402,24 +1402,24 @@ class CoreLogic {
 			|| $checkDescription !== $description
 			|| $u->system_user_role_id !== $roleId
 			|| !empty($password)) {
-				throw new InvalidRequestException(LANG['ldap_accounts_cannot_be_modified']);
+				throw new InvalidRequestException(LANG('ldap_accounts_cannot_be_modified'));
 			}
 		}
 
 		if(empty(trim($username))) {
-			throw new InvalidRequestException(LANG['username_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('username_cannot_be_empty'));
 		}
 		$checkUser = $this->db->getSystemUserByLogin($username);
 		if($checkUser !== null && $checkUser->id !== $u->id) {
-			throw new InvalidRequestException(LANG['username_already_exists']);
+			throw new InvalidRequestException(LANG('username_already_exists'));
 		}
 		if(empty(trim($display_name))) {
-			throw new InvalidRequestException(LANG['username_cannot_be_empty']);
+			throw new InvalidRequestException(LANG('username_cannot_be_empty'));
 		}
 		$newPassword = $u->password;
 		if(!empty($password)) {
 			if(empty(trim($password))) {
-				throw new InvalidRequestException(LANG['password_cannot_be_empty']);
+				throw new InvalidRequestException(LANG('password_cannot_be_empty'));
 			}
 			$newPassword = password_hash($password, PASSWORD_DEFAULT);
 		}
@@ -1454,7 +1454,7 @@ class CoreLogic {
 		if($u === null) throw new NotFoundException();
 
 		$result = $this->db->removeSystemUser($id);
-		if(!$result) throw new Exception(LANG['unknown_error']);
+		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.delete', []);
 		return $result;
 	}

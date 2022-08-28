@@ -4,7 +4,7 @@ require_once('../../loader.inc.php');
 require_once('../session.php');
 
 if(empty($_GET['query'])) {
-	echo LANG['no_search_results'];
+	echo LANG('no_search_results');
 	die();
 }
 
@@ -58,6 +58,6 @@ $counter = 0;
 
 <?php
 if($counter == 0) {
-	die(LANG['no_search_results']);
+	die(LANG('no_search_results'));
 }
 ?>

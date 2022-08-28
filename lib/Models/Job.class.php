@@ -68,25 +68,25 @@ class Job {
 		}
 		if($this->state == self::STATUS_WAITING_FOR_CLIENT) {
 			$startTimeParsed = strtotime($this->job_container_start_time);
-			if($startTimeParsed !== false && $startTimeParsed > time()) return LANG['waiting_for_start'];
-			return LANG['waiting_for_agent'];
+			if($startTimeParsed !== false && $startTimeParsed > time()) return LANG('waiting_for_start');
+			return LANG('waiting_for_agent');
 		}
 		elseif($this->state == self::STATUS_FAILED)
-			return LANG['failed'].$returnCodeString;
+			return LANG('failed').$returnCodeString;
 		elseif($this->state == self::STATUS_EXPIRED)
-			return LANG['expired'];
+			return LANG('expired');
 		elseif($this->state == self::STATUS_OS_INCOMPATIBLE)
-			return LANG['incompatible'];
+			return LANG('incompatible');
 		elseif($this->state == self::STATUS_PACKAGE_CONFLICT)
-			return LANG['package_conflict'];
+			return LANG('package_conflict');
 		elseif($this->state == self::STATUS_ALREADY_INSTALLED)
-			return LANG['already_installed'];
+			return LANG('already_installed');
 		elseif($this->state == self::STATUS_DOWNLOAD_STARTED)
-			return LANG['download_started'];
+			return LANG('download_started');
 		elseif($this->state == self::STATUS_EXECUTION_STARTED)
-			return LANG['execution_started'];
+			return LANG('execution_started');
 		elseif($this->state == self::STATUS_SUCCEEDED)
-			return LANG['succeeded'].$returnCodeString;
+			return LANG('succeeded').$returnCodeString;
 		else return $this->state;
 	}
 

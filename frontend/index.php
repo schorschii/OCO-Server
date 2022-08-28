@@ -28,7 +28,7 @@ if(!empty($_GET['view'])) {
 <!DOCTYPE html>
 <html>
 <head>
-	<title><?php echo LANG['app_name']; ?></title>
+	<title><?php echo LANG('app_name'); ?></title>
 	<?php require_once('head.inc.php'); ?>
 	<!--
 		Wir begrüßen Sie an diesem wunderschönen <?php echo date("l"); ?>,
@@ -42,31 +42,31 @@ if(!empty($_GET['view'])) {
 
 	<div id='header'>
 		<span class='left'>
-			<button id='btnSidebar' class='noprint' onclick='toggleSidebar()' title='<?php echo LANG['show_hide_sidebar']; ?>'><img src='img/menu.light.svg'></button>
-			<a href='index.php' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' class='title'><?php echo LANG['app_name']; ?></a>
+			<button id='btnSidebar' class='noprint' onclick='toggleSidebar()' title='<?php echo LANG('show_hide_sidebar'); ?>'><img src='img/menu.light.svg'></button>
+			<a href='index.php' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' class='title'><?php echo LANG('app_name'); ?></a>
 			<span class='separator space'></span>
 		</span>
 		<span class='search'>
-			<input type='text' id='txtGlobalSearch' autocomplete='off' placeholder='<?php echo LANG['search_computer_packages_job_container']; ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults()} else if(event.keyCode==40) {focusNextSearchResult()} else {doSearch(this.value)}' onpaste='doSearch(this.value)'></input>
+			<input type='text' id='txtGlobalSearch' autocomplete='off' placeholder='<?php echo LANG('search_computer_packages_job_container'); ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults()} else if(event.keyCode==40) {focusNextSearchResult()} else {doSearch(this.value)}' onpaste='doSearch(this.value)'></input>
 			<div id='search-glass'></div>
 			<div id='search-results'>
 				<div class='search-result'>
-					<?php echo LANG['no_search_results']; ?>
+					<?php echo LANG('no_search_results'); ?>
 				</div>
 			</div>
 		</span>
 		<span class='right'>
-			<button id='btnHomepage' class='noprint' onclick='refreshContentExplorer("views/homepage.php")' title='<?php echo LANG['home_page']; ?>'><img src='img/home.light.svg'></button>
+			<button id='btnHomepage' class='noprint' onclick='refreshContentExplorer("views/homepage.php")' title='<?php echo LANG('home_page'); ?>'><img src='img/home.light.svg'></button>
 			<span class='separator noprint'></span>
-			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG['refresh']; ?>'><img src='img/refresh.light.svg'></button>
+			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG('refresh'); ?>'><img src='img/refresh.light.svg'></button>
 			<span class='separator noprint'></span>
-			<button id='btnSettings' class='noprint' onclick='refreshContentExplorer("views/settings.php")' title='<?php echo LANG['settings']; ?>'><img src='img/settings.light.svg'></button>
+			<button id='btnSettings' class='noprint' onclick='refreshContentExplorer("views/settings.php")' title='<?php echo LANG('settings'); ?>'><img src='img/settings.light.svg'></button>
 			<span class='separator noprint'></span>
-			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG['about']; ?>", "views/dialog-about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG['about']; ?>'><img src='img/info.light.svg'></button>
+			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog-about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'><img src='img/info.light.svg'></button>
 			<span class='separator noprint'></span>
-			<button id='btnHelp' class='noprint' onclick='refreshContentExplorer("views/docs.php")' title='<?php echo LANG['help']; ?>'><img src='img/help.light.svg'></button>
+			<button id='btnHelp' class='noprint' onclick='refreshContentExplorer("views/docs.php")' title='<?php echo LANG('help'); ?>'><img src='img/help.light.svg'></button>
 			<span class='separator noprint'></span>
-			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG['log_out']; ?>'><span><?php echo htmlspecialchars($_SESSION['oco_username']); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
+			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'><span><?php echo htmlspecialchars($_SESSION['oco_username']); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
 		</span>
 	</div>
 
@@ -75,7 +75,7 @@ if(!empty($_GET['view'])) {
 		</div>
 		<div id='explorer-content' onclick='closeSearchResults()'>
 			<?php if($initialExplorerContent == null) { ?>
-				<div class='alert error'><?php echo LANG['requested_view_does_not_exist']; ?></div>
+				<div class='alert error'><?php echo LANG('requested_view_does_not_exist'); ?></div>
 			<?php } ?>
 		</div>
 	</div>
@@ -89,9 +89,9 @@ if(!empty($_GET['view'])) {
 			<h2 id='dialog-title'></h2>
 			<div id='dialog-text'></div>
 			<div id='dialog-controls' class='spread'>
-				<button id='btnDialogHome' onclick='hideDialog();refreshContentExplorer("views/homepage.php");'><img src='img/home.dyn.svg'>&nbsp;<?php echo LANG['home_page']; ?></button>
-				<button id='btnDialogReload' onclick='hideDialog();refreshContent();'><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG['retry']; ?></button>
-				<button id='btnDialogClose' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG['close']; ?></button>
+				<button id='btnDialogHome' onclick='hideDialog();refreshContentExplorer("views/homepage.php");'><img src='img/home.dyn.svg'>&nbsp;<?php echo LANG('home_page'); ?></button>
+				<button id='btnDialogReload' onclick='hideDialog();refreshContent();'><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('retry'); ?></button>
+				<button id='btnDialogClose' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
 			</div>
 		</div>
 	</div>

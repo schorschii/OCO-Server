@@ -18,7 +18,7 @@ function checkUpdate() {
 		if(empty($item['tag_name'])) continue;
 		$availVersion = ltrim($item['tag_name'], 'v');
 		if(version_compare(OcoServer::APP_VERSION, $availVersion, '<'))
-			return $availVersion.(empty($item['prerelease']) ? '' : ' '.LANG['prerelease_note']);
+			return $availVersion.(empty($item['prerelease']) ? '' : ' '.LANG('prerelease_note'));
 	}
 	return false;
 }

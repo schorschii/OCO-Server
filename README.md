@@ -43,7 +43,7 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
 ## Translations & Contributions Welcome!
 Please open a pull request for any improvements you like!
 
-For translators: the language files are in `lib/lang/<langcode>.php`. There you can insert new files with your translations or correct existing ones. Thank you very much!
+For translators: the language files are in `lib/Language/<langcode>.php`. There you can insert new files with your translations or correct existing ones. Thank you very much!
 
 ## Information, Manual, Documentation
 **Please read the documentation in the [`/docs`](docs/README.md) folder.**

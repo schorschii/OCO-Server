@@ -12,7 +12,7 @@ if(!empty($_GET['page']) && in_array($_GET['page'], scandir(DOCS_DIR)))
 if(file_exists(DOCS_DIR.'/'.$fileName)) {
 	$Parsedown = new Parsedown();
 	$content = file_get_contents(DOCS_DIR.'/'.$fileName);
-	if(empty($content)) die("<div class='alert error'>".LANG['not_found']."</div>");
+	if(empty($content)) die("<div class='alert error'>".LANG('not_found')."</div>");
 	$html = $Parsedown->text($content);
 
 	$dom = new DOMDocument;
@@ -28,5 +28,5 @@ if(file_exists(DOCS_DIR.'/'.$fileName)) {
 	}
 	echo $dom->saveHTML();
 } else {
-	echo "<div class='alert error'>".LANG['not_found']."</div>";
+	echo "<div class='alert error'>".LANG('not_found')."</div>";
 }

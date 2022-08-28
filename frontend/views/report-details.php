@@ -9,9 +9,9 @@ try {
 	$permissionWrite  = $currentSystemUser->checkPermission($report, PermissionManager::METHOD_WRITE, false);
 	$permissionDelete = $currentSystemUser->checkPermission($report, PermissionManager::METHOD_DELETE, false);
 } catch(NotFoundException $e) {
-	die("<div class='alert warning'>".LANG['not_found']."</div>");
+	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
-	die("<div class='alert warning'>".LANG['permission_denied']."</div>");
+	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 } catch(InvalidRequestException $e) {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
@@ -28,19 +28,19 @@ try {
 <div class='details-header'>
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><span id='spnReportName'><?php echo htmlspecialchars($report->name); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='showDialogEditReport("<?php echo $report->id; ?>", spnReportName.innerText, spnReportNotes.innerText, spnReportQuery.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG['edit']; ?></button>
-		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+		<button onclick='showDialogEditReport("<?php echo $report->id; ?>", spnReportName.innerText, spnReportNotes.innerText, spnReportQuery.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
 	</div>
 </div>
 
 <div class='details-abreast'>
 	<div>
-		<h2><?php echo LANG['query']; ?></h2>
+		<h2><?php echo LANG('query'); ?></h2>
 		<code class='block'><span id='spnReportQuery'><?php echo htmlspecialchars($report->query); ?></span></code>
 	</div>
 	<div>
-		<h2><?php echo LANG['description']; ?></h2>
+		<h2><?php echo LANG('description'); ?></h2>
 		<span id='spnReportNotes'>
 		<?php if(!empty($report->notes)) { ?>
 			<p class='quote'><?php echo nl2br(htmlspecialchars($report->notes)); ?></p>
@@ -51,12 +51,12 @@ try {
 
 <div class='details-abreast'>
 	<div class='stickytable'>
-		<h2><?php echo LANG['results']; ?></h2>
+		<h2><?php echo LANG('results'); ?></h2>
 
 		<?php if($error !== null) { ?>
 			<div class='alert error'><?php echo htmlspecialchars($error); ?></div>
 		<?php } elseif(count($results) == 0) { ?>
-			<div class='alert info'><?php echo LANG['no_results']; ?></div>
+			<div class='alert info'><?php echo LANG('no_results'); ?></div>
 		<?php } else { ?>
 
 		<table id='tblReportDetailData' class='list searchable sortable'>
@@ -113,21 +113,21 @@ try {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
+							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='event.preventDefault();downloadTableCsv("tblReportDetailData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG['csv']; ?></button>
+							<button onclick='event.preventDefault();downloadTableCsv("tblReportDetailData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<?php if($hasComputerIds) { ?>
-								<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-								<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG['wol']; ?></button>
-								<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
-								<button onclick='removeSelectedComputer("id[]", "computer_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+								<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+								<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
+								<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
+								<button onclick='removeSelectedComputer("id[]", "computer_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							<?php } ?>
 							<?php if($hasPackageIds) { ?>
-								<button onclick='deploySelectedPackage("id[]", "package_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG['deploy']; ?></button>
-								<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG['add_to']; ?></button>
-								<button onclick='removeSelectedPackage("id[]", "package_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+								<button onclick='deploySelectedPackage("id[]", "package_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+								<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
+								<button onclick='removeSelectedPackage("id[]", "package_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							<?php } ?>
 						</div>
 					</div>

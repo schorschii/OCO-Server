@@ -1,6 +1,6 @@
 <?php
 
-class LangCodes {
+class LanguageCodes {
 
 	public static function getLocaleNameByLcid($lcid) {
 		if(empty($lcid) || $lcid == '-' || $lcid == '?') return $lcid;
@@ -11,6 +11,7 @@ class LangCodes {
 		return $lcid;
 	}
 
+	// LCIDs are the internal language code identifiers in Microsoft Windows
 	const LCIDS = [
 		1078 =>
 		array (

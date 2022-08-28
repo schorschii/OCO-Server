@@ -14,11 +14,11 @@ try {
 
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
-	die(LANG['permission_denied']);
+	die(LANG('permission_denied'));
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
 	die($e->getMessage());
 }
 
 header('HTTP/1.1 400 Invalid Request');
-die(LANG['unknown_method']);
+die(LANG('unknown_method'));

@@ -10,16 +10,16 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 ?>
 
 <div class='details-header'>
-	<h1><img src='img/settings.dyn.svg'><span id='page-title'><?php echo LANG['settings']; ?></span></h1>
+	<h1><img src='img/settings.dyn.svg'><span id='page-title'><?php echo LANG('settings'); ?></span></h1>
 </div>
 
 <div id='tabControlSettings' class='tabcontainer'>
 	<div class='tabbuttons'>
-		<a href='#' name='own-system-user-settings' class='<?php if($tab=='own-system-user-settings') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['own_system_user_settings']; ?></a>
+		<a href='#' name='own-system-user-settings' class='<?php if($tab=='own-system-user-settings') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('own_system_user_settings'); ?></a>
 		<?php if($showSystemUserManagement) { ?>
-			<a href='#' name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['system_user_management']; ?></a>
+			<a href='#' name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('system_user_management'); ?></a>
 		<?php } ?>
-		<a href='#' name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG['configuration_overview']; ?></a>
+		<a href='#' name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('configuration_overview'); ?></a>
 	</div>
 	<div class='tabcontents'>
 
@@ -28,37 +28,37 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 			<div class='details-abreast'>
 				<div>
 					<div class='controls'>
-						<button onclick='askNotificationPermission()'><img src='img/notification.dyn.svg'>&nbsp;<?php echo LANG['enable_notifications']; ?></button>
-						<button onclick='showDialogEditOwnSystemUserPassword()' <?php if($currentSystemUser->ldap) echo 'disabled'; ?>><img src='img/password.dyn.svg'>&nbsp;<?php echo LANG['change_password']; ?></button>
+						<button onclick='askNotificationPermission()'><img src='img/notification.dyn.svg'>&nbsp;<?php echo LANG('enable_notifications'); ?></button>
+						<button onclick='showDialogEditOwnSystemUserPassword()' <?php if($currentSystemUser->ldap) echo 'disabled'; ?>><img src='img/password.dyn.svg'>&nbsp;<?php echo LANG('change_password'); ?></button>
 						<span class='filler'></span>
 					</div>
 					<table class='list metadata'>
 						<tr>
-							<th><?php echo LANG['login_name']; ?>:</th>
+							<th><?php echo LANG('login_name'); ?>:</th>
 							<td><?php echo htmlspecialchars($ownSystemUser->username); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['display_name']; ?>:</th>
+							<th><?php echo LANG('display_name'); ?>:</th>
 							<td><?php echo htmlspecialchars($ownSystemUser->display_name); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['role']; ?>:</th>
+							<th><?php echo LANG('role'); ?>:</th>
 							<td><?php echo htmlspecialchars($ownSystemUser->system_user_role_name); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['ldap_account']; ?>:</th>
-							<td><?php if($ownSystemUser->ldap) echo LANG['yes']; else echo LANG['no']; ?></td>
+							<th><?php echo LANG('ldap_account'); ?>:</th>
+							<td><?php if($ownSystemUser->ldap) echo LANG('yes'); else echo LANG('no'); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['locked']; ?>:</th>
-							<td><?php if($ownSystemUser->locked) echo LANG['yes']; else echo LANG['no']; ?></td>
+							<th><?php echo LANG('locked'); ?>:</th>
+							<td><?php if($ownSystemUser->locked) echo LANG('yes'); else echo LANG('no'); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['last_login']; ?>:</th>
+							<th><?php echo LANG('last_login'); ?>:</th>
 							<td><?php echo htmlspecialchars($ownSystemUser->last_login); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['created']; ?>:</th>
+							<th><?php echo LANG('created'); ?>:</th>
 							<td><?php echo htmlspecialchars($ownSystemUser->created); ?></td>
 						</tr>
 					</table>
@@ -71,21 +71,21 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 			<div class='details-abreast'>
 				<div>
 					<div class='controls'>
-						<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG['add']; ?></button>
-						<button onclick='ldapSync()' <?php if(empty(LDAP_SERVER)) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG['ldap_sync']; ?></button>
+						<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+						<button onclick='ldapSync()' <?php if(empty(LDAP_SERVER)) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
 						<span class='filler'></span>
 					</div>
 					<table id='tblSystemUserData' class='list searchable sortable savesort actioncolumn'>
 					<thead>
 						<tr>
 							<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblSystemUserData, this.checked)'></th>
-							<th class='searchable sortable'><?php echo LANG['login_name']; ?></th>
-							<th class='searchable sortable'><?php echo LANG['display_name']; ?></th>
-							<th class='searchable sortable'><?php echo LANG['role']; ?></th>
-							<th class='searchable sortable'><?php echo LANG['description']; ?></th>
-							<th class='searchable sortable'><?php echo LANG['last_login']; ?></th>
-							<th class='searchable sortable'><?php echo LANG['created']; ?></th>
-							<th class=''><?php echo LANG['action']; ?></th>
+							<th class='searchable sortable'><?php echo LANG('login_name'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('role'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('description'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('last_login'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+							<th class=''><?php echo LANG('action'); ?></th>
 						</tr>
 					</thead>
 					<?php
@@ -95,8 +95,8 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 						echo "<tr>";
 						echo "<td><input type='checkbox' name='system_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblSystemUserData)'></td>";
 						echo "<td>";
-						if($u->ldap) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG['ldap_account']."'>&nbsp;";
-						if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG['locked']."'>&nbsp;";
+						if($u->ldap) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
+						if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG('locked')."'>&nbsp;";
 						echo  "<span id='spnSystemUserUid".$u->id."' style='display:none'>".htmlspecialchars($u->uid)."</span>";
 						echo  "<span id='spnSystemUserUsername".$u->id."'>".htmlspecialchars($u->username)."</span>";
 						echo "</td>";
@@ -105,7 +105,7 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 						echo "<td id='spnSystemUserDescription".$u->id."'>".htmlspecialchars($u->description)."</td>";
 						echo "<td>".htmlspecialchars($u->last_login)."</td>";
 						echo "<td>".htmlspecialchars($u->created)."</td>";
-						echo "<td><button title='".LANG['edit']."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUid".$u->id.".innerText, spnSystemUserUsername".$u->id.".innerText, spnSystemUserDisplayName".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"), ".$u->ldap.")'><img src='img/edit.dyn.svg'></button></td>";
+						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUid".$u->id.".innerText, spnSystemUserUsername".$u->id.".innerText, spnSystemUserDisplayName".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"), ".$u->ldap.")'><img src='img/edit.dyn.svg'></button></td>";
 						echo "</tr>";
 					}
 					?>
@@ -114,13 +114,13 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 							<td colspan='999'>
 								<div class='spread'>
 									<div>
-										<span class='counter'><?php echo $counter; ?></span> <?php echo LANG['elements']; ?>,
-										<span class='counter-checked'>0</span>&nbsp;<?php echo LANG['elements_checked']; ?>
+										<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
+										<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 									</div>
 									<div class='controls'>
-										<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.dyn.svg'>&nbsp;<?php echo LANG['lock']; ?></button>
-										<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.dyn.svg'>&nbsp;<?php echo LANG['unlock']; ?></button>
-										<button onclick='confirmRemoveSelectedSystemUser("system_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG['delete']; ?></button>
+										<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.dyn.svg'>&nbsp;<?php echo LANG('lock'); ?></button>
+										<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.dyn.svg'>&nbsp;<?php echo LANG('unlock'); ?></button>
+										<button onclick='confirmRemoveSelectedSystemUser("system_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 									</div>
 								</div>
 							</td>
@@ -135,46 +135,46 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 		<div name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div>
-					<p><?php echo LANG['change_settings_in_config_file']; ?></p>
+					<p><?php echo LANG('change_settings_in_config_file'); ?></p>
 					<table class='list metadata'>
 						<tr>
-							<th><?php echo LANG['client_api_enabled']; ?>:</th>
-							<td><?php if(CLIENT_API_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
+							<th><?php echo LANG('client_api_enabled'); ?>:</th>
+							<td><?php if(CLIENT_API_ENABLED) echo LANG('yes'); else echo LANG('no'); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['agent_registration_enabled']; ?>:</th>
-							<td><?php if(AGENT_SELF_REGISTRATION_ENABLED) echo LANG['yes']; else echo LANG['no']; ?></td>
+							<th><?php echo LANG('agent_registration_enabled'); ?>:</th>
+							<td><?php if(AGENT_SELF_REGISTRATION_ENABLED) echo LANG('yes'); else echo LANG('no'); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['assume_computer_offline_after']; ?>:</th>
+							<th><?php echo LANG('assume_computer_offline_after'); ?>:</th>
 							<td><?php echo htmlspecialchars(niceTime(COMPUTER_OFFLINE_SECONDS)); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['wol_shutdown_expiry_seconds']; ?>:</th>
+							<th><?php echo LANG('wol_shutdown_expiry_seconds'); ?>:</th>
 							<td><?php echo htmlspecialchars(niceTime(WOL_SHUTDOWN_EXPIRY_SECONDS)); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['agent_update_interval']; ?>:</th>
+							<th><?php echo LANG('agent_update_interval'); ?>:</th>
 							<td><?php echo htmlspecialchars(niceTime(AGENT_UPDATE_INTERVAL)); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['purge_succeeded_jobs_after']; ?>:</th>
+							<th><?php echo LANG('purge_succeeded_jobs_after'); ?>:</th>
 							<td><?php echo htmlspecialchars(niceTime(PURGE_SUCCEEDED_JOBS_AFTER)); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['purge_failed_jobs_after']; ?>:</th>
+							<th><?php echo LANG('purge_failed_jobs_after'); ?>:</th>
 							<td><?php echo htmlspecialchars(niceTime(PURGE_FAILED_JOBS_AFTER)); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['purge_logs_after']; ?>:</th>
+							<th><?php echo LANG('purge_logs_after'); ?>:</th>
 							<td><?php echo htmlspecialchars(niceTime(PURGE_LOGS_AFTER)); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['purge_domain_user_logons_after']; ?>:</th>
+							<th><?php echo LANG('purge_domain_user_logons_after'); ?>:</th>
 							<td><?php echo htmlspecialchars(niceTime(PURGE_DOMAIN_USER_LOGONS_AFTER)); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG['wol_satellites']; ?>:</th>
+							<th><?php echo LANG('wol_satellites'); ?>:</th>
 							<td><?php foreach(SATELLITE_WOL_SERVER as $s) echo htmlspecialchars($s['ADDRESS'].':'.$s['PORT']).'<br>'; ?></td>
 						</tr>
 					</table>

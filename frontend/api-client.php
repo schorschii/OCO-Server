@@ -27,16 +27,16 @@ if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2
 $cl = null;
 try {
 	if(empty($_SERVER['PHP_AUTH_USER']) || empty($_SERVER['PHP_AUTH_PW'])) {
-		throw new AuthenticationException(LANG['username_cannot_be_empty']);
+		throw new AuthenticationException(LANG('username_cannot_be_empty'));
 	}
 	$authenticator = new AuthenticationController($db);
 	$user = $authenticator->login($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']);
 	if($user == null || !$user instanceof Models\SystemUser) {
-		throw new AuthenticationException(LANG['unknown_error']);
+		throw new AuthenticationException(LANG('unknown_error'));
 	}
 
 	if(!$user->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_CLIENT_API, false)) {
-		throw new AuthenticationException(LANG['api_login_not_allowed']);
+		throw new AuthenticationException(LANG('api_login_not_allowed'));
 	}
 
 	// login successful
@@ -58,7 +58,7 @@ $data = $params['data'] ?? [];
 // check API key
 if(!empty(CLIENT_API_KEY) && CLIENT_API_KEY !== ($params['api_key'] ?? '')) {
 	header('Content-Type: application/json');
-	$resdata['error'] = LANG['invalid_api_key'];
+	$resdata['error'] = LANG('invalid_api_key');
 	$resdata['result'] = [ 'success' => false, 'data' => [] ];
 	echo json_encode($resdata);
 	die();
@@ -178,7 +178,7 @@ switch($srcdata['method']) {
 			$tmpFilePath = '/tmp/ocotmp';
 			$fileContent = base64_decode($data['file'], true);
 			if(!$fileContent) {
-				throw new InvalidRequestException(LANG['payload_corrupt']);
+				throw new InvalidRequestException(LANG('payload_corrupt'));
 			}
 			file_put_contents($tmpFilePath, $fileContent);
 		}
@@ -279,18 +279,18 @@ switch($srcdata['method']) {
 		break;
 
 	default:
-		throw new InvalidRequestException(LANG['unknown_method']);
+		throw new InvalidRequestException(LANG('unknown_method'));
 }
 
 } catch(NotFoundException $e) {
 	header('HTTP/1.1 404 Not Found');
-	$resdata['error'] = LANG['not_found'];
+	$resdata['error'] = LANG('not_found');
 	$resdata['result'] = [
 		'success' => false
 	];
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
-	$resdata['error'] = LANG['permission_denied'];
+	$resdata['error'] = LANG('permission_denied');
 	$resdata['result'] = [
 		'success' => false
 	];

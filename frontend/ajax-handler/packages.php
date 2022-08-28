@@ -26,7 +26,7 @@ try {
 
 	if(!empty($_POST['update_package_family_id']) && !empty($_FILES['update_icon']['tmp_name'])) {
 		if(!exif_imagetype($_FILES['update_icon']['tmp_name'])) {
-			throw new Exception(LANG['invalid_input']);
+			throw new Exception(LANG('invalid_input'));
 		}
 		$cl->updatePackageFamilyIcon($_POST['update_package_family_id'], file_get_contents($_FILES['update_icon']['tmp_name']));
 		die();
@@ -159,11 +159,11 @@ try {
 
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
-	die(LANG['permission_denied']);
+	die(LANG('permission_denied'));
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
 	die($e->getMessage());
 }
 
 header('HTTP/1.1 400 Invalid Request');
-die(LANG['unknown_method']);
+die(LANG('unknown_method'));
