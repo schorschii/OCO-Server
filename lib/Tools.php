@@ -1,7 +1,7 @@
 <?php
 
 function LANG($key) {
-	return LanguageController::getMessage($key);
+	return LanguageController::getMessageFromSingleton($key);
 }
 
 function startsWith( $haystack, $needle ) {
