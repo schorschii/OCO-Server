@@ -1407,7 +1407,7 @@ div.details-abreast > div.stickytable > table.list tfoot {
 		border-color: rgba(255,255,255,0.1);
 	}
 	#login-bg {
-		filter: grayscale(15%) contrast(85%) brightness(60%);
+		filter: grayscale(15%) contrast(85%) brightness(70%);
 	}
 	#login-wall #motd {
 		color: rgba(255,255,255,0.75);
