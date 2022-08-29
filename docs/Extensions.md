@@ -50,7 +50,7 @@ return [
 ```
 
 ### Web Tree Hook
-Example file (`tree-isc-dhcp-reservations.php`, as referenced in `frontend-tree` in `index.php`):
+Example file (`isc-dhcp-reservations.tree.php`, as referenced in `frontend-tree` in `index.php`):
 ```
 <div class='node'>
 	<a <?php echo explorerLink('views/myaddon.php'); ?>><img src='img/myaddon.dyn.svg'>My Add-On</a>
