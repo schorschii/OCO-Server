@@ -17,4 +17,4 @@ services:
       - MARIADB_USER=oco
       - MARIADB_PASSWORD=Ch@ngem4
     volumes:
-      - ./lib/sql:/docker-entrypoint-initdb.d
+      - ./sql:/docker-entrypoint-initdb.d
