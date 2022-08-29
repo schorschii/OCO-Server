@@ -18,6 +18,9 @@ spl_autoload_register(function ($class) {
 // global database handle object
 $db = new DatabaseController();
 
+// load extensions
+$ext = new ExtensionController();
+
 // housekeeping without cron
 if(DO_HOUSEKEEPING_BY_WEB_REQUESTS) {
 	$houseKeeping = new HouseKeeping($db);

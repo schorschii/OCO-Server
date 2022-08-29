@@ -3,20 +3,32 @@
 class LanguageController {
 
 	// directory with translation files
-	const LANG_DIR = __DIR__.'/Language';
+	const DEFAULT_LANG_DIR = __DIR__.'/Language';
 
 	// the base language which *must* be fully translated
 	const DEFAULT_LANG = 'en';
 
-	// compiled messages (base language + translated strings)
-	private $messages;
+	// extra language directories
+	protected $langDirs = [self::DEFAULT_LANG_DIR];
 
-	// we do not want to initialize the LanguageController on every getMessage() call, so we save the object in a singleton
+	// compiled messages (base language + translated strings)
+	private $messages = [];
+
+	// we do not want to initialize the LanguageController (= merge the arrays) on every getMessage() call,
+	// so we save the object in a singleton
 	private static $singleton;
 
 	function __construct($langCodes=[]) {
+		$this->loadTranslations($langCodes);
+	}
+
+	private function loadTranslations($langCodes=[]) {
+		$this->messages = [];
+
 		// load default language
-		$this->messages = require(self::LANG_DIR.'/'.self::DEFAULT_LANG.'.php');
+		foreach($this->langDirs as $langDir) {
+			$this->messages = array_merge( $this->messages, require($langDir.'/'.self::DEFAULT_LANG.'.php') );
+		}
 
 		// override default messages with translated messages of user's desired language
 		if(!empty($_POST['lang'])) { // evaluate POST parameter (API calls)
@@ -26,7 +38,7 @@ class LanguageController {
 			$langCodes[] = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 		}
 		foreach($langCodes as $langCode) {
-			$this->messages = array_merge( $this->messages, $this->loadFile($langCode) );
+			$this->messages = array_merge( $this->messages, $this->loadTranslationFile($langCode) );
 		}
 	}
 
@@ -35,20 +47,33 @@ class LanguageController {
 		else return $key; // fallback
 	}
 
-	private function loadFile($langCode) {
+	private function loadTranslationFile($langCode) {
 		if(empty($langCode)) return [];
-		$fileName = self::LANG_DIR.'/' . preg_replace('/[^a-zA-Z0-9_-]/s', '', $langCode) . '.php';
-		if(file_exists($fileName)) {
-			return require($fileName);
+		$messages = [];
+		foreach($this->langDirs as $langDir) {
+			$fileName = $langDir.'/' . preg_replace('/[^a-zA-Z0-9_-]/s', '', $langCode) . '.php';
+			if(file_exists($fileName)) {
+				$messages = array_merge( $messages, require($fileName) );
+			}
 		}
-		return [];
+		return $messages;
 	}
 
-	public static function getMessageFromSingleton($key) {
+	private static function initializeSingleton() {
 		if(!isset(self::$singleton)) {
 			self::$singleton = new LanguageController();
 		}
+	}
+
+	public static function getMessageFromSingleton($key) {
+		self::initializeSingleton();
 		return self::$singleton->getMessage($key);
+	}
+
+	public static function registerTranslationDirInSingleton($dir) {
+		self::initializeSingleton();
+		self::$singleton->langDirs[] = $dir;
+		self::$singleton->loadTranslations();
 	}
 
 }

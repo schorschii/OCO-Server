@@ -8,10 +8,9 @@ $initialExplorerContent = 'views/homepage.php';
 $initialExplorerContentParameter = '';
 if(!empty($_GET['view'])) {
 	// check which view should be loaded via ajax
-	if(in_array($_GET['view'].'.php', scandir(__DIR__.'/views'))) {
+	if(in_array($_GET['view'].'.php', scandir(__DIR__.'/views'))
+	|| array_key_exists($_GET['view'].'.php', $ext->getAggregatedConf('frontend-views'))) {
 		$initialExplorerContent = 'views/'.$_GET['view'].'.php';
-	} elseif(in_array($_GET['view'].'.php', scandir(__DIR__.'/views/views.d'))) {
-		$initialExplorerContent = 'views/views.d/'.$_GET['view'].'.php';
 	} else {
 		$initialExplorerContent = null;
 	}

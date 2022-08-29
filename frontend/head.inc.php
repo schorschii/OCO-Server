@@ -10,12 +10,13 @@
 <script src='js/confetti.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 
 <?php
-// include extension JS & CSS
-foreach(glob(__DIR__.'/js/js.d/*.js') as $filename) {
-	echo '<script src="js/js.d/'.htmlspecialchars(basename($filename), ENT_QUOTES).'"></script>';
+// include extension JS
+foreach($ext->getAggregatedConf('frontend-js') as $filename) {
+	echo '<script src="js/'.htmlspecialchars(basename($filename), ENT_QUOTES).'"></script>';
 }
-foreach(glob(__DIR__.'/css/css.d/*.css') as $filename) {
-	echo '<link rel="stylesheet" type="text/css" href="css/css.d/'.htmlspecialchars(basename($filename), ENT_QUOTES).'"></link>';
+// include extension CSS
+foreach($ext->getAggregatedConf('frontend-css') as $filename) {
+	echo '<link rel="stylesheet" type="text/css" href="css/'.htmlspecialchars(basename($filename), ENT_QUOTES).'"></link>';
 }
 ?>
 

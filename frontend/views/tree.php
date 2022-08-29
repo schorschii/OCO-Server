@@ -52,9 +52,9 @@ require_once('../session.php');
 </div>
 
 <?php
-// include add-ons
-foreach(glob(__DIR__.'/tree.d/*.php') as $filename) {
-	require_once($filename);
+// include extensions
+foreach($ext->getAggregatedConf('frontend-tree') as $treeExtension) {
+	require($treeExtension);
 }
 ?>
 
