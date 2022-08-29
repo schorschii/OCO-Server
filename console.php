@@ -12,7 +12,7 @@ switch($argv[1]) {
 	case 'housekeeping':
 		try {
 			$houseKeeping = new HouseKeeping($db, true);
-			$houseKeeping->houseKeeping();
+			$houseKeeping->cleanup();
 		} catch(Exception $e) {
 			echo $argv[1].' ERROR: '.$e->getMessage()."\n";
 			exit(1);

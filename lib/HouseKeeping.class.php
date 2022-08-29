@@ -12,7 +12,7 @@ class HouseKeeping {
 		$this->debug = $debug;
 	}
 
-	public function houseKeeping() {
+	public function cleanup() {
 		$this->jobHouseKeeping();
 		$this->jobWol();
 		$this->logonHouseKeeping();
