@@ -13,12 +13,12 @@ You can create your own roles by adding a new role record in the database with a
 
 ```
 {
-    "client_api_allowed": true,            <-- allows the user to use the Client API
-    "client_web_frontend_allowed": true,   <-- allows the user to use the Web Frontend
-    "system_user_management": true,        <-- allows the user to edit system users
-    "recognised_software_view": true,      <-- allows the user to view recognised software over all computers
+    "Special\\ClientApi": true,            <-- allows the user to use the Client API
+    "Special\\WebFrontend": true,          <-- allows the user to use the Web Frontend
+    "Models\\SystemUser": true,            <-- allows the user to edit system users
+    "Models\\Software": true,              <-- allows the user to view recognised software over all computers
 
-    "computer_management": {
+    "Models\\Computer": {
         "create": true,                    <-- allows the user to create new computers
         "*": {                             <-- * refers to all computers
             "read": true,
@@ -35,7 +35,7 @@ You can create your own roles by adding a new role record in the database with a
         }
     },
 
-    "computer_group_management": {
+    "Models\\ComputerGroup": {
         "create": true,                    <-- allows the user to create new root computer groups
         "3": {
             "create": true,                <-- allows the user to create sub groups of the group with ID 3
@@ -49,7 +49,7 @@ You can create your own roles by adding a new role record in the database with a
                 "delete": true
             }
         },
-        "*": {                             <-- note: "items" is not valid inside "*" - use "computer_management" for general computer permissions
+        "*": {                             <-- note: "items" is not valid inside "*" - use "Models\\Computer" for general computer permissions
             "create": true,
             "read": true,
             "write": true,
@@ -57,7 +57,7 @@ You can create your own roles by adding a new role record in the database with a
         }
     },
 
-    "package_management": {
+    "Models\\Package": {
         "create": true,                    <-- allows the user to create new packages
         "*": {
             "read": true,
@@ -68,9 +68,9 @@ You can create your own roles by adding a new role record in the database with a
         }
     },
 
-    "package_family_management": {
+    "Models\\PackageFamily": {
         "create": false,                   <-- disallows the user to create new package families
-        "*": {                             <-- note: "items" is not valid inside "*" - use "package_management" for general package permissions
+        "*": {                             <-- note: "items" is not valid inside "*" - use "Models\\Package" for general package permissions
             "create": false,               <-- disallows the user to create new versions for all package families
             "read": true,
             "write": false,
@@ -90,9 +90,9 @@ You can create your own roles by adding a new role record in the database with a
         },
     },
 
-    "package_group_management": {
+    "Models\\PackageGroup": {
         "create": true,
-        "*": {                              <-- note: "items" is not valid inside "*" - use "package_management" for general package permissions
+        "*": {                              <-- note: "items" is not valid inside "*" - use "Models\\Package" for general package permissions
             "create": true,
             "read": true,
             "write": true,
@@ -109,7 +109,7 @@ You can create your own roles by adding a new role record in the database with a
         },
     },
 
-    "report_management": {
+    "Models\\Report": {
         "create": true,
         "*": {
             "create": true,
@@ -119,7 +119,7 @@ You can create your own roles by adding a new role record in the database with a
         }
     },
 
-    "report_group_management": {
+    "Models\\ReportGroup": {
         "create": true,
         "*": {
             "read": true,
@@ -128,7 +128,7 @@ You can create your own roles by adding a new role record in the database with a
         }
     },
 
-    "job_container_management": {
+    "Models\\JobContainer": {
         "create": true,
         "own": {                    <-- refers to all job containers created by the corresponding user
             "read": true,

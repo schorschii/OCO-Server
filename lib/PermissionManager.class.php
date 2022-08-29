@@ -17,20 +17,11 @@ class PermissionManager {
 	const METHOD_DOWNLOAD = 'download';
 	const METHOD_DELETE   = 'delete';
 
-	const RESSOURCE_TYPE_COMPUTER       = 'computer_management';
-	const RESSOURCE_TYPE_COMPUTER_GROUP = 'computer_group_management';
-	const RESSOURCE_TYPE_PACKAGE        = 'package_management';
-	const RESSOURCE_TYPE_PACKAGE_FAMILY = 'package_family_management';
-	const RESSOURCE_TYPE_PACKAGE_GROUP  = 'package_group_management';
-	const RESSOURCE_TYPE_JOB_CONTAINER  = 'job_container_management';
-	const RESSOURCE_TYPE_REPORT         = 'report_management';
-	const RESSOURCE_TYPE_REPORT_GROUP   = 'report_group_management';
-	const RESSOURCE_TYPE_DOMAIN_USER    = 'domain_user_management';
-
-	const SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT = 'system_user_management';
-	const SPECIAL_PERMISSION_SOFTWARE_VIEW          = 'recognised_software_view';
-	const SPECIAL_PERMISSION_CLIENT_API             = 'client_api_allowed';
-	const SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND    = 'client_web_frontend_allowed';
+	const SPECIAL_PERMISSION_DOMAIN_USER            = 'Models\\DomainUser';
+	const SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT = 'Models\\SystemUser';
+	const SPECIAL_PERMISSION_SOFTWARE_VIEW          = 'Models\\Software';
+	const SPECIAL_PERMISSION_CLIENT_API             = 'Special\\ClientApi';
+	const SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND    = 'Special\\WebFrontend';
 
 	private /*DatabaseController*/ $db;
 	private /*Models\SystemUser*/ $systemUser;
@@ -65,13 +56,13 @@ class PermissionManager {
 				$parentGroups = array_merge($parentGroups, $this->getParentGroupsRecursively($group));
 			}
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_COMPUTER, self::RESSOURCE_TYPE_COMPUTER_GROUP, $parentGroups, $ressource, $method
+				get_class($ressource), get_class(new Models\ComputerGroup()), $parentGroups, $ressource, $method
 			);
 
 		} else if($ressource instanceof Models\ComputerGroup) {
 			$parentGroups = $this->getParentGroupsRecursively($ressource);
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_COMPUTER_GROUP, self::RESSOURCE_TYPE_COMPUTER_GROUP, $parentGroups, $ressource, $method
+				get_class($ressource), get_class(new Models\ComputerGroup()), $parentGroups, $ressource, $method
 			);
 
 		} else if($ressource instanceof Models\Package) {
@@ -82,29 +73,29 @@ class PermissionManager {
 				$parentGroups = array_merge($parentGroups, $this->getParentGroupsRecursively($group));
 			}
 			if($this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_PACKAGE, self::RESSOURCE_TYPE_PACKAGE_GROUP, $parentGroups, $ressource, $method
+				get_class($ressource), get_class(new Models\PackageGroup()), $parentGroups, $ressource, $method
 			)) return true;
 
 			// check permission in context of package family
 			$family = Models\PackageFamily::__constructWithId($ressource->package_family_id);
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_PACKAGE, self::RESSOURCE_TYPE_PACKAGE_FAMILY, [$family], $ressource, $method
+				get_class($ressource), get_class(new Models\PackageFamily()), [$family], $ressource, $method
 			);
 
 		} else if($ressource instanceof Models\PackageFamily) {
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_PACKAGE_FAMILY, null, null, $ressource, $method
+				get_class($ressource), null, null, $ressource, $method
 			);
 
 		} else if($ressource instanceof Models\PackageGroup) {
 			$parentGroups = $this->getParentGroupsRecursively($ressource);
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_PACKAGE_GROUP, self::RESSOURCE_TYPE_PACKAGE_GROUP, $parentGroups, $ressource, $method
+				get_class($ressource), get_class(new Models\PackageGroup()), $parentGroups, $ressource, $method
 			);
 
 		} else if($ressource instanceof Models\JobContainer) {
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_JOB_CONTAINER, null, null, $ressource, $method
+				get_class($ressource), null, null, $ressource, $method
 			);
 
 		} else if($ressource instanceof Models\Report) {
@@ -114,22 +105,24 @@ class PermissionManager {
 				$parentGroups = $this->getParentGroupsRecursively($group);
 			}
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_REPORT, self::RESSOURCE_TYPE_REPORT_GROUP, $parentGroups, $ressource, $method
+				get_class($ressource), get_class(new Models\ReportGroup()), $parentGroups, $ressource, $method
 			);
 
 		} else if($ressource instanceof Models\ReportGroup) {
 			$parentGroups = $this->getParentGroupsRecursively($ressource);
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_REPORT_GROUP, self::RESSOURCE_TYPE_REPORT_GROUP, $parentGroups, $ressource, $method
+				get_class($ressource), get_class(new Models\ReportGroup()), $parentGroups, $ressource, $method
 			);
 
 		} else if($ressource instanceof Models\DomainUser) {
 			return $this->checkRessourcePermission(
-				self::RESSOURCE_TYPE_DOMAIN_USER, null, null, new Models\DomainUser() /*no specific check*/, $method
+				get_class($ressource), null, null, new Models\DomainUser() /*no specific check*/, $method
 			);
 
 		} else {
-			throw new InvalidArgumentException('Permission check for this ressource type is not implemented');
+			return $this->checkRessourcePermission(
+				get_class($ressource), null, null, $ressource, $method
+			);
 		}
 	}
 

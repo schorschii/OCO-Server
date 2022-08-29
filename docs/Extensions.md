@@ -69,7 +69,7 @@ $SUBVIEW = 1;
 if(!isset($db) || !isset($currentSystemUser)) die();
 
 # (optional) ressource permission check
-if(!$currentSystemUser->checkPermission(null, 'dhcp_reservation_management', false))
+if(!$currentSystemUser->checkPermission(null, 'IscDhcpReservationsController', false))
 	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 ?>
 
