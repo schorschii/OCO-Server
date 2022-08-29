@@ -26,7 +26,7 @@ return [
 	'autoload' => __DIR__.'/lib',
 
 	# web frontend sidebar HTML include
-	'frontend-tree' => __DIR__.'/frontend/views/tree-isc-dhcp-reservations.php',
+	'frontend-tree' => __DIR__.'/frontend/views/isc-dhcp-reservations.tree.php',
 	# web frontend views provided by the extension
 	'frontend-views' => [
 		'isc-dhcp-reservations.php' => __DIR__.'/frontend/views/isc-dhcp-reservations.php',
@@ -50,17 +50,17 @@ return [
 ```
 
 ### Web Tree Hook
-Example file (`tree-isc-dhcp-reservations.php`):
+Example file (`tree-isc-dhcp-reservations.php`, as referenced in `frontend-tree` in `index.php`):
 ```
 <div class='node'>
-	<a href='<?php echo explorerLink('views/views.d/myaddon.php'); ?>' onclick='event.preventDefault();refreshContentExplorer("views/views.d/myaddon.php")'><img src='img/img.d/myaddon.dyn.svg'>My Add-On</a>
+	<a <?php echo explorerLink('views/myaddon.php'); ?>><img src='img/myaddon.dyn.svg'>My Add-On</a>
 </div>
 ```
 
 ### Main Web View
 The main view of the extension as shown in explorer content window (can be multiple files which are linked among themselves). It should include the `loader.inc.php` for database access and `session.php` for authorization check. You may include additional libraries which are part of your extension (see "Libraries").
 
-Example file (`isc-dhcp-reservations.php`):
+Example file (`isc-dhcp-reservations.php`, as referenced in `frontend-views` in `index.php`):
 ```
 <?php
 $SUBVIEW = 1;
