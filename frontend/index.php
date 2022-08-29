@@ -50,7 +50,7 @@ if(!empty($_GET['view'])) {
 			<div id='search-glass'></div>
 			<div id='search-results'>
 				<div class='search-result'>
-					<?php echo LANG('no_search_results'); ?>
+					<div class="alert info nomargin"><?php echo LANG('please_enter_a_search_term'); ?></div>
 				</div>
 			</div>
 		</span>

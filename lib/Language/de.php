@@ -409,6 +409,12 @@ return [
 	'restricted_view' => 'Sie sehen eine beschränkte Ansicht',
 	'total' => 'Gesamt',
 	'this_is_an_empty_package_without_archive' => 'Dies ist ein leeres Paket ohne Archiv.',
+	'please_enter_a_search_term' => 'Bitte geben Sie einen Suchbegriff ein',
+	'more' => 'Mehr...',
+	'search_results_for' => 'Suchergebnisse für »%s«',
+	'package_family' => 'Paketfamilie',
+	'domain_user' => 'Domänenbenutzer',
+	'report' => 'Report',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

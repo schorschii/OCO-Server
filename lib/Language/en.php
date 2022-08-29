@@ -414,6 +414,12 @@ return [
 	'restricted_view' => 'You see a restricted view',
 	'total' => 'Total',
 	'this_is_an_empty_package_without_archive' => 'This is an empty package without archive.',
+	'please_enter_a_search_term' => 'Please enter a search term',
+	'more' => 'More...',
+	'search_results_for' => 'Search results for »%s«',
+	'package_family' => 'Package Family',
+	'domain_user' => 'Domain User',
+	'report' => 'Report',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

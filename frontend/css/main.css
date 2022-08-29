@@ -1117,6 +1117,9 @@ div.details-abreast > div.stickytable > table.list tfoot {
 .marginbottom {
 	margin-bottom: 16px !important;
 }
+.nomargin {
+	margin: 0px !important;
+}
 .center {
 	text-align: center;
 }

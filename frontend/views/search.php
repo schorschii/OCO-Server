@@ -4,60 +4,146 @@ require_once('../../loader.inc.php');
 require_once('../session.php');
 
 if(empty($_GET['query'])) {
-	echo LANG('no_search_results');
-	die();
+	die('<div class="alert info nomargin">'.LANG('please_enter_a_search_term').'</div>');
 }
 
+$maxResults = 5;
+$more = false;
+if(!empty($_GET['context']) && $_GET['context'] === 'more') {
+	$maxResults = 99999999;
+	$more = true;
+}
+
+$items = [];
+$moreAvail = false;
 $counter = 0;
-?>
-
-<?php foreach($db->getAllComputerByName($_GET['query'], 5) as $c) {
+foreach($db->getAllComputerByName($_GET['query']) as $c) {
+	$counter ++;
 	if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = $c;
+}
+$counter = 0;
+foreach($db->getAllPackageFamilyByName($_GET['query']) as $pf) {
 	$counter ++;
-?>
-	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/computer-details.php?id='.$c->id, 'closeSearchResults()'); ?>><img src='img/computer.dyn.svg'><?php echo htmlspecialchars($c->hostname); ?></a>
-	</div>
-<?php } ?>
-
-<?php foreach($db->getAllPackageFamilyByName($_GET['query'], 5) as $pf) {
 	if(!$currentSystemUser->checkPermission($pf, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = $pf;
+}
+$counter = 0;
+foreach($db->getAllJobContainerByName($_GET['query']) as $jc) {
 	$counter ++;
-?>
-	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/packages.php?package_family_id='.$pf->id, 'closeSearchResults()'); ?>><img src='img/package.dyn.svg'><?php echo htmlspecialchars($pf->name); ?></a>
-	</div>
-<?php } ?>
-
-<?php foreach($db->getAllJobContainerByName($_GET['query'], 5) as $jc) {
 	if(!$currentSystemUser->checkPermission($jc, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = $jc;
+}
+$counter = 0;
+foreach($db->getAllDomainUserByName($_GET['query']) as $u) {
 	$counter ++;
-?>
-	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/job-containers.php?id='.$jc->id, 'closeSearchResults()'); ?>><img src='img/job.dyn.svg'><?php echo htmlspecialchars($jc->name); ?></a>
-	</div>
-<?php } ?>
-
-<?php foreach($db->getAllDomainUserByName($_GET['query'], 5) as $u) {
 	if(!$currentSystemUser->checkPermission($u, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = $u;
+}
+$counter = 0;
+foreach($db->getAllReportByName($_GET['query']) as $r) {
 	$counter ++;
-?>
-	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/domain-users.php?id='.$u->id, 'closeSearchResults()'); ?>><img src='img/user.dyn.svg'><?php echo htmlspecialchars($u->displayNameWithUsername()); ?></a>
-	</div>
-<?php } ?>
-
-<?php foreach($db->getAllReportByName($_GET['query'], 5) as $r) {
 	if(!$currentSystemUser->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
-	$counter ++;
-?>
-	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/report-details.php?id='.$r->id, 'closeSearchResults()'); ?>><img src='img/report.dyn.svg'><?php echo htmlspecialchars($r->name); ?></a>
-	</div>
-<?php } ?>
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = $r;
+}
 
-<?php
-if($counter == 0) {
-	die(LANG('no_search_results'));
+if(count($items) == 0) {
+	die('<div class="alert warning nomargin">'.LANG('no_search_results').'</div>');
 }
 ?>
+
+<?php if($more) { ?>
+
+<h2><?php echo str_replace('%s', htmlspecialchars($_GET['query']), LANG('search_results_for')); ?></h2>
+<table class='list searchable sortable savesort fullwidth'>
+	<thead>
+		<tr>
+			<th class='searchable sortable'><?php echo LANG('type'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php foreach($items as $item) { ?>
+		<tr>
+			<?php if($item instanceof Models\Computer) { ?>
+				<td>
+					<img src='img/computer.dyn.svg'>
+					<?php echo LANG('computer'); ?>
+				</td>
+				<td>
+					<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/computer-details.php?id='.$item->id, 'closeSearchResults()'); ?>><?php echo htmlspecialchars($item->hostname); ?></a>
+				</td>
+			<?php } elseif($item instanceof Models\PackageFamily) { ?>
+				<td>
+					<img src='img/package.dyn.svg'>
+					<?php echo LANG('package_family'); ?>
+				</td>
+				<td>
+					<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/packages.php?package_family_id='.$item->id, 'closeSearchResults()'); ?>><?php echo htmlspecialchars($item->name); ?></a>
+				</td>
+			<?php } elseif($item instanceof Models\JobContainer) { ?>
+				<td>
+					<img src='img/job.dyn.svg'>
+					<?php echo LANG('job_container'); ?>
+				</td>
+				<td>
+					<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/job-containers.php?id='.$item->id, 'closeSearchResults()'); ?>><?php echo htmlspecialchars($item->name); ?></a>
+				</td>
+			<?php } elseif($item instanceof Models\DomainUser) { ?>
+				<td>
+					<img src='img/user.dyn.svg'>
+					<?php echo LANG('domain_user'); ?>
+				</td>
+				<td>
+					<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/domain-users.php?id='.$item->id, 'closeSearchResults()'); ?>><?php echo htmlspecialchars($item->displayNameWithUsername()); ?></a>
+				</td>
+			<?php } elseif($item instanceof Models\Report) { ?>
+				<td>
+					<img src='img/report.dyn.svg'>
+					<?php echo LANG('report'); ?>
+				</td>
+				<td>
+					<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/report-details.php?id='.$item->id, 'closeSearchResults()'); ?>><?php echo htmlspecialchars($item->name); ?></a>
+				</td>
+			<?php } ?>
+		</tr>
+	<?php } ?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan='999'>
+				<span class='counter'><?php echo count($items); ?></span> <?php echo LANG('elements'); ?>
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+<?php } else { ?>
+
+<?php foreach($items as $item) { ?>
+	<div class='node'>
+		<?php if($item instanceof Models\Computer) { ?>
+			<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/computer-details.php?id='.$item->id, 'closeSearchResults()'); ?>><img src='img/computer.dyn.svg'><?php echo htmlspecialchars($item->hostname); ?></a>
+		<?php } elseif($item instanceof Models\PackageFamily) { ?>
+			<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/packages.php?package_family_id='.$item->id, 'closeSearchResults()'); ?>><img src='img/package.dyn.svg'><?php echo htmlspecialchars($item->name); ?></a>
+		<?php } elseif($item instanceof Models\JobContainer) { ?>
+			<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/job-containers.php?id='.$item->id, 'closeSearchResults()'); ?>><img src='img/job.dyn.svg'><?php echo htmlspecialchars($item->name); ?></a>
+		<?php } elseif($item instanceof Models\DomainUser) { ?>
+			<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/domain-users.php?id='.$item->id, 'closeSearchResults()'); ?>><img src='img/user.dyn.svg'><?php echo htmlspecialchars($item->displayNameWithUsername()); ?></a>
+		<?php } elseif($item instanceof Models\Report) { ?>
+			<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/report-details.php?id='.$item->id, 'closeSearchResults()'); ?>><img src='img/report.dyn.svg'><?php echo htmlspecialchars($item->name); ?></a>
+		<?php } ?>
+	</div>
+<?php } ?>
+<?php if($moreAvail) { ?>
+	<div class='node'>
+		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/search.php?context=more&query='.urlencode($_GET['query']), 'closeSearchResults()'); ?>><img src='img/eye.dyn.svg'><?php echo LANG('more'); ?></a>
+	</div>
+<?php } ?>
+
+<?php } ?>
