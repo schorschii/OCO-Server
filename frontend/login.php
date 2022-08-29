@@ -92,7 +92,8 @@ if(!empty($_SESSION['oco_username'])) {
 			<?php } ?>
 		</div>
 
-		<div id='login-bg'>
+		<div id='login-wall'>
+			<div id='login-bg'></div>
 			<a href='https://github.com/schorschii/oco-server' target='_blank'>
 				<img id='forkme' src='img/forkme.png'>
 			</a>

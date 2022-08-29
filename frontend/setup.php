@@ -68,8 +68,11 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 			</form>
 			<img src='img/logo.dyn.svg'>
 		</div>
-		<div id='login-bg'>
-
+		<div id='login-wall'>
+			<div id='login-bg'></div>
+			<a href='https://github.com/schorschii/oco-server' target='_blank'>
+				<img id='forkme' src='img/forkme.png'>
+			</a>
 		</div>
 	</div>
 

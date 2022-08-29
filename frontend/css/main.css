@@ -182,28 +182,34 @@ h3 {
 #login-form > img {
 	opacity: 0.2;
 }
-#login-bg {
+#login-wall {
 	position: relative;
 	flex-grow: 1;
 	flex-shrink: 1;
-	background: url('../img/bg.jpg');
-	background-size: cover;
-	background-position: center;
 	width: 70%;
 	height: 100%;
 }
-#login-bg img#forkme {
+#login-bg {
+	position: absolute;
+	background: url('../img/bg.jpg');
+	background-size: cover;
+	background-position: center;
+	filter: grayscale(20%) contrast(40%) brightness(165%);
+	width: 100%;
+	height: 100%;
+}
+#login-wall img#forkme {
 	position: absolute;
 	top: 0px;
 	right: 0px;
 }
-#login-bg #motd {
+#login-wall #motd {
 	position: absolute;
 	bottom: 0px;
 	left: 0px;
 	right: 0px;
 	padding: 20px;
-	color: rgba(255,255,255,0.7);
+	color: white;
 	text-shadow: 0px 0px 2px rgba(0,0,0,0.2);
 	max-width: 600px;
 }
@@ -1387,7 +1393,7 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	#explorer:not(.nosidebar) #explorer-content {
 		display: none;
 	}
-	#login #login-bg {
+	#login #login-wall {
 		display: none;
 	}
 }
@@ -1399,6 +1405,12 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	#explorer-tree, #login-form, #dialog-container #dialog-box, #header #search-results {
 		background-color: #161b22;
 		border-color: rgba(255,255,255,0.1);
+	}
+	#login-bg {
+		filter: grayscale(15%) contrast(85%) brightness(60%);
+	}
+	#login-wall #motd {
+		color: rgba(255,255,255,0.75);
 	}
 	.filler {
 		background-color: rgb(255,255,255,0.1);
