@@ -41,6 +41,7 @@ try {
 <div id='tabControlPackage' class='tabcontainer'>
 	<div class='tabbuttons'>
 		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('general_and_dependencies'); ?></a>
+		<a href='#' name='archive-contents' class='<?php if($tab=='archive-contents') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('archive_contents'); ?></a>
 		<a href='#' name='computers' class='<?php if($tab=='computers') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('computer_and_jobs'); ?></a>
 	</div>
 	<div class='tabcontents'>
@@ -74,13 +75,10 @@ try {
 						<tr>
 							<th><?php echo LANG('zip_archive'); ?></th>
 							<td>
-								<span id='spnArchiveContents' class='rawvalue'><?php echo $package->getContentListing(); ?></span>
 								<?php
 								$size = $package->getSize();
-								if($size) {
-									echo niceSize($size, true).', '.niceSize($size, false).' ';
-									echo "(<a href='#' onclick='event.preventDefault();showDialog(\"".LANG('show_contents')."\",spnArchiveContents.innerText,DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)'>".LANG('show_contents')."</a>)";
-								} else echo LANG('not_found');
+								if($size) echo niceSize($size, true).', '.niceSize($size, false).' ';
+								else echo LANG('not_found');
 								?>
 							</td>
 						</tr>
@@ -311,6 +309,47 @@ try {
 							</tr>
 						</tfoot>
 					</table>
+				</div>
+			</div>
+		</div>
+
+		<div name='archive-contents' class='<?php if($tab=='archive-contents') echo 'active'; ?>'>
+			<div class='details-abreast'>
+				<div>
+					<?php $contents = $package->getContentListing(); if($contents) { ?>
+					<h2><?php echo LANG('archive_contents'); ?></h2>
+					<table id='tblArchiveContents' class='list searchable sortable savesort'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('size'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+						<?php
+						$totalSize = 0;
+						$counter = 0;
+						foreach($contents as $filename => $size) {
+							$counter ++;
+							$totalSize += $size;
+							echo "<tr>";
+							echo "<td>".htmlspecialchars($filename)."</td>";
+							echo "<td sort_key='".$size."'>".niceSize($size)."</td>";
+							echo "</tr>";
+						} ?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>;
+									<?php echo LANG('total').': '.$counter.' '.LANG('elements').', '.niceSize($totalSize, true).', '.niceSize($totalSize, false); ?>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+					<?php } else { ?>
+						<div class='alert warning'><?php echo LANG('this_is_an_empty_package_without_archive'); ?></div>
+					<?php } ?>
 				</div>
 			</div>
 		</div>

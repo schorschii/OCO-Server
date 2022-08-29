@@ -334,7 +334,7 @@ return [
 	'force_installation_of_same_version' => 'Installationsjobs anlegen, selbst wenn die gleiche Version bereits installiert ist',
 	'already_installed' => 'Bereits installiert',
 	'delete_failed_dependent_packages' => 'Das Paket konnte nicht gelöscht werden, da noch von diesem Pakete abhängige Pakete zugeordnet sind.',
-	'show_contents' => 'Inhalte anzeigen',
+	'archive_contents' => 'Archivinhalte',
 	'shutdown_waked_computers' => 'Aufgeweckte Computer herunterfahren',
 	'shutdown_waked_after_completion' => 'Aufgeweckte Computer nach Fertigstellung wieder herunterfahren',
 	'history' => 'Historie',
@@ -407,6 +407,8 @@ return [
 	'enabled' => 'Aktiviert',
 	'disabled' => 'Deaktiviert',
 	'restricted_view' => 'Sie sehen eine beschränkte Ansicht',
+	'total' => 'Gesamt',
+	'this_is_an_empty_package_without_archive' => 'Dies ist ein leeres Paket ohne Archiv.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

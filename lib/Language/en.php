@@ -339,7 +339,7 @@ return [
 	'force_installation_of_same_version' => 'Create installation jobs even if the same version is already installed',
 	'already_installed' => 'Already installed',
 	'delete_failed_dependent_packages' => 'The package could not be deleted because there are still dependent packages which are referenced to this package.',
-	'show_contents' => 'Show Contents',
+	'archive_contents' => 'Archive Contents',
 	'shutdown_waked_computers' => 'Shutdown waked computers',
 	'shutdown_waked_after_completion' => 'Shutdown waked computers after completion',
 	'history' => 'History',
@@ -412,6 +412,8 @@ return [
 	'enabled' => 'Enabled',
 	'disabled' => 'Disabled',
 	'restricted_view' => 'You see a restricted view',
+	'total' => 'Total',
+	'this_is_an_empty_package_without_archive' => 'This is an empty package without archive.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

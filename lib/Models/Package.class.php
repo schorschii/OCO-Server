@@ -82,22 +82,19 @@ class Package {
 		}
 	}
 	public function getContentListing() {
+		$contents = [];
 		$filePath = $this->getFilePath();
-		if(!$filePath) return '';
-		$output = ''; $size = 0;
+		if(!$filePath) return false;
 		$zip = new \ZipArchive();
 		$res = $zip->open($filePath);
 		if($res) {
 			$i = 0;
 			while(!empty($zip->statIndex($i)['name'])) {
-				$output .= $zip->statIndex($i)['name']." (".niceSize($zip->statIndex($i)['size']).")<br>\n";
-				$size += $zip->statIndex($i)['size'];
+				$contents[$zip->statIndex($i)['name']] = $zip->statIndex($i)['size'];
 				$i ++;
 			}
-			$output .= "=========================<br>\n";
-			$output .= niceSize($size);
 		}
-		return $output;
+		return $contents;
 	}
 
 }
