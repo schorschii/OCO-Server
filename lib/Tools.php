@@ -100,7 +100,7 @@ function ipAddressToBits($inet) {
 	return $binaryip;
 }
 function isIpInRange($ip, $range) {
-	// $range is in IP/CIDR format e.g. 127.0.0.1/24 or 21DA:00D3:0000:2F3B::/64
+	// $range is in IP/CIDR format e.g. 127.0.0.1/24 or CAFF:EECA:FFEE:0000::/64
 	if(strpos( $range, '/' ) == false) $range .= '/32'; // fallback range
 	list( $range, $maskBits ) = explode( '/', $range, 2 );
 	$binaryNet = ipAddressToBits($range);
