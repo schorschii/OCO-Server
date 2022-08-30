@@ -68,8 +68,9 @@ try {
 
 // handle BREW requests
 if(isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) == 'BREW') {
-	header('HTTP/1.1 200 Brewer Informed');
+	header("HTTP/1.1 418 I'm a teapot");
 	die(
+		'This is a teapot! But luckily it can handle coffee too.'."\n".
 		'The local brewing personnel was informed about your coffee request.'."\n".
 		'Please be patient while the CPU is heating up to brew your coffee.'."\n".
 		'Meanwhile, here is an ASCII cup for you. Attention: Hot!'."\n".
