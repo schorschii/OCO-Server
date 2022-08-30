@@ -3,11 +3,19 @@ require_once('../loader.inc.php');
 
 $info = null;
 $infoclass = null;
+$step = 0;
 
 // exit if setup was already done
-if($db->existsSchema() && count($db->getAllSystemUser()) > 0) {
-	header('Location: index.php');
-	die();
+if(!$db->existsSchema()) {
+	$info = LANG('please_import_database_schema_first');
+	$infoclass = 'warning';
+} else {
+	if(count($db->getAllSystemUser()) > 0) {
+		header('Location: index.php');
+		die();
+	} else {
+		$step = 1;
+	}
 }
 
 // create initial admin user
@@ -21,7 +29,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 	} elseif($_POST['password'] !== $_POST['password2']) {
 		$info = LANG('passwords_do_not_match');
 		$infoclass = 'error';
-	} else {
+	} elseif($db->existsSchema() && count($db->getAllSystemUser()) == 0) {
 		if(
 			$db->addSystemUser(
 				md5(rand()), $_POST['username'], $_POST['username'],
@@ -56,15 +64,17 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 
 	<div id='login'>
 		<div id='login-form'>
-			<form method='POST' action='setup.php' onsubmit='btnFinish.disabled = true'>
+			<form method='POST' action='setup.php' onsubmit='btnFinish.disabled=true'>
 				<h1><?php echo LANG('setup'); ?></h1>
 				<?php if($info !== null) { ?>
 					<div class='alert bold <?php echo $infoclass; ?>'><?php echo $info; ?></div>
 				<?php } ?>
-				<input type='text' name='username' placeholder='<?php echo LANG('choose_admin_username'); ?>' autofocus='true'>
-				<input type='password' name='password' placeholder='<?php echo LANG('choose_admin_password'); ?>'>
-				<input type='password' name='password2' placeholder='<?php echo LANG('confirm_admin_password'); ?>'>
-				<button id='btnFinish'><?php echo LANG('done'); ?></button>
+				<?php if($step == 1) { ?>
+					<input type='text' name='username' placeholder='<?php echo LANG('choose_admin_username'); ?>' autofocus='true'>
+					<input type='password' name='password' placeholder='<?php echo LANG('choose_admin_password'); ?>'>
+					<input type='password' name='password2' placeholder='<?php echo LANG('confirm_admin_password'); ?>'>
+					<button id='btnFinish'><?php echo LANG('done'); ?></button>
+				<?php } ?>
 			</form>
 			<img src='img/logo.dyn.svg'>
 		</div>

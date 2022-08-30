@@ -47,6 +47,9 @@ class DatabaseController {
 	public function existsSchema() {
 		$this->stmt = $this->dbh->prepare('SHOW TABLES LIKE "computer"');
 		$this->stmt->execute();
+		if($this->stmt->rowCount() != 1) return false;
+		$this->stmt = $this->dbh->prepare('SHOW TABLES LIKE "system_user"');
+		$this->stmt->execute();
 		return ($this->stmt->rowCount() == 1);
 	}
 
