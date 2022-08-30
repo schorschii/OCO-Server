@@ -339,9 +339,33 @@ switch($srcdata['method']) {
 				$data['software'] ?? [],
 				$logins
 			);
-			$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE,
-				['updated'=>true]
-			);
+			$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE, [
+				'hostname' => $params['hostname'],
+				'os' => $data['os'],
+				'os_version' => $data['os_version'],
+				'os_license' => $data['os_license'] ?? '-',
+				'os_language' => $data['os_language'] ?? '-',
+				'kernel_version' => $data['kernel_version'],
+				'architecture' => $data['architecture'],
+				'cpu' => $data['cpu'],
+				'gpu' => $data['gpu'],
+				'ram' => $data['ram'],
+				'agent_version' => $data['agent_version'],
+				'serial' => $data['serial'],
+				'manufacturer' => $data['manufacturer'],
+				'model' => $data['model'],
+				'bios_version' => $data['bios_version'],
+				'uptime' => intval($data['uptime'] ?? 0),
+				'boot_type' => $data['boot_type'],
+				'secure_boot' => $data['secure_boot'],
+				'domain' => $data['domain'] ?? '',
+				'network' => $data['networks'] ?? [],
+				'screens' => $data['screens'] ?? [],
+				'printers' => $data['printers'] ?? [],
+				'partitions' => $data['partitions'] ?? [],
+				'software' => $data['software'] ?? [],
+				'logins' => $logins
+			]);
 		} else {
 			errorExit('400 Update Not Necessary', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE,
 				'computer should not update now'
