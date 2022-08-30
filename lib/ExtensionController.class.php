@@ -10,7 +10,7 @@ class ExtensionController {
 		// load all extensions
 		foreach(glob(self::EXTENSION_DIR.'/*/index.php') as $fileName) {
 			$extConf = require_once($fileName);
-			if(empty($extConf['id'])) continue;
+			if(empty($extConf['id']) || empty($extConf['name']) || empty($extConf['version']) || empty($extConf['author'])) continue;
 			if(isset($extConf['oco-version-min']) && version_compare($extConf['oco-version-min'], OcoServer::APP_VERSION, '>')) continue;
 			if(isset($extConf['oco-version-max']) && version_compare($extConf['oco-version-max'], OcoServer::APP_VERSION, '<')) continue;
 			$this->extensions[$extConf['id']] = $extConf;
@@ -34,6 +34,10 @@ class ExtensionController {
 				return false;
 			});
 		}
+	}
+
+	public function getLoadedExtensions() {
+		return $this->extensions;
 	}
 
 	public function getAggregatedConf($key) {

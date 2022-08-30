@@ -192,7 +192,7 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 		<div name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div>
-					<p><?php echo LANG('change_settings_in_config_file'); ?></p>
+					<div class='alert info margintop'><?php echo LANG('change_settings_in_config_file'); ?></div>
 					<table class='list metadata'>
 						<tr>
 							<th><?php echo LANG('client_api_enabled'); ?>:</th>
@@ -233,6 +233,10 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 						<tr>
 							<th><?php echo LANG('wol_satellites'); ?>:</th>
 							<td><?php foreach(SATELLITE_WOL_SERVER as $s) echo htmlspecialchars($s['ADDRESS'].':'.$s['PORT']).'<br>'; ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG('extensions'); ?>:</th>
+							<td><?php foreach($ext->getLoadedExtensions() as $e) echo htmlspecialchars($e['name'].' ('.$e['id'].', v'.$e['version'].', '.$e['author'].')').'<br>'; ?></td>
 						</tr>
 					</table>
 				</div>

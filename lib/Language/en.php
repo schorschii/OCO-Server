@@ -427,6 +427,7 @@ return [
 	'user_log' => 'User Log',
 	'deleted_objects_history' => 'Deleted Objects History',
 	'object_id' => 'Object ID',
+	'extensions' => 'Erweiterungen',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
