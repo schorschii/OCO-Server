@@ -178,6 +178,7 @@ class CoreLogic {
 		if(count($this->db->getComputerByComputerAndGroup($computer->id, $computerGroup->id)) == 0) {
 			$this->db->addComputerToGroup($computer->id, $computerGroup->id);
 			$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.add_member', ['computer_id'=>$computer->id]);
+			$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.add_to_group', ['computer_group_id'=>$computerGroup->id]);
 		}
 	}
 	public function removeComputerFromGroup($computerId, $groupId) {
@@ -189,6 +190,7 @@ class CoreLogic {
 
 		$this->db->removeComputerFromGroup($computer->id, $computerGroup->id);
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.remove_member', ['computer_id'=>$computer->id]);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.remove_from_group', ['computer_group_id'=>$computerGroup->id]);
 	}
 	public function removeComputerGroup($id, $force=false) {
 		$computerGroup = $this->db->getComputerGroup($id);
@@ -352,6 +354,7 @@ class CoreLogic {
 		if(count($this->db->getPackageByPackageAndGroup($package->id, $packageGroup->id)) == 0) {
 			$this->db->addPackageToGroup($package->id, $packageGroup->id);
 			$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.add_member', ['package_id'=>$package->id]);
+			$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.add_to_group', ['package_group_id'=>$packageGroup->id]);
 		}
 	}
 	public function removePackageFromGroup($packageId, $groupId) {
@@ -363,6 +366,7 @@ class CoreLogic {
 
 		$this->db->removePackageFromGroup($package->id, $packageGroup->id);
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.remove_member', ['package_id'=>$package->id]);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_from_group', ['package_group_id'=>$packageGroup->id]);
 	}
 	public function removePackage($id, $force=false) {
 		$package = $this->db->getPackage($id);
