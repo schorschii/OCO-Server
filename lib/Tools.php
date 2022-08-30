@@ -88,20 +88,29 @@ function shorter($text, $charsLimit=40, $dots=true) {
 	}
 }
 
-function isIpInRange($ip, $range) {
-	if(strpos( $range, '/' ) == false) {
-		$range .= '/32';
+// converts IPv4 or v6 address to string with bits
+function ipAddressToBits($inet) {
+	$inet = inet_pton($inet);
+	if($inet === false) return false;
+	$splitted = str_split($inet);
+	$binaryip = '';
+	foreach($splitted as $char) {
+		$binaryip .= str_pad(decbin(ord($char)), 8, '0', STR_PAD_LEFT);
 	}
-	// $range is in IP/CIDR format eg 127.0.0.1/24
-	list( $range, $netmask ) = explode( '/', $range, 2 );
-	$range_decimal = ip2long( $range );
-	$ip_decimal = ip2long( $ip );
-	if($range_decimal === false || $ip_decimal === false) {
+	return $binaryip;
+}
+function isIpInRange($ip, $range) {
+	// $range is in IP/CIDR format e.g. 127.0.0.1/24 or 21DA:00D3:0000:2F3B::/64
+	if(strpos( $range, '/' ) == false) $range .= '/32'; // fallback range
+	list( $range, $maskBits ) = explode( '/', $range, 2 );
+	$binaryNet = ipAddressToBits($range);
+	$binaryIp  = ipAddressToBits($ip);
+	$ipNetBits = substr($binaryIp, 0, $maskBits);
+	$netBits   = substr($binaryNet, 0, $maskBits);
+	if($binaryIp === false || $binaryNet === false) {
 		throw new Exception(LANG('invalid_ip_address'));
 	}
-	$wildcard_decimal = pow( 2, ( 32 - $netmask ) ) - 1;
-	$netmask_decimal = ~ $wildcard_decimal;
-	return ( ( $ip_decimal & $netmask_decimal ) == ( $range_decimal & $netmask_decimal ) );
+	return ($ipNetBits === $netBits);
 }
 
 function GUIDtoStr($binary_guid) {
