@@ -27,6 +27,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `computer` (
   `id` int(11) NOT NULL,
+  `uid` text DEFAULT NULL,
   `hostname` text NOT NULL,
   `os` text NOT NULL,
   `os_version` text NOT NULL,
@@ -186,6 +187,7 @@ CREATE TABLE `computer_software` (
 CREATE TABLE `domain_user` (
   `id` int(11) NOT NULL,
   `uid` text DEFAULT NULL,
+  `domain` text DEFAULT NULL,
   `username` text NOT NULL,
   `display_name` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
