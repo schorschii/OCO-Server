@@ -80,7 +80,7 @@ const LDAP_ATTR_DESCRIPTION   = 'description';     // Example: 'description' for
 
  With satellite WOL, the OCO server will contact another server in the target network via SSH executing the "wakeonlan" command.
 
- Please make sure that the remote server can be accessed with the defined SSH key and that "wakeonlan" ist installed.
+ Please make sure that the remote server can be accessed with the defined SSH key and that "wakeonlan" is installed.
 */
 const SATELLITE_WOL_SERVER = [
 	# [
