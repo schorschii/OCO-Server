@@ -33,11 +33,11 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 // get & log body
 $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
-$db->addLogEntry(Models\Log::LEVEL_DEBUG, null, null, Models\Log::ACTION_CLIENT_API_RAW, $body);
+$db->addLogEntry(Models\Log::LEVEL_DEBUG, null, null, Models\Log::ACTION_AGENT_API_RAW, $body);
 
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
-	errorExit('400 Payload Corrupt', null, null, 'oco.agent', 'invalid JSON data');
+	errorExit('400 Payload Corrupt', null, null, Models\Log::ACTION_AGENT_API, 'invalid JSON data');
 }
 
 $resdata = ['id' => $srcdata['id']];
@@ -54,16 +54,16 @@ switch($srcdata['method']) {
 			|| !isset($data['state'])
 			|| !isset($data['return-code'])
 			|| !isset($data['message'])) {
-			errorExit('400 Parameter Mismatch', null, null, $srcdata['method'], 'invalid JSON data');
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS, 'invalid JSON data');
 		}
 
 		// check authorization
 		$computer = $db->getComputerByName($params['hostname']);
 		if($computer === null) {
-			errorExit('404 Computer Not Found', $params['hostname'], null, $srcdata['method'], 'computer not found');
+			errorExit('404 Computer Not Found', $params['hostname'], null, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS, 'computer not found');
 		}
 		if($params['agent-key'] !== $computer->agent_key) {
-			errorExit('401 Client Not Authorized', $params['hostname'], $computer, $srcdata['method'],
+			errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS,
 				'computer found but agent key mismatch: '.$params['agent-key']
 			);
 		}
@@ -72,12 +72,12 @@ switch($srcdata['method']) {
 		$state = intval($data['state']);
 		$job = $db->getJob($data['job-id']);
 		if($job === null) {
-			errorExit('404 Job Not Found', $params['hostname'], $computer, $srcdata['method'],
+			errorExit('404 Job Not Found', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS,
 				'job »'.$params['job-id'].'« not found'
 			);
 		}
 		if($job->computer_id !== $computer->id) {
-			errorExit('403 Forbidden', $params['hostname'], $computer, $srcdata['method'],
+			errorExit('403 Forbidden', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS,
 				'computer not allowed to update job »'.$job->id.'«'
 			);
 		}
@@ -104,7 +104,7 @@ switch($srcdata['method']) {
 		// update job state in database
 		$db->updateComputerPing($computer->id);
 		$db->updateJobState($data['job-id'], $state, intval($data['return-code']), $data['message']);
-		$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, $srcdata['method'],
+		$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS,
 			['job_id'=>$data['job-id'], 'return_code'=>intval($data['return-code']), 'message'=>$data['message']]
 		);
 		// update computer-package assignment if job was successful
@@ -131,7 +131,7 @@ switch($srcdata['method']) {
 
 		// check parameter
 		if(!isset($params['hostname']) || !isset($params['agent-key'])) {
-			errorExit('400 Parameter Mismatch', null, null, $srcdata['method'],
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_HELLO,
 				'invalid JSON data'
 			);
 		}
@@ -141,7 +141,7 @@ switch($srcdata['method']) {
 
 		if($computer == null) {
 			if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
-				errorExit('401 Client Not Authorized', $params['hostname'], null, $srcdata['method'],
+				errorExit('401 Client Not Authorized', $params['hostname'], null, Models\Log::ACTION_AGENT_API_HELLO,
 					'computer not found and agent registration key mismatch: '.$params['agent-key']
 				);
 			}
@@ -161,7 +161,7 @@ switch($srcdata['method']) {
 					$success = true;
 				}
 			} else {
-				errorExit('403 Client Self-Registration Disabled', $params['hostname'], null, $srcdata['method'],
+				errorExit('403 Client Self-Registration Disabled', $params['hostname'], null, Models\Log::ACTION_AGENT_API_HELLO,
 					'computer not found and agent self-registration disabled'
 				);
 			}
@@ -169,7 +169,7 @@ switch($srcdata['method']) {
 			if(empty($computer->agent_key)) {
 				// computer was pre-registered in the web frontend: check global key and generate individual key
 				if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
-					errorExit('401 Client Not Authorized', $params['hostname'], $computer, $srcdata['method'],
+					errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_HELLO,
 						'computer is pre-registered but agent registration key mismatch: '.$params['agent-key']
 					);
 				} else {
@@ -179,7 +179,7 @@ switch($srcdata['method']) {
 			} else {
 				// check individual agent key
 				if($params['agent-key'] !== $computer->agent_key) {
-					errorExit('401 Client Not Authorized', $params['hostname'], $computer, $srcdata['method'],
+					errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_HELLO,
 						'computer found but agent key mismatch: '.$params['agent-key']
 					);
 				}
@@ -247,7 +247,7 @@ switch($srcdata['method']) {
 				];
 			}
 
-			$db->addLogEntry(Models\Log::LEVEL_DEBUG, $params['hostname'], $computer->id, $srcdata['method'],
+			$db->addLogEntry(Models\Log::LEVEL_DEBUG, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_HELLO,
 				['update'=>$update, 'software_jobs'=>$jobs]
 			);
 			$success = true;
@@ -272,7 +272,7 @@ switch($srcdata['method']) {
 
 		// check parameter
 		if(!isset($params['hostname']) || !isset($params['agent-key'])) {
-			errorExit('400 Parameter Mismatch', null, null, $srcdata['method'],
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE,
 				'invalid JSON data'
 			);
 		}
@@ -280,12 +280,12 @@ switch($srcdata['method']) {
 		// check authorization
 		$computer = $db->getComputerByName($params['hostname']);
 		if($computer === null) {
-			errorExit('404 Computer Not Found', $params['hostname'], null, $srcdata['method'],
+			errorExit('404 Computer Not Found', $params['hostname'], null, Models\Log::ACTION_AGENT_API_UPDATE,
 				'computer not found'
 			);
 		}
 		if($params['agent-key'] !== $computer->agent_key) {
-			errorExit('401 Client Not Authorized', $params['hostname'], $computer, $srcdata['method'],
+			errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE,
 				'computer found but agent key mismatch: '.$params['agent-key']
 			);
 		}
@@ -339,11 +339,11 @@ switch($srcdata['method']) {
 				$data['software'] ?? [],
 				$logins
 			);
-			$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, $srcdata['method'],
+			$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE,
 				['updated'=>true]
 			);
 		} else {
-			errorExit('400 Update Not Necessary', $params['hostname'], $computer, $srcdata['method'],
+			errorExit('400 Update Not Necessary', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE,
 				'computer should not update now'
 			);
 		}
@@ -359,7 +359,7 @@ switch($srcdata['method']) {
 		break;
 
 	default:
-		errorExit('400 Unknown Method', null, null, $srcdata['method'],
+		errorExit('400 Unknown Method', null, null, Models\Log::ACTION_AGENT_API,
 			'unknown method'
 		);
 }
@@ -371,7 +371,7 @@ echo json_encode($resdata);
 }
 
 else {
-	errorExit('400 Content Type Mismatch', null, null, 'oco.agent', 'invalid content type: '.($_SERVER['CONTENT_TYPE']??''));
+	errorExit('400 Content Type Mismatch', null, null, Models\Log::ACTION_AGENT_API, 'invalid content type: '.($_SERVER['CONTENT_TYPE']??''));
 }
 
 

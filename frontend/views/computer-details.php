@@ -44,6 +44,7 @@ try {
 		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('general_and_hardware'); ?></a>
 		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('packages_and_jobs'); ?></a>
 		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('recognised_software'); ?></a>
+		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('history'); ?></a>
 	</div>
 	<div class='tabcontents'>
 
@@ -448,6 +449,57 @@ try {
 										</div>
 										<div class='controls'>
 											<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div name='history' class='<?php if($tab=='history') echo 'active'; ?>'>
+			<div class='details-abreast'>
+				<div class='stickytable'>
+					<h2><?php echo LANG('history'); ?></h2>
+					<table id='tblComputerHistoryData' class='list searchable sortable savesort'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('ip_address'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('user'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('action'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('data'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							$counter = 0;
+							foreach($db->getLogEntries($computer->id, 'oco.computer', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+								$counter ++;
+								echo "<tr>";
+								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($l->host)."</td>";
+								echo "<td>".htmlspecialchars($l->user)."</td>";
+								echo "<td>".htmlspecialchars($l->action)."</td>";
+								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(str_replace(chr(0x00),'',trim($l->data)),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "</tr>";
+							}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<div class='spread'>
+										<div>
+											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+										</div>
+										<div class='controls'>
+											<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<?php if(empty($_GET['nolimit'])) { ?>
+												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+											<?php } ?>
 										</div>
 									</div>
 								</td>

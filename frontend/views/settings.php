@@ -18,6 +18,7 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 		<a href='#' name='own-system-user-settings' class='<?php if($tab=='own-system-user-settings') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('own_system_user_settings'); ?></a>
 		<?php if($showSystemUserManagement) { ?>
 			<a href='#' name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('system_user_management'); ?></a>
+			<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('history'); ?></a>
 		<?php } ?>
 		<a href='#' name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('configuration_overview'); ?></a>
 	</div>
@@ -126,6 +127,59 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 							</td>
 						</tr>
 					</tfoot>
+					</table>
+				</div>
+			</div>
+		<?php } ?>
+		</div>
+
+		<div name='history' class='<?php if($tab=='history') echo 'active'; ?>'>
+		<?php if($showSystemUserManagement) { ?>
+			<div class='details-abreast'>
+				<div class='stickytable'>
+					<h2><?php echo LANG('web_client_log'); ?></h2>
+					<table id='tblPackageHistoryData' class='list searchable sortable savesort'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('ip_address'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('user'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('action'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('data'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							$counter = 0;
+							foreach($db->getLogEntries(null, 'oco.client', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+								$counter ++;
+								echo "<tr>";
+								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($l->host)."</td>";
+								echo "<td>".htmlspecialchars($l->user)."</td>";
+								echo "<td>".htmlspecialchars($l->action)."</td>";
+								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(str_replace(chr(0x00),'',trim($l->data)),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "</tr>";
+							}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<div class='spread'>
+										<div>
+											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+										</div>
+										<div class='controls'>
+											<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<?php if(empty($_GET['nolimit'])) { ?>
+												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+											<?php } ?>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
 					</table>
 				</div>
 			</div>

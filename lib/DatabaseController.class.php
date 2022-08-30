@@ -1833,6 +1833,15 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
+	public function getLogEntries($object_id, $action, $limit=Models\Log::DEFAULT_VIEW_LIMIT) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM log WHERE '.($object_id===null ? 'object_id IS NULL' : 'object_id = :object_id').' AND action LIKE :action ORDER BY timestamp DESC '.($limit ? 'LIMIT '.intval($limit) : '')
+		);
+		$params = [':action' => $action.'%'];
+		if($object_id !== null) $params[':object_id'] = $object_id;
+		$this->stmt->execute($params);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Log');
+	}
 	public function removeLogEntryOlderThan($seconds) {
 		if(intval($seconds) < 1) return;
 		$this->stmt = $this->dbh->prepare(

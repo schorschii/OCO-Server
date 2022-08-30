@@ -416,6 +416,10 @@ return [
 	'domain_user' => 'Domänenbenutzer',
 	'report' => 'Report',
 	'please_import_database_schema_first' => 'Bitte importieren Sie zuerst das Datenbankschema!',
+	'user' => 'Benutzer',
+	'data' => 'Daten',
+	'web_client_log' => 'Webclient-Log',
+	'show_all' => 'Alle anzeigen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
