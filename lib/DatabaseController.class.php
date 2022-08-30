@@ -1833,12 +1833,25 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function getLogEntries($object_id, $action, $limit=Models\Log::DEFAULT_VIEW_LIMIT) {
+	public function getLogEntries($object_id, $actions, $limit=Models\Log::DEFAULT_VIEW_LIMIT) {
+		if(empty($actions)) throw new Exception('Log filter: no action specified!');
+		if(!is_array($actions)) $actions = [$actions];
+		$actionSql = '(';
+		$params = [];
+		$counter = 0;
+		foreach($actions as $action) {
+			$counter ++;
+			if($actionSql != '(') $actionSql .= ' OR ';
+			$actionSql .= 'action LIKE :action'.$counter;
+			$params[':action'.$counter] = $action.'%';
+		}
+		$actionSql .= ')';
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM log WHERE '.($object_id===null ? 'object_id IS NULL' : 'object_id = :object_id').' AND action LIKE :action ORDER BY timestamp DESC '.($limit ? 'LIMIT '.intval($limit) : '')
+			'SELECT * FROM log WHERE '.($object_id===null ? 'object_id IS NULL' : $object_id===false ? '1=1' : 'object_id = :object_id').' AND '.$actionSql.' ORDER BY timestamp DESC '.($limit ? 'LIMIT '.intval($limit) : '')
 		);
-		$params = [':action' => $action.'%'];
-		if($object_id !== null) $params[':object_id'] = $object_id;
+		if($object_id !== null && $object_id !== false) {
+			$params[':object_id'] = $object_id;
+		}
 		$this->stmt->execute($params);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Log');
 	}

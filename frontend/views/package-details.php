@@ -318,8 +318,7 @@ try {
 			<div class='details-abreast'>
 				<div>
 					<?php $contents = $package->getContentListing(); if($contents) { ?>
-					<h2><?php echo LANG('archive_contents'); ?></h2>
-					<table id='tblArchiveContents' class='list searchable sortable savesort'>
+					<table id='tblArchiveContents' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
@@ -349,7 +348,7 @@ try {
 						</tfoot>
 					</table>
 					<?php } else { ?>
-						<div class='alert warning'><?php echo LANG('this_is_an_empty_package_without_archive'); ?></div>
+						<div class='alert warning margintop'><?php echo LANG('this_is_an_empty_package_without_archive'); ?></div>
 					<?php } ?>
 				</div>
 			</div>
@@ -446,8 +445,7 @@ try {
 		<div name='history' class='<?php if($tab=='history') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<h2><?php echo LANG('history'); ?></h2>
-					<table id='tblPackageHistoryData' class='list searchable sortable savesort'>
+					<table id='tblPackageHistoryData' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
@@ -467,7 +465,7 @@ try {
 								echo "<td>".htmlspecialchars($l->host)."</td>";
 								echo "<td>".htmlspecialchars($l->user)."</td>";
 								echo "<td>".htmlspecialchars($l->action)."</td>";
-								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(str_replace(chr(0x00),'',trim($l->data)),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
 								echo "</tr>";
 							}
 							?>

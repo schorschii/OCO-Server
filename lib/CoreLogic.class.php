@@ -136,7 +136,7 @@ class CoreLogic {
 		}
 		$result = $this->db->removeComputer($computer->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.delete', []);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.delete', json_encode($computer));
 		return $result;
 	}
 	public function createComputerGroup($name, $parentGroupId=null) {
@@ -382,7 +382,7 @@ class CoreLogic {
 
 		$result = $this->db->removePackage($package->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.delete', []);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.delete', json_encode($package));
 		return $result;
 	}
 	public function removePackageFamily($id) {
@@ -395,7 +395,7 @@ class CoreLogic {
 
 		$result = $this->db->removePackageFamily($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.delete', []);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.delete', json_encode($packageFamily));
 		return $result;
 	}
 	public function createPackageGroup($name, $parentGroupId=null) {
@@ -1145,7 +1145,7 @@ class CoreLogic {
 
 		$result = $this->db->removeJobContainer($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.delete', []);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.delete', json_encode($jc));
 		return $result;
 	}
 	public function removeJob($id) {
@@ -1250,7 +1250,7 @@ class CoreLogic {
 
 		$result = $this->db->removeReport($report->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.delete', []);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.delete', json_encode($report));
 		return $result;
 	}
 	public function createReportGroup($name, $parentGroupId=null) {
@@ -1313,9 +1313,10 @@ class CoreLogic {
 		return $domainUser;
 	}
 	public function removeDomainUser($id) {
+		$du = $this->db->getDomainUser($id);
 		$this->systemUser->checkPermission(new Models\DomainUser(), PermissionManager::METHOD_DELETE);
 
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $id, 'oco.domain_user.delete', []);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $id, 'oco.domain_user.delete', json_encode($du));
 		return $this->db->removeDomainUser($id);
 	}
 

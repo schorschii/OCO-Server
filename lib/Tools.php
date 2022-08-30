@@ -15,6 +15,12 @@ function isIE() {
 		|| strpos($_SERVER['HTTP_USER_AGENT'], 'Edge');
 }
 
+function prettyJson($json) {
+	$parsed = json_decode($json);
+	if($parsed === null) return $json;
+	return json_encode($parsed, JSON_PRETTY_PRINT);
+}
+
 function niceSize($value, $useBinary=true, $round=1, $echoZeroIfEmpty=false) {
 	if($value === 0 || ($echoZeroIfEmpty && empty($value))) return "0 B";
 	if(empty($value)) return "";

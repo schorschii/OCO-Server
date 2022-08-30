@@ -418,8 +418,7 @@ try {
 		<div name='software' class='<?php if($tab=='software') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<h2><?php echo LANG('recognised_software'); ?></h2>
-					<table id='tblSoftwareInventoryData' class='list searchable sortable savesort'>
+					<table id='tblSoftwareInventoryData' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
@@ -462,8 +461,7 @@ try {
 		<div name='history' class='<?php if($tab=='history') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<h2><?php echo LANG('history'); ?></h2>
-					<table id='tblComputerHistoryData' class='list searchable sortable savesort'>
+					<table id='tblComputerHistoryData' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
@@ -483,7 +481,7 @@ try {
 								echo "<td>".htmlspecialchars($l->host)."</td>";
 								echo "<td>".htmlspecialchars($l->user)."</td>";
 								echo "<td>".htmlspecialchars($l->action)."</td>";
-								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(str_replace(chr(0x00),'',trim($l->data)),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
 								echo "</tr>";
 							}
 							?>

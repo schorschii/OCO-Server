@@ -7,6 +7,7 @@ $tab = 'own-system-user-settings';
 if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 
 $showSystemUserManagement = $currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT, false);
+$showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_VIEW_DELETED_OBJECTS, false);
 ?>
 
 <div class='details-header'>
@@ -18,9 +19,12 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 		<a href='#' name='own-system-user-settings' class='<?php if($tab=='own-system-user-settings') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('own_system_user_settings'); ?></a>
 		<?php if($showSystemUserManagement) { ?>
 			<a href='#' name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('system_user_management'); ?></a>
-			<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('history'); ?></a>
+			<a href='#' name='user-log' class='<?php if($tab=='user-log') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('user_log'); ?></a>
 		<?php } ?>
 		<a href='#' name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('configuration_overview'); ?></a>
+		<?php if($showDeletedObjects) { ?>
+			<a href='#' name='deleted-objects-history' class='<?php if($tab=='deleted-objects-history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('deleted_objects_history'); ?></a>
+		<?php } ?>
 	</div>
 	<div class='tabcontents'>
 
@@ -133,12 +137,11 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 		<?php } ?>
 		</div>
 
-		<div name='history' class='<?php if($tab=='history') echo 'active'; ?>'>
+		<div name='user-log' class='<?php if($tab=='user-log') echo 'active'; ?>'>
 		<?php if($showSystemUserManagement) { ?>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<h2><?php echo LANG('web_client_log'); ?></h2>
-					<table id='tblPackageHistoryData' class='list searchable sortable savesort'>
+					<table id='tblUserLogData' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
@@ -158,7 +161,7 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 								echo "<td>".htmlspecialchars($l->host)."</td>";
 								echo "<td>".htmlspecialchars($l->user)."</td>";
 								echo "<td>".htmlspecialchars($l->action)."</td>";
-								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(str_replace(chr(0x00),'',trim($l->data)),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
 								echo "</tr>";
 							}
 							?>
@@ -234,6 +237,60 @@ $showSystemUserManagement = $currentSystemUser->checkPermission(null, Permission
 					</table>
 				</div>
 			</div>
+		</div>
+
+		<div name='deleted-objects-history' class='<?php if($tab=='deleted-objects-history') echo 'active'; ?>'>
+		<?php if($showDeletedObjects) { ?>
+			<div class='details-abreast'>
+				<div class='stickytable'>
+					<table id='tblUserLogData' class='list searchable sortable savesort margintop'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('ip_address'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('user'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('action'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('object_id'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('data'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							$counter = 0;
+							foreach($db->getLogEntries(false, ['oco.computer.delete', 'oco.package.delete', 'oco.package_family.delete', 'oco.job_container.delete', 'oco.domain_user.delete', 'oco.report.delete'], empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+								$counter ++;
+								echo "<tr>";
+								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($l->host)."</td>";
+								echo "<td>".htmlspecialchars($l->user)."</td>";
+								echo "<td>".htmlspecialchars($l->action)."</td>";
+								echo "<td>".htmlspecialchars($l->object_id)."</td>";
+								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "</tr>";
+							}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<div class='spread'>
+										<div>
+											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+										</div>
+										<div class='controls'>
+											<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<?php if(empty($_GET['nolimit'])) { ?>
+												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+											<?php } ?>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+		<?php } ?>
 		</div>
 
 	</div>
