@@ -110,7 +110,11 @@ rg \\ /
   # do the customizations you like
   cd /tmp
   wget https://github.com/schorschii/OCO-Agent/releases/download/vX.X.X/oco-agent.deb
+  echo "oco-agent oco-agent/server-name string oco.example.com" | sudo debconf-set-selections
+  echo "oco-agent oco-agent/agent-key string 12345678" | sudo debconf-set-selections
   gdebi -n oco-agent.deb
+  echo "oco-agent oco-agent/server-name string " | sudo debconf-set-selections
+  echo "oco-agent oco-agent/agent-key string " | sudo debconf-set-selections
 
   # clean up and leave chroot
   umount /proc || umount -lf /proc
@@ -179,3 +183,12 @@ Boot your client device via PXE. Maybe you need to enter your BIOS/UEFI settings
 Make sure that you boot in EFI mode. For that, disable CSM (Compatibility Support Module) in the BIOS/UEFI settings of your computer.
 
 You also need to disable Secure Boot in order to load iPXE. After installation, you can turn it on again.
+
+## More Information
+### Ubuntu/Mint Image Customization
+- [Ubuntu Live CD Customization](https://help.ubuntu.com/community/LiveCDCustomization)
+- [Live CD remastering](https://wiki.ubuntuusers.de/LiveCD_manuell_remastern/)
+
+### Windows Image Customization
+- [NTLite](https://www.ntlite.com/)
+- [DISM](https://docs.microsoft.com/de-de/windows-hardware/manufacture/desktop/what-is-dism)
