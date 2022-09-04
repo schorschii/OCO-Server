@@ -4,7 +4,7 @@ This document describes the JSON-REST and package download API for the OCO agent
 # The JSON-RPC Package
 A valid JSON-RPC request is sent via HTTP(S) with the HTTP header `Content-Type: application/json` to the API endpoint `api-agent.php`.
 
-Within the `params` object, please send the `hostname` with the correct `agent-key` value and all required additional parameters for the method you are calling inside a `data` object. The server will trust the agent only if the `agent-key` matches the one saved in the database.
+Within the `params` object, please send the `hostname` and `uid` (machine GUID) with the correct `agent-key` value and all required additional parameters for the method you are calling inside a `data` object. The server will trust the agent only if the `agent-key` matches the one saved in the database.
 
 Please have a look at the following API method documentation for JSON-RPC request/response examples.
 
@@ -28,6 +28,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"method": "oco.agent_hello",
 	"params": {
 		"agent-key": "🌈💜👆🚧🛸💩",
+		"uid": "00000000-0000-0000-0000-000000000000",
 		"hostname": "mypc",
 		"data": {
 			"agent_version": "1.0.0",
@@ -95,6 +96,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"method": "oco.agent_update",
 	"params": {
 		"agent-key": "🌈💜👆🚧🛸💩",
+		"uid": "00000000-0000-0000-0000-000000000000",
 		"hostname": "mypc",
 		"data": {
 			"os": "Windows 10 Education",
@@ -196,6 +198,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"method": "oco.update_deploy_status",
 	"params": {
 		"agent-key": "🌈💜👆🚧🛸💩",
+		"uid": "00000000-0000-0000-0000-000000000000",
 		"hostname": "mypc",
 		"data": {
 			"job-id": 123,

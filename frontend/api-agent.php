@@ -312,6 +312,7 @@ switch($srcdata['method']) {
 			// update inventory data now
 			$success = $db->updateComputerInventoryValues(
 				$computer->id,
+				$params['uid'] ?? null,
 				$params['hostname'],
 				$data['os'],
 				$data['os_version'],
