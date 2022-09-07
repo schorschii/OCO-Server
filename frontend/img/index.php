@@ -16,6 +16,9 @@ if(isset($extViews[$requestUrlFile]) && file_exists($extViews[$requestUrlFile]))
 	$mimeType = mime_content_type($extViews[$requestUrlFile]);
 	if(empty($mimeType) || $mimeType == 'image/svg') $mimeType = 'image/svg+xml';
 	header('Content-Type: '.$mimeType);
+	header('Content-Length: '.filesize($extViews[$requestUrlFile]));
+	header('Etag: '.md5_file($extViews[$requestUrlFile]));
+	header('Cache-Control: max-age='.(60*60*24*30));
 	readfile($extViews[$requestUrlFile]);
 } else {
 	header('HTTP/1.1 404 Not Found'); die();
