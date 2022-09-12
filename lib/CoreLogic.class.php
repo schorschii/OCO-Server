@@ -591,7 +591,6 @@ class CoreLogic {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
-			error_log($priority);
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(!in_array($auto_uninstall, ['0', '1'])) {
@@ -630,7 +629,6 @@ class CoreLogic {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
-			error_log($priority);
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(!in_array($auto_uninstall, ['0', '1'])) {
@@ -1204,7 +1202,6 @@ class CoreLogic {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
-			error_log($priority);
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 
