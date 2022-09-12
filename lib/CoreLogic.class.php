@@ -928,20 +928,23 @@ class CoreLogic {
 		}
 		return empty($validatedIpRanges) ? null : implode(',', $validatedIpRanges);
 	}
-	private function compileDeployPackageArray($packageId, $isDependency=false) {
+	private function compileDeployPackageArray($packageId, $isDependency=false, $existingPackages=[]) {
 		$packages = [];
 
 		// check if id exists
 		$p = $this->db->getPackage($packageId, null);
 		if($p == null) return [];
+
+		// check permission
 		if(!$this->systemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) return [];
 
 		// recursive dependency resolver
 		foreach($this->db->getDependentPackages($p->id) as $p2) {
-			$packages = $packages + $this->compileDeployPackageArray($p2->id, true);
+			if(array_key_exists($p2->id, $existingPackages)) continue;
+			$packages = $packages + $this->compileDeployPackageArray($p2->id, true, array_merge([$p2->id=>$p2], $existingPackages));
 		}
 
-		// add package after dependencies
+		// add requested package after dependencies
 		// note: PHP automatically treats string value $p->id as integer when using numeric strings as array key
 		$packages[$p->id] = [
 			'package_family_id' => $p->package_family_id,
