@@ -34,12 +34,29 @@ require_once('../session.php');
 </div>
 
 <div id='divNodeJobs' class='node expandable'>
-	<a <?php echo explorerLink('views/job-containers.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG('jobs'); ?></a>
+	<a <?php echo explorerLink('views/jobs.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG('jobs'); ?></a>
 	<div id='divSubnodeJobs' class='subitems'>
 		<?php
-		foreach($cl->getJobContainers() as $container) {
-			echo "<a ".explorerLink('views/job-containers.php?id='.$container->id)."><img src='img/".$db->getJobContainerIcon($container->id).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
+		$jobContainers = $cl->getJobContainers();
+		echo "<div class='subnode ".(empty($jobContainers) ? '' : 'expandable')."'>";
+		echo "<a ".explorerLink('views/job-containers.php')."><img src='img/container.dyn.svg'>".LANG('job_containers')."</a>";
+		echo "<div id='divNodeStaticJobs' class='subitems'>";
+		foreach($jobContainers as $container) {
+			echo "<a ".explorerLink('views/job-containers.php?id='.$container->id)."><img src='img/".$container->getStatus($db->getStaticJobsByJobContainer($container->id)).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
 		}
+		echo "</div>";
+		echo "</div>";
+		?>
+		<?php
+		$deploymentRules = $cl->getDeploymentRules();
+		echo "<div class='subnode ".(empty($deploymentRules) ? '' : 'expandable')."'>";
+		echo "<a ".explorerLink('views/deployment-rules.php')."><img src='img/rule.dyn.svg'>".LANG('deployment_rules')."</a>";
+		echo "<div id='divNodeDynamicJobs' class='subitems'>";
+		foreach($deploymentRules as $container) {
+			echo "<a ".explorerLink('views/deployment-rules.php?id='.$container->id)."><img src='img/".$container->getStatus($db->getDynamicJobsByDeploymentRule($container->id)).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
+		}
+		echo "</div>";
+		echo "</div>";
 		?>
 	</div>
 </div>

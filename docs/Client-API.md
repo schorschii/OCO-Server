@@ -197,7 +197,7 @@ no parameters
 					"job_container_id": "203",
 					"computer_id": null,
 					"package_id": "113",
-					"package_procedure": null,
+					"procedure": null,
 					"success_return_codes": null,
 					"is_uninstall": "0",
 					"download": "0",
@@ -620,7 +620,7 @@ no parameters
 }
 ```
 
-## `oco.job.list` - List All Jobs Of A Job Container
+## `oco.job_container.job.list` - List All Jobs Of A Job Container
 ### Parameters
 - `ìd` - job container ID
 ### Example
@@ -649,7 +649,7 @@ no parameters
 				"job_container_id": "203",
 				"computer_id": "116",
 				"package_id": "113",
-				"package_procedure": "msiexec /quiet /i test.msi",
+				"procedure": "msiexec /quiet /i test.msi",
 				"success_return_codes": "0",
 				"is_uninstall": "0",
 				"download": "0",
@@ -670,7 +670,7 @@ no parameters
 }
 ```
 
-## `oco.deploy` - Create Deployment Jobs
+## `oco.job_container.deploy` - Create Deployment Jobs
 ### Parameters
 - `name` - name for the new job container
 - `description` (optional) - name for the new job container
@@ -732,7 +732,7 @@ no parameters
 }
 ```
 
-## `oco.uninstall` - Create Uninstall Jobs
+## `oco.job_container.uninstall` - Create Uninstall Jobs
 ### Parameters
 - `name` - name for the new job container
 - `description` (optional) - name for the new job container
@@ -840,7 +840,7 @@ This will delete all jobs in the container and the container itself. Pending job
 }
 ```
 
-## `oco.job.remove` - Remove Job
+## `oco.job_container.job.remove` - Remove Job
 This removes a single job from a job container.
 ### Parameters
 - `id` - job ID

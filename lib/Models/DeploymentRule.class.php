@@ -2,33 +2,25 @@
 
 namespace Models;
 
-class JobContainer {
+class DeploymentRule {
 
 	public $id;
 	public $name;
-	public $enabled;
-	public $start_time;
-	public $end_time;
 	public $notes;
-	public $wol_sent;
-	public $shutdown_waked_after_completion;
-	public $sequence_mode;
+	public $author;
+	public $enabled;
+	public $computer_group_id;
+	public $package_group_id;
 	public $priority;
-	public $agent_ip_ranges;
+	public $auto_uninstall;
+	public $post_action_timeout;
 	public $created;
-
-	// aggregated values
-	public $execution_finished;
 
 	// constants (= icon names)
 	public const STATUS_SUCCEEDED = 'success';
 	public const STATUS_FAILED = 'error';
 	public const STATUS_IN_PROGRESS = 'wait';
 	public const STATUS_WAITING_FOR_START = 'schedule';
-	public const SEQUENCE_MODE_IGNORE_FAILED = 0;
-	public const SEQUENCE_MODE_ABORT_AFTER_FAILED = 1;
-	public const RETURN_CODE_AGENT_ERROR = -9999;
-	public const RETURN_CODE_ABORT_AFTER_FAILED = -8888;
 
 	// functions
 	public function getStatus($jobs) {
@@ -48,13 +40,10 @@ class JobContainer {
 			}
 		}
 		if($waitings > 0) {
-			$startTimeParsed = strtotime($this->start_time);
-			if($startTimeParsed !== false && $startTimeParsed > time())
-				return JobContainer::STATUS_WAITING_FOR_START;
-			else return JobContainer::STATUS_IN_PROGRESS;
+			return DeploymentRule::STATUS_IN_PROGRESS;
 		}
-		elseif($errors > 0) return JobContainer::STATUS_FAILED;
-		else return JobContainer::STATUS_SUCCEEDED;
+		elseif($errors > 0) return DeploymentRule::STATUS_FAILED;
+		else return DeploymentRule::STATUS_SUCCEEDED;
 	}
 
 }

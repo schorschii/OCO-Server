@@ -24,7 +24,7 @@ foreach($ext->getAggregatedConf('frontend-css') as $filename) {
 <link rel='prefetch' as='image' href='img/collapse.dyn.svg'>
 <link rel='prefetch' as='image' href='img/close.opacity.svg'>
 <link rel='prefetch' as='image' href='img/info.message.svg'>
-<link rel='prefetch' as='image' href='img/tick.message.svg'>
+<link rel='prefetch' as='image' href='img/success.message.svg'>
 <link rel='prefetch' as='image' href='img/warning.message.svg'>
 <link rel='prefetch' as='image' href='img/error.message.svg'>
 

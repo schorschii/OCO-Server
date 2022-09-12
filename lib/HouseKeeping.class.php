@@ -23,14 +23,14 @@ class HouseKeeping {
 	private function jobHouseKeeping() {
 		foreach($this->db->getAllJobContainer() as $container) {
 			// purge old jobs
-			$icon = $this->db->getJobContainerIcon($container->id);
-			if($icon == Models\JobContainer::STATUS_SUCCEEDED) {
+			$status = $container->getStatus($this->db->getStaticJobsByJobContainer($container->id));
+			if($status == Models\JobContainer::STATUS_SUCCEEDED) {
 				if(time() - strtotime($container->execution_finished) > PURGE_SUCCEEDED_JOBS_AFTER) {
 					if($this->debug) echo('Remove succeeded job container #'.$container->id.' ('.$container->name.')'."\n");
 					$this->db->removeJobContainer($container->id);
 				}
 			}
-			elseif($icon == Models\JobContainer::STATUS_FAILED) {
+			elseif($status == Models\JobContainer::STATUS_FAILED) {
 				if(time() - strtotime($container->execution_finished) > PURGE_FAILED_JOBS_AFTER) {
 					if($this->debug) echo('Remove failed job container #'.$container->id.' ('.$container->name.')'."\n");
 					$this->db->removeJobContainer($container->id);
@@ -39,10 +39,13 @@ class HouseKeeping {
 
 			// set job state to expired if job container end date reached
 			if($container->end_time !== null && strtotime($container->end_time) < time()) {
-				foreach($this->db->getAllJobByContainer($container->id) as $job) {
-					if($job->state == Models\Job::STATUS_WAITING_FOR_CLIENT || $job->state == Models\Job::STATUS_DOWNLOAD_STARTED || $job->state == Models\Job::STATUS_EXECUTION_STARTED) {
+				foreach($this->db->getStaticJobsByJobContainer($container->id) as $job) {
+					if($job->state == Models\Job::STATE_WAITING_FOR_AGENT || $job->state == Models\Job::STATE_DOWNLOAD_STARTED || $job->state == Models\Job::STATE_EXECUTION_STARTED) {
 						if($this->debug) echo('Set job #'.$job->id.' (container #'.$container->id.', '.$container->name.') state to EXPIRED'."\n");
-						$this->db->updateJobState($job->id, Models\Job::STATUS_EXPIRED, NULL, '');
+						$job->state = Models\Job::STATE_EXPIRED;
+						$job->return_code = null;
+						$job->message = '';
+						$this->db->updateJobExecutionState($job);
 					}
 				}
 			}
@@ -87,20 +90,20 @@ class HouseKeeping {
 
 			// check WOL status (for shutting it down later)
 			if(!empty($container->shutdown_waked_after_completion)) {
-				foreach($this->db->getAllJobByContainer($container->id) as $j) {
+				foreach($this->db->getStaticJobsByJobContainer($container->id) as $j) {
 					if(!empty($j->wol_shutdown_set)) {
 						$c = $this->db->getComputer($j->computer_id); if(!$c) continue;
 						// The computer came up in the defined time range, this means WOL worked.
 						// Remove the "WOL Shutdown Set" flag to keep the shutdown forever.
 						if($c->isOnline() && time() - strtotime($j->wol_shutdown_set) < WOL_SHUTDOWN_EXPIRY_SECONDS) {
 							if($this->debug) echo('Host came up before WOL shutdown expiry. Keep shutdown of job #'.$j->id.' (in container #'.$container->id.' '.$container->name.') forever'."\n");
-							$this->db->removeWolShutdownJobInContainer($container->id, $j->id, Models\Package::POST_ACTION_SHUTDOWN);
+							$this->db->removeWolShutdownStaticJobInContainer($container->id, $j->id, Models\Package::POST_ACTION_SHUTDOWN);
 						}
 						// If the computer does not came up with WOL after a certain time, WOL didn't work -> remove the shutdown.
 						// It is likely that a user has now manually powered on the machine. Then, an automatic shutdown is not desired anymore.
 						if(time() - strtotime($j->wol_shutdown_set) > WOL_SHUTDOWN_EXPIRY_SECONDS) {
 							if($this->debug) echo('Remove expired WOL shutdown for job #'.$j->id.' (in container #'.$container->id.' '.$container->name.')'."\n");
-							$this->db->removeWolShutdownJobInContainer($container->id, $j->id, Models\Package::POST_ACTION_NONE);
+							$this->db->removeWolShutdownStaticJobInContainer($container->id, $j->id, Models\Package::POST_ACTION_NONE);
 						}
 					}
 				}

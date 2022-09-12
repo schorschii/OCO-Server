@@ -539,7 +539,7 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 	);
 }
 function refreshContentDeploy(packages=[], packageGroups=[], computers=[], computerGroups=[]) {
-	ajaxRequest('views/deploy.php', 'explorer-content', function(){
+	ajaxRequest('views/job-container-new.php', 'explorer-content', function(){
 		addToDeployTarget(computerGroups, divTargetComputerList, 'target_computer_groups');
 		addToDeployTarget(computers, divTargetComputerList, 'target_computers');
 		addToDeployTarget(packageGroups, divTargetPackageList, 'target_package_groups');
@@ -1031,13 +1031,13 @@ function refreshDeployComputerList(groupId=null, reportId=null) {
 	var params = [];
 	if(groupId != null) {
 		params.push({'key':'get_computer_group_members', 'value':groupId});
-		ajaxRequest('ajax-handler/deploy.php?'+urlencodeArray(params), 'divComputerList', function(){
+		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divComputerList', function(){
 			refreshDeployComputerCount();
 		});
 	}
 	else if(reportId != null) {
 		params.push({'key':'get_computer_report_results', 'value':reportId});
-		ajaxRequest('ajax-handler/deploy.php?'+urlencodeArray(params), 'divComputerList', function(){
+		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divComputerList', function(){
 			refreshDeployComputerCount();
 		});
 	} else {
@@ -1058,13 +1058,13 @@ function refreshDeployPackageList(groupId=null, reportId=null) {
 	var params = [];
 	if(groupId != null) {
 		params.push({'key':'get_package_group_members', 'value':groupId});
-		ajaxRequest('ajax-handler/deploy.php?'+urlencodeArray(params), 'divPackageList', function(){
+		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divPackageList', function(){
 			refreshDeployPackageCount();
 		});
 	}
 	else if(reportId != null) {
 		params.push({'key':'get_package_report_results', 'value':reportId});
-		ajaxRequest('ajax-handler/deploy.php?'+urlencodeArray(params), 'divPackageList', function(){
+		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divPackageList', function(){
 			refreshDeployPackageCount();
 		});
 	} else {
@@ -1421,13 +1421,94 @@ function showDialogAddComputerToGroup(id) {
 }
 
 // ======== JOB OPERATIONS ========
-function showDialogMoveJobToContainer(id) {
+function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, computerGroupId=-1, packageGroupId=-1, priority=0, autoUninstall=1) {
+	title = L__EDIT_DEPLOYMENT_RULE;
+	buttonText = L__CHANGE;
+	if(id == -1) {
+		title = L__NEW_DEPLOYMENT_RULE;
+		buttonText = L__CREATE;
+	}
+	showDialogAjax(title, 'views/dialog-deployment-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditDeploymentRuleId.value = id;
+		txtEditDeploymentRuleName.value = name;
+		txtEditDeploymentRuleNotes.value = notes;
+		chkEditDeploymentRuleEnabled.checked = enabled=='1';
+		sltEditDeploymentRuleComputerGroupId.value = computerGroupId;
+		sltEditDeploymentRulePackageGroupId.value = packageGroupId;
+		sldEditDeploymentRulePriority.value = priority;
+		lblEditDeploymentRulePriorityPreview.innerText = priority;
+		chkEditDeploymentRuleAutoUninstall.checked = autoUninstall=='1';
+		spnBtnUpdateDeploymentRule.innerText = buttonText;
+	});
+}
+function editDeploymentRule(id, name, notes, enabled, computerGroupId, packageGroupId, priority, autoUninstall) {
+	var params = [];
+	params.push({'key':'edit_deployment_rule_id', 'value':id});
+	params.push({'key':'name', 'value':name});
+	params.push({'key':'notes', 'value':notes});
+	params.push({'key':'enabled', 'value':enabled?'1':'0'});
+	params.push({'key':'computer_group_id', 'value':computerGroupId});
+	params.push({'key':'package_group_id', 'value':packageGroupId});
+	params.push({'key':'priority', 'value':priority});
+	params.push({'key':'auto_uninstall', 'value':autoUninstall?'1':'0'});
+	ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeArray(params), null, function(response) {
+		hideDialog();
+		if(id == '-1') {
+			refreshContentExplorer('views/deployment-rules.php?id='+parseInt(response));
+			refreshSidebar();
+			emitMessage(L__JOBS_CREATED, name, MESSAGE_TYPE_SUCCESS);
+		} else {
+			refreshContent(); refreshSidebar();
+			emitMessage(L__SAVED, name, MESSAGE_TYPE_SUCCESS);
+		}
+	});
+}
+function reevaluateDeploymentRule(deploymentRuleId) {
+	var params = [];
+	params.push({'key':'evaluate_deployment_rule_id', 'value':deploymentRuleId});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/deployment-rules.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(L__REEVALUATED, '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function removeSelectedDeploymentRule(checkboxName, attributeName=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	confirmRemoveDeploymentRule(ids);
+}
+function confirmRemoveDeploymentRule(ids, infoText='') {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_deployment_rule_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(L__CONFIRM_DELETE_DEPLOYMENT_RULE)) {
+		ajaxRequestPost('ajax-handler/deployment-rules.php', paramString, null, function() {
+			refreshContentExplorer('views/deployment-rules.php'); refreshSidebar();
+			emitMessage(L__OBJECT_DELETED, infoText, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function showDialogMoveStaticJobToContainer(id) {
 	if(!id) return;
 	showDialogAjax(L__JOB_CONTAINERS, 'views/dialog-jobs-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditJobId.value = id;
 	});
 }
-function moveJobToContainer(jobId, containerId) {
+function moveStaticJobToContainer(jobId, containerId) {
 	if(containerId === false) return;
 	var params = [];
 	containerId.toString().split(',').forEach(function(entry) {
@@ -1466,7 +1547,7 @@ function confirmRemoveJobContainer(ids, infoText='') {
 		params.push({'key':'remove_container_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
-	if(confirm(L__CONFIRM_DELETE_JOBCONTAINER)) {
+	if(confirm(L__CONFIRM_DELETE_JOB_CONTAINER)) {
 		ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
 			refreshContentExplorer('views/job-containers.php'); refreshSidebar();
 			emitMessage(L__OBJECT_DELETED, infoText, MESSAGE_TYPE_SUCCESS);
@@ -1586,7 +1667,7 @@ function deploy(title, start, end, description, computers, computerGroups, compu
 	computerReports.forEach(function(entry) {
 		formData.append('computer_report_id[]', entry);
 	});
-	req.open('POST', 'ajax-handler/deploy.php');
+	req.open('POST', 'ajax-handler/job-containers.php');
 	req.send(formData);
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
@@ -1630,7 +1711,7 @@ function uninstall(checkboxName, name, notes, startTime, endTime, useWol, shutdo
 	params.push({'key':'restart_timeout', 'value':restartTimeout});
 	params.push({'key':'priority', 'value':priority});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/deploy.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
 		hideDialog();
 		refreshSidebar(); refreshContent();
 		emitMessage(L__JOBS_CREATED, name, MESSAGE_TYPE_SUCCESS);
@@ -1653,7 +1734,7 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT)) {
-		ajaxRequestPost('ajax-handler/deploy.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
 			refreshContent();
 			emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 		});
@@ -1665,7 +1746,7 @@ function showDialogRenewFailedJobs(id, defaultName) {
 		txtRenewJobContainerName.value = defaultName;
 	});
 }
-function renewFailedJobsInContainer(id, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
+function renewFailedStaticJobsInContainer(id, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
 	var params = [];
 	params.push({'key':'create_renew_job_container', 'value':name});
 	params.push({'key':'renew_container_id', 'value':id});
@@ -1676,7 +1757,7 @@ function renewFailedJobsInContainer(id, name, notes, startTime, endTime, useWol,
 	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
 	params.push({'key':'priority', 'value':priority});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/deploy.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
 		hideDialog();
 		refreshSidebar(); refreshContent();
 		emitMessage(L__JOBS_CREATED, name, MESSAGE_TYPE_SUCCESS);

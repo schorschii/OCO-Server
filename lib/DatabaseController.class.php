@@ -59,8 +59,7 @@ class DatabaseController {
 			(SELECT count(id) FROM domain_user) AS "domain_users",
 			(SELECT count(id) FROM computer) AS "computers",
 			(SELECT count(id) FROM package) AS "packages",
-			(SELECT count(id) FROM job) AS "jobs",
-			(SELECT count(id) FROM job_container) AS "job_containers",
+			(SELECT (SELECT count(id) FROM job_container_job jcj)+(SELECT count(id) FROM deployment_rule_job)) AS "jobs",
 			(SELECT count(id) FROM report) AS "reports"
 			FROM DUAL'
 		);
@@ -134,12 +133,13 @@ class DatabaseController {
 		$this->stmt->execute([':cid' => $cid]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerSoftware');
 	}
-	public function getComputerPackage($cid) {
+	public function getComputerPackagesByComputer($cid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_family_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
+			'SELECT cp.id AS "id", c.id AS "computer_id", c.hostname AS "computer_hostname", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_family_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN package p ON p.id = cp.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			INNER JOIN computer c ON c.id = cp.computer_id
 			WHERE cp.computer_id = :cid'
 		);
 		$this->stmt->execute([':cid' => $cid]);
@@ -561,14 +561,23 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_group_member (computer_id, computer_group_id) VALUES (:cid, :gid)'
 		);
-		$this->stmt->execute([':cid' => $cid, ':gid' => $gid]);
-		return $this->dbh->lastInsertId();
+		if(!$this->stmt->execute([':cid' => $cid, ':gid' => $gid])) return false;
+		$insertId = $this->dbh->lastInsertId();
+		foreach($this->getDeploymentRulesByComputerGroup($gid) as $dr) {
+			$this->evaluateDeploymentRule($dr->id);
+		}
+		return $insertId;
 	}
 	public function removeComputerFromGroup($cid, $gid) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_group_member WHERE computer_id = :cid AND computer_group_id = :gid'
 		);
-		return $this->stmt->execute([':cid' => $cid, ':gid' => $gid]);
+		if(!$this->stmt->execute([':cid' => $cid, ':gid' => $gid])) return false;
+		if($this->stmt->rowCount() != 1) return false;
+		foreach($this->getDeploymentRulesByComputerGroup($gid) as $dr) {
+			$this->evaluateDeploymentRule($dr->id);
+		}
+		return true;
 	}
 
 	// Package Operations
@@ -634,11 +643,11 @@ class DatabaseController {
 		]);
 	}
 	public function addPackageToComputer($pid, $cid, $author, $procedure) {
-		$this->dbh->beginTransaction();
-		$this->removeComputerAssignedPackageByIds($cid, $pid);
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_package (package_id, computer_id, installed_by, installed_procedure)
-			VALUES (:package_id, :computer_id, :installed_by, :installed_procedure)'
+			'INSERT INTO computer_package (id, package_id, computer_id, installed_by, installed_procedure, installed)
+			(SELECT id, package_id, computer_id, installed_by, installed_procedure, installed FROM computer_package WHERE package_id = :package_id AND computer_id = :computer_id
+			UNION SELECT null, :package_id, :computer_id, :installed_by, :installed_procedure, CURRENT_TIMESTAMP FROM DUAL LIMIT 1)
+			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), installed_by = :installed_by, installed_procedure = :installed_procedure, installed = CURRENT_TIMESTAMP'
 		);
 		$this->stmt->execute([
 			':package_id' => $pid,
@@ -646,14 +655,20 @@ class DatabaseController {
 			':installed_by' => $author,
 			':installed_procedure' => $procedure,
 		]);
-		$this->dbh->commit();
-		return $this->dbh->lastInsertId();
+		$insertId = $this->dbh->lastInsertId();
+		foreach($this->getGroupByComputer($cid) as $g) {
+			foreach($this->getDeploymentRulesByComputerGroup($g->id) as $dr) {
+				$this->evaluateDeploymentRule($dr->id);
+			}
+		}
+		return $insertId;
 	}
-	public function getPackageComputer($pid) {
+	public function getComputerPackagesByPackage($pid) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
+			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN computer c ON c.id = cp.computer_id
+			INNER JOIN package p ON p.id = cp.package_id
 			WHERE cp.package_id = :pid'
 		);
 		$this->stmt->execute([':pid' => $pid]);
@@ -803,7 +818,14 @@ class DatabaseController {
 		$this->stmt->execute([':name' => $name, ':version' => $version]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function getComputerAssignedPackage($id) {
+	public function getAllComputerPackages() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_package'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
+	}
+	public function getComputerPackage($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_package WHERE id = :id'
 		);
@@ -884,8 +906,12 @@ class DatabaseController {
 			'INSERT INTO package_group_member (package_id, package_group_id, sequence)
 			VALUES (:package_id, :package_group_id, :sequence)'
 		);
-		$this->stmt->execute([':package_id' => $pid, ':package_group_id' => $gid, ':sequence' => $seq]);
-		return $this->dbh->lastInsertId();
+		if(!$this->stmt->execute([':package_id' => $pid, ':package_group_id' => $gid, ':sequence' => $seq])) return false;
+		$insertId = $this->dbh->lastInsertId();
+		foreach($this->getDeploymentRulesByPackageGroup($gid) as $dr) {
+			$this->evaluateDeploymentRule($dr->id);
+		}
+		return $insertId;
 	}
 	public function reorderPackageInGroup($package_group_id, $old_seq, $new_seq) {
 		$this->stmt = $this->dbh->prepare(
@@ -966,14 +992,26 @@ class DatabaseController {
 			'DELETE FROM package_group_member WHERE package_id = :package_id AND package_group_id = :package_group_id'
 		);
 		if(!$this->stmt->execute([':package_id' => $pid, ':package_group_id' => $gid])) return false;
-		return $this->refactorPackageGroupOrder($gid);
+		if($this->stmt->rowCount() != 1) return false;
+		if(!$this->refactorPackageGroupOrder($gid)) return false;
+		foreach($this->getDeploymentRulesByPackageGroup($gid) as $dr) {
+			$this->evaluateDeploymentRule($dr->id);
+		}
+		return true;
 	}
 	public function removeComputerAssignedPackage($id) {
+		$computerPackageAssignment = $this->getComputerPackage($id);
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_package WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return ($this->stmt->rowCount() == 1);
+		if($this->stmt->rowCount() != 1) return false;
+		foreach($this->getGroupByComputer($computerPackageAssignment->computer_id) as $g) {
+			foreach($this->getDeploymentRulesByComputerGroup($g->id) as $dr) {
+				$this->evaluateDeploymentRule($dr->id);
+			}
+		}
+		return true;
 	}
 	public function removeComputerAssignedPackageByIds($cid, $pid) {
 		$this->stmt = $this->dbh->prepare(
@@ -1002,16 +1040,16 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addJob($job_container_id, $computer_id, $package_id, $package_procedure, $success_return_codes, $is_uninstall, $download, $post_action, $post_action_timeout, $sequence, $state=0) {
+	public function addStaticJob($job_container_id, $computer_id, $package_id, $procedure, $success_return_codes, $is_uninstall, $download, $post_action, $post_action_timeout, $sequence, $state=0) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job (job_container_id, computer_id, package_id, package_procedure, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, message)
-			VALUES (:job_container_id, :computer_id, :package_id, :package_procedure, :success_return_codes, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, "")'
+			'INSERT INTO job_container_job (job_container_id, computer_id, package_id, `procedure`, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, message)
+			VALUES (:job_container_id, :computer_id, :package_id, :procedure, :success_return_codes, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, "")'
 		);
 		$this->stmt->execute([
 			':job_container_id' => $job_container_id,
 			':computer_id' => $computer_id,
 			':package_id' => $package_id,
-			':package_procedure' => $package_procedure,
+			':procedure' => $procedure,
 			':success_return_codes' => $success_return_codes,
 			':is_uninstall' => $is_uninstall,
 			':download' => $download,
@@ -1040,58 +1078,56 @@ class DatabaseController {
 	}
 	public function getAllJobContainer() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT jc.*, (SELECT MAX(execution_finished) FROM job j WHERE j.job_container_id = jc.id) AS "execution_finished"
+			'SELECT jc.*, (SELECT MAX(execution_finished) FROM job_container_job j WHERE j.job_container_id = jc.id) AS "execution_finished"
 			FROM job_container jc'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer');
 	}
-	public function getJobContainerMinJobExecution($job_container_id) {
+	public function getJobContainerMinExecutionStaticJob($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM job WHERE job_container_id = :job_container_id ORDER BY execution_started ASC LIMIT 1'
+			'SELECT * FROM job_container_job WHERE job_container_id = :job_container_id ORDER BY execution_started ASC LIMIT 1'
 		);
 		$this->stmt->execute([':job_container_id' => $job_container_id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob') as $row) {
 			return $row;
 		}
 	}
-	public function getJobContainerMaxJobExecution($job_container_id) {
+	public function getJobContainerMaxExecutionStaticJob($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM job WHERE job_container_id = :job_container_id ORDER BY execution_finished DESC LIMIT 1'
+			'SELECT * FROM job_container_job WHERE job_container_id = :job_container_id ORDER BY execution_finished DESC LIMIT 1'
 		);
 		$this->stmt->execute([':job_container_id' => $job_container_id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob') as $row) {
 			return $row;
 		}
 	}
-	public function getJob($id) {
+	public function getStaticJob($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.*, jc.start_time AS "job_container_start_time", jc.author AS "job_container_author" FROM job j
+			'SELECT j.*, jc.start_time AS "job_container_start_time", jc.author AS "job_container_author" FROM job_container_job j
 			INNER JOIN job_container jc ON jc.id = j.job_container_id
 			WHERE j.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob') as $row) {
 			return $row;
 		}
 	}
-	public function getActiveJobByComputerPackage($cid, $pid) {
+	public function getDynamicJob($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.* FROM job j
-			INNER JOIN job_container jc ON j.job_container_id = jc.id
-			WHERE j.computer_id = :computer_id AND j.package_id = :package_id
-			AND jc.enabled != 0
-			AND (j.state = '.Models\Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Models\Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATUS_EXECUTION_STARTED.')'
+			'SELECT j.*, dr.author AS "deployment_rule_author", dr.sequence_mode AS "deployment_rule_sequence_mode" FROM deployment_rule_job j
+			INNER JOIN deployment_rule dr ON dr.id = j.deployment_rule_id
+			WHERE j.id = :id'
 		);
-		$this->stmt->execute([':computer_id' => $cid, ':package_id' => $pid]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job') as $row) {
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob') as $row) {
 			return $row;
 		}
 	}
 	public function getComputerMacByContainer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "id", c.hostname AS "hostname", cn.mac AS "computer_network_mac"
-			FROM job j
+			FROM job_container_job j
 			INNER JOIN computer c ON c.id = j.computer_id
 			INNER JOIN computer_network cn ON cn.computer_id = c.id
 			WHERE j.job_container_id = :id'
@@ -1099,10 +1135,10 @@ class DatabaseController {
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
-	public function getAllJobByContainer($id) {
+	public function getStaticJobsByJobContainer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.*, pf.name AS "package_family_name", p.version AS "package_version", c.hostname AS "computer_hostname", jc.start_time AS "job_container_start_time"
-			FROM job j
+			FROM job_container_job j
 			INNER JOIN computer c ON c.id = j.computer_id
 			INNER JOIN package p ON p.id = j.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
@@ -1111,76 +1147,245 @@ class DatabaseController {
 			ORDER BY j.computer_id, j.sequence'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
 	}
-	public function getPendingJobsForComputer($id) {
+	public function getDynamicJobsByDeploymentRule($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", j.package_id AS "package_id", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", jc.sequence_mode AS "sequence_mode", jc.agent_ip_ranges AS "agent_ip_ranges"
-			FROM job j
-			INNER JOIN job_container jc ON j.job_container_id = jc.id
-			WHERE j.computer_id = :id
-			AND jc.enabled = 1
-			AND (j.state = '.Models\Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Models\Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATUS_EXECUTION_STARTED.')
-			AND (jc.start_time IS NULL OR jc.start_time < CURRENT_TIMESTAMP)
-			AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
-			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
+			'SELECT j.*, pf.name AS "package_family_name", p.version AS "package_version", c.hostname AS "computer_hostname"
+			FROM deployment_rule_job j
+			INNER JOIN computer c ON c.id = j.computer_id
+			INNER JOIN package p ON p.id = j.package_id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			INNER JOIN deployment_rule dr ON dr.id = j.deployment_rule_id
+			WHERE j.deployment_rule_id = :id
+			ORDER BY j.computer_id, j.sequence'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
 	}
-	public function getPendingJobsForComputerDetailPage($id) {
+	public function getPendingJobsForAgent($computer_id) {
+		// static jobs
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time",
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.sequence_mode AS "job_container_sequence_mode", jc.agent_ip_ranges AS "job_container_agent_ip_ranges",
+			j.package_id AS "package_id", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM job_container_job j
+			INNER JOIN job_container jc ON j.job_container_id = jc.id
+			WHERE j.computer_id = :computer_id
+			AND jc.enabled = 1
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
+			AND (jc.start_time IS NULL OR jc.start_time < CURRENT_TIMESTAMP) AND (jc.end_time IS NULL OR jc.end_time > CURRENT_TIMESTAMP)
+			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		$static_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
+		// dynamic jobs
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.enabled AS "deployment_rule_enabled", dr.sequence_mode AS "deployment_rule_sequence_mode", dr.priority AS "deployment_rule_priority",
+			j.package_id AS "package_id", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM deployment_rule_job j
+			INNER JOIN deployment_rule dr ON j.deployment_rule_id = dr.id
+			WHERE j.computer_id = :computer_id
+			AND dr.enabled = 1
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
+			ORDER BY dr.priority DESC, dr.created ASC, j.sequence ASC'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		$dynamic_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
+		// merge and order
+		$jobs = array_merge( $static_jobs, $dynamic_jobs );
+		usort($jobs, [Models\Job::class, 'sortJobs']);
+		return $jobs;
+	}
+	public function getPendingJobsForComputerDetailPage($computer_id) {
+		// static jobs
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
 			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
-			FROM job j
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM job_container_job j
 			INNER JOIN package p ON j.package_id = p.id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
-			WHERE j.computer_id = :id
-			AND jc.enabled = 1
-			AND (j.state = '.Models\Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Models\Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATUS_EXECUTION_STARTED.')
+			WHERE j.computer_id = :computer_id
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
 			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
 		);
-		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job');
-	}
-	public function getPendingJobsForPackageDetailPage($id) {
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		$static_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
+		// dynamic jobs
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time",
+			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.name AS "deployment_rule_name", dr.enabled AS "deployment_rule_enabled", dr.priority AS "deployment_rule_priority",
+			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM deployment_rule_job j
+			INNER JOIN package p ON j.package_id = p.id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			INNER JOIN deployment_rule dr ON j.deployment_rule_id = dr.id
+			WHERE j.computer_id = :computer_id
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
+			ORDER BY dr.priority DESC, dr.created ASC, j.sequence ASC'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		$dynamic_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
+		// merge and order
+		$jobs = array_merge( $static_jobs, $dynamic_jobs );
+		usort($jobs, [Models\Job::class, 'sortJobs']);
+		return $jobs;
+	}
+	public function getPendingJobsForPackageDetailPage($package_id) {
+		// static jobs
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
 			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.package_procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
-			FROM job j
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM job_container_job j
 			INNER JOIN computer c ON j.computer_id = c.id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
-			WHERE j.package_id = :id
-			AND jc.enabled = 1
-			AND (j.state = '.Models\Job::STATUS_WAITING_FOR_CLIENT.' OR j.state = '.Models\Job::STATUS_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATUS_EXECUTION_STARTED.')
+			WHERE j.package_id = :package_id
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
 			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
 		);
-		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job');
+		$this->stmt->execute([':package_id' => $package_id]);
+		$static_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
+		// dynamic jobs
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.name AS "deployment_rule_name", dr.enabled AS "deployment_rule_enabled", dr.priority AS "deployment_rule_priority",
+			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM deployment_rule_job j
+			INNER JOIN computer c ON j.computer_id = c.id
+			INNER JOIN deployment_rule dr ON j.deployment_rule_id = dr.id
+			WHERE j.package_id = :package_id
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
+			ORDER BY dr.priority DESC, dr.created ASC, j.sequence ASC'
+		);
+		$this->stmt->execute([':package_id' => $package_id]);
+		$dynamic_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
+		// merge and order
+		$jobs = array_merge( $static_jobs, $dynamic_jobs );
+		usort($jobs, [Models\Job::class, 'sortJobs']);
+		return $jobs;
+	}
+	public function getPendingJobForAgentByComputerAndPackage($computer_id, $package_id) {
+		foreach($this->getPendingJobsForAgent($computer_id) as $job) {
+			if($job->package_id === $package_id) return $job;
+		}
+	}
+	public function evaluateDeploymentRule($deployment_rule_id) {
+		$deployment_rule = $this->getDeploymentRule($deployment_rule_id);
+		$computer_packages = $this->getAllComputerPackages();
+		$dynamic_jobs = [];
+		$created_uninstall_jobs = [];
+		foreach($this->getComputerByGroup($deployment_rule->computer_group_id) as $computer) {
+			$sequence = 1;
+			foreach($this->getPackageByGroup($deployment_rule->package_group_id) as $package) {
+				$state = Models\Job::STATE_WAITING_FOR_AGENT;
+				$isInstalled = false;
+				// check if already installed
+				foreach($computer_packages as $cp) {
+					if($cp->computer_id == $computer->id && $cp->package_id == $package->id) {
+						$state = Models\Job::STATE_ALREADY_INSTALLED;
+						$isInstalled = true;
+						break;
+					}
+				}
+				// check if we need to uninstall older versions
+				if($deployment_rule->auto_uninstall && $state != Models\Job::STATE_ALREADY_INSTALLED && $state != Models\Job::STATE_OS_INCOMPATIBLE && $state != Models\Job::STATE_PACKAGE_CONFLICT) {
+					$dynamic_jobs = array_merge(
+						$dynamic_jobs,
+						$this->getDynamicUninstallJobs($deployment_rule, $package->package_family_id, $this->getComputerPackagesByComputer($computer->id), $created_uninstall_jobs, $sequence)
+					);
+				}
+				// add dynamic job
+				$dynamic_jobs[] = Models\DynamicJob::__constructWithValues(
+					$deployment_rule->id, $deployment_rule->name, $deployment_rule->author, $deployment_rule->enabled, $deployment_rule->priority,
+					$computer->id, $computer->hostname,
+					$package->id, $package->version, $package->package_family_name, $package->install_procedure, $package->install_procedure_success_return_codes,
+					0/*is_uninstall*/, $package->getFilePath() ? 1 : 0,
+					$package->install_procedure_post_action, $deployment_rule->post_action_timeout,
+					$sequence,
+					$state, $dynamic_job_execution->return_code??null, $dynamic_job_execution->message??''
+				);
+				$sequence ++;
+			}
+		}
+		$ids = [];
+		foreach($dynamic_jobs as $job) {
+			// insert/update dynamic job
+			// - do not update state "success" if new state is "already installed" or "failed" and new state is "waiting for agent"
+			// - keep execution results (return_code and message)
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO deployment_rule_job (id, deployment_rule_id, computer_id, package_id, `procedure`, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, return_code, message)
+				(SELECT id, deployment_rule_id, computer_id, package_id, `procedure`, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, return_code, message FROM deployment_rule_job WHERE deployment_rule_id = :deployment_rule_id AND computer_id = :computer_id AND package_id = :package_id AND is_uninstall = :is_uninstall
+				UNION SELECT null, :deployment_rule_id, :computer_id, :package_id, :procedure, :success_return_codes, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, :return_code, :message FROM DUAL LIMIT 1)
+				ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), `procedure` = :procedure, success_return_codes = :success_return_codes, download = :download, post_action = :post_action, post_action_timeout = :post_action_timeout, sequence = :sequence, state = IF((state='.Models\Job::STATE_SUCCEEDED.' AND :state='.Models\Job::STATE_ALREADY_INSTALLED.') OR (state='.Models\Job::STATE_FAILED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (state='.Models\Job::STATE_DOWNLOAD_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (state='.Models\Job::STATE_EXECUTION_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.'), state, :state)'
+			);
+			$this->stmt->execute([
+				':deployment_rule_id' => $job->deployment_rule_id,
+				':computer_id' => $job->computer_id,
+				':package_id' => $job->package_id,
+				':procedure' => $job->procedure,
+				':success_return_codes' => $job->success_return_codes,
+				':is_uninstall' => $job->is_uninstall,
+				':download' => $job->download,
+				':post_action' => $job->post_action,
+				':post_action_timeout' => $job->post_action_timeout,
+				':sequence' => $job->sequence,
+				':state' => $job->state,
+				':return_code' => $job->return_code,
+				':message' => $job->message,
+			]);
+			$ids[] = $this->dbh->lastInsertId();
+		}
+		// remove all obsolete jobs (computers or packages removed from target groups)
+		list($in_placeholders, $in_params) = self::compileSqlInValues($ids);
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM deployment_rule_job WHERE deployment_rule_id = :deployment_rule_id AND id NOT IN ('.$in_placeholders.')'
+		);
+		return $this->stmt->execute(array_merge([':deployment_rule_id'=>$deployment_rule->id], $in_params));
+	}
+	private function getDynamicUninstallJobs($deployment_rule, $package_family_id, $computer_packages, &$createdUninstallJobs, &$sequence) {
+		$dynamic_jobs = [];
+		foreach($computer_packages as $cp) {
+			// uninstall it, if it is from the same package family ...
+			if($cp->package_family_id === $package_family_id) {
+				$cpp = $this->getPackage($cp->package_id, null);
+				// ... but not, if this uninstall job was already created
+				if(in_array($cp->id, $createdUninstallJobs)) continue;
+				$createdUninstallJobs[] = $cp->id;
+				$dynamic_jobs[] = Models\DynamicJob::__constructWithValues(
+					$deployment_rule->id, $deployment_rule->name, $deployment_rule->author, $deployment_rule->enabled, $deployment_rule->priority,
+					$cp->computer_id, $cp->computer_hostname,
+					$cpp->id, $cpp->version, $cpp->package_family_name, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
+					1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
+					$cpp->uninstall_procedure_post_action, $deployment_rule->post_action_timeout,
+					$sequence
+				);
+				$sequence ++;
+			}
+		}
+		return $dynamic_jobs;
 	}
 	public function setComputerOnlineStateForWolShutdown($job_container_id) {
 		$tmpJobContainer = $this->getJobContainer($job_container_id);
 		if(empty($tmpJobContainer->shutdown_waked_after_completion)) return;
-		foreach($this->getAllLastComputerJobInContainer($job_container_id) as $j) {
+		foreach($this->getAllLastComputerStaticJobsInContainer($job_container_id) as $j) {
 			$tmpComputer = $this->getComputer($j->computer_id);
 			if(!$tmpComputer->isOnline())
-				$this->setWolShutdownJobInContainer($job_container_id, $tmpComputer->id, $j->max_sequence);
+				$this->setWolShutdownStaticJobInContainer($job_container_id, $tmpComputer->id, $j->max_sequence);
 		}
 	}
-	public function getAllLastComputerJobInContainer($job_container_id) {
+	public function getAllLastComputerStaticJobsInContainer($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT computer_id, MAX(sequence) AS "max_sequence" FROM job
 			WHERE job_container_id = :job_container_id GROUP BY computer_id'
 		);
 		if(!$this->stmt->execute([':job_container_id' => $job_container_id])) return false;
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Job');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
 	}
-	public function setWolShutdownJobInContainer($job_container_id, $computer_id, $sequence) {
+	public function setWolShutdownStaticJobInContainer($job_container_id, $computer_id, $sequence) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE job SET post_action = '.Models\Package::POST_ACTION_SHUTDOWN.','
+			'UPDATE job_container_job SET post_action = '.Models\Package::POST_ACTION_SHUTDOWN.','
 			.' wol_shutdown_set = CURRENT_TIMESTAMP'
 			.' WHERE job_container_id = :job_container_id'
 			.' AND computer_id = :computer_id'
@@ -1193,9 +1398,9 @@ class DatabaseController {
 			':sequence' => $sequence,
 		])) return false;
 	}
-	public function removeWolShutdownJobInContainer($job_container_id, $job_id, $post_action) {
+	public function removeWolShutdownStaticJobInContainer($job_container_id, $job_id, $post_action) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE job SET post_action = :post_action,'
+			'UPDATE job_container_job SET post_action = :post_action,'
 			.' wol_shutdown_set = NULL'
 			.' WHERE job_container_id = :job_container_id'
 			.' AND id = :id'
@@ -1207,54 +1412,69 @@ class DatabaseController {
 			':post_action' => $post_action,
 		])) return false;
 	}
-	public function updateJobState($id, $state, $return_code, $message) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE job SET state = :state, return_code = :return_code, message = :message WHERE id = :id'
-		);
-		if(!$this->stmt->execute([
-			':id' => $id,
-			':state' => $state,
-			':return_code' => $return_code,
-			':message' => $message,
-		])) return false;
-		// update job timestamps
-		if($state === Models\Job::STATUS_DOWNLOAD_STARTED) {
-			$this->stmt = $this->dbh->prepare('UPDATE job SET download_started = CURRENT_TIMESTAMP WHERE id = :id');
-			if(!$this->stmt->execute([':id'=>$id])) return false;
-		} elseif($state === Models\Job::STATUS_EXECUTION_STARTED) {
-			$this->stmt = $this->dbh->prepare('UPDATE job SET execution_started = CURRENT_TIMESTAMP WHERE id = :id');
-			if(!$this->stmt->execute([':id'=>$id])) return false;
-		} else {
-			$this->stmt = $this->dbh->prepare('UPDATE job SET execution_finished = CURRENT_TIMESTAMP WHERE id = :id');
-			if(!$this->stmt->execute([':id'=>$id])) return false;
-		}
-		// set all pending jobs of specific computer to failed if sequence_mode is 'abort after failed'
-		if($state == Models\Job::STATUS_FAILED) {
-			$job_container_id = -1;
-			$sequence_mode = Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED;
+	public function updateJobExecutionState($job) {
+		if($job instanceof Models\StaticJob) {
+			if($job->state === Models\Job::STATE_DOWNLOAD_STARTED) {
+				$timestamp_update = 'download_started = CURRENT_TIMESTAMP';
+			} elseif($job->state === Models\Job::STATE_EXECUTION_STARTED) {
+				$timestamp_update = 'execution_started = CURRENT_TIMESTAMP';
+			} else {
+				$timestamp_update = 'execution_finished = CURRENT_TIMESTAMP';
+			}
 			$this->stmt = $this->dbh->prepare(
-				'SELECT jc.id AS "job_container_id", jc.sequence_mode FROM job j INNER JOIN job_container jc ON j.job_container_id = jc.id WHERE j.id = :id'
+				'UPDATE job_container_job SET state = :state, return_code = :return_code, message = :message, '.$timestamp_update.'
+				WHERE id = :id'
 			);
-			$this->stmt->execute([':id' => $id]);
-			foreach($this->stmt->fetchAll() as $row) {
-				$job_container_id = $row['job_container_id'];
-				$sequence_mode = $row['sequence_mode'];
-			}
-			if($sequence_mode == Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+			if(!$this->stmt->execute([
+				':id' => $job->id,
+				':state' => $job->state,
+				':return_code' => $job->return_code,
+				':message' => $job->message,
+			])) return false;
+			// set all pending jobs of specific computer to failed if sequence_mode is 'abort after failed'
+			if($job->state == Models\Job::STATE_FAILED) {
+				$job_container_id = -1;
+				$sequence_mode = Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED;
 				$this->stmt = $this->dbh->prepare(
-					'UPDATE job SET state = :state, return_code = :return_code, message = :message, execution_finished = CURRENT_TIMESTAMP
-					WHERE job_container_id = :job_container_id AND state = :old_state'
+					'SELECT jc.id AS "job_container_id", jc.sequence_mode FROM job_container_job j INNER JOIN job_container jc ON j.job_container_id = jc.id WHERE j.id = :id'
 				);
-				return $this->stmt->execute([
-					':job_container_id' => $job_container_id,
-					':old_state' => Models\Job::STATUS_WAITING_FOR_CLIENT,
-					':state' => Models\Job::STATUS_FAILED,
-					':return_code' => Models\JobContainer::RETURN_CODE_ABORT_AFTER_FAILED,
-					':message' => LANG('aborted_after_failed'),
-				]);
+				$this->stmt->execute([':id' => $job->id]);
+				foreach($this->stmt->fetchAll() as $row) {
+					$job_container_id = $row['job_container_id'];
+					$sequence_mode = $row['sequence_mode'];
+				}
+				if($sequence_mode == Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+					$this->stmt = $this->dbh->prepare(
+						'UPDATE job_container_job SET state = :state, return_code = :return_code, message = :message, execution_finished = CURRENT_TIMESTAMP
+						WHERE job_container_id = :job_container_id AND state = :old_state'
+					);
+					return $this->stmt->execute([
+						':job_container_id' => $job_container_id,
+						':old_state' => Models\Job::STATE_WAITING_FOR_AGENT,
+						':state' => Models\Job::STATE_FAILED,
+						':return_code' => Models\JobContainer::RETURN_CODE_ABORT_AFTER_FAILED,
+						':message' => LANG('aborted_after_failed'),
+					]);
+				}
 			}
+		} elseif($job instanceof Models\DynamicJob) {
+			if($job->state === Models\Job::STATE_DOWNLOAD_STARTED) {
+				$timestamp_update = 'download_started = CURRENT_TIMESTAMP';
+			} elseif($job->state === Models\Job::STATE_EXECUTION_STARTED) {
+				$timestamp_update = 'execution_started = CURRENT_TIMESTAMP';
+			} else {
+				$timestamp_update = 'execution_finished = CURRENT_TIMESTAMP';
+			}
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE deployment_rule_job SET state = :state, return_code = :return_code, message = :message, '.$timestamp_update.' WHERE id = :id'
+			);
+			if(!$this->stmt->execute([
+				':id' => $job->id,
+				':state' => $job->state,
+				':return_code' => $job->return_code,
+				':message' => $job->message,
+			])) return false;
 		}
-		return true;
 	}
 	public function updateJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges) {
 		$this->stmt = $this->dbh->prepare(
@@ -1276,38 +1496,11 @@ class DatabaseController {
 			':agent_ip_ranges' => $agent_ip_ranges,
 		]);
 	}
-	public function moveJobToContainer($jid, $cid) {
+	public function moveStaticJobToContainer($jid, $cid) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE job SET job_container_id = :cid WHERE id = :jid'
+			'UPDATE job_container_job SET job_container_id = :cid WHERE id = :jid'
 		);
 		return $this->stmt->execute([':jid' => $jid, ':cid' => $cid]);
-	}
-	public function getJobContainerIcon($id) {
-		$container = $this->getJobContainer($id);
-		$jobs = $this->getAllJobByContainer($id);
-		$waitings = 0;
-		$errors = 0;
-		foreach($jobs as $job) {
-			if($job->state == Models\Job::STATUS_WAITING_FOR_CLIENT
-			|| $job->state == Models\Job::STATUS_DOWNLOAD_STARTED
-			|| $job->state == Models\Job::STATUS_EXECUTION_STARTED) {
-				$waitings ++;
-			}
-			if($job->state == Models\Job::STATUS_FAILED
-			|| $job->state == Models\Job::STATUS_EXPIRED
-			|| $job->state == Models\Job::STATUS_OS_INCOMPATIBLE
-			|| $job->state == Models\Job::STATUS_PACKAGE_CONFLICT) {
-				$errors ++;
-			}
-		}
-		if($waitings > 0) {
-			$startTimeParsed = strtotime($container->start_time);
-			if($startTimeParsed !== false && $startTimeParsed > time())
-				return Models\JobContainer::STATUS_WAITING_FOR_START;
-			else return Models\JobContainer::STATUS_IN_PROGRESS;
-		}
-		elseif($errors > 0) return Models\JobContainer::STATUS_FAILED;
-		else return Models\JobContainer::STATUS_SUCCEEDED;
 	}
 	public function removeJobContainer($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1316,9 +1509,83 @@ class DatabaseController {
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function removeJob($id) {
+	public function removeStaticJob($id) {
 		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM job WHERE id = :id'
+			'DELETE FROM job_container_job WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
+	}
+	public function getAllDeploymentRules() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM deployment_rule'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule');
+	}
+	public function getDeploymentRule($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM deployment_rule WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule') as $row) {
+			return $row;
+		}
+	}
+	public function getDeploymentRulesByComputerGroup($computer_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM deployment_rule WHERE computer_group_id = :computer_group_id'
+		);
+		$this->stmt->execute([':computer_group_id' => $computer_group_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule');
+	}
+	public function getDeploymentRulesByPackageGroup($package_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM deployment_rule WHERE package_group_id = :package_group_id'
+		);
+		$this->stmt->execute([':package_group_id' => $package_group_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule');
+	}
+	public function addDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO deployment_rule (name, author, enabled, computer_group_id, package_group_id, notes, priority, auto_uninstall)
+			VALUES (:name, :author, :enabled, :computer_group_id, :package_group_id, :notes, :priority, :auto_uninstall)'
+		);
+		if(!$this->stmt->execute([
+			':name' => $name,
+			':author' => $author,
+			':enabled' => $enabled,
+			':computer_group_id' => $computer_group_id,
+			':package_group_id' => $package_group_id,
+			':notes' => $notes,
+			':priority' => $priority,
+			':auto_uninstall' => $auto_uninstall,
+		])) return false;
+		$insertId = $this->dbh->lastInsertId();
+		$this->evaluateDeploymentRule($insertId);
+		return $insertId;
+	}
+	public function updateDeploymentRule($id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE deployment_rule
+			SET name = :name, enabled = :enabled, computer_group_id = :computer_group_id, package_group_id = :package_group_id, notes = :notes, priority = :priority, auto_uninstall = :auto_uninstall
+			WHERE id = :id'
+		);
+		if(!$this->stmt->execute([
+			':id' => $id,
+			':name' => $name,
+			':enabled' => $enabled,
+			':computer_group_id' => $computer_group_id,
+			':package_group_id' => $package_group_id,
+			':notes' => $notes,
+			':priority' => $priority,
+			':auto_uninstall' => $auto_uninstall,
+		])) return false;
+		return $this->evaluateDeploymentRule($id);
+	}
+	public function removeDeploymentRule($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM deployment_rule WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);

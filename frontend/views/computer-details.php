@@ -343,7 +343,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getComputerPackage($computer->id) as $p) {
+							foreach($db->getComputerPackagesByComputer($computer->id) as $p) {
 								$counter ++;
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" package_id="'.$p->package_id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
@@ -379,10 +379,10 @@ try {
 					<table id='tblPendingComputerJobsData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
-								<!--<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPendingComputerJobsData, this.checked)'></th>-->
 								<th class='searchable sortable'><?php echo LANG('package'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('job_container'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('container'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('priority'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -390,15 +390,19 @@ try {
 							$counter = 0;
 							foreach($db->getPendingJobsForComputerDetailPage($computer->id) as $j) {
 								$counter ++;
-								echo '<tr>';
-								//echo '<td><input type="checkbox" name="job_id[]" value="'.$j->id.'" onchange="refreshCheckedCounter(tblPendingComputerJobsData)"></td>';
+								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
 								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
 								echo  '<a '.explorerLink('views/package-details.php?id='.$j->package_id).'>'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
 								echo '</td>';
-								echo '<td><a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
+								if($j instanceof Models\DynamicJob) {
+									echo '<td><img src="img/rule.dyn.svg" title="'.LANG('deployment_rule').'">&nbsp;<a '.explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
+								} elseif($j instanceof Models\StaticJob) {
+									echo '<td><img src="img/container.dyn.svg" title="'.LANG('job_container').'">&nbsp;<a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
+								}
 								echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
+								echo '<td>'.htmlspecialchars($j->getPriority()).'</td>';
 								echo '</tr>';
 							}
 							?>

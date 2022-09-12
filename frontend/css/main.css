@@ -489,7 +489,7 @@ body.loading2 #loader-container {
 }
 #message-container .message.success {
 	border-left: 6px solid #87CA81;
-	background-image: url('../img/tick.message.svg');
+	background-image: url('../img/success.message.svg');
 }
 #message-container .message.warning {
 	border-left: 6px solid #FFC122;
@@ -1106,6 +1106,9 @@ div.details-abreast > div.stickytable > table.list tfoot {
 }
 .inactive {
 	color: rgba(7,7,7,0.4);
+}
+.inactive a, .inactive img {
+	opacity: 0.4;
 }
 
 .fullwidth {

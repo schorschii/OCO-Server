@@ -115,7 +115,7 @@ switch($srcdata['method']) {
 				'printers' => $db->getComputerPrinter($computer->id),
 				'filesystems' => $db->getComputerPartition($computer->id),
 				'recognised_software' => $db->getComputerSoftware($computer->id),
-				'installed_packages' => $db->getComputerPackage($computer->id),
+				'installed_packages' => $db->getComputerPackagesByComputer($computer->id),
 				'pending_jobs' => $db->getPendingJobsForComputerDetailPage($computer->id),
 			]
 		];
@@ -166,7 +166,7 @@ switch($srcdata['method']) {
 		$resdata['result'] = [
 			'success' => true, 'data' => [
 				'general' => $package,
-				'installations' => $db->getPackageComputer($package->id),
+				'installations' => $db->getComputerPackagesByPackage($package->id),
 				'pending_jobs' => $db->getPendingJobsForPackageDetailPage($package->id),
 			]
 		];
@@ -210,15 +210,15 @@ switch($srcdata['method']) {
 		];
 		break;
 
-	case 'oco.job.list':
+	case 'oco.job_container.job.list':
 		$jc = $cl->getJobContainer($data['id'] ?? 0);
 		$resdata['error'] = null;
 		$resdata['result'] = [
-			'success' => true, 'data' => $db->getAllJobByContainer($data['id'] ?? 0)
+			'success' => true, 'data' => $db->getStaticJobsByJobContainer($data['id'] ?? 0)
 		];
 		break;
 
-	case 'oco.deploy':
+	case 'oco.job_container.deploy':
 		$insertId = $cl->deploy(
 			$data['name'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
 			$data['computer_ids'] ?? [], $data['computer_group_ids'] ?? [], $data['computer_report_ids'] ?? [],
@@ -234,7 +234,7 @@ switch($srcdata['method']) {
 		];
 		break;
 
-	case 'oco.uninstall':
+	case 'oco.job_container.uninstall':
 		$insertId = $cl->uninstall(
 			$data['name'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
 			$data['installation_ids'] ?? [],
@@ -264,8 +264,8 @@ switch($srcdata['method']) {
 		];
 		break;
 
-	case 'oco.job.remove':
-		$cl->removeJob(intval($data['id'] ?? 0));
+	case 'oco.job_container.job.remove':
+		$cl->removeStaticJob(intval($data['id'] ?? 0));
 		$resdata['error'] = null;
 		$resdata['result'] = [
 			'success' => true, 'data' => []

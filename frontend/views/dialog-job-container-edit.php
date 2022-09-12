@@ -64,7 +64,7 @@ require_once('../session.php');
 
 <div class='controls right'>
 	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button id='btnUpdateComputer' class='primary' onclick='editJobContainer(
+	<button id='btnUpdateJobContainer' class='primary' onclick='editJobContainer(
 		txtEditJobContainerId.value,
 		txtEditJobContainerName.value,
 		chkEditJobContainerEnabled.checked,

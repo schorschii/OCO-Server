@@ -6,8 +6,8 @@ require_once('../session.php');
 if(!empty($_GET['id'])) {
 
 	try {
-		$container = $cl->getJobContainer($_GET['id'] ?? -1);
-		$permissionCreate = $currentSystemUser->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE, false);
+		$container = $cl->getDeploymentRule($_GET['id'] ?? -1);
+		$permissionCreate = $currentSystemUser->checkPermission(new Models\DeploymentRule(), PermissionManager::METHOD_CREATE, false);
 		$permissionWrite  = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_WRITE, false);
 		$permissionDelete = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_DELETE, false);
 	} catch(NotFoundException $e) {
@@ -18,7 +18,7 @@ if(!empty($_GET['id'])) {
 		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
 
-	$jobs = $db->getStaticJobsByJobContainer($container->id);
+	$jobs = $db->getDynamicJobsByDeploymentRule($container->id);
 	$done = 0; $failed = 0; $percent = 0;
 	if(count($jobs) > 0) {
 		foreach($jobs as $job) {
@@ -32,11 +32,11 @@ if(!empty($_GET['id'])) {
 ?>
 
 	<div class='details-header'>
-		<h1><img src='img/<?php echo $icon; ?>.dyn.svg' class='<?php echo($container->enabled ? 'online' : 'offline'); ?>'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
+		<h1><img src='img/<?php echo $icon; ?>.dyn.svg' class='<?php echo($container->enabled ? 'online' : 'offline'); ?>'><span id='page-title'><span id='spnDeploymentRuleName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 		<div class='controls'>
-			<button onclick='showDialogEditJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText, spnJobContainerEnabled.innerText, spnJobContainerStartTime.innerText, spnJobContainerEndTime.innerText, spnJobContainerSequenceMode.innerText, spnJobContainerPriority.innerText, spnJobContainerAgentIpRanges.innerText, spnJobContainerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
-			<button onclick='showDialogRenewFailedJobs("<?php echo $container->id; ?>", spnJobContainerName.innerText+" - <?php echo LANG('renew'); ?>")' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('renew_failed_jobs'); ?></button>
-			<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+			<button onclick='showDialogEditDeploymentRule(<?php echo $container->id; ?>, spnDeploymentRuleName.innerText, spnDeploymentRuleNotes.innerText, spnDeploymentRuleEnabled.innerText, spnDeploymentRuleComputerGroupId.innerText, spnDeploymentRulePackageGroupId.innerText, spnDeploymentRulePriority.innerText, spnDeploymentRuleAutoUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<button onclick='reevaluateDeploymentRule(<?php echo $container->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('reevaluate'); ?></button>
+			<button onclick='confirmRemoveDeploymentRule([<?php echo $container->id; ?>], spnDeploymentRuleName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 			<span class='filler'></span>
 		</div>
 	</div>
@@ -61,50 +61,40 @@ if(!empty($_GET['id'])) {
 				<th><?php echo LANG('enabled'); ?></th>
 				<td>
 					<?php if($container->enabled=='1') echo LANG('yes'); else echo LANG('no'); ?>
-					<span id='spnJobContainerEnabled' class='rawvalue'><?php echo htmlspecialchars($container->enabled); ?></span>
+					<span id='spnDeploymentRuleEnabled' class='rawvalue'><?php echo htmlspecialchars($container->enabled); ?></span>
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('start'); ?></th>
+				<th><?php echo LANG('computer_group'); ?></th>
 				<td>
-					<span id='spnJobContainerStartTime'><?php echo htmlspecialchars($container->start_time); ?></span>
-					<?php if($container->wol_sent >= 0) echo ' ('.LANG('wol').')'; if($container->shutdown_waked_after_completion > 0) echo ' ('.LANG('shutdown_waked_computers').')'; ?>
+					<?php echo '<a '.explorerLink('views/computers.php?id='.$container->computer_group_id).'>'.htmlspecialchars($db->getComputerGroupBreadcrumbString($container->computer_group_id)).'</a>'; ?>
+					<span id='spnDeploymentRuleComputerGroupId' class='rawvalue'><?php echo htmlspecialchars($container->computer_group_id); ?></span>
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('end'); ?></th>
+				<th><?php echo LANG('package_group'); ?></th>
 				<td>
-					<?php echo htmlspecialchars($container->end_time ?? "-"); ?>
-					<span id='spnJobContainerEndTime' class='rawvalue'><?php echo htmlspecialchars($container->end_time ?? ""); ?></span>
-				</td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('sequence_mode'); ?></th>
-				<td>
-					<span id='spnJobContainerSequenceMode' class='rawvalue'><?php echo htmlspecialchars($container->sequence_mode); ?></span>
-					<?php switch($container->sequence_mode) {
-						case(Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED): echo LANG('ignore_failed'); break;
-						case(Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED): echo LANG('abort_after_failed'); break;
-						default: echo htmlspecialchars($container->sequence_mode);
-					} ?>
+					<?php echo '<a '.explorerLink('views/packages.php?id='.$container->package_group_id).'>'.htmlspecialchars($db->getPackageGroupBreadcrumbString($container->package_group_id)).'</a>'; ?>
+					<span id='spnDeploymentRulePackageGroupId' class='rawvalue'><?php echo htmlspecialchars($container->package_group_id); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('priority'); ?></th>
 				<td>
-					<span id='spnJobContainerPriority'><?php echo htmlspecialchars($container->priority); ?></span>
+					<span id='spnDeploymentRulePriority'><?php echo htmlspecialchars($container->priority); ?></span>
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('agent_ip_range'); ?></th>
+				<th><?php echo LANG('uninstall_old_package_versions'); ?></th>
 				<td>
-					<span id='spnJobContainerAgentIpRanges'><?php echo htmlspecialchars($container->agent_ip_ranges); ?></span>
+					<?php if($container->auto_uninstall=='1') echo LANG('yes'); else echo LANG('no'); ?>
+					<span id='spnDeploymentRuleAutoUninstall' class='rawvalue'><?php echo htmlspecialchars($container->auto_uninstall); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('description'); ?></th>
 				<td>
-					<span id='spnJobContainerNotes'><?php echo nl2br(htmlspecialchars($container->notes)); ?></span>
+					<span id='spnDeploymentRuleNotes'><?php echo nl2br(htmlspecialchars($container->notes)); ?></span>
 				</td>
 			</tr>
 		</table>
@@ -113,49 +103,8 @@ if(!empty($_GET['id'])) {
 		<h2><?php echo LANG('state'); ?></h2>
 		<table class='list metadata'>
 			<tr>
-				<th><?php echo LANG('progress'); ?></th>
+				<th><?php echo LANG('enforcement'); ?></th>
 				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, 'stretch', ''); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('total_runtime'); ?></th>
-				<td><?php
-				if(strtotime($container->start_time) > time()) {
-					echo htmlspecialchars('-');
-				} else {
-					if($icon == Models\JobContainer::STATUS_SUCCEEDED || $icon == Models\JobContainer::STATUS_FAILED) {
-						$maxTimeJob = $db->getJobContainerMaxExecutionStaticJob($container->id);
-						$maxTime = time(); if(!empty($maxTimeJob)) $maxTime = strtotime($maxTimeJob->execution_finished);
-						$timeDiff = $maxTime-strtotime($container->start_time);
-						if($timeDiff < 0) {
-							echo htmlspecialchars('-');
-						} else {
-							echo htmlspecialchars(niceTime($timeDiff));
-						}
-					} else {
-						$timeDiff = time()-strtotime($container->start_time);
-						echo htmlspecialchars('~ '.niceTime($timeDiff));
-					}
-				}
-				?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('effective_runtime'); ?></th>
-				<td><?php
-				$minTimeJob = $db->getJobContainerMinExecutionStaticJob($container->id);
-				$maxTimeJob = $db->getJobContainerMaxExecutionStaticJob($container->id);
-				if(empty($minTimeJob) || empty($maxTimeJob) || empty($minTimeJob->execution_started) || empty($maxTimeJob->execution_finished)) {
-					echo htmlspecialchars('-');
-				} else {
-					$flag = '~ ';
-					if($icon == Models\JobContainer::STATUS_SUCCEEDED || $icon == Models\JobContainer::STATUS_FAILED) {
-						$flag = '';
-					}
-					$minTime = strtotime($minTimeJob->execution_started);
-					$maxTime = strtotime($maxTimeJob->execution_finished);
-					$timeDiff = $maxTime - $minTime;
-					echo htmlspecialchars($flag.niceTime($timeDiff));
-				}
-				?></td>
 			</tr>
 		</table>
 	</div>
@@ -164,10 +113,9 @@ if(!empty($_GET['id'])) {
 	<div class='details-abreast'>
 	<div class='stickytable'>
 		<h2><?php echo LANG('jobs'); ?></h2>
-		<table id='tblJobContainerJobData' class='list searchable sortable savesort'>
+		<table id='tblDeploymentRuleJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobContainerJobData, this.checked)'></th>
 					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('package'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('procedure'); ?></th>
@@ -181,7 +129,6 @@ if(!empty($_GET['id'])) {
 			foreach($jobs as $job) {
 				$counter ++;
 				echo "<tr>";
-				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."' onchange='refreshCheckedCounter(tblJobContainerJobData)'></td>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
 				echo "<td><a ".explorerLink('views/package-details.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle monospace' title='".htmlspecialchars($job->procedure, ENT_QUOTES)."'>";
@@ -216,9 +163,7 @@ if(!empty($_GET['id'])) {
 								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblJobContainerJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-								<button onclick='showDialogMoveStaticJobToContainer(getSelectedCheckBoxValues("job_id[]", null, true))' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/move.dyn.svg'>&nbsp;<?php echo LANG('move'); ?></button>
-								<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblDeploymentRuleJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -232,8 +177,8 @@ if(!empty($_GET['id'])) {
 } else {
 
 	try {
-		$containers = $cl->getJobContainers();
-		$permissionCreate = $currentSystemUser->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE, false);
+		$rules = $cl->getDeploymentRules();
+		$permissionCreate = $currentSystemUser->checkPermission(new Models\DeploymentRule(), PermissionManager::METHOD_CREATE, false);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG('not_found')."</div>");
 	} catch(PermissionException $e) {
@@ -243,35 +188,35 @@ if(!empty($_GET['id'])) {
 	}
 ?>
 
-	<h1><img src='img/container.dyn.svg'><span id='page-title'><?php echo LANG('job_containers'); ?></span></h1>
+	<h1><img src='img/rule.dyn.svg'><span id='page-title'><?php echo LANG('deployment_rules'); ?></span></h1>
 
 	<div class='controls'>
-		<button onclick='refreshContentDeploy()' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_job_container'); ?></button>
+		<button onclick='showDialogEditDeploymentRule()' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_deployment_rule'); ?></button>
 		<span class='filler'></span>
 	</div>
 
 	<div class='details-abreast'>
 	<div class='stickytable'>
-		<table id='tblJobcontainerData' class='list searchable sortable savesort'>
+		<table id='tblDeploymentRuleData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobcontainerData, this.checked)'></th>
+					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDeploymentRuleData, this.checked)'></th>
 					<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('author'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('computer_group'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('package_group'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('start'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('end'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('priority'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('description'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('progress'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('enforcement'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 			<?php $counter = 0;
-			foreach($containers as $jc) {
+			foreach($rules as $dr) {
 				$counter ++;
 				$done = 0; $percent = 0;
-				$jobs = $db->getStaticJobsByJobContainer($jc->id);
+				$jobs = $db->getDynamicJobsByDeploymentRule($dr->id);
 				if(count($jobs) > 0) {
 					foreach($jobs as $job) {
 						if($job->state == Models\Job::STATE_SUCCEEDED || $job->state == Models\Job::STATE_ALREADY_INSTALLED) $done ++;
@@ -279,17 +224,17 @@ if(!empty($_GET['id'])) {
 					$percent = $done/count($jobs)*100;
 				}
 				echo "<tr>";
-				echo "<td><input type='checkbox' name='job_container_id[]' value='".$jc->id."' onchange='refreshCheckedCounter(tblJobcontainerData)'></td>";
+				echo "<td><input type='checkbox' name='deployment_rule_id[]' value='".$dr->id."' onchange='refreshCheckedCounter(tblDeploymentRuleData)'></td>";
 				echo "<td class='middle'>";
-				echo  "<img src='img/".$jc->getStatus($jobs).".dyn.svg' class='".($jc->enabled?'online':'offline')."'>&nbsp;";
-				echo  "<a ".explorerLink('views/job-containers.php?id='.$jc->id).">".htmlspecialchars($jc->name)."</a>";
+				echo  "<img src='img/".$dr->getStatus($jobs).".dyn.svg' class='".($dr->enabled?'online':'offline')."'>&nbsp;";
+				echo  "<a ".explorerLink('views/deployment-rules.php?id='.$dr->id).">".htmlspecialchars($dr->name)."</a>";
 				echo "</td>";
-				echo "<td>".htmlspecialchars($jc->author)."</td>";
-				echo "<td>".htmlspecialchars($jc->created)."</td>";
-				echo "<td>".htmlspecialchars($jc->start_time)."</td>";
-				echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
-				echo "<td>".htmlspecialchars($jc->priority)."</td>";
-				echo "<td>".htmlspecialchars(shorter($jc->notes))."</td>";
+				echo "<td>".htmlspecialchars($dr->author)."</td>";
+				echo "<td><a ".explorerLink('views/computers.php?id='.$dr->computer_group_id).'>'.htmlspecialchars($db->getComputerGroupBreadcrumbString($dr->computer_group_id))."</a></td>";
+				echo "<td><a ".explorerLink('views/packages.php?id='.$dr->package_group_id).'>'.htmlspecialchars($db->getPackageGroupBreadcrumbString($dr->package_group_id))."</a></td>";
+				echo "<td>".htmlspecialchars($dr->created)."</td>";
+				echo "<td>".htmlspecialchars($dr->priority)."</td>";
+				echo "<td>".htmlspecialchars(shorter($dr->notes))."</td>";
 				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, 'stretch', '')."</td>";
 				echo "</tr>";
 			} ?>
@@ -303,8 +248,8 @@ if(!empty($_GET['id'])) {
 								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblJobcontainerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-								<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+								<button onclick='event.preventDefault();downloadTableCsv("tblDeploymentRuleData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button onclick='removeSelectedDeploymentRule("deployment_rule_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>
 					</td>

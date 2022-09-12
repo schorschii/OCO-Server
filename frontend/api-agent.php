@@ -15,7 +15,7 @@ if(empty($_SERVER['CONTENT_TYPE']) && !empty($_GET['id'])) {
 		header('HTTP/1.1 401 Client Not Authorized'); die();
 	}
 	// allow download only if a job is active
-	if(!$db->getActiveJobByComputerPackage($computer->id, $package->id)) {
+	if(!$db->getPendingJobForAgentByComputerAndPackage($computer->id, $package->id)) {
 		header('HTTP/1.1 401 No Active Job'); die();
 	}
 	// start download
@@ -43,6 +43,7 @@ if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2
 $resdata = ['id' => $srcdata['id']];
 $params = $srcdata['params'];
 switch($srcdata['method']) {
+	case 'oco.agent.update_job_state':
 	case 'oco.agent.update_deploy_status':
 	case 'oco.update_deploy_status':
 		$data = $params['data'];
@@ -54,36 +55,41 @@ switch($srcdata['method']) {
 			|| !isset($data['state'])
 			|| !isset($data['return-code'])
 			|| !isset($data['message'])) {
-			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS, 'invalid JSON data');
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE, 'invalid JSON data');
 		}
 
 		// check authorization
 		$computer = $db->getComputerByName($params['hostname']);
 		if($computer === null) {
-			errorExit('404 Computer Not Found', $params['hostname'], null, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS, 'computer not found');
+			errorExit('404 Computer Not Found', $params['hostname'], null, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE, 'computer not found');
 		}
 		if($params['agent-key'] !== $computer->agent_key) {
-			errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS,
+			errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE,
 				'computer found but agent key mismatch: '.$params['agent-key']
 			);
 		}
 
 		// get job details
 		$state = intval($data['state']);
-		$job = $db->getJob($data['job-id']);
+		$jobId = $data['job-id'] ?? -1;
+		if(startsWith($jobId, Models\DynamicJob::PREFIX_DYNAMIC_ID)) {
+			$job = $db->getDynamicJob(str_replace(Models\DynamicJob::PREFIX_DYNAMIC_ID, '', $jobId));
+		} else {
+			$job = $db->getStaticJob($jobId);
+		}
 		if($job === null) {
-			errorExit('404 Job Not Found', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS,
-				'job »'.$params['job-id'].'« not found'
+			errorExit('404 Job Not Found', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE,
+				'job »'.$jobId.'« not found'
 			);
 		}
 		if($job->computer_id !== $computer->id) {
-			errorExit('403 Forbidden', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS,
+			errorExit('403 Forbidden', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE,
 				'computer not allowed to update job »'.$job->id.'«'
 			);
 		}
 
 		// if job finished, we need to check the return code
-		if($state === Models\Job::STATUS_SUCCEEDED) {
+		if($state === Models\Job::STATE_SUCCEEDED) {
 			$successCodes = [];
 			foreach(explode(',', $job->success_return_codes) as $successCode) {
 				if(trim($successCode) === '') continue;
@@ -91,26 +97,29 @@ switch($srcdata['method']) {
 			}
 			// check if return code is a success return code if any valid return code found
 			if(count($successCodes) > 0) {
-				$state = Models\Job::STATUS_FAILED;
+				$state = Models\Job::STATE_FAILED;
 				foreach($successCodes as $successCode) {
 					if(intval($data['return-code']) === intval($successCode)) {
-						$state = Models\Job::STATUS_SUCCEEDED;
+						$state = Models\Job::STATE_SUCCEEDED;
 						break;
 					}
 				}
 			}
 		}
 
-		// update job state in database
+		// update job execution state in database
+		$job->state = $state;
+		$job->return_code = intval($data['return-code']);
+		$job->message = $data['message'];
 		$db->updateComputerPing($computer->id);
-		$db->updateJobState($data['job-id'], $state, intval($data['return-code']), $data['message']);
-		$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE_DEPLOY_STATUS,
+		$db->updateJobExecutionState($job);
+		$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE,
 			['job_id'=>$data['job-id'], 'return_code'=>intval($data['return-code']), 'message'=>$data['message']]
 		);
 		// update computer-package assignment if job was successful
-		if($state === Models\Job::STATUS_SUCCEEDED) {
+		if($state === Models\Job::STATE_SUCCEEDED) {
 			if($job->is_uninstall == 0) {
-				$db->addPackageToComputer($job->package_id, $job->computer_id, $job->job_container_author, $job->package_procedure);
+				$db->addPackageToComputer($job->package_id, $job->computer_id, $job->getAuthor(), $job->procedure);
 			} elseif($job->is_uninstall == 1) {
 				$db->removeComputerAssignedPackageByIds($job->computer_id, $job->package_id);
 			}
@@ -120,7 +129,7 @@ switch($srcdata['method']) {
 			'success' => true,
 			'params' => [
 				'server-key' => $computer->server_key,
-				'job-succeeded' => ($state === Models\Job::STATUS_SUCCEEDED),
+				'job-succeeded' => ($state === Models\Job::STATE_SUCCEEDED),
 			]
 		];
 		break;
@@ -204,11 +213,11 @@ switch($srcdata['method']) {
 			}
 
 			// get pending jobs
-			foreach($db->getPendingJobsForComputer($computer->id) as $pj) {
+			foreach($db->getPendingJobsForAgent($computer->id) as $pj) {
 				// constraint check
-				if(!empty($pj['agent_ip_ranges'])) {
+				if(!empty($pj->job_container_agent_ip_ranges)) {
 					$continue = true;
-					foreach(explode(',', $pj['agent_ip_ranges']) as $range) {
+					foreach(explode(',', $pj->job_container_agent_ip_ranges) as $range) {
 						if(startsWith($range, '!')) {
 							if(isIpInRange($_SERVER['REMOTE_ADDR'], ltrim($range, '!'))) {
 								// agent IP is in that range but should not be - ignore this job
@@ -227,20 +236,20 @@ switch($srcdata['method']) {
 				}
 				// set post action
 				$restart = null; $shutdown = null; $exit = null;
-				if($pj['post_action'] == Models\Package::POST_ACTION_RESTART)
-					$restart = intval($pj['post_action_timeout'] ?? 1);
-				if($pj['post_action'] == Models\Package::POST_ACTION_SHUTDOWN)
-					$shutdown = intval($pj['post_action_timeout'] ?? 1);
-				if($pj['post_action'] == Models\Package::POST_ACTION_EXIT)
-					$exit = intval($pj['post_action_timeout'] ?? 1);
+				if($pj->post_action == Models\Package::POST_ACTION_RESTART)
+					$restart = intval($pj->post_action_timeout ?? 1);
+				if($pj->post_action == Models\Package::POST_ACTION_SHUTDOWN)
+					$shutdown = intval($pj->post_action_timeout ?? 1);
+				if($pj->post_action == Models\Package::POST_ACTION_EXIT)
+					$exit = intval($pj->post_action_timeout ?? 1);
 				// add job to list
 				$jobs[] = [
-					'id' => $pj['id'],
-					'container-id' => $pj['job_container_id'],
-					'package-id' => $pj['package_id'],
-					'download' => $pj['download']==0 ? False : True,
-					'procedure' => $pj['procedure'],
-					'sequence-mode' => intval($pj['sequence_mode']),
+					'id' => $pj->getIdForAgent(),
+					'container-id' => $pj->getContainerId(),
+					'package-id' => $pj->package_id,
+					'download' => $pj->download==0 ? False : True,
+					'procedure' => $pj->procedure,
+					'sequence-mode' => intval($pj->getSequenceMode()),
 					'restart' => $restart,
 					'shutdown' => $shutdown,
 					'exit' => $exit,

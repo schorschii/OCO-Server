@@ -20,5 +20,5 @@ require_once('../session.php');
 
 <div class='controls right'>
 	<button onclick='hideDialog()'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button class='primary' onclick='moveJobToContainer(txtEditJobId.value, sltNewJobContainer.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('move'); ?></button>
+	<button class='primary' onclick='moveStaticJobToContainer(txtEditJobId.value, sltNewJobContainer.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('move'); ?></button>
 </div>

@@ -15,6 +15,7 @@ class ComputerPackage {
 	public $computer_hostname;
 
 	// joined package attributes
+	public $package_family_id;
 	public $package_family_name;
 	public $package_version;
 

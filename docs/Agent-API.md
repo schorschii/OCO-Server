@@ -4,7 +4,7 @@ This document describes the JSON-REST and package download API for the OCO agent
 # The JSON-RPC Package
 A valid JSON-RPC request is sent via HTTP(S) with the HTTP header `Content-Type: application/json` to the API endpoint `api-agent.php`.
 
-Within the `params` object, please send the `hostname` and `uid` (machine GUID) with the correct `agent-key` value and all required additional parameters for the method you are calling inside a `data` object. The server will trust the agent only if the `agent-key` matches the one saved in the database.
+Within the `params` object, please send the `hostname` and `uid` (machine UUID/GUID) with the correct `agent-key` value and all required additional parameters for the method you are calling inside a `data` object. The server will trust the agent only if the `agent-key` matches the one saved in the database.
 
 Please have a look at the following API method documentation for JSON-RPC request/response examples.
 
@@ -16,7 +16,7 @@ Before the first agent request, both `agent-key` and `server-key` are empty by d
 The server-agent communcation should be encrypted via HTTPS as mentioned in the installation instructions, otherwise attackers can easily obtain the agent and server key.
 
 # JSON-REST-API Methods
-## `oco.agent_hello` - Agent Contact Approach
+## `oco.agent.hello` - Agent Contact Approach
 ### Parameters
 - `agent_version`: the agent version
 - `networks`: the network interface information of the managed computer
@@ -25,7 +25,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 {
 	"jsonrpc": "2.0",
 	"id": 1,
-	"method": "oco.agent_hello",
+	"method": "oco.agent.hello",
 	"params": {
 		"agent-key": "🌈💜👆🚧🛸💩",
 		"uid": "00000000-0000-0000-0000-000000000000",
@@ -63,7 +63,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 }
 ```
 
-## `oco.agent_update` - Update Agent Inventory Values
+## `oco.agent.update` - Update Agent Inventory Values
 ### Parameters
 - `os`: operating system
 - `os_version`: operating system version (including build number)
@@ -93,7 +93,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 {
 	"jsonrpc": "2.0",
 	"id": 1,
-	"method": "oco.agent_update",
+	"method": "oco.agent.update",
 	"params": {
 		"agent-key": "🌈💜👆🚧🛸💩",
 		"uid": "00000000-0000-0000-0000-000000000000",
@@ -184,9 +184,9 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 }
 ```
 
-## `oco.update_deploy_status` - Update Job Deployment Status
+## `oco.agent.update_job_state` - Update Job Deployment Status
 ### Parameters
-- `job-id`: ID of the job to update
+- `job-id`: ID of the job to update (static job: `<job_id>`, dynamic job: `dynamic-<job_id>`)
 - `state`: state of the job, e.g. downloading, executing, finished (integer) - see const definitions in 'Job' class
 - `return-code`: procedure command return code
 - `message`: procedure command output (stdout & stderr)
@@ -195,7 +195,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 {
 	"jsonrpc": "2.0",
 	"id": 1,
-	"method": "oco.update_deploy_status",
+	"method": "oco.agent.update_job_state",
 	"params": {
 		"agent-key": "🌈💜👆🚧🛸💩",
 		"uid": "00000000-0000-0000-0000-000000000000",
@@ -226,7 +226,8 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 # Package Download API
 To download the package payload ZIP file, the agent has to contact the API endpoint `api-agent.php` with the following HTTP GET parameter.
 - `id`: the package id to download
-- `hostname`: the hostname of the client
-- `agent-key`: the corresponding agent key
+- `hostname`: the hostname of the client for authentication
+- `uid`: the UUID of the client for authentication
+- `agent-key`: the corresponding agent key for authentication
 
 Note: the download will be declined with HTTP code 401 if the agent key is not correct or if there is no active job for the given package and computer.

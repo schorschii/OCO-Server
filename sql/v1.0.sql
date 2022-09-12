@@ -108,8 +108,8 @@ CREATE TABLE `computer_package` (
   `id` int(11) NOT NULL,
   `computer_id` int(11) NOT NULL,
   `package_id` int(11) NOT NULL,
-  `installed_procedure` text NOT NULL,
-  `installed_by` text NOT NULL,
+  `installed_procedure` text,
+  `installed_by` text,
   `installed` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -181,6 +181,54 @@ CREATE TABLE `computer_software` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `deployment_rule`
+--
+
+CREATE TABLE `deployment_rule` (
+  `id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  `notes` text NOT NULL,
+  `author` text NOT NULL,
+  `enabled` tinyint(4) NOT NULL DEFAULT 1,
+  `computer_group_id` int(11) NOT NULL,
+  `package_group_id` int(11) NOT NULL,
+  `sequence_mode` tinyint(4) NOT NULL DEFAULT 0,
+  `priority` tinyint(4) NOT NULL DEFAULT 0,
+  `auto_uninstall` tinyint(4) NOT NULL DEFAULT 1,
+  `post_action_timeout` int(11) NOT NULL DEFAULT 5,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `deployment_rule_job`
+--
+
+CREATE TABLE `deployment_rule_job` (
+  `id` int(11) NOT NULL,
+  `deployment_rule_id` int(11) NOT NULL,
+  `computer_id` int(11) NOT NULL,
+  `package_id` int(11) NOT NULL,
+  `procedure` text NOT NULL,
+  `success_return_codes` text NOT NULL,
+  `is_uninstall` tinyint NOT NULL DEFAULT 0,
+  `download` tinyint NOT NULL DEFAULT 1,
+  `post_action` int(11) DEFAULT NULL,
+  `post_action_timeout` int(11) DEFAULT NULL,
+  `sequence` int(11) NOT NULL DEFAULT 0,
+  `state` int(11) NOT NULL DEFAULT 0,
+  `return_code` bigint(11) DEFAULT NULL,
+  `message` text NOT NULL,
+  `wol_shutdown_set` datetime DEFAULT NULL,
+  `download_started` datetime DEFAULT NULL,
+  `execution_started` datetime DEFAULT NULL,
+  `execution_finished` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `domain_user`
 --
 
@@ -209,15 +257,15 @@ CREATE TABLE `domain_user_logon` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `job`
+-- Tabellenstruktur für Tabelle `job_container_job`
 --
 
-CREATE TABLE `job` (
+CREATE TABLE `job_container_job` (
   `id` int(11) NOT NULL,
   `job_container_id` int(11) NOT NULL,
   `computer_id` int(11) NOT NULL,
   `package_id` int(11) NOT NULL,
-  `package_procedure` text NOT NULL,
+  `procedure` text NOT NULL,
   `success_return_codes` text NOT NULL,
   `is_uninstall` tinyint(4) NOT NULL DEFAULT 0,
   `download` tinyint(4) NOT NULL DEFAULT 1,
@@ -252,6 +300,7 @@ CREATE TABLE `job_container` (
   `sequence_mode` tinyint(4) NOT NULL DEFAULT 0,
   `priority` tinyint(4) NOT NULL DEFAULT 0,
   `agent_ip_ranges` text DEFAULT NULL,
+  `self_service` tinyint(4) NOT NULL DEFAULT 0,
   `created` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -382,7 +431,7 @@ INSERT INTO `report` (`id`, `report_group_id`, `name`, `notes`, `query`) VALUES
 (2, 1, 'report_packages_without_installations', '', 'SELECT p.id AS package_id, pf.name, p.version, count(cp.package_id) AS install_count FROM package p LEFT JOIN computer_package cp ON p.id = cp.package_id INNER JOIN package_family pf ON p.package_family_id = pf.id GROUP BY p.id HAVING install_count = 0'),
 (3, 1, 'report_recognized_software_chrome', '', 'SELECT id as software_id, name FROM software WHERE name LIKE \'%chrome%\''),
 (4, 1, 'report_domain_users_multiple_computers', '', 'SELECT du.id AS domain_user_id, username, (SELECT count(DISTINCT dl2.computer_id) FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id) AS \'computer_count\' FROM domain_user du HAVING computer_count > 1'),
-(5, 1, 'report_expired_jobcontainers', '', 'SELECT id AS jobcontainer_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
+(5, 1, 'report_expired_job_containers', '', 'SELECT id AS job_container_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()'),
 (6, 1, 'report_preregistered_computers', '', 'SELECT id AS computer_id, hostname FROM computer WHERE last_update IS NULL OR last_update <= \'2000-01-01 00:00:00\''),
 (7, 1, 'report_all_monitors', '', 'SELECT c.hostname, cs.* FROM computer_screen cs INNER JOIN computer c ON c.id = cs.computer_id WHERE cs.serialno != \"\"'),
 (8, 1, 'report_7_days_no_agent', '', 'SELECT id AS \'computer_id\', hostname, os, os_version, last_ping FROM computer WHERE last_ping IS NULL OR last_ping < NOW() - INTERVAL 7 DAY'),
@@ -463,7 +512,7 @@ CREATE TABLE `system_user_role` (
 --
 
 INSERT INTO `system_user_role` (`id`, `name`, `permissions`) VALUES
-(1, 'Superadmin', '{\"Special\\\\ClientApi\": true, \"Special\\\\WebFrontend\": true, \"Special\\\\DeletedObjects\": true, \"Models\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true}}, \"Models\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\SystemUser\": true, \"Models\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Software\": true}');
+(1, 'Superadmin', '{\"Special\\\\ClientApi\": true, \"Special\\\\WebFrontend\": true, \"Special\\\\DeletedObjects\": true, \"Models\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true}}, \"Models\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\SystemUser\": true, \"Models\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Software\": true, \"Models\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}}');
 
 -- --------------------------------------------------------
 
@@ -537,6 +586,23 @@ ALTER TABLE `computer_software`
   ADD KEY `fk_computer_software_2` (`software_id`);
 
 --
+-- Indizes für die Tabelle `deployment_rule`
+--
+ALTER TABLE `deployment_rule`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_deployment_rule_1` (`computer_group_id`),
+  ADD KEY `fk_deployment_rule_2` (`package_group_id`);
+
+--
+-- Indizes für die Tabelle `deployment_rule_job`
+--
+ALTER TABLE `deployment_rule_job`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_deployment_rule_job_1` (`deployment_rule_id`),
+  ADD KEY `fk_deployment_rule_job_2` (`computer_id`),
+  ADD KEY `fk_deployment_rule_job_3` (`package_id`);
+
+--
 -- Indizes für die Tabelle `domain_user`
 --
 ALTER TABLE `domain_user`
@@ -551,13 +617,13 @@ ALTER TABLE `domain_user_logon`
   ADD KEY `fk_domain_user_logon_2` (`computer_id`);
 
 --
--- Indizes für die Tabelle `job`
+-- Indizes für die Tabelle `job_container_job`
 --
-ALTER TABLE `job`
+ALTER TABLE `job_container_job`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `fk_job_1` (`job_container_id`),
-  ADD KEY `fk_job_2` (`computer_id`),
-  ADD KEY `fk_job_3` (`package_id`);
+  ADD KEY `fk_job_container_job_1` (`job_container_id`),
+  ADD KEY `fk_job_container_job_2` (`computer_id`),
+  ADD KEY `fk_job_container_job_3` (`package_id`);
 
 --
 -- Indizes für die Tabelle `job_container`
@@ -707,6 +773,18 @@ ALTER TABLE `computer_software`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT für Tabelle `deployment_rule`
+--
+ALTER TABLE `deployment_rule`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `deployment_rule_job`
+--
+ALTER TABLE `deployment_rule_job`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT für Tabelle `domain_user`
 --
 ALTER TABLE `domain_user`
@@ -719,9 +797,9 @@ ALTER TABLE `domain_user_logon`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT für Tabelle `job`
+-- AUTO_INCREMENT für Tabelle `job_container_job`
 --
-ALTER TABLE `job`
+ALTER TABLE `job_container_job`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -858,6 +936,21 @@ ALTER TABLE `computer_software`
   ADD CONSTRAINT `fk_computer_software_2` FOREIGN KEY (`software_id`) REFERENCES `software` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints der Tabelle `deployment_rule`
+--
+ALTER TABLE `deployment_rule`
+  ADD CONSTRAINT `fk_deployment_rule_1` FOREIGN KEY (`computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  ADD CONSTRAINT `fk_deployment_rule_2` FOREIGN KEY (`package_group_id`) REFERENCES `package_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT;
+
+--
+-- Constraints der Tabelle `deployment_rule_job`
+--
+ALTER TABLE `deployment_rule_job`
+  ADD CONSTRAINT `fk_deployment_rule_job_1` FOREIGN KEY (`deployment_rule_id`) REFERENCES `deployment_rule` (`id`) ON DELETE CASCADE ON UPDATE RESTRICT,
+  ADD CONSTRAINT `fk_deployment_rule_job_2` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_deployment_rule_job_3` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints der Tabelle `domain_user_logon`
 --
 ALTER TABLE `domain_user_logon`
@@ -865,12 +958,12 @@ ALTER TABLE `domain_user_logon`
   ADD CONSTRAINT `fk_domain_user_logon_2` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints der Tabelle `job`
+-- Constraints der Tabelle `job_container_job`
 --
-ALTER TABLE `job`
-  ADD CONSTRAINT `fk_job_1` FOREIGN KEY (`job_container_id`) REFERENCES `job_container` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_job_2` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `fk_job_3` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `job_container_job`
+  ADD CONSTRAINT `fk_job_container_job_1` FOREIGN KEY (`job_container_id`) REFERENCES `job_container` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_job_container_job_2` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_job_container_job_3` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints der Tabelle `package`

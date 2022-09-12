@@ -6,7 +6,7 @@ class CoreLogic {
 		 Class CoreLogic
 		 Database Abstraction Layer Wrapper
 
-		 Adds additional checks & logic before the database is accessed and sanitizes user input.
+		 Adds additional (permission) checks & logic before the database is accessed and sanitizes user input.
 		 It's public functions are used by the web frontend and the client API.
 	*/
 
@@ -557,6 +557,113 @@ class CoreLogic {
 	}
 
 	/*** Deployment / Job Container Operations ***/
+	public function getDeploymentRules(Object $filterRessource=null) {
+		if($filterRessource === null) {
+			$deploymentRulesFiltered = [];
+			foreach($this->db->getAllDeploymentRules() as $deploymentRule) {
+				if($this->systemUser->checkPermission($deploymentRule, PermissionManager::METHOD_READ, false))
+					$deploymentRulesFiltered[] = $deploymentRule;
+			}
+			return $deploymentRulesFiltered;
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function getDeploymentRule($id) {
+		$deploymentRule = $this->db->getDeploymentRule($id);
+		if(empty($deploymentRule)) throw new NotFoundException();
+		$this->systemUser->checkPermission($deploymentRule, PermissionManager::METHOD_READ);
+		return $deploymentRule;
+	}
+	public function evaluateDeploymentRule($id) {
+		$deploymentRule = $this->db->getDeploymentRule($id);
+		if(empty($deploymentRule)) throw new NotFoundException();
+		$this->systemUser->checkPermission($deploymentRule, PermissionManager::METHOD_WRITE);
+		return $this->db->evaluateDeploymentRule($deploymentRule->id);
+	}
+	public function createDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+		$this->checkPermission(new Models\DeploymentRule(), PermissionManager::METHOD_CREATE);
+
+		if(empty(trim($name))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+		if(!in_array($enabled, ['0', '1'])) {
+			throw new InvalidRequestException(LANG('invalid_input'));
+		}
+		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
+			error_log($priority);
+			throw new InvalidRequestException(LANG('invalid_input'));
+		}
+		if(!in_array($auto_uninstall, ['0', '1'])) {
+			throw new InvalidRequestException(LANG('invalid_input'));
+		}
+		$computerGroup = $this->db->getComputerGroup($computer_group_id);
+		if(empty($computerGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
+		$packageGroup = $this->db->getPackageGroup($package_group_id);
+		if(empty($packageGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
+
+		$insertId = $this->db->addDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.deployment_rule.create', [
+			'name'=>$name,
+			'notes'=>$notes,
+			'author'=>$author,
+			'enabled'=>$enabled,
+			'computer_group_id'=>$computer_group_id,
+			'package_group_id'=>$package_group_id,
+			'priority'=>$priority,
+			'auto_uninstall'=>$auto_uninstall,
+		]);
+		return $insertId;
+	}
+	public function updateDeploymentRule($id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+		$dr = $this->db->getDeploymentRule($id);
+		if(empty($dr)) throw new NotFoundException();
+		$this->systemUser->checkPermission($dr, PermissionManager::METHOD_WRITE);
+
+		if(empty(trim($name))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+		if(!in_array($enabled, ['0', '1'])) {
+			throw new InvalidRequestException(LANG('invalid_input'));
+		}
+		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
+			error_log($priority);
+			throw new InvalidRequestException(LANG('invalid_input'));
+		}
+		if(!in_array($auto_uninstall, ['0', '1'])) {
+			throw new InvalidRequestException(LANG('invalid_input'));
+		}
+		$computerGroup = $this->db->getComputerGroup($computer_group_id);
+		if(empty($computerGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
+		$packageGroup = $this->db->getPackageGroup($package_group_id);
+		if(empty($packageGroup)) throw new NotFoundException();
+		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
+
+		$this->db->updateDeploymentRule($dr->id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $dr->id, 'oco.deployment_rule.update', [
+			'name'=>$name,
+			'notes'=>$notes,
+			'enabled'=>$enabled,
+			'computer_group_id'=>$computer_group_id,
+			'package_group_id'=>$package_group_id,
+			'priority'=>$priority,
+			'auto_uninstall'=>$auto_uninstall,
+		]);
+	}
+	public function removeDeploymentRule($id) {
+		$dr = $this->db->getDeploymentRule($id);
+		if(empty($dr)) throw new NotFoundException();
+		$this->systemUser->checkPermission($dr, PermissionManager::METHOD_DELETE);
+
+		$result = $this->db->removeDeploymentRule($dr->id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $dr->id, 'oco.deployment_rule.delete', json_encode($dr));
+		return $result;
+	}
 	public function getJobContainers(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$jobContainersFiltered = [];
@@ -715,17 +822,17 @@ class CoreLogic {
 
 				foreach($packages as $pid => $package) {
 
-					$targetJobState = Models\Job::STATUS_WAITING_FOR_CLIENT;
+					$targetJobState = Models\Job::STATE_WAITING_FOR_AGENT;
 
 					// check OS compatibility
 					if(!empty($package['compatible_os']) && !empty($tmpComputer->os)
 					&& $package['compatible_os'] != $tmpComputer->os) {
 						// create failed job
-						if($this->db->addJob($jcid, $computer_id,
+						if($this->db->addStaticJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
 							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 							$package['install_procedure_post_action'], $restartTimeout,
-							$sequence, Models\Job::STATUS_OS_INCOMPATIBLE
+							$sequence, Models\Job::STATE_OS_INCOMPATIBLE
 						)) {
 							$sequence ++;
 						}
@@ -734,24 +841,24 @@ class CoreLogic {
 					if(!empty($package['compatible_os_version']) && !empty($tmpComputer->os_version)
 					&& $package['compatible_os_version'] != $tmpComputer->os_version) {
 						// create failed job
-						if($this->db->addJob($jcid, $computer_id,
+						if($this->db->addStaticJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
 							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 							$package['install_procedure_post_action'], $restartTimeout,
-							$sequence, Models\Job::STATUS_OS_INCOMPATIBLE
+							$sequence, Models\Job::STATE_OS_INCOMPATIBLE
 						)) {
 							$sequence ++;
 						}
 						continue;
 					}
 
-					foreach($this->db->getComputerPackage($computer_id) as $cp) {
+					foreach($this->db->getComputerPackagesByComputer($computer_id) as $cp) {
 						// ignore if it is an automatically added dependency package and version is the same as already installed
 						if($package['is_dependency'] && strval($pid) === $cp->package_id) continue 2;
 
-						// if the same version is already installed, add a informative job with status STATUS_ALREADY_INSTALLED
+						// if the same version is already installed, add a informative job with status STATE_ALREADY_INSTALLED
 						if($cp->package_id === strval($pid) && empty($forceInstallSameVersion)) {
-							$targetJobState = Models\Job::STATUS_ALREADY_INSTALLED;
+							$targetJobState = Models\Job::STATE_ALREADY_INSTALLED;
 							break;
 						}
 
@@ -766,11 +873,11 @@ class CoreLogic {
 								// ... and not, if this uninstall job was already created
 								if(in_array($cp->id, $createdUninstallJobs)) continue;
 								$createdUninstallJobs[] = $cp->id;
-								$this->db->addJob($jcid, $computer_id,
+								$this->db->addStaticJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
-									1/*is_uninstall*/, $cpp->download_for_uninstall,
+									1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
 									$cpp->uninstall_procedure_post_action, $restartTimeout,
-									$sequence, Models\Job::STATUS_WAITING_FOR_CLIENT
+									$sequence, Models\Job::STATE_WAITING_FOR_AGENT
 								);
 								$sequence ++;
 							}
@@ -778,7 +885,7 @@ class CoreLogic {
 					}
 
 					// create installation job
-					if($this->db->addJob($jcid, $computer_id,
+					if($this->db->addStaticJob($jcid, $computer_id,
 						$pid, $package['procedure'], $package['success_return_codes'],
 						0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 						$package['install_procedure_post_action'], $restartTimeout,
@@ -798,7 +905,7 @@ class CoreLogic {
 
 		}
 
-		$jobs = $this->db->getAllJobByContainer($jcid);
+		$jobs = $this->db->getStaticJobsByJobContainer($jcid);
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 		return $jcid;
 	}
@@ -877,7 +984,7 @@ class CoreLogic {
 		// wol handling
 		$computer_ids = [];
 		foreach($installationIds as $id) {
-			$ap = $this->db->getComputerAssignedPackage($id);
+			$ap = $this->db->getComputerPackage($id);
 			if(empty($ap)) continue;
 			$tmpComputer = $this->db->getComputer($ap->computer_id);
 			if(empty($tmpComputer)) continue;
@@ -916,20 +1023,20 @@ class CoreLogic {
 			$description, $wolSent, $shutdownWakedAfterCompletion, $sequenceMode, $priority, $this->compileIpRanges($constraintIpRanges)
 		);
 		foreach($installationIds as $id) {
-			$ap = $this->db->getComputerAssignedPackage($id); if(empty($ap)) continue;
+			$ap = $this->db->getComputerPackage($id); if(empty($ap)) continue;
 			$p = $this->db->getPackage($ap->package_id); if(empty($p)) continue;
 			$c = $this->db->getComputer($ap->computer_id); if(empty($c)) continue;
 
 			if(!$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 			if(!$this->systemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-			$jid = $this->db->addJob($jcid, $ap->computer_id,
+			$jid = $this->db->addStaticJob($jcid, $ap->computer_id,
 				$ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes,
-				1/*is_uninstall*/, $p->download_for_uninstall,
+				1/*is_uninstall*/, ($p->download_for_uninstall&&$p->getFilePath()) ? 1 : 0,
 				$p->uninstall_procedure_post_action, $restartTimeout,
 				0/*sequence*/
 			);
-			$jobs[] = $this->db->getJob($jid);
+			$jobs[] = $this->db->getStaticJob($jid);
 		}
 		// if instant WOL: check if computers are currently online (to know if we should shut them down after all jobs are done)
 		if(strtotime($dateStart) <= time() && $useWol && $shutdownWakedAfterCompletion) {
@@ -939,7 +1046,7 @@ class CoreLogic {
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 	}
 	public function removeComputerAssignedPackage($id) {
-		$computerPackageAssignment = $this->db->getComputerAssignedPackage($id);
+		$computerPackageAssignment = $this->db->getComputerPackage($id);
 		if(!$computerPackageAssignment) throw new NotFoundException();
 		$computer = $this->db->getComputer($computerPackageAssignment->computer_id);
 		if(!$computer) throw new NotFoundException();
@@ -954,7 +1061,7 @@ class CoreLogic {
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_assignment', ['computer_id'=>$computer->id]);
 		return $result;
 	}
-	public function renewFailedJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
+	public function renewFailedStaticJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
 		$jc = $this->db->getJobContainer($renewContainerId);
 		if(!$jc) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
@@ -988,11 +1095,11 @@ class CoreLogic {
 
 		// wol handling
 		$computer_ids = [];
-		foreach($this->db->getAllJobByContainer($container->id) as $job) {
-			if($job->state == Models\Job::STATUS_FAILED
-			|| $job->state == Models\Job::STATUS_EXPIRED
-			|| $job->state == Models\Job::STATUS_OS_INCOMPATIBLE
-			|| $job->state == Models\Job::STATUS_PACKAGE_CONFLICT) {
+		foreach($this->db->getStaticJobsByJobContainer($container->id) as $job) {
+			if($job->state == Models\Job::STATE_FAILED
+			|| $job->state == Models\Job::STATE_EXPIRED
+			|| $job->state == Models\Job::STATE_OS_INCOMPATIBLE
+			|| $job->state == Models\Job::STATE_PACKAGE_CONFLICT) {
 				$computer_ids[] = $job->computer_id;
 			}
 		}
@@ -1021,19 +1128,19 @@ class CoreLogic {
 			$description, $wolSent, $shutdownWakedAfterCompletion,
 			$sequenceMode, $priority, $container->agent_ip_ranges
 		)) {
-			foreach($this->db->getAllJobByContainer($container->id) as $job) {
-				if($job->state == Models\Job::STATUS_FAILED
-				|| $job->state == Models\Job::STATUS_EXPIRED
-				|| $job->state == Models\Job::STATUS_OS_INCOMPATIBLE
-				|| $job->state == Models\Job::STATUS_PACKAGE_CONFLICT) {
+			foreach($this->db->getStaticJobsByJobContainer($container->id) as $job) {
+				if($job->state == Models\Job::STATE_FAILED
+				|| $job->state == Models\Job::STATE_EXPIRED
+				|| $job->state == Models\Job::STATE_OS_INCOMPATIBLE
+				|| $job->state == Models\Job::STATE_PACKAGE_CONFLICT) {
 
 					// use the current package procedure, return codes, post action
 					$package = $this->db->getPackage($job->package_id);
-					$newJob = new Models\Job();
+					$newJob = new Models\StaticJob();
 					$newJob->job_container_id = $jcid;
 					$newJob->computer_id = $job->computer_id;
 					$newJob->package_id = $job->package_id;
-					$newJob->package_procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
+					$newJob->procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
 					$newJob->success_return_codes = empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes;
 					$newJob->is_uninstall = $job->is_uninstall;
 					$newJob->download = $package->getFilePath() ? 1 : 0;
@@ -1041,15 +1148,15 @@ class CoreLogic {
 					$newJob->post_action_timeout = $job->post_action_timeout;
 					$newJob->sequence = $job->sequence;
 
-					if($this->db->addJob($newJob->job_container_id,
+					if($this->db->addStaticJob($newJob->job_container_id,
 						$newJob->computer_id, $newJob->package_id,
-						$newJob->package_procedure, $newJob->success_return_codes,
+						$newJob->procedure, $newJob->success_return_codes,
 						$newJob->is_uninstall, $newJob->download,
 						$newJob->post_action, $newJob->post_action_timeout,
 						$newJob->sequence
 					)) {
 						$jobs[] = $newJob;
-						$this->db->removeJob($job->id);
+						$this->db->removeStaticJob($job->id);
 					}
 				}
 			}
@@ -1124,9 +1231,9 @@ class CoreLogic {
 			'agent_ip_ranges'=>$agent_ip_ranges,
 		]);
 	}
-	public function moveJobToContainer($jobId, $containerId) {
-		$job = $this->db->getJob($jobId);
-		if(empty($job)) throw new NotFoundException();
+	public function moveStaticJobToContainer($jobId, $containerId) {
+		$job = $this->db->getStaticJob($jobId);
+		if(empty($job) || !$job instanceof Models\StaticJob) throw new NotFoundException();
 		$oldContainer = $this->db->getJobContainer($job->job_container_id);
 		if(empty($oldContainer)) throw new NotFoundException();
 		$newContainer = $this->db->getJobContainer($containerId);
@@ -1135,7 +1242,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($oldContainer, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($newContainer, PermissionManager::METHOD_WRITE);
 
-		$this->db->moveJobToContainer($job->id, $newContainer->id);
+		$this->db->moveStaticJobToContainer($job->id, $newContainer->id);
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $newContainer->id, 'oco.job_container.move_jobs', [
 			'old_container_id'=>$oldContainer->id,
 			'new_container_id'=>$newContainer->id,
@@ -1152,16 +1259,16 @@ class CoreLogic {
 		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.delete', json_encode($jc));
 		return $result;
 	}
-	public function removeJob($id) {
-		$job = $this->db->getJob($id);
-		if(empty($job)) throw new NotFoundException();
+	public function removeStaticJob($id) {
+		$job = $this->db->getStaticJob($id);
+		if(empty($job) || !$job instanceof Models\StaticJob) throw new NotFoundException();
 		$jc = $this->db->getJobContainer($job->job_container_id);
 		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_DELETE);
 
-		$result = $this->db->removeJob($id);
+		$result = $this->db->removeStaticJob($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $job->id, 'oco.job.delete', ['job_container_id'=>$jc->id]);
+		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $job->id, 'oco.job_container.job.delete', ['job_container_id'=>$jc->id]);
 		return $result;
 	}
 
