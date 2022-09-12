@@ -1004,7 +1004,8 @@ a.subbuttons > button {
 .tabbuttons {
 	display: flex;
 	align-items: bottom;
-	gap: 12px;
+	flex-wrap: wrap;
+	gap: 14px;
 	margin-top: 16px;
 }
 .tabbuttons a {
@@ -1015,6 +1016,7 @@ a.subbuttons > button {
 	text-decoration: none;
 	color: inherit;
 	letter-spacing: 0.2px;
+	font-size: 16px;
 }
 .tabbuttons a.active {
 	border-color: #0079B8;
