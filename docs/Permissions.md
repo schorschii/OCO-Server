@@ -16,7 +16,7 @@ You can create your own roles by adding a new role record in the database with a
     "Special\\ClientApi": true,            <-- allows the user to use the Client API
     "Special\\WebFrontend": true,          <-- allows the user to use the Web Frontend
     "Models\\SystemUser": true,            <-- allows the user to edit system users
-    "Models\\Software": true,              <-- allows the user to view recognised software over all computers
+    "Models\\Software": true,              <-- allows the user to view recognised software of all computers
 
     "Models\\Computer": {
         "create": true,                    <-- allows the user to create new computers
@@ -141,5 +141,19 @@ You can create your own roles by adding a new role record in the database with a
             "delete": false         <-´
         }
     },
+
+    "Models\\DeploymentRule": {
+        "create": true,
+        "own": {
+            "read": true,
+            "write": true,
+            "delete": true
+        },
+        "*": {
+            "read": true,
+            "write": false,
+            "delete": false
+        }
+    }
 }
 ```
