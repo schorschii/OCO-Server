@@ -18,7 +18,7 @@ if(!empty($_GET['id'])) {
 		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
 
-	$jobs = $db->getStaticJobsByJobContainer($container->id);
+	$jobs = $db->selectAllStaticJobByJobContainer($container->id);
 	$done = 0; $failed = 0; $percent = 0;
 	if(count($jobs) > 0) {
 		foreach($jobs as $job) {
@@ -123,7 +123,7 @@ if(!empty($_GET['id'])) {
 					echo htmlspecialchars('-');
 				} else {
 					if($icon == Models\JobContainer::STATUS_SUCCEEDED || $icon == Models\JobContainer::STATUS_FAILED) {
-						$maxTimeJob = $db->getJobContainerMaxExecutionStaticJob($container->id);
+						$maxTimeJob = $db->selectMaxExecutionStaticJobByJobContainerId($container->id);
 						$maxTime = time(); if(!empty($maxTimeJob)) $maxTime = strtotime($maxTimeJob->execution_finished);
 						$timeDiff = $maxTime-strtotime($container->start_time);
 						if($timeDiff < 0) {
@@ -141,8 +141,8 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG('effective_runtime'); ?></th>
 				<td><?php
-				$minTimeJob = $db->getJobContainerMinExecutionStaticJob($container->id);
-				$maxTimeJob = $db->getJobContainerMaxExecutionStaticJob($container->id);
+				$minTimeJob = $db->selectMinExecutionStaticJobByJobContainerId($container->id);
+				$maxTimeJob = $db->selectMaxExecutionStaticJobByJobContainerId($container->id);
 				if(empty($minTimeJob) || empty($maxTimeJob) || empty($minTimeJob->execution_started) || empty($maxTimeJob->execution_finished)) {
 					echo htmlspecialchars('-');
 				} else {
@@ -271,7 +271,7 @@ if(!empty($_GET['id'])) {
 			foreach($containers as $jc) {
 				$counter ++;
 				$done = 0; $percent = 0;
-				$jobs = $db->getStaticJobsByJobContainer($jc->id);
+				$jobs = $db->selectAllStaticJobByJobContainer($jc->id);
 				if(count($jobs) > 0) {
 					foreach($jobs as $job) {
 						if($job->state == Models\Job::STATE_SUCCEEDED || $job->state == Models\Job::STATE_ALREADY_INSTALLED) $done ++;

@@ -101,10 +101,10 @@ class LdapSync {
 
 			// check if user already exists
 			$id = null;
-			$checkResult = $this->db->getSystemUserByUid($uid);
+			$checkResult = $this->db->selectSystemUserByUid($uid);
 			if(empty($checkResult)) {
 				// fallback for old DB schema without uid
-				$tmpCheckResult = $this->db->getSystemUserByLogin($username);
+				$tmpCheckResult = $this->db->selectSystemUserByUsername($username);
 				if(!empty($tmpCheckResult) && empty($tmpCheckResult->uid)) {
 					$checkResult = $tmpCheckResult;
 				}
@@ -121,7 +121,7 @@ class LdapSync {
 				if($this->debug) echo '--> '.$username.': not found in db - creating';
 
 				// insert into db
-				if($this->db->addSystemUser($uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, $groupCheck))
+				if($this->db->insertSystemUser($uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, $groupCheck))
 					if($this->debug) echo "  OK\n";
 				else throw new Exception('Error inserting: '.$this->db->getLastStatement()->error);
 			}
@@ -130,7 +130,7 @@ class LdapSync {
 		ldap_close($ldapconn);
 
 		if($this->debug) echo "<=== Check For Deleted Users... ===>\n";
-		foreach($this->db->getAllSystemUser() as $dbUser) {
+		foreach($this->db->selectAllSystemUser() as $dbUser) {
 			if($dbUser->ldap != 1) continue;
 			$found = false;
 			foreach($foundLdapUsers as $uid => $username) {
@@ -142,7 +142,7 @@ class LdapSync {
 				}
 			}
 			if(!$found) {
-				if($this->db->removeSystemUser($dbUser->id)) {
+				if($this->db->deleteSystemUser($dbUser->id)) {
 					if($this->debug) echo '--> '.$dbUser->username.': deleting  OK'."\n";
 				}
 				else throw new Exception('Error deleting '.$dbUser->username.': '.$this->db->getLastStatement()->error);

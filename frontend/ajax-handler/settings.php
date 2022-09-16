@@ -28,22 +28,22 @@ try {
 		)));
 	}
 
-	if(!empty($_POST['update_own_system_user_password'])
+	if(!empty($_POST['edit_own_system_user_password'])
 	&& isset($_POST['old_password'])) {
-		$cl->updateOwnSystemUserPassword(
-			$_POST['old_password'], $_POST['update_own_system_user_password']
+		$cl->editOwnSystemUserPassword(
+			$_POST['old_password'], $_POST['edit_own_system_user_password']
 		);
 		die();
 	}
 
-	if(!empty($_POST['update_system_user_id'])
+	if(!empty($_POST['edit_system_user_id'])
 	&& isset($_POST['username'])
 	&& isset($_POST['display_name'])
 	&& isset($_POST['description'])
 	&& isset($_POST['password'])
 	&& isset($_POST['role_id'])) {
-		$cl->updateSystemUser(
-			$_POST['update_system_user_id'], $_POST['username'], $_POST['display_name'], $_POST['description'], $_POST['password'], $_POST['role_id']
+		$cl->editSystemUser(
+			$_POST['edit_system_user_id'], $_POST['username'], $_POST['display_name'], $_POST['description'], $_POST['password'], $_POST['role_id']
 		);
 		die();
 	}
@@ -59,7 +59,7 @@ try {
 	if(!empty($_POST['lock_system_user_id'])
 	&& is_array($_POST['lock_system_user_id'])) {
 		foreach($_POST['lock_system_user_id'] as $id) {
-			$cl->updateSystemUserLocked($id, 1);
+			$cl->editSystemUserLocked($id, 1);
 		}
 		die();
 	}
@@ -67,7 +67,7 @@ try {
 	if(!empty($_POST['unlock_system_user_id'])
 	&& is_array($_POST['unlock_system_user_id'])) {
 		foreach($_POST['unlock_system_user_id'] as $id) {
-			$cl->updateSystemUserLocked($id, 0);
+			$cl->editSystemUserLocked($id, 0);
 		}
 		die();
 	}

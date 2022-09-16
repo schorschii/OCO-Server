@@ -15,7 +15,7 @@ class AuthenticationController {
 
 	/*** Authentication Logic ***/
 	public function login($username, $password) {
-		$user = $this->db->getSystemUserByLogin($username);
+		$user = $this->db->selectSystemUserByUsername($username);
 		if($user === null) {
 			sleep(2); // delay to avoid brute force attacks
 			throw new AuthenticationException(LANG('user_does_not_exist'));

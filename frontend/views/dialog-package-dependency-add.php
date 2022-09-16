@@ -7,7 +7,7 @@ function echoTargetPackageGroupOptions($parent=null) {
 	global $db;
 	global $currentSystemUser;
 
-	foreach($db->getAllPackageGroup($parent) as $pg) {
+	foreach($db->selectAllPackageGroupByParentPackageGroupId($parent) as $pg) {
 		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
 		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 

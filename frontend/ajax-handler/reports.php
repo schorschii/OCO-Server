@@ -5,11 +5,11 @@ require_once('../session.php');
 
 try {
 
-	if(!empty($_POST['update_report_id'])
+	if(!empty($_POST['edit_report_id'])
 	&& isset($_POST['name'])
 	&& isset($_POST['notes'])
 	&& isset($_POST['query'])) {
-		$cl->updateReport($_POST['update_report_id'], $_POST['name'], $_POST['notes'], $_POST['query']);
+		$cl->editReport($_POST['edit_report_id'], $_POST['name'], $_POST['notes'], $_POST['query']);
 		die();
 	}
 

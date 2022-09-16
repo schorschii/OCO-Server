@@ -14,15 +14,16 @@ try {
 		die(json_encode($finalArray));
 	}
 
-	if(!empty($_POST['update_computer_id'])
+	if(!empty($_POST['edit_computer_id'])
 	&& isset($_POST['hostname'])
 	&& isset($_POST['notes'])) {
-		$cl->updateComputer($_POST['update_computer_id'], $_POST['hostname'], $_POST['notes']);
+		$cl->editComputer($_POST['edit_computer_id'], $_POST['hostname'], $_POST['notes']);
 		die();
 	}
 
-	if(!empty($_POST['update_computer_id']) && isset($_POST['update_force_update'])) {
-		$cl->updateComputerForceUpdate($_POST['update_computer_id'], $_POST['update_force_update']);
+	if(!empty($_POST['edit_computer_id'])
+	&& isset($_POST['force_update'])) {
+		$cl->editComputerForceUpdate($_POST['edit_computer_id'], $_POST['force_update']);
 		die();
 	}
 

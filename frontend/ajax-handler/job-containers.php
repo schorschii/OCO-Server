@@ -7,10 +7,10 @@ try {
 
 	// ----- refresh list content if requested -----
 	if(isset($_GET['get_computer_group_members'])) {
-		$group = $db->getComputerGroup($_GET['get_computer_group_members']);
+		$group = $db->selectComputerGroup($_GET['get_computer_group_members']);
 		$computers = [];
-		if(empty($group)) $computers = $db->getAllComputer();
-		else $computers = $db->getComputerByGroup($group->id);
+		if(empty($group)) $computers = $db->selectAllComputer();
+		else $computers = $db->selectAllComputerByComputerGroupId($group->id);
 
 		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($computers as $c) {
@@ -26,7 +26,7 @@ try {
 		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($reportResult as $row) {
 			if(empty($row['computer_id'])) continue;
-			$c = $db->getComputer($row['computer_id']);
+			$c = $db->selectComputer($row['computer_id']);
 			if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$c->id.": this.innerText}, divTargetComputerList, \"target_computers\")'><input type='checkbox' name='computers' onclick='refreshDeployComputerCount()' value='".$c->id."' />".htmlspecialchars($c->hostname)."</label>";
@@ -34,10 +34,10 @@ try {
 		die();
 	}
 	if(isset($_GET['get_package_group_members'])) {
-		$group = $db->getPackageGroup($_GET['get_package_group_members']);
+		$group = $db->selectPackageGroup($_GET['get_package_group_members']);
 		$packages = [];
-		if(empty($group)) $packages = $db->getAllPackage(true);
-		else $packages = $db->getPackageByGroup($group->id);
+		if(empty($group)) $packages = $db->selectAllPackage(true);
+		else $packages = $db->selectAllPackageByPackageGroupId($group->id);
 
 		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($packages as $p) {
@@ -53,7 +53,7 @@ try {
 		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($reportResult as $row) {
 			if(empty($row['package_id'])) continue;
-			$p = $db->getPackage($row['package_id']);
+			$p = $db->selectPackage($row['package_id']);
 			if(!$currentSystemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$p->id.": this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
@@ -151,7 +151,7 @@ try {
 	&& isset($_POST['priority'])
 	&& isset($_POST['agent_ip_ranges'])
 	&& isset($_POST['notes'])) {
-		$cl->updateJobContainer($_POST['edit_job_container_id'],
+		$cl->editJobContainer($_POST['edit_job_container_id'],
 			$_POST['name'],
 			$_POST['enabled'],
 			$_POST['start'],

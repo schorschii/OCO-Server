@@ -14,49 +14,51 @@ try {
 		die(json_encode($finalArray));
 	}
 
-	if(!empty($_POST['update_package_family_id']) && isset($_POST['update_name'])) {
-		$cl->renamePackageFamily($_POST['update_package_family_id'], $_POST['update_name']);
+	if(!empty($_POST['edit_package_family_id'])
+	&& isset($_POST['name'])
+	&& isset($_POST['notes'])) {
+		$cl->editPackageFamily($_POST['edit_package_family_id'], $_POST['name'], $_POST['notes']);
 		die();
 	}
 
-	if(!empty($_POST['update_package_family_id']) && isset($_POST['update_notes'])) {
-		$cl->updatePackageFamilyNotes($_POST['update_package_family_id'], $_POST['update_notes']);
-		die();
-	}
-
-	if(!empty($_POST['update_package_family_id']) && !empty($_FILES['update_icon']['tmp_name'])) {
-		if(!exif_imagetype($_FILES['update_icon']['tmp_name'])) {
+	if(!empty($_POST['edit_package_family_id'])
+	&& !empty($_FILES['icon']['tmp_name'])) {
+		if(!exif_imagetype($_FILES['icon']['tmp_name'])) {
 			throw new Exception(LANG('invalid_input'));
 		}
-		$cl->updatePackageFamilyIcon($_POST['update_package_family_id'], file_get_contents($_FILES['update_icon']['tmp_name']));
+		$cl->editPackageFamilyIcon($_POST['edit_package_family_id'], file_get_contents($_FILES['icon']['tmp_name']));
 		die();
 	}
 
-	if(!empty($_POST['update_package_family_id']) && !empty($_POST['remove_icon'])) {
-		$cl->updatePackageFamilyIcon($_POST['update_package_family_id'], null);
+	if(!empty($_POST['edit_package_family_id'])
+	&& !empty($_POST['remove_icon'])) {
+		$cl->editPackageFamilyIcon($_POST['edit_package_family_id'], null);
 		die();
 	}
 
-	if(!empty($_POST['update_package_id']) && !empty($_POST['add_dependency_package_id'])) {
-		$cl->addPackageDependency($_POST['update_package_id'], $_POST['add_dependency_package_id']);
+	if(!empty($_POST['edit_package_id'])
+	&& !empty($_POST['add_dependend_package_id'])) {
+		$cl->addPackageDependency($_POST['edit_package_id'], $_POST['add_dependend_package_id']);
 		die();
 	}
 
-	if(!empty($_POST['update_package_id']) && !empty($_POST['remove_dependency_package_id']) && is_array($_POST['remove_dependency_package_id'])) {
+	if(!empty($_POST['edit_package_id'])
+	&& !empty($_POST['remove_dependency_package_id']) && is_array($_POST['remove_dependency_package_id'])) {
 		foreach($_POST['remove_dependency_package_id'] as $dpid) {
-			$cl->removePackageDependency($_POST['update_package_id'], $dpid);
+			$cl->removePackageDependency($_POST['edit_package_id'], $dpid);
 		}
 		die();
 	}
 
-	if(!empty($_POST['update_package_id']) && !empty($_POST['remove_dependent_package_id']) && is_array($_POST['remove_dependent_package_id'])) {
+	if(!empty($_POST['edit_package_id'])
+	&& !empty($_POST['remove_dependent_package_id']) && is_array($_POST['remove_dependent_package_id'])) {
 		foreach($_POST['remove_dependent_package_id'] as $dpid) {
-			$cl->removePackageDependency($dpid, $_POST['update_package_id']);
+			$cl->removePackageDependency($dpid, $_POST['edit_package_id']);
 		}
 		die();
 	}
 
-	if(!empty($_POST['update_package_id'])
+	if(!empty($_POST['edit_package_id'])
 	&& isset($_POST['package_family_id'])
 	&& isset($_POST['version'])
 	&& isset($_POST['compatible_os'])
@@ -69,7 +71,7 @@ try {
 	&& isset($_POST['uninstall_procedure_success_return_codes'])
 	&& isset($_POST['uninstall_procedure_post_action'])
 	&& isset($_POST['download_for_uninstall'])) {
-		$cl->updatePackage($_POST['update_package_id'],
+		$cl->editPackage($_POST['edit_package_id'],
 			$_POST['package_family_id'],
 			$_POST['version'],
 			$_POST['compatible_os'],

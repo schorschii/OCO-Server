@@ -689,22 +689,6 @@ function createPackage(name, version, description, archive, install_procedure, i
 	req.open('POST', 'ajax-handler/packages.php');
 	req.send(formData);
 }
-function renamePackageFamily(id, oldValue) {
-	var newValue = prompt(L__ENTER_NAME, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_family_id':id, 'update_name':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__OBJECT_RENAMED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function removePackageFamilyIcon(id) {
-	if(!confirm(L__ARE_YOU_SURE)) return;
-	ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_family_id':id, 'remove_icon':1}), null, function() {
-		refreshContent();
-		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
-	});
-}
 function editPackageFamilyIcon(id, file) {
 	if(file.size/1024/1024 > 2/*MiB*/) {
 		emitMessage(L__FILE_TOO_BIG, '', MESSAGE_TYPE_ERROR);
@@ -713,8 +697,8 @@ function editPackageFamilyIcon(id, file) {
 
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
-	formData.append('update_package_family_id', id);
-	formData.append('update_icon', file);
+	formData.append('edit_package_family_id', id);
+	formData.append('icon', file);
 
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
@@ -730,14 +714,25 @@ function editPackageFamilyIcon(id, file) {
 	req.open('POST', 'ajax-handler/packages.php');
 	req.send(formData);
 }
-function editPackageFamilyNotes(id, oldValue) {
-	var newValue = prompt(L__ENTER_NEW_VALUE, oldValue);
-	if(newValue != null) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'update_package_family_id':id, 'update_notes':newValue}), null, function() {
-			refreshContent();
-			emitMessage(L__SAVED, newValue, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function removePackageFamilyIcon(id) {
+	if(!confirm(L__ARE_YOU_SURE)) return;
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'edit_package_family_id':id, 'remove_icon':1}), null, function() {
+		refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogEditPackageFamily(id, name, notes) {
+	showDialogAjax(L__EDIT_PACKAGE_FAMILY, 'views/dialog-package-family-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditPackageFamilyId.value = id;
+		txtEditPackageFamilyName.value = name;
+		txtEditPackageFamilyNotes.value = notes;
+	});
+}
+function editPackageFamily(id, name, notes) {
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'edit_package_family_id':id, 'name':name, 'notes':notes}), null, function() {
+		hideDialog(); refreshContent();
+		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function showDialogEditPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	showDialogAjax(L__EDIT_PACKAGE, 'views/dialog-package-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
@@ -762,7 +757,7 @@ function showDialogEditPackage(id, package_family_id, version, compatible_os, co
 }
 function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	var params = [];
-	params.push({'key':'update_package_id', 'value':id});
+	params.push({'key':'edit_package_id', 'value':id});
 	params.push({'key':'package_family_id', 'value':package_family_id});
 	params.push({'key':'version', 'value':version});
 	params.push({'key':'compatible_os', 'value':compatible_os});
@@ -966,8 +961,8 @@ function addPackageDependency(packageId, dependencyPackageId) {
 	for(var i = 0; i < packageId.length; i++) {
 		for(var n = 0; n < dependencyPackageId.length; n++) {
 			var params = [];
-			params.push({'key':'update_package_id', 'value':packageId[i]});
-			params.push({'key':'add_dependency_package_id', 'value':dependencyPackageId[n]});
+			params.push({'key':'edit_package_id', 'value':packageId[i]});
+			params.push({'key':'add_dependend_package_id', 'value':dependencyPackageId[n]});
 			ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 				hideDialog();
 				refreshContent();
@@ -991,7 +986,7 @@ function removeSelectedPackageDependency(checkboxName, packageId) {
 }
 function removePackageDependency(ids, packageId) {
 	var params = [];
-	params.push({'key':'update_package_id', 'value':packageId});
+	params.push({'key':'edit_package_id', 'value':packageId});
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_dependency_package_id[]', 'value':entry});
 	});
@@ -1016,7 +1011,7 @@ function removeSelectedDependentPackages(checkboxName, packageId) {
 }
 function removeDependentPackages(ids, packageId) {
 	var params = [];
-	params.push({'key':'update_package_id', 'value':packageId});
+	params.push({'key':'edit_package_id', 'value':packageId});
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_dependent_package_id[]', 'value':entry});
 	});
@@ -1238,7 +1233,7 @@ function showDialogEditComputer(id, hostname, notes) {
 }
 function editComputer(id, hostname, notes) {
 	var params = [];
-	params.push({'key':'update_computer_id', 'value':id});
+	params.push({'key':'edit_computer_id', 'value':id});
 	params.push({'key':'hostname', 'value':hostname});
 	params.push({'key':'notes', 'value':notes});
 	var paramString = urlencodeArray(params);
@@ -1249,7 +1244,7 @@ function editComputer(id, hostname, notes) {
 	});
 }
 function setComputerForceUpdate(id, value) {
-	ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'update_computer_id':id, 'update_force_update':value}), null, function() {
+	ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'edit_computer_id':id, 'force_update':value}), null, function() {
 		refreshContent();
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -1853,7 +1848,7 @@ function showDialogEditReport(id, name, notes, query) {
 }
 function editReport(id, name, notes, query) {
 	var params = [];
-	params.push({'key':'update_report_id', 'value':id});
+	params.push({'key':'edit_report_id', 'value':id});
 	params.push({'key':'name', 'value':name});
 	params.push({'key':'notes', 'value':notes});
 	params.push({'key':'query', 'value':query});
@@ -2002,7 +1997,7 @@ function showDialogEditOwnSystemUserPassword() {
 }
 function editOwnSystemUserPassword(oldPassword, newPassword) {
 	var params = [];
-	params.push({'key':'update_own_system_user_password', 'value':newPassword});
+	params.push({'key':'edit_own_system_user_password', 'value':newPassword});
 	params.push({'key':'old_password', 'value':oldPassword});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
@@ -2031,7 +2026,7 @@ function showDialogEditSystemUser(id, uid, username, displayName, description, r
 }
 function editSystemUser(id, username, displayName, description, password, roleId) {
 	var params = [];
-	params.push({'key':'update_system_user_id', 'value':id});
+	params.push({'key':'edit_system_user_id', 'value':id});
 	params.push({'key':'username', 'value':username});
 	params.push({'key':'display_name', 'value':displayName});
 	params.push({'key':'description', 'value':description});

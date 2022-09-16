@@ -9,7 +9,7 @@ if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 
 try {
 	$package = $cl->getPackage($_GET['id'] ?? -1);
-	$packageFamily = $db->getPackageFamily($package->package_family_id);
+	$packageFamily = $db->selectPackageFamily($package->package_family_id);
 	if($packageFamily === null) throw new NotFoundException();
 
 	$permissionCreate   = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
@@ -99,7 +99,7 @@ try {
 							<th><?php echo LANG('assigned_groups'); ?></th>
 							<td>
 								<?php
-								$res = $db->getGroupByPackage($package->id);
+								$res = $db->selectAllPackageGroupByPackageId($package->id);
 								$i = 0;
 								foreach($res as $group) {
 									echo "<a class='subbuttons' ".explorerLink('views/packages.php?id='.$group->id).">".wrapInSpanIfNotEmpty($db->getPackageGroupBreadcrumbString($group->id));
@@ -202,7 +202,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getPackageByFamily($package->package_family_id) as $p) {
+							foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
 								if($p->id === $package->id) continue; // do not show this package
 								$counter ++;
 								echo '<tr>';
@@ -241,7 +241,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getDependentPackages($package->id) as $dp) {
+							foreach($db->selectAllPackageDependencyByPackageId($package->id) as $dp) {
 								$counter ++;
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="dependency_package_id[]" value="'.$dp->id.'" onchange="refreshCheckedCounter(tblDependencyPackageData)"></td>';
@@ -284,7 +284,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getDependentForPackages($package->id) as $dp) {
+							foreach($db->selectAllPackageDependencyByDependentPackageId($package->id) as $dp) {
 								$counter ++;
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="dependent_package_id[]" value="'.$dp->id.'" onchange="refreshCheckedCounter(tblDependentPackageData)"></td>';
@@ -370,7 +370,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getComputerPackagesByPackage($package->id) as $p) {
+							foreach($db->selectAllComputerPackageByPackageId($package->id) as $p) {
 								$counter ++;
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
@@ -415,7 +415,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getPendingJobsForPackageDetailPage($package->id) as $j) {
+							foreach($db->getAllPendingJobByPackageId($package->id) as $j) {
 								$counter ++;
 								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
 								echo '<td>';
@@ -462,7 +462,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getLogEntries($package->id, 'oco.package', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+							foreach($db->selectAllLogEntryByObjectIdAndActions($package->id, 'oco.package', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
 								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($l->timestamp)."</td>";

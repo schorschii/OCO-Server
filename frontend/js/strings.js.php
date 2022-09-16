@@ -64,6 +64,7 @@ var L__EDIT_USER = "<?php echo LANG('edit_user'); ?>";
 var L__EDIT_REPORT = "<?php echo LANG('edit_report'); ?>";
 var L__EDIT_COMPUTER = "<?php echo LANG('edit_computer'); ?>";
 var L__EDIT_PACKAGE = "<?php echo LANG('edit_package'); ?>";
+var L__EDIT_PACKAGE_FAMILY = "<?php echo LANG('edit_package_family'); ?>";
 var L__EDIT_JOB_CONTAINER = "<?php echo LANG('edit_job_container'); ?>";
 var L__EDIT_DEPLOYMENT_RULE = "<?php echo LANG('edit_deployment_rule'); ?>";
 var L__JOB_CONTAINERS = "<?php echo LANG('job_container'); ?>";

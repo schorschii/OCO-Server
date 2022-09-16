@@ -122,20 +122,20 @@ function GUIDtoStr($binary_guid) {
 	return sprintf('%08x-%04x-%04x-%04x-%04x%08x', $unpacked['a'], $unpacked['b1'], $unpacked['b2'], $unpacked['c1'], $unpacked['c2'], $unpacked['d']);
 }
 
-function echoComputerGroupOptions($db, $parent=null, $indent=0) {
-	foreach($db->getAllComputerGroup($parent) as $g) {
+function echoComputerGroupOptions($db, $parentId=null, $indent=0) {
+	foreach($db->selectAllComputerGroupByParentComputerGroupId($parentId) as $g) {
 		echo "<option value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
 		echoComputerGroupOptions($db, $g->id, $indent+1);
 	}
 }
-function echoPackageGroupOptions($db, $parent=null, $indent=0) {
-	foreach($db->getAllPackageGroup($parent) as $g) {
+function echoPackageGroupOptions($db, $parentId=null, $indent=0) {
+	foreach($db->selectAllPackageGroupByParentPackageGroupId($parentId) as $g) {
 		echo "<option value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
 		echoPackageGroupOptions($db, $g->id, $indent+1);
 	}
 }
-function echoReportGroupOptions($db, $parent=null, $indent=0) {
-	foreach($db->getAllReportGroup($parent) as $g) {
+function echoReportGroupOptions($db, $parentId=null, $indent=0) {
+	foreach($db->selectAllReportGroupByParentReportGroupId($parentId) as $g) {
 		echo "<option value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
 		echoReportGroupOptions($db, $g->id, $indent+1);
 	}

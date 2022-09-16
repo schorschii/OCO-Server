@@ -5,7 +5,7 @@ $info = null;
 $infoclass = null;
 
 // redirect to setup if setup is not done
-if(!$db->existsSchema() || count($db->getAllSystemUser()) == 0) {
+if(!$db->existsSchema() || count($db->selectAllSystemUser()) == 0) {
 	header('Location: setup.php');
 	die();
 }
@@ -23,7 +23,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		}
 
 		// login successful
-		$db->addLogEntry(Models\Log::LEVEL_INFO, $user->username, null, Models\Log::ACTION_CLIENT_WEB, ['authenticated'=>true]);
+		$db->insertLogEntry(Models\Log::LEVEL_INFO, $user->username, null, Models\Log::ACTION_CLIENT_WEB, ['authenticated'=>true]);
 		$_SESSION['oco_last_login'] = $user->last_login;
 		$_SESSION['oco_username'] = $user->username;
 		$_SESSION['oco_user_id'] = $user->id;
@@ -32,7 +32,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		if(!empty($_SESSION['oco_login_redirect'])) $redirect = $_SESSION['oco_login_redirect'];
 		header('Location: '.$redirect); die('Welcome to the enchanting world of OCO!');
 	} catch(AuthenticationException $e) {
-		$db->addLogEntry(Models\Log::LEVEL_WARNING, $_POST['username'], null, Models\Log::ACTION_CLIENT_WEB, ['authenticated'=>false]);
+		$db->insertLogEntry(Models\Log::LEVEL_WARNING, $_POST['username'], null, Models\Log::ACTION_CLIENT_WEB, ['authenticated'=>false]);
 
 		$info = $e->getMessage();
 		$infoclass = 'error';
@@ -42,7 +42,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 // execute logout if requested
 elseif(isset($_GET['logout'])) {
 	if(isset($_SESSION['oco_username'])) {
-		$db->addLogEntry(Models\Log::LEVEL_INFO, $_SESSION['oco_username'], null, Models\Log::ACTION_CLIENT_WEB, ['logout'=>true]);
+		$db->insertLogEntry(Models\Log::LEVEL_INFO, $_SESSION['oco_username'], null, Models\Log::ACTION_CLIENT_WEB, ['logout'=>true]);
 		session_unset();
 		session_destroy();
 		$info = LANG('log_out_successful');

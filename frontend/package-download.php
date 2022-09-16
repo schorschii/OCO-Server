@@ -6,7 +6,7 @@ require_once('session.php');
 session_write_close();
 
 // get package and start download
-$package = $db->getPackage($_GET['id'] ?? -1);
+$package = $db->selectPackage($_GET['id'] ?? -1);
 if($package === null || !$package->getFilePath()) {
 	header('HTTP/1.1 404 Not Found'); die();
 }

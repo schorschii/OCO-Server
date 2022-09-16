@@ -90,7 +90,7 @@ try {
 			$counter ++;
 			$ip_addresses = [];
 			$mac_addresses = [];
-			$cnetwork = $db->getComputerNetwork($c->id);
+			$cnetwork = $db->selectAllComputerNetworkByComputerId($c->id);
 			foreach($cnetwork as $n) {
 				if(!(empty($n->address) || $n->address == '-' || $n->address == '?')) $ip_addresses[] = $n->address;
 				if(!(empty($n->mac) || $n->mac == '-' || $n->mac == '?')) $mac_addresses[] = $n->mac;

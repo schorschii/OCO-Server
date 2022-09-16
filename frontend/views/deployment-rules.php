@@ -18,7 +18,7 @@ if(!empty($_GET['id'])) {
 		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
 
-	$jobs = $db->getDynamicJobsByDeploymentRule($container->id);
+	$jobs = $db->selectAllDynamicJobByDeploymentRuleId($container->id);
 	$done = 0; $failed = 0; $percent = 0;
 	if(count($jobs) > 0) {
 		foreach($jobs as $job) {
@@ -216,7 +216,7 @@ if(!empty($_GET['id'])) {
 			foreach($rules as $dr) {
 				$counter ++;
 				$done = 0; $percent = 0;
-				$jobs = $db->getDynamicJobsByDeploymentRule($dr->id);
+				$jobs = $db->selectAllDynamicJobByDeploymentRuleId($dr->id);
 				if(count($jobs) > 0) {
 					foreach($jobs as $job) {
 						if($job->state == Models\Job::STATE_SUCCEEDED || $job->state == Models\Job::STATE_ALREADY_INSTALLED) $done ++;

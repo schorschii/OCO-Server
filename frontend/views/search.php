@@ -17,35 +17,35 @@ if(!empty($_GET['context']) && $_GET['context'] === 'more') {
 $items = [];
 $moreAvail = false;
 $counter = 0;
-foreach($db->getAllComputerByName($_GET['query']) as $c) {
+foreach($db->searchAllComputer($_GET['query']) as $c) {
 	$counter ++;
 	if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = $c;
 }
 $counter = 0;
-foreach($db->getAllPackageFamilyByName($_GET['query']) as $pf) {
+foreach($db->searchAllPackageFamily($_GET['query']) as $pf) {
 	$counter ++;
 	if(!$currentSystemUser->checkPermission($pf, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = $pf;
 }
 $counter = 0;
-foreach($db->getAllJobContainerByName($_GET['query']) as $jc) {
+foreach($db->searchAllJobContainer($_GET['query']) as $jc) {
 	$counter ++;
 	if(!$currentSystemUser->checkPermission($jc, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = $jc;
 }
 $counter = 0;
-foreach($db->getAllDomainUserByName($_GET['query']) as $u) {
+foreach($db->searchAllDomainUser($_GET['query']) as $u) {
 	$counter ++;
 	if(!$currentSystemUser->checkPermission($u, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = $u;
 }
 $counter = 0;
-foreach($db->getAllReportByName($_GET['query']) as $r) {
+foreach($db->searchAllReport($_GET['query']) as $r) {
 	$counter ++;
 	if(!$currentSystemUser->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }

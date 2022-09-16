@@ -6,46 +6,8 @@ require_once('../session.php');
 $tab = 'simple';
 if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 
-$default_job_container_name = '';
-if(!empty($_GET['computer_id']) && is_array($_GET['computer_id'])) {
-	foreach($_GET['computer_id'] as $id) {
-		$c = $db->getComputer($id);
-		if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
-		if(empty($default_job_container_name)) $default_job_container_name = LANG('install').' '.$c->hostname;
-		else $default_job_container_name .= ', '.$c->hostname;
-	}
-}
-if(!empty($_GET['package_id']) && is_array($_GET['package_id'])) {
-	foreach($_GET['package_id'] as $id) {
-		$p = $db->getPackage($id);
-		if(!$currentSystemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
-		if(empty($default_job_container_name)) $default_job_container_name = LANG('install').' '.$p->package_family_name;
-		else $default_job_container_name .= ', '.$p->package_family_name;
-	}
-}
-if(!empty($_GET['computer_group_id']) && is_array($_GET['computer_group_id'])) {
-	foreach($_GET['computer_group_id'] as $id) {
-		$cg = $db->getComputerGroup($id);
-		if(!$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_READ, false)
-		&& !$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
-		if(empty($default_job_container_name)) $default_job_container_name = LANG('install').' '.$cg->name;
-		else $default_job_container_name .= ', '.$cg->name;
-	}
-}
-if(!empty($_GET['package_group_id']) && is_array($_GET['package_group_id'])) {
-	foreach($_GET['package_group_id'] as $id) {
-		$pg = $db->getPackageGroup($id);
-		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
-		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
-		if(empty($default_job_container_name)) $default_job_container_name = LANG('install').' '.$pg->name;
-		else $default_job_container_name .= ', '.$pg->name;
-	}
-}
-
 // compile job name
-if(empty($default_job_container_name)) {
-	$default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
-}
+$default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 ?>
 
 <h1><img src='img/deploy.dyn.svg'><span id='page-title'><?php echo LANG('deployment_assistant'); ?></span></h1>
@@ -284,7 +246,7 @@ function echoTargetComputerGroupOptions($parent=null) {
 	global $db;
 	global $currentSystemUser;
 
-	foreach($db->getAllComputerGroup($parent) as $cg) {
+	foreach($db->selectAllComputerGroupByParentComputerGroupId($parent) as $cg) {
 		if(!$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_READ, false)
 		&& !$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
@@ -301,7 +263,7 @@ function echoTargetComputerReportOptions($parent=null) {
 	global $db;
 	global $currentSystemUser;
 
-	foreach($db->getAllReport($parent) as $r) {
+	foreach($db->selectAllReport($parent) as $r) {
 		if(!$currentSystemUser->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 
 		$displayName = LANG($r->name);
@@ -315,7 +277,7 @@ function echoTargetPackageGroupOptions($parent=null) {
 	global $db;
 	global $currentSystemUser;
 
-	foreach($db->getAllPackageGroup($parent) as $pg) {
+	foreach($db->selectAllPackageGroupByParentPackageGroupId($parent) as $pg) {
 		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
 		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
@@ -332,7 +294,7 @@ function echoTargetPackageReportOptions($parent=null) {
 	global $db;
 	global $currentSystemUser;
 
-	foreach($db->getAllReport($parent) as $r) {
+	foreach($db->selectAllReport($parent) as $r) {
 		if(!$currentSystemUser->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 
 		$displayName = LANG($r->name);

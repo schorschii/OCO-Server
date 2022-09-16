@@ -25,7 +25,7 @@ try {
 				$_POST['auto_uninstall']
 			));
 		} else {
-			$cl->updateDeploymentRule($_POST['edit_deployment_rule_id'],
+			$cl->editDeploymentRule($_POST['edit_deployment_rule_id'],
 				$_POST['name'],
 				$_POST['notes'],
 				$_POST['enabled'],

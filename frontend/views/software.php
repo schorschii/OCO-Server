@@ -9,7 +9,7 @@ if(!$currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISS
 
 <?php
 if(!empty($_GET['id'])) {
-	$software = $db->getSoftware($_GET['id']);
+	$software = $db->selectSoftware($_GET['id']);
 	if($software === null) die("<div class='alert warning'>".LANG('not_found')."</div>");
 ?>
 
@@ -33,7 +33,7 @@ if(!empty($_GET['id'])) {
 			</thead>
 			<?php
 			$counter = 0;
-			foreach($db->getComputerBySoftware($_GET['id']) as $c) {
+			foreach($db->selectAllComputerBySoftwareId($_GET['id']) as $c) {
 				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
@@ -81,7 +81,7 @@ if(!empty($_GET['id'])) {
 			</thead>
 			<?php
 			$counter = 0;
-			foreach($db->getComputerBySoftwareName($_GET['name']) as $c) {
+			foreach($db->selectAllComputerBySoftwareName($_GET['name']) as $c) {
 				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
@@ -119,16 +119,16 @@ if(!empty($_GET['id'])) {
 		<?php $software = [];
 		if(isset($_GET['os']) && $_GET['os'] == 'windows') {
 			echo "<h2>".LANG('windows')."</h2>";
-			$software = $db->getAllSoftwareNamesWindows();
+			$software = $db->selectAllSoftwareByComputerOsWindows();
 		} elseif(isset($_GET['os']) && $_GET['os'] == 'macos') {
 			echo "<h2>".LANG('macos')."</h2>";
-			$software = $db->getAllSoftwareNamesMacOS();
+			$software = $db->selectAllSoftwareByComputerOsMacOs();
 		} elseif(isset($_GET['os']) && $_GET['os'] == 'other') {
 			echo "<h2>".LANG('linux')."</h2>";
-			$software = $db->getAllSoftwareNamesOther();
+			$software = $db->selectAllSoftwareByComputerOsOther();
 		} else {
 			echo "<h2>".LANG('all_os')."</h2>";
-			$software = $db->getAllSoftwareNames();
+			$software = $db->selectAllSoftware();
 		}
 		?>
 		<table id='tblSoftwareData' class='list searchable sortable savesort'>

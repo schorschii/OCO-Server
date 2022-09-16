@@ -38,7 +38,7 @@ if(!empty($_GET['id'])) {
 			</thead>
 			<?php
 			$counter = 0;
-			foreach($db->getDomainUserLogonByDomainUser($domainUser->id) as $logon) {
+			foreach($db->selectAllAggregatedDomainUserLogonByDomainUserId($domainUser->id) as $logon) {
 				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
@@ -75,7 +75,7 @@ if(!empty($_GET['id'])) {
 			</thead>
 			<?php
 			$counter = 0;
-			foreach($db->getDomainUserLogonHistoryByDomainUser($domainUser->id) as $logon) {
+			foreach($db->selectAllDomainUserLogonByDomainUserId($domainUser->id) as $logon) {
 				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";

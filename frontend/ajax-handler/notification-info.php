@@ -7,9 +7,9 @@ $info = [
 	'job_container' => [],
 ];
 
-foreach($db->getAllJobContainer() as $jc) {
+foreach($cl->getJobContainers() as $jc) {
 	$stateDescription = '';
-	$state = $jc->getStatus($db->getStaticJobsByJobContainer($jc->id));
+	$state = $jc->getStatus($db->selectAllStaticJobByJobContainer($jc->id));
 	if($state == 'schedule') $stateDescription = LANG('waiting_for_start');
 	if($state == 'wait') $stateDescription = LANG('waiting_for_agent');
 	if($state == 'error') $stateDescription = LANG('failed');

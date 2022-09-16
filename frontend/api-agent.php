@@ -5,17 +5,17 @@ require_once('../loader.inc.php');
 ///// handle package download requests
 if(empty($_SERVER['CONTENT_TYPE']) && !empty($_GET['id'])) {
 	// get package
-	$package = $db->getPackage($_GET['id']);
+	$package = $db->selectPackage($_GET['id']);
 	if($package === null || !$package->getFilePath()) {
 		header('HTTP/1.1 404 Not Found'); die();
 	}
 	// check if agent key is correct
-	$computer = $db->getComputerByName($_GET['hostname']??'');
+	$computer = $db->selectComputerByHostname($_GET['hostname']??'');
 	if($computer == null || ($_GET['agent-key']??'') !== $computer->agent_key) {
 		header('HTTP/1.1 401 Client Not Authorized'); die();
 	}
 	// allow download only if a job is active
-	if(!$db->getPendingJobForAgentByComputerAndPackage($computer->id, $package->id)) {
+	if(!$db->getPendingAndActiveJobForAgentByComputerIdAndPackageId($computer->id, $package->id)) {
 		header('HTTP/1.1 401 No Active Job'); die();
 	}
 	// start download
@@ -33,7 +33,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 // get & log body
 $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
-$db->addLogEntry(Models\Log::LEVEL_DEBUG, null, null, Models\Log::ACTION_AGENT_API_RAW, $body);
+$db->insertLogEntry(Models\Log::LEVEL_DEBUG, null, null, Models\Log::ACTION_AGENT_API_RAW, $body);
 
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
@@ -59,7 +59,7 @@ switch($srcdata['method']) {
 		}
 
 		// check authorization
-		$computer = $db->getComputerByName($params['hostname']);
+		$computer = $db->selectComputerByHostname($params['hostname']);
 		if($computer === null) {
 			errorExit('404 Computer Not Found', $params['hostname'], null, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE, 'computer not found');
 		}
@@ -73,9 +73,9 @@ switch($srcdata['method']) {
 		$state = intval($data['state']);
 		$jobId = $data['job-id'] ?? -1;
 		if(startsWith($jobId, Models\DynamicJob::PREFIX_DYNAMIC_ID)) {
-			$job = $db->getDynamicJob(str_replace(Models\DynamicJob::PREFIX_DYNAMIC_ID, '', $jobId));
+			$job = $db->selectDynamicJob(str_replace(Models\DynamicJob::PREFIX_DYNAMIC_ID, '', $jobId));
 		} else {
-			$job = $db->getStaticJob($jobId);
+			$job = $db->selectStaticJob($jobId);
 		}
 		if($job === null) {
 			errorExit('404 Job Not Found', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE,
@@ -113,15 +113,15 @@ switch($srcdata['method']) {
 		$job->message = $data['message'];
 		$db->updateComputerPing($computer->id);
 		$db->updateJobExecutionState($job);
-		$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE,
+		$db->insertLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE,
 			['job_id'=>$data['job-id'], 'return_code'=>intval($data['return-code']), 'message'=>$data['message']]
 		);
 		// update computer-package assignment if job was successful
 		if($state === Models\Job::STATE_SUCCEEDED) {
 			if($job->is_uninstall == 0) {
-				$db->addPackageToComputer($job->package_id, $job->computer_id, $job->getAuthor(), $job->procedure);
+				$db->insertComputerPackage($job->package_id, $job->computer_id, $job->getAuthor(), $job->procedure);
 			} elseif($job->is_uninstall == 1) {
-				$db->removeComputerAssignedPackageByIds($job->computer_id, $job->package_id);
+				$db->deleteComputerPackageByComputerIdAndPackageId($job->computer_id, $job->package_id);
 			}
 		}
 		$resdata['error'] = null;
@@ -145,7 +145,7 @@ switch($srcdata['method']) {
 			);
 		}
 
-		$computer = $db->getComputerByName($params['hostname']);
+		$computer = $db->selectComputerByHostname($params['hostname']);
 		$jobs = []; $update = 0; $server_key = null; $agent_key = null; $success = false;
 
 		if($computer == null) {
@@ -159,7 +159,7 @@ switch($srcdata['method']) {
 				$server_key = randomString();
 				$agent_key = randomString();
 				$update = 1;
-				if($db->addComputer(
+				if($db->insertComputer(
 					$params['hostname'],
 					$data['agent_version'],
 					$data['networks'],
@@ -183,7 +183,7 @@ switch($srcdata['method']) {
 					);
 				} else {
 					$agent_key = randomString();
-					$db->updateComputerAgentkey($computer->id, $agent_key);
+					$db->updateComputerAgentKey($computer->id, $agent_key);
 				}
 			} else {
 				// check individual agent key
@@ -197,7 +197,7 @@ switch($srcdata['method']) {
 			if(empty($computer->server_key)) {
 				// generate a server key if empty
 				$server_key = randomString();
-				$db->updateComputerServerkey($computer->id, $server_key);
+				$db->updateComputerServerKey($computer->id, $server_key);
 			} else {
 				// get the current server key for the agent
 				$server_key = $computer->server_key;
@@ -213,7 +213,7 @@ switch($srcdata['method']) {
 			}
 
 			// get pending jobs
-			foreach($db->getPendingJobsForAgent($computer->id) as $pj) {
+			foreach($db->getAllPendingAndActiveJobForAgentByComputerId($computer->id) as $pj) {
 				// constraint check
 				if(!empty($pj->job_container_agent_ip_ranges)) {
 					$continue = true;
@@ -256,7 +256,7 @@ switch($srcdata['method']) {
 				];
 			}
 
-			$db->addLogEntry(Models\Log::LEVEL_DEBUG, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_HELLO,
+			$db->insertLogEntry(Models\Log::LEVEL_DEBUG, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_HELLO,
 				['update'=>$update, 'software_jobs'=>$jobs]
 			);
 			$success = true;
@@ -287,7 +287,7 @@ switch($srcdata['method']) {
 		}
 
 		// check authorization
-		$computer = $db->getComputerByName($params['hostname']);
+		$computer = $db->selectComputerByHostname($params['hostname']);
 		if($computer === null) {
 			errorExit('404 Computer Not Found', $params['hostname'], null, Models\Log::ACTION_AGENT_API_UPDATE,
 				'computer not found'
@@ -349,7 +349,7 @@ switch($srcdata['method']) {
 				$data['software'] ?? [],
 				$logins
 			);
-			$db->addLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE, [
+			$db->insertLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE, [
 				'hostname' => $params['hostname'],
 				'os' => $data['os'],
 				'os_version' => $data['os_version'],
@@ -416,7 +416,7 @@ function errorExit($httpCode, $hostname, $computer, $action, $message) {
 	error_log('api-agent: authentication failure');
 
 	// log into database
-	$db->addLogEntry(Models\Log::LEVEL_WARNING, $hostname, $computer ? $computer->id : null, $action, json_encode(['error'=>$message]));
+	$db->insertLogEntry(Models\Log::LEVEL_WARNING, $hostname, $computer ? $computer->id : null, $action, json_encode(['error'=>$message]));
 
 	// exit with error code
 	header('HTTP/1.1 '.$httpCode);

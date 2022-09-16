@@ -58,9 +58,8 @@ try {
 ?>
 	<h1><img src='<?php echo $family->getIcon(); ?>'><span id='page-title'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($family->name); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentPackageNew("<?php echo htmlspecialchars($family->name,ENT_QUOTES); ?>")' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
-		<button onclick='renamePackageFamily(<?php echo $family->id; ?>, spnPackageFamilyName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('rename'); ?></button>
-		<button onclick='editPackageFamilyNotes(<?php echo $family->id; ?>, spnPackageFamilyNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit_description'); ?></button>
+		<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
+		<button onclick='showDialogEditPackageFamily(<?php echo $family->id; ?>, spnPackageFamilyName.innerText, spnPackageFamilyNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button class='<?php echo (!empty($family->icon)?'nomarginright':''); ?>' onclick='fleIcon.click()' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-add.dyn.svg'>&nbsp;<?php echo LANG('change_icon'); ?></button>
 		<?php if(!empty($family->icon)) { ?>
 			<button onclick='removePackageFamilyIcon(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-remove.dyn.svg'>&nbsp;<?php echo LANG('remove_icon'); ?></button>

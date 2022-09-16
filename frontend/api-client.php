@@ -16,7 +16,7 @@ $body = file_get_contents('php://input');
 $srcdata = json_decode($body, true);
 
 // log complete request
-$db->addLogEntry(Models\Log::LEVEL_DEBUG, null, null, Models\Log::ACTION_CLIENT_API_RAW, $body);
+$db->insertLogEntry(Models\Log::LEVEL_DEBUG, null, null, Models\Log::ACTION_CLIENT_API_RAW, $body);
 
 // validate JSON-RPC
 if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2.0' || !isset($srcdata['method']) || !isset($srcdata['params']) || !isset($srcdata['id'])) {
@@ -41,9 +41,9 @@ try {
 
 	// login successful
 	$cl = new CoreLogic($db, $user);
-	$db->addLogEntry(Models\Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], null, Models\Log::ACTION_CLIENT_API, ['authenticated'=>true]);
+	$db->insertLogEntry(Models\Log::LEVEL_INFO, $_SERVER['PHP_AUTH_USER'], null, Models\Log::ACTION_CLIENT_API, ['authenticated'=>true]);
 } catch(AuthenticationException $e) {
-	$db->addLogEntry(Models\Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', null, Models\Log::ACTION_CLIENT_API, ['authenticated'=>false]);
+	$db->insertLogEntry(Models\Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', null, Models\Log::ACTION_CLIENT_API, ['authenticated'=>false]);
 
 	header('HTTP/1.1 401 Client Not Authorized');
 	error_log('api-agent: authentication failure');
@@ -109,14 +109,14 @@ switch($srcdata['method']) {
 			'success' => true,
 			'data' => [
 				'general' => $computer,
-				'logins' => $db->getDomainUserLogonByComputer($computer->id),
-				'networks' => $db->getComputerNetwork($computer->id),
-				'screens' => $db->getComputerScreen($computer->id),
-				'printers' => $db->getComputerPrinter($computer->id),
-				'filesystems' => $db->getComputerPartition($computer->id),
-				'recognised_software' => $db->getComputerSoftware($computer->id),
-				'installed_packages' => $db->getComputerPackagesByComputer($computer->id),
-				'pending_jobs' => $db->getPendingJobsForComputerDetailPage($computer->id),
+				'logins' => $db->selectAllDomainUserLogonByComputerId($computer->id),
+				'networks' => $db->selectAllComputerNetworkByComputerId($computer->id),
+				'screens' => $db->selectAllComputerScreenByComputerId($computer->id),
+				'printers' => $db->selectAllComputerPrinterByComputerId($computer->id),
+				'filesystems' => $db->selectAllComputerPartitionByComputerId($computer->id),
+				'recognised_software' => $db->selectAllComputerSoftwareByComputerId($computer->id),
+				'installed_packages' => $db->selectAllComputerPackageByComputerId($computer->id),
+				'pending_jobs' => $db->getAllPendingJobByComputerId($computer->id),
 			]
 		];
 		break;
@@ -156,7 +156,7 @@ switch($srcdata['method']) {
 		$pf = $cl->getPackageFamily($data['id'] ?? 0);
 		$resdata['error'] = null;
 		$resdata['result'] = [
-			'success' => true, 'data' => $db->getPackageByFamily($data['id'] ?? 0)
+			'success' => true, 'data' => $db->selectAllPackageByPackageFamilyId($data['id'] ?? 0)
 		];
 		break;
 
@@ -166,8 +166,8 @@ switch($srcdata['method']) {
 		$resdata['result'] = [
 			'success' => true, 'data' => [
 				'general' => $package,
-				'installations' => $db->getComputerPackagesByPackage($package->id),
-				'pending_jobs' => $db->getPendingJobsForPackageDetailPage($package->id),
+				'installations' => $db->selectAllComputerPackageByPackageId($package->id),
+				'pending_jobs' => $db->getAllPendingJobByPackageId($package->id),
 			]
 		];
 		break;
@@ -214,7 +214,7 @@ switch($srcdata['method']) {
 		$jc = $cl->getJobContainer($data['id'] ?? 0);
 		$resdata['error'] = null;
 		$resdata['result'] = [
-			'success' => true, 'data' => $db->getStaticJobsByJobContainer($data['id'] ?? 0)
+			'success' => true, 'data' => $db->selectAllStaticJobByJobContainer($data['id'] ?? 0)
 		];
 		break;
 

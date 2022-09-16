@@ -51,7 +51,7 @@ class PermissionManager {
 
 		// check specific ressource type permissions
 		if($ressource instanceof Models\Computer) {
-			$groups = $this->db->getGroupByComputer($ressource->id);
+			$groups = $this->db->selectAllComputerGroupByComputerId($ressource->id);
 			$parentGroups = [];
 			foreach($groups as $group) {
 				$parentGroups = array_merge($parentGroups, $this->getParentGroupsRecursively($group));
@@ -68,7 +68,7 @@ class PermissionManager {
 
 		} else if($ressource instanceof Models\Package) {
 			// check permission in context of package groups
-			$groups = $this->db->getGroupByPackage($ressource->id);
+			$groups = $this->db->selectAllPackageGroupByPackageId($ressource->id);
 			$parentGroups = [];
 			foreach($groups as $group) {
 				$parentGroups = array_merge($parentGroups, $this->getParentGroupsRecursively($group));
@@ -102,7 +102,7 @@ class PermissionManager {
 		} else if($ressource instanceof Models\Report) {
 			$parentGroups = [];
 			if($ressource->report_group_id != null) {
-				$group = $this->db->getReportGroup($ressource->report_group_id);
+				$group = $this->db->selectReportGroup($ressource->report_group_id);
 				$parentGroups = $this->getParentGroupsRecursively($group);
 			}
 			return $this->checkRessourcePermission(
@@ -133,21 +133,21 @@ class PermissionManager {
 		$parentGroups = [$groupRessource];
 		if($groupRessource instanceof Models\ComputerGroup) {
 			while($groupRessource->parent_computer_group_id != null) {
-				$parentGroup = $this->db->getComputerGroup($groupRessource->parent_computer_group_id);
+				$parentGroup = $this->db->selectComputerGroup($groupRessource->parent_computer_group_id);
 				$parentGroups[] = $parentGroup;
 				$groupRessource = $parentGroup;
 			}
 
 		} else if($groupRessource instanceof Models\PackageGroup) {
 			while($groupRessource->parent_package_group_id != null) {
-				$parentGroup = $this->db->getPackageGroup($groupRessource->parent_package_group_id);
+				$parentGroup = $this->db->selectPackageGroup($groupRessource->parent_package_group_id);
 				$parentGroups[] = $parentGroup;
 				$groupRessource = $parentGroup;
 			}
 
 		} else if($groupRessource instanceof Models\ReportGroup) {
 			while($groupRessource->parent_report_group_id != null) {
-				$parentGroup = $this->db->getReportGroup($groupRessource->parent_report_group_id);
+				$parentGroup = $this->db->selectReportGroup($groupRessource->parent_report_group_id);
 				$parentGroups[] = $parentGroup;
 				$groupRessource = $parentGroup;
 			}

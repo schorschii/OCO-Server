@@ -10,7 +10,7 @@ if(!$db->existsSchema()) {
 	$info = LANG('please_import_database_schema_first');
 	$infoclass = 'warning';
 } else {
-	if(count($db->getAllSystemUser()) > 0) {
+	if(count($db->selectAllSystemUser()) > 0) {
 		header('Location: index.php');
 		die();
 	} else {
@@ -29,9 +29,9 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 	} elseif($_POST['password'] !== $_POST['password2']) {
 		$info = LANG('passwords_do_not_match');
 		$infoclass = 'error';
-	} elseif($db->existsSchema() && count($db->getAllSystemUser()) == 0) {
+	} elseif($db->existsSchema() && count($db->selectAllSystemUser()) == 0) {
 		if(
-			$db->addSystemUser(
+			$db->insertSystemUser(
 				md5(rand()), $_POST['username'], $_POST['username'],
 				password_hash($_POST['password'], PASSWORD_DEFAULT),
 				0/*ldap flag*/, null, null, null, 'initial admin user', 0/*locked*/, 1/*default role: superadmin*/

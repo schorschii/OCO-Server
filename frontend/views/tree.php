@@ -42,7 +42,7 @@ require_once('../session.php');
 		echo "<a ".explorerLink('views/job-containers.php')."><img src='img/container.dyn.svg'>".LANG('job_containers')."</a>";
 		echo "<div id='divNodeStaticJobs' class='subitems'>";
 		foreach($jobContainers as $container) {
-			echo "<a ".explorerLink('views/job-containers.php?id='.$container->id)."><img src='img/".$container->getStatus($db->getStaticJobsByJobContainer($container->id)).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
+			echo "<a ".explorerLink('views/job-containers.php?id='.$container->id)."><img src='img/".$container->getStatus($db->selectAllStaticJobByJobContainer($container->id)).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
 		}
 		echo "</div>";
 		echo "</div>";
@@ -53,7 +53,7 @@ require_once('../session.php');
 		echo "<a ".explorerLink('views/deployment-rules.php')."><img src='img/rule.dyn.svg'>".LANG('deployment_rules')."</a>";
 		echo "<div id='divNodeDynamicJobs' class='subitems'>";
 		foreach($deploymentRules as $container) {
-			echo "<a ".explorerLink('views/deployment-rules.php?id='.$container->id)."><img src='img/".$container->getStatus($db->getDynamicJobsByDeploymentRule($container->id)).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
+			echo "<a ".explorerLink('views/deployment-rules.php?id='.$container->id)."><img src='img/".$container->getStatus($db->selectAllDynamicJobByDeploymentRuleId($container->id)).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
 		}
 		echo "</div>";
 		echo "</div>";

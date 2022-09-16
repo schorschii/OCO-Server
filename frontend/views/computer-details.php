@@ -154,7 +154,7 @@ try {
 							<th><?php echo LANG('assigned_groups'); ?></th>
 							<td>
 								<?php
-								$res = $db->getGroupByComputer($computer->id);
+								$res = $db->selectAllComputerGroupByComputerId($computer->id);
 								$i = 0;
 								foreach($res as $group) {
 									echo "<a class='subbuttons' ".explorerLink('views/computers.php?id='.$group->id).">".wrapInSpanIfNotEmpty($db->getComputerGroupBreadcrumbString($group->id));
@@ -186,7 +186,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							foreach($db->getDomainUserLogonByComputer($computer->id) as $logon) {
+							foreach($db->selectAllDomainUserLogonByComputerId($computer->id) as $logon) {
 								echo "<tr>";
 								echo "<td><a ".explorerLink('views/domain-users.php?id='.$logon->domain_user_id).">".htmlspecialchars($logon->domain_user_username)."</a></td>";
 								echo "<td>".htmlspecialchars($logon->domain_user_display_name)."</td>";
@@ -215,7 +215,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							foreach($db->getComputerNetwork($computer->id) as $n) {
+							foreach($db->selectAllComputerNetworkByComputerId($computer->id) as $n) {
 								echo '<tr>';
 								echo '<td class="flyout-container" tabindex="0">';
 								echo  htmlspecialchars($n->address);
@@ -251,7 +251,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							foreach($db->getComputerScreen($computer->id) as $s) {
+							foreach($db->selectAllComputerScreenByComputerId($computer->id) as $s) {
 								echo '<tr class="'.(empty($s->active)?'inactive':'').'">';
 								echo '<td>'.htmlspecialchars($s->name).'</a></td>';
 								echo '<td>'.htmlspecialchars($s->manufacturer).'</td>';
@@ -282,7 +282,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							foreach($db->getComputerPrinter($computer->id) as $p) {
+							foreach($db->selectAllComputerPrinterByComputerId($computer->id) as $p) {
 								echo '<tr>';
 								echo '<td>'.htmlspecialchars($p->name).'</a></td>';
 								echo '<td>'.htmlspecialchars($p->driver).'</td>';
@@ -308,7 +308,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							foreach($db->getComputerPartition($computer->id) as $p) {
+							foreach($db->selectAllComputerPartitionByComputerId($computer->id) as $p) {
 								$percent = 0;
 								if(!empty($p->free) && !empty($p->size))
 								$percent = round(100 - ($p->free / $p->size * 100));
@@ -343,7 +343,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getComputerPackagesByComputer($computer->id) as $p) {
+							foreach($db->selectAllComputerPackageByComputerId($computer->id) as $p) {
 								$counter ++;
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" package_id="'.$p->package_id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
@@ -388,7 +388,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getPendingJobsForComputerDetailPage($computer->id) as $j) {
+							foreach($db->getAllPendingJobByComputerId($computer->id) as $j) {
 								$counter ++;
 								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
 								echo '<td>';
@@ -433,7 +433,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getComputerSoftware($computer->id) as $s) {
+							foreach($db->selectAllComputerSoftwareByComputerId($computer->id) as $s) {
 								$counter ++;
 								echo "<tr>";
 								echo "<td><a ".explorerLink('views/software.php?name='.urlencode($s->software_name)).">".htmlspecialchars($s->software_name)."</a></td>";
@@ -478,7 +478,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getLogEntries($computer->id, 'oco.computer', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+							foreach($db->selectAllLogEntryByObjectIdAndActions($computer->id, 'oco.computer', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
 								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($l->timestamp)."</td>";

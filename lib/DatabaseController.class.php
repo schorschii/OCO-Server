@@ -7,6 +7,12 @@ class DatabaseController {
 		 Database Abstraction Layer
 
 		 Handles direct database access.
+
+		 Function naming:
+		 - prefix oriented on SQL command: select, insert, update, insertOrUpdate, delete, search (special for search operations)
+		 - if it returns an array, the word "All" is inserted
+		 - entity name singular (e.g. "Computer")
+		 - "By<Attribute>" suffix if objects are filtered by attributes other than the own object id (e.g. "ByHostname")
 	*/
 
 	private $dbh;
@@ -37,6 +43,7 @@ class DatabaseController {
 		return [$in_placeholders, $in_params];
 	}
 
+	// Database Handle Access for Extensions
 	public function getDbHandle() {
 		return $this->dbh;
 	}
@@ -44,6 +51,7 @@ class DatabaseController {
 		return $this->stmt;
 	}
 
+	// Special Queries
 	public function existsSchema() {
 		$this->stmt = $this->dbh->prepare('SHOW TABLES LIKE "computer"');
 		$this->stmt->execute();
@@ -52,7 +60,6 @@ class DatabaseController {
 		$this->stmt->execute();
 		return ($this->stmt->rowCount() == 1);
 	}
-
 	public function getStats() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT
@@ -69,15 +76,69 @@ class DatabaseController {
 		}
 	}
 
+	// Breadcrumb Generation
+	public function getComputerGroupBreadcrumbString($id) {
+		$currentGroupId = $id;
+		$groupStrings = [];
+		while(true) {
+			$currentGroup = $this->selectComputerGroup($currentGroupId);
+			$groupStrings[] = $currentGroup->name;
+			if($currentGroup->parent_computer_group_id === null) {
+				break;
+			} else {
+				$currentGroupId = $currentGroup->parent_computer_group_id;
+			}
+		}
+		$groupStrings = array_reverse($groupStrings);
+		return implode($groupStrings, ' » ');
+	}
+	public function getPackageGroupBreadcrumbString($id) {
+		$currentGroupId = $id;
+		$groupStrings = [];
+		while(true) {
+			$currentGroup = $this->selectPackageGroup($currentGroupId);
+			$groupStrings[] = $currentGroup->name;
+			if($currentGroup->parent_package_group_id === null) {
+				break;
+			} else {
+				$currentGroupId = $currentGroup->parent_package_group_id;
+			}
+		}
+		$groupStrings = array_reverse($groupStrings);
+		return implode($groupStrings, ' » ');
+	}
+	public function getReportGroupBreadcrumbString($id) {
+		$currentGroupId = $id;
+		$groupStrings = [];
+		while(true) {
+			$currentGroup = $this->selectReportGroup($currentGroupId);
+			$groupStrings[] = $currentGroup->name;
+			if($currentGroup->parent_report_group_id === null) {
+				break;
+			} else {
+				$currentGroupId = $currentGroup->parent_report_group_id;
+			}
+		}
+		$groupStrings = array_reverse($groupStrings);
+		return implode($groupStrings, ' » ');
+	}
+
 	// Computer Operations
-	public function getAllComputerByName($hostname, $limit=null) {
+	public function searchAllComputer($hostname, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer WHERE hostname LIKE :hostname ORDER BY hostname ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':hostname' => '%'.$hostname.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
-	public function getComputerByName($hostname) {
+	public function selectAllComputer() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer ORDER BY hostname ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
+	}
+	public function selectComputerByHostname($hostname) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer WHERE hostname = :hostname'
 		);
@@ -86,7 +147,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getComputer($id) {
+	public function selectComputer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer WHERE id = :id'
 		);
@@ -95,64 +156,57 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getComputerNetwork($cid) {
+	public function selectAllComputerNetworkByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_network WHERE computer_id = :cid'
+			'SELECT * FROM computer_network WHERE computer_id = :computer_id'
 		);
-		$this->stmt->execute([':cid' => $cid]);
+		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerNetwork');
 	}
-	public function getComputerScreen($cid) {
+	public function selectAllComputerScreenByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_screen WHERE computer_id = :cid ORDER BY active DESC'
+			'SELECT * FROM computer_screen WHERE computer_id = :computer_id ORDER BY active DESC'
 		);
-		$this->stmt->execute([':cid' => $cid]);
+		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerScreen');
 	}
-	public function getComputerPrinter($cid) {
+	public function selectAllComputerPrinterByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_printer WHERE computer_id = :cid'
+			'SELECT * FROM computer_printer WHERE computer_id = :computer_id'
 		);
-		$this->stmt->execute([':cid' => $cid]);
+		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPrinter');
 	}
-	public function getComputerPartition($cid) {
+	public function selectAllComputerPartitionByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_partition WHERE computer_id = :cid'
+			'SELECT * FROM computer_partition WHERE computer_id = :computer_id'
 		);
-		$this->stmt->execute([':cid' => $cid]);
+		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPartition');
 	}
-	public function getComputerSoftware($cid) {
+	public function selectAllComputerSoftwareByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cs.id AS "id", s.id AS "software_id", s.name AS "software_name", s.version AS "software_version", s.description AS "software_description", cs.installed AS "installed"
 			FROM computer_software cs
 			INNER JOIN software s ON cs.software_id = s.id
-			WHERE cs.computer_id = :cid ORDER BY s.name'
+			WHERE cs.computer_id = :computer_id ORDER BY s.name'
 		);
-		$this->stmt->execute([':cid' => $cid]);
+		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerSoftware');
 	}
-	public function getComputerPackagesByComputer($cid) {
+	public function selectAllComputerPackageByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cp.id AS "id", c.id AS "computer_id", c.hostname AS "computer_hostname", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_family_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN package p ON p.id = cp.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			INNER JOIN computer c ON c.id = cp.computer_id
-			WHERE cp.computer_id = :cid'
+			WHERE cp.computer_id = :computer_id'
 		);
-		$this->stmt->execute([':cid' => $cid]);
+		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
 	}
-	public function getAllComputer() {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer ORDER BY hostname ASC'
-		);
-		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
-	}
-	public function addComputer($hostname, $agent_version, $networks, $notes, $agent_key, $server_key) {
+	public function insertComputer($hostname, $agent_version, $networks, $notes, $agent_key, $server_key) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, os_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, remote_address, boot_type, secure_boot, domain, notes, agent_key, server_key)
 			VALUES (:hostname, :agent_version, NULL, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :notes, :agent_key, :server_key)'
@@ -164,10 +218,10 @@ class DatabaseController {
 			':agent_key' => $agent_key,
 			':server_key' => $server_key,
 		]);
-		$cid = $this->dbh->lastInsertId();
+		$computer_id = $this->dbh->lastInsertId();
 		foreach($networks as $index => $network) {
 			$this->insertOrUpdateComputerNetwork(
-				$cid,
+				$computer_id,
 				$index,
 				$network['addr'],
 				$network['netmask'],
@@ -176,7 +230,7 @@ class DatabaseController {
 				$network['interface']
 			);
 		}
-		return $cid;
+		return $computer_id;
 	}
 	public function updateComputer($id, $hostname, $notes) {
 		$this->stmt = $this->dbh->prepare(
@@ -196,13 +250,13 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':force_update' => intval($force_update)]);
 	}
-	public function updateComputerAgentkey($id, $agent_key) {
+	public function updateComputerAgentKey($id, $agent_key) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET agent_key = :agent_key WHERE id = :id'
 		);
 		return $this->stmt->execute([':id' => $id, ':agent_key' => $agent_key]);
 	}
-	public function updateComputerServerkey($id, $server_key) {
+	public function updateComputerServerKey($id, $server_key) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET server_key = :server_key WHERE id = :id'
 		);
@@ -240,7 +294,7 @@ class DatabaseController {
 			':domain' => $domain,
 		])) return false;
 
-		///// update networks
+		// update networks
 		$nids = [];
 		foreach($networks as $index => $network) {
 			if(empty($network['addr'])) continue;
@@ -262,7 +316,7 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		///// update screens
+		// update screens
 		$sids = [];
 		foreach($screens as $screen) {
 			if(empty($screen['name'])) continue;
@@ -287,7 +341,7 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		///// update printers
+		// update printers
 		$pids = [];
 		foreach($printers as $printer) {
 			if(empty($printer['name'])) continue;
@@ -309,7 +363,7 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		///// update partitions
+		// update partitions
 		$pids = [];
 		foreach($partitions as $part) {
 			if(empty($part['size'])) continue;
@@ -330,7 +384,7 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		///// update software
+		// update software
 		$sids = [];
 		foreach($software as $s) {
 			if(empty($s['name'])) continue;
@@ -345,7 +399,7 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
-		///// insert new domain user logins
+		// insert new domain user logins
 		foreach($logins as $l) {
 			if(empty($l['username'])) continue;
 			$did = $this->insertOrUpdateDomainUser($l['guid']??null, $l['username'], $l['display_name']??'');
@@ -357,7 +411,7 @@ class DatabaseController {
 		$this->dbh->commit();
 		return true;
 	}
-	private function insertOrUpdateComputerPartition($cid, $device, $mountpoint, $filesystem, $size, $free) {
+	private function insertOrUpdateComputerPartition($computer_id, $device, $mountpoint, $filesystem, $size, $free) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_partition (id, computer_id, device, mountpoint, filesystem, size, free)
 			(SELECT id, computer_id, device, mountpoint, filesystem, size, free FROM computer_partition WHERE computer_id=:computer_id AND device=:device AND mountpoint=:mountpoint AND filesystem=:filesystem
@@ -365,7 +419,7 @@ class DatabaseController {
 			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), size=:size, free=:free'
 		);
 		$this->stmt->execute([
-			':computer_id' => $cid,
+			':computer_id' => $computer_id,
 			':device' => $device,
 			':mountpoint' => $mountpoint,
 			':filesystem' => $filesystem,
@@ -374,7 +428,7 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	private function insertOrUpdateComputerPrinter($cid, $name, $driver, $paper, $dpi, $uri, $status) {
+	private function insertOrUpdateComputerPrinter($computer_id, $name, $driver, $paper, $dpi, $uri, $status) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_printer (id, computer_id, name, driver, paper, dpi, uri, status)
 			(SELECT id, computer_id, name, driver, paper, dpi, uri, status FROM computer_printer WHERE computer_id=:computer_id AND name=:name AND driver=:driver AND paper=:paper AND dpi=:dpi AND uri=:uri
@@ -382,7 +436,7 @@ class DatabaseController {
 			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), status=:status'
 		);
 		$this->stmt->execute([
-			':computer_id' => $cid,
+			':computer_id' => $computer_id,
 			':name' => $name,
 			':driver' => $driver,
 			':paper' => $paper,
@@ -392,7 +446,7 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	private function insertOrUpdateComputerScreen($cid, $name, $manufacturer, $type, $resolution, $size, $manufactured, $serialno) {
+	private function insertOrUpdateComputerScreen($computer_id, $name, $manufacturer, $type, $resolution, $size, $manufactured, $serialno) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_screen (id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno, active)
 			(SELECT id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno, active FROM computer_screen WHERE computer_id=:computer_id AND name=:name AND manufacturer=:manufacturer AND type=:type AND size=:size AND manufactured=:manufactured AND serialno=:serialno
@@ -400,7 +454,7 @@ class DatabaseController {
 			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), resolution=:resolution, active=1'
 		);
 		$this->stmt->execute([
-			':computer_id' => $cid,
+			':computer_id' => $computer_id,
 			':name' => $name,
 			':manufacturer' => $manufacturer,
 			':type' => $type,
@@ -411,7 +465,7 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	private function insertOrUpdateComputerNetwork($cid, $nic_number, $address, $netmask, $broadcast, $mac, $interface) {
+	private function insertOrUpdateComputerNetwork($computer_id, $nic_number, $address, $netmask, $broadcast, $mac, $interface) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_network (id, computer_id, nic_number, address, netmask, broadcast, mac, interface)
 			(SELECT id, computer_id, nic_number, address, netmask, broadcast, mac, interface FROM computer_network WHERE computer_id=:computer_id AND nic_number=:nic_number AND mac=:mac AND interface=:interface
@@ -419,7 +473,7 @@ class DatabaseController {
 			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), address=:address, netmask=:netmask, broadcast=:broadcast'
 		);
 		$this->stmt->execute([
-			':computer_id' => $cid,
+			':computer_id' => $computer_id,
 			':nic_number' => $nic_number,
 			':address' => $address,
 			':netmask' => $netmask,
@@ -429,30 +483,14 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function removeComputer($id) {
+	public function deleteComputer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer WHERE id = :computer_id'
 		);
-		$this->stmt->execute([ ':computer_id' => $id ]);
+		$this->stmt->execute([':computer_id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-
-	public function getComputerGroupBreadcrumbString($id) {
-		$currentGroupId = $id;
-		$groupStrings = [];
-		while(true) {
-			$currentGroup = $this->getComputerGroup($currentGroupId);
-			$groupStrings[] = $currentGroup->name;
-			if($currentGroup->parent_computer_group_id === null) {
-				break;
-			} else {
-				$currentGroupId = $currentGroup->parent_computer_group_id;
-			}
-		}
-		$groupStrings = array_reverse($groupStrings);
-		return implode($groupStrings, ' » ');
-	}
-	public function getComputerGroup($id) {
+	public function selectComputerGroup($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_group WHERE id = :id'
 		);
@@ -461,8 +499,8 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getAllComputerGroup($parent_id=null) {
-		if($parent_id === null) {
+	public function selectAllComputerGroupByParentComputerGroupId($parent_computer_group_id=null) {
+		if($parent_computer_group_id === null) {
 			$this->stmt = $this->dbh->prepare(
 				'SELECT * FROM computer_group WHERE parent_computer_group_id IS NULL ORDER BY name'
 			);
@@ -471,11 +509,11 @@ class DatabaseController {
 			$this->stmt = $this->dbh->prepare(
 				'SELECT * FROM computer_group WHERE parent_computer_group_id = :parent_computer_group_id ORDER BY name'
 			);
-			$this->stmt->execute([':parent_computer_group_id' => $parent_id]);
+			$this->stmt->execute([':parent_computer_group_id' => $parent_computer_group_id]);
 		}
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
 	}
-	public function getComputerBySoftwareName($name) {
+	public function selectAllComputerBySoftwareName($name) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "id", c.hostname AS "hostname", s.id AS "software_id", s.name AS "software_name", s.version AS "software_version"
 			FROM computer_software cs
@@ -487,7 +525,7 @@ class DatabaseController {
 		$this->stmt->execute([':name' => $name]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
-	public function getComputerBySoftware($sid) {
+	public function selectAllComputerBySoftwareId($software_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "id", c.hostname AS "hostname", c.os AS "os", c.os_version AS "os_version", s.id AS "software_id", s.name AS "software_name", s.version AS "software_version"
 			FROM computer_software cs
@@ -496,40 +534,40 @@ class DatabaseController {
 			WHERE cs.software_id = :id
 			ORDER BY c.hostname'
 		);
-		$this->stmt->execute([':id' => $sid]);
+		$this->stmt->execute([':id' => $software_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
-	public function getComputerByGroup($id) {
+	public function selectAllComputerByComputerGroupId($computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.* FROM computer c
 			INNER JOIN computer_group_member cgm ON c.id = cgm.computer_id
-			WHERE cgm.computer_group_id = :id
+			WHERE cgm.computer_group_id = :computer_group_id
 			ORDER BY c.hostname'
 		);
-		$this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':computer_group_id' => $computer_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
-	public function getComputerByComputerAndGroup($cid, $gid) {
+	public function selectAllComputerByIdAndComputerGroupId($computer_id, $computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.* FROM computer_group_member cgm
 			INNER JOIN computer c ON c.id = cgm.computer_id
-			WHERE cgm.computer_id = :cid AND cgm.computer_group_id = :gid'
+			WHERE cgm.computer_id = :computer_id AND cgm.computer_group_id = :computer_group_id'
 		);
-		$this->stmt->execute([':cid' => $cid, ':gid' => $gid]);
+		$this->stmt->execute([':computer_id' => $computer_id, ':computer_group_id' => $computer_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
-	public function getGroupByComputer($cid) {
+	public function selectAllComputerGroupByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cg.id AS "id", cg.name AS "name", cg.parent_computer_group_id AS "parent_computer_group_id"
 			FROM computer_group_member cgm
 			INNER JOIN computer_group cg ON cg.id = cgm.computer_group_id
-			WHERE cgm.computer_id = :cid
+			WHERE cgm.computer_id = :computer_id
 			ORDER BY cg.name'
 		);
-		$this->stmt->execute([':cid' => $cid]);
+		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
 	}
-	public function addComputerGroup($name, $parent_id=null) {
+	public function insertComputerGroup($name, $parent_id=null) {
 		if(empty($parent_id) || intval($parent_id) < 0) {
 			$this->stmt = $this->dbh->prepare(
 				'INSERT INTO computer_group (name) VALUES (:name)'
@@ -543,45 +581,49 @@ class DatabaseController {
 		}
 		return $this->dbh->lastInsertId();
 	}
-	public function renameComputerGroup($id, $name) {
+	public function updateComputerGroup($id, $name) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer_group SET name = :name WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id, ':name' => $name]);
 		return $this->dbh->lastInsertId();
 	}
-	public function removeComputerGroup($id) {
+	public function deleteComputerGroup($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_group WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function addComputerToGroup($cid, $gid) {
+	public function insertComputerGroupMember($computer_id, $computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_group_member (computer_id, computer_group_id) VALUES (:cid, :gid)'
+			'INSERT INTO computer_group_member (computer_id, computer_group_id) VALUES (:computer_id, :computer_group_id)'
 		);
-		if(!$this->stmt->execute([':cid' => $cid, ':gid' => $gid])) return false;
+		if(!$this->stmt->execute([':computer_id' => $computer_id, ':computer_group_id' => $computer_group_id])) return false;
 		$insertId = $this->dbh->lastInsertId();
-		foreach($this->getDeploymentRulesByComputerGroup($gid) as $dr) {
+
+		// evaluate corresponding deployment rule(s)
+		foreach($this->selectAllDeploymentRuleByComputerGroupId($computer_group_id) as $dr) {
 			$this->evaluateDeploymentRule($dr->id);
 		}
 		return $insertId;
 	}
-	public function removeComputerFromGroup($cid, $gid) {
+	public function deleteComputerGroupMember($computer_id, $computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM computer_group_member WHERE computer_id = :cid AND computer_group_id = :gid'
+			'DELETE FROM computer_group_member WHERE computer_id = :computer_id AND computer_group_id = :computer_group_id'
 		);
-		if(!$this->stmt->execute([':cid' => $cid, ':gid' => $gid])) return false;
+		if(!$this->stmt->execute([':computer_id' => $computer_id, ':computer_group_id' => $computer_group_id])) return false;
 		if($this->stmt->rowCount() != 1) return false;
-		foreach($this->getDeploymentRulesByComputerGroup($gid) as $dr) {
+
+		// evaluate corresponding deployment rule(s)
+		foreach($this->selectAllDeploymentRuleByComputerGroupId($computer_group_id) as $dr) {
 			$this->evaluateDeploymentRule($dr->id);
 		}
 		return true;
 	}
 
 	// Package Operations
-	public function addPackageFamily($name, $notes) {
+	public function insertPackageFamily($name, $notes) {
 		$this->stmt = $this->dbh->prepare('INSERT INTO package_family (name, notes) VALUES (:name, :notes)');
 		$this->stmt->execute([
 			':name' => $name,
@@ -589,7 +631,17 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addPackage($package_family_id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
+	public function updatePackageFamily($id, $name, $notes, $icon) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE package_family SET name = :name, notes = :notes, icon = :icon WHERE id = :id'
+		);
+		$this->stmt->bindParam(':id', $id, PDO::PARAM_INT);
+		$this->stmt->bindParam(':name', $name, PDO::PARAM_STR);
+		$this->stmt->bindParam(':notes', $notes, PDO::PARAM_STR);
+		$this->stmt->bindParam(':icon', $icon, PDO::PARAM_LOB);
+		return $this->stmt->execute();
+	}
+	public function insertPackage($package_family_id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO package (package_family_id, version, author, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version)
 			VALUES (:package_family_id, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :compatible_os, :compatible_os_version)'
@@ -610,16 +662,6 @@ class DatabaseController {
 			':compatible_os_version' => $compatible_os_version,
 		]);
 		return $this->dbh->lastInsertId();
-	}
-	public function updatePackageFamily($id, $name, $notes, $icon) {
-		$this->stmt = $this->dbh->prepare(
-			'UPDATE package_family SET name = :name, notes = :notes, icon = :icon WHERE id = :id'
-		);
-		$this->stmt->bindParam(':id', $id, PDO::PARAM_INT);
-		$this->stmt->bindParam(':name', $name, PDO::PARAM_STR);
-		$this->stmt->bindParam(':notes', $notes, PDO::PARAM_STR);
-		$this->stmt->bindParam(':icon', $icon, PDO::PARAM_LOB);
-		return $this->stmt->execute();
 	}
 	public function updatePackage($id, $package_family_id, $author, $version, $compatible_os, $compatible_os_version, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
 		$this->stmt = $this->dbh->prepare(
@@ -642,7 +684,7 @@ class DatabaseController {
 			':download_for_uninstall' => $download_for_uninstall,
 		]);
 	}
-	public function addPackageToComputer($pid, $cid, $author, $procedure) {
+	public function insertComputerPackage($package_id, $computer_id, $author, $procedure) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_package (id, package_id, computer_id, installed_by, installed_procedure, installed)
 			(SELECT id, package_id, computer_id, installed_by, installed_procedure, installed FROM computer_package WHERE package_id = :package_id AND computer_id = :computer_id
@@ -650,80 +692,82 @@ class DatabaseController {
 			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), installed_by = :installed_by, installed_procedure = :installed_procedure, installed = CURRENT_TIMESTAMP'
 		);
 		$this->stmt->execute([
-			':package_id' => $pid,
-			':computer_id' => $cid,
+			':package_id' => $package_id,
+			':computer_id' => $computer_id,
 			':installed_by' => $author,
 			':installed_procedure' => $procedure,
 		]);
 		$insertId = $this->dbh->lastInsertId();
-		foreach($this->getGroupByComputer($cid) as $g) {
-			foreach($this->getDeploymentRulesByComputerGroup($g->id) as $dr) {
+
+		// evaluate corresponding deployment rule(s)
+		foreach($this->selectAllComputerGroupByComputerId($computer_id) as $g) {
+			foreach($this->selectAllDeploymentRuleByComputerGroupId($g->id) as $dr) {
 				$this->evaluateDeploymentRule($dr->id);
 			}
 		}
 		return $insertId;
 	}
-	public function getComputerPackagesByPackage($pid) {
+	public function selectAllComputerPackageByPackageId($package_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN computer c ON c.id = cp.computer_id
 			INNER JOIN package p ON p.id = cp.package_id
-			WHERE cp.package_id = :pid'
+			WHERE cp.package_id = :package_id'
 		);
-		$this->stmt->execute([':pid' => $pid]);
+		$this->stmt->execute([':package_id' => $package_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
 	}
-	public function getPackageByPackageAndGroup($pid, $gid) {
+	public function selectAllPackageByIdAndPackageGroupId($package_id, $package_group_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "package_family_name" FROM package_group_member pgm
 			INNER JOIN package p ON p.id = pgm.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
-			WHERE pgm.package_id = :pid AND pgm.package_group_id = :gid'
+			WHERE pgm.package_id = :package_id AND pgm.package_group_id = :package_group_id'
 		);
-		$this->stmt->execute([':pid' => $pid, ':gid' => $gid]);
+		$this->stmt->execute([':package_id' => $package_id, ':package_group_id' => $package_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function getPackageByFamily($fid) {
+	public function selectAllPackageByPackageFamilyId($package_family_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "package_family_name" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE p.package_family_id = :package_family_id'
 		);
-		$this->stmt->execute([':package_family_id' => $fid]);
+		$this->stmt->execute([':package_family_id' => $package_family_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function getDependentPackages($pid) {
+	public function selectAllPackageDependencyByPackageId($package_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "package_family_name" FROM package_dependency pd
 			INNER JOIN package p ON p.id = pd.dependent_package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pd.package_id = :package_id'
 		);
-		$this->stmt->execute([':package_id' => $pid]);
+		$this->stmt->execute([':package_id' => $package_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function getDependentForPackages($pid) {
+	public function selectAllPackageDependencyByDependentPackageId($package_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "package_family_name" FROM package_dependency pd
 			INNER JOIN package p ON p.id = pd.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pd.dependent_package_id = :package_id'
 		);
-		$this->stmt->execute([':package_id' => $pid]);
+		$this->stmt->execute([':package_id' => $package_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function getConflictPackages($pid) {
+	public function selectPackageConflictByPackageId($package_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "package_family_name" FROM package_conflict pc
 			INNER JOIN package p ON p.id = pc.conflict_package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			WHERE pc.package_id = :package_id'
 		);
-		$this->stmt->execute([':package_id' => $pid]);
+		$this->stmt->execute([':package_id' => $package_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function getAllPackage($orderByCreated=false) {
+	public function selectAllPackage($orderByCreated=false) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "package_family_name" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id'
@@ -732,7 +776,7 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function getAllPackageFamily($binaryAsBase64=false) {
+	public function selectAllPackageFamily($binaryAsBase64=false) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT pf.*, (SELECT COUNT(id) FROM package p WHERE p.package_family_id = pf.id) AS "package_count",
 				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created DESC LIMIT 1) AS "newest_package_created",
@@ -742,33 +786,33 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily', [$binaryAsBase64]);
 	}
-	public function getPackageFamily($id) {
+	public function selectPackageFamily($id) {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE id = :id');
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily') as $row) {
 			return $row;
 		}
 	}
-	public function getPackageFamilyByName($name) {
+	public function selectPackageFamilyByName($name) {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE name = :name');
 		$this->stmt->execute([':name' => $name]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily') as $row) {
 			return $row;
 		}
 	}
-	public function getGroupByPackage($pid) {
+	public function selectAllPackageGroupByPackageId($package_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT pg.id AS "id", pg.name AS "name", pg.parent_package_group_id AS "parent_package_group_id"
 			FROM package_group_member pgm
 			INNER JOIN package_group pg ON pg.id = pgm.package_group_id
-			WHERE pgm.package_id = :pid
+			WHERE pgm.package_id = :package_id
 			ORDER BY pg.name'
 		);
-		$this->stmt->execute([':pid' => $pid]);
+		$this->stmt->execute([':package_id' => $package_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup');
 	}
-	public function getAllPackageGroup($parent_id=null) {
-		if($parent_id === null) {
+	public function selectAllPackageGroupByParentPackageGroupId($parent_package_group_id=null) {
+		if($parent_package_group_id === null) {
 			$this->stmt = $this->dbh->prepare(
 				'SELECT * FROM package_group WHERE parent_package_group_id IS NULL ORDER BY name'
 			);
@@ -777,13 +821,12 @@ class DatabaseController {
 			$this->stmt = $this->dbh->prepare(
 				'SELECT * FROM package_group WHERE parent_package_group_id = :parent_package_group_id ORDER BY name'
 			);
-			$this->stmt->execute([':parent_package_group_id' => $parent_id]);
+			$this->stmt->execute([':parent_package_group_id' => $parent_package_group_id]);
 		}
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup');
 	}
-	public function getPackage($id, $binaryAsBase64=false) {
-		if($binaryAsBase64 === null) {
-			// do not fetch icons if not necessary
+	public function selectPackage($id, $binaryAsBase64=false) {
+		if($binaryAsBase64 === null) { // do not fetch icons if not necessary
 			$this->stmt = $this->dbh->prepare(
 				'SELECT p.*, pf.name AS "package_family_name" FROM package p
 				INNER JOIN package_family pf ON pf.id = p.package_family_id
@@ -801,7 +844,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getAllPackageFamilyByName($name, $limit=null) {
+	public function searchAllPackageFamily($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT id, name FROM package_family
 			WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
@@ -809,7 +852,7 @@ class DatabaseController {
 		$this->stmt->execute([':name' => '%'.$name.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily');
 	}
-	public function getPackageByNameVersion($name, $version) {
+	public function selectAllPackageByPackageFamilyNameAndVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "package_family_name" FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
@@ -818,14 +861,14 @@ class DatabaseController {
 		$this->stmt->execute([':name' => $name, ':version' => $version]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function getAllComputerPackages() {
+	public function selectAllComputerPackage() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_package'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
 	}
-	public function getComputerPackage($id) {
+	public function selectComputerPackage($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_package WHERE id = :id'
 		);
@@ -834,22 +877,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getPackageGroupBreadcrumbString($id) {
-		$currentGroupId = $id;
-		$groupStrings = [];
-		while(true) {
-			$currentGroup = $this->getPackageGroup($currentGroupId);
-			$groupStrings[] = $currentGroup->name;
-			if($currentGroup->parent_package_group_id === null) {
-				break;
-			} else {
-				$currentGroupId = $currentGroup->parent_package_group_id;
-			}
-		}
-		$groupStrings = array_reverse($groupStrings);
-		return implode($groupStrings, ' » ');
-	}
-	public function getPackageGroup($id) {
+	public function selectPackageGroup($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM package_group WHERE id = :id'
 		);
@@ -858,7 +886,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function addPackageGroup($name, $parent_id=null) {
+	public function insertPackageGroup($name, $parent_id=null) {
 		if(empty($parent_id) || intval($parent_id) < 0) {
 			$this->stmt = $this->dbh->prepare(
 				'INSERT INTO package_group (name) VALUES (:name)'
@@ -872,14 +900,14 @@ class DatabaseController {
 		}
 		return $this->dbh->lastInsertId();
 	}
-	public function renamePackageGroup($id, $name) {
+	public function updatePackageGroup($id, $name) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE package_group SET name = :name WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id, ':name' => $name]);
 		return $this->dbh->lastInsertId();
 	}
-	public function getPackageByGroup($id) {
+	public function selectAllPackageByPackageGroupId($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT p.*, pf.name AS "package_family_name", pgm.sequence AS "package_group_member_sequence"
 			FROM package p
@@ -891,7 +919,7 @@ class DatabaseController {
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function addPackageToGroup($pid, $gid) {
+	public function insertPackageGroupMember($pid, $gid) {
 		$seq = -1;
 
 		$this->stmt = $this->dbh->prepare(
@@ -908,7 +936,9 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute([':package_id' => $pid, ':package_group_id' => $gid, ':sequence' => $seq])) return false;
 		$insertId = $this->dbh->lastInsertId();
-		foreach($this->getDeploymentRulesByPackageGroup($gid) as $dr) {
+
+		// evaluate corresponding deployment rule(s)
+		foreach($this->selectAllDeploymentRuleByPackageGroupId($gid) as $dr) {
 			$this->evaluateDeploymentRule($dr->id);
 		}
 		return $insertId;
@@ -928,15 +958,15 @@ class DatabaseController {
 		$this->stmt->bindParam(':oldpos', intval($old_seq), PDO::PARAM_INT);
 		$this->stmt->bindParam(':newpos', intval($new_seq), PDO::PARAM_INT);
 		if(!$this->stmt->execute()) return false;
-		return $this->refactorPackageGroupOrder($package_group_id);
+		return $this->renewPackageGroupOrder($package_group_id);
 	}
-	public function refactorPackageGroupOrder($gid) {
+	private function renewPackageGroupOrder($package_group_id) {
 		$seq = 1;
 		$this->dbh->beginTransaction();
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM package_group_member WHERE package_group_id = :package_group_id ORDER BY sequence'
 		);
-		$this->stmt->execute([':package_group_id' => $gid]);
+		$this->stmt->execute([':package_group_id' => $package_group_id]);
 		foreach($this->stmt->fetchAll() as $row) {
 			$this->stmt = $this->dbh->prepare(
 				'UPDATE package_group_member SET sequence = :sequence WHERE id = :id'
@@ -947,81 +977,85 @@ class DatabaseController {
 		$this->dbh->commit();
 		return true;
 	}
-	public function addPackageDependency($pid, $dpid) {
+	public function insertPackageDependency($package_id, $dependend_package_id) {
 		$this->dbh->beginTransaction();
-		$this->removePackageDependency($pid, $dpid);
+		$this->deletePackageDependencyByPackageIdAndDependentPackageId($package_id, $dependend_package_id);
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO package_dependency (package_id, dependent_package_id)
 			VALUES (:package_id, :dependent_package_id)'
 		);
-		$this->stmt->execute([':package_id' => $pid, ':dependent_package_id' => $dpid]);
+		$this->stmt->execute([':package_id' => $package_id, ':dependent_package_id' => $dependend_package_id]);
 		$this->dbh->commit();
 		return $this->dbh->lastInsertId();
 	}
-	public function removePackageDependency($pid, $dpid) {
+	public function deletePackageDependencyByPackageIdAndDependentPackageId($package_id, $dependend_package_id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM package_dependency
 			WHERE package_id = :package_id AND dependent_package_id = :dependent_package_id'
 		);
-		$this->stmt->execute([':package_id' => $pid, ':dependent_package_id' => $dpid]);
+		$this->stmt->execute([':package_id' => $package_id, ':dependent_package_id' => $dependend_package_id]);
 		return $this->dbh->lastInsertId();
 	}
-	public function removePackage($id) {
+	public function deletePackage($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM package WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function removePackageFamily($id) {
+	public function deletePackageFamily($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM package_family WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function removePackageGroup($id) {
+	public function deletePackageGroup($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM package_group WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function removePackageFromGroup($pid, $gid) {
+	public function deletePackageFromGroup($package_id, $package_group_id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM package_group_member WHERE package_id = :package_id AND package_group_id = :package_group_id'
 		);
-		if(!$this->stmt->execute([':package_id' => $pid, ':package_group_id' => $gid])) return false;
+		if(!$this->stmt->execute([':package_id' => $package_id, ':package_group_id' => $package_group_id])) return false;
 		if($this->stmt->rowCount() != 1) return false;
-		if(!$this->refactorPackageGroupOrder($gid)) return false;
-		foreach($this->getDeploymentRulesByPackageGroup($gid) as $dr) {
+		if(!$this->renewPackageGroupOrder($package_group_id)) return false;
+
+		// evaluate corresponding deployment rule(s)
+		foreach($this->selectAllDeploymentRuleByPackageGroupId($package_group_id) as $dr) {
 			$this->evaluateDeploymentRule($dr->id);
 		}
 		return true;
 	}
-	public function removeComputerAssignedPackage($id) {
-		$computerPackageAssignment = $this->getComputerPackage($id);
+	public function deleteComputerPackage($id) {
+		$computerPackageAssignment = $this->selectComputerPackage($id);
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_package WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		if($this->stmt->rowCount() != 1) return false;
-		foreach($this->getGroupByComputer($computerPackageAssignment->computer_id) as $g) {
-			foreach($this->getDeploymentRulesByComputerGroup($g->id) as $dr) {
+
+		// evaluate corresponding deployment rule(s)
+		foreach($this->selectAllComputerGroupByComputerId($computerPackageAssignment->computer_id) as $g) {
+			foreach($this->selectAllDeploymentRuleByComputerGroupId($g->id) as $dr) {
 				$this->evaluateDeploymentRule($dr->id);
 			}
 		}
 		return true;
 	}
-	public function removeComputerAssignedPackageByIds($cid, $pid) {
+	public function deleteComputerPackageByComputerIdAndPackageId($computer_id, $package_id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_package WHERE computer_id = :computer_id AND package_id = :package_id'
 		);
-		return $this->stmt->execute([':computer_id' => $cid, ':package_id' => $pid]);
+		return $this->stmt->execute([':computer_id' => $computer_id, ':package_id' => $package_id]);
 	}
 
 	// Job Operations
-	public function addJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges) {
+	public function insertJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority, agent_ip_ranges)
 			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority, :agent_ip_ranges)'
@@ -1040,7 +1074,7 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function addStaticJob($job_container_id, $computer_id, $package_id, $procedure, $success_return_codes, $is_uninstall, $download, $post_action, $post_action_timeout, $sequence, $state=0) {
+	public function insertStaticJob($job_container_id, $computer_id, $package_id, $procedure, $success_return_codes, $is_uninstall, $download, $post_action, $post_action_timeout, $sequence, $state=0) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO job_container_job (job_container_id, computer_id, package_id, `procedure`, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, message)
 			VALUES (:job_container_id, :computer_id, :package_id, :procedure, :success_return_codes, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, "")'
@@ -1060,7 +1094,7 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function getJobContainer($id) {
+	public function selectJobContainer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM job_container WHERE id = :id'
 		);
@@ -1069,14 +1103,14 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getAllJobContainerByName($name, $limit=null) {
+	public function searchAllJobContainer($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM job_container WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer');
 	}
-	public function getAllJobContainer() {
+	public function selectAllJobContainer() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT jc.*, (SELECT MAX(execution_finished) FROM job_container_job j WHERE j.job_container_id = jc.id) AS "execution_finished"
 			FROM job_container jc'
@@ -1084,7 +1118,7 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer');
 	}
-	public function getJobContainerMinExecutionStaticJob($job_container_id) {
+	public function selectMinExecutionStaticJobByJobContainerId($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM job_container_job WHERE job_container_id = :job_container_id ORDER BY execution_started ASC LIMIT 1'
 		);
@@ -1093,7 +1127,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getJobContainerMaxExecutionStaticJob($job_container_id) {
+	public function selectMaxExecutionStaticJobByJobContainerId($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM job_container_job WHERE job_container_id = :job_container_id ORDER BY execution_finished DESC LIMIT 1'
 		);
@@ -1102,7 +1136,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getStaticJob($id) {
+	public function selectStaticJob($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.*, jc.start_time AS "job_container_start_time", jc.author AS "job_container_author" FROM job_container_job j
 			INNER JOIN job_container jc ON jc.id = j.job_container_id
@@ -1113,7 +1147,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getDynamicJob($id) {
+	public function selectDynamicJob($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.*, dr.author AS "deployment_rule_author", dr.sequence_mode AS "deployment_rule_sequence_mode" FROM deployment_rule_job j
 			INNER JOIN deployment_rule dr ON dr.id = j.deployment_rule_id
@@ -1124,18 +1158,18 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getComputerMacByContainer($id) {
+	public function selectAllComputerWithMacByJobContainer($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "id", c.hostname AS "hostname", cn.mac AS "computer_network_mac"
 			FROM job_container_job j
 			INNER JOIN computer c ON c.id = j.computer_id
 			INNER JOIN computer_network cn ON cn.computer_id = c.id
-			WHERE j.job_container_id = :id'
+			WHERE j.job_container_id = :job_container_id'
 		);
-		$this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':job_container_id' => $job_container_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
-	public function getStaticJobsByJobContainer($id) {
+	public function selectAllStaticJobByJobContainer($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.*, pf.name AS "package_family_name", p.version AS "package_version", c.hostname AS "computer_hostname", jc.start_time AS "job_container_start_time"
 			FROM job_container_job j
@@ -1143,13 +1177,13 @@ class DatabaseController {
 			INNER JOIN package p ON p.id = j.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			INNER JOIN job_container jc ON jc.id = j.job_container_id
-			WHERE j.job_container_id = :id
+			WHERE j.job_container_id = :job_container_id
 			ORDER BY j.computer_id, j.sequence'
 		);
-		$this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':job_container_id' => $job_container_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
 	}
-	public function getDynamicJobsByDeploymentRule($id) {
+	public function selectAllDynamicJobByDeploymentRuleId($deployment_rule_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.*, pf.name AS "package_family_name", p.version AS "package_version", c.hostname AS "computer_hostname"
 			FROM deployment_rule_job j
@@ -1157,13 +1191,13 @@ class DatabaseController {
 			INNER JOIN package p ON p.id = j.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			INNER JOIN deployment_rule dr ON dr.id = j.deployment_rule_id
-			WHERE j.deployment_rule_id = :id
+			WHERE j.deployment_rule_id = :deployment_rule_id
 			ORDER BY j.computer_id, j.sequence'
 		);
-		$this->stmt->execute([':id' => $id]);
+		$this->stmt->execute([':deployment_rule_id' => $deployment_rule_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
 	}
-	public function getPendingJobsForAgent($computer_id) {
+	public function getAllPendingAndActiveJobForAgentByComputerId($computer_id) {
 		// static jobs
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.sequence_mode AS "job_container_sequence_mode", jc.agent_ip_ranges AS "job_container_agent_ip_ranges",
@@ -1196,89 +1230,89 @@ class DatabaseController {
 		usort($jobs, [Models\Job::class, 'sortJobs']);
 		return $jobs;
 	}
-	public function getPendingJobsForComputerDetailPage($computer_id) {
-		// static jobs
-		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
-			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
-			FROM job_container_job j
-			INNER JOIN package p ON j.package_id = p.id
-			INNER JOIN package_family pf ON pf.id = p.package_family_id
-			INNER JOIN job_container jc ON j.job_container_id = jc.id
-			WHERE j.computer_id = :computer_id
-			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
-			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
-		);
-		$this->stmt->execute([':computer_id' => $computer_id]);
-		$static_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
-		// dynamic jobs
-		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.name AS "deployment_rule_name", dr.enabled AS "deployment_rule_enabled", dr.priority AS "deployment_rule_priority",
-			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
-			FROM deployment_rule_job j
-			INNER JOIN package p ON j.package_id = p.id
-			INNER JOIN package_family pf ON pf.id = p.package_family_id
-			INNER JOIN deployment_rule dr ON j.deployment_rule_id = dr.id
-			WHERE j.computer_id = :computer_id
-			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
-			ORDER BY dr.priority DESC, dr.created ASC, j.sequence ASC'
-		);
-		$this->stmt->execute([':computer_id' => $computer_id]);
-		$dynamic_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
-		// merge and order
-		$jobs = array_merge( $static_jobs, $dynamic_jobs );
-		usort($jobs, [Models\Job::class, 'sortJobs']);
-		return $jobs;
-	}
-	public function getPendingJobsForPackageDetailPage($package_id) {
-		// static jobs
-		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
-			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
-			FROM job_container_job j
-			INNER JOIN computer c ON j.computer_id = c.id
-			INNER JOIN job_container jc ON j.job_container_id = jc.id
-			WHERE j.package_id = :package_id
-			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
-			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
-		);
-		$this->stmt->execute([':package_id' => $package_id]);
-		$static_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
-		// dynamic jobs
-		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.name AS "deployment_rule_name", dr.enabled AS "deployment_rule_enabled", dr.priority AS "deployment_rule_priority",
-			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
-			FROM deployment_rule_job j
-			INNER JOIN computer c ON j.computer_id = c.id
-			INNER JOIN deployment_rule dr ON j.deployment_rule_id = dr.id
-			WHERE j.package_id = :package_id
-			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
-			ORDER BY dr.priority DESC, dr.created ASC, j.sequence ASC'
-		);
-		$this->stmt->execute([':package_id' => $package_id]);
-		$dynamic_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
-		// merge and order
-		$jobs = array_merge( $static_jobs, $dynamic_jobs );
-		usort($jobs, [Models\Job::class, 'sortJobs']);
-		return $jobs;
-	}
-	public function getPendingJobForAgentByComputerAndPackage($computer_id, $package_id) {
-		foreach($this->getPendingJobsForAgent($computer_id) as $job) {
+	public function getPendingAndActiveJobForAgentByComputerIdAndPackageId($computer_id, $package_id) {
+		foreach($this->getAllPendingAndActiveJobForAgentByComputerId($computer_id) as $job) {
 			if($job->package_id === $package_id) return $job;
 		}
 	}
+	public function getAllPendingJobByComputerId($computer_id) {
+		// static jobs
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
+			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM job_container_job j
+			INNER JOIN package p ON j.package_id = p.id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			INNER JOIN job_container jc ON j.job_container_id = jc.id
+			WHERE j.computer_id = :computer_id
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
+			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		$static_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
+		// dynamic jobs
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.name AS "deployment_rule_name", dr.enabled AS "deployment_rule_enabled", dr.priority AS "deployment_rule_priority",
+			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM deployment_rule_job j
+			INNER JOIN package p ON j.package_id = p.id
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			INNER JOIN deployment_rule dr ON j.deployment_rule_id = dr.id
+			WHERE j.computer_id = :computer_id
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
+			ORDER BY dr.priority DESC, dr.created ASC, j.sequence ASC'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		$dynamic_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
+		// merge and order
+		$jobs = array_merge( $static_jobs, $dynamic_jobs );
+		usort($jobs, [Models\Job::class, 'sortJobs']);
+		return $jobs;
+	}
+	public function getAllPendingJobByPackageId($package_id) {
+		// static jobs
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
+			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM job_container_job j
+			INNER JOIN computer c ON j.computer_id = c.id
+			INNER JOIN job_container jc ON j.job_container_id = jc.id
+			WHERE j.package_id = :package_id
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
+			ORDER BY jc.priority DESC, jc.created ASC, j.sequence ASC'
+		);
+		$this->stmt->execute([':package_id' => $package_id]);
+		$static_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
+		// dynamic jobs
+		$this->stmt = $this->dbh->prepare(
+			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.name AS "deployment_rule_name", dr.enabled AS "deployment_rule_enabled", dr.priority AS "deployment_rule_priority",
+			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			FROM deployment_rule_job j
+			INNER JOIN computer c ON j.computer_id = c.id
+			INNER JOIN deployment_rule dr ON j.deployment_rule_id = dr.id
+			WHERE j.package_id = :package_id
+			AND (j.state = '.Models\Job::STATE_WAITING_FOR_AGENT.' OR j.state = '.Models\Job::STATE_DOWNLOAD_STARTED.' OR j.state = '.Models\Job::STATE_EXECUTION_STARTED.')
+			ORDER BY dr.priority DESC, dr.created ASC, j.sequence ASC'
+		);
+		$this->stmt->execute([':package_id' => $package_id]);
+		$dynamic_jobs = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
+		// merge and order
+		$jobs = array_merge( $static_jobs, $dynamic_jobs );
+		usort($jobs, [Models\Job::class, 'sortJobs']);
+		return $jobs;
+	}
 	public function evaluateDeploymentRule($deployment_rule_id) {
-		$deployment_rule = $this->getDeploymentRule($deployment_rule_id);
-		$computer_packages = $this->getAllComputerPackages();
+		$deployment_rule = $this->selectDeploymentRule($deployment_rule_id);
+		$computer_packages = $this->selectAllComputerPackage();
 		$dynamic_jobs = [];
 		$created_uninstall_jobs = [];
-		foreach($this->getComputerByGroup($deployment_rule->computer_group_id) as $computer) {
+		foreach($this->selectAllComputerByComputerGroupId($deployment_rule->computer_group_id) as $computer) {
 			$sequence = 1;
-			foreach($this->getPackageByGroup($deployment_rule->package_group_id) as $package) {
+			foreach($this->selectAllPackageByPackageGroupId($deployment_rule->package_group_id) as $package) {
 				$state = Models\Job::STATE_WAITING_FOR_AGENT;
 				$isInstalled = false;
 				// check if already installed
@@ -1293,7 +1327,7 @@ class DatabaseController {
 				if($deployment_rule->auto_uninstall && $state != Models\Job::STATE_ALREADY_INSTALLED && $state != Models\Job::STATE_OS_INCOMPATIBLE && $state != Models\Job::STATE_PACKAGE_CONFLICT) {
 					$dynamic_jobs = array_merge(
 						$dynamic_jobs,
-						$this->getDynamicUninstallJobs($deployment_rule, $package->package_family_id, $this->getComputerPackagesByComputer($computer->id), $created_uninstall_jobs, $sequence)
+						$this->getDynamicUninstallJobs($deployment_rule, $package->package_family_id, $this->selectAllComputerPackageByComputerId($computer->id), $created_uninstall_jobs, $sequence)
 					);
 				}
 				// add dynamic job
@@ -1349,7 +1383,7 @@ class DatabaseController {
 		foreach($computer_packages as $cp) {
 			// uninstall it, if it is from the same package family ...
 			if($cp->package_family_id === $package_family_id) {
-				$cpp = $this->getPackage($cp->package_id, null);
+				$cpp = $this->selectPackage($cp->package_id, null);
 				// ... but not, if this uninstall job was already created
 				if(in_array($cp->id, $createdUninstallJobs)) continue;
 				$createdUninstallJobs[] = $cp->id;
@@ -1367,15 +1401,15 @@ class DatabaseController {
 		return $dynamic_jobs;
 	}
 	public function setComputerOnlineStateForWolShutdown($job_container_id) {
-		$tmpJobContainer = $this->getJobContainer($job_container_id);
+		$tmpJobContainer = $this->selectJobContainer($job_container_id);
 		if(empty($tmpJobContainer->shutdown_waked_after_completion)) return;
 		foreach($this->getAllLastComputerStaticJobsInContainer($job_container_id) as $j) {
-			$tmpComputer = $this->getComputer($j->computer_id);
+			$tmpComputer = $this->selectComputer($j->computer_id);
 			if(!$tmpComputer->isOnline())
 				$this->setWolShutdownStaticJobInContainer($job_container_id, $tmpComputer->id, $j->max_sequence);
 		}
 	}
-	public function getAllLastComputerStaticJobsInContainer($job_container_id) {
+	private function getAllLastComputerStaticJobsInContainer($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT computer_id, MAX(sequence) AS "max_sequence" FROM job
 			WHERE job_container_id = :job_container_id GROUP BY computer_id'
@@ -1383,7 +1417,7 @@ class DatabaseController {
 		if(!$this->stmt->execute([':job_container_id' => $job_container_id])) return false;
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
 	}
-	public function setWolShutdownStaticJobInContainer($job_container_id, $computer_id, $sequence) {
+	private function setWolShutdownStaticJobInContainer($job_container_id, $computer_id, $sequence) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container_job SET post_action = '.Models\Package::POST_ACTION_SHUTDOWN.','
 			.' wol_shutdown_set = CURRENT_TIMESTAMP'
@@ -1496,34 +1530,34 @@ class DatabaseController {
 			':agent_ip_ranges' => $agent_ip_ranges,
 		]);
 	}
-	public function moveStaticJobToContainer($jid, $cid) {
+	public function moveStaticJobToJobContainer($job_id, $job_container_id) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE job_container_job SET job_container_id = :cid WHERE id = :jid'
+			'UPDATE job_container_job SET job_container_id = :job_container_id WHERE id = :job_id'
 		);
-		return $this->stmt->execute([':jid' => $jid, ':cid' => $cid]);
+		return $this->stmt->execute([':job_id' => $job_id, ':job_container_id' => $job_container_id]);
 	}
-	public function removeJobContainer($id) {
+	public function deleteJobContainer($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM job_container WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function removeStaticJob($id) {
+	public function deleteStaticJob($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM job_container_job WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function getAllDeploymentRules() {
+	public function selectAllDeploymentRule() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM deployment_rule'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule');
 	}
-	public function getDeploymentRule($id) {
+	public function selectDeploymentRule($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM deployment_rule WHERE id = :id'
 		);
@@ -1532,21 +1566,21 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getDeploymentRulesByComputerGroup($computer_group_id) {
+	public function selectAllDeploymentRuleByComputerGroupId($computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM deployment_rule WHERE computer_group_id = :computer_group_id'
 		);
 		$this->stmt->execute([':computer_group_id' => $computer_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule');
 	}
-	public function getDeploymentRulesByPackageGroup($package_group_id) {
+	public function selectAllDeploymentRuleByPackageGroupId($package_group_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM deployment_rule WHERE package_group_id = :package_group_id'
 		);
 		$this->stmt->execute([':package_group_id' => $package_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule');
 	}
-	public function addDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+	public function insertDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO deployment_rule (name, author, enabled, computer_group_id, package_group_id, notes, priority, auto_uninstall)
 			VALUES (:name, :author, :enabled, :computer_group_id, :package_group_id, :notes, :priority, :auto_uninstall)'
@@ -1583,7 +1617,7 @@ class DatabaseController {
 		])) return false;
 		return $this->evaluateDeploymentRule($id);
 	}
-	public function removeDeploymentRule($id) {
+	public function deleteDeploymentRule($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM deployment_rule WHERE id = :id'
 		);
@@ -1604,7 +1638,7 @@ class DatabaseController {
 		$this->stmt->execute([':uid' => $uid, ':username' => $username, ':display_name' => $display_name]);
 		return $this->dbh->lastInsertId();
 	}
-	public function getAllDomainUser() {
+	public function selectAllDomainUser() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT *,
 				(SELECT count(dl2.id) FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id) AS "logon_amount",
@@ -1613,42 +1647,42 @@ class DatabaseController {
 			FROM domain_user du
 			ORDER BY username ASC'
 		);
-		$this->stmt->execute([]);
+		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser');
 	}
-	public function getAllDomainUserByName($name, $limit=null) {
+	public function searchAllDomainUser($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM domain_user WHERE username LIKE :username OR display_name LIKE :username ORDER BY username ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':username' => '%'.$name.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser');
 	}
-	public function getDomainUser($id) {
+	public function selectDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT *, (SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
-			FROM domain_user du
-			WHERE id = :id'
+			FROM domain_user du WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser') as $row) {
 			return $row;
 		}
 	}
-	private function insertOrUpdateDomainUserLogon($cid, $did, $console, $timestamp) {
+	private function insertOrUpdateDomainUserLogon($computer_id, $did, $console, $timestamp) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO domain_user_logon (id, computer_id, domain_user_id, console, timestamp)
 			(SELECT id, computer_id, domain_user_id, console, timestamp FROM domain_user_logon WHERE computer_id=:computer_id AND domain_user_id=:domain_user_id AND console=:console AND timestamp=:timestamp
 			UNION SELECT null, :computer_id, :domain_user_id, :console, :timestamp FROM DUAL LIMIT 1)
 			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
 		);
-		$this->stmt->execute([':computer_id' => $cid,
+		$this->stmt->execute([
+			':computer_id' => $computer_id,
 			':domain_user_id' => $did,
 			':console' => $console,
 			':timestamp' => $timestamp,
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function getDomainUserLogonHistoryByDomainUser($id) {
+	public function selectAllDomainUserLogonByDomainUserId($domain_user_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "computer_id", c.hostname AS "computer_hostname", dl.console AS "console", dl.timestamp AS "timestamp"
 			FROM domain_user_logon dl
@@ -1656,12 +1690,10 @@ class DatabaseController {
 			WHERE dl.domain_user_id = :domain_user_id
 			ORDER BY timestamp DESC, computer_hostname ASC'
 		);
-		$this->stmt->execute([
-			':domain_user_id' => $id,
-		]);
+		$this->stmt->execute([':domain_user_id' => $domain_user_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserLogon');
 	}
-	public function getDomainUserLogonByDomainUser($id) {
+	public function selectAllAggregatedDomainUserLogonByDomainUserId($domain_user_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "computer_id", c.hostname AS "computer_hostname", COUNT(c.hostname) AS "logon_amount",
 			(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domain_user_id = dl.domain_user_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
@@ -1671,12 +1703,10 @@ class DatabaseController {
 			GROUP BY dl.domain_user_id, dl.computer_id
 			ORDER BY timestamp DESC, logon_amount DESC, computer_hostname ASC'
 		);
-		$this->stmt->execute([
-			':domain_user_id' => $id,
-		]);
+		$this->stmt->execute([':domain_user_id' => $domain_user_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserLogon');
 	}
-	public function getDomainUserLogonByComputer($id) {
+	public function selectAllDomainUserLogonByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT du.id AS "domain_user_id", du.username AS "domain_user_username", du.display_name AS "domain_user_display_name", COUNT(du.username) AS "logon_amount",
 			(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domain_user_id = dl.domain_user_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
@@ -1686,19 +1716,17 @@ class DatabaseController {
 			GROUP BY dl.computer_id, dl.domain_user_id
 			ORDER BY timestamp DESC, logon_amount DESC, domain_user_username ASC'
 		);
-		$this->stmt->execute([
-			':computer_id' => $id,
-		]);
+		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserLogon');
 	}
-	public function removeDomainUser($id) {
+	public function deleteDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM domain_user WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function removeDomainUserLogonOlderThan($seconds) {
+	public function deleteDomainUserLogonOlderThan($seconds) {
 		if(intval($seconds) < 1) return;
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM domain_user_logon WHERE timestamp < NOW() - INTERVAL '.intval($seconds).' SECOND'
@@ -1708,14 +1736,14 @@ class DatabaseController {
 	}
 
 	// System User Operations
-	public function getAllSystemUserRole() {
+	public function selectAllSystemUserRole() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM system_user_role ORDER BY name ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUserRole');
 	}
-	public function getAllSystemUser() {
+	public function selectAllSystemUser() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT su.*, sur.name AS "system_user_role_name", sur.permissions AS "system_user_role_permissions"
 			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
@@ -1724,7 +1752,7 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser', [$this]);
 	}
-	public function getSystemUser($id) {
+	public function selectSystemUser($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT su.*, sur.name AS "system_user_role_name", sur.permissions AS "system_user_role_permissions"
 			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
@@ -1735,7 +1763,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getSystemUserByLogin($username) {
+	public function selectSystemUserByUsername($username) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT su.*, sur.name AS "system_user_role_name", sur.permissions AS "system_user_role_permissions"
 			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
@@ -1746,7 +1774,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getSystemUserByUid($uid) {
+	public function selectSystemUserByUid($uid) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT su.*, sur.name AS "system_user_role_name", sur.permissions AS "system_user_role_permissions"
 			FROM system_user su LEFT JOIN system_user_role sur ON su.system_user_role_id = sur.id
@@ -1757,7 +1785,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function addSystemUser($uid, $username, $display_name, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
+	public function insertSystemUser($uid, $username, $display_name, $password, $ldap, $email, $phone, $mobile, $description, $locked, $system_user_role_id) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO system_user (uid, username, display_name, password, ldap, email, phone, mobile, description, locked, system_user_role_id)
 			VALUES (:uid, :username, :display_name, :password, :ldap, :email, :phone, :mobile, :description, :locked, :system_user_role_id)'
@@ -1800,7 +1828,7 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare('UPDATE system_user SET last_login = CURRENT_TIMESTAMP WHERE id = :id');
 		return $this->stmt->execute([':id' => $id]);
 	}
-	public function removeSystemUser($id) {
+	public function deleteSystemUser($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM system_user WHERE id = :id'
 		);
@@ -1808,15 +1836,16 @@ class DatabaseController {
 	}
 
 	// Software Operations
-	public function getAllSoftwareNames() {
+	public function selectAllSoftware() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
-			FROM software s LEFT JOIN computer_software cs ON cs.software_id = s.id GROUP BY s.name ORDER BY s.name ASC'
+			FROM software s LEFT JOIN computer_software cs ON cs.software_id = s.id
+			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
 	}
-	public function getAllSoftwareNamesWindows() {
+	public function selectAllSoftwareByComputerOsWindows() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
 			FROM software s INNER JOIN computer_software cs ON cs.id = (
@@ -1831,7 +1860,7 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
 	}
-	public function getAllSoftwareNamesMacOS() {
+	public function selectAllSoftwareByComputerOsMacOs() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
 			FROM software s INNER JOIN computer_software cs ON cs.id = (
@@ -1846,7 +1875,7 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
 	}
-	public function getAllSoftwareNamesOther() {
+	public function selectAllSoftwareByComputerOsOther() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
 			FROM software s INNER JOIN computer_software cs ON cs.id = (
@@ -1861,7 +1890,7 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
 	}
-	public function getSoftware($id) {
+	public function selectSoftware($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM software WHERE id = :id'
 		);
@@ -1882,19 +1911,19 @@ class DatabaseController {
 		$this->stmt->execute([':name' => $name, ':version' => $version, ':description' => $description]);
 		return $this->dbh->lastInsertId();
 	}
-	private function insertOrUpdateComputerSoftware($cid, $sid) {
+	private function insertOrUpdateComputerSoftware($computer_id, $software_id) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_software (id, computer_id, software_id)
 			(SELECT id, computer_id, software_id FROM computer_software WHERE computer_id=:computer_id AND software_id=:software_id
 			UNION SELECT null, :computer_id, :software_id FROM DUAL LIMIT 1)
 			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
 		);
-		$this->stmt->execute([':computer_id' => $cid, ':software_id' => $sid]);
+		$this->stmt->execute([':computer_id' => $computer_id, ':software_id' => $software_id]);
 		return $this->dbh->lastInsertId();
 	}
 
 	// Report Operations
-	public function addReportGroup($name, $parent_id) {
+	public function insertReportGroup($name, $parent_id) {
 		if(empty($parent_id) || intval($parent_id) < 0) {
 			$this->stmt = $this->dbh->prepare(
 				'INSERT INTO report_group (name) VALUES (:name)'
@@ -1908,20 +1937,20 @@ class DatabaseController {
 		}
 		return $this->dbh->lastInsertId();
 	}
-	public function renameReportGroup($id, $name) {
+	public function updateReportGroup($id, $name) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE report_group SET name = :name WHERE id = :id'
 		);
 		return $this->stmt->execute([':id' => $id, ':name' => $name]);
 	}
-	public function removeReportGroup($id) {
+	public function deleteReportGroup($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM report_group WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function getAllReportGroup($parent_id=null) {
+	public function selectAllReportGroupByParentReportGroupId($parent_id=null) {
 		if($parent_id === null) {
 			$this->stmt = $this->dbh->prepare(
 				'SELECT * FROM report_group WHERE parent_report_group_id IS NULL ORDER BY name'
@@ -1942,7 +1971,7 @@ class DatabaseController {
 		});
 		return $reports;
 	}
-	public function getReportGroup($id) {
+	public function selectReportGroup($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM report_group WHERE id = :id'
 		);
@@ -1952,23 +1981,7 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function getReportGroupBreadcrumbString($id) {
-		$currentGroupId = $id;
-		$groupStrings = [];
-		while(true) {
-			$currentGroup = $this->getReportGroup($currentGroupId);
-			$groupStrings[] = $currentGroup->name;
-			if($currentGroup->parent_report_group_id === null) {
-				break;
-			} else {
-				$currentGroupId = $currentGroup->parent_report_group_id;
-			}
-		}
-		$groupStrings = array_reverse($groupStrings);
-		return implode($groupStrings, ' » ');
-	}
-
-	public function addReport($report_group_id, $name, $notes, $query) {
+	public function insertReport($report_group_id, $name, $notes, $query) {
 		if(empty($report_group_id) || intval($report_group_id) < 0) {
 			$this->stmt = $this->dbh->prepare(
 				'INSERT INTO report (report_group_id, name, notes, query) VALUES (NULL, :name, :notes, :query)'
@@ -2016,14 +2029,14 @@ class DatabaseController {
 		}
 		return $this->dbh->lastInsertId();
 	}
-	public function removeReport($id) {
+	public function deleteReport($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM report WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function getAllReport() {
+	public function selectAllReport() {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM report ORDER BY name');
 		$this->stmt->execute();
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report');
@@ -2035,7 +2048,7 @@ class DatabaseController {
 		});
 		return $reports;
 	}
-	public function getAllReportByName($name, $limit=null) {
+	public function searchAllReport($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM report');
 		$this->stmt->execute();
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report');
@@ -2049,11 +2062,11 @@ class DatabaseController {
 		if($limit == null) return $reports;
 		else return array_slice($reports, 0, intval($limit));
 	}
-	public function getAllReportByGroup($groupId) {
+	public function selectAllReportByReportGroupId($report_group_id) {
 		if($groupId == null) $sql = 'SELECT * FROM report WHERE report_group_id IS NULL ORDER BY name';
 		else $sql = 'SELECT * FROM report WHERE report_group_id = :report_group_id ORDER BY name';
 		$this->stmt = $this->dbh->prepare($sql);
-		$this->stmt->execute([':report_group_id' => $groupId]);
+		$this->stmt->execute([':report_group_id' => $report_group_id]);
 		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Report');
 		foreach($reports as $report) {
 			$report->name = LANG($report->name);
@@ -2063,7 +2076,7 @@ class DatabaseController {
 		});
 		return $reports;
 	}
-	public function getReport($id) {
+	public function selectReport($id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM report WHERE id = :id'
 		);
@@ -2074,7 +2087,7 @@ class DatabaseController {
 		}
 	}
 	public function executeReport($id) {
-		$report = $this->getReport($id);
+		$report = $this->selectReport($id);
 		if(!$report) return false;
 		$this->dbh->beginTransaction();
 		$this->stmt = $this->dbh->prepare($report->query);
@@ -2085,7 +2098,7 @@ class DatabaseController {
 	}
 
 	// Log Operations
-	public function addLogEntry($level, $user, $object_id, $action, $data) {
+	public function insertLogEntry($level, $user, $object_id, $action, $data) {
 		if($level < LOG_LEVEL) return;
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO log (level, host, user, object_id, action, data)
@@ -2101,7 +2114,7 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function getLogEntries($object_id, $actions, $limit=Models\Log::DEFAULT_VIEW_LIMIT) {
+	public function selectAllLogEntryByObjectIdAndActions($object_id, $actions, $limit=Models\Log::DEFAULT_VIEW_LIMIT) {
 		if(empty($actions)) throw new Exception('Log filter: no action specified!');
 		if(!is_array($actions)) $actions = [$actions];
 		$actionSql = '(';
@@ -2123,7 +2136,7 @@ class DatabaseController {
 		$this->stmt->execute($params);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Log');
 	}
-	public function removeLogEntryOlderThan($seconds) {
+	public function deleteLogEntryOlderThan($seconds) {
 		if(intval($seconds) < 1) return;
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM log WHERE timestamp < NOW() - INTERVAL '.intval($seconds).' SECOND'

@@ -29,7 +29,7 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 	<div class='tabcontents'>
 
 		<div name='own-system-user-settings' class='<?php if($tab=='own-system-user-settings') echo 'active'; ?>'>
-			<?php $ownSystemUser = $db->getSystemUser($_SESSION['oco_user_id']); ?>
+			<?php $ownSystemUser = $db->selectSystemUser($_SESSION['oco_user_id']); ?>
 			<div class='details-abreast'>
 				<div>
 					<div class='controls'>
@@ -154,7 +154,7 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getLogEntries(null, 'oco.client', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+							foreach($db->selectAllLogEntryByObjectIdAndActions(null, 'oco.client', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
 								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
@@ -261,7 +261,7 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getLogEntries(false, ['oco.computer.delete', 'oco.package.delete', 'oco.package_family.delete', 'oco.job_container.delete', 'oco.deployment_rule.delete', 'oco.domain_user.delete', 'oco.report.delete'], empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+							foreach($db->selectAllLogEntryByObjectIdAndActions(false, ['oco.computer.delete', 'oco.package.delete', 'oco.package_family.delete', 'oco.job_container.delete', 'oco.deployment_rule.delete', 'oco.domain_user.delete', 'oco.report.delete'], empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
 								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($l->timestamp)."</td>";

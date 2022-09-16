@@ -21,25 +21,25 @@ class HouseKeeping {
 	}
 
 	private function jobHouseKeeping() {
-		foreach($this->db->getAllJobContainer() as $container) {
+		foreach($this->db->selectAllJobContainer() as $container) {
 			// purge old jobs
-			$status = $container->getStatus($this->db->getStaticJobsByJobContainer($container->id));
+			$status = $container->getStatus($this->db->selectAllStaticJobByJobContainer($container->id));
 			if($status == Models\JobContainer::STATUS_SUCCEEDED) {
 				if(time() - strtotime($container->execution_finished) > PURGE_SUCCEEDED_JOBS_AFTER) {
 					if($this->debug) echo('Remove succeeded job container #'.$container->id.' ('.$container->name.')'."\n");
-					$this->db->removeJobContainer($container->id);
+					$this->db->deleteJobContainer($container->id);
 				}
 			}
 			elseif($status == Models\JobContainer::STATUS_FAILED) {
 				if(time() - strtotime($container->execution_finished) > PURGE_FAILED_JOBS_AFTER) {
 					if($this->debug) echo('Remove failed job container #'.$container->id.' ('.$container->name.')'."\n");
-					$this->db->removeJobContainer($container->id);
+					$this->db->deleteJobContainer($container->id);
 				}
 			}
 
 			// set job state to expired if job container end date reached
 			if($container->end_time !== null && strtotime($container->end_time) < time()) {
-				foreach($this->db->getStaticJobsByJobContainer($container->id) as $job) {
+				foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 					if($job->state == Models\Job::STATE_WAITING_FOR_AGENT || $job->state == Models\Job::STATE_DOWNLOAD_STARTED || $job->state == Models\Job::STATE_EXECUTION_STARTED) {
 						if($this->debug) echo('Set job #'.$job->id.' (container #'.$container->id.', '.$container->name.') state to EXPIRED'."\n");
 						$job->state = Models\Job::STATE_EXPIRED;
@@ -53,7 +53,7 @@ class HouseKeeping {
 	}
 
 	private function jobWol() {
-		foreach($this->db->getAllJobContainer() as $container) {
+		foreach($this->db->selectAllJobContainer() as $container) {
 			if($container->wol_sent == 0) {
 				if(strtotime($container->start_time) <= time()) {
 					if($this->debug) echo('Execute WOL for job container #'.$container->id.' ('.$container->name.')'."\n");
@@ -64,7 +64,7 @@ class HouseKeeping {
 					}
 					// collect MAC addresses for WOL
 					$wolMacAddresses = [];
-					foreach($this->db->getComputerMacByContainer($container->id) as $c) {
+					foreach($this->db->selectAllComputerWithMacByJobContainer($container->id) as $c) {
 						if($this->debug) echo('   Found MAC address '.$c->computer_network_mac."\n");
 						$wolMacAddresses[] = $c->computer_network_mac;
 					}
@@ -90,9 +90,9 @@ class HouseKeeping {
 
 			// check WOL status (for shutting it down later)
 			if(!empty($container->shutdown_waked_after_completion)) {
-				foreach($this->db->getStaticJobsByJobContainer($container->id) as $j) {
+				foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $j) {
 					if(!empty($j->wol_shutdown_set)) {
-						$c = $this->db->getComputer($j->computer_id); if(!$c) continue;
+						$c = $this->db->selectComputer($j->computer_id); if(!$c) continue;
 						// The computer came up in the defined time range, this means WOL worked.
 						// Remove the "WOL Shutdown Set" flag to keep the shutdown forever.
 						if($c->isOnline() && time() - strtotime($j->wol_shutdown_set) < WOL_SHUTDOWN_EXPIRY_SECONDS) {
@@ -112,12 +112,12 @@ class HouseKeeping {
 	}
 
 	private function logonHouseKeeping() {
-		$result = $this->db->removeDomainUserLogonOlderThan(PURGE_DOMAIN_USER_LOGONS_AFTER);
+		$result = $this->db->deleteDomainUserLogonOlderThan(PURGE_DOMAIN_USER_LOGONS_AFTER);
 		if($this->debug) echo('Purged '.intval($result).' domain user logons older than '.intval(PURGE_DOMAIN_USER_LOGONS_AFTER).' seconds'."\n");
 	}
 
 	private function logHouseKeeping() {
-		$result = $this->db->removeLogEntryOlderThan(PURGE_LOGS_AFTER);
+		$result = $this->db->deleteLogEntryOlderThan(PURGE_LOGS_AFTER);
 		if($this->debug) echo('Purged '.intval($result).' log entries older than '.intval(PURGE_LOGS_AFTER).' seconds'."\n");
 	}
 }

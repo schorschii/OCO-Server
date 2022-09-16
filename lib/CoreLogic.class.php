@@ -8,6 +8,10 @@ class CoreLogic {
 
 		 Adds additional (permission) checks & logic before the database is accessed and sanitizes user input.
 		 It's public functions are used by the web frontend and the client API.
+
+		Function naming (intentionally different from DatabaseController to easily distinguish if we operate directly with the database or with (permission) checks):
+		 - prefix oriented on frontend (JS) command: get, create, edit, remove, add (for group memberships)
+		 - entity name singular for single objects (e.g. "Computer") or plural if an array is returned (e.g. "Computers")
 	*/
 
 	private $db;
@@ -29,36 +33,36 @@ class CoreLogic {
 	public function getComputers(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$computersFiltered = [];
-			foreach($this->db->getAllComputer() as $computer) {
+			foreach($this->db->selectAllComputer() as $computer) {
 				if($this->systemUser->checkPermission($computer, PermissionManager::METHOD_READ, false))
 					$computersFiltered[] = $computer;
 			}
 			return $computersFiltered;
 		} elseif($filterRessource instanceof Models\ComputerGroup) {
-			$group = $this->db->getComputerGroup($filterRessource->id);
+			$group = $this->db->selectComputerGroup($filterRessource->id);
 			if(empty($group)) throw new NotFoundException();
 			$this->systemUser->checkPermission($group, PermissionManager::METHOD_READ);
-			return $this->db->getComputerByGroup($group->id);
+			return $this->db->selectAllComputerByComputerGroupId($group->id);
 		} else {
 			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
 		}
 	}
 	public function getComputerGroups($parentId=null) {
 		$computerGroupsFiltered = [];
-		foreach($this->db->getAllComputerGroup($parentId) as $computerGroup) {
+		foreach($this->db->selectAllComputerGroupByParentComputerGroupId($parentId) as $computerGroup) {
 			if($this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_READ, false))
 				$computerGroupsFiltered[] = $computerGroup;
 		}
 		return $computerGroupsFiltered;
 	}
 	public function getComputer($id) {
-		$computer = $this->db->getComputer($id);
+		$computer = $this->db->selectComputer($id);
 		if(empty($computer)) throw new NotFoundException();
 		$this->systemUser->checkPermission($computer, PermissionManager::METHOD_READ);
 		return $computer;
 	}
 	public function getComputerGroup($id) {
-		$computerGroup = $this->db->getComputerGroup($id);
+		$computerGroup = $this->db->selectComputerGroup($id);
 		if(empty($computerGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_READ);
 		return $computerGroup;
@@ -70,16 +74,16 @@ class CoreLogic {
 		if(empty($finalHostname)) {
 			throw new InvalidRequestException(LANG('hostname_cannot_be_empty'));
 		}
-		if($this->db->getComputerByName($finalHostname) !== null) {
+		if($this->db->selectComputerByHostname($finalHostname) !== null) {
 			throw new InvalidRequestException(LANG('hostname_already_exists'));
 		}
-		$insertId = $this->db->addComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, ''/*Agent Key*/, ''/*Server Key*/);
+		$insertId = $this->db->insertComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, ''/*Agent Key*/, ''/*Server Key*/);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.computer.create', ['hostname'=>$finalHostname, 'notes'=>$notes]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.computer.create', ['hostname'=>$finalHostname, 'notes'=>$notes]);
 		return $insertId;
 	}
-	public function updateComputer($id, $hostname, $notes) {
-		$computer = $this->db->getComputer($id);
+	public function editComputer($id, $hostname, $notes) {
+		$computer = $this->db->selectComputer($id);
 		if(empty($computer)) throw new NotFoundException();
 		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
 
@@ -87,33 +91,33 @@ class CoreLogic {
 		if(empty($finalHostname)) {
 			throw new InvalidRequestException(LANG('hostname_cannot_be_empty'));
 		}
-		$checkComputer = $this->db->getComputerByName($finalHostname);
+		$checkComputer = $this->db->selectComputerByHostname($finalHostname);
 		if($checkComputer !== null && intval($checkComputer->id) !== intval($id)) {
 			throw new InvalidRequestException(LANG('hostname_already_exists'));
 		}
 		$result = $this->db->updateComputer($computer->id, $finalHostname, $notes);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['hostname'=>$finalHostname]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['hostname'=>$finalHostname]);
 		return $result;
 	}
-	public function updateComputerForceUpdate($id, $newValue) {
-		$computer = $this->db->getComputer($id);
+	public function editComputerForceUpdate($id, $newValue) {
+		$computer = $this->db->selectComputer($id);
 		if(empty($computer)) throw new NotFoundException();
 		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
 
 		$result = $this->db->updateComputerForceUpdate($computer->id, $newValue);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['force_update'=>$newValue]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.update', ['force_update'=>$newValue]);
 		return $result;
 	}
-	public function wolComputers($ids, $debugOutput=true) {
+	public function wolComputers($computerIds, $debugOutput=true) {
 		$wolMacAdresses = [];
-		foreach($ids as $id) {
-			$computer = $this->db->getComputer($id);
+		foreach($computerIds as $id) {
+			$computer = $this->db->selectComputer($id);
 			if(empty($computer)) throw new NotFoundException();
 			$this->checkPermission($computer, PermissionManager::METHOD_WOL);
 
-			foreach($this->db->getComputerNetwork($computer->id) as $n) {
+			foreach($this->db->selectAllComputerNetworkByComputerId($computer->id) as $n) {
 				if(empty($n->mac) || $n->mac == '-' || $n->mac == '?') continue;
 				$wolMacAdresses[] = $n->mac;
 			}
@@ -121,29 +125,29 @@ class CoreLogic {
 		if(count($wolMacAdresses) == 0) {
 			throw new Exception(LANG('no_mac_addresses_for_wol'));
 		}
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, null, 'oco.computer.wol', $wolMacAdresses);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, null, 'oco.computer.wol', $wolMacAdresses);
 		WakeOnLan::wol($wolMacAdresses, $debugOutput);
 		return true;
 	}
 	public function removeComputer($id, $force=false) {
-		$computer = $this->db->getComputer($id);
+		$computer = $this->db->selectComputer($id);
 		if(empty($computer)) throw new NotFoundException();
 		$this->checkPermission($computer, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
-			$jobs = $this->db->getPendingJobsForComputerDetailPage($id);
+			$jobs = $this->db->getAllPendingJobByComputerId($id);
 			if(count($jobs) > 0) throw new InvalidRequestException(LANG('delete_failed_active_jobs'));
 		}
-		$result = $this->db->removeComputer($computer->id);
+		$result = $this->db->deleteComputer($computer->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.delete', json_encode($computer));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.delete', json_encode($computer));
 		return $result;
 	}
 	public function createComputerGroup($name, $parentGroupId=null) {
 		if($parentGroupId == null) {
 			$this->systemUser->checkPermission(new Models\ComputerGroup(), PermissionManager::METHOD_CREATE);
 		} else {
-			$computerGroup = $this->db->getComputerGroup($parentGroupId);
+			$computerGroup = $this->db->selectComputerGroup($parentGroupId);
 			if(empty($computerGroup)) throw new NotFoundException();
 			$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_CREATE);
 		}
@@ -151,59 +155,59 @@ class CoreLogic {
 		if(empty(trim($name))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$insertId = $this->db->addComputerGroup($name, $parentGroupId);
+		$insertId = $this->db->insertComputerGroup($name, $parentGroupId);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.computer_group.create', ['name'=>$name, 'parent_computer_group_id'=>$parentGroupId]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.computer_group.create', ['name'=>$name, 'parent_computer_group_id'=>$parentGroupId]);
 		return $insertId;
 	}
 	public function renameComputerGroup($id, $newName) {
-		$computerGroup = $this->db->getComputerGroup($id);
+		$computerGroup = $this->db->selectComputerGroup($id);
 		if(empty($computerGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newName))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$this->db->renameComputerGroup($computerGroup->id, $newName);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.update', ['name'=>$newName]);
+		$this->db->updateComputerGroup($computerGroup->id, $newName);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.update', ['name'=>$newName]);
 	}
 	public function addComputerToGroup($computerId, $groupId) {
-		$computer = $this->db->getComputer($computerId);
+		$computer = $this->db->selectComputer($computerId);
 		if(empty($computer)) throw new NotFoundException();
-		$computerGroup = $this->db->getComputerGroup($groupId);
+		$computerGroup = $this->db->selectComputerGroup($groupId);
 		if(empty($computerGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($computer, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
 
-		if(count($this->db->getComputerByComputerAndGroup($computer->id, $computerGroup->id)) == 0) {
-			$this->db->addComputerToGroup($computer->id, $computerGroup->id);
-			$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.add_member', ['computer_id'=>$computer->id]);
-			$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.add_to_group', ['computer_group_id'=>$computerGroup->id]);
+		if(count($this->db->selectAllComputerByIdAndComputerGroupId($computer->id, $computerGroup->id)) == 0) {
+			$this->db->insertComputerGroupMember($computer->id, $computerGroup->id);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.add_member', ['computer_id'=>$computer->id]);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.add_to_group', ['computer_group_id'=>$computerGroup->id]);
 		}
 	}
 	public function removeComputerFromGroup($computerId, $groupId) {
-		$computer = $this->db->getComputer($computerId);
+		$computer = $this->db->selectComputer($computerId);
 		if(empty($computer)) throw new NotFoundException();
-		$computerGroup = $this->db->getComputerGroup($groupId);
+		$computerGroup = $this->db->selectComputerGroup($groupId);
 		if(empty($computerGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
 
-		$this->db->removeComputerFromGroup($computer->id, $computerGroup->id);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.remove_member', ['computer_id'=>$computer->id]);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.remove_from_group', ['computer_group_id'=>$computerGroup->id]);
+		$this->db->deleteComputerGroupMember($computer->id, $computerGroup->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.remove_member', ['computer_id'=>$computer->id]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computer->id, 'oco.computer.remove_from_group', ['computer_group_id'=>$computerGroup->id]);
 	}
 	public function removeComputerGroup($id, $force=false) {
-		$computerGroup = $this->db->getComputerGroup($id);
+		$computerGroup = $this->db->selectComputerGroup($id);
 		if(empty($computerGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
-			$subgroups = $this->db->getAllComputerGroup($id);
+			$subgroups = $this->db->selectAllComputerGroupByParentComputerGroupId($id);
 			if(count($subgroups) > 0) throw new InvalidRequestException(LANG('delete_failed_subgroups'));
 		}
-		$result = $this->db->removeComputerGroup($id);
+		$result = $this->db->deleteComputerGroup($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $computerGroup->id, 'oco.computer_group.delete', []);
 		return $result;
 	}
 
@@ -211,28 +215,28 @@ class CoreLogic {
 	public function getPackages(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$packagesFiltered = [];
-			foreach($this->db->getAllPackage() as $package) {
+			foreach($this->db->selectAllPackage() as $package) {
 				if($this->systemUser->checkPermission($package, PermissionManager::METHOD_READ, false))
 					$packagesFiltered[] = $package;
 			}
 			return $packagesFiltered;
 		} elseif($filterRessource instanceof Models\PackageFamily) {
-			$family = $this->db->getPackageFamily($filterRessource->id);
+			$family = $this->db->selectPackageFamily($filterRessource->id);
 			if(empty($family)) throw new NotFoundException();
 			$this->systemUser->checkPermission($family, PermissionManager::METHOD_READ);
-			return $this->db->getPackageByFamily($family->id);
+			return $this->db->selectAllPackageByPackageFamilyId($family->id);
 		} elseif($filterRessource instanceof Models\PackageGroup) {
-			$group = $this->db->getPackageGroup($filterRessource->id);
+			$group = $this->db->selectPackageGroup($filterRessource->id);
 			if(empty($group)) throw new NotFoundException();
 			$this->systemUser->checkPermission($group, PermissionManager::METHOD_READ);
-			return $this->db->getPackageByGroup($group->id);
+			return $this->db->selectAllPackageByPackageGroupId($group->id);
 		} else {
 			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
 		}
 	}
 	public function getPackageGroups($parentId=null) {
 		$packageGroupsFiltered = [];
-		foreach($this->db->getAllPackageGroup($parentId) as $packageGroup) {
+		foreach($this->db->selectAllPackageGroupByParentPackageGroupId($parentId) as $packageGroup) {
 			if($this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_READ, false))
 				$packageGroupsFiltered[] = $packageGroup;
 		}
@@ -241,7 +245,7 @@ class CoreLogic {
 	public function getPackageFamilies(Object $filterRessource=null, $binaryAsBase64=false) {
 		if($filterRessource === null) {
 			$packageFamiliesFiltered = [];
-			foreach($this->db->getAllPackageFamily($binaryAsBase64) as $packageFamily) {
+			foreach($this->db->selectAllPackageFamily($binaryAsBase64) as $packageFamily) {
 				if($this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_READ, false))
 					$packageFamiliesFiltered[] = $packageFamily;
 			}
@@ -251,19 +255,19 @@ class CoreLogic {
 		}
 	}
 	public function getPackage($id) {
-		$package = $this->db->getPackage($id);
+		$package = $this->db->selectPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_READ);
 		return $package;
 	}
 	public function getPackageGroup($id) {
-		$packageGroup = $this->db->getPackageGroup($id);
+		$packageGroup = $this->db->selectPackageGroup($id);
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_READ);
 		return $packageGroup;
 	}
 	public function getPackageFamily($id) {
-		$packageFamily = $this->db->getPackageFamily($id);
+		$packageFamily = $this->db->selectPackageFamily($id);
 		if(empty($packageFamily)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_READ);
 		return $packageFamily;
@@ -281,7 +285,7 @@ class CoreLogic {
 		if(empty($name) || empty($installProcedure) || empty($version)) {
 			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
-		if(!empty($this->db->getPackageByNameVersion($name, $version))) {
+		if(!empty($this->db->selectAllPackageByPackageFamilyNameAndVersion($name, $version))) {
 			throw new InvalidRequestException(LANG('package_exists_with_version'));
 		}
 		// decide what to do with uploaded file
@@ -301,11 +305,11 @@ class CoreLogic {
 		}
 		// insert into database
 		$packageFamilyId = null;
-		$existingPackageFamily = $this->db->getPackageFamilyByName($name);
+		$existingPackageFamily = $this->db->selectPackageFamilyByName($name);
 		if($existingPackageFamily === null) {
 			$this->systemUser->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE);
 
-			$packageFamilyId = $this->db->addPackageFamily($name, '');
+			$packageFamilyId = $this->db->insertPackageFamily($name, '');
 		} else {
 			$this->systemUser->checkPermission($existingPackageFamily, PermissionManager::METHOD_CREATE);
 
@@ -314,7 +318,7 @@ class CoreLogic {
 		if(!$packageFamilyId) {
 			throw new Exception(LANG('database_error'));
 		}
-		$insertId = $this->db->addPackage(
+		$insertId = $this->db->insertPackage(
 			$packageFamilyId, $version,
 			$author, $description,
 			$installProcedure,
@@ -336,77 +340,77 @@ class CoreLogic {
 			$result = rename($tmpFilePath, $finalFilePath);
 			if(!$result) {
 				error_log('Can not move uploaded file to: '.$finalFilePath);
-				$this->db->removePackage($insertId);
+				$this->db->deletePackage($insertId);
 				throw new Exception(LANG('cannot_move_uploaded_file'));
 			}
 		}
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.package.create', ['package_family_id'=>$packageFamilyId, 'version'=>$version]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.package.create', ['package_family_id'=>$packageFamilyId, 'version'=>$version]);
 		return $insertId;
 	}
 	public function addPackageToGroup($packageId, $groupId) {
-		$package = $this->db->getPackage($packageId);
+		$package = $this->db->selectPackage($packageId);
 		if(empty($package)) throw new NotFoundException();
-		$packageGroup = $this->db->getPackageGroup($groupId);
+		$packageGroup = $this->db->selectPackageGroup($groupId);
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
 
-		if(count($this->db->getPackageByPackageAndGroup($package->id, $packageGroup->id)) == 0) {
-			$this->db->addPackageToGroup($package->id, $packageGroup->id);
-			$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.add_member', ['package_id'=>$package->id]);
-			$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.add_to_group', ['package_group_id'=>$packageGroup->id]);
+		if(count($this->db->selectAllPackageByIdAndPackageGroupId($package->id, $packageGroup->id)) == 0) {
+			$this->db->insertPackageGroupMember($package->id, $packageGroup->id);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.add_member', ['package_id'=>$package->id]);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.add_to_group', ['package_group_id'=>$packageGroup->id]);
 		}
 	}
 	public function removePackageFromGroup($packageId, $groupId) {
-		$package = $this->db->getPackage($packageId);
+		$package = $this->db->selectPackage($packageId);
 		if(empty($package)) throw new NotFoundException();
-		$packageGroup = $this->db->getPackageGroup($groupId);
+		$packageGroup = $this->db->selectPackageGroup($groupId);
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
 
-		$this->db->removePackageFromGroup($package->id, $packageGroup->id);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.remove_member', ['package_id'=>$package->id]);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_from_group', ['package_group_id'=>$packageGroup->id]);
+		$this->db->deletePackageFromGroup($package->id, $packageGroup->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.remove_member', ['package_id'=>$package->id]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_from_group', ['package_group_id'=>$packageGroup->id]);
 	}
 	public function removePackage($id, $force=false) {
-		$package = $this->db->getPackage($id);
+		$package = $this->db->selectPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
-			$jobs = $this->db->getPendingJobsForPackageDetailPage($id);
+			$jobs = $this->db->getAllPendingJobByPackageId($id);
 			if(count($jobs) > 0) throw new InvalidRequestException(LANG('delete_failed_active_jobs'));
 
-			$dependentPackages = $this->db->getDependentForPackages($id);
+			$dependentPackages = $this->db->selectAllPackageDependencyByDependentPackageId($id);
 			if(count($dependentPackages) > 0) throw new InvalidRequestException(LANG('delete_failed_dependent_packages'));
 		}
 
 		$path = $package->getFilePath();
 		if(!empty($path)) unlink($path);
 
-		$result = $this->db->removePackage($package->id);
+		$result = $this->db->deletePackage($package->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.delete', json_encode($package));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.delete', json_encode($package));
 		return $result;
 	}
 	public function removePackageFamily($id) {
-		$packageFamily = $this->db->getPackageFamily($id);
+		$packageFamily = $this->db->selectPackageFamily($id);
 		if(empty($packageFamily)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_DELETE);
 
-		$packages = $this->db->getPackageByFamily($id);
+		$packages = $this->db->selectAllPackageByPackageFamilyId($id);
 		if(count($packages) > 0) throw new InvalidRequestException(LANG('delete_failed_package_family_contains_packages'));
 
-		$result = $this->db->removePackageFamily($id);
+		$result = $this->db->deletePackageFamily($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.delete', json_encode($packageFamily));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.delete', json_encode($packageFamily));
 		return $result;
 	}
 	public function createPackageGroup($name, $parentGroupId=null) {
 		if($parentGroupId == null) {
 			$this->systemUser->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE);
 		} else {
-			$packageGroup = $this->db->getPackageGroup($parentGroupId);
+			$packageGroup = $this->db->selectPackageGroup($parentGroupId);
 			if(empty($packageGroup)) throw new NotFoundException();
 			$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_CREATE);
 		}
@@ -414,81 +418,73 @@ class CoreLogic {
 		if(empty(trim($name))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$insertId = $this->db->addPackageGroup($name, $parentGroupId);
+		$insertId = $this->db->insertPackageGroup($name, $parentGroupId);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.package_group.create', ['name'=>$name, 'parent_packge_group_id'=>$parentGroupId]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.package_group.create', ['name'=>$name, 'parent_packge_group_id'=>$parentGroupId]);
 		return $insertId;
 	}
 	public function removePackageGroup($id, $force=false) {
-		$packageGroup = $this->db->getPackageGroup($id);
+		$packageGroup = $this->db->selectPackageGroup($id);
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
-			$subgroups = $this->db->getAllPackageGroup($id);
+			$subgroups = $this->db->selectAllPackageGroupByParentPackageGroupId($id);
 			if(count($subgroups) > 0) throw new InvalidRequestException(LANG('delete_failed_subgroups'));
 		}
 
-		$result = $this->db->removePackageGroup($id);
+		$result = $this->db->deletePackageGroup($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.delete', []);
 		return $result;
 	}
-	public function renamePackageFamily($id, $newName) {
-		$packageFamily = $this->db->getPackageFamily($id);
+	public function editPackageFamily($id, $name, $notes) {
+		$packageFamily = $this->db->selectPackageFamily($id);
 		if(empty($packageFamily)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
 
-		if(empty(trim($newName))) {
+		if(empty(trim($name))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$this->db->updatePackageFamily($packageFamily->id, $newName, $packageFamily->notes, $packageFamily->icon);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.update', ['name'=>$newName]);
+		$this->db->updatePackageFamily($packageFamily->id, $name, $notes, $packageFamily->icon);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.update', ['name'=>$name, 'notes'=>$notes]);
 	}
-	public function updatePackageFamilyNotes($id, $notes) {
-		$packageFamily = $this->db->getPackageFamily($id);
-		if(empty($packageFamily)) throw new NotFoundException();
-		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
-
-		$this->db->updatePackageFamily($packageFamily->id, $packageFamily->name, $notes, $packageFamily->icon);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.update', ['notes'=>$notes]);
-	}
-	public function updatePackageFamilyIcon($id, $icon) {
-		$packageFamily = $this->db->getPackageFamily($id);
+	public function editPackageFamilyIcon($id, $icon) {
+		$packageFamily = $this->db->selectPackageFamily($id);
 		if(empty($packageFamily)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
 
 		$this->db->updatePackageFamily($packageFamily->id, $packageFamily->name, $packageFamily->notes, $icon);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.update', ['icon'=>base64_encode($icon)]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageFamily->id, 'oco.package_family.update', ['icon'=>base64_encode($icon)]);
 	}
 	public function addPackageDependency($packageId, $dependentPackageId) {
-		$package = $this->db->getPackage($packageId);
+		$package = $this->db->selectPackage($packageId);
 		if(empty($package)) throw new NotFoundException();
-		$dependentPackage = $this->db->getPackage($dependentPackageId);
+		$dependentPackage = $this->db->selectPackage($dependentPackageId);
 		if(empty($dependentPackage)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($dependentPackage, PermissionManager::METHOD_WRITE);
 
-		$this->db->addPackageDependency($package->id, $dependentPackage->id);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.add_dependency', ['dependent_package_id'=>$dependentPackage->id]);
+		$this->db->insertPackageDependency($package->id, $dependentPackage->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.add_dependency', ['dependent_package_id'=>$dependentPackage->id]);
 	}
 	public function removePackageDependency($packageId, $dependentPackageId) {
-		$package = $this->db->getPackage($packageId);
+		$package = $this->db->selectPackage($packageId);
 		if(empty($package)) throw new NotFoundException();
-		$dependentPackage = $this->db->getPackage($dependentPackageId);
+		$dependentPackage = $this->db->selectPackage($dependentPackageId);
 		if(empty($dependentPackage)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($dependentPackage, PermissionManager::METHOD_WRITE);
 
-		$this->db->removePackageDependency($package->id, $dependentPackage->id);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_dependency', ['dependent_package_id'=>$dependentPackage->id]);
+		$this->db->deletePackageDependencyByPackageIdAndDependentPackageId($package->id, $dependentPackage->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_dependency', ['dependent_package_id'=>$dependentPackage->id]);
 	}
-	public function updatePackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall) {
-		$package = $this->db->getPackage($id);
+	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall) {
+		$package = $this->db->selectPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 
-		$package_family = $this->db->getPackageFamily($package_family_id);
+		$package_family = $this->db->selectPackageFamily($package_family_id);
 		if(empty($package_family)) throw new NotFoundException();
 		$this->systemUser->checkPermission($package_family, PermissionManager::METHOD_WRITE);
 
@@ -522,7 +518,7 @@ class CoreLogic {
 			intval($uninstallProcedurePostAction),
 			intval($downloadForUninstall),
 		);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', [
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.update', [
 			'version'=>$version,
 			'compatible_os'=>$compatibleOs,
 			'compatible_os_version'=>$compatibleOsVersion,
@@ -537,30 +533,30 @@ class CoreLogic {
 		]);
 	}
 	public function reorderPackageInGroup($groupId, $oldPos, $newPos) {
-		$packageGroup = $this->db->getPackageGroup($groupId);
+		$packageGroup = $this->db->selectPackageGroup($groupId);
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
 
 		$this->db->reorderPackageInGroup($packageGroup->id, $oldPos, $newPos);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.reorder', ['old_pos'=>$oldPos, 'new_pos'=>$newPos]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.reorder', ['old_pos'=>$oldPos, 'new_pos'=>$newPos]);
 	}
 	public function renamePackageGroup($id, $newName) {
-		$packageGroup = $this->db->getPackageGroup($id);
+		$packageGroup = $this->db->selectPackageGroup($id);
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_DELETE);
 
 		if(empty(trim($newName))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$this->db->renamePackageGroup($packageGroup->id, $newName);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.update', ['name'=>$newName]);
+		$this->db->updatePackageGroup($packageGroup->id, $newName);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $packageGroup->id, 'oco.package_group.update', ['name'=>$newName]);
 	}
 
 	/*** Deployment / Job Container Operations ***/
 	public function getDeploymentRules(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$deploymentRulesFiltered = [];
-			foreach($this->db->getAllDeploymentRules() as $deploymentRule) {
+			foreach($this->db->selectAllDeploymentRule() as $deploymentRule) {
 				if($this->systemUser->checkPermission($deploymentRule, PermissionManager::METHOD_READ, false))
 					$deploymentRulesFiltered[] = $deploymentRule;
 			}
@@ -570,13 +566,13 @@ class CoreLogic {
 		}
 	}
 	public function getDeploymentRule($id) {
-		$deploymentRule = $this->db->getDeploymentRule($id);
+		$deploymentRule = $this->db->selectDeploymentRule($id);
 		if(empty($deploymentRule)) throw new NotFoundException();
 		$this->systemUser->checkPermission($deploymentRule, PermissionManager::METHOD_READ);
 		return $deploymentRule;
 	}
 	public function evaluateDeploymentRule($id) {
-		$deploymentRule = $this->db->getDeploymentRule($id);
+		$deploymentRule = $this->db->selectDeploymentRule($id);
 		if(empty($deploymentRule)) throw new NotFoundException();
 		$this->systemUser->checkPermission($deploymentRule, PermissionManager::METHOD_WRITE);
 		return $this->db->evaluateDeploymentRule($deploymentRule->id);
@@ -596,16 +592,16 @@ class CoreLogic {
 		if(!in_array($auto_uninstall, ['0', '1'])) {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
-		$computerGroup = $this->db->getComputerGroup($computer_group_id);
+		$computerGroup = $this->db->selectComputerGroup($computer_group_id);
 		if(empty($computerGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
-		$packageGroup = $this->db->getPackageGroup($package_group_id);
+		$packageGroup = $this->db->selectPackageGroup($package_group_id);
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
 
-		$insertId = $this->db->addDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall);
+		$insertId = $this->db->insertDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.deployment_rule.create', [
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.deployment_rule.create', [
 			'name'=>$name,
 			'notes'=>$notes,
 			'author'=>$author,
@@ -617,8 +613,8 @@ class CoreLogic {
 		]);
 		return $insertId;
 	}
-	public function updateDeploymentRule($id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
-		$dr = $this->db->getDeploymentRule($id);
+	public function editDeploymentRule($id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+		$dr = $this->db->selectDeploymentRule($id);
 		if(empty($dr)) throw new NotFoundException();
 		$this->systemUser->checkPermission($dr, PermissionManager::METHOD_WRITE);
 
@@ -634,15 +630,15 @@ class CoreLogic {
 		if(!in_array($auto_uninstall, ['0', '1'])) {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
-		$computerGroup = $this->db->getComputerGroup($computer_group_id);
+		$computerGroup = $this->db->selectComputerGroup($computer_group_id);
 		if(empty($computerGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
-		$packageGroup = $this->db->getPackageGroup($package_group_id);
+		$packageGroup = $this->db->selectPackageGroup($package_group_id);
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
 
 		$this->db->updateDeploymentRule($dr->id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $dr->id, 'oco.deployment_rule.update', [
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $dr->id, 'oco.deployment_rule.update', [
 			'name'=>$name,
 			'notes'=>$notes,
 			'enabled'=>$enabled,
@@ -653,19 +649,19 @@ class CoreLogic {
 		]);
 	}
 	public function removeDeploymentRule($id) {
-		$dr = $this->db->getDeploymentRule($id);
+		$dr = $this->db->selectDeploymentRule($id);
 		if(empty($dr)) throw new NotFoundException();
 		$this->systemUser->checkPermission($dr, PermissionManager::METHOD_DELETE);
 
-		$result = $this->db->removeDeploymentRule($dr->id);
+		$result = $this->db->deleteDeploymentRule($dr->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $dr->id, 'oco.deployment_rule.delete', json_encode($dr));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $dr->id, 'oco.deployment_rule.delete', json_encode($dr));
 		return $result;
 	}
 	public function getJobContainers(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$jobContainersFiltered = [];
-			foreach($this->db->getAllJobContainer() as $jobContainer) {
+			foreach($this->db->selectAllJobContainer() as $jobContainer) {
 				if($this->systemUser->checkPermission($jobContainer, PermissionManager::METHOD_READ, false))
 					$jobContainersFiltered[] = $jobContainer;
 			}
@@ -675,7 +671,7 @@ class CoreLogic {
 		}
 	}
 	public function getJobContainer($id) {
-		$jobContainer = $this->db->getJobContainer($id);
+		$jobContainer = $this->db->selectJobContainer($id);
 		if(empty($jobContainer)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jobContainer, PermissionManager::METHOD_READ);
 		return $jobContainer;
@@ -711,18 +707,18 @@ class CoreLogic {
 		$computer_report_ids = [];
 		$package_report_ids = [];
 		if(!empty($computerIds)) foreach($computerIds as $computer_id) {
-			$tmpComputer = $this->db->getComputer($computer_id);
+			$tmpComputer = $this->db->selectComputer($computer_id);
 			if($tmpComputer == null) continue;
 			if(!$this->systemUser->checkPermission($tmpComputer, PermissionManager::METHOD_DEPLOY, false)) continue;
 			$computer_ids[$computer_id] = $computer_id;
 		}
 		if(!empty($computerGroupIds)) foreach($computerGroupIds as $computer_group_id) {
-			$tmpComputerGroup = $this->db->getComputerGroup($computer_group_id);
+			$tmpComputerGroup = $this->db->selectComputerGroup($computer_group_id);
 			if($tmpComputerGroup == null) continue;
 			$computer_group_ids[] = $computer_group_id;
 		}
 		if(!empty($computerReportIds)) foreach($computerReportIds as $computer_report_id) {
-			$tmpComputerReport = $this->db->getReport($computer_report_id);
+			$tmpComputerReport = $this->db->selectReport($computer_report_id);
 			if($tmpComputerReport == null) continue;
 			$computer_report_ids[] = $computer_report_id;
 		}
@@ -731,25 +727,25 @@ class CoreLogic {
 			$packages = $packages + $this->compileDeployPackageArray($package_id);
 		}
 		if(!empty($packageGroupIds)) foreach($packageGroupIds as $package_group_id) {
-			$tmpPackageGroup = $this->db->getPackageGroup($package_group_id);
+			$tmpPackageGroup = $this->db->selectPackageGroup($package_group_id);
 			if($tmpPackageGroup == null) continue;
 			$package_group_ids[] = $package_group_id;
 		}
 		if(!empty($packageReportIds)) foreach($packageReportIds as $package_report_id) {
-			$tmpPackageReport = $this->db->getReport($package_report_id);
+			$tmpPackageReport = $this->db->selectReport($package_report_id);
 			if($tmpPackageReport == null) continue;
 			$package_report_ids[] = $package_report_id;
 		}
 
 		// add all group members
 		foreach($computer_group_ids as $computer_group_id) {
-			foreach($this->db->getComputerByGroup($computer_group_id) as $c) {
+			foreach($this->db->selectAllComputerByComputerGroupId($computer_group_id) as $c) {
 				if(!$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 				$computer_ids[$c->id] = $c->id;
 			}
 		}
 		foreach($package_group_ids as $package_group_id) {
-			foreach($this->db->getPackageByGroup($package_group_id) as $p) {
+			foreach($this->db->selectAllPackageByPackageGroupId($package_group_id) as $p) {
 				$packages = $packages + $this->compileDeployPackageArray($p->id);
 			}
 		}
@@ -758,7 +754,7 @@ class CoreLogic {
 		foreach($computer_report_ids as $computer_report_id) {
 			//try { // ignore report with syntax errors
 				foreach($this->executeReport($computer_report_id) as $row) {
-					$c = $this->db->getComputer($row['computer_id']);
+					$c = $this->db->selectComputer($row['computer_id']);
 					if(empty($c) || !$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 					$computer_ids[$c->id] = $c->id;
 				}
@@ -770,7 +766,7 @@ class CoreLogic {
 		foreach($package_report_ids as $package_report_id) {
 			//try { // ignore report with syntax errors
 				foreach($this->executeReport($package_report_id) as $row) {
-					$p = $this->db->getPackage($row['package_id']);
+					$p = $this->db->selectPackage($row['package_id']);
 					if(empty($p)) continue;
 					$packages = $packages + $this->compileDeployPackageArray($p->id);
 				}
@@ -793,7 +789,7 @@ class CoreLogic {
 				$wolSent = 1;
 				$wolMacAdresses = [];
 				foreach($computer_ids as $cid) {
-					foreach($this->db->getComputerNetwork($cid) as $cn) {
+					foreach($this->db->selectAllComputerNetworkByComputerId($cid) as $cn) {
 						$wolMacAdresses[] = $cn->mac;
 					}
 				}
@@ -804,7 +800,7 @@ class CoreLogic {
 		}
 
 		// create jobs
-		if($jcid = $this->db->addJobContainer(
+		if($jcid = $this->db->insertJobContainer(
 			$name, $author,
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
@@ -814,7 +810,7 @@ class CoreLogic {
 		)) {
 			foreach($computer_ids as $computer_id) {
 
-				$tmpComputer = $this->db->getComputer($computer_id);
+				$tmpComputer = $this->db->selectComputer($computer_id);
 				$createdUninstallJobs = [];
 				$sequence = 1;
 
@@ -826,7 +822,7 @@ class CoreLogic {
 					if(!empty($package['compatible_os']) && !empty($tmpComputer->os)
 					&& $package['compatible_os'] != $tmpComputer->os) {
 						// create failed job
-						if($this->db->addStaticJob($jcid, $computer_id,
+						if($this->db->insertStaticJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
 							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 							$package['install_procedure_post_action'], $restartTimeout,
@@ -839,7 +835,7 @@ class CoreLogic {
 					if(!empty($package['compatible_os_version']) && !empty($tmpComputer->os_version)
 					&& $package['compatible_os_version'] != $tmpComputer->os_version) {
 						// create failed job
-						if($this->db->addStaticJob($jcid, $computer_id,
+						if($this->db->insertStaticJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
 							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 							$package['install_procedure_post_action'], $restartTimeout,
@@ -850,7 +846,7 @@ class CoreLogic {
 						continue;
 					}
 
-					foreach($this->db->getComputerPackagesByComputer($computer_id) as $cp) {
+					foreach($this->db->selectAllComputerPackageByComputerId($computer_id) as $cp) {
 						// ignore if it is an automatically added dependency package and version is the same as already installed
 						if($package['is_dependency'] && strval($pid) === $cp->package_id) continue 2;
 
@@ -864,14 +860,14 @@ class CoreLogic {
 						if(!empty($autoCreateUninstallJobs)) {
 							// uninstall it, if it is from the same package family ...
 							if($cp->package_family_id === $package['package_family_id']) {
-								$cpp = $this->db->getPackage($cp->package_id, null);
+								$cpp = $this->db->selectPackage($cp->package_id, null);
 								if($cpp == null) continue;
 								// ... but not, if it is another package family version and autoCreateUninstallJobs flag is set
 								if($cp->package_id !== strval($pid) && empty($autoCreateUninstallJobs)) continue;
 								// ... and not, if this uninstall job was already created
 								if(in_array($cp->id, $createdUninstallJobs)) continue;
 								$createdUninstallJobs[] = $cp->id;
-								$this->db->addStaticJob($jcid, $computer_id,
+								$this->db->insertStaticJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
 									1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
 									$cpp->uninstall_procedure_post_action, $restartTimeout,
@@ -883,7 +879,7 @@ class CoreLogic {
 					}
 
 					// create installation job
-					if($this->db->addStaticJob($jcid, $computer_id,
+					if($this->db->insertStaticJob($jcid, $computer_id,
 						$pid, $package['procedure'], $package['success_return_codes'],
 						0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 						$package['install_procedure_post_action'], $restartTimeout,
@@ -903,8 +899,8 @@ class CoreLogic {
 
 		}
 
-		$jobs = $this->db->getStaticJobsByJobContainer($jcid);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
+		$jobs = $this->db->selectAllStaticJobByJobContainer($jcid);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 		return $jcid;
 	}
 	private function compileIpRanges(Array $constraintIpRanges) {
@@ -932,14 +928,14 @@ class CoreLogic {
 		$packages = [];
 
 		// check if id exists
-		$p = $this->db->getPackage($packageId, null);
+		$p = $this->db->selectPackage($packageId, null);
 		if($p == null) return [];
 
 		// check permission
 		if(!$this->systemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) return [];
 
 		// recursive dependency resolver
-		foreach($this->db->getDependentPackages($p->id) as $p2) {
+		foreach($this->db->selectAllPackageDependencyByPackageId($p->id) as $p2) {
 			if(array_key_exists($p2->id, $existingPackages)) continue;
 			$packages = $packages + $this->compileDeployPackageArray($p2->id, true, array_merge([$p2->id=>$p2], $existingPackages));
 		}
@@ -985,9 +981,9 @@ class CoreLogic {
 		// wol handling
 		$computer_ids = [];
 		foreach($installationIds as $id) {
-			$ap = $this->db->getComputerPackage($id);
+			$ap = $this->db->selectComputerPackage($id);
 			if(empty($ap)) continue;
-			$tmpComputer = $this->db->getComputer($ap->computer_id);
+			$tmpComputer = $this->db->selectComputer($ap->computer_id);
 			if(empty($tmpComputer)) continue;
 			if(!$this->systemUser->checkPermission($tmpComputer, PermissionManager::METHOD_DEPLOY, false)) continue;
 
@@ -1000,7 +996,7 @@ class CoreLogic {
 				$wolSent = 1;
 				$wolMacAdresses = [];
 				foreach($computer_ids as $cid) {
-					foreach($this->db->getComputerNetwork($cid) as $cn) {
+					foreach($this->db->selectAllComputerNetworkByComputerId($cid) as $cn) {
 						$wolMacAdresses[] = $cn->mac;
 					}
 				}
@@ -1017,53 +1013,53 @@ class CoreLogic {
 
 		// create jobs
 		$jobs = [];
-		$jcid = $this->db->addJobContainer(
+		$jcid = $this->db->insertJobContainer(
 			$name, $author,
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
 			$description, $wolSent, $shutdownWakedAfterCompletion, $sequenceMode, $priority, $this->compileIpRanges($constraintIpRanges)
 		);
 		foreach($installationIds as $id) {
-			$ap = $this->db->getComputerPackage($id); if(empty($ap)) continue;
-			$p = $this->db->getPackage($ap->package_id); if(empty($p)) continue;
-			$c = $this->db->getComputer($ap->computer_id); if(empty($c)) continue;
+			$ap = $this->db->selectComputerPackage($id); if(empty($ap)) continue;
+			$p = $this->db->selectPackage($ap->package_id); if(empty($p)) continue;
+			$c = $this->db->selectComputer($ap->computer_id); if(empty($c)) continue;
 
 			if(!$this->systemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 			if(!$this->systemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-			$jid = $this->db->addStaticJob($jcid, $ap->computer_id,
+			$jid = $this->db->insertStaticJob($jcid, $ap->computer_id,
 				$ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes,
 				1/*is_uninstall*/, ($p->download_for_uninstall&&$p->getFilePath()) ? 1 : 0,
 				$p->uninstall_procedure_post_action, $restartTimeout,
 				0/*sequence*/
 			);
-			$jobs[] = $this->db->getStaticJob($jid);
+			$jobs[] = $this->db->selectStaticJob($jid);
 		}
 		// if instant WOL: check if computers are currently online (to know if we should shut them down after all jobs are done)
 		if(strtotime($dateStart) <= time() && $useWol && $shutdownWakedAfterCompletion) {
 			$this->db->setComputerOnlineStateForWolShutdown($jcid);
 		}
 
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 	}
 	public function removeComputerAssignedPackage($id) {
-		$computerPackageAssignment = $this->db->getComputerPackage($id);
+		$computerPackageAssignment = $this->db->selectComputerPackage($id);
 		if(!$computerPackageAssignment) throw new NotFoundException();
-		$computer = $this->db->getComputer($computerPackageAssignment->computer_id);
+		$computer = $this->db->selectComputer($computerPackageAssignment->computer_id);
 		if(!$computer) throw new NotFoundException();
-		$package = $this->db->getPackage($computerPackageAssignment->package_id);
+		$package = $this->db->selectPackage($computerPackageAssignment->package_id);
 		if(!$package) throw new NotFoundException();
 
 		$this->systemUser->checkPermission($computer, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_WRITE);
 
-		$result = $this->db->removeComputerAssignedPackage($id);
+		$result = $this->db->deleteComputerPackage($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_assignment', ['computer_id'=>$computer->id]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_assignment', ['computer_id'=>$computer->id]);
 		return $result;
 	}
 	public function renewFailedStaticJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
-		$jc = $this->db->getJobContainer($renewContainerId);
+		$jc = $this->db->selectJobContainer($renewContainerId);
 		if(!$jc) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE);
@@ -1089,14 +1085,14 @@ class CoreLogic {
 		}
 
 		// get old job container
-		$container = $this->db->getJobContainer($renewContainerId);
+		$container = $this->db->selectJobContainer($renewContainerId);
 		if($container === null) {
 			throw new NotFoundException();
 		}
 
 		// wol handling
 		$computer_ids = [];
-		foreach($this->db->getStaticJobsByJobContainer($container->id) as $job) {
+		foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 			if($job->state == Models\Job::STATE_FAILED
 			|| $job->state == Models\Job::STATE_EXPIRED
 			|| $job->state == Models\Job::STATE_OS_INCOMPATIBLE
@@ -1111,7 +1107,7 @@ class CoreLogic {
 				$wolSent = 1;
 				$wolMacAdresses = [];
 				foreach($computer_ids as $cid) {
-					foreach($this->db->getComputerNetwork($cid) as $cn) {
+					foreach($this->db->selectAllComputerNetworkByComputerId($cid) as $cn) {
 						$wolMacAdresses[] = $cn->mac;
 					}
 				}
@@ -1123,20 +1119,20 @@ class CoreLogic {
 
 		// create renew jobs
 		$jobs = [];
-		if($jcid = $this->db->addJobContainer(
+		if($jcid = $this->db->insertJobContainer(
 			$name, $author,
 			$dateStart, empty($dateEnd) ? null : $dateEnd,
 			$description, $wolSent, $shutdownWakedAfterCompletion,
 			$sequenceMode, $priority, $container->agent_ip_ranges
 		)) {
-			foreach($this->db->getStaticJobsByJobContainer($container->id) as $job) {
+			foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 				if($job->state == Models\Job::STATE_FAILED
 				|| $job->state == Models\Job::STATE_EXPIRED
 				|| $job->state == Models\Job::STATE_OS_INCOMPATIBLE
 				|| $job->state == Models\Job::STATE_PACKAGE_CONFLICT) {
 
 					// use the current package procedure, return codes, post action
-					$package = $this->db->getPackage($job->package_id);
+					$package = $this->db->selectPackage($job->package_id);
 					$newJob = new Models\StaticJob();
 					$newJob->job_container_id = $jcid;
 					$newJob->computer_id = $job->computer_id;
@@ -1149,7 +1145,7 @@ class CoreLogic {
 					$newJob->post_action_timeout = $job->post_action_timeout;
 					$newJob->sequence = $job->sequence;
 
-					if($this->db->addStaticJob($newJob->job_container_id,
+					if($this->db->insertStaticJob($newJob->job_container_id,
 						$newJob->computer_id, $newJob->package_id,
 						$newJob->procedure, $newJob->success_return_codes,
 						$newJob->is_uninstall, $newJob->download,
@@ -1157,14 +1153,14 @@ class CoreLogic {
 						$newJob->sequence
 					)) {
 						$jobs[] = $newJob;
-						$this->db->removeStaticJob($job->id);
+						$this->db->deleteStaticJob($job->id);
 					}
 				}
 			}
 
 			// check if there are any computer & packages
 			if(count($jobs) == 0) {
-				$this->db->removeJobContainer($jcid);
+				$this->db->deleteJobContainer($jcid);
 				throw new InvalidRequestException(LANG('no_jobs_created'));
 			}
 
@@ -1173,11 +1169,11 @@ class CoreLogic {
 				$this->db->setComputerOnlineStateForWolShutdown($jcid);
 			}
 
-			$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jcid, 'oco.job_container.create', ['name'>=$name, 'jobs'=>$jobs]);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jcid, 'oco.job_container.create', ['name'>=$name, 'jobs'=>$jobs]);
 		}
 	}
-	public function updateJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $sequence_mode, $priority, $agent_ip_ranges) {
-		$jc = $this->db->getJobContainer($id);
+	public function editJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $sequence_mode, $priority, $agent_ip_ranges) {
+		$jc = $this->db->selectJobContainer($id);
 		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
 
@@ -1220,7 +1216,7 @@ class CoreLogic {
 			$priority,
 			$agent_ip_ranges
 		);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', [
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.update', [
 			'name'=>$name,
 			'enabled'=>$enabled,
 			'start_time'=>$start_time,
@@ -1232,43 +1228,43 @@ class CoreLogic {
 		]);
 	}
 	public function moveStaticJobToContainer($jobId, $containerId) {
-		$job = $this->db->getStaticJob($jobId);
+		$job = $this->db->selectStaticJob($jobId);
 		if(empty($job) || !$job instanceof Models\StaticJob) throw new NotFoundException();
-		$oldContainer = $this->db->getJobContainer($job->job_container_id);
+		$oldContainer = $this->db->selectJobContainer($job->job_container_id);
 		if(empty($oldContainer)) throw new NotFoundException();
-		$newContainer = $this->db->getJobContainer($containerId);
+		$newContainer = $this->db->selectJobContainer($containerId);
 		if(empty($newContainer)) throw new NotFoundException();
 		$this->systemUser->checkPermission($oldContainer, PermissionManager::METHOD_DELETE);
 		$this->systemUser->checkPermission($oldContainer, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($newContainer, PermissionManager::METHOD_WRITE);
 
-		$this->db->moveStaticJobToContainer($job->id, $newContainer->id);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $newContainer->id, 'oco.job_container.move_jobs', [
+		$this->db->moveStaticJobToJobContainer($job->id, $newContainer->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $newContainer->id, 'oco.job_container.move_jobs', [
 			'old_container_id'=>$oldContainer->id,
 			'new_container_id'=>$newContainer->id,
 			'job_id'=>$job->id,
 		]);
 	}
 	public function removeJobContainer($id) {
-		$jc = $this->db->getJobContainer($id);
+		$jc = $this->db->selectJobContainer($id);
 		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_DELETE);
 
-		$result = $this->db->removeJobContainer($id);
+		$result = $this->db->deleteJobContainer($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.delete', json_encode($jc));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $jc->id, 'oco.job_container.delete', json_encode($jc));
 		return $result;
 	}
 	public function removeStaticJob($id) {
-		$job = $this->db->getStaticJob($id);
+		$job = $this->db->selectStaticJob($id);
 		if(empty($job) || !$job instanceof Models\StaticJob) throw new NotFoundException();
-		$jc = $this->db->getJobContainer($job->job_container_id);
+		$jc = $this->db->selectJobContainer($job->job_container_id);
 		if(empty($jc)) throw new NotFoundException();
 		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_DELETE);
 
-		$result = $this->db->removeStaticJob($id);
+		$result = $this->db->deleteStaticJob($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $job->id, 'oco.job_container.job.delete', ['job_container_id'=>$jc->id]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $job->id, 'oco.job_container.job.delete', ['job_container_id'=>$jc->id]);
 		return $result;
 	}
 
@@ -1276,42 +1272,42 @@ class CoreLogic {
 	public function getReports(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$reportsFiltered = [];
-			foreach($this->db->getAllReport() as $report) {
+			foreach($this->db->selectAllReport() as $report) {
 				if($this->systemUser->checkPermission($report, PermissionManager::METHOD_READ, false))
 					$reportsFiltered[] = $report;
 			}
 			return $reportsFiltered;
 		} elseif($filterRessource instanceof Models\ReportGroup) {
-			$group = $this->db->getReportGroup($filterRessource->id);
+			$group = $this->db->selectReportGroup($filterRessource->id);
 			if(empty($group)) throw new NotFoundException();
 			$this->systemUser->checkPermission($group, PermissionManager::METHOD_READ);
-			return $this->db->getAllReportByGroup($group->id);
+			return $this->db->selectAllReportByReportGroupId($group->id);
 		} else {
 			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
 		}
 	}
 	public function getReportGroups($parentId=null) {
 		$reportGroupsFiltered = [];
-		foreach($this->db->getAllReportGroup($parentId) as $reportGroup) {
+		foreach($this->db->selectAllReportGroupByParentReportGroupId($parentId) as $reportGroup) {
 			if($this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_READ, false))
 				$reportGroupsFiltered[] = $reportGroup;
 		}
 		return $reportGroupsFiltered;
 	}
 	public function getReport($id) {
-		$report = $this->db->getReport($id);
+		$report = $this->db->selectReport($id);
 		if(empty($report)) throw new NotFoundException();
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_READ);
 		return $report;
 	}
 	public function executeReport($id) {
-		$report = $this->db->getReport($id);
+		$report = $this->db->selectReport($id);
 		if(empty($report)) throw new NotFoundException();
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_READ);
 		return $this->db->executeReport($report->id);
 	}
 	public function getReportGroup($id) {
-		$reportGroup = $this->db->getReportGroup($id);
+		$reportGroup = $this->db->selectReportGroup($id);
 		if(empty($reportGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_READ);
 		return $reportGroup;
@@ -1319,7 +1315,7 @@ class CoreLogic {
 	public function createReport($name, $notes, $query, $groupId=0) {
 		$this->systemUser->checkPermission(new Models\Report(), PermissionManager::METHOD_CREATE);
 		if(!empty($groupId)) {
-			$reportGroup = $this->db->getReportGroup($groupId);
+			$reportGroup = $this->db->selectReportGroup($groupId);
 			if(empty($reportGroup)) throw new NotFoundException();
 			$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
 		}
@@ -1327,13 +1323,13 @@ class CoreLogic {
 		if(empty(trim($name)) || empty(trim($query))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$insertId = $this->db->addReport($groupId, $name, $notes, $query);
+		$insertId = $this->db->insertReport($groupId, $name, $notes, $query);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.report.create', ['name'=>$name, 'notes'=>$notes, 'query'=>$query, 'report_group_id'=>$groupId]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.report.create', ['name'=>$name, 'notes'=>$notes, 'query'=>$query, 'report_group_id'=>$groupId]);
 		return $insertId;
 	}
-	public function updateReport($id, $name, $notes, $query) {
-		$report = $this->db->getReport($id);
+	public function editReport($id, $name, $notes, $query) {
+		$report = $this->db->selectReport($id);
 		if(empty($report)) throw new NotFoundException();
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_WRITE);
 
@@ -1341,34 +1337,34 @@ class CoreLogic {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 		$this->db->updateReport($report->id, $report->report_group_id, $name, $notes, $query);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.update', ['name'=>$name, 'notes'=>$notes, 'query'=>$query]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.update', ['name'=>$name, 'notes'=>$notes, 'query'=>$query]);
 	}
 	public function moveReportToGroup($reportId, $groupId) {
-		$report = $this->db->getReport($reportId);
+		$report = $this->db->selectReport($reportId);
 		if(empty($report)) throw new ENotFoundxception();
-		$reportGroup = $this->db->getReportGroup($groupId);
+		$reportGroup = $this->db->selectReportGroup($groupId);
 		if(empty($reportGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
 
 		$this->db->updateReport($report->id, intval($groupId), $report->name, $report->notes, $report->query);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.move', ['group_id'=>$reportGroup->id]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.move', ['group_id'=>$reportGroup->id]);
 	}
 	public function removeReport($id) {
-		$report = $this->db->getReport($id);
+		$report = $this->db->selectReport($id);
 		if(empty($report)) throw new NotFoundException();
 		$this->systemUser->checkPermission($report, PermissionManager::METHOD_DELETE);
 
-		$result = $this->db->removeReport($report->id);
+		$result = $this->db->deleteReport($report->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.delete', json_encode($report));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $report->id, 'oco.report.delete', json_encode($report));
 		return $result;
 	}
 	public function createReportGroup($name, $parentGroupId=null) {
 		if($parentGroupId == null) {
 			$this->systemUser->checkPermission(new Models\ReportGroup(), PermissionManager::METHOD_CREATE);
 		} else {
-			$reportGroup = $this->db->getReportGroup($parentGroupId);
+			$reportGroup = $this->db->selectReportGroup($parentGroupId);
 			if(empty($reportGroup)) throw new NotFoundException();
 			$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_CREATE);
 		}
@@ -1376,34 +1372,34 @@ class CoreLogic {
 		if(empty(trim($name))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$insertId = $this->db->addReportGroup($name, $parentGroupId);
+		$insertId = $this->db->insertReportGroup($name, $parentGroupId);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.report_group.create', ['name'=>$name, 'parent_report_group_id'=>$parentGroupId]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.report_group.create', ['name'=>$name, 'parent_report_group_id'=>$parentGroupId]);
 		return $insertId;
 	}
 	public function renameReportGroup($id, $newName) {
-		$reportGroup = $this->db->getReportGroup($id);
+		$reportGroup = $this->db->selectReportGroup($id);
 		if(empty($reportGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
 
 		if(empty(trim($newName))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$this->db->renameReportGroup($reportGroup->id, $newName);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $reportGroup->id, 'oco.report_group.update', ['name'=>$newName]);
+		$this->db->updateReportGroup($reportGroup->id, $newName);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $reportGroup->id, 'oco.report_group.update', ['name'=>$newName]);
 	}
 	public function removeReportGroup($id, $force=false) {
-		$reportGroup = $this->db->getReportGroup($id);
+		$reportGroup = $this->db->selectReportGroup($id);
 		if(empty($reportGroup)) throw new NotFoundException();
 		$this->systemUser->checkPermission($reportGroup, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
-			$subgroups = $this->db->getAllReportGroup($id);
+			$subgroups = $this->db->selectAllReportGroupByParentReportGroupId($id);
 			if(count($subgroups) > 0) throw new InvalidRequestException(LANG('delete_failed_subgroups'));
 		}
-		$result = $this->db->removeReportGroup($reportGroup->id);
+		$result = $this->db->deleteReportGroup($reportGroup->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $reportGroup->id, 'oco.report_group.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $reportGroup->id, 'oco.report_group.delete', []);
 		return $result;
 	}
 
@@ -1411,7 +1407,7 @@ class CoreLogic {
 	public function getDomainUsers(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$this->systemUser->checkPermission(new Models\DomainUser(), PermissionManager::METHOD_READ);
-			return $this->db->getAllDomainUser();
+			return $this->db->selectAllDomainUser();
 		} else {
 			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
 		}
@@ -1419,34 +1415,34 @@ class CoreLogic {
 	public function getDomainUser($id) {
 		$this->systemUser->checkPermission(new Models\DomainUser(), PermissionManager::METHOD_READ);
 
-		$domainUser = $this->db->getDomainUser($id);
+		$domainUser = $this->db->selectDomainUser($id);
 		if(empty($domainUser)) throw new NotFoundException();
 		return $domainUser;
 	}
 	public function removeDomainUser($id) {
-		$du = $this->db->getDomainUser($id);
+		$du = $this->db->selectDomainUser($id);
 		$this->systemUser->checkPermission(new Models\DomainUser(), PermissionManager::METHOD_DELETE);
 
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $id, 'oco.domain_user.delete', json_encode($du));
-		return $this->db->removeDomainUser($id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $id, 'oco.domain_user.delete', json_encode($du));
+		return $this->db->deleteDomainUser($id);
 	}
 
 	/*** System User Operations ***/
 	public function getSystemUsers(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
-			return $this->db->getAllSystemUser();
+			return $this->db->selectAllSystemUser();
 		} else {
 			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
 		}
 	}
 	public function getSystemUserRoles() {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
-		return $this->db->getAllSystemUserRole();
+		return $this->db->selectAllSystemUserRole();
 	}
 	public function getSystemUser($id) {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
-		$systemUser = $this->db->getSystemUser($id);
+		$systemUser = $this->db->selectSystemUser($id);
 		if(empty($systemUser)) throw new NotFoundException();
 		return $systemUser;
 	}
@@ -1460,17 +1456,17 @@ class CoreLogic {
 		if(empty(trim($password))) {
 			throw new InvalidRequestException(LANG('password_cannot_be_empty'));
 		}
-		if($this->db->getSystemUserByLogin($username) !== null) {
+		if($this->db->selectSystemUserByUsername($username) !== null) {
 			throw new InvalidRequestException(LANG('username_already_exists'));
 		}
 
-		$insertId = $this->db->addSystemUser(
+		$insertId = $this->db->insertSystemUser(
 			md5(rand()), $username, $display_name,
 			password_hash($password, PASSWORD_DEFAULT),
 			0/*ldap*/, ''/*email*/, ''/*mobile*/, ''/*phone*/, $description, 0/*locked*/, $roleId
 		);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.system_user.create', [
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.system_user.create', [
 			'username'=>$username,
 			'display_name'=>$display_name,
 			'description'=>$description,
@@ -1478,7 +1474,7 @@ class CoreLogic {
 		]);
 		return $insertId;
 	}
-	public function updateOwnSystemUserPassword($oldPassword, $newPassword) {
+	public function editOwnSystemUserPassword($oldPassword, $newPassword) {
 		if($this->systemUser->ldap) throw new Exception('Password of LDAP account cannot be modified');
 
 		if(empty(trim($newPassword))) {
@@ -1499,12 +1495,12 @@ class CoreLogic {
 			$this->systemUser->id, $this->systemUser->uid, $this->systemUser->username, $this->systemUser->display_name, $newPasswordHash,
 			$this->systemUser->ldap, $this->systemUser->email, $this->systemUser->phone, $this->systemUser->mobile, $this->systemUser->description, $this->systemUser->locked, $this->systemUser->system_user_role_id
 		);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $this->systemUser->id, 'oco.system_user.update_password', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $this->systemUser->id, 'oco.system_user.update_password', []);
 	}
-	public function updateSystemUser($id, $username, $display_name, $description, $password, $roleId) {
+	public function editSystemUser($id, $username, $display_name, $description, $password, $roleId) {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
-		$u = $this->db->getSystemUser($id);
+		$u = $this->db->selectSystemUser($id);
 		if($u === null) throw new NotFoundException();
 		if(!empty($u->ldap)) {
 			$checkDescription = $u->description;
@@ -1521,7 +1517,7 @@ class CoreLogic {
 		if(empty(trim($username))) {
 			throw new InvalidRequestException(LANG('username_cannot_be_empty'));
 		}
-		$checkUser = $this->db->getSystemUserByLogin($username);
+		$checkUser = $this->db->selectSystemUserByUsername($username);
 		if($checkUser !== null && $checkUser->id !== $u->id) {
 			throw new InvalidRequestException(LANG('username_already_exists'));
 		}
@@ -1540,34 +1536,34 @@ class CoreLogic {
 			$u->id, $u->uid, trim($username), $display_name, $newPassword,
 			$u->ldap, $u->email, $u->phone, $u->mobile, $description, $u->locked, $roleId
 		);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.update', [
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.update', [
 			'username'=>$username,
 			'display_name'=>$display_name,
 			'description'=>$description,
 			'system_user_role_id'=>$roleId
 		]);
 	}
-	public function updateSystemUserLocked($id, $locked) {
+	public function editSystemUserLocked($id, $locked) {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
-		$u = $this->db->getSystemUser($id);
+		$u = $this->db->selectSystemUser($id);
 		if($u === null) throw new NotFoundException();
 
 		$this->db->updateSystemUser(
 			$u->id, $u->uid, $u->username, $u->display_name, $u->password,
 			$u->ldap, $u->email, $u->phone, $u->mobile, $u->description, $locked, $u->system_user_role_id
 		);
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.lock', ['locked'=>$locked]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.lock', ['locked'=>$locked]);
 	}
 	public function removeSystemUser($id) {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
-		$u = $this->db->getSystemUser($id);
+		$u = $this->db->selectSystemUser($id);
 		if($u === null) throw new NotFoundException();
 
-		$result = $this->db->removeSystemUser($id);
+		$result = $this->db->deleteSystemUser($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->addLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $u->id, 'oco.system_user.delete', []);
 		return $result;
 	}
 
