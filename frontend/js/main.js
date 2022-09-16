@@ -1312,7 +1312,7 @@ function confirmRemoveComputer(ids, event=null, infoText='') {
 		params.push({'key':'force', 'value':'1'});
 	}
 	var paramString = urlencodeArray(params);
-	if(confirm(L__CONFIRM_DELETE)) {
+	if(confirm(L__CONFIRM_DELETE_COMPUTER)) {
 		ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
 			refreshContent();
 			emitMessage(L__OBJECT_DELETED, infoText, MESSAGE_TYPE_SUCCESS);

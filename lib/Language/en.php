@@ -148,6 +148,7 @@ return [
 	'no_elements_selected' => 'No objects selected',
 	'confirm_delete' => 'Really delete?',
 	'confirm_delete_package' => 'Are you sure you want to delete the package(s)?\n\nAll computer assignments will be lost and you can no longer uninstall this package using the OCO server. If the shift key is pressed, all pending jobs and assigned package dependencies are also deleted automatically.',
+	'confirm_delete_computer' => 'Are you sure you want to delete the computer(s)?\n\nAll package assignments will be lost. If the shift key is pressed, all pending jobs are also deleted automatically.',
 	'enter_name' => 'Please enter a name',
 	'new_hostname_warning' => 'Warning: If you change the host name, you must also change the name on the computer, otherwise the agent can no longer establish a connection with the server!',
 	'confirm_remove_package_assignment' => 'Are you sure you want to unassign the computer package? Usually the package should be uninstalled.',

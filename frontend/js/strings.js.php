@@ -16,6 +16,7 @@ var L__UNINSTALL_PACKAGES = "<?php echo LANG('uninstall_packages'); ?>";
 var L__CONFIRM_REMOVE_PACKAGE_ASSIGNMENT = "<?php echo LANG('confirm_remove_package_assignment'); ?>";
 var L__CONFIRM_DELETE = "<?php echo LANG('confirm_delete'); ?>";
 var L__CONFIRM_DELETE_PACKAGE = "<?php echo LANG('confirm_delete_package'); ?>";
+var L__CONFIRM_DELETE_COMPUTER = "<?php echo LANG('confirm_delete_computer'); ?>";
 var L__CONFIRM_DELETE_GROUP = "<?php echo LANG('confirm_delete_group'); ?>";
 var L__CONFIRM_DELETE_JOB = "<?php echo LANG('confirm_delete_job'); ?>";
 var L__CONFIRM_DELETE_JOB_CONTAINER = "<?php echo LANG('confirm_delete_job_container'); ?>";

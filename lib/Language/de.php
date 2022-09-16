@@ -143,6 +143,7 @@ return [
 	'no_elements_selected' => 'Keine Elemente ausgewählt',
 	'confirm_delete' => 'Wirklich löschen?',
 	'confirm_delete_package' => 'Sind Sie sicher, dass Sie das Paket bzw. die Pakete löschen möchten?\n\nAlle Computerzuordungen gehen verloren und Sie können das Paket nicht mehr über den OCO-Server deinstallieren. Bei gedrückter Umschalt-Taste werden auch alle ausstehenden Jobs und zugewiesene Abhängigkeiten zu anderen Paketen automatisch gelöscht.',
+	'confirm_delete_computer' => 'Sind Sie sicher, dass Sie den Computer bzw. die Computer löschen möchten?\n\nAlle Paketzuordungen gehen verloren. Bei gedrückter Umschalt-Taste werden auch alle ausstehenden Jobs automatisch gelöscht.',
 	'enter_name' => 'Bitte geben Sie einen Namen ein',
 	'new_hostname_warning' => 'Achtung: Wenn Sie den Hostnamen ändern müssen Sie den Namen auch auf dem Computer ändern, andernfalls kann der Agent keine Verbindung mehr mit dem Server herstellen!',
 	'confirm_remove_package_assignment' => 'Möchten Sie die Computer-Paket-Zuordnung wirklich aufheben? Normalerweise sollte das Paket deinstalliert werden.',
