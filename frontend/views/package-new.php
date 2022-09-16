@@ -7,7 +7,7 @@ require_once('../session.php');
 <h1><img src='img/package-new.dyn.svg'><span id='page-title'><?php echo LANG('new_package'); ?></span></h1>
 
 <datalist id='lstPackageNames'>
-	<?php foreach($db->selectAllPackageFamily() as $p) { ?>
+	<?php foreach($cl->getPackageFamilies() as $p) { ?>
 		<option><?php echo htmlspecialchars($p->name); ?></option>
 	<?php } ?>
 </datalist>
@@ -42,7 +42,7 @@ require_once('../session.php');
 <datalist id='lstOs'>
 	<?php
 	$mentioned = [];
-	foreach($db->selectAllComputer() as $c) {
+	foreach($cl->getComputers() as $c) {
 		if(in_array($c->os, $mentioned)) continue;
 		$mentioned[] = $c->os;
 	?>
@@ -52,7 +52,7 @@ require_once('../session.php');
 <datalist id='lstOsVersion'>
 	<?php
 	$mentioned = [];
-	foreach($db->selectAllComputer() as $c) {
+	foreach($cl->getComputers() as $c) {
 		if(in_array($c->os_version, $mentioned)) continue;
 		$mentioned[] = $c->os_version;
 	?>
