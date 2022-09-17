@@ -584,6 +584,15 @@ const MESSAGE_TYPE_SUCCESS = 'success';
 const MESSAGE_TYPE_WARNING = 'warning';
 const MESSAGE_TYPE_ERROR   = 'error';
 function emitMessage(title, text, type='info', timeout=8000) {
+	let dismissMessage = function() {
+		let animation = messageBox.animate(
+			[ {opacity:1, transform:'translateX(0)'}, {opacity:0, transform:'translateX(80%)'} ],
+			{ duration: 400, iterations: 1, easing:'ease' }
+		);
+		animation.onfinish = (event) => {
+			messageBox.remove();
+		};
+	};
 	var messageBox = document.createElement('div');
 	messageBox.classList.add('message');
 	messageBox.classList.add('icon');
@@ -598,18 +607,10 @@ function emitMessage(title, text, type='info', timeout=8000) {
 	var messageBoxClose = document.createElement('button');
 	messageBoxClose.classList.add('message-close');
 	messageBoxClose.innerText = 'Close';
-	messageBoxClose.onclick = function() { messageBox.remove(); };
+	messageBoxClose.onclick = dismissMessage;
 	messageBox.appendChild(messageBoxClose);
 	obj('message-container').prepend(messageBox);
-	if(timeout != null) setTimeout(function() {
-		let animation = messageBox.animate(
-			[ {opacity:1, transform:'translateX(0)'}, {opacity:0, transform:'translateX(80%)'} ],
-			{ duration: 400, iterations: 1, easing:'ease' }
-		);
-		animation.onfinish = (event) => {
-			messageBox.remove();
-		};
-	}, timeout);
+	if(timeout != null) setTimeout(dismissMessage, timeout);
 }
 
 // ======== PACKAGE OPERATIONS ========
