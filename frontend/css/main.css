@@ -519,8 +519,8 @@ body.loading2 #loader-container {
 	color: transparent;
 }
 @keyframes message-in {
-	0%   { opacity:0; max-height:0px; }
-	100% { opacity:1; max-height:350px; }
+	0%   { opacity:0; max-height:0; transform:translateY(-50%); }
+	100% { opacity:1; max-height:350px; transform:translateY(0); }
 }
 
 .quote {
