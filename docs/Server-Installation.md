@@ -13,7 +13,7 @@
      service apache2 restart
      ```
 2. Download the [latest release](https://github.com/schorschii/oco-server/releases), copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.
-3. Import the database schema (use the newest version, e.g. `/sql/v1.0.sql`) into an empty database.
+3. Import the database schema (including all schema upgrades, `/sql/*.sql`) into an empty database.
    ```
    root@ocoserver:/# mysql
    mysql> CREATE DATABASE oco DEFAULT CHARACTER SET utf8mb4;
@@ -21,7 +21,7 @@
    mysql> GRANT ALL PRIVILEGES ON oco.* TO 'oco'@'localhost';
    mysql> FLUSH PRIVILEGES;
    mysql> EXIT;
-   root@ocoserver:/# mysql oco < /var/www/oco/sql/v1.x.sql
+   root@ocoserver:/# cat sql/*.sql | mysql oco
    ```
 4. Enter your MySQL credentials in `conf.php` (create this file by copying the template `conf.example.php`).  
    (Use a separate user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.)
