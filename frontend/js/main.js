@@ -140,15 +140,20 @@ function showDialog(title='', text='', controls=false, size=false, monospace=fal
 	showDialogHTML(title, escapeHTML(text), controls, size, monospace);
 }
 function showDialogAjax(title='', url='', controls=false, size=false, callback=null) {
+	// show loader while waiting for response
+	obj('dialog-container').classList.add('loading');
+	// start ajax request
 	ajaxRequest(url, null, function(text) {
 		showDialogHTML(title, text, controls, size, false);
+		obj('dialog-container').classList.remove('loading');
 		if(callback != undefined && typeof callback == 'function') {
 			callback(this.responseText);
 		}
-	}, false)
+	}, false, false, function(text) {
+		obj('dialog-container').classList.remove('loading');
+	});
 }
 function showDialogHTML(title='', text='', controls=false, size=false, monospace=false) {
-	obj('dialog-container').classList.add('active');
 	obj('dialog-title').innerText = title;
 	obj('dialog-text').innerHTML = text;
 	if(controls == DIALOG_BUTTONS_RELOAD) {
@@ -180,11 +185,23 @@ function showDialogHTML(title='', text='', controls=false, size=false, monospace
 		if(childs[i].getAttribute('autofocus'))
 			childs[i].focus();
 	}
+	// make dialog visible
+	obj('dialog-container').classList.add('active');
+	obj('dialog-box').animate(
+		[ {transform:'scale(102%)'}, {transform:'scale(100%)'} ],
+		{ duration: 200, iterations: 1, easing:'ease' }
+	);
 }
 function hideDialog() {
-	obj('dialog-container').classList.remove('active');
-	obj('dialog-title').innerText = '';
-	obj('dialog-text').innerHTML = '';
+	let animation = obj('dialog-box').animate(
+		[ {transform:'scale(100%)'}, {transform:'scale(98%)'} ],
+		{ duration: 100, iterations: 1, easing:'linear' }
+	);
+	animation.onfinish = (event) => {
+		obj('dialog-container').classList.remove('active');
+		obj('dialog-title').innerText = '';
+		obj('dialog-text').innerHTML = '';
+	};
 }
 function escapeHTML(unsafe) {
 	return unsafe
@@ -197,7 +214,7 @@ function escapeHTML(unsafe) {
 
 // ======== AJAX OPERATIONS ========
 var currentExplorerContentUrl = null;
-function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoader=true) {
+function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoader=true, errorCallback=null) {
 	let timer = null;
 	if(objID == 'explorer-content') {
 		currentExplorerContentUrl = url;
@@ -234,6 +251,9 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 				emitMessage(L__NO_CONNECTION_TO_SERVER, L__PLEASE_CHECK_NETWORK, MESSAGE_TYPE_ERROR);
 			} else {
 				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
+			}
+			if(errorCallback != undefined && typeof errorCallback == 'function') {
+				errorCallback(this.responseText);
 			}
 		}
 		// hide loaders
@@ -293,17 +313,20 @@ function urlencodeArray(src) {
 }
 
 function showLoader(state) {
-	if(state) {
-		document.body.classList.add('loading');
-	} else {
-		document.body.classList.remove('loading');
-	}
+	// decent loading indication (loading cursor)
+	if(state) document.body.classList.add('loading');
+	else document.body.classList.remove('loading');
 }
 function showLoader2(state) {
+	// blocking loading animation (fullscreen loader)
 	if(state) {
-		document.body.classList.add('loading2');
+		explorer.classList.add('diffuse');
+		explorer.classList.add('noresponse');
+		header.classList.add('progress');
 	} else {
-		document.body.classList.remove('loading2');
+		explorer.classList.remove('diffuse');
+		explorer.classList.remove('noresponse');
+		header.classList.remove('progress');
 	}
 }
 

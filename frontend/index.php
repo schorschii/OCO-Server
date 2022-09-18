@@ -79,11 +79,8 @@ if(!empty($_GET['view'])) {
 		</div>
 	</div>
 
-	<div id='loader-container'>
-		<img src='img/loader.svg'>
-	</div>
-
 	<div id='dialog-container'>
+		<img src='img/loader.svg'>
 		<div id='dialog-box'>
 			<h2 id='dialog-title'></h2>
 			<div id='dialog-text'></div>

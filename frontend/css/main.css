@@ -23,6 +23,9 @@ body {
 	margin: 0px;
 	-webkit-font-smoothing: antialiased;
 }
+body.loading {
+	cursor: wait;
+}
 h1 {
 	font-size: 24px;
 	font-weight: 200;
@@ -53,6 +56,11 @@ h3 {
 	box-sizing: border-box;
 	padding: 5px 15px;
 	font-weight: 100;
+}
+#header.progress {
+	background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
+	background-size: 1rem 1rem;
+	animation: progressbar-stripes 1s linear infinite;
 }
 #header * {
 	vertical-align: middle;
@@ -225,6 +233,9 @@ h3 {
 #explorer.diffuse {
 	opacity: 0.5;
 }
+#explorer.noresponse {
+	pointer-events: none;
+}
 #explorer.nosidebar #explorer-tree {
 	display: none;
 }
@@ -370,30 +381,6 @@ h3 {
 	font-weight: bold;
 }
 
-#loader-container {
-	display: none;
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	right: 0px;
-	bottom: 0px;
-	background-color: transparent;
-	transition: background-color 0.1s ease;
-	z-index: 888;
-}
-#loader-container img {
-	height: 90px;
-}
-body.loading {
-	cursor: wait;
-}
-body.loading2 #loader-container {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	background-color: rgba(0,0,0,0.3);
-}
-
 #dialog-container {
 	display: none;
 	position: fixed;
@@ -403,11 +390,24 @@ body.loading2 #loader-container {
 	bottom: 0px;
 	z-index: 999;
 }
-#dialog-container.active {
+#dialog-container.active,
+#dialog-container.loading {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	background-color: rgba(0,0,0,0.3);
+}
+#dialog-container > img {
+	display: none;
+	position: absolute;
+	top: calc(50% - 45px);
+	left: calc(50% - 45px);
+}
+#dialog-container.loading > #dialog-box {
+	display: none;
+}
+#dialog-container.loading > img {
+	display: inline-block;
 }
 #dialog-container #dialog-box {
 	box-sizing: border-box;
