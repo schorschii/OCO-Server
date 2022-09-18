@@ -414,9 +414,9 @@ class DatabaseController {
 	private function insertOrUpdateComputerPartition($computer_id, $device, $mountpoint, $filesystem, $size, $free) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_partition (id, computer_id, device, mountpoint, filesystem, size, free)
-			(SELECT id, computer_id, device, mountpoint, filesystem, size, free FROM computer_partition WHERE computer_id=:computer_id AND device=:device AND mountpoint=:mountpoint AND filesystem=:filesystem
-			UNION SELECT null, :computer_id, :device, :mountpoint, :filesystem, :size, :free FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), size=:size, free=:free'
+			(SELECT cp2.id, cp2.computer_id, cp2.device, cp2.mountpoint, cp2.filesystem, cp2.size, cp2.free FROM computer_partition cp2 WHERE cp2.computer_id=:computer_id AND cp2.device=:device AND cp2.mountpoint=:mountpoint AND cp2.filesystem=:filesystem)
+			UNION (SELECT null, :computer_id, :device, :mountpoint, :filesystem, :size, :free FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE computer_partition.id=LAST_INSERT_ID(computer_partition.id), computer_partition.size=:size, computer_partition.free=:free'
 		);
 		$this->stmt->execute([
 			':computer_id' => $computer_id,
@@ -431,9 +431,9 @@ class DatabaseController {
 	private function insertOrUpdateComputerPrinter($computer_id, $name, $driver, $paper, $dpi, $uri, $status) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_printer (id, computer_id, name, driver, paper, dpi, uri, status)
-			(SELECT id, computer_id, name, driver, paper, dpi, uri, status FROM computer_printer WHERE computer_id=:computer_id AND name=:name AND driver=:driver AND paper=:paper AND dpi=:dpi AND uri=:uri
-			UNION SELECT null, :computer_id, :name, :driver, :paper, :dpi, :uri, :status FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), status=:status'
+			(SELECT cp2.id, cp2.computer_id, cp2.name, cp2.driver, cp2.paper, cp2.dpi, cp2.uri, cp2.status FROM computer_printer cp2 WHERE cp2.computer_id=:computer_id AND cp2.name=:name AND cp2.driver=:driver AND cp2.paper=:paper AND cp2.dpi=:dpi AND cp2.uri=:uri)
+			UNION (SELECT null, :computer_id, :name, :driver, :paper, :dpi, :uri, :status FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE computer_printer.id=LAST_INSERT_ID(computer_printer.id), computer_printer.status=:status'
 		);
 		$this->stmt->execute([
 			':computer_id' => $computer_id,
@@ -449,9 +449,9 @@ class DatabaseController {
 	private function insertOrUpdateComputerScreen($computer_id, $name, $manufacturer, $type, $resolution, $size, $manufactured, $serialno) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_screen (id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno, active)
-			(SELECT id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno, active FROM computer_screen WHERE computer_id=:computer_id AND name=:name AND manufacturer=:manufacturer AND type=:type AND size=:size AND manufactured=:manufactured AND serialno=:serialno
-			UNION SELECT null, :computer_id, :name, :manufacturer, :type, :resolution, :size, :manufactured, :serialno, 1 FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), resolution=:resolution, active=1'
+			(SELECT cs2.id, cs2.computer_id, cs2.name, cs2.manufacturer, cs2.type, cs2.resolution, cs2.size, cs2.manufactured, cs2.serialno, cs2.active FROM computer_screen cs2 WHERE cs2.computer_id=:computer_id AND cs2.name=:name AND cs2.manufacturer=:manufacturer AND cs2.type=:type AND cs2.size=:size AND cs2.manufactured=:manufactured AND cs2.serialno=:serialno)
+			UNION (SELECT null, :computer_id, :name, :manufacturer, :type, :resolution, :size, :manufactured, :serialno, 1 FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE computer_screen.id=LAST_INSERT_ID(computer_screen.id), computer_screen.resolution=:resolution, computer_screen.active=1'
 		);
 		$this->stmt->execute([
 			':computer_id' => $computer_id,
@@ -468,9 +468,9 @@ class DatabaseController {
 	private function insertOrUpdateComputerNetwork($computer_id, $nic_number, $address, $netmask, $broadcast, $mac, $interface) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_network (id, computer_id, nic_number, address, netmask, broadcast, mac, interface)
-			(SELECT id, computer_id, nic_number, address, netmask, broadcast, mac, interface FROM computer_network WHERE computer_id=:computer_id AND nic_number=:nic_number AND mac=:mac AND interface=:interface
-			UNION SELECT null, :computer_id, :nic_number, :address, :netmask, :broadcast, :mac, :interface FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), address=:address, netmask=:netmask, broadcast=:broadcast'
+			(SELECT cn2.id, cn2.computer_id, cn2.nic_number, cn2.address, cn2.netmask, cn2.broadcast, cn2.mac, cn2.interface FROM computer_network cn2 WHERE cn2.computer_id=:computer_id AND cn2.nic_number=:nic_number AND cn2.mac=:mac AND cn2.interface=:interface)
+			UNION (SELECT null, :computer_id, :nic_number, :address, :netmask, :broadcast, :mac, :interface FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE computer_network.id=LAST_INSERT_ID(computer_network.id), computer_network.address=:address, computer_network.netmask=:netmask, computer_network.broadcast=:broadcast'
 		);
 		$this->stmt->execute([
 			':computer_id' => $computer_id,
@@ -687,9 +687,9 @@ class DatabaseController {
 	public function insertComputerPackage($package_id, $computer_id, $author, $procedure) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_package (id, package_id, computer_id, installed_by, installed_procedure, installed)
-			(SELECT id, package_id, computer_id, installed_by, installed_procedure, installed FROM computer_package WHERE package_id = :package_id AND computer_id = :computer_id
-			UNION SELECT null, :package_id, :computer_id, :installed_by, :installed_procedure, CURRENT_TIMESTAMP FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), installed_by = :installed_by, installed_procedure = :installed_procedure, installed = CURRENT_TIMESTAMP'
+			(SELECT cp2.id, cp2.package_id, cp2.computer_id, cp2.installed_by, cp2.installed_procedure, cp2.installed FROM computer_package cp2 WHERE cp2.package_id=:package_id AND cp2.computer_id=:computer_id)
+			UNION (SELECT null, :package_id, :computer_id, :installed_by, :installed_procedure, CURRENT_TIMESTAMP FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE computer_package.id=LAST_INSERT_ID(computer_package.id), computer_package.installed_by=:installed_by, computer_package.installed_procedure=:installed_procedure, computer_package.installed=CURRENT_TIMESTAMP'
 		);
 		$this->stmt->execute([
 			':package_id' => $package_id,
@@ -1350,9 +1350,9 @@ class DatabaseController {
 			// - keep execution results (return_code and message)
 			$this->stmt = $this->dbh->prepare(
 				'INSERT INTO deployment_rule_job (id, deployment_rule_id, computer_id, package_id, `procedure`, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, return_code, message)
-				(SELECT id, deployment_rule_id, computer_id, package_id, `procedure`, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, return_code, message FROM deployment_rule_job WHERE deployment_rule_id = :deployment_rule_id AND computer_id = :computer_id AND package_id = :package_id AND is_uninstall = :is_uninstall
-				UNION SELECT null, :deployment_rule_id, :computer_id, :package_id, :procedure, :success_return_codes, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, :return_code, :message FROM DUAL LIMIT 1)
-				ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), `procedure` = :procedure, success_return_codes = :success_return_codes, download = :download, post_action = :post_action, post_action_timeout = :post_action_timeout, sequence = :sequence, state = IF((state='.Models\Job::STATE_SUCCEEDED.' AND :state='.Models\Job::STATE_ALREADY_INSTALLED.') OR (state='.Models\Job::STATE_FAILED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (state='.Models\Job::STATE_DOWNLOAD_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (state='.Models\Job::STATE_EXECUTION_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.'), state, :state)'
+				(SELECT drj2.id, drj2.deployment_rule_id, drj2.computer_id, drj2.package_id, drj2.`procedure`, drj2.success_return_codes, drj2.is_uninstall, drj2.download, drj2.post_action, drj2.post_action_timeout, drj2.sequence, drj2.state, drj2.return_code, drj2.message FROM deployment_rule_job drj2 WHERE drj2.deployment_rule_id=:deployment_rule_id AND drj2.computer_id=:computer_id AND drj2.package_id=:package_id AND drj2.is_uninstall=:is_uninstall)
+				UNION (SELECT null, :deployment_rule_id, :computer_id, :package_id, :procedure, :success_return_codes, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, :return_code, :message FROM DUAL) LIMIT 1
+				ON DUPLICATE KEY UPDATE deployment_rule_job.id=LAST_INSERT_ID(deployment_rule_job.id), deployment_rule_job.`procedure`=:procedure, deployment_rule_job.success_return_codes=:success_return_codes, deployment_rule_job.download=:download, deployment_rule_job.post_action=:post_action, deployment_rule_job.post_action_timeout=:post_action_timeout, deployment_rule_job.sequence=:sequence, deployment_rule_job.state=IF((deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' AND :state='.Models\Job::STATE_ALREADY_INSTALLED.') OR (deployment_rule_job.state='.Models\Job::STATE_FAILED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (deployment_rule_job.state='.Models\Job::STATE_DOWNLOAD_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (deployment_rule_job.state='.Models\Job::STATE_EXECUTION_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.'), deployment_rule_job.state, :state)'
 			);
 			$this->stmt->execute([
 				':deployment_rule_id' => $job->deployment_rule_id,
@@ -1630,9 +1630,9 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			// we cannot use REPLACE INTO here because this internally DELETEs and INSERTs existing rows, which automatically deletes the rows in domain_user_logon
 			'INSERT INTO domain_user (id, uid, username, display_name)
-			(SELECT id, uid, username, display_name FROM domain_user WHERE (uid IS NOT NULL AND uid=:uid) OR (username=:username AND display_name=:display_name) OR (username=:username AND display_name="")
-			UNION SELECT null, :uid, :username, :display_name FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), uid=IF(:uid IS NULL,uid,:uid), username=:username, display_name=:display_name'
+			(SELECT du2.id, du2.uid, du2.username, du2.display_name FROM domain_user du2 WHERE (du2.uid IS NOT NULL AND du2.uid=:uid) OR (du2.username=:username AND du2.display_name=:display_name) OR (du2.username=:username AND du2.display_name=""))
+			UNION (SELECT null, :uid, :username, :display_name FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE domain_user.id=LAST_INSERT_ID(domain_user.id), domain_user.uid=IF(:uid IS NULL,domain_user.uid,:uid), domain_user.username=:username, domain_user.display_name=:display_name'
 		);
 		if(empty(trim($uid))) $uid = null;
 		$this->stmt->execute([':uid' => $uid, ':username' => $username, ':display_name' => $display_name]);
@@ -1670,9 +1670,9 @@ class DatabaseController {
 	private function insertOrUpdateDomainUserLogon($computer_id, $did, $console, $timestamp) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO domain_user_logon (id, computer_id, domain_user_id, console, timestamp)
-			(SELECT id, computer_id, domain_user_id, console, timestamp FROM domain_user_logon WHERE computer_id=:computer_id AND domain_user_id=:domain_user_id AND console=:console AND timestamp=:timestamp
-			UNION SELECT null, :computer_id, :domain_user_id, :console, :timestamp FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
+			(SELECT dul2.id, dul2.computer_id, dul2.domain_user_id, dul2.console, dul2.timestamp FROM domain_user_logon dul2 WHERE dul2.computer_id=:computer_id AND dul2.domain_user_id=:domain_user_id AND dul2.console=:console AND dul2.timestamp=:timestamp)
+			UNION (SELECT null, :computer_id, :domain_user_id, :console, :timestamp FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE domain_user_logon.id=LAST_INSERT_ID(domain_user_logon.id)'
 		);
 		$this->stmt->execute([
 			':computer_id' => $computer_id,
@@ -1904,9 +1904,9 @@ class DatabaseController {
 			// we cannot use REPLACE INTO here because this internally DELETEs and INSERTs existing rows, which automatically deletes the rows in computer_software
 			// https://web.archive.org/web/20150925012041/http://mikefenwick.com:80/blog/insert-into-database-or-return-id-of-duplicate-row-in-mysql/
 			'INSERT INTO software (id, name, version, description)
-			(SELECT id, name, version, description FROM software WHERE BINARY name=:name AND BINARY version=:version AND description=:description
-			UNION SELECT null, :name, :version, :description FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
+			(SELECT s2.id, s2.name, s2.version, s2.description FROM software s2 WHERE BINARY s2.name=:name AND BINARY s2.version=:version AND s2.description=:description)
+			UNION (SELECT null, :name, :version, :description FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE software.id=LAST_INSERT_ID(software.id)'
 		);
 		$this->stmt->execute([':name' => $name, ':version' => $version, ':description' => $description]);
 		return $this->dbh->lastInsertId();
@@ -1914,9 +1914,9 @@ class DatabaseController {
 	private function insertOrUpdateComputerSoftware($computer_id, $software_id) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_software (id, computer_id, software_id)
-			(SELECT id, computer_id, software_id FROM computer_software WHERE computer_id=:computer_id AND software_id=:software_id
-			UNION SELECT null, :computer_id, :software_id FROM DUAL LIMIT 1)
-			ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id)'
+			(SELECT cs2.id, cs2.computer_id, cs2.software_id FROM computer_software cs2 WHERE cs2.computer_id=:computer_id AND cs2.software_id=:software_id)
+			UNION (SELECT null, :computer_id, :software_id FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE computer_software.id=LAST_INSERT_ID(computer_software.id)'
 		);
 		$this->stmt->execute([':computer_id' => $computer_id, ':software_id' => $software_id]);
 		return $this->dbh->lastInsertId();
