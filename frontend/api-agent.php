@@ -46,7 +46,7 @@ switch($srcdata['method']) {
 	case 'oco.agent.update_job_state':
 	case 'oco.agent.update_deploy_status':
 	case 'oco.update_deploy_status':
-		$data = $params['data'];
+		$data = $params['data'] ?? [];
 
 		// check parameter
 		if(!isset($params['hostname'])
@@ -136,14 +136,14 @@ switch($srcdata['method']) {
 
 	case 'oco.agent.hello':
 	case 'oco.agent_hello':
-		$data = $params['data'];
-
 		// check parameter
 		if(!isset($params['hostname']) || !isset($params['agent-key'])) {
 			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_HELLO,
 				'invalid JSON data'
 			);
 		}
+
+		$data = $params['data'] ?? [];
 
 		$computer = $db->selectComputerByHostname($params['hostname']);
 		$jobs = []; $update = 0; $server_key = null; $agent_key = null; $success = false;
@@ -161,8 +161,8 @@ switch($srcdata['method']) {
 				$update = 1;
 				if($db->insertComputer(
 					$params['hostname'],
-					$data['agent_version'],
-					$data['networks'],
+					$data['agent_version'] ?? '?',
+					$data['networks'] ?? [],
 					LANG('self_registration').' '.date('Y-m-d H:i:s'),
 					$agent_key,
 					$server_key
@@ -277,14 +277,14 @@ switch($srcdata['method']) {
 
 	case 'oco.agent.update':
 	case 'oco.agent_update':
-		$data = $params['data'];
-
 		// check parameter
-		if(!isset($params['hostname']) || !isset($params['agent-key'])) {
+		if(!isset($params['hostname']) || !isset($params['agent-key']) || empty($params['data'])) {
 			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE,
 				'invalid JSON data'
 			);
 		}
+
+		$data = $params['data'];
 
 		// check authorization
 		$computer = $db->selectComputerByHostname($params['hostname']);
