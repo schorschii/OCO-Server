@@ -74,7 +74,7 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 		<div name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>'>
 		<?php if($showSystemUserManagement) { ?>
 			<div class='details-abreast'>
-				<div>
+				<div class='stickytable'>
 					<div class='controls'>
 						<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 						<button onclick='ldapSync()' <?php if(empty(LDAP_SERVER)) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
