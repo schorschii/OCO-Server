@@ -25,7 +25,7 @@ localStorage.setItem(STORAGE_KEY_PRESENTED_NOTIFICATIONS, null);
 // permission already granted
 // automatically start watching for notifications
 if(Notification && Notification.permission === 'granted') {
-	setInterval(refreshNotificationInfo, 5000);
+	desktopNotificationCheck = setInterval(refreshNotificationInfo, 5000);
 }
 
 var notificationInfo = null;
@@ -35,6 +35,8 @@ function refreshNotificationInfo() {
 		if(this.readyState != 4) return;
 		if(this.status == 200) {
 			checkNotification(JSON.parse(this.responseText));
+		} else if(this.status == 401) { // stop periodic query if user is logged out
+			clearInterval(desktopNotificationCheck);
 		}
 	};
 	xhttp.open('GET', 'ajax-handler/notification-info.php', true);
