@@ -135,7 +135,7 @@ class CoreLogic {
 		$this->checkPermission($computer, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
-			$jobs = $this->db->getAllPendingJobByComputerId($id);
+			$jobs = $this->db->selectAllPendingJobByComputerId($id);
 			if(count($jobs) > 0) throw new InvalidRequestException(LANG('delete_failed_active_jobs'));
 		}
 		$result = $this->db->deleteComputer($computer->id);
@@ -378,7 +378,7 @@ class CoreLogic {
 		$this->systemUser->checkPermission($package, PermissionManager::METHOD_DELETE);
 
 		if(!$force) {
-			$jobs = $this->db->getAllPendingJobByPackageId($id);
+			$jobs = $this->db->selectAllPendingJobByPackageId($id);
 			if(count($jobs) > 0) throw new InvalidRequestException(LANG('delete_failed_active_jobs'));
 
 			$dependentPackages = $this->db->selectAllPackageDependencyByDependentPackageId($id);

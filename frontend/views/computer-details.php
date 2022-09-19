@@ -388,7 +388,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getAllPendingJobByComputerId($computer->id) as $j) {
+							foreach($db->selectAllPendingJobByComputerId($computer->id) as $j) {
 								$counter ++;
 								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
 								echo '<td>';

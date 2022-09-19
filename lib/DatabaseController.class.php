@@ -1197,7 +1197,7 @@ class DatabaseController {
 		$this->stmt->execute([':deployment_rule_id' => $deployment_rule_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DynamicJob');
 	}
-	public function getAllPendingAndActiveJobForAgentByComputerId($computer_id) {
+	public function selectAllPendingAndActiveJobForAgentByComputerId($computer_id) {
 		// static jobs
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.sequence_mode AS "job_container_sequence_mode", jc.agent_ip_ranges AS "job_container_agent_ip_ranges",
@@ -1230,12 +1230,12 @@ class DatabaseController {
 		usort($jobs, [Models\Job::class, 'sortJobs']);
 		return $jobs;
 	}
-	public function getPendingAndActiveJobForAgentByComputerIdAndPackageId($computer_id, $package_id) {
-		foreach($this->getAllPendingAndActiveJobForAgentByComputerId($computer_id) as $job) {
+	public function selectPendingAndActiveJobForAgentByComputerIdAndPackageId($computer_id, $package_id) {
+		foreach($this->selectAllPendingAndActiveJobForAgentByComputerId($computer_id) as $job) {
 			if($job->package_id === $package_id) return $job;
 		}
 	}
-	public function getAllPendingJobByComputerId($computer_id) {
+	public function selectAllPendingJobByComputerId($computer_id) {
 		// static jobs
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
@@ -1271,7 +1271,7 @@ class DatabaseController {
 		usort($jobs, [Models\Job::class, 'sortJobs']);
 		return $jobs;
 	}
-	public function getAllPendingJobByPackageId($package_id) {
+	public function selectAllPendingJobByPackageId($package_id) {
 		// static jobs
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
@@ -1327,7 +1327,7 @@ class DatabaseController {
 				if($deployment_rule->auto_uninstall && $state != Models\Job::STATE_ALREADY_INSTALLED && $state != Models\Job::STATE_OS_INCOMPATIBLE && $state != Models\Job::STATE_PACKAGE_CONFLICT) {
 					$dynamic_jobs = array_merge(
 						$dynamic_jobs,
-						$this->getDynamicUninstallJobs($deployment_rule, $package->package_family_id, $this->selectAllComputerPackageByComputerId($computer->id), $created_uninstall_jobs, $sequence)
+						$this->compileDynamicUninstallJobs($deployment_rule, $package->package_family_id, $this->selectAllComputerPackageByComputerId($computer->id), $created_uninstall_jobs, $sequence)
 					);
 				}
 				// add dynamic job
@@ -1378,7 +1378,7 @@ class DatabaseController {
 		);
 		return $this->stmt->execute(array_merge([':deployment_rule_id'=>$deployment_rule->id], $in_params));
 	}
-	private function getDynamicUninstallJobs($deployment_rule, $package_family_id, $computer_packages, &$createdUninstallJobs, &$sequence) {
+	private function compileDynamicUninstallJobs($deployment_rule, $package_family_id, $computer_packages, &$createdUninstallJobs, &$sequence) {
 		$dynamic_jobs = [];
 		foreach($computer_packages as $cp) {
 			// uninstall it, if it is from the same package family ...
@@ -1403,13 +1403,13 @@ class DatabaseController {
 	public function setComputerOnlineStateForWolShutdown($job_container_id) {
 		$tmpJobContainer = $this->selectJobContainer($job_container_id);
 		if(empty($tmpJobContainer->shutdown_waked_after_completion)) return;
-		foreach($this->getAllLastComputerStaticJobsInContainer($job_container_id) as $j) {
+		foreach($this->selectAllLastComputerStaticJobByJobContainer($job_container_id) as $j) {
 			$tmpComputer = $this->selectComputer($j->computer_id);
 			if(!$tmpComputer->isOnline())
-				$this->setWolShutdownStaticJobInContainer($job_container_id, $tmpComputer->id, $j->max_sequence);
+				$this->setWolShutdownStaticJobInJobContainer($job_container_id, $tmpComputer->id, $j->max_sequence);
 		}
 	}
-	private function getAllLastComputerStaticJobsInContainer($job_container_id) {
+	private function selectAllLastComputerStaticJobByJobContainer($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT computer_id, MAX(sequence) AS "max_sequence" FROM job
 			WHERE job_container_id = :job_container_id GROUP BY computer_id'
@@ -1417,7 +1417,7 @@ class DatabaseController {
 		if(!$this->stmt->execute([':job_container_id' => $job_container_id])) return false;
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\StaticJob');
 	}
-	private function setWolShutdownStaticJobInContainer($job_container_id, $computer_id, $sequence) {
+	private function setWolShutdownStaticJobInJobContainer($job_container_id, $computer_id, $sequence) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container_job SET post_action = '.Models\Package::POST_ACTION_SHUTDOWN.','
 			.' wol_shutdown_set = CURRENT_TIMESTAMP'
@@ -1432,7 +1432,7 @@ class DatabaseController {
 			':sequence' => $sequence,
 		])) return false;
 	}
-	public function removeWolShutdownStaticJobInContainer($job_container_id, $job_id, $post_action) {
+	public function removeWolShutdownStaticJobInJobContainer($job_container_id, $job_id, $post_action) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container_job SET post_action = :post_action,'
 			.' wol_shutdown_set = NULL'

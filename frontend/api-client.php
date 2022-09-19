@@ -116,7 +116,7 @@ switch($srcdata['method']) {
 				'filesystems' => $db->selectAllComputerPartitionByComputerId($computer->id),
 				'recognised_software' => $db->selectAllComputerSoftwareByComputerId($computer->id),
 				'installed_packages' => $db->selectAllComputerPackageByComputerId($computer->id),
-				'pending_jobs' => $db->getAllPendingJobByComputerId($computer->id),
+				'pending_jobs' => $db->selectAllPendingJobByComputerId($computer->id),
 			]
 		];
 		break;
@@ -167,7 +167,7 @@ switch($srcdata['method']) {
 			'success' => true, 'data' => [
 				'general' => $package,
 				'installations' => $db->selectAllComputerPackageByPackageId($package->id),
-				'pending_jobs' => $db->getAllPendingJobByPackageId($package->id),
+				'pending_jobs' => $db->selectAllPendingJobByPackageId($package->id),
 			]
 		];
 		break;

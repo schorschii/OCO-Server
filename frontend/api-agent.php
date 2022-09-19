@@ -15,7 +15,7 @@ if(empty($_SERVER['CONTENT_TYPE']) && !empty($_GET['id'])) {
 		header('HTTP/1.1 401 Client Not Authorized'); die();
 	}
 	// allow download only if a job is active
-	if(!$db->getPendingAndActiveJobForAgentByComputerIdAndPackageId($computer->id, $package->id)) {
+	if(!$db->selectPendingAndActiveJobForAgentByComputerIdAndPackageId($computer->id, $package->id)) {
 		header('HTTP/1.1 401 No Active Job'); die();
 	}
 	// start download
@@ -213,7 +213,7 @@ switch($srcdata['method']) {
 			}
 
 			// get pending jobs
-			foreach($db->getAllPendingAndActiveJobForAgentByComputerId($computer->id) as $pj) {
+			foreach($db->selectAllPendingAndActiveJobForAgentByComputerId($computer->id) as $pj) {
 				// constraint check
 				if(!empty($pj->job_container_agent_ip_ranges)) {
 					$continue = true;

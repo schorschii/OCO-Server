@@ -97,13 +97,13 @@ class HouseKeeping {
 						// Remove the "WOL Shutdown Set" flag to keep the shutdown forever.
 						if($c->isOnline() && time() - strtotime($j->wol_shutdown_set) < WOL_SHUTDOWN_EXPIRY_SECONDS) {
 							if($this->debug) echo('Host came up before WOL shutdown expiry. Keep shutdown of job #'.$j->id.' (in container #'.$container->id.' '.$container->name.') forever'."\n");
-							$this->db->removeWolShutdownStaticJobInContainer($container->id, $j->id, Models\Package::POST_ACTION_SHUTDOWN);
+							$this->db->removeWolShutdownStaticJobInJobContainer($container->id, $j->id, Models\Package::POST_ACTION_SHUTDOWN);
 						}
 						// If the computer does not came up with WOL after a certain time, WOL didn't work -> remove the shutdown.
 						// It is likely that a user has now manually powered on the machine. Then, an automatic shutdown is not desired anymore.
 						if(time() - strtotime($j->wol_shutdown_set) > WOL_SHUTDOWN_EXPIRY_SECONDS) {
 							if($this->debug) echo('Remove expired WOL shutdown for job #'.$j->id.' (in container #'.$container->id.' '.$container->name.')'."\n");
-							$this->db->removeWolShutdownStaticJobInContainer($container->id, $j->id, Models\Package::POST_ACTION_NONE);
+							$this->db->removeWolShutdownStaticJobInJobContainer($container->id, $j->id, Models\Package::POST_ACTION_NONE);
 						}
 					}
 				}

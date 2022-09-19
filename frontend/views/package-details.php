@@ -415,7 +415,7 @@ try {
 						<tbody>
 							<?php
 							$counter = 0;
-							foreach($db->getAllPendingJobByPackageId($package->id) as $j) {
+							foreach($db->selectAllPendingJobByPackageId($package->id) as $j) {
 								$counter ++;
 								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
 								echo '<td>';
