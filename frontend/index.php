@@ -46,7 +46,7 @@ if(!empty($_GET['view'])) {
 			<span class='separator space'></span>
 		</span>
 		<span class='search'>
-			<input type='text' id='txtGlobalSearch' autocomplete='off' placeholder='<?php echo LANG('search_computer_packages_job_container'); ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults()} else if(event.keyCode==40) {focusNextSearchResult()} else {doSearch(this.value)}' onpaste='doSearch(this.value)'></input>
+			<input type='text' id='txtGlobalSearch' autocomplete='off' placeholder='<?php echo LANG('search_computer_packages_job_container'); ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults()} else if(event.keyCode==40) {focusNextSearchResult()} else {doSearch(this.value)}' onpaste='doSearch(this.value)' onblur='closeSearchResults()'></input>
 			<div id='search-glass'></div>
 			<div id='search-results'>
 				<div class='search-result'>
@@ -70,9 +70,9 @@ if(!empty($_GET['view'])) {
 	</div>
 
 	<div id='explorer'>
-		<div id='explorer-tree' onclick='toggleSidebar(false);closeSearchResults()'>
+		<div id='explorer-tree' onclick='toggleSidebar(false)'>
 		</div>
-		<div id='explorer-content' onclick='closeSearchResults()'>
+		<div id='explorer-content'>
 			<?php if($initialExplorerContent == null) { ?>
 				<div class='alert error'><?php echo LANG('requested_view_does_not_exist'); ?></div>
 			<?php } ?>

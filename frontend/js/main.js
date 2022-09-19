@@ -219,7 +219,8 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 	if(objID == 'explorer-content') {
 		currentExplorerContentUrl = url;
 		showLoader(true);
-		if(showFullscreenLoader) timer = setTimeout(function(){ showLoader2(true) }, 100);
+		// show fullscreen loading animation only if query takes longer than 200ms (otherwise annoying)
+		if(showFullscreenLoader) timer = setTimeout(function(){ showLoader2(true) }, 250);
 	}
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {

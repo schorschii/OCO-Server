@@ -230,7 +230,8 @@ h3 {
 	align-items: stretch;
 	height: calc(100% - 62px);
 }
-#explorer.diffuse {
+#explorer.diffuse,
+#explorer.noresponse {
 	opacity: 0.5;
 }
 #explorer.noresponse {
