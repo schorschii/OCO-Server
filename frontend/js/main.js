@@ -403,45 +403,23 @@ function setInputsDisabled(rootElement, disabled) {
 	}
 }
 
-// ======== COOKIE HANDLING ========
-function setCookie(cookieName, value) {
-	const d = new Date();
-	d.setTime(d.getTime() + (365*24*60*60*1000));
-	let expires = 'expires=' + d.toUTCString();
-	document.cookie = cookieName + '=' + value + ';' + expires + ';path=/';
-}
-function getCookie(cookieName, defaultValue) {
-	let name = cookieName + '=';
-	let decodedCookie = decodeURIComponent(document.cookie);
-	let ca = decodedCookie.split(';');
-	for(let i = 0; i < ca.length; i++) {
-		let c = ca[i];
-		while(c.charAt(0) == ' ') {
-			c = c.substring(1);
-		}
-		if(c.indexOf(name) == 0) {
-			return c.substring(name.length, c.length);
-		}
-	}
-	return defaultValue;
-}
-
 // ======== CONTENT REFRESH FUNCTIONS ========
 const REFRESH_SIDEBAR_TIMEOUT = 12000;
 const REFRESH_CONTENT_TIMEOUT = 2000;
-const COOKIE_SIDEBAR_STATE    = 'sidebar-state';
+const STORAGE_KEY_SIDEBAR_STATE = 'sidebar-state';
 var refreshContentTimer = null;
 var refreshSidebarTimer = null;
-var refreshSidebarState = JSON.parse(getCookie(COOKIE_SIDEBAR_STATE, '{}'));
+var refreshSidebarState = JSON.parse(localStorage.getItem(STORAGE_KEY_SIDEBAR_STATE));
 function refreshSidebar(callback=null, handleAutoRefresh=false) {
 	// save node expand states
+	if(refreshSidebarState == null) refreshSidebarState = {};
 	var elements = obj('explorer-tree').querySelectorAll('.subitems');
 	for(var i = 0; i < elements.length; i++) {
 		if(elements[i].id) {
 			refreshSidebarState[elements[i].id] = elements[i].classList.contains('expanded');
 		}
 	}
-	setCookie(COOKIE_SIDEBAR_STATE, JSON.stringify(refreshSidebarState));
+	localStorage.setItem(STORAGE_KEY_SIDEBAR_STATE, JSON.stringify(refreshSidebarState));
 	// do refresh
 	ajaxRequest('views/tree.php', 'explorer-tree', function() {
 		// execute custom callback

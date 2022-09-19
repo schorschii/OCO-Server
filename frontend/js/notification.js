@@ -1,3 +1,5 @@
+const STORAGE_KEY_PRESENTED_NOTIFICATIONS = 'presented-notifications';
+
 function askNotificationPermission() {
 	if(!Notification) {
 		emitMessage(L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED, '', MESSAGE_TYPE_ERROR);
@@ -19,7 +21,7 @@ function askNotificationPermission() {
 }
 
 // reset previous notification state
-localStorage.setItem('presentedNotifications', null);
+localStorage.setItem(STORAGE_KEY_PRESENTED_NOTIFICATIONS, null);
 // permission already granted
 // automatically start watching for notifications
 if(Notification && Notification.permission === 'granted') {
@@ -57,11 +59,12 @@ function checkNotification(newNotificationInfo) {
 
 function notify(title, body, icon, link, tag) {
 	// check if notification was already presented
-	let presentedNotifications = JSON.parse(localStorage.getItem('presentedNotifications'));
+	let presentedNotifications = JSON.parse(localStorage.getItem(STORAGE_KEY_PRESENTED_NOTIFICATIONS));
 	if(presentedNotifications == null) presentedNotifications = [];
 	if(presentedNotifications.indexOf(tag) != -1) return;
 	presentedNotifications.push(tag);
-	localStorage.setItem('presentedNotifications', JSON.stringify(presentedNotifications));
+	localStorage.setItem(STORAGE_KEY_PRESENTED_NOTIFICATIONS, JSON.stringify(presentedNotifications));
+
 	// show notification
 	if(Notification.permission !== 'granted') return;
 	var notification = new Notification(title, {
