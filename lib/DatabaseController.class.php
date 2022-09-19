@@ -1201,7 +1201,7 @@ class DatabaseController {
 		// static jobs
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.sequence_mode AS "job_container_sequence_mode", jc.agent_ip_ranges AS "job_container_agent_ip_ranges",
-			j.package_id AS "package_id", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			j.package_id AS "package_id", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM job_container_job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
 			WHERE j.computer_id = :computer_id
@@ -1215,7 +1215,7 @@ class DatabaseController {
 		// dynamic jobs
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.enabled AS "deployment_rule_enabled", dr.sequence_mode AS "deployment_rule_sequence_mode", dr.priority AS "deployment_rule_priority",
-			j.package_id AS "package_id", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			j.package_id AS "package_id", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM deployment_rule_job j
 			INNER JOIN deployment_rule dr ON j.deployment_rule_id = dr.id
 			WHERE j.computer_id = :computer_id
@@ -1240,7 +1240,7 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
 			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM job_container_job j
 			INNER JOIN package p ON j.package_id = p.id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
@@ -1255,7 +1255,7 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.name AS "deployment_rule_name", dr.enabled AS "deployment_rule_enabled", dr.priority AS "deployment_rule_priority",
 			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM deployment_rule_job j
 			INNER JOIN package p ON j.package_id = p.id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
@@ -1276,7 +1276,7 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
 			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM job_container_job j
 			INNER JOIN computer c ON j.computer_id = c.id
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
@@ -1290,7 +1290,7 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT j.id AS "id", j.deployment_rule_id AS "deployment_rule_id", dr.name AS "deployment_rule_name", dr.enabled AS "deployment_rule_enabled", dr.priority AS "deployment_rule_priority",
 			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
-			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout"
+			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM deployment_rule_job j
 			INNER JOIN computer c ON j.computer_id = c.id
 			INNER JOIN deployment_rule dr ON j.deployment_rule_id = dr.id

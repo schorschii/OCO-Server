@@ -137,7 +137,7 @@ abstract class Job {
 		$prioA = $a->getPriority();
 		$prioB = $b->getPriority();
 		if($prioA === $prioB) {
-			return $b->sequence <=> $a->sequence;
+			return $a->sequence <=> $b->sequence;
 		}
 		return $prioB <=> $prioA;
 	}
