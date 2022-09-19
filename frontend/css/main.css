@@ -68,7 +68,7 @@ h3 {
 #header .title {
 	font-size: 20px;
 }
-#header > .search {
+#header > #search-container {
 	flex-grow: 1;
 	position: relative;
 	margin-right: 10px;
@@ -1381,7 +1381,7 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	#header .separator.space {
 		display: none;
 	}
-	#header > .search {
+	#header > #search-container {
 		width: 278px;
 		margin-right: 0px;
 	}
