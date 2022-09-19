@@ -1,18 +1,19 @@
 # OCO: Server Installation
 
 ## Basic Setup
-0. Install PHP 7.x (with PHP-DOM module), MySQL/MariaDB and a web sever of your choice (Apache recommended).
+0. Install PHP 7.x (with PHP-DOM module), MySQL/MariaDB and Apache2 on a Linux server (Debian recommended).
    ```
    apt install php php-dom mariadb-server apache2 libapache2-mod-php
    ```
-1. Configure your Apache webserver
-   - make sure that in your Apache config `AllowOverride All` is set (for at least the OCO directory `/var/www/oco`) so that the `.htaccess` files work
+1. Download the [latest release](https://github.com/schorschii/oco-server/releases) and copy/extract all files into `/srv/www/oco`.
+2. Configure your Apache webserver
+   - configure your web sever to use the `/srv/www/oco/frontend` directory as webroot
+   - make sure that `AllowOverride All` is set (for the frontend directory `/srv/www/oco/frontend`) so that the `.htaccess` files work
    - make sure that the `rewrite` module is installed and enabled
      ```
      a2enmod rewrite
      service apache2 restart
      ```
-2. Download the [latest release](https://github.com/schorschii/oco-server/releases), copy all files into `/var/www/oco` and configure your web sever to use the `frontend` directory as webroot.
 3. Import the database schema (including all schema upgrades, `/sql/*.sql`) into an empty database.
    ```
    root@ocoserver:/# mysql
@@ -27,7 +28,7 @@
    (Use a separate user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.)
 5. Make sure the in `conf.php` defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
 6. **Important:** please set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
-   - It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any software packages to your client!!!
+   - It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any (malicious) software packages to your client!!!
    - Redirect all HTTP requests to HTTPS using appropriate rewrite rules.  
      <details>
      <summary>/etc/apache2/sites-enabled/000-default.conf</summary>
@@ -35,7 +36,7 @@
      ```
      <VirtualHost *:80>
         .....
-        DocumentRoot /var/www/oco
+        DocumentRoot /srv/www/oco/frontend
         ## Redirect to HTTPS
         RewriteEngine On
         RewriteCond %{HTTPS} !=on
@@ -45,10 +46,14 @@
 
      <VirtualHost *:443>
       .....
-      DocumentRoot /var/www/oco
+      DocumentRoot /srv/www/oco/frontend
       SSLEngine on
       SSLCertificateFile /etc/apache2/ssl/mycertwithchain.crt
       SSLCertificateKeyFile /etc/apache2/ssl/myprivkey.key
+      .....
+      <Directory /srv/www/oco/frontend>
+        AllowOverride All
+      </Directory>
       .....
      </VirtualHost>
      ```
@@ -60,7 +65,7 @@
 8. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
 9. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
    ```
-   */2 *  * * *  www-data  cd /var/www/oco && php console.php housekeeping
+   */2 *  * * *  www-data  cd /srv/www/oco && php console.php housekeeping
    ```
 10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
 
@@ -90,9 +95,9 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
    - `LDAP_ATTR_UID`, `LDAP_ATTR_USERNAME`, `LDAP_ATTR_FIRST_NAME`, `LDAP_ATTR_LAST_NAME`, `LDAP_ATTR_DISPLAY_NAME`, `LDAP_ATTR_EMAIL`, `LDAP_ATTR_PHONE`, `LDAP_ATTR_MOBILE`, `LDAP_ATTR_DESCRIPTION`: LDAP attributes to query. Set for Active Directory by default; you can adjust it if you are using an other LDAP server like OpenLDAP.
 2. Set up a cron job executing `php console.php ldapsync` every 30 minutes as webserver user (`www-data`).
    ```
-   */10 *  * * *  www-data  cd /var/www/oco && php console.php ldapsync
+   */10 *  * * *  www-data  cd /srv/www/oco && php console.php ldapsync
    ```
-3. Start the first sync manually by executing `cd /var/www/oco && php console.php ldapsync`.  
+3. Start the first sync manually by executing `cd /srv/www/oco && php console.php ldapsync`.  
    Now you can log in with the synced accounts on the web frontend.
 
 ### Only Provide Agent API On Virtual Host

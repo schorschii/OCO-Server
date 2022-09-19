@@ -4,4 +4,4 @@
    Please also have a look at the comments inside the upgrade script. Maybe some additional steps are required to migrate your data.
 2. Update all files (but keep your `conf.php`), e.g. by using `git pull`.
 3. Clear your browser cache.
-4. Start your webserver. Have a look at the error logs to check if everything is OK (`/var/log/apache2/error.log`).
+4. Start your webserver. Have a look at the error logs to check if everything is OK (`/srv/log/apache2/error.log`).
