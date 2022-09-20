@@ -140,18 +140,23 @@ function showDialog(title='', text='', controls=false, size=false, monospace=fal
 	showDialogHTML(title, escapeHTML(text), controls, size, monospace);
 }
 function showDialogAjax(title='', url='', controls=false, size=false, callback=null) {
-	// show loader while waiting for response
+	// show dark background while waiting for response
 	obj('dialog-container').classList.add('loading');
+	// show loader if request took a little longer (would be annoying if shown directly)
+	dialogLoaderTimer = setTimeout(function(){ obj('dialog-container').classList.add('loading2') }, 100);
 	// start ajax request
+	let finalAction = function() {
+		obj('dialog-container').classList.remove('loading');
+		obj('dialog-container').classList.remove('loading2');
+		clearTimeout(dialogLoaderTimer);
+	};
 	ajaxRequest(url, null, function(text) {
 		showDialogHTML(title, text, controls, size, false);
-		obj('dialog-container').classList.remove('loading');
 		if(callback != undefined && typeof callback == 'function') {
 			callback(this.responseText);
 		}
-	}, false, false, function(text) {
-		obj('dialog-container').classList.remove('loading');
-	});
+		finalAction();
+	}, false, false, finalAction);
 }
 function showDialogHTML(title='', text='', controls=false, size=false, monospace=false) {
 	obj('dialog-title').innerText = title;

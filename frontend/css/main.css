@@ -404,10 +404,11 @@ h3 {
 	top: calc(50% - 45px);
 	left: calc(50% - 45px);
 }
-#dialog-container.loading > #dialog-box {
+#dialog-container.loading > #dialog-box,
+#dialog-container.loading2 > #dialog-box {
 	display: none;
 }
-#dialog-container.loading > img {
+#dialog-container.loading2 > img {
 	display: inline-block;
 }
 #dialog-container #dialog-box {
