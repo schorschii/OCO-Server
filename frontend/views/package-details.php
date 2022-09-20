@@ -316,7 +316,7 @@ try {
 
 		<div name='archive-contents' class='<?php if($tab=='archive-contents') echo 'active'; ?>'>
 			<div class='details-abreast'>
-				<div>
+				<div class='stickytable'>
 					<?php $contents = $package->getContentListing(); if($contents) { ?>
 					<table id='tblArchiveContents' class='list searchable sortable savesort margintop'>
 						<thead>
