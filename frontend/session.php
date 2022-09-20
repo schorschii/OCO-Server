@@ -2,7 +2,7 @@
 
 require_once('session-options.php');
 
-// check if user has a valid session
+// check if user has a valid session and is authenticated (logged in)
 if(!isset($_SESSION['oco_username'])) {
 	redirectToLogin();
 }
