@@ -62,6 +62,7 @@ class LdapSync {
 			$phone       = null;
 			$mobile      = null;
 			$description = null;
+			$locked      = 0;
 			if(isset($data[$i][LDAP_ATTR_FIRST_NAME][0]))
 				$firstname = $data[$i][LDAP_ATTR_FIRST_NAME][0];
 			if(isset($data[$i][LDAP_ATTR_LAST_NAME][0]))
@@ -76,8 +77,12 @@ class LdapSync {
 				$mobile = $data[$i][LDAP_ATTR_MOBILE][0];
 			if(isset($data[$i][LDAP_ATTR_DESCRIPTION][0]))
 				$description = $data[$i][LDAP_ATTR_DESCRIPTION][0];
+			#if(isset($data[$i]["useraccountcontrol"][0]))
+			#	$locked = (intval($data[$i]["useraccountcontrol"][0]) & 2) ? 1 : 0;
+			/* We currently do not modify the OCO locked flag via LDAP sync.
+			   If the user is disabled in AD, then the login function (which tries an LDAP simple bind) will fail anyway. */
 
-			// check group membership and determine role ID
+		   // check group membership and determine role ID
 			$groupCheck = null;
 			if(empty(LDAP_GROUPS)) {
 				$groupCheck = LDAP_DEFAULT_ROLE_ID;
@@ -114,14 +119,14 @@ class LdapSync {
 				if($this->debug) echo '--> '.$username.': found in db - update id: '.$id;
 
 				// update into db
-				if($this->db->updateSystemUser($id, $uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, $groupCheck))
+				if($this->db->updateSystemUser($id, $uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, $locked, $groupCheck))
 					if($this->debug) echo "  OK\n";
 				else throw new Exception('Error updating: '.$this->db->getLastStatement()->error);
 			} else {
 				if($this->debug) echo '--> '.$username.': not found in db - creating';
 
 				// insert into db
-				if($this->db->insertSystemUser($uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, 0/*locked*/, $groupCheck))
+				if($this->db->insertSystemUser($uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, $locked, $groupCheck))
 					if($this->debug) echo "  OK\n";
 				else throw new Exception('Error inserting: '.$this->db->getLastStatement()->error);
 			}
