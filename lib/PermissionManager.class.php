@@ -29,12 +29,12 @@ class PermissionManager {
 	private /*Array*/ $permData;
 
 	function __construct(DatabaseController $db, Models\SystemUser $systemUser) {
-		if(empty($systemUser->system_user_role_permissions)) {
-			throw new Exception('No permission definition data found for this system user!');
-		}
 		$this->db = $db;
 		$this->systemUser = $systemUser;
 		$this->permData = json_decode($systemUser->system_user_role_permissions, true);
+		if(empty($this->permData)) { // json_decode returns false on error; it is intentional that we also throw an error if the permission list is empty
+			throw new Exception('Invalid or no permission definition data found for this system user!');
+		}
 	}
 
 	public function getPermissionEntry($ressource, String $method=null) {
