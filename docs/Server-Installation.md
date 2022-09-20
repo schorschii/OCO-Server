@@ -29,7 +29,6 @@
 5. Make sure the in `conf.php` defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
 6. **Important:** set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
    - It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any (malicious) software packages to your client!!!
-   - Login on the OCO web frontend only works using HTTPS. If you really need to login via HTTP (for debugging or testing purposes), you have to disable the `cookie_secure` and `Strict-Transport-Security` options in the `frontend/.htaccess` file.
    - Redirect all HTTP requests to HTTPS using appropriate rewrite rules.  
      <details>
      <summary>/etc/apache2/sites-enabled/000-default.conf</summary>

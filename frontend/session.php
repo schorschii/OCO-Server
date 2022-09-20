@@ -1,6 +1,6 @@
 <?php
 
-session_start();
+require_once('session-options.php');
 
 // check if user has a valid session
 if(!isset($_SESSION['oco_username'])) {

@@ -1,6 +1,0 @@
-php_value session.cookie_httponly 1
-php_value session.use_only_cookies 1
-
-# the following rules must be disabled if you want to access the web frontend via HTTP (NOT RECOMMENDED - INSECURE!)
-php_value session.cookie_secure 1
-Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"

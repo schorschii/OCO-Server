@@ -11,7 +11,7 @@ if(!$db->existsSchema() || count($db->selectAllSystemUser()) == 0) {
 }
 
 // execute login if requested
-session_start();
+require_once('session-options.php');
 if(isset($_POST['username']) && isset($_POST['password'])) {
 	try {
 		$authenticator = new AuthenticationController($db);
