@@ -4,3 +4,4 @@ php_value session.use_only_cookies 1
 
 # enable the following option after setting up HTTPS
 #php_value session.cookie_secure 1
+#Header always set Strict-Transport-Security "max-age=15552000; includeSubDomains"
