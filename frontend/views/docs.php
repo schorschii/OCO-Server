@@ -17,13 +17,22 @@ if(file_exists(DOCS_DIR.'/'.$fileName)) {
 
 	$dom = new DOMDocument;
 	@$dom->loadHTML('<?xml encoding="utf-8" ?>'.$html);
+	// link adjustments
 	$nodes = $dom->getElementsByTagName('a');
 	foreach($nodes as $node) {
-		foreach($node->attributes as $att) {
-			if($att->name == 'href') {
-				if(startsWith($node->getAttribute('href'), 'https://github.com/')) continue;
-				$node->setAttribute('href', 'index.php?view=docs&page='.urlencode($att->value));
-			}
+		$attr = $node->getAttribute('href');
+		if(!empty($attr)) {
+			if(startsWith($attr, 'https://github.com/')) continue;
+			$node->setAttribute('href', 'index.php?view=docs&page='.urlencode($attr));
+		}
+	}
+	// image adjustments
+	$nodes = $dom->getElementsByTagName('img');
+	foreach($nodes as $node) {
+		$attr = $node->getAttribute('src');
+		if(!empty($attr)) {
+			$base64 = base64_encode(file_get_contents(DOCS_DIR.'/'.$node->getAttribute('src')));
+			$node->setAttribute('src', 'data:image/png;base64,'.$base64);
 		}
 	}
 	echo $dom->saveHTML();
