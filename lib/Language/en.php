@@ -1,8 +1,8 @@
 <?php
 /*
 	Naming Convention Hints
-	- Objects (Computers, Packages, Reports, Groups) are *created* while assignments are *added*
-	- Objects (Computers, Packages, Reports, Groups) are *deleted* while assignments are *removed*
+	- Objects (e.g. Computers, Packages) are *created* while assignments (e.g. group memberships) are *added*
+	- Objects (e.g. Computers, Packages) are *deleted* while assignments (e.g. group memberships) are *removed*
 */
 return [
 	'app_name' => 'OCO IT Client Manager',
@@ -440,6 +440,7 @@ return [
 	'reevaluate' => 'Re-evaluate',
 	'reevaluated' => 'Reevaluated',
 	'enforcement' => 'Enforcement',
+	'sequence' => 'Sequence',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

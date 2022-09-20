@@ -409,7 +409,7 @@ try {
 								<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('container'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('priority'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('priority').'/'.LANG('sequence'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -429,7 +429,7 @@ try {
 									echo '<td><img src="img/container.dyn.svg" title="'.LANG('job_container').'">&nbsp;<a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
 								}
 								echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
-								echo '<td>'.htmlspecialchars($j->getPriority()).'</td>';
+								echo '<td sort_key="'.htmlspecialchars($j->getSortKey()).'">'.htmlspecialchars($j->getPriority().'-'.$j->sequence).'</td>';
 								echo '</tr>';
 							}
 							?>

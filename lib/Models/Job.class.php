@@ -142,4 +142,8 @@ abstract class Job {
 		return $prioB <=> $prioA;
 	}
 
+	public function getSortKey() {
+		return ($this->getPriority()*1000) + $this->sequence;
+	}
+
 }
