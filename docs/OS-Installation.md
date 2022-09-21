@@ -163,6 +163,7 @@ In addition to that, can use dynamic administrator passwords by using [LAPS](htt
 - Add the OCO agent setup to the Windows sources for automatic installation.
   - Insert the setup `.exe` into `/srv/smb/images/Windows10/sources/$OEM$/$$/Setup/Files`.
   - Create the post-installation script `/srv/smb/images/Windows10/sources/$OEM$/$$/Setup/Scripts/SetupComplete.cmd` from the example file [examples/SetupComplete.cmd](examples/SetupComplete.cmd).
+  - Adjust the server address and agent key in `oco-agent-setup.inf`.
 
 More information can be found in the official wimboot documentation: https://ipxe.org/howto/winpe
 

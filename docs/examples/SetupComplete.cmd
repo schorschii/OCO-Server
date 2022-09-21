@@ -1,8 +1,7 @@
 @echo off
 
 echo "OCO-Agent-Installation..." >> C:\Windows\installation.log
-"%WINDIR%\Setup\Files\oco-agent.exe" /LOADINF=oco-agent-setup.inf /SILENT >> C:\Windows\installation.log
-net stop oco-agent >> C:\Windows\installation.log
+"%WINDIR%\Setup\Files\oco-agent.exe" /LOADINF=%WINDIR%\Setup\Files\oco-agent-setup.inf /SILENT >> C:\Windows\installation.log
 
 echo "Temporäre Setup-Dateien löschen..." >> C:\Windows\installation.log
 rd /q /s "%WINDIR%\Setup\Files" >> C:\Windows\installation.log
