@@ -48,22 +48,7 @@ This server runs on Runlevel 7™.
 ## Web UI Default Values
 You can customize the default values of the deployment, package creation and other forms by editing the `DEFAULTS` constant in the `config.php` file.
 
-## Web Design Customization
-You can customize the web design by creating a `*.css` file inside `/frontend/css/css.d` with your desired CSS rules. This ensures that your custom CSS is not overwritten with an update.
+## Web Design / Web Console Customization
+You can customize the web design (e.g. to adapt your corporate design or to easily distinguish a test system from the production system) and functionality by creating OCO extensions with your desired CSS and JS. This ensures that your custom code is not overwritten with an update.
 
-Why?
-- to adapt your corporate design
-- to be able to easily distinguish a test system from the production system
-
-Example:
-```
-/* construction site header for test systems */
-#header {
-	background-image: repeating-linear-gradient(45deg, yellow, yellow 20px, black 20px, black 40px);
-	font-weight: bold;
-	text-shadow: 0px 0px 2px black, 0px 0px 2px black;
-}
-#login-bg {
-	background-image: url('custombg.jpg');
-}
-```
+Please have a look at the docs and examples at [OCO-Extensions](https://github.com/schorschii/oco-server-extensions) for more information.
