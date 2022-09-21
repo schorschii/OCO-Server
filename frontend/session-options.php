@@ -13,7 +13,7 @@ if(version_compare(PHP_VERSION, '7.3.0') >= 0) {
 		'domain' => null,
 		'secure' => $secure,
 		'httponly' => true,
-		'samesite' => 'Strict'
+		'samesite' => 'Lax'
 	]);
 } else {
 	session_set_cookie_params(
