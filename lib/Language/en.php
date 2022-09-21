@@ -433,7 +433,7 @@ return [
 	'extensions' => 'Erweiterungen',
 	'container' => 'Container',
 	'deployment_rule' => 'Deployment Rule',
-	'deployment_rule' => 'Deployment Rules',
+	'deployment_rules' => 'Deployment Rules',
 	'computer_group' => 'Computer Group',
 	'package_group' => 'Package Group',
 	'new_deployment_rule' => 'New Deployment Rule',
