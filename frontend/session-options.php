@@ -9,16 +9,16 @@ if(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
 if(version_compare(PHP_VERSION, '7.3.0') >= 0) {
 	session_set_cookie_params([
 		'lifetime' => 0,
-		'path' => null,
+		'path' => '/',
 		'domain' => null,
 		'secure' => $secure,
 		'httponly' => true,
-		'samesite' => 'Lax'
+		'samesite' => 'Strict'
 	]);
 } else {
 	session_set_cookie_params(
 		0 /* session_lifetime: 0 -> until browser closed */,
-		null /* path: default */,
+		'/' /* path: default */,
 		null /* domain: default */,
 		$secure,
 		true /*http_only*/
