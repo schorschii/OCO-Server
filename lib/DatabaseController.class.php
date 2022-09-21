@@ -2063,7 +2063,7 @@ class DatabaseController {
 		else return array_slice($reports, 0, intval($limit));
 	}
 	public function selectAllReportByReportGroupId($report_group_id) {
-		if($groupId == null) $sql = 'SELECT * FROM report WHERE report_group_id IS NULL ORDER BY name';
+		if($report_group_id == null) $sql = 'SELECT * FROM report WHERE report_group_id IS NULL ORDER BY name';
 		else $sql = 'SELECT * FROM report WHERE report_group_id = :report_group_id ORDER BY name';
 		$this->stmt = $this->dbh->prepare($sql);
 		$this->stmt->execute([':report_group_id' => $report_group_id]);
