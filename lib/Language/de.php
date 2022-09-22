@@ -139,7 +139,6 @@ return [
 	'jobs_created' => 'Job(s) wurden erstellt',
 	'group_created' => 'Gruppe wurde erstellt',
 	'report_created' => 'Report wurde erstellt',
-	'user_created' => 'Benutzer wurde erstellt',
 	'no_elements_selected' => 'Keine Elemente ausgewählt',
 	'confirm_delete' => 'Wirklich löschen?',
 	'confirm_delete_package' => 'Sind Sie sicher, dass Sie das Paket bzw. die Pakete löschen möchten?\n\nAlle Computerzuordungen gehen verloren und Sie können das Paket nicht mehr über den OCO-Server deinstallieren. Bei gedrückter Umschalt-Taste werden auch alle ausstehenden Jobs und zugewiesene Abhängigkeiten zu anderen Paketen automatisch gelöscht.',
@@ -357,7 +356,7 @@ return [
 	'create_system_user' => 'Systembenutzer erstellen',
 	'create_report' => 'Report erstellen',
 	'edit_report' => 'Report bearbeiten',
-	'edit_user' => 'Benutzer bearbeiten',
+	'edit_system_user' => 'Systembenutzer bearbeiten',
 	'edit_computer' => 'Computer bearbeiten',
 	'edit_package' => 'Paket bearbeiten',
 	'edit_package_family' => 'Paketfamilie bearbeiten',
@@ -441,6 +440,13 @@ return [
 	'oco_configuration' => 'OCO-Konfiguration',
 	'webserver_version' => 'Webserver-Version',
 	'php_version' => 'PHP-Version',
+	'system_user_role_management' => 'Rollenverwaltung',
+	'permission_json' => 'Berechtigungen (JSON-Format)',
+	'permission_json_docs' => 'Achtung: Syntaxfehler führen dazu, dass die Benutzer gar keine Berechtigungen mehr haben. Bitte lesen Sie die Dokumentation um zu erfahren, wie die JSON-Policies geschrieben werden.',
+	'system_users' => 'Systembenutzer',
+	'create_system_user_role' => 'Systembenutzerrolle erstellen',
+	'edit_system_user_role' => 'Systembenutzerrolle bearbeiten',
+	'create' => 'Erstellen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

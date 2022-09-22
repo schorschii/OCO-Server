@@ -1738,10 +1738,45 @@ class DatabaseController {
 	// System User Operations
 	public function selectAllSystemUserRole() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM system_user_role ORDER BY name ASC'
+			'SELECT sur.*, (SELECT count(id) FROM system_user su WHERE su.system_user_role_id = sur.id) AS "system_user_count" FROM system_user_role sur ORDER BY name ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUserRole');
+	}
+	public function selectSystemUserRole($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT sur.*, (SELECT count(id) FROM system_user su WHERE su.system_user_role_id = sur.id) AS "system_user_count" FROM system_user_role sur WHERE sur.id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUserRole') as $row) {
+			return $row;
+		}
+	}
+	public function insertSystemUserRole($name, $permissions) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO system_user_role (name, permissions) VALUES (:name, :permissions)'
+		);
+		$this->stmt->execute([
+			':name' => $name,
+			':permissions' => $permissions,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function updateSystemUserRole($id, $name, $permissions) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE system_user_role SET name = :name, permissions = :permissions WHERE id = :id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':name' => $name,
+			':permissions' => $permissions,
+		]);
+	}
+	public function deleteSystemUserRole($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM system_user_role WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
 	}
 	public function selectAllSystemUser() {
 		$this->stmt = $this->dbh->prepare(

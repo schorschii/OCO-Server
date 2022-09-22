@@ -144,7 +144,6 @@ return [
 	'jobs_created' => 'Job(s) created',
 	'group_created' => 'Group created',
 	'report_created' => 'Report created',
-	'user_created' => 'User created',
 	'no_elements_selected' => 'No objects selected',
 	'confirm_delete' => 'Really delete?',
 	'confirm_delete_package' => 'Are you sure you want to delete the package(s)?\n\nAll computer assignments will be lost and you can no longer uninstall this package using the OCO server. If the shift key is pressed, all pending jobs and assigned package dependencies are also deleted automatically.',
@@ -362,7 +361,7 @@ return [
 	'create_system_user' => 'Create System User',
 	'create_report' => 'Create Report',
 	'edit_report' => 'Edit Report',
-	'edit_user' => 'Edit User',
+	'edit_system_user' => 'Edit System User',
 	'edit_computer' => 'Edit Computer',
 	'edit_package' => 'Edit Package',
 	'edit_package_family' => 'Edit Package Family',
@@ -446,6 +445,13 @@ return [
 	'oco_configuration' => 'OCO Configuration',
 	'webserver_version' => 'Webserver Version',
 	'php_version' => 'PHP Version',
+	'system_user_role_management' => 'Role Management',
+	'permission_json' => 'Permissions (JSON format)',
+	'permission_json_docs' => 'Warning: syntax errors mean that the users no longer have any permissions. Please read the documentation to learn how the JSON policies are written.',
+	'system_users' => 'System Users',
+	'create_system_user_role' => 'Create System User Role',
+	'edit_system_user_role' => 'Edit System User Role',
+	'create' => 'Create',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

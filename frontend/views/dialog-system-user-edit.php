@@ -44,5 +44,15 @@ require_once('../session.php');
 
 <div class='controls right'>
 	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button id='btnCreateUser' class='primary' onclick='if(txtEditSystemUserNewPassword.value!=txtEditSystemUserConfirmNewPassword.value){emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;} editSystemUser(txtEditSystemUserId.value, txtEditSystemUserUsername.value, txtEditSystemUserDisplayName.value, txtEditSystemUserDescription.value, txtEditSystemUserNewPassword.value, sltEditSystemUserRole.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('change'); ?></button>
+	<button id='btnEditSystemUser' class='primary' onclick='
+	if(txtEditSystemUserNewPassword.value!=txtEditSystemUserConfirmNewPassword.value)
+	{emitMessage(L__PASSWORDS_DO_NOT_MATCH, "", MESSAGE_TYPE_WARNING);return false;}
+	editSystemUser(
+		txtEditSystemUserId.value,
+		txtEditSystemUserUsername.value,
+		txtEditSystemUserDisplayName.value,
+		txtEditSystemUserDescription.value,
+		txtEditSystemUserNewPassword.value,
+		sltEditSystemUserRole.value
+	)'><img src='img/send.white.svg'>&nbsp;<span id='spnBtnEditSystemUser'><?php echo LANG('change'); ?></span></button>
 </div>

@@ -8,4 +8,7 @@ class SystemUserRole {
 	public $name;
 	public $permissions;
 
+	// aggregated attributes
+	public $system_user_count;
+
 }

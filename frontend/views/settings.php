@@ -19,6 +19,7 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 		<a href='#' name='own-system-user-settings' class='<?php if($tab=='own-system-user-settings') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('own_system_user_settings'); ?></a>
 		<?php if($showSystemUserManagement) { ?>
 			<a href='#' name='system-user-management' class='<?php if($tab=='system-user-management') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('system_user_management'); ?></a>
+			<a href='#' name='system-user-role-management' class='<?php if($tab=='system-user-role-management') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('system_user_role_management'); ?></a>
 			<a href='#' name='user-log' class='<?php if($tab=='user-log') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('user_log'); ?></a>
 		<?php } ?>
 		<a href='#' name='configuration-overview' class='<?php if($tab=='configuration-overview') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('configuration_overview'); ?></a>
@@ -76,7 +77,7 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 			<div class='details-abreast'>
 				<div class='stickytable'>
 					<div class='controls'>
-						<button onclick='showDialogCreateSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+						<button onclick='showDialogEditSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('create_system_user'); ?></button>
 						<button onclick='ldapSync()' <?php if(empty(LDAP_SERVER)) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
 						<span class='filler'></span>
 					</div>
@@ -126,6 +127,60 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 										<button onclick='lockSelectedSystemUser("system_user_id[]")'><img src='img/lock.dyn.svg'>&nbsp;<?php echo LANG('lock'); ?></button>
 										<button onclick='unlockSelectedSystemUser("system_user_id[]")'><img src='img/unlock.dyn.svg'>&nbsp;<?php echo LANG('unlock'); ?></button>
 										<button onclick='confirmRemoveSelectedSystemUser("system_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tfoot>
+					</table>
+				</div>
+			</div>
+		<?php } ?>
+		</div>
+
+		<div name='system-user-role-management' class='<?php if($tab=='system-user-role-management') echo 'active'; ?>'>
+		<?php if($showSystemUserManagement) { ?>
+			<div class='details-abreast'>
+				<div class='stickytable'>
+					<div class='controls'>
+						<button onclick='showDialogEditSystemUserRole()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('create_system_user_role'); ?></button>
+						<span class='filler'></span>
+					</div>
+					<table id='tblSystemUserRoleData' class='list searchable sortable savesort actioncolumn'>
+					<thead>
+						<tr>
+							<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblSystemUserRoleData, this.checked)'></th>
+							<th class='searchable sortable'><?php echo LANG('id'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('permission_json'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('system_users'); ?></th>
+							<th class=''><?php echo LANG('action'); ?></th>
+						</tr>
+					</thead>
+					<?php
+					$counter = 0;
+					foreach($cl->getSystemUserRoles() as $r) {
+						$counter ++;
+						echo "<tr>";
+						echo "<td><input type='checkbox' name='system_user_role_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblSystemUserRoleData)'></td>";
+						echo "<td>".htmlspecialchars($r->id)."</td>";
+						echo "<td><span id='spnSystemUserRoleName".$r->id."'>".htmlspecialchars($r->name)."</span></td>";
+						echo "<td class='subbuttons'>".htmlspecialchars(shorter($r->permissions, 100))." <button id='btnSystemUserRolePermissions".$r->id."' onclick='event.preventDefault();showDialog(\"".htmlspecialchars($r->name,ENT_QUOTES)."\",this.getAttribute(\"permissions\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' permissions='".htmlspecialchars(prettyJson($r->permissions),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+						echo "<td>".htmlspecialchars($r->system_user_count)."</span></td>";
+						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUserRole(".$r->id.", spnSystemUserRoleName".$r->id.".innerText, btnSystemUserRolePermissions".$r->id.".getAttribute(\"permissions\"))'><img src='img/edit.dyn.svg'></button></td>";
+						echo "</tr>";
+					}
+					?>
+					<tfoot>
+						<tr>
+							<td colspan='999'>
+								<div class='spread'>
+									<div>
+										<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
+										<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+									</div>
+									<div class='controls'>
+										<button onclick='confirmRemoveSelectedSystemUserRole("system_user_role_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 									</div>
 								</div>
 							</td>

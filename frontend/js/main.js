@@ -1991,23 +1991,6 @@ function unlockSelectedSystemUser(checkboxName) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogCreateSystemUser() {
-	showDialogAjax(L__CREATE_SYSTEM_USER, 'views/dialog-system-user-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO)
-}
-function createSystemUser(username, displayName, description, password, roleId) {
-	var params = [];
-	params.push({'key':'create_system_user', 'value':username});
-	params.push({'key':'display_name', 'value':displayName});
-	params.push({'key':'description', 'value':description});
-	params.push({'key':'password', 'value':password});
-	params.push({'key':'role_id', 'value':roleId});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
-		emitMessage(L__USER_CREATED, username, MESSAGE_TYPE_SUCCESS);
-	});
-}
 function showDialogEditOwnSystemUserPassword() {
 	showDialogAjax(L__CHANGE_PASSWORD, 'views/dialog-system-user-edit-own-password.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
@@ -2022,8 +2005,14 @@ function editOwnSystemUserPassword(oldPassword, newPassword) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditSystemUser(id, uid, username, displayName, description, roleId, ldap) {
-	showDialogAjax(L__EDIT_USER, 'views/dialog-system-user-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+function showDialogEditSystemUser(id=-1, uid='', username='', displayName='', description='', roleId=-1, ldap=0) {
+	title = L__EDIT_SYSTEM_USER;
+	buttonText = L__CHANGE;
+	if(id == -1) {
+		title = L__CREATE_SYSTEM_USER;
+		buttonText = L__CREATE;
+	}
+	showDialogAjax(title, 'views/dialog-system-user-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditSystemUserId.value = id;
 		txtEditSystemUserUid.value = uid;
 		txtEditSystemUserUsername.value = username;
@@ -2038,6 +2027,7 @@ function showDialogEditSystemUser(id, uid, username, displayName, description, r
 			txtEditSystemUserConfirmNewPassword.readOnly = true;
 			sltEditSystemUserRole.disabled = true;
 		}
+		spnBtnEditSystemUser.innerText = buttonText;
 	});
 }
 function editSystemUser(id, username, displayName, description, password, roleId) {
@@ -2054,6 +2044,53 @@ function editSystemUser(id, username, displayName, description, password, roleId
 		refreshContent();
 		emitMessage(L__SAVED, username, MESSAGE_TYPE_SUCCESS);
 	});
+}
+function showDialogEditSystemUserRole(id=-1, name='', permissions='') {
+	title = L__EDIT_SYSTEM_USER_ROLE;
+	buttonText = L__CHANGE;
+	if(id == -1) {
+		title = L__CREATE_SYSTEM_USER_ROLE;
+		buttonText = L__CREATE;
+	}
+	showDialogAjax(title, 'views/dialog-system-user-role-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditSystemUserRoleId.value = id;
+		txtEditSystemUserRoleName.value = name;
+		txtEditSystemUserRolePermissions.value = permissions;
+		spnBtnUpdateSystemUserRole.innerText = buttonText;
+	});
+}
+function editSystemUserRole(id, name, permissions) {
+	var params = [];
+	params.push({'key':'edit_system_user_role_id', 'value':id});
+	params.push({'key':'name', 'value':name});
+	params.push({'key':'permissions', 'value':permissions});
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+		hideDialog(); refreshContent();
+		emitMessage(L__SAVED, name, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function confirmRemoveSelectedSystemUserRole(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_system_user_role_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(L__CONFIRM_DELETE)) {
+		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_DELETED, '', MESSAGE_TYPE_SUCCESS);
+		});
+	}
 }
 
 // ======== SYSTEM OPERATIONS ========

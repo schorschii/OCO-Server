@@ -1428,6 +1428,55 @@ class CoreLogic {
 	}
 
 	/*** System User Operations ***/
+	public function getSystemUserRoles() {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+		return $this->db->selectAllSystemUserRole();
+	}
+	public function createSystemUserRole($name, $permissions) {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+
+		if(empty(trim($name))
+		|| empty(trim($permissions))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+
+		$insertId = $this->db->insertSystemUserRole($name, $permissions);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $insertId, 'oco.system_user_role.create', [
+			'name'=>$name,
+			'permissions'=>$permissions,
+		]);
+		return $insertId;
+	}
+	public function editSystemUserRole($id, $name, $permissions) {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+
+		$r = $this->db->selectSystemUserRole($id);
+		if($r === null) throw new NotFoundException();
+
+		if(empty(trim($name))
+		|| empty(trim($permissions))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+
+		$this->db->updateSystemUserRole($r->id, $name, $permissions);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $r->id, 'oco.system_user_role.update', [
+			'name'=>$name,
+			'permissions'=>$permissions,
+		]);
+	}
+	public function removeSystemUserRole($id) {
+		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+
+		$r = $this->db->selectSystemUserRole($id);
+		if($r === null) throw new NotFoundException();
+
+		$result = $this->db->deleteSystemUserRole($id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $r->id, 'oco.system_user_role.delete', []);
+		return $result;
+	}
+
 	public function getSystemUsers(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
@@ -1435,10 +1484,6 @@ class CoreLogic {
 		} else {
 			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
 		}
-	}
-	public function getSystemUserRoles() {
-		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
-		return $this->db->selectAllSystemUserRole();
 	}
 	public function getSystemUser($id) {
 		$this->systemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
