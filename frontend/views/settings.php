@@ -85,6 +85,7 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 					<thead>
 						<tr>
 							<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblSystemUserData, this.checked)'></th>
+							<th class='searchable sortable'><?php echo LANG('id'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('login_name'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('role'); ?></th>
@@ -100,6 +101,7 @@ $showDeletedObjects = $currentSystemUser->checkPermission(null, PermissionManage
 						$counter ++;
 						echo "<tr>";
 						echo "<td><input type='checkbox' name='system_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblSystemUserData)'></td>";
+						echo "<td>".htmlspecialchars($u->id)."</td>";
 						echo "<td>";
 						if($u->ldap) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
 						if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG('locked')."'>&nbsp;";
