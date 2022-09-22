@@ -1406,6 +1406,13 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	#login #login-wall {
 		display: none;
 	}
+	#message-container {
+		top: 5px;
+		right: 0px;
+		left: 0px;
+		width: auto;
+		min-width: auto;
+	}
 }
 
 @media (prefers-color-scheme: dark) {
