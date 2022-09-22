@@ -185,17 +185,21 @@ function showDialogHTML(title='', text='', controls=false, size=false, monospace
 	} else {
 		obj('dialog-text').classList.remove('monospace');
 	}
-	var childs = obj('dialog-text').querySelectorAll('*');
-	for(var i = 0; i < childs.length; i++) {
-		if(childs[i].getAttribute('autofocus'))
-			childs[i].focus();
-	}
 	// make dialog visible
 	obj('dialog-container').classList.add('active');
-	obj('dialog-box').animate(
+	let animation = obj('dialog-box').animate(
 		[ {transform:'scale(102%)'}, {transform:'scale(100%)'} ],
 		{ duration: 200, iterations: 1, easing:'ease' }
 	);
+	// set focus
+	animation.onfinish = (event) => {
+		var childs = obj('dialog-text').querySelectorAll('*');
+		for(var i = 0; i < childs.length; i++) {
+			if(childs[i].getAttribute('autofocus')) {
+				childs[i].focus();
+			}
+		}
+	};
 }
 function hideDialog() {
 	let animation = obj('dialog-box').animate(
