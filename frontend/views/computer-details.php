@@ -20,6 +20,8 @@ try {
 } catch(InvalidRequestException $e) {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
+
+$commands = Models\Computer::getCommands($ext);
 ?>
 
 <div class='details-header'>
@@ -30,10 +32,10 @@ try {
 		<button onclick='showDialogEditComputer(<?php echo $computer->id; ?>, spnComputerName.innerText, spnComputerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button onclick='showDialogAddComputerToGroup(<?php echo $computer->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
 		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+		<span class='filler'></span>
 		<?php
-		if(count(COMPUTER_COMMANDS) > 0) echo "<span class='filler'></span>";
-		foreach(COMPUTER_COMMANDS as $c) {
-			echoCommandButton($c, $computer->hostname);
+		foreach($commands as $command) {
+			echoCommandButton($command, $computer->hostname);
 		}
 		?>
 	</div>
@@ -219,9 +221,9 @@ try {
 								echo '<tr>';
 								echo '<td class="flyout-container" tabindex="0">';
 								echo  htmlspecialchars($n->address);
-								if(count(COMPUTER_COMMANDS) > 0) {
+								if(count($commands) > 0) {
 									echo '<div class="flyout box">';
-									foreach(COMPUTER_COMMANDS as $c) { echoCommandButton($c, $n->address, true); echo ' '; }
+									foreach($commands as $c) { echoCommandButton($c, $n->address, true); echo ' '; }
 									echo '</div>';
 								}
 								echo '</td>';

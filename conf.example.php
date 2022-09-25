@@ -98,14 +98,6 @@ const SATELLITE_WOL_SERVER = [
 ////////////////////////////////////
 ///// ADDITIONAL CONFIGURATION /////
 ////////////////////////////////////
-/* (custom) computer actions, mainly intended to start remote sessions */
-const COMPUTER_COMMANDS = [
-	['icon'=>'img/screen-access.dyn.svg', 'name'=>'VNC', 'description'=>'client_extension_note', 'command'=>'vnc://$$TARGET$$', 'new_tab'=>false],
-	['icon'=>'img/screen-access.dyn.svg', 'name'=>'RDP', 'description'=>'client_extension_note', 'command'=>'rdp://$$TARGET$$', 'new_tab'=>false],
-	['icon'=>'img/screen-access.dyn.svg', 'name'=>'SSH', 'description'=>'client_extension_note', 'command'=>'ssh://$$TARGET$$', 'new_tab'=>false],
-	['icon'=>'img/ping.dyn.svg', 'name'=>'Ping', 'description'=>'client_extension_note', 'command'=>'ping://$$TARGET$$', 'new_tab'=>false],
-	['icon'=>'img/portscan.dyn.svg', 'name'=>'Nmap', 'description'=>'client_extension_note', 'command'=>'nmap://$$TARGET$$', 'new_tab'=>false],
-];
 
 /* strings randomly shown on the login page */
 const LOGIN_SCREEN_QUOTES = [

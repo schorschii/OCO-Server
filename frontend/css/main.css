@@ -616,6 +616,9 @@ tfoot .controls {
 .controls select {
 	max-width: 200px;
 }
+.controls button img {
+	height: 24px;
+}
 .controls.subfolders {
 	flex-wrap: wrap;
 }
