@@ -1058,10 +1058,10 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $package->id, 'oco.package.remove_assignment', ['computer_id'=>$computer->id]);
 		return $result;
 	}
-	public function renewFailedStaticJobsInContainer($name, $description, $author, $renewContainerId, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
-		$jc = $this->db->selectJobContainer($renewContainerId);
-		if(!$jc) throw new NotFoundException();
-		$this->systemUser->checkPermission($jc, PermissionManager::METHOD_WRITE);
+	public function renewFailedStaticJobsInJobContainer($name, $description, $author, $renewJobContainerId, $renewJobIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
+		$container = $this->db->selectJobContainer($renewJobContainerId);
+		if(!$container) throw new NotFoundException();
+		$this->systemUser->checkPermission($container, PermissionManager::METHOD_WRITE);
 		$this->systemUser->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -1084,15 +1084,10 @@ class CoreLogic {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 
-		// get old job container
-		$container = $this->db->selectJobContainer($renewContainerId);
-		if($container === null) {
-			throw new NotFoundException();
-		}
-
 		// wol handling
 		$computer_ids = [];
 		foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
+			if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
 			if($job->state == Models\Job::STATE_FAILED
 			|| $job->state == Models\Job::STATE_EXPIRED
 			|| $job->state == Models\Job::STATE_OS_INCOMPATIBLE
@@ -1117,7 +1112,7 @@ class CoreLogic {
 			}
 		}
 
-		// create renew jobs
+		// create new jobs
 		$jobs = [];
 		if($jcid = $this->db->insertJobContainer(
 			$name, $author,
@@ -1126,6 +1121,7 @@ class CoreLogic {
 			$sequenceMode, $priority, $container->agent_ip_ranges
 		)) {
 			foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
+				if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
 				if($job->state == Models\Job::STATE_FAILED
 				|| $job->state == Models\Job::STATE_EXPIRED
 				|| $job->state == Models\Job::STATE_OS_INCOMPATIBLE
@@ -1227,7 +1223,7 @@ class CoreLogic {
 			'agent_ip_ranges'=>$agent_ip_ranges,
 		]);
 	}
-	public function moveStaticJobToContainer($jobId, $containerId) {
+	public function moveStaticJobToJobContainer($jobId, $containerId) {
 		$job = $this->db->selectStaticJob($jobId);
 		if(empty($job) || !$job instanceof Models\StaticJob) throw new NotFoundException();
 		$oldContainer = $this->db->selectJobContainer($job->job_container_id);

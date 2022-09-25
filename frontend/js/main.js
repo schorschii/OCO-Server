@@ -1517,13 +1517,13 @@ function confirmRemoveDeploymentRule(ids, infoText='') {
 		});
 	}
 }
-function showDialogMoveStaticJobToContainer(id) {
+function showDialogMoveStaticJobToJobContainer(id) {
 	if(!id) return;
 	showDialogAjax(L__JOB_CONTAINERS, 'views/dialog-jobs-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditJobId.value = id;
 	});
 }
-function moveStaticJobToContainer(jobId, containerId) {
+function moveStaticJobToJobContainer(jobId, containerId) {
 	if(containerId === false) return;
 	var params = [];
 	containerId.toString().split(',').forEach(function(entry) {
@@ -1755,16 +1755,21 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 		});
 	}
 }
-function showDialogRenewFailedJobs(id, defaultName) {
+function showDialogRenewFailedStaticJobs(id, defaultName, jobIds) {
+	if(!jobIds) return;
 	showDialogAjax(L__RENEW_FAILED_JOBS, 'views/dialog-jobs-renew.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtRenewJobContainerId.value = id;
 		txtRenewJobContainerName.value = defaultName;
+		txtRenewJobContainerJobId.value = jobIds;
 	});
 }
-function renewFailedStaticJobsInContainer(id, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
+function renewFailedStaticJobs(id, jobId, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
 	var params = [];
 	params.push({'key':'create_renew_job_container', 'value':name});
-	params.push({'key':'renew_container_id', 'value':id});
+	params.push({'key':'job_container_id', 'value':id});
+	jobId.toString().split(',').forEach(function(entry) {
+		if(entry.trim() != '') params.push({'key':'job_id[]', 'value':entry});
+	});
 	params.push({'key':'notes', 'value':notes});
 	params.push({'key':'start_time', 'value':startTime});
 	params.push({'key':'end_time', 'value':endTime});
@@ -1773,8 +1778,7 @@ function renewFailedStaticJobsInContainer(id, name, notes, startTime, endTime, u
 	params.push({'key':'priority', 'value':priority});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
-		hideDialog();
-		refreshSidebar(); refreshContent();
+		hideDialog(); refreshSidebar(); refreshContent();
 		emitMessage(L__JOBS_CREATED, name, MESSAGE_TYPE_SUCCESS);
 	});
 }

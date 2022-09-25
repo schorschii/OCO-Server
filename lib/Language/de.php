@@ -206,6 +206,8 @@ return [
 	'expired' => 'Abgelaufen',
 	'in_progress' => 'Wird verarbeitet...',
 	'renew_failed_jobs' => 'Fehlgeschlagene Jobs erneuern',
+	'renew_failed' => 'Fehlgeschlagene erneuern',
+	'renew_failed_description' => 'Erneuert ausgewählte fehlgeschlagene Jobs bzw. alle fehlgeschlagenen Jobs, wenn keine Auswahl getroffen wurde',
 	'renew_jobs_description' => 'Es wird ein neuer Jobcontainer mit allen fehlgeschlagenen Jobs erstellt. Anschließend werden die fehlgeschlagen Jobs vom ursprünglichen Container gelöscht.',
 	'renew' => 'Erneuern',
 	'default_motd' => 'Die Dokumentation sowie den Bugtracker finden Sie auf <a href="https://github.com/schorschii/OCO-Server" target="_blank">Github</a> - Feedback und Pull Requests sind gerne gesehen!<br>Falls Sie Fragen haben können Sie auch <a href="https://georg-sieber.de/?page=impressum" target="_blank">professionellen Support erhalten</a>.<br><br>Werfen Sie auch einen Blick auf die neue <a href="https://github.com/schorschii/oco-server/blob/master/docs/Client-API.md" target="_blank">JSON-RPC-API</a>.',

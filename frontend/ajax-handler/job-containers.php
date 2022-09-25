@@ -74,7 +74,7 @@ try {
 			}
 		}
 		// create container + jobs
-		$jcid = $cl->deploy(
+		die($cl->deploy(
 			$_POST['create_install_job_container'], $_POST['description'], $_SESSION['oco_username'],
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['computer_report_id'] ?? [],
 			$_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [], $_POST['package_report_id'] ?? [],
@@ -82,8 +82,7 @@ try {
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
 			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['force_install_same_version'] ?? 0,
 			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, $agentIpRanges
-		);
-		die(strval(intval($jcid)));
+		));
 	}
 
 	// ----- create uninstall jobs if requested -----
@@ -117,20 +116,19 @@ try {
 
 	// ----- renew failed jobs in container if requested -----
 	if(!empty($_POST['create_renew_job_container'])
-	&& isset($_POST['renew_container_id'])
+	&& isset($_POST['job_container_id'])
 	&& isset($_POST['notes'])
 	&& isset($_POST['start_time'])
 	&& isset($_POST['end_time'])
 	&& isset($_POST['use_wol'])
 	&& isset($_POST['shutdown_waked_after_completion'])
 	&& isset($_POST['priority'])) {
-		$cl->renewFailedStaticJobsInContainer(
+		die($cl->renewFailedStaticJobsInJobContainer(
 			$_POST['create_renew_job_container'], $_POST['notes'], $_SESSION['oco_username'],
-			$_POST['renew_container_id'], $_POST['start_time'], $_POST['end_time'],
+			$_POST['job_container_id'], $_POST['job_id'] ?? [], $_POST['start_time'], $_POST['end_time'],
 			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'],
 			0/*sequence mode*/, $_POST['priority']
-		);
-		die();
+		));
 	}
 
 	// ----- remove jobs in container if requested -----
@@ -176,7 +174,7 @@ try {
 	if(isset($_POST['move_to_container_id']) && is_array($_POST['move_to_container_id']) && isset($_POST['move_to_container_job_id']) && is_array($_POST['move_to_container_job_id'])) {
 		foreach($_POST['move_to_container_job_id'] as $cid) {
 			foreach($_POST['move_to_container_id'] as $gid) {
-				$cl->moveStaticJobToContainer($cid, $gid);
+				$cl->moveStaticJobToJobContainer($cid, $gid);
 			}
 		}
 		die();
