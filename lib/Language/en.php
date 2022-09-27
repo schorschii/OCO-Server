@@ -454,6 +454,8 @@ return [
 	'create_system_user_role' => 'Create System User Role',
 	'edit_system_user_role' => 'Edit System User Role',
 	'create' => 'Create',
+	'json_syntax_error' => 'JSON Syntax Error',
+	'role_cannot_be_deleted_still_assigned' => 'This role cannot be deleted because it is still assigned to at least one user.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

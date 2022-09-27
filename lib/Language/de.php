@@ -449,6 +449,8 @@ return [
 	'create_system_user_role' => 'Systembenutzerrolle erstellen',
 	'edit_system_user_role' => 'Systembenutzerrolle bearbeiten',
 	'create' => 'Erstellen',
+	'json_syntax_error' => 'JSON-Syntax-Fehler',
+	'role_cannot_be_deleted_still_assigned' => 'Diese Rolle kann nicht entfernt werden, da sie noch mindestens einem Benutzer zugewiesen ist.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

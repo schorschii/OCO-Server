@@ -1435,6 +1435,9 @@ class CoreLogic {
 		|| empty(trim($permissions))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
+		if(!json_decode($permissions)) {
+			throw new InvalidRequestException(LANG('json_syntax_error'));
+		}
 
 		$insertId = $this->db->insertSystemUserRole($name, $permissions);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
@@ -1454,6 +1457,9 @@ class CoreLogic {
 		|| empty(trim($permissions))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
+		if(!json_decode($permissions)) {
+			throw new InvalidRequestException(LANG('json_syntax_error'));
+		}
 
 		$this->db->updateSystemUserRole($r->id, $name, $permissions);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->systemUser->username, $r->id, 'oco.system_user_role.update', [
@@ -1466,6 +1472,9 @@ class CoreLogic {
 
 		$r = $this->db->selectSystemUserRole($id);
 		if($r === null) throw new NotFoundException();
+		if($r->system_user_count > 0) {
+			throw new InvalidRequestException(LANG('role_cannot_be_deleted_still_assigned'));
+		}
 
 		$result = $this->db->deleteSystemUserRole($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
