@@ -14,7 +14,7 @@ const CLIENT_API_KEY                  = 'Ungah2oo'; // key for using the API - g
 
 const AGENT_SELF_REGISTRATION_ENABLED = false;      // enable/disable automatic agent registration
 const AGENT_REGISTRATION_KEY          = 'ernesto';  // agent registration key - generate your own!
-const AGENT_UPDATE_INTERVAL           = 3600;       // update computer details every 1 hour
+const AGENT_UPDATE_INTERVAL           = 60*60*2;    // update computer details every 2 hours
 const COMPUTER_KEEP_INACTIVE_SCREENS  = true;       // do not delete disconnected screens from database (to keep track of serial numbers)
 
 const PURGE_SUCCEEDED_JOBS_AFTER      = 14400;      // 4 hours
