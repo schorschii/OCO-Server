@@ -206,7 +206,7 @@ switch($srcdata['method']) {
 	case 'oco.job_container.list':
 		$resdata['error'] = null;
 		$resdata['result'] = [
-			'success' => true, 'data' => $cl->getJobContainers()
+			'success' => true, 'data' => $cl->getJobContainers(null)
 		];
 		break;
 

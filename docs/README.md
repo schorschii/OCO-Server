@@ -33,6 +33,7 @@ Please refer to the [README.md in the OCO Agent repo](https://github.com/schorsc
 - [Permissions](Permissions.md)
 - [Logging](Logging.md)
 - [Extensions](Extensions.md)
+- [Self Service Portal](Self-Service.md)
 
 ## Developer Documentation
 - [Client API](Client-API.md)

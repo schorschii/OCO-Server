@@ -9,8 +9,8 @@ require_once('../session.php');
 	<div>
 		<select id='sltNewJobContainer' class='resizeVertical' size='10'>
 			<?php
-			foreach($cl->getJobContainers() as $container) {
-				if(!$currentSystemUser->checkPermission($container, PermissionManager::METHOD_WRITE, false)) continue;
+			foreach($cl->getJobContainers(false) as $container) {
+				if(!$cl->checkPermission($container, PermissionManager::METHOD_WRITE, false)) continue;
 			?>
 				<option value='<?php echo $container->id; ?>'><?php echo htmlspecialchars($container->name); ?></option>
 			<?php } ?>

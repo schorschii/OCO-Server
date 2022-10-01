@@ -24,8 +24,8 @@ try {
 ?>
 
 <?php if($group === null) {
-	$permissionCreateReport = $currentSystemUser->checkPermission(new Models\Report(), PermissionManager::METHOD_CREATE, false);
-	$permissionCreateGroup  = $currentSystemUser->checkPermission(new Models\ReportGroup(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateReport = $cl->checkPermission(new Models\Report(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup  = $cl->checkPermission(new Models\ReportGroup(), PermissionManager::METHOD_CREATE, false);
 ?>
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><?php echo LANG('reports'); ?></span></h1>
 	<div class='controls'>
@@ -35,10 +35,10 @@ try {
 		<span><a target='_blank' href='img/dbschema.png' title='<?php echo LANG('database_schema_description'); ?>'><?php echo LANG('database_schema'); ?></a></span>
 	</div>
 <?php } else {
-	$permissionCreateReport = $currentSystemUser->checkPermission(new Models\Report(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false);
-	$permissionCreateGroup  = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_CREATE, false);
-	$permissionWrite  = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false);
-	$permissionDelete = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false);
+	$permissionCreateReport = $cl->checkPermission(new Models\Report(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission($group, PermissionManager::METHOD_WRITE, false);
+	$permissionCreateGroup  = $cl->checkPermission($group, PermissionManager::METHOD_CREATE, false);
+	$permissionWrite  = $cl->checkPermission($group, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $cl->checkPermission($group, PermissionManager::METHOD_DELETE, false);
 ?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getReportGroupBreadcrumbString($group->id)); ?></span><span id='spnReportGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
 	<div class='controls'>

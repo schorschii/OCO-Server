@@ -70,6 +70,17 @@ const LDAP_ATTR_PHONE         = 'telephonenumber'; // Example: 'telephonenumber'
 const LDAP_ATTR_MOBILE        = 'mobile';          // Example: 'mobile' for ActiveDirectory & OpenLDAP
 const LDAP_ATTR_DESCRIPTION   = 'description';     // Example: 'description' for ActiveDirectory & OpenLDAP
 
+/////////////////////////////////////////////
+///// SELF SERVICE PORTAL CONFIGURATION /////
+/////////////////////////////////////////////
+const SELF_SERVICE_ENABLED = true;
+const SELF_SERVICE_LDAP_GROUPS = [
+	// 'LDÁP Path' => OCO Role ID
+	// Example: 'CN=OcoSelfService,OU=Benutzer,DC=sieber,DC=systems' => 1,
+	'CN=OcoSelfService,OU=Benutzer,DC=sieber,DC=systems' => 2,
+];
+const SELF_SERVICE_DEFAULT_ROLE_ID = 1;
+
 
 //////////////////////////////////////////////////
 ///// SATELLITE WOL CONFIGURATION (optional) /////

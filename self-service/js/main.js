@@ -1,0 +1,1 @@
+../../frontend/js/main.js

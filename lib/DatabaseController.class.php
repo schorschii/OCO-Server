@@ -52,6 +52,9 @@ class DatabaseController {
 	}
 
 	// Special Queries
+	public function getServerVersion() {
+		return $this->dbh->getAttribute(PDO::ATTR_SERVER_VERSION);
+	}
 	public function existsSchema() {
 		$this->stmt = $this->dbh->prepare('SHOW TABLES LIKE "computer"');
 		$this->stmt->execute();
@@ -1081,10 +1084,10 @@ class DatabaseController {
 	}
 
 	// Job Operations
-	public function insertJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges) {
+	public function insertJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges, $self_service) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority, agent_ip_ranges)
-			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority, :agent_ip_ranges)'
+			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority, agent_ip_ranges, self_service)
+			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority, :agent_ip_ranges, :self_service)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
@@ -1097,6 +1100,7 @@ class DatabaseController {
 			':sequence_mode' => $sequence_mode,
 			':priority' => $priority,
 			':agent_ip_ranges' => $agent_ip_ranges,
+			':self_service' => $self_service,
 		]);
 		return $this->dbh->lastInsertId();
 	}
@@ -1136,10 +1140,10 @@ class DatabaseController {
 		$this->stmt->execute([':name' => '%'.$name.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer');
 	}
-	public function selectAllJobContainer() {
+	public function selectAllJobContainer($self_service=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT jc.*, (SELECT MAX(execution_finished) FROM job_container_job j WHERE j.job_container_id = jc.id) AS "execution_finished"
-			FROM job_container jc'
+			FROM job_container jc '.($self_service===null?'':($self_service?'WHERE self_service = 1':'WHERE self_service = 0'))
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer');
@@ -1226,7 +1230,7 @@ class DatabaseController {
 	public function selectAllPendingAndActiveJobForAgentByComputerId($computer_id) {
 		// static jobs
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.sequence_mode AS "job_container_sequence_mode", jc.agent_ip_ranges AS "job_container_agent_ip_ranges",
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.sequence_mode AS "job_container_sequence_mode", jc.agent_ip_ranges AS "job_container_agent_ip_ranges", jc.self_service AS "job_container_self_service",
 			j.package_id AS "package_id", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM job_container_job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
@@ -1264,7 +1268,7 @@ class DatabaseController {
 	public function selectAllPendingJobByComputerId($computer_id) {
 		// static jobs
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.self_service AS "job_container_self_service",
 			j.package_id AS "package_id", pf.name AS "package_family_name", p.version AS "package_version",
 			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM job_container_job j
@@ -1300,7 +1304,7 @@ class DatabaseController {
 	public function selectAllPendingJobByPackageId($package_id) {
 		// static jobs
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority",
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.name AS "job_container_name", jc.start_time AS "job_container_start_time", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.self_service AS "job_container_self_service",
 			j.computer_id AS "computer_id", c.hostname AS "computer_hostname",
 			j.is_uninstall AS "is_uninstall", j.state AS "state", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM job_container_job j
@@ -1652,6 +1656,48 @@ class DatabaseController {
 	}
 
 	// Domain User Operations
+	public function selectAllDomainUserRole() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT dur.*, (SELECT count(id) FROM domain_user du WHERE du.domain_user_role_id = dur.id) AS "domain_user_count" FROM domain_user_role dur ORDER BY name ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserRole');
+	}
+	public function selectDomainUserRole($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT dur.*, (SELECT count(id) FROM domain_user du WHERE du.domain_user_role_id = dur.id) AS "domain_user_count" FROM domain_user_role dur WHERE dur.id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserRole') as $row) {
+			return $row;
+		}
+	}
+	public function insertDomainUserRole($name, $permissions) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO domain_user_role (name, permissions) VALUES (:name, :permissions)'
+		);
+		$this->stmt->execute([
+			':name' => $name,
+			':permissions' => $permissions,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function updateDomainUserRole($id, $name, $permissions) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE domain_user_role SET name = :name, permissions = :permissions WHERE id = :id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':name' => $name,
+			':permissions' => $permissions,
+		]);
+	}
+	public function deleteDomainUserRole($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM domain_user_role WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
+	}
 	private function insertOrUpdateDomainUser($uid, $username, $display_name, &$preparedStatement=null) {
 		if(!$preparedStatement) {
 			$preparedStatement = $this->dbh->prepare(
@@ -1667,14 +1713,15 @@ class DatabaseController {
 		$this->stmt->execute([':uid' => $uid, ':username' => $username, ':display_name' => $display_name]);
 		return $this->dbh->lastInsertId();
 	}
-	public function selectAllDomainUser() {
+	public function selectAllDomainUser($selfServiceOnly=false) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT *,
+			'SELECT du.*, dur.name AS "domain_user_role_name",
 				(SELECT count(dl2.id) FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id) AS "logon_amount",
 				(SELECT count(DISTINCT dl2.computer_id) FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id) AS "computer_amount",
 				(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
-			FROM domain_user du
-			ORDER BY username ASC'
+			FROM domain_user du LEFT JOIN domain_user_role dur ON du.domain_user_role_id = dur.id '
+			.($selfServiceOnly ? 'WHERE du.domain_user_role_id IS NOT NULL AND (du.password IS NOT NULL OR du.ldap > 0) ' : '')
+			.'ORDER BY username ASC'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser');
@@ -1688,10 +1735,32 @@ class DatabaseController {
 	}
 	public function selectDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT *, (SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
-			FROM domain_user du WHERE id = :id'
+			'SELECT du.*, dur.permissions AS "domain_user_role_permissions", (SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
+			FROM domain_user du LEFT JOIN domain_user_role dur ON du.domain_user_role_id = dur.id WHERE du.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser') as $row) {
+			return $row;
+		}
+	}
+	public function selectDomainUserByUsername($username) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT du.*, dur.name AS "domain_user_role_name", dur.permissions AS "domain_user_role_permissions"
+			FROM domain_user du LEFT JOIN domain_user_role dur ON du.domain_user_role_id = dur.id
+			WHERE du.username = :username'
+		);
+		$this->stmt->execute([':username' => $username]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser') as $row) {
+			return $row;
+		}
+	}
+	public function selectDomainUserByUid($uid) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT du.*, dur.name AS "domain_user_role_name", dur.permissions AS "domain_user_role_permissions"
+			FROM domain_user du LEFT JOIN domain_user_role dur ON du.domain_user_role_id = dur.id
+			WHERE du.uid = :uid'
+		);
+		$this->stmt->execute([':uid' => $uid]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser') as $row) {
 			return $row;
 		}
@@ -1750,6 +1819,41 @@ class DatabaseController {
 		);
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserLogon');
+	}
+	public function selectLastDomainUserLogonByDomainUserIdAndComputerId($domain_user_id, $computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT du.id AS "domain_user_id", du.username AS "domain_user_username", du.display_name AS "domain_user_display_name", dl.timestamp AS "timestamp"
+			FROM domain_user_logon dl
+			INNER JOIN domain_user du ON dl.domain_user_id = du.id
+			WHERE dl.computer_id = :computer_id AND dl.domain_user_id = :domain_user_id
+			ORDER BY timestamp DESC LIMIT 1'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id, ':domain_user_id' => $domain_user_id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserLogon') as $row) {
+			return $row;
+		}
+	}
+	public function updateDomainUser($id, $domain_user_role_id, $password, $ldap) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE domain_user SET password = :password, domain_user_role_id = :domain_user_role_id, ldap = :ldap WHERE id = :id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':domain_user_role_id' => empty($domain_user_role_id) ? null : $domain_user_role_id,
+			':password' => $password,
+			':ldap' => $ldap,
+		]);
+	}
+	public function revokeAllLdapDomainUserByIds($ids) {
+		list($in_placeholders, $in_params) = self::compileSqlInValues($ids);
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE domain_user SET domain_user_role_id = NULL, password = NULL, ldap = 0 WHERE ldap = 1 AND id NOT IN ('.$in_placeholders.')'
+		);
+		return $this->stmt->execute($in_params);
+	}
+	public function updateDomainUserLastLogin($id) {
+		$this->stmt = $this->dbh->prepare('UPDATE domain_user SET last_login = CURRENT_TIMESTAMP WHERE id = :id');
+		return $this->stmt->execute([':id' => $id]);
 	}
 	public function deleteDomainUser($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1817,7 +1921,7 @@ class DatabaseController {
 			ORDER BY username ASC'
 		);
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser', [$this]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser');
 	}
 	public function selectSystemUser($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -1826,7 +1930,7 @@ class DatabaseController {
 			WHERE su.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser', [$this]) as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser') as $row) {
 			return $row;
 		}
 	}
@@ -1837,7 +1941,7 @@ class DatabaseController {
 			WHERE su.username = :username'
 		);
 		$this->stmt->execute([':username' => $username]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser', [$this]) as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser') as $row) {
 			return $row;
 		}
 	}
@@ -1848,7 +1952,7 @@ class DatabaseController {
 			WHERE su.uid = :uid'
 		);
 		$this->stmt->execute([':uid' => $uid]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser', [$this]) as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\SystemUser') as $row) {
 			return $row;
 		}
 	}

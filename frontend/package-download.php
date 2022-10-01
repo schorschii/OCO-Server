@@ -12,7 +12,7 @@ if($package === null || !$package->getFilePath()) {
 }
 
 // check if system user is allowed to download
-if(!$currentSystemUser->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false)) {
+if(!$cl->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false)) {
 	header('HTTP/1.1 403 Forbidden'); die();
 }
 

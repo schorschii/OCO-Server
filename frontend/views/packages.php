@@ -28,10 +28,10 @@ try {
 
 <?php if($group !== null) {
 	$subGroups = $cl->getPackageGroups($group->id);
-	$permissionCreate = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_CREATE, false);
-	$permissionDeploy = !empty($packages) && $currentSystemUser->checkPermission($packages[0], PermissionManager::METHOD_DEPLOY, false);
-	$permissionWrite  = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false);
-	$permissionDelete = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false);
+	$permissionCreate = $cl->checkPermission($group, PermissionManager::METHOD_CREATE, false);
+	$permissionDeploy = !empty($packages) && $cl->checkPermission($packages[0], PermissionManager::METHOD_DEPLOY, false);
+	$permissionWrite  = $cl->checkPermission($group, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $cl->checkPermission($group, PermissionManager::METHOD_DELETE, false);
 ?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getPackageGroupBreadcrumbString($group->id)); ?></span><span id='spnPackageGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
 	<div class='controls'>
@@ -52,9 +52,9 @@ try {
 		<?php } ?>
 	</div>
 <?php } elseif($family !== null) {
-	$permissionCreate = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($family, PermissionManager::METHOD_CREATE, false);
-	$permissionWrite  = $currentSystemUser->checkPermission($family, PermissionManager::METHOD_WRITE, false);
-	$permissionDelete = $currentSystemUser->checkPermission($family, PermissionManager::METHOD_DELETE, false);
+	$permissionCreate = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission($family, PermissionManager::METHOD_CREATE, false);
+	$permissionWrite  = $cl->checkPermission($family, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $cl->checkPermission($family, PermissionManager::METHOD_DELETE, false);
 ?>
 	<h1><img src='<?php echo $family->getIcon(); ?>'><span id='page-title'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($family->name); ?></span></span></h1>
 	<div class='controls'>
@@ -76,8 +76,8 @@ try {
 	</span>
 <?php } else {
 	$subGroups = $cl->getPackageGroups(null);
-	$permissionCreatePackage = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
-	$permissionCreateGroup   = $currentSystemUser->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreatePackage = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup   = $cl->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE, false);
 ?>
 	<h1><img src='img/package.dyn.svg'><span id='page-title'><?php echo LANG('complete_package_library'); ?></span></h1>
 	<div class='controls'>

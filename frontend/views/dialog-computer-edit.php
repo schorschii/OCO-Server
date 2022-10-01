@@ -13,14 +13,14 @@ require_once('../session.php');
 	<tr>
 		<th></th>
 		<td>
-			<div class='alert warning' style='margin-top:0px;width:350px'>
+			<div class='alert warning' style='margin-top:0px;width:350px;min-width:100%'>
 				<?php echo LANG('new_hostname_warning'); ?>
 			</div>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('notes'); ?></th>
-		<td><textarea class='fullwidth' autocomplete='new-password' id='txtEditComputerNotes'></textarea></td>
+		<td><textarea class='fullwidth' autocomplete='new-password' id='txtEditComputerNotes' rows='5'></textarea></td>
 	</tr>
 </table>
 

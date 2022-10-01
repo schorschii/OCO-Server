@@ -5,11 +5,11 @@ require_once('../session.php');
 
 function echoTargetPackageGroupOptions($parent=null) {
 	global $db;
-	global $currentSystemUser;
+	global $cl;
 
 	foreach($db->selectAllPackageGroupByParentPackageGroupId($parent) as $pg) {
-		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
-		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
+		if(!$cl->checkPermission($pg, PermissionManager::METHOD_READ, false)
+		&& !$cl->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'>";
 		echo htmlspecialchars($pg->name);

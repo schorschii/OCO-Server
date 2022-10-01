@@ -10,7 +10,7 @@ if(!empty($_GET['id'])) {
 		$domainUser = $cl->getDomainUser($_GET['id']);
 
 		$historyLimit = null;
-		$permissionEntry = $currentSystemUser->getPermissionEntry(PermissionManager::SPECIAL_PERMISSION_DOMAIN_USER, PermissionManager::METHOD_READ);
+		$permissionEntry = $cl->getPermissionEntry(PermissionManager::SPECIAL_PERMISSION_DOMAIN_USER, PermissionManager::METHOD_READ);
 		if(isset($permissionEntry['history_limit'])) $historyLimit = intval($permissionEntry['history_limit']);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG('not_found')."</div>");

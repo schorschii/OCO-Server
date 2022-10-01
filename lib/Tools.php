@@ -140,3 +140,30 @@ function echoReportGroupOptions($db, $parentId=null, $indent=0) {
 		echoReportGroupOptions($db, $g->id, $indent+1);
 	}
 }
+
+function echoCommandButton($c, $target, $link=false) {
+	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
+	$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);
+	$description = LANG($c['description']);
+	if($c['new_tab']) {
+		if($link) {
+			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."' target='_blank'>";
+			echo htmlspecialchars($c['name']);
+			echo "</a>";
+		} else {
+			echo "<button title='".htmlspecialchars($description)."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
+			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
+			echo "</button>";
+		}
+	} else {
+		if($link) {
+			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."'>";
+			echo htmlspecialchars($c['name']);
+			echo "</a>";
+		} else {
+			echo "<button title='".htmlspecialchars($description)."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
+			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
+			echo "</button>";
+		}
+	}
+}

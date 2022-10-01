@@ -9,10 +9,10 @@ if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 
 try {
 	$computer = $cl->getComputer($_GET['id'] ?? -1);
-	$permissionDeploy = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_DEPLOY, false);
-	$permissionWol    = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_WOL, false);
-	$permissionWrite  = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_WRITE, false);
-	$permissionDelete = $currentSystemUser->checkPermission($computer, PermissionManager::METHOD_DELETE, false);
+	$permissionDeploy = $cl->checkPermission($computer, PermissionManager::METHOD_DEPLOY, false);
+	$permissionWol    = $cl->checkPermission($computer, PermissionManager::METHOD_WOL, false);
+	$permissionWrite  = $cl->checkPermission($computer, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $cl->checkPermission($computer, PermissionManager::METHOD_DELETE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
@@ -399,9 +399,9 @@ $commands = Models\Computer::getCommands($ext);
 								echo  '<a '.explorerLink('views/package-details.php?id='.$j->package_id).'>'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
 								echo '</td>';
 								if($j instanceof Models\DynamicJob) {
-									echo '<td><img src="img/rule.dyn.svg" title="'.LANG('deployment_rule').'">&nbsp;<a '.explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
 								} elseif($j instanceof Models\StaticJob) {
-									echo '<td><img src="img/container.dyn.svg" title="'.LANG('job_container').'">&nbsp;<a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
 								}
 								echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 								echo '<td sort_key="'.htmlspecialchars($j->getSortKey()).'">'.htmlspecialchars($j->getPriority().'-'.$j->sequence).'</td>';
@@ -516,31 +516,3 @@ $commands = Models\Computer::getCommands($ext);
 
 	</div>
 </div>
-
-<?php
-function echoCommandButton($c, $target, $link=false) {
-	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
-	$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);
-	$description = LANG($c['description']);
-	if($c['new_tab']) {
-		if($link) {
-			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."' target='_blank'>";
-			echo htmlspecialchars($c['name']);
-			echo "</a>";
-		} else {
-			echo "<button title='".htmlspecialchars($description)."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
-			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
-			echo "</button>";
-		}
-	} else {
-		if($link) {
-			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."'>";
-			echo htmlspecialchars($c['name']);
-			echo "</a>";
-		} else {
-			echo "<button title='".htmlspecialchars($description)."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
-			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
-			echo "</button>";
-		}
-	}
-}

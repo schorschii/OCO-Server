@@ -16,7 +16,7 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG('query'); ?></th>
-		<td><textarea class='fullwidth monospace' rows='4' id='txtCreateReportQuery'></textarea></td>
+		<td><textarea class='fullwidth monospace' rows='6' cols='30' id='txtCreateReportQuery'></textarea></td>
 	</tr>
 </table>
 

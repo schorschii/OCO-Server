@@ -14,7 +14,7 @@ try {
 
 		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($computers as $c) {
-			if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
+			if(!$cl->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$c->id.": this.innerText}, divTargetComputerList, \"target_computers\")'><input type='checkbox' name='computers' onclick='refreshDeployComputerCount()' value='".$c->id."' />".htmlspecialchars($c->hostname)."</label>";
 		}
@@ -27,7 +27,7 @@ try {
 		foreach($reportResult as $row) {
 			if(empty($row['computer_id'])) continue;
 			$c = $db->selectComputer($row['computer_id']);
-			if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
+			if(!$cl->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$c->id.": this.innerText}, divTargetComputerList, \"target_computers\")'><input type='checkbox' name='computers' onclick='refreshDeployComputerCount()' value='".$c->id."' />".htmlspecialchars($c->hostname)."</label>";
 		}
@@ -41,7 +41,7 @@ try {
 
 		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($packages as $p) {
-			if(!$currentSystemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
+			if(!$cl->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$p->id.": this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
 		}
@@ -54,7 +54,7 @@ try {
 		foreach($reportResult as $row) {
 			if(empty($row['package_id'])) continue;
 			$p = $db->selectPackage($row['package_id']);
-			if(!$currentSystemUser->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
+			if(!$cl->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$p->id.": this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
 		}
@@ -75,7 +75,7 @@ try {
 		}
 		// create container + jobs
 		die($cl->deploy(
-			$_POST['create_install_job_container'], $_POST['description'], $_SESSION['oco_username'],
+			$_POST['create_install_job_container'], $_POST['description'], $currentSystemUser->username,
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['computer_report_id'] ?? [],
 			$_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [], $_POST['package_report_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
@@ -97,7 +97,7 @@ try {
 	&& isset($_POST['restart_timeout'])
 	&& isset($_POST['priority'])) {
 		$cl->uninstall(
-			$_POST['create_uninstall_job_container'], $_POST['notes'], $_SESSION['oco_username'],
+			$_POST['create_uninstall_job_container'], $_POST['notes'], $currentSystemUser->username,
 			$_POST['uninstall_package_assignment_id'], $_POST['start_time'], $_POST['end_time'],
 			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'], $_POST['restart_timeout'],
 			0/*sequence mode*/, $_POST['priority']
@@ -124,7 +124,7 @@ try {
 	&& isset($_POST['shutdown_waked_after_completion'])
 	&& isset($_POST['priority'])) {
 		die($cl->renewFailedStaticJobsInJobContainer(
-			$_POST['create_renew_job_container'], $_POST['notes'], $_SESSION['oco_username'],
+			$_POST['create_renew_job_container'], $_POST['notes'], $currentSystemUser->username,
 			$_POST['job_container_id'], $_POST['job_id'] ?? [], $_POST['start_time'], $_POST['end_time'],
 			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'],
 			0/*sequence mode*/, $_POST['priority']

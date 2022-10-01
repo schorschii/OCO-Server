@@ -244,11 +244,11 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 <?php
 function echoTargetComputerGroupOptions($parent=null) {
 	global $db;
-	global $currentSystemUser;
+	global $cl;
 
 	foreach($db->selectAllComputerGroupByParentComputerGroupId($parent) as $cg) {
-		if(!$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_READ, false)
-		&& !$currentSystemUser->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
+		if(!$cl->checkPermission($cg, PermissionManager::METHOD_READ, false)
+		&& !$cl->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 		echo "<a class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.")' ondblclick='addToDeployTarget({".$cg->id.": this.innerText}, divTargetComputerList, \"target_computer_groups\")'><input type='checkbox' name='computer_groups' value='".$cg->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
 		echo htmlspecialchars($cg->name);
@@ -261,10 +261,10 @@ function echoTargetComputerGroupOptions($parent=null) {
 }
 function echoTargetComputerReportOptions($parent=null) {
 	global $db;
-	global $currentSystemUser;
+	global $cl;
 
 	foreach($db->selectAllReport($parent) as $r) {
-		if(!$currentSystemUser->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+		if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 
 		$displayName = LANG($r->name);
 		echo "<a class='blockListItem' onclick='refreshDeployComputerList(null, ".$r->id.")' ondblclick='addToDeployTarget({".$r->id.": this.innerText}, divTargetComputerList, \"target_computer_reports\")'><input type='checkbox' name='computer_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
@@ -275,11 +275,11 @@ function echoTargetComputerReportOptions($parent=null) {
 }
 function echoTargetPackageGroupOptions($parent=null) {
 	global $db;
-	global $currentSystemUser;
+	global $cl;
 
 	foreach($db->selectAllPackageGroupByParentPackageGroupId($parent) as $pg) {
-		if(!$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_READ, false)
-		&& !$currentSystemUser->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
+		if(!$cl->checkPermission($pg, PermissionManager::METHOD_READ, false)
+		&& !$cl->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")' ondblclick='addToDeployTarget({".$pg->id.": this.innerText}, divTargetPackageList, \"target_package_groups\")'><input type='checkbox' name='package_groups' value='".$pg->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
 		echo htmlspecialchars($pg->name);
@@ -292,10 +292,10 @@ function echoTargetPackageGroupOptions($parent=null) {
 }
 function echoTargetPackageReportOptions($parent=null) {
 	global $db;
-	global $currentSystemUser;
+	global $cl;
 
 	foreach($db->selectAllReport($parent) as $r) {
-		if(!$currentSystemUser->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+		if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 
 		$displayName = LANG($r->name);
 		echo "<a class='blockListItem' onclick='refreshDeployPackageList(null, ".$r->id.")' ondblclick='addToDeployTarget({".$r->id.": this.innerText}, divTargetPackageList, \"target_package_reports\")'><input type='checkbox' name='package_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";

@@ -29,4 +29,6 @@ class Log {
 	public const ACTION_CLIENT_API     = 'oco.client.api';
 	public const ACTION_CLIENT_WEB     = 'oco.client.web';
 
+	public const ACTION_SELF_SERVICE_WEB     = 'oco.self_service.web';
+
 }

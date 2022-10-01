@@ -7,9 +7,9 @@ if(!empty($_GET['id'])) {
 
 	try {
 		$container = $cl->getJobContainer($_GET['id'] ?? -1);
-		$permissionCreate = $currentSystemUser->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE, false);
-		$permissionWrite  = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_WRITE, false);
-		$permissionDelete = $currentSystemUser->checkPermission($container, PermissionManager::METHOD_DELETE, false);
+		$permissionCreate = $cl->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE, false);
+		$permissionWrite  = $cl->checkPermission($container, PermissionManager::METHOD_WRITE, false);
+		$permissionDelete = $cl->checkPermission($container, PermissionManager::METHOD_DELETE, false);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG('not_found')."</div>");
 	} catch(PermissionException $e) {
@@ -232,8 +232,9 @@ if(!empty($_GET['id'])) {
 } else {
 
 	try {
-		$containers = $cl->getJobContainers();
-		$permissionCreate = $currentSystemUser->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE, false);
+		$selfService = !empty($_GET['selfservice']);
+		$containers = $cl->getJobContainers($selfService);
+		$permissionCreate = $cl->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE, false);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG('not_found')."</div>");
 	} catch(PermissionException $e) {
@@ -243,7 +244,7 @@ if(!empty($_GET['id'])) {
 	}
 ?>
 
-	<h1><img src='img/container.dyn.svg'><span id='page-title'><?php echo LANG('job_containers'); ?></span></h1>
+	<h1><img src='img/<?php echo $selfService ? 'self-service' : 'container'; ?>.dyn.svg'><span id='page-title'><?php echo $selfService ? LANG('self_service_job_containers') : LANG('system_users_job_containers'); ?></span></h1>
 
 	<div class='controls'>
 		<button onclick='refreshContentDeploy()' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_job_container'); ?></button>

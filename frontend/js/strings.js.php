@@ -74,6 +74,10 @@ var L__REEVALUATED = "<?php echo LANG('reevaluated'); ?>";
 var L__CREATE = "<?php echo LANG('create'); ?>";
 var L__CHANGE = "<?php echo LANG('change'); ?>";
 var L__NEW_DEPLOYMENT_RULE = "<?php echo LANG('new_deployment_rule'); ?>";
+var L__CREATE_DOMAIN_USER_ROLE = "<?php echo LANG('create_domain_user_role'); ?>";
+var L__EDIT_DOMAIN_USER_ROLE = "<?php echo LANG('edit_domain_user_role'); ?>";
+var L__CREATE_DOMAIN_USER = "<?php echo LANG('create_domain_user'); ?>";
+var L__EDIT_DOMAIN_USER = "<?php echo LANG('edit_domain_user'); ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG('desktop_notifications_not_supported'); ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG('desktop_notifications_denied'); ?>";

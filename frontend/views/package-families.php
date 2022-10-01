@@ -9,8 +9,8 @@ $permissionCreateGroup   = false;
 try {
 	$families = $cl->getPackageFamilies();
 	$subGroups = $cl->getPackageGroups(null);
-	$permissionCreatePackage = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
-	$permissionCreateGroup   = $currentSystemUser->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreatePackage = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup   = $cl->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {

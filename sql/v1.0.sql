@@ -385,6 +385,20 @@ CREATE TABLE IF NOT EXISTS `deployment_rule_job` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `domain_user_role`
+--
+
+CREATE TABLE IF NOT EXISTS `domain_user_role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` text NOT NULL,
+  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `c_domain_user_role_1` CHECK(JSON_VALID(permissions))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `domain_user`
 --
 
@@ -394,7 +408,14 @@ CREATE TABLE IF NOT EXISTS `domain_user` (
   `domain` text DEFAULT NULL,
   `username` text NOT NULL,
   `display_name` text NOT NULL,
-  PRIMARY KEY (`id`)
+  `domain_user_role_id` int(11) DEFAULT NULL,
+  `password` text DEFAULT NULL,
+  `ldap` tinyint(4) NOT NULL DEFAULT 0,
+  `last_login` datetime DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `fk_domain_user_1` (`domain_user_role_id`),
+  CONSTRAINT `fk_domain_user_1` FOREIGN KEY (`domain_user_role_id`) REFERENCES `domain_user_role` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -560,7 +581,7 @@ CREATE TABLE IF NOT EXISTS `system_user_role` (
   `name` text NOT NULL,
   `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `check_json_role` CHECK(JSON_VALID(permissions))
+  CONSTRAINT `c_system_user_role_1` CHECK(JSON_VALID(permissions))
 ) ;
 
 --

@@ -1,8 +1,10 @@
 # OCO: Permissions
 Every OCO system user has one role assigned. The role defines which actions he is allowed to do. Roles are described as a JSON object in the database table `system_user_role`. By default, there is one role called "Superadmin" which allows everything.
 
+This page describes the role architecture for system users. For domain user (self service) roles, please have a look at the [Self Service](Self-Service.md) page.
+
 ## Create Own R{o|u}les
-You can create your own roles by adding a new role record in the database with a JSON-ACL (Access Control List) string like the following.
+You can create your own roles by adding a new role on the web frontend settings page with a JSON-ACL (Access Control List) string like the following.
 
 **Please note:**
 - for managing group memberships, the user needs `write` permissions on both the computer/package/report **and** the group.

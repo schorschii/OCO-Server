@@ -3,7 +3,7 @@
 require_once('session-options.php');
 
 // check if user has a valid session and is authenticated (logged in)
-if(!isset($_SESSION['oco_username'])) {
+if(!isset($_SESSION['oco_user_id'])) {
 	redirectToLogin();
 }
 // check if user account still exists and is not locked

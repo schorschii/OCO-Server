@@ -7,30 +7,29 @@ if(!isset($argv[1]))
 
 require_once(__DIR__.'/loader.inc.php');
 
-switch($argv[1]) {
+try {
 
-	case 'housekeeping':
-		try {
+	switch($argv[1]) {
+
+		case 'housekeeping':
 			$houseKeeping = new HouseKeeping($db, true);
 			$houseKeeping->cleanup();
-		} catch(Exception $e) {
-			echo $argv[1].' ERROR: '.$e->getMessage()."\n";
-			exit(1);
-		}
-		break;
+			break;
 
-	case 'ldapsync':
-		try {
+		case 'ldapsync':
 			$ldapSync = new LdapSync($db, true);
-			$ldapSync->sync();
-		} catch(Exception $e) {
-			echo $argv[1].' ERROR: '.$e->getMessage()."\n";
-			exit(1);
-		}
-		break;
+			echo '<===== Syncing System Users =====>'."\n";
+			$ldapSync->syncSystemUsers();
+			echo '<===== Syncing Domain Users =====>'."\n";
+			$ldapSync->syncDomainUsers();
+			break;
 
-	default:
-		echo $argv[1].' ERROR: unknown command'."\n";
-		exit(1);
+		default:
+			throw new Exception('unknown command');
 
+	}
+
+} catch(Exception $e) {
+	echo $argv[1].' ERROR: '.$e->getMessage()."\n";
+	exit(1);
 }

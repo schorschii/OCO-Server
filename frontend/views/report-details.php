@@ -6,8 +6,8 @@ require_once('../session.php');
 // ----- prepare view -----
 try {
 	$report = $cl->getReport($_GET['id'] ?? -1);
-	$permissionWrite  = $currentSystemUser->checkPermission($report, PermissionManager::METHOD_WRITE, false);
-	$permissionDelete = $currentSystemUser->checkPermission($report, PermissionManager::METHOD_DELETE, false);
+	$permissionWrite  = $cl->checkPermission($report, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $cl->checkPermission($report, PermissionManager::METHOD_DELETE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {

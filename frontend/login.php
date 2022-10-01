@@ -18,7 +18,8 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		$user = $authenticator->login($_POST['username'], $_POST['password']);
 		if($user == null || !$user instanceof Models\SystemUser) throw new Exception(LANG('unknown_error'));
 
-		if(!$user->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND, false)) {
+		$cl1 = new CoreLogic($db, $user);
+		if(!$cl1->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND, false)) {
 			throw new AuthenticationException(LANG('web_interface_login_not_allowed'));
 		}
 
@@ -41,7 +42,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 
 // execute logout if requested
 elseif(isset($_GET['logout'])) {
-	if(isset($_SESSION['oco_username'])) {
+	if(isset($_SESSION['oco_user_id'])) {
 		$db->insertLogEntry(Models\Log::LEVEL_INFO, $_SESSION['oco_username'], null, Models\Log::ACTION_CLIENT_WEB, ['logout'=>true]);
 		session_unset();
 		session_destroy();
@@ -51,7 +52,7 @@ elseif(isset($_GET['logout'])) {
 }
 
 // redirect to index.php if already logged in
-if(!empty($_SESSION['oco_username'])) {
+if(!empty($_SESSION['oco_user_id'])) {
 	header('Location: index.php');
 	die();
 }

@@ -5,7 +5,7 @@ require_once('../session.php');
 ?>
 
 <div id='divNodeDomainUsers' class='node'>
-	<a <?php echo explorerLink('views/domain-users.php'); ?>><img src='img/users.dyn.svg'><?php echo LANG('users'); ?></a>
+	<a <?php echo explorerLink('views/domain-users.php'); ?>><img src='img/users.dyn.svg'><?php echo LANG('domain_users'); ?></a>
 </div>
 
 <div class='node expandable'>
@@ -15,7 +15,7 @@ require_once('../session.php');
 	</div>
 </div>
 
-<?php if($currentSystemUser->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
+<?php if($cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
 <div class='node expandable'>
 	<a <?php echo explorerLink('views/software.php'); ?>><img src='img/software.dyn.svg'><?php echo LANG('recognised_software'); ?></a>
 	<div id='divSubnodeSoftware' class='subitems'>
@@ -37,9 +37,20 @@ require_once('../session.php');
 	<a <?php echo explorerLink('views/jobs.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG('jobs'); ?></a>
 	<div id='divSubnodeJobs' class='subitems'>
 		<?php
-		$jobContainers = $cl->getJobContainers();
+		$jobContainers = $cl->getJobContainers(true);
 		echo "<div class='subnode ".(empty($jobContainers) ? '' : 'expandable')."'>";
-		echo "<a ".explorerLink('views/job-containers.php')."><img src='img/container.dyn.svg'>".LANG('job_containers')."</a>";
+		echo "<a ".explorerLink('views/job-containers.php?selfservice=1')."><img src='img/self-service.dyn.svg'>".LANG('self_service_job_containers')."</a>";
+		echo "<div id='divNodeSelfServiceJobs' class='subitems'>";
+		foreach($jobContainers as $container) {
+			echo "<a ".explorerLink('views/job-containers.php?id='.$container->id)."><img src='img/".$container->getStatus($db->selectAllStaticJobByJobContainer($container->id)).".dyn.svg'>".htmlspecialchars($container->name)."</a>";
+		}
+		echo "</div>";
+		echo "</div>";
+		?>
+		<?php
+		$jobContainers = $cl->getJobContainers(false);
+		echo "<div class='subnode ".(empty($jobContainers) ? '' : 'expandable')."'>";
+		echo "<a ".explorerLink('views/job-containers.php')."><img src='img/container.dyn.svg'>".LANG('system_users_job_containers')."</a>";
 		echo "<div id='divNodeStaticJobs' class='subitems'>";
 		foreach($jobContainers as $container) {
 			echo "<a ".explorerLink('views/job-containers.php?id='.$container->id)."><img src='img/".$container->getStatus($db->selectAllStaticJobByJobContainer($container->id)).".dyn.svg'>".htmlspecialchars($container->name)."</a>";

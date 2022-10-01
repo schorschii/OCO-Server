@@ -12,11 +12,11 @@ try {
 	$packageFamily = $db->selectPackageFamily($package->package_family_id);
 	if($packageFamily === null) throw new NotFoundException();
 
-	$permissionCreate   = $currentSystemUser->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $currentSystemUser->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
-	$permissionDeploy   = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DEPLOY, false);
-	$permissionDownload = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false);
-	$permissionWrite    = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_WRITE, false);
-	$permissionDelete   = $currentSystemUser->checkPermission($package, PermissionManager::METHOD_DELETE, false);
+	$permissionCreate   = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
+	$permissionDeploy   = $cl->checkPermission($package, PermissionManager::METHOD_DEPLOY, false);
+	$permissionDownload = $cl->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false);
+	$permissionWrite    = $cl->checkPermission($package, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete   = $cl->checkPermission($package, PermissionManager::METHOD_DELETE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
@@ -424,9 +424,9 @@ try {
 								echo  '<a '.explorerLink('views/computer-details.php?id='.$j->computer_id).'>'.htmlspecialchars($j->computer_hostname).'</a>';
 								echo '</td>';
 								if($j instanceof Models\DynamicJob) {
-									echo '<td><img src="img/rule.dyn.svg" title="'.LANG('deployment_rule').'">&nbsp;<a '.explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
 								} elseif($j instanceof Models\StaticJob) {
-									echo '<td><img src="img/container.dyn.svg" title="'.LANG('job_container').'">&nbsp;<a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
 								}
 								echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 								echo '<td sort_key="'.htmlspecialchars($j->getSortKey()).'">'.htmlspecialchars($j->getPriority().'-'.$j->sequence).'</td>';

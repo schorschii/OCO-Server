@@ -19,35 +19,35 @@ $moreAvail = false;
 $counter = 0;
 foreach($db->searchAllComputer($_GET['query']) as $c) {
 	$counter ++;
-	if(!$currentSystemUser->checkPermission($c, PermissionManager::METHOD_READ, false)) continue;
+	if(!$cl->checkPermission($c, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = $c;
 }
 $counter = 0;
 foreach($db->searchAllPackageFamily($_GET['query']) as $pf) {
 	$counter ++;
-	if(!$currentSystemUser->checkPermission($pf, PermissionManager::METHOD_READ, false)) continue;
+	if(!$cl->checkPermission($pf, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = $pf;
 }
 $counter = 0;
 foreach($db->searchAllJobContainer($_GET['query']) as $jc) {
 	$counter ++;
-	if(!$currentSystemUser->checkPermission($jc, PermissionManager::METHOD_READ, false)) continue;
+	if(!$cl->checkPermission($jc, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = $jc;
 }
 $counter = 0;
 foreach($db->searchAllDomainUser($_GET['query']) as $u) {
 	$counter ++;
-	if(!$currentSystemUser->checkPermission($u, PermissionManager::METHOD_READ, false)) continue;
+	if(!$cl->checkPermission($u, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = $u;
 }
 $counter = 0;
 foreach($db->searchAllReport($_GET['query']) as $r) {
 	$counter ++;
-	if(!$currentSystemUser->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+	if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = $r;
 }

@@ -17,7 +17,7 @@ try {
 			die($cl->createDeploymentRule(
 				$_POST['name'],
 				$_POST['notes'],
-				$_SESSION['oco_username'],
+				$currentSystemUser->username,
 				$_POST['enabled'],
 				$_POST['computer_group_id'],
 				$_POST['package_group_id'],

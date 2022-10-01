@@ -12,12 +12,12 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG('permission_json'); ?></th>
-		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditSystemUserRolePermissions'></textarea></td>
+		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditSystemUserRolePermissions' rows='8'></textarea></td>
 	</tr>
 	<tr>
 		<th></th>
 		<td>
-			<div class='alert warning' style='margin-top:0px;width:350px'>
+			<div class='alert warning' style='margin-top:0px;width:350px;min-width:100%'>
 				<?php echo LANG('permission_json_docs'); ?>
 			</div>
 		</td>

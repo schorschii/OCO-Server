@@ -543,6 +543,10 @@ h3 {
 	flex-direction: row;
 	flex-wrap: nowrap;
 }
+.gallery.gap {
+	gap: 30px;
+	flex-wrap: wrap;
+}
 .gallery > *:not(img) {
 	flex-grow: 1;
 	flex-shrink: 1;
@@ -567,6 +571,36 @@ h3 {
 .gallery h3 img {
 	width: 18px;
 	margin: 0px 5px 0px 0px;
+}
+.gallery > .item {
+	flex-grow: 0;
+	flex-shrink: 0;
+	flex-basis: 200px;
+	padding: 10px;
+	background-color: white;
+	transition: 0.2s ease;
+	text-decoration: none !important;
+	text-align: center !important;
+}
+.gallery > .item > h3 {
+	display: block;
+	font-weight: bold;
+	margin-bottom: 0px;
+}
+.gallery > .item:hover {
+	transform: scale(1.05);
+}
+.gallery > .item.blue {
+	border: 3px solid #0079B8;
+	border-radius: 5px;
+}
+.gallery > .item.orange {
+	border: 3px solid #ffa725;
+	border-radius: 5px;
+}
+.gallery > .item.red {
+	border: 3px solid #5f2020;
+	border-radius: 5px;
 }
 
 .controls {
@@ -878,8 +912,8 @@ table.list tr:last-child th:last-child,
 table.list tr:last-child td:last-child {
 	border-bottom-right-radius: 2px;
 }
-table.list.actioncolumn tr th:last-child,
-table.list.actioncolumn tr td:last-child {
+table.list.actioncolumn thead tr th:last-child,
+table.list.actioncolumn tbody tr td:last-child {
 	text-align: right;
 }
 table.metadata tr th:first-child {
@@ -1013,7 +1047,17 @@ a.subbuttons > button {
 	gap: 14px;
 	margin-top: 16px;
 }
-.tabbuttons a {
+.actionmenu {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 14px;
+	margin-top: 16px;
+}
+.tabbuttons a,
+.actionmenu a {
+	flex-shrink: 1;
+	flex-grow: 0;
 	display: inline-block;
 	padding: 8px 0px;
 	text-transform: uppercase;
@@ -1032,6 +1076,12 @@ a.subbuttons > button {
 }
 .tabcontents > *.active {
 	display: block;
+}
+.actionmenu a:hover,
+.actionemnu a:focus,
+.actionmenu a:active {
+	border-color: #0079B8;
+	color: #0079B8;
 }
 
 .checkboxWithText {
@@ -1334,6 +1384,7 @@ div.details-abreast > div.stickytable > table.list tfoot {
 	margin-top: 10px;
 	margin-bottom: 10px;
 	padding: 8px !important;
+	box-sizing: border-box;
 }
 .alert.info {
 	background: #E1F4FC;

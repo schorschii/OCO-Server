@@ -24,8 +24,8 @@ try {
 ?>
 
 <?php if($group === null) {
-	$permissionCreateComputer = $currentSystemUser->checkPermission(new Models\Computer(), PermissionManager::METHOD_CREATE, false);
-	$permissionCreateGroup    = $currentSystemUser->checkPermission(new Models\ComputerGroup(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateComputer = $cl->checkPermission(new Models\Computer(), PermissionManager::METHOD_CREATE, false);
+	$permissionCreateGroup    = $cl->checkPermission(new Models\ComputerGroup(), PermissionManager::METHOD_CREATE, false);
 ?>
 	<h1><img src='img/computer.dyn.svg'><span id='page-title'><?php echo LANG('all_computer'); ?></span></h1>
 	<div class='controls'>
@@ -35,10 +35,10 @@ try {
 		<span><a target='_blank' href='https://github.com/schorschii/oco-agent' title='<?php echo LANG('agent_download_description'); ?>'><?php echo LANG('agent_download'); ?></a></span>
 	</div>
 <?php } else {
-	$permissionCreate = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_CREATE, false);
-	$permissionDeploy = !empty($computers) && $currentSystemUser->checkPermission($computers[0], PermissionManager::METHOD_DEPLOY, false);
-	$permissionWrite  = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_WRITE, false);
-	$permissionDelete = $currentSystemUser->checkPermission($group, PermissionManager::METHOD_DELETE, false);
+	$permissionCreate = $cl->checkPermission($group, PermissionManager::METHOD_CREATE, false);
+	$permissionDeploy = !empty($computers) && $cl->checkPermission($computers[0], PermissionManager::METHOD_DEPLOY, false);
+	$permissionWrite  = $cl->checkPermission($group, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $cl->checkPermission($group, PermissionManager::METHOD_DELETE, false);
 ?>
 	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($db->getComputerGroupBreadcrumbString($group->id)); ?></span><span id='spnComputerGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
 	<div class='controls'>

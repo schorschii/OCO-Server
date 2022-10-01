@@ -5,8 +5,18 @@ namespace Models;
 class DomainUser {
 
 	public $id;
+	public $uid;
+	public $domain;
 	public $username;
 	public $display_name;
+	public $domain_user_role_id;
+	public $password;
+	public $ldap;
+	public $last_login;
+	public $created;
+
+	// joined attributes
+	public $domain_user_role_name;
 
 	// aggregated values
 	public $logon_amount;

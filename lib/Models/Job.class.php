@@ -84,6 +84,14 @@ abstract class Job {
 			return $this->deployment_rule_author;
 		}
 	}
+	public function getContainerIcon() {
+		if($this instanceof StaticJob) {
+			if($this->job_container_self_service) return 'img/self-service.dyn.svg';
+			else return 'img/container.dyn.svg';
+		} else {
+			return 'img/rule.dyn.svg';
+		}
+	}
 	public function getIcon() {
 		if($this->state == self::STATE_WAITING_FOR_AGENT) {
 			if($this instanceof StaticJob) {

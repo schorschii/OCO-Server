@@ -49,7 +49,7 @@ $used = $total - $free;
 			</td>
 		</tr>
 		<tr>
-			<td class='center'><img src='img/users.dyn.svg'><br><?php echo $stats['domain_users'].' '.LANG('users'); ?></td>
+			<td class='center'><img src='img/users.dyn.svg'><br><?php echo $stats['domain_users'].' '.LANG('domain_users'); ?></td>
 			<td class='center'><img src='img/computer.dyn.svg'><br><?php echo $stats['computers'].' '.LANG('computer'); ?></td>
 			<td class='center'><img src='img/package.dyn.svg'><br><?php echo $stats['packages'].' '.LANG('packages'); ?></td>
 			<td class='center'><img src='img/job.dyn.svg'><br><?php echo $stats['jobs'].' '.LANG('jobs'); ?></td>

@@ -1784,6 +1784,85 @@ function renewFailedStaticJobs(id, jobId, name, notes, startTime, endTime, useWo
 }
 
 // ======== DOMAIN USER OPERATIONS ========
+function showDialogEditDomainUserRole(id=-1, name='', permissions='') {
+	title = L__EDIT_DOMAIN_USER_ROLE;
+	buttonText = L__CHANGE;
+	if(id == -1) {
+		title = L__CREATE_DOMAIN_USER_ROLE;
+		buttonText = L__CREATE;
+	}
+	showDialogAjax(title, 'views/dialog-domain-user-role-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditDomainUserRoleId.value = id;
+		txtEditDomainUserRoleName.value = name;
+		txtEditDomainUserRolePermissions.value = permissions;
+		spnBtnUpdateDomainUserRole.innerText = buttonText;
+	});
+}
+function editDomainUserRole(id, name, permissions) {
+	var params = [];
+	params.push({'key':'edit_domain_user_role_id', 'value':id});
+	params.push({'key':'name', 'value':name});
+	params.push({'key':'permissions', 'value':permissions});
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+		hideDialog(); refreshContent();
+		emitMessage(L__SAVED, name, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function confirmRemoveSelectedDomainUserRole(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_domain_user_role_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(L__CONFIRM_DELETE)) {
+		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_DELETED, '', MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function showDialogEditDomainUser(id=-1, uid='', username='', displayName='', roleId=-1, ldap=0) {
+	title = L__EDIT_DOMAIN_USER;
+	buttonText = L__CHANGE;
+	if(id == -1) {
+		title = L__CREATE_DOMAIN_USER;
+		buttonText = L__CREATE;
+	}
+	showDialogAjax(title, 'views/dialog-domain-user-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtEditDomainUserId.value = id;
+		txtEditDomainUserUid.value = uid;
+		txtEditDomainUserUsername.value = username;
+		txtEditDomainUserDisplayName.value = displayName;
+		sltEditDomainUserRole.value = roleId;
+		if(ldap) {
+			txtEditDomainUserNewPassword.readOnly = true;
+			txtEditDomainUserConfirmNewPassword.readOnly = true;
+			sltEditDomainUserRole.disabled = true;
+		}
+		spnBtnEditDomainUser.innerText = buttonText;
+	});
+}
+function editDomainUser(id, username, password, roleId) {
+	var params = [];
+	params.push({'key':'edit_domain_user_id', 'value':id});
+	params.push({'key':'password', 'value':password});
+	params.push({'key':'domain_user_role_id', 'value':roleId});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		hideDialog(); refreshContent();
+		emitMessage(L__SAVED, username, MESSAGE_TYPE_SUCCESS);
+	});
+}
 function confirmRemoveSelectedDomainUser(checkboxName) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
@@ -2045,7 +2124,7 @@ function editSystemUser(id, username, displayName, description, password, roleId
 	params.push({'key':'display_name', 'value':displayName});
 	params.push({'key':'description', 'value':description});
 	params.push({'key':'password', 'value':password});
-	params.push({'key':'role_id', 'value':roleId});
+	params.push({'key':'system_user_role_id', 'value':roleId});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
 		hideDialog();
@@ -2102,9 +2181,18 @@ function confirmRemoveSelectedSystemUserRole(checkboxName) {
 }
 
 // ======== SYSTEM OPERATIONS ========
-function ldapSync() {
+function ldapSyncSystemUsers() {
 	var params = [];
-	params.push({'key':'ldap_sync', 'value':1});
+	params.push({'key':'ldap_sync_system_users', 'value':1});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+		refreshContent();
+		emitMessage(L__LDAP_SYNC, text, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function ldapSyncDomainUsers() {
+	var params = [];
+	params.push({'key':'ldap_sync_domain_users', 'value':1});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
 		refreshContent();
