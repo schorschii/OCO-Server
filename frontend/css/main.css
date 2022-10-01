@@ -1477,6 +1477,9 @@ div.details-abreast > div.stickytable > table.list tfoot {
 		background-color: #161b22;
 		border-color: rgba(255,255,255,0.1);
 	}
+	.gallery > .item {
+		background-color: #161b22;
+	}
 	#login-bg {
 		filter: grayscale(15%) contrast(85%) brightness(70%);
 	}
