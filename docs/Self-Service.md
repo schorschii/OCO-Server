@@ -65,3 +65,6 @@ The LDAP sync will assign the ldap flag and role with the given ID to the domain
 
 ## Self Service Jobs
 Self service jobs can be monitored and changed by admins in the admin web frontend. Self service job containers are displayed separately besides normal job containers, created by system users.
+
+## Custom Help
+You can provide custom (help) HTML pages for your self service users. If you want to do this, please create a file called `index.html` inside the `self-service/views/help` directory. You can link to other pages in this directory by adding links like `<a href="?view=help&page=page2.html">PAGE 2</a>` into your HTML file.
