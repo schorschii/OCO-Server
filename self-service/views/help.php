@@ -14,5 +14,5 @@ if(file_exists(HELP_PATH.'/'.$fileName) && is_file(HELP_PATH.'/'.$fileName)) {
 	$content = file_get_contents(HELP_PATH.'/'.$fileName);
 	echo $content;
 } else {
-	echo "<div class='alert error'>".LANG('not_found')."</div>";
+	echo "<div class='alert warning'>".LANG('not_found')."</div>";
 }
