@@ -419,7 +419,8 @@ class DatabaseController {
 		$preparedStatementDomainUserLogon = null;
 		foreach($logins as $l) {
 			if(empty($l['username'])) continue;
-			$did = $this->insertOrUpdateDomainUser($l['guid']??null, $l['username'], $l['display_name']??'', $preparedStatementDomainUser);
+			$guid = empty($l['guid']) ? null : trim($l['guid'], '{}');
+			$did = $this->insertOrUpdateDomainUser($guid, $l['username'], $l['display_name']??'', $preparedStatementDomainUser);
 			if(!$this->insertOrUpdateDomainUserLogon($id, $did, $l['console'], $l['timestamp'], $preparedStatementDomainUserLogon)) return false;
 		}
 		// old logins, which are not present in local client logs anymore, should NOT automatically be deleted
