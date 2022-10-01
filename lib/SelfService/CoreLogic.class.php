@@ -106,7 +106,7 @@ class CoreLogic {
 			$sequenceMode, 0/*priority*/, []/*constraintIpRanges*/, 1/*selfService*/
 		);
 
-		if($result) {
+		if($jcid) {
 			$jobs = $this->db->selectAllStaticJobByJobContainer($jcid);
 			$this->db->insertLogEntry(\Models\Log::LEVEL_INFO, $author, $jcid, 'oco.self_service.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 			return $jcid;
