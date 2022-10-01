@@ -1025,7 +1025,9 @@ class CoreLogic {
 			$name, $author,
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
-			$description, $wolSent, $shutdownWakedAfterCompletion, $sequenceMode, $priority, $this->compileIpRanges($constraintIpRanges)
+			$description, $wolSent, $shutdownWakedAfterCompletion,
+			$sequenceMode, $priority, $this->compileIpRanges($constraintIpRanges),
+			0/*self-service*/
 		);
 		foreach($installationIds as $id) {
 			$ap = $this->db->selectComputerPackage($id); if(empty($ap)) continue;
@@ -1126,7 +1128,8 @@ class CoreLogic {
 			$name, $author,
 			$dateStart, empty($dateEnd) ? null : $dateEnd,
 			$description, $wolSent, $shutdownWakedAfterCompletion,
-			$sequenceMode, $priority, $container->agent_ip_ranges
+			$sequenceMode, $priority, $container->agent_ip_ranges,
+			0/*self-service*/
 		)) {
 			foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 				if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
