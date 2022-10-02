@@ -35,7 +35,8 @@ try {
 		throw new AuthenticationException(LANG('unknown_error'));
 	}
 
-	if(!$user->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_CLIENT_API, false)) {
+	$cl1 = new CoreLogic($db, $user);
+	if(!$cl1->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_CLIENT_API, false)) {
 		throw new AuthenticationException(LANG('api_login_not_allowed'));
 	}
 
@@ -46,7 +47,7 @@ try {
 	$db->insertLogEntry(Models\Log::LEVEL_WARNING, $_SERVER['PHP_AUTH_USER'] ?? '', null, Models\Log::ACTION_CLIENT_API, ['authenticated'=>false]);
 
 	header('HTTP/1.1 401 Client Not Authorized');
-	error_log('api-agent: authentication failure');
+	error_log('api-client: authentication failure');
 	die('HTTP Basic Auth: '.$e->getMessage());
 }
 
@@ -97,9 +98,23 @@ if(isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) =
 switch($srcdata['method']) {
 	case 'oco.computer.list':
 		$resdata['error'] = null;
-		$resdata['result'] = [
-			'success' => true, 'data' => $cl->getComputers()
-		];
+		if(empty($data['computer_group_id'])) {
+			$resdata['result'] = [
+				'success' => true, 'data' => [
+					'computers' => $cl->getComputers(),
+					'groups' => $cl->getComputerGroups(),
+				]
+			];
+		} else {
+			$group = $cl->getComputerGroup($data['computer_group_id']);
+			$resdata['result'] = [
+				'success' => true, 'data' => [
+					'name' => $group->name,
+					'computers' => $cl->getComputers($group),
+					'groups' => $cl->getComputerGroups($group->id),
+				]
+			];
+		}
 		break;
 
 	case 'oco.computer.get':
@@ -153,11 +168,29 @@ switch($srcdata['method']) {
 		break;
 
 	case 'oco.package.list':
-		$pf = $cl->getPackageFamily($data['id'] ?? 0);
-		$resdata['error'] = null;
-		$resdata['result'] = [
-			'success' => true, 'data' => $db->selectAllPackageByPackageFamilyId($data['id'] ?? 0)
-		];
+		if(empty($data['package_group_id'])) {
+			if(empty($data['package_family_id'])) {
+				throw new InvalidRequestException('package_family_id or package_group_id is required');
+			} else {
+				$family = $cl->getPackageFamily($data['package_family_id'] ?? 0);
+				$resdata['result'] = [
+					'success' => true, 'data' => [
+						'name' => $family->name,
+						'packages' => $db->selectAllPackageByPackageFamilyId($family->id),
+						'groups' => $cl->getPackageGroups(),
+					]
+				];
+			}
+		} else {
+			$group = $cl->getPackageGroup($data['package_group_id']);
+			$resdata['result'] = [
+				'success' => true, 'data' => [
+					'name' => $group->name,
+					'packages' => $cl->getPackages($group),
+					'groups' => $cl->getPackageGroups($group->id),
+				]
+			];
+		}
 		break;
 
 	case 'oco.package.get':
@@ -214,7 +247,7 @@ switch($srcdata['method']) {
 		$jc = $cl->getJobContainer($data['id'] ?? 0);
 		$resdata['error'] = null;
 		$resdata['result'] = [
-			'success' => true, 'data' => $db->selectAllStaticJobByJobContainer($data['id'] ?? 0)
+			'success' => true, 'data' => $db->selectAllStaticJobByJobContainer($jc->id)
 		];
 		break;
 
@@ -269,6 +302,21 @@ switch($srcdata['method']) {
 		$resdata['error'] = null;
 		$resdata['result'] = [
 			'success' => true, 'data' => []
+		];
+		break;
+
+	case 'oco.deployment_rule.list':
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => $cl->getDeploymentRules()
+		];
+		break;
+
+	case 'oco.deployment_rule.job.list':
+		$dr = $cl->getDeploymentRule($data['id'] ?? 0);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => $db->selectAllDynamicJobByDeploymentRuleId($dr->id)
 		];
 		break;
 

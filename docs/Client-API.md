@@ -21,7 +21,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 # Methods
 ## `oco.computer.list` - List All Computers
 ### Parameters
-no parameters
+- `computer_group_id` (optional) - computer group ID (if omitted, all computers and rootlevel computer groups will be returned)
 ### Example
 ```
 {
@@ -29,7 +29,10 @@ no parameters
 	"id": 1,
 	"method": "oco.computer.list",
 	"params": {
-		"api_key": "🌈💜👆🚧🛸💩"
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"computer_group_id": null
+		}
 	}
 }
 ```
@@ -39,36 +42,50 @@ no parameters
 	"error": null,
 	"result": {
 		"success": true,
-		"data": [
-			{
-				"id": "164",
-				"hostname": "PC01",
-				"os": "Windows 10 Home",
-				"os_version": "10.0.19042",
-				"kernel_version": "-",
-				"architecture": "AMD64",
-				"cpu": "Intel64 Family 6 Model 158 Stepping 9, GenuineIntel",
-				"gpu": "Intel(R) HD Graphics 630",
-				"ram": "17011314688",
-				"agent_version": "1.0.0",
-				"serial": "ABC123",
-				"manufacturer": "FUJITSU // American Megatrends Inc.",
-				"model": "ESPRIMO Q556/2",
-				"bios_version": "11700000",
-				"boot_type": "Legacy",
-				"secure_boot": "0",
-				"last_ping": "2021-06-22 14:56:36",
-				"last_update": "2021-06-22 14:56:36",
-				"notes": "",
-				"agent_key": "abc123",
-				"server_key": "abc123",
-				"software_version": null,
-				"computer_network_mac": null,
-				"os_license": "1",
-				"os_locale": "0407"
-			},
-			.........................
-		]
+		"data": {
+			"computers": [
+				{
+					"id": "164",
+					"hostname": "PC01",
+					"os": "Windows 10 Home",
+					"os_version": "10.0.19042",
+					"kernel_version": "-",
+					"architecture": "AMD64",
+					"cpu": "Intel64 Family 6 Model 158 Stepping 9, GenuineIntel",
+					"gpu": "Intel(R) HD Graphics 630",
+					"ram": "17011314688",
+					"agent_version": "1.0.0",
+					"serial": "ABC123",
+					"manufacturer": "FUJITSU // American Megatrends Inc.",
+					"model": "ESPRIMO Q556/2",
+					"bios_version": "11700000",
+					"boot_type": "Legacy",
+					"secure_boot": "0",
+					"last_ping": "2021-06-22 14:56:36",
+					"last_update": "2021-06-22 14:56:36",
+					"notes": "",
+					"agent_key": "abc123",
+					"server_key": "abc123",
+					"software_version": null,
+					"computer_network_mac": null,
+					"os_license": "1",
+					"os_locale": "0407"
+				},
+				.........................
+			],
+			"groups": [
+				{
+					"id": "95",
+					"parent_computer_group_id": null,
+					"name": "Linux Clients"
+				},
+				{
+					"id": "102",
+					"parent_computer_group_id": null,
+					"name": "Windows Clients"
+				}
+			]
+		}
 	}
 }
 ```
@@ -345,7 +362,9 @@ no parameters
 
 ## `oco.package.list` - List All Packages Of A Package Family
 ### Parameters
-- `ìd` - package family ID
+- `package_family_ìd` - package family ID
+- `package_group_id` - package group ID
+- at least one of these parameters must be given
 ### Example
 ```
 {
@@ -355,7 +374,7 @@ no parameters
 	"params": {
 		"api_key": "🌈💜👆🚧🛸💩",
 		"data": {
-			"id": 123
+			"package_family_id": 123
 		}
 	}
 }
@@ -366,44 +385,59 @@ no parameters
 	"error": null,
 	"result": {
 		"success": true,
-		"data": [
-			{
-				"id": "108",
-				"package_family_id": "3",
-				"package_family_name": "CDBurnerXP",
-				"version": "4.5.8.7128",
-				"notes": "",
-				"author": "root",
-				"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.8.7128.msi",
-				"install_procedure_success_return_codes": "0",
-				"install_procedure_post_action": "0",
-				"uninstall_procedure": "msiexec /quiet /x cdbxp_setup_x64_4.5.8.7128.msi",
-				"uninstall_procedure_success_return_codes": "1",
-				"download_for_uninstall": "1",
-				"uninstall_procedure_post_action": "0",
-				"created": "2021-04-24 18:13:12",
-				"last_update": "2021-06-15 23:44:02",
-				"package_group_member_sequence": null
-			},
-			{
-				"id": "109",
-				"package_family_id": "3",
-				"package_family_name": "CDBurnerXP",
-				"version": "4.5.0.3661",
-				"notes": "",
-				"author": "root",
-				"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.0.3661.msi",
-				"install_procedure_success_return_codes": "0",
-				"install_procedure_post_action": "0",
-				"uninstall_procedure": "msiexec /quiet /x cdbxp_setup_x64_4.5.0.3661.msi",
-				"uninstall_procedure_success_return_codes": "0",
-				"download_for_uninstall": "1",
-				"uninstall_procedure_post_action": "0",
-				"created": "2021-04-24 18:15:51",
-				"last_update": "2021-04-24 18:15:51",
-				"package_group_member_sequence": null
-			}
-		]
+		"data": {
+			"name": "CDBurnerXP",
+			"packages": [
+				{
+					"id": "108",
+					"package_family_id": "3",
+					"package_family_name": "CDBurnerXP",
+					"version": "4.5.8.7128",
+					"notes": "",
+					"author": "root",
+					"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.8.7128.msi",
+					"install_procedure_success_return_codes": "0",
+					"install_procedure_post_action": "0",
+					"uninstall_procedure": "msiexec /quiet /x cdbxp_setup_x64_4.5.8.7128.msi",
+					"uninstall_procedure_success_return_codes": "1",
+					"download_for_uninstall": "1",
+					"uninstall_procedure_post_action": "0",
+					"created": "2021-04-24 18:13:12",
+					"last_update": "2021-06-15 23:44:02",
+					"package_group_member_sequence": null
+				},
+				{
+					"id": "109",
+					"package_family_id": "3",
+					"package_family_name": "CDBurnerXP",
+					"version": "4.5.0.3661",
+					"notes": "",
+					"author": "root",
+					"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.0.3661.msi",
+					"install_procedure_success_return_codes": "0",
+					"install_procedure_post_action": "0",
+					"uninstall_procedure": "msiexec /quiet /x cdbxp_setup_x64_4.5.0.3661.msi",
+					"uninstall_procedure_success_return_codes": "0",
+					"download_for_uninstall": "1",
+					"uninstall_procedure_post_action": "0",
+					"created": "2021-04-24 18:15:51",
+					"last_update": "2021-04-24 18:15:51",
+					"package_group_member_sequence": null
+				}
+			],
+			"groups": [
+				{
+					"id": "20",
+					"parent_package_group_id": null,
+					"name": "Test Group 1"
+				},
+				{
+					"id": "19",
+					"parent_package_group_id": null,
+					"name": "Windows"
+				}
+			]
+		}
 	}
 }
 ```
@@ -628,7 +662,7 @@ no parameters
 {
 	"jsonrpc": "2.0",
 	"id": 1,
-	"method": "oco.job.list",
+	"method": "oco.job_container.job.list",
 	"params": {
 		"api_key": "🌈💜👆🚧🛸💩",
 		"data": {
@@ -695,7 +729,7 @@ no parameters
 {
 	"jsonrpc": "2.0",
 	"id": 1,
-	"method": "oco.deploy",
+	"method": "oco.job_container.deploy",
 	"params": {
 		"api_key": "🌈💜👆🚧🛸💩",
 		"data": {
@@ -750,7 +784,7 @@ no parameters
 {
 	"jsonrpc": "2.0",
 	"id": 1,
-	"method": "oco.uninstall",
+	"method": "oco.job_container.uninstall",
 	"params": {
 		"api_key": "🌈💜👆🚧🛸💩",
 		"data": {
@@ -849,7 +883,7 @@ This removes a single job from a job container.
 {
 	"jsonrpc": "2.0",
 	"id": 1,
-	"method": "oco.job.remove",
+	"method": "oco.job_container.job.remove",
 	"params": {
 		"api_key": "🌈💜👆🚧🛸💩",
 		"data": {
@@ -865,6 +899,103 @@ This removes a single job from a job container.
 	"result": {
 		"success": true,
 		"data": []
+	}
+}
+```
+
+## `oco.deployment_rule.list` - List All Deployment Rules
+### Parameters
+no parameters
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.deployment_rule.list",
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩"
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": [
+			{
+				"id": "15",
+				"name": "Regel Nummer 1",
+				"notes": "",
+				"author": "root",
+				"enabled": "1",
+				"computer_group_id": "95",
+				"package_group_id": "20",
+				"priority": "0",
+				"auto_uninstall": "1",
+				"post_action_timeout": "500",
+				"created": "2022-10-01 21:17:08",
+				"sequence_mode": "0"
+			}
+		]
+	}
+}
+```
+
+## `oco.deployment_rule.job.list` - List All Jobs Of A Deployment Rule
+### Parameters
+- `ìd` - deployment rule ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.deployment_rule.job.list",
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"id": 123
+		}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": [
+			{
+				"deployment_rule_id": "15",
+				"deployment_rule_name": null,
+				"deployment_rule_author": null,
+				"deployment_rule_enabled": null,
+				"deployment_rule_sequence_mode": null,
+				"deployment_rule_priority": null,
+				"id": "105",
+				"computer_id": "92",
+				"package_id": "154",
+				"procedure": "hdiutil attach laps4mac-client.dmg && cp -R /Volumes/LAPS4MAC/LAPS4MAC.app /Applications && hdiutil detach /Volumes/LAPS4MAC",
+				"success_return_codes": "0",
+				"is_uninstall": "0",
+				"download": "1",
+				"post_action": "0",
+				"post_action_timeout": "500",
+				"sequence": "1",
+				"state": "0",
+				"return_code": null,
+				"message": "",
+				"wol_shutdown_set": null,
+				"download_started": null,
+				"execution_started": null,
+				"execution_finished": null,
+				"computer_hostname": "Client002",
+				"package_family_name": "M_LAPS4MAC",
+				"package_version": "1.5.2 v2"
+			}
+		]
 	}
 }
 ```
