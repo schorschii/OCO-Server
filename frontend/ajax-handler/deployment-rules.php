@@ -38,6 +38,11 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['renew_deployment_rule'])) {
+		$cl->renewDeploymentRuleJob($_POST['renew_deployment_rule'], $_POST['job_id'] ?? []);
+		die();
+	}
+
 	if(!empty($_POST['remove_deployment_rule_id']) && is_array($_POST['remove_deployment_rule_id'])) {
 		foreach($_POST['remove_deployment_rule_id'] as $id) {
 			$cl->removeDeploymentRule($id);

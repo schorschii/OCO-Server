@@ -1782,6 +1782,19 @@ function renewFailedStaticJobs(id, jobId, name, notes, startTime, endTime, useWo
 		emitMessage(L__JOBS_CREATED, name, MESSAGE_TYPE_SUCCESS);
 	});
 }
+function renewFailedDynamicJobs(id, jobId) {
+	if(!confirm(L__RENEW_FAILED_DEPLOYMENT_RULE_JOBS_NOW)) return;
+	var params = [];
+	params.push({'key':'renew_deployment_rule', 'value':id});
+	jobId.toString().split(',').forEach(function(entry) {
+		if(entry.trim() != '') params.push({'key':'job_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/deployment-rules.php', paramString, null, function() {
+		refreshSidebar(); refreshContent();
+		emitMessage(L__JOBS_RENEWED, '', MESSAGE_TYPE_SUCCESS);
+	});
+}
 
 // ======== DOMAIN USER OPERATIONS ========
 function showDialogEditDomainUserRole(id=-1, name='', permissions='') {

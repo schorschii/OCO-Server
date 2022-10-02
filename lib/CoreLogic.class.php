@@ -659,6 +659,18 @@ class CoreLogic {
 			'auto_uninstall'=>$auto_uninstall,
 		]);
 	}
+	public function renewDeploymentRuleJob($renewDeploymentRuleId, $renewJobIds) {
+		$container = $this->db->selectDeploymentRule($renewDeploymentRuleId);
+		if(!$container) throw new NotFoundException();
+		$this->checkPermission($container, PermissionManager::METHOD_WRITE);
+		$jobIds = [];
+		foreach($this->db->selectAllDynamicJobByDeploymentRuleId($container->id) as $job) {
+			if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
+			if($job->isFailed()) $jobIds[] = $job->id;
+		}
+		if(!$this->db->updateDynamicJob($jobIds, Models\Job::STATE_WAITING_FOR_AGENT, null/*return_code*/, ''/*messgae*/))
+			throw new InvalidRequestException(LANG('no_failed_jobs'));
+	}
 	public function removeDeploymentRule($id) {
 		$dr = $this->db->selectDeploymentRule($id);
 		if(empty($dr)) throw new NotFoundException();
@@ -1098,10 +1110,7 @@ class CoreLogic {
 		$computer_ids = [];
 		foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 			if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
-			if($job->state == Models\Job::STATE_FAILED
-			|| $job->state == Models\Job::STATE_EXPIRED
-			|| $job->state == Models\Job::STATE_OS_INCOMPATIBLE
-			|| $job->state == Models\Job::STATE_PACKAGE_CONFLICT) {
+			if($job->isFailed()) {
 				$computer_ids[] = $job->computer_id;
 			}
 		}
@@ -1133,10 +1142,7 @@ class CoreLogic {
 		)) {
 			foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 				if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
-				if($job->state == Models\Job::STATE_FAILED
-				|| $job->state == Models\Job::STATE_EXPIRED
-				|| $job->state == Models\Job::STATE_OS_INCOMPATIBLE
-				|| $job->state == Models\Job::STATE_PACKAGE_CONFLICT) {
+				if($job->isFailed()) {
 
 					// use the current package procedure, return codes, post action
 					$package = $this->db->selectPackage($job->package_id);

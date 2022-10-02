@@ -42,6 +42,12 @@ abstract class Job {
 	public const STATE_SUCCEEDED = 3;
 
 	// functions
+	public function isFailed() {
+		return ($this->state == self::STATE_FAILED
+			|| $this->state == self::STATE_EXPIRED
+			|| $this->state == self::STATE_OS_INCOMPATIBLE
+			|| $this->state == self::STATE_PACKAGE_CONFLICT);
+	}
 	public function getIdForAgent() {
 		if($this instanceof StaticJob) {
 			return $this->id;

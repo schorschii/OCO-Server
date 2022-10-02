@@ -116,6 +116,7 @@ if(!empty($_GET['id'])) {
 		<table id='tblDeploymentRuleJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
+				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDeploymentRuleJobData, this.checked)'></th>
 					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('package'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('procedure'); ?></th>
@@ -129,6 +130,7 @@ if(!empty($_GET['id'])) {
 			foreach($jobs as $job) {
 				$counter ++;
 				echo "<tr>";
+				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."' onchange='refreshCheckedCounter(tblDeploymentRuleJobData)'></td>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
 				echo "<td><a ".explorerLink('views/package-details.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle monospace' title='".htmlspecialchars($job->procedure, ENT_QUOTES)."'>";
@@ -164,6 +166,7 @@ if(!empty($_GET['id'])) {
 							</div>
 							<div class='controls'>
 								<button onclick='event.preventDefault();downloadTableCsv("tblDeploymentRuleJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button onclick='renewFailedDynamicJobs(<?php echo $container->id; ?>, getSelectedCheckBoxValues("job_id[]", null))' <?php if($failed==0 || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('renew_failed'); ?></button>
 							</div>
 						</div>
 					</td>

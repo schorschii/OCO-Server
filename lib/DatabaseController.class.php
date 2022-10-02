@@ -1648,6 +1648,14 @@ class DatabaseController {
 		])) return false;
 		return $this->evaluateDeploymentRule($id);
 	}
+	public function updateDynamicJob($ids, $state, $return_code, $message) {
+		list($in_placeholders, $in_params) = self::compileSqlInValues($ids);
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE deployment_rule_job SET state = :state, return_code = :return_code, message = :message WHERE id IN ('.$in_placeholders.')'
+		);
+		$this->stmt->execute(array_merge($in_params, [':state'=>$state, ':return_code'=>$return_code, ':message'=>$message]));
+		return $this->stmt->rowCount() == 1;
+	}
 	public function deleteDeploymentRule($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM deployment_rule WHERE id = :id'
