@@ -13,7 +13,7 @@ const CLIENT_API_ENABLED              = false;      // enable/disable the api-cl
 const CLIENT_API_KEY                  = 'Ungah2oo'; // key for using the API - generate your own!
 
 const AGENT_SELF_REGISTRATION_ENABLED = false;      // enable/disable automatic agent registration
-const AGENT_REGISTRATION_KEY          = 'ernesto';  // agent registration key - generate your own!
+const AGENT_REGISTRATION_KEY          = 'soa3Peig'; // agent registration key - generate your own!
 const AGENT_UPDATE_INTERVAL           = 60*60*2;    // update computer details every 2 hours
 const COMPUTER_KEEP_INACTIVE_SCREENS  = true;       // do not delete disconnected screens from database (to keep track of serial numbers)
 
@@ -24,7 +24,7 @@ const PURGE_DOMAIN_USER_LOGONS_AFTER  = 31536000;   // 1 year
 const CHECK_UPDATE                    = true;       // check for new OCO versions
 
 const LOG_LEVEL                       = 2;          // available levels: 0->DEBUG, 1->INFO, 2->WARNING, 3->ERROR, 4->NO LOGGING
-const PURGE_LOGS_AFTER                = 172800;     // 2 days
+const PURGE_LOGS_AFTER                = 60*60*24*7; // purge log entries after 7 days
 
 
 ///////////////////////////////

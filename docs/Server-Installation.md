@@ -24,10 +24,11 @@
    mysql> EXIT;
    root@ocoserver:/# cat sql/*.sql | mysql oco
    ```
-4. Enter your MySQL credentials in `conf.php` (create this file by copying the template `conf.example.php`).  
-   (Use a separate user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.)
-5. Make sure the in `conf.php` defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
-6. **Important:** set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
+4. Create the configuration file `conf.php` (create this file by copying the template `conf.example.php`).
+   - Enter your MySQL credentials in `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`. Use a separate database user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.
+   - Make sure that the defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
+   - Generate your own `CLIENT_API_KEY` and `AGENT_REGISTRATION_KEY`, e.g. by using `pwgen`.
+5. **Important:** set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
    - It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any (malicious) software packages to your client!!!
    - Redirect all HTTP requests to HTTPS using appropriate rewrite rules.  
      <details>
@@ -60,14 +61,14 @@
      </details>
    - The next section describes in detail how to obtain a LetsEncrypt certificate. It is also possible to use a self-signed certificate if necessary. Then, you have to import your own CA certificate into the trust store of every agent's operating system.
    - After you have sucessfully set up HTTPS, please enable the option `php_value session.cookie_secure 1` in the `frontend/.htaccess` file to ensure cookies are only transferred via HTTPS.
-7. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size  
+6. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size  
   (pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size` and `max_execution_time`).
-8. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
-9. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
+7. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
+8. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
    ```
    */2 *  * * *  www-data  cd /srv/www/oco && php console.php housekeeping
    ```
-10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
+9. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
 
 ### Obtaining A Let’s Encrypt Certificate
 1. Enable the Apache SSL module: `a2enmod ssl`
