@@ -46,7 +46,7 @@ $commands = Models\Computer::getCommands($ext);
 		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('general_and_hardware'); ?></a>
 		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('packages_and_jobs'); ?></a>
 		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('recognised_software'); ?></a>
-		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('history'); ?></a>
+		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('history'); ?></a>
 	</div>
 	<div class='tabcontents'>
 
@@ -465,6 +465,7 @@ $commands = Models\Computer::getCommands($ext);
 		</div>
 
 		<div name='history' class='<?php if($tab=='history') echo 'active'; ?>'>
+			<?php if($tab == 'history') { ?>
 			<div class='details-abreast'>
 				<div class='stickytable'>
 					<table id='tblComputerHistoryData' class='list searchable sortable savesort margintop'>
@@ -512,6 +513,7 @@ $commands = Models\Computer::getCommands($ext);
 					</table>
 				</div>
 			</div>
+			<?php } ?>
 		</div>
 
 	</div>

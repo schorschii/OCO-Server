@@ -83,7 +83,13 @@ function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}) {
 		document.location.pathname+'?'+keyValuePairs.join('&')
 	);
 }
-function openTab(tabControl, tabName) {
+function getCurrentUrlParameter(param) {
+	var url = new URL(location);
+	for(const [key, value] of url.searchParams) {
+		if(key == param) return value;
+	}
+}
+function openTab(tabControl, tabName, forceRefresh=false) {
 	var childs = tabControl.querySelectorAll('.tabbuttons > a, .tabcontents > div');
 	for(var i = 0; i < childs.length; i++) {
 		if(childs[i].getAttribute('name') == tabName) {
@@ -100,7 +106,9 @@ function openTab(tabControl, tabName) {
 			childs[i].classList.add('hidden');
 		}
 	}
+	let refresh = (forceRefresh && getCurrentUrlParameter('tab') != tabName);
 	rewriteUrlContentParameter(currentExplorerContentUrl, {'tab':tabName});
+	if(refresh) refreshContent();
 }
 
 // ======== EVENT LISTENERS ========

@@ -43,7 +43,7 @@ try {
 		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('general_and_dependencies'); ?></a>
 		<a href='#' name='archive-contents' class='<?php if($tab=='archive-contents') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('archive_contents'); ?></a>
 		<a href='#' name='computers' class='<?php if($tab=='computers') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('computer_and_jobs'); ?></a>
-		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('history'); ?></a>
+		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"),true)'><?php echo LANG('history'); ?></a>
 	</div>
 	<div class='tabcontents'>
 		<div name='general' class='<?php if($tab=='general') echo 'active'; ?>'>
@@ -447,6 +447,7 @@ try {
 		</div>
 
 		<div name='history' class='<?php if($tab=='history') echo 'active'; ?>'>
+			<?php if($tab == 'history') { ?>
 			<div class='details-abreast'>
 				<div class='stickytable'>
 					<table id='tblPackageHistoryData' class='list searchable sortable savesort margintop'>
@@ -494,6 +495,7 @@ try {
 					</table>
 				</div>
 			</div>
+			<?php } ?>
 		</div>
 
 	</div>
