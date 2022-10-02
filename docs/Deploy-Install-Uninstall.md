@@ -40,6 +40,8 @@ It is recommended to keep the rule disabled at creation time and check if all jo
 
 As soon as computer or package group members or computer-package assignments changed, the deployment rule will automatically be re-evaluated and adjust the dynamic jobs according to the new conditions. This means e.g. packages which are newly added to the package group will be instantly deployed on the computers of the selected computer group.
 
+It is also possible to manually re-evaluate a rule. This is necessary e.g. if you changed a package procedure in order to update the procedure in the deployment rule.
+
 **Note:** be careful when using deployment rules. If your package group contains multiple versions of a package family and automatic uninstallation is enabled in your rule, you will get an endless loop of uninstallation and installation jobs.
 
 # Uninstall Packages
