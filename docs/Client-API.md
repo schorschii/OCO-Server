@@ -140,6 +140,13 @@ Please have a look at the following API method documentation for JSON-RPC reques
 				"os_locale": "0407",
 				"domain": "vm2-PC"
 			},
+			"groups": [
+				{
+					"id": "102",
+					"parent_computer_group_id": null,
+					"name": "Windows Clients"
+				}
+			],
 			"logins": [
 				{
 					"id": null,
@@ -491,6 +498,13 @@ Please have a look at the following API method documentation for JSON-RPC reques
 				"package_family_icon": null,
 				"self_service_enabled": "0"
 			},
+			"groups": [
+				{
+					"id": "20",
+					"parent_package_group_id": null,
+					"name": "Test Group 1"
+				}
+			],
 			"installations": [
 				{
 					"id": "289",

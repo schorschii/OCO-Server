@@ -124,6 +124,7 @@ switch($srcdata['method']) {
 			'success' => true,
 			'data' => [
 				'general' => $computer,
+				'groups' => $db->selectAllComputerGroupByComputerId($computer->id),
 				'logins' => $db->selectAllDomainUserLogonByComputerId($computer->id),
 				'networks' => $db->selectAllComputerNetworkByComputerId($computer->id),
 				'screens' => $db->selectAllComputerScreenByComputerId($computer->id),
@@ -199,6 +200,7 @@ switch($srcdata['method']) {
 		$resdata['result'] = [
 			'success' => true, 'data' => [
 				'general' => $package,
+				'groups' => $db->selectAllPackageGroupByPackageId($package->id),
 				'installations' => $db->selectAllComputerPackageByPackageId($package->id),
 				'pending_jobs' => $db->selectAllPendingJobByPackageId($package->id),
 			]
