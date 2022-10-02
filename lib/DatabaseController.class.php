@@ -222,7 +222,6 @@ class DatabaseController {
 			':server_key' => $server_key,
 		]);
 		$computer_id = $this->dbh->lastInsertId();
-		$preparedStatementNetwork = null;
 		foreach($networks as $index => $network) {
 			$this->insertOrUpdateComputerNetwork(
 				$computer_id,
@@ -231,8 +230,7 @@ class DatabaseController {
 				$network['netmask'],
 				$network['broadcast'],
 				$network['mac'],
-				$network['interface'],
-				$preparedStatementNetwork
+				$network['interface']
 			);
 		}
 		return $computer_id;
@@ -301,7 +299,6 @@ class DatabaseController {
 
 		// update networks
 		$nids = [];
-		$preparedStatementNetwork = null;
 		foreach($networks as $index => $network) {
 			if(empty($network['addr'])) continue;
 			$nid = $this->insertOrUpdateComputerNetwork(
@@ -311,8 +308,7 @@ class DatabaseController {
 				$network['netmask'] ?? '?',
 				$network['broadcast'] ?? '?',
 				$network['mac'] ?? '?',
-				$network['interface'] ?? '?',
-				$preparedStatementNetwork
+				$network['interface'] ?? '?'
 			);
 			$nids[] = $nid;
 		}
@@ -325,7 +321,6 @@ class DatabaseController {
 
 		// update screens
 		$sids = [];
-		$preparedStatementScreen = null;
 		foreach($screens as $screen) {
 			if(empty($screen['name'])) continue;
 			$sid = $this->insertOrUpdateComputerScreen(
@@ -336,8 +331,7 @@ class DatabaseController {
 				$screen['resolution'] ?? '?',
 				$screen['size'] ?? '?',
 				$screen['manufactured'] ?? '?',
-				$screen['serialno'] ?? '?',
-				$preparedStatementScreen
+				$screen['serialno'] ?? '?'
 			);
 			$sids[] = $sid;
 		}
@@ -352,7 +346,6 @@ class DatabaseController {
 
 		// update printers
 		$pids = [];
-		$preparedStatementPrinter = null;
 		foreach($printers as $printer) {
 			if(empty($printer['name'])) continue;
 			$pid = $this->insertOrUpdateComputerPrinter(
@@ -362,8 +355,7 @@ class DatabaseController {
 				$printer['paper'] ?? '?',
 				$printer['dpi'] ?? '?',
 				$printer['uri'] ?? '?',
-				$printer['status'] ?? '?',
-				$preparedStatementPrinter
+				$printer['status'] ?? '?'
 			);
 			$pids[] = $pid;
 		}
@@ -376,7 +368,6 @@ class DatabaseController {
 
 		// update partitions
 		$pids = [];
-		$preparedStatementPartition = null;
 		foreach($partitions as $part) {
 			if(empty($part['size'])) continue;
 			$pid = $this->insertOrUpdateComputerPartition(
@@ -385,8 +376,7 @@ class DatabaseController {
 				$part['mountpoint'] ?? '?',
 				$part['filesystem'] ?? '?',
 				intval($part['size']),
-				intval($part['free']),
-				$preparedStatementPartition
+				intval($part['free'])
 			);
 			$pids[] = $pid;
 		}
@@ -399,13 +389,11 @@ class DatabaseController {
 
 		// update software
 		$sids = [];
-		$preparedStatementSoftware = null;
-		$preparedStatementComputerSoftware = null;
 		foreach($software as $s) {
 			if(empty($s['name'])) continue;
-			$sid = intval($this->insertOrUpdateSoftware($s['name'], $s['version'], $s['description']??'', $preparedStatementSoftware));
+			$sid = intval($this->insertOrUpdateSoftware($s['name'], $s['version'], $s['description']??''));
 			$sids[] = $sid;
-			if(!$this->insertOrUpdateComputerSoftware($id, $sid, $preparedStatementComputerSoftware)) return false;
+			if(!$this->insertOrUpdateComputerSoftware($id, $sid)) return false;
 		}
 		// remove software which can not be found in agent output
 		list($in_placeholders, $in_params) = self::compileSqlInValues($sids);
@@ -415,13 +403,11 @@ class DatabaseController {
 		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
 
 		// insert new domain user logins
-		$preparedStatementDomainUser = null;
-		$preparedStatementDomainUserLogon = null;
 		foreach($logins as $l) {
 			if(empty($l['username'])) continue;
 			$guid = empty($l['guid']) ? null : trim($l['guid'], '{}');
-			$did = $this->insertOrUpdateDomainUser($guid, $l['username'], $l['display_name']??'', $preparedStatementDomainUser);
-			if(!$this->insertOrUpdateDomainUserLogon($id, $did, $l['console'], $l['timestamp'], $preparedStatementDomainUserLogon)) return false;
+			$did = $this->insertOrUpdateDomainUser($guid, $l['username'], $l['display_name']??'');
+			if(!$this->insertOrUpdateDomainUserLogon($id, $did, $l['console'], $l['timestamp'])) return false;
 		}
 		// old logins, which are not present in local client logs anymore, should NOT automatically be deleted
 		// instead, old logins are cleaned up by the server's housekeeping process after a certain amount of time (defined in configuration)
@@ -429,37 +415,41 @@ class DatabaseController {
 		$this->dbh->commit();
 		return true;
 	}
-	private function insertOrUpdateComputerPartition($computer_id, $device, $mountpoint, $filesystem, $size, $free, &$preparedStatement=null) {
-		if(!$preparedStatement) {
-			$preparedStatement = $this->dbh->prepare(
-				'INSERT INTO computer_partition (id, computer_id, device, mountpoint, filesystem, size, free)
-				(SELECT cp2.id, cp2.computer_id, cp2.device, cp2.mountpoint, cp2.filesystem, cp2.size, cp2.free FROM computer_partition cp2 WHERE cp2.computer_id=:computer_id AND cp2.device=:device AND cp2.mountpoint=:mountpoint AND cp2.filesystem=:filesystem)
-				UNION (SELECT null, :computer_id, :device, :mountpoint, :filesystem, :size, :free FROM DUAL) LIMIT 1
-				ON DUPLICATE KEY UPDATE computer_partition.id=LAST_INSERT_ID(computer_partition.id), computer_partition.size=:size, computer_partition.free=:free'
-			);
-		}
-		$this->stmt = $preparedStatement;
-		$this->stmt->execute([
+	private function insertOrUpdateComputerPartition($computer_id, $device, $mountpoint, $filesystem, $size, $free) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_partition SET id = LAST_INSERT_ID(id), size = :size, free = :free
+			WHERE computer_id = :computer_id AND device = :device AND mountpoint = :mountpoint AND filesystem = :filesystem LIMIT 1'
+		);
+		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
 			':device' => $device,
 			':mountpoint' => $mountpoint,
 			':filesystem' => $filesystem,
 			':size' => $size,
 			':free' => $free,
-		]);
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_partition (computer_id, device, mountpoint, filesystem, size, free)
+			VALUES (:computer_id, :device, :mountpoint, :filesystem, :size, :free)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':device' => $device,
+			':mountpoint' => $mountpoint,
+			':filesystem' => $filesystem,
+			':size' => $size,
+			':free' => $free,
+		])) return false;
 		return $this->dbh->lastInsertId();
 	}
-	private function insertOrUpdateComputerPrinter($computer_id, $name, $driver, $paper, $dpi, $uri, $status, &$preparedStatement=null) {
-		if(!$preparedStatement) {
-			$preparedStatement = $this->dbh->prepare(
-				'INSERT INTO computer_printer (id, computer_id, name, driver, paper, dpi, uri, status)
-				(SELECT cp2.id, cp2.computer_id, cp2.name, cp2.driver, cp2.paper, cp2.dpi, cp2.uri, cp2.status FROM computer_printer cp2 WHERE cp2.computer_id=:computer_id AND cp2.name=:name AND cp2.driver=:driver AND cp2.paper=:paper AND cp2.dpi=:dpi AND cp2.uri=:uri)
-				UNION (SELECT null, :computer_id, :name, :driver, :paper, :dpi, :uri, :status FROM DUAL) LIMIT 1
-				ON DUPLICATE KEY UPDATE computer_printer.id=LAST_INSERT_ID(computer_printer.id), computer_printer.status=:status'
-			);
-		}
-		$this->stmt = $preparedStatement;
-		$this->stmt->execute([
+	private function insertOrUpdateComputerPrinter($computer_id, $name, $driver, $paper, $dpi, $uri, $status) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_printer SET id = LAST_INSERT_ID(id), status = :status
+			WHERE computer_id = :computer_id AND name = :name AND driver = :driver AND paper = :paper AND dpi = :dpi AND uri = :uri LIMIT 1'
+		);
+		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
 			':name' => $name,
 			':driver' => $driver,
@@ -467,20 +457,30 @@ class DatabaseController {
 			':dpi' => $dpi,
 			':uri' => $uri,
 			':status' => $status,
-		]);
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_printer (computer_id, name, driver, paper, dpi, uri, status)
+			VALUES (:computer_id, :name, :driver, :paper, :dpi, :uri, :status)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':name' => $name,
+			':driver' => $driver,
+			':paper' => $paper,
+			':dpi' => $dpi,
+			':uri' => $uri,
+			':status' => $status,
+		])) return false;
 		return $this->dbh->lastInsertId();
 	}
-	private function insertOrUpdateComputerScreen($computer_id, $name, $manufacturer, $type, $resolution, $size, $manufactured, $serialno, &$preparedStatement=null) {
-		if(!$preparedStatement) {
-			$preparedStatement = $this->dbh->prepare(
-				'INSERT INTO computer_screen (id, computer_id, name, manufacturer, type, resolution, size, manufactured, serialno, active)
-				(SELECT cs2.id, cs2.computer_id, cs2.name, cs2.manufacturer, cs2.type, cs2.resolution, cs2.size, cs2.manufactured, cs2.serialno, cs2.active FROM computer_screen cs2 WHERE cs2.computer_id=:computer_id AND cs2.name=:name AND cs2.manufacturer=:manufacturer AND cs2.type=:type AND cs2.size=:size AND cs2.manufactured=:manufactured AND cs2.serialno=:serialno)
-				UNION (SELECT null, :computer_id, :name, :manufacturer, :type, :resolution, :size, :manufactured, :serialno, 1 FROM DUAL) LIMIT 1
-				ON DUPLICATE KEY UPDATE computer_screen.id=LAST_INSERT_ID(computer_screen.id), computer_screen.resolution=:resolution, computer_screen.active=1'
-			);
-		}
-		$this->stmt = $preparedStatement;
-		$this->stmt->execute([
+	private function insertOrUpdateComputerScreen($computer_id, $name, $manufacturer, $type, $resolution, $size, $manufactured, $serialno) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_screen SET id = LAST_INSERT_ID(id), resolution = :resolution, active = 1
+			WHERE computer_id = :computer_id AND name = :name AND manufacturer = :manufacturer AND type = :type AND size = :size AND manufactured = :manufactured AND serialno = :serialno LIMIT 1'
+		);
+		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
 			':name' => $name,
 			':manufacturer' => $manufacturer,
@@ -489,20 +489,31 @@ class DatabaseController {
 			':size' => $size,
 			':manufactured' => $manufactured,
 			':serialno' => $serialno,
-		]);
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_screen (computer_id, name, manufacturer, type, resolution, size, manufactured, serialno, active)
+			VALUES (:computer_id, :name, :manufacturer, :type, :resolution, :size, :manufactured, :serialno, 1)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':name' => $name,
+			':manufacturer' => $manufacturer,
+			':type' => $type,
+			':resolution' => $resolution,
+			':size' => $size,
+			':manufactured' => $manufactured,
+			':serialno' => $serialno,
+		])) return false;
 		return $this->dbh->lastInsertId();
 	}
-	private function insertOrUpdateComputerNetwork($computer_id, $nic_number, $address, $netmask, $broadcast, $mac, $interface, &$preparedStatement=null) {
-		if(!$preparedStatement) {
-			$preparedStatement = $this->dbh->prepare(
-				'INSERT INTO computer_network (id, computer_id, nic_number, address, netmask, broadcast, mac, interface)
-				(SELECT cn2.id, cn2.computer_id, cn2.nic_number, cn2.address, cn2.netmask, cn2.broadcast, cn2.mac, cn2.interface FROM computer_network cn2 WHERE cn2.computer_id=:computer_id AND cn2.nic_number=:nic_number AND cn2.mac=:mac AND cn2.interface=:interface)
-				UNION (SELECT null, :computer_id, :nic_number, :address, :netmask, :broadcast, :mac, :interface FROM DUAL) LIMIT 1
-				ON DUPLICATE KEY UPDATE computer_network.id=LAST_INSERT_ID(computer_network.id), computer_network.address=:address, computer_network.netmask=:netmask, computer_network.broadcast=:broadcast'
-			);
-		}
-		$this->stmt = $preparedStatement;
-		$this->stmt->execute([
+	private function insertOrUpdateComputerNetwork($computer_id, $nic_number, $address, $netmask, $broadcast, $mac, $interface) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_network SET id = LAST_INSERT_ID(id), address = :address, netmask = :netmask, broadcast=:broadcast
+			WHERE computer_id = :computer_id AND nic_number = :nic_number AND mac = :mac AND interface = :interface LIMIT 1'
+		);
+		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
 			':nic_number' => $nic_number,
 			':address' => $address,
@@ -510,7 +521,22 @@ class DatabaseController {
 			':broadcast' => $broadcast,
 			':mac' => $mac,
 			':interface' => $interface,
-		]);
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_network (computer_id, nic_number, address, netmask, broadcast, mac, interface)
+			VALUES (:computer_id, :nic_number, :address, :netmask, :broadcast, :mac, :interface)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':nic_number' => $nic_number,
+			':address' => $address,
+			':netmask' => $netmask,
+			':broadcast' => $broadcast,
+			':mac' => $mac,
+			':interface' => $interface,
+		])) return false;
 		return $this->dbh->lastInsertId();
 	}
 	public function deleteComputer($id) {
@@ -1707,19 +1733,20 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id]);
 	}
-	private function insertOrUpdateDomainUser($uid, $username, $display_name, &$preparedStatement=null) {
-		if(!$preparedStatement) {
-			$preparedStatement = $this->dbh->prepare(
-				// we cannot use REPLACE INTO here because this internally DELETEs and INSERTs existing rows, which automatically deletes the rows in domain_user_logon
-				'INSERT INTO domain_user (id, uid, username, display_name)
-				(SELECT du2.id, du2.uid, du2.username, du2.display_name FROM domain_user du2 WHERE (du2.uid IS NOT NULL AND du2.uid=:uid) OR (du2.username=:username AND du2.display_name=:display_name) OR (du2.username=:username AND du2.display_name=""))
-				UNION (SELECT null, :uid, :username, :display_name FROM DUAL) LIMIT 1
-				ON DUPLICATE KEY UPDATE domain_user.id=LAST_INSERT_ID(domain_user.id), domain_user.uid=IF(:uid IS NULL,domain_user.uid,:uid), domain_user.username=:username, domain_user.display_name=:display_name'
-			);
-		}
-		$this->stmt = $preparedStatement;
+	private function insertOrUpdateDomainUser($uid, $username, $display_name) {
 		if(empty(trim($uid))) $uid = null;
-		$this->stmt->execute([':uid' => $uid, ':username' => $username, ':display_name' => $display_name]);
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE domain_user SET id = LAST_INSERT_ID(id), uid = IF(:uid IS NULL,uid,:uid), username = :username, display_name = :display_name
+			WHERE (uid IS NOT NULL AND uid = :uid) OR (username = :username AND display_name = :display_name) OR (username = :username AND display_name = "") LIMIT 1'
+		);
+		if(!$this->stmt->execute([':uid' => $uid, ':username' => $username, ':display_name' => $display_name])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO domain_user (uid, username, display_name)
+			VALUES (:uid, :username, :display_name)'
+		);
+		if(!$this->stmt->execute([':uid' => $uid, ':username' => $username, ':display_name' => $display_name])) return false;
 		return $this->dbh->lastInsertId();
 	}
 	public function selectAllDomainUser($selfServiceOnly=false) {
@@ -1774,22 +1801,29 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	private function insertOrUpdateDomainUserLogon($computer_id, $did, $console, $timestamp, &$preparedStatement=null) {
-		if(!$preparedStatement) {
-			$preparedStatement = $this->dbh->prepare(
-				'INSERT INTO domain_user_logon (id, computer_id, domain_user_id, console, timestamp)
-				(SELECT dul2.id, dul2.computer_id, dul2.domain_user_id, dul2.console, dul2.timestamp FROM domain_user_logon dul2 WHERE dul2.computer_id=:computer_id AND dul2.domain_user_id=:domain_user_id AND dul2.console=:console AND dul2.timestamp=:timestamp)
-				UNION (SELECT null, :computer_id, :domain_user_id, :console, :timestamp FROM DUAL) LIMIT 1
-				ON DUPLICATE KEY UPDATE domain_user_logon.id=LAST_INSERT_ID(domain_user_logon.id)'
-			);
-		}
-		$this->stmt = $preparedStatement;
-		$this->stmt->execute([
+	private function insertOrUpdateDomainUserLogon($computer_id, $did, $console, $timestamp) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE domain_user_logon SET id = LAST_INSERT_ID(id)
+			WHERE computer_id = :computer_id AND domain_user_id = :domain_user_id AND console = :console AND timestamp = :timestamp LIMIT 1'
+		);
+		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
 			':domain_user_id' => $did,
 			':console' => $console,
 			':timestamp' => $timestamp,
-		]);
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO domain_user_logon (computer_id, domain_user_id, console, timestamp)
+			VALUES (:computer_id, :domain_user_id, :console, :timestamp)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':domain_user_id' => $did,
+			':console' => $console,
+			':timestamp' => $timestamp,
+		])) return false;
 		return $this->dbh->lastInsertId();
 	}
 	public function selectAllDomainUserLogonByDomainUserId($domain_user_id) {
@@ -2079,32 +2113,32 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	private function insertOrUpdateSoftware($name, $version, $description, &$preparedStatement=null) {
-		if(!$preparedStatement) {
-			$preparedStatement = $this->dbh->prepare(
-				// we cannot use REPLACE INTO here because this internally DELETEs and INSERTs existing rows, which automatically deletes the rows in computer_software
-				// https://web.archive.org/web/20150925012041/http://mikefenwick.com:80/blog/insert-into-database-or-return-id-of-duplicate-row-in-mysql/
-				'INSERT INTO software (id, name, version, description)
-				(SELECT s2.id, s2.name, s2.version, s2.description FROM software s2 WHERE BINARY s2.name=:name AND BINARY s2.version=:version AND s2.description=:description)
-				UNION (SELECT null, :name, :version, :description FROM DUAL) LIMIT 1
-				ON DUPLICATE KEY UPDATE software.id=LAST_INSERT_ID(software.id)'
-			);
-		}
-		$this->stmt = $preparedStatement;
-		$this->stmt->execute([':name' => $name, ':version' => $version, ':description' => $description]);
+	private function insertOrUpdateSoftware($name, $version, $description) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE software SET id = LAST_INSERT_ID(id)
+			WHERE BINARY name = :name AND BINARY version = :version AND description = :description LIMIT 1'
+		);
+		if(!$this->stmt->execute([':name' => $name, ':version' => $version, ':description' => $description])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO software (name, version, description) VALUES (:name, :version, :description)'
+		);
+		if(!$this->stmt->execute([':name' => $name, ':version' => $version, ':description' => $description])) return false;
 		return $this->dbh->lastInsertId();
 	}
-	private function insertOrUpdateComputerSoftware($computer_id, $software_id, &$preparedStatement=null) {
-		if(!$preparedStatement) {
-			$preparedStatement = $this->dbh->prepare(
-				'INSERT INTO computer_software (id, computer_id, software_id)
-				(SELECT cs2.id, cs2.computer_id, cs2.software_id FROM computer_software cs2 WHERE cs2.computer_id=:computer_id AND cs2.software_id=:software_id)
-				UNION (SELECT null, :computer_id, :software_id FROM DUAL) LIMIT 1
-				ON DUPLICATE KEY UPDATE computer_software.id=LAST_INSERT_ID(computer_software.id)'
-			);
-		}
-		$this->stmt = $preparedStatement;
-		$this->stmt->execute([':computer_id' => $computer_id, ':software_id' => $software_id]);
+	private function insertOrUpdateComputerSoftware($computer_id, $software_id) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_software SET id = LAST_INSERT_ID(id)
+			WHERE computer_id = :computer_id AND software_id = :software_id LIMIT 1'
+		);
+		if(!$this->stmt->execute([':computer_id' => $computer_id, ':software_id' => $software_id])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_software (computer_id, software_id) VALUES (:computer_id, :software_id)'
+		);
+		if(!$this->stmt->execute([':computer_id' => $computer_id, ':software_id' => $software_id])) return false;
 		return $this->dbh->lastInsertId();
 	}
 
