@@ -153,6 +153,7 @@ return [
 	'confirm_delete_computer' => 'Are you sure you want to delete the computer(s)?\n\nAll package assignments will be lost. If the shift key is pressed, all pending jobs are also deleted automatically.',
 	'enter_name' => 'Please enter a name',
 	'new_hostname_warning' => 'Warning: If you change the host name, you must also change the name on the computer, otherwise the agent can no longer establish a connection with the server!',
+	'hostname_info' => 'The hostname must exactly match the hostname of the computer to be managed.',
 	'confirm_remove_package_assignment' => 'Are you sure you want to unassign the computer package? Usually the package should be uninstalled.',
 	'confirm_delete_group' => 'Are you sure you want to delete the selected group(s)? The objects in the group are not deleted.',
 	'confirm_delete_job_container' => 'Are you sure you want to delete this job container(s)? Pending jobs will no longer be distributed.',
@@ -365,6 +366,7 @@ return [
 	'object_deleted' => 'Object(s) deleted',
 	'group_deleted' => 'Group deleted',
 	'object_removed_from_group' => 'Object(s) removed from group',
+	'create_computer' => 'Create Computer',
 	'create_system_user' => 'Create System User',
 	'create_report' => 'Create Report',
 	'edit_report' => 'Edit Report',
@@ -478,6 +480,7 @@ return [
 	'no_jobs_found' => 'No Jobs found',
 	'self_service_is_disabled' => 'The Self Service Portal is currently disabled',
 	'password_set' => 'Password set',
+	'individual_agent_key' => 'Individual Agen Key',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

@@ -78,7 +78,7 @@ class CoreLogic {
 		$this->checkPermission($computerGroup, PermissionManager::METHOD_READ);
 		return $computerGroup;
 	}
-	public function createComputer($hostname, $notes='') {
+	public function createComputer($hostname, $notes='', $agentKey='') {
 		$this->checkPermission(new Models\Computer(), PermissionManager::METHOD_CREATE);
 
 		$finalHostname = trim($hostname);
@@ -88,7 +88,7 @@ class CoreLogic {
 		if($this->db->selectComputerByHostname($finalHostname) !== null) {
 			throw new InvalidRequestException(LANG('hostname_already_exists'));
 		}
-		$insertId = $this->db->insertComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, ''/*Agent Key*/, ''/*Server Key*/);
+		$insertId = $this->db->insertComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, $agentKey, ''/*Server Key*/);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.computer.create', ['hostname'=>$finalHostname, 'notes'=>$notes]);
 		return $insertId;

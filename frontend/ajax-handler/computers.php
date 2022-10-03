@@ -33,7 +33,9 @@ try {
 	}
 
 	if(isset($_POST['create_computer'])) {
-		die(strval(intval( $cl->createComputer($_POST['create_computer']) )));
+		die(
+			$cl->createComputer($_POST['create_computer'], $_POST['notes']??'', $_POST['agent_key']??'')
+		);
 	}
 
 	if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
@@ -58,9 +60,9 @@ try {
 	}
 
 	if(isset($_POST['create_group'])) {
-		die(strval(intval(
+		die(
 			$cl->createComputerGroup($_POST['create_group'], empty($_POST['parent_id']) ? null : intval($_POST['parent_id']))
-		)));
+		);
 	}
 
 	if(!empty($_POST['rename_group_id']) && isset($_POST['new_name'])) {

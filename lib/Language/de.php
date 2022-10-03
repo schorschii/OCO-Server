@@ -148,6 +148,7 @@ return [
 	'confirm_delete_computer' => 'Sind Sie sicher, dass Sie den Computer bzw. die Computer löschen möchten?\n\nAlle Paketzuordungen gehen verloren. Bei gedrückter Umschalt-Taste werden auch alle ausstehenden Jobs automatisch gelöscht.',
 	'enter_name' => 'Bitte geben Sie einen Namen ein',
 	'new_hostname_warning' => 'Achtung: Wenn Sie den Hostnamen ändern müssen Sie den Namen auch auf dem Computer ändern, andernfalls kann der Agent keine Verbindung mehr mit dem Server herstellen!',
+	'hostname_info' => 'Der Hostname muss exakt mit dem Hostnamen des zu verwaltenden Computers übereinstimmen.',
 	'confirm_remove_package_assignment' => 'Möchten Sie die Computer-Paket-Zuordnung wirklich aufheben? Normalerweise sollte das Paket deinstalliert werden.',
 	'confirm_delete_group' => 'Möchten Sie die Gruppe(n) wirklich löschen? Die Objekte in der Gruppe werden nicht gelöscht.',
 	'confirm_delete_job_container' => 'Möchten Sie diese(n) Jobcontainer wirklich löschen? Ausstehende Jobs werden nicht mehr ausgeführt.',
@@ -360,6 +361,7 @@ return [
 	'object_deleted' => 'Objekt(e) wurden gelöscht',
 	'group_deleted' => 'Gruppe wurde gelöscht',
 	'object_removed_from_group' => 'Objekt(e) wurden aus Gruppe entfernt',
+	'create_computer' => 'Computer erstellen',
 	'create_system_user' => 'Systembenutzer erstellen',
 	'create_report' => 'Report erstellen',
 	'edit_report' => 'Report bearbeiten',
@@ -473,6 +475,7 @@ return [
 	'no_jobs_found' => 'Keine Jobs gefunden',
 	'self_service_is_disabled' => 'Das Self-Service-Portal ist zurzeit deaktiviert',
 	'password_set' => 'Passwort gesetzt',
+	'individual_agent_key' => 'Individueller Agentenschlüssel',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

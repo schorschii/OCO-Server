@@ -1252,6 +1252,21 @@ function searchItems(container, search) {
 }
 
 // ======== COMPUTER OPERATIONS ========
+function showDialogCreateComputer() {
+	showDialogAjax(L__CREATE_COMPUTER, 'views/dialog-computer-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+}
+function createComputer(hostname, notes, agentKey) {
+	var params = [];
+	params.push({'key':'create_computer', 'value':hostname});
+	params.push({'key':'notes', 'value':notes});
+	params.push({'key':'agent_key', 'value':agentKey});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
+		hideDialog();
+		refreshContentExplorer('views/computer-details.php?id='+parseInt(text));
+		emitMessage(L__COMPUTER_CREATED, hostname, MESSAGE_TYPE_SUCCESS);
+	});
+}
 function showDialogEditComputer(id, hostname, notes) {
 	showDialogAjax(L__EDIT_COMPUTER, 'views/dialog-computer-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditComputerId.value = id;
@@ -1276,18 +1291,6 @@ function setComputerForceUpdate(id, value) {
 		refreshContent();
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
-}
-function createComputer() {
-	var newName = prompt(L__ENTER_NAME);
-	if(newName != null) {
-		var params = [];
-		params.push({'key':'create_computer', 'value':newName});
-		var paramString = urlencodeArray(params);
-		ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
-			refreshContentExplorer('views/computer-details.php?id='+parseInt(text));
-			emitMessage(L__COMPUTER_CREATED, newName, MESSAGE_TYPE_SUCCESS);
-		});
-	}
 }
 function removeSelectedComputerFromGroup(checkboxName, groupId) {
 	var ids = [];
