@@ -1,9 +1,9 @@
 var packageDragAndDropEnabled = false;
-var TableSortUltra = function(tab, startsort) {
+var TableSortUltra = function(table) {
 	var me = this;
 
 	// get rows
-	var thead = tab.tHead;
+	var thead = table.tHead;
 	if(thead) {
 		var tr_in_thead = thead.querySelectorAll("tr.sortable");
 		if(!tr_in_thead.length) tr_in_thead = thead.rows;
@@ -13,7 +13,7 @@ var TableSortUltra = function(tab, startsort) {
 		console.warn("Table has no <TH>");
 		return null;
 	}
-	var tbdy = tab.tBodies;
+	var tbdy = table.tBodies;
 	if( !tbdy || tbdy.length == 0 ) {
 		console.warn("Table has no <TBODY>");
 		return null;
@@ -35,7 +35,7 @@ var TableSortUltra = function(tab, startsort) {
 	var sorttype = [];
 	var firstsort = [];
 	var startsort_u = -1, startsort_d = -1;
-	var savesort = tab.classList.contains("savesort") && tab.id && tab.id.length>0 && localStorage;
+	var savesort = table.classList.contains("savesort") && table.id && table.id.length>0 && localStorage;
 	var minsort = -1;
 
 	var initTableHead = function(col) {
@@ -151,14 +151,23 @@ var TableSortUltra = function(tab, startsort) {
 			tbdy.appendChild(arr[r][ncols]);
 		}
 
-		// save search setting
+		// save sort state
 		if(savesort) {
-			var store = { sorted: sorted, desc: sortsymbols[sorted].classList.contains("sorteddesc") };
-			localStorage.setItem(tab.id, JSON.stringify(store));
+			// get prev table state
+			var storage = null;
+			if(localStorage && savesort) {
+				let tmpStore = localStorage.getItem(table.id);
+				if(tmpStore) storage = JSON.parse(tmpStore);
+			}
+
+			if(!storage) storage = {};
+			storage["sort"] = sorted;
+			storage["desc"] = sortsymbols[sorted].classList.contains("sorteddesc");
+			localStorage.setItem(table.id, JSON.stringify(storage));
 		}
 
 		// enable drag and drop only if package list is sorted by sequence ascending
-		packageDragAndDropEnabled = (tab.id == "tblPackageData" && col == 7 && sortsymbols[col].classList.contains("sortedasc"));
+		packageDragAndDropEnabled = (table.id == "tblPackageData" && col == 7 && sortsymbols[col].classList.contains("sortedasc"));
 		togglePackageDragAndDrop("tblPackageData", packageDragAndDropEnabled);
 	}
 
@@ -187,11 +196,16 @@ var TableSortUltra = function(tab, startsort) {
 	}
 
 	// execute saved/default sort
-	if(startsort && typeof(startsort.sorted)!="undefined" && typeof(startsort.desc)!="undefined") {
-		if(startsort.desc) {
-			startsort_d = startsort.sorted; startsort_u = -1;
+	var storage = null;
+	if(localStorage && savesort) {
+		let tmpStore = localStorage.getItem(table.id);
+		if(tmpStore) storage = JSON.parse(tmpStore);
+	}
+	if(storage && typeof(storage.sort)!="undefined" && typeof(storage.desc)!="undefined") {
+		if(storage.desc) {
+			startsort_d = storage.sort; startsort_u = -1;
 		} else {
-			startsort_u = startsort.sorted; startsort_d = -1;
+			startsort_u = storage.sort; startsort_d = -1;
 		}
 	}
 	if(startsort_u >= 0 && startsort_u < ncols) {
@@ -207,13 +221,8 @@ var TableSortUltra = function(tab, startsort) {
 function initTableSort() {
 	// find all tables which should be sortable
 	var tables = document.querySelectorAll("table.sortable");
-	for(var i = 0, storage; i < tables.length; i++) {
-		storage = null;
-		if(localStorage && tables[i].id && tables[i].classList.contains("savesort") && tables[i].id.length) {
-			let tmpStore = localStorage.getItem(tables[i].id);
-			if(tmpStore) storage = JSON.parse(tmpStore);
-		}
-		new TableSortUltra(tables[i], storage);
+	for(var i = 0; i < tables.length; i++) {
+		new TableSortUltra(tables[i]);
 	}
 }
 
@@ -226,6 +235,15 @@ function initTableSearch() {
 		let trSearch = document.createElement("tr");
 		let tr = thead.getElementsByTagName("tr")[0];
 		let ths = tr.getElementsByTagName("th");
+
+		// get prev table state
+		var startSearch = false;
+		var storage = null;
+		if(localStorage) {
+			let tmpStore = localStorage.getItem(table.id);
+			if(tmpStore) storage = JSON.parse(tmpStore);
+		}
+
 		for(var i = 0; i < ths.length; i++) {
 			var thSearch = document.createElement("th");
 			if(ths[i].classList.contains("searchable")) {
@@ -235,15 +253,29 @@ function initTableSearch() {
 				txtSearch.addEventListener("input", function(){ tableSearch(table) });
 				txtSearch.addEventListener("paste", function(){ tableSearch(table) });
 				thSearch.appendChild(txtSearch);
+
+				if(storage && typeof(storage["search"])!="undefined"
+				&& typeof(storage["search"][i])!="undefined" && storage["search"][i]!="") {
+					txtSearch.value = storage["search"][i];
+					startSearch = true;
+				}
 			}
 			trSearch.appendChild(thSearch);
 		}
 		thead.appendChild(trSearch);
+		if(startSearch) tableSearch(table);
 	}
 }
 
 function tableSearch(table) {
 	var count = 0, txtValue, active = false, conditions = [];
+
+	// get prev table state
+	var storage = null;
+	if(localStorage) {
+		let tmpStore = localStorage.getItem(table.id);
+		if(tmpStore) storage = JSON.parse(tmpStore);
+	}
 
 	// get search conditions from table head
 	thead = table.getElementsByTagName("thead");
@@ -256,6 +288,12 @@ function tableSearch(table) {
 			for(var m = 0; m < inputs.length; m++) {
 				conditions[n] = inputs[m].value.toUpperCase();
 				if(inputs[m].value != "") active = true;
+
+				// save state
+				if(!storage) storage = {};
+				if(!storage["search"]) storage["search"] = {};
+				storage["search"][n] = inputs[m].value;
+				localStorage.setItem(table.id, JSON.stringify(storage));
 			}
 		}
 	}
