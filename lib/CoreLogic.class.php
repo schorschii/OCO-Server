@@ -36,7 +36,7 @@ class CoreLogic {
 		}
 	}
 	public function getPermissionEntry($ressource, String $method) {
-		if($this->pm === null) $this->pm = new \PermissionManager($this->db, $this);
+		if($this->pm === null) $this->pm = new \PermissionManager($this->db, $this->su);
 		return $this->pm->getPermissionEntry($ressource, $method);
 	}
 
