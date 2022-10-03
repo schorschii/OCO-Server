@@ -20,6 +20,10 @@ class CoreLogic {
 		if(!$checkResult && $throw) throw new \PermissionException();
 		return $checkResult;
 	}
+	public function getPermissionEntry($ressource, String $method) {
+		if($this->pm === null) $this->pm = new PermissionManager($this->db, $this->du);
+		return $this->pm->getPermissionEntry($ressource, $method);
+	}
 
 	/*** Computer Operations ***/
 	public function getMyComputers() {
@@ -88,6 +92,7 @@ class CoreLogic {
 		return $jobContainer;
 	}
 	public function deploySelfService($name, $author, $computerIds, $packageIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode) {
+		// check permission to given computer and package ids
 		$this->checkPermission(new \Models\JobContainer(), PermissionManager::METHOD_CREATE);
 		foreach($computerIds as $cid) {
 			$this->checkPermission($this->getMyComputer($cid), PermissionManager::METHOD_DEPLOY);
@@ -95,6 +100,15 @@ class CoreLogic {
 		foreach($packageIds as $pid) {
 			$this->checkPermission($this->getMyPackage($pid), PermissionManager::METHOD_DEPLOY);
 		}
+
+		// determine priority
+		$priority = 0;
+		$permissionEntry = $this->getPermissionEntry(new \Models\JobContainer(), PermissionManager::METHOD_CREATE);
+		if(isset($permissionEntry['create_priority']) && is_int($permissionEntry['create_priority'])) {
+			$priority = $permissionEntry['create_priority'];
+		}
+
+		// use the normal admin client CoreLogic for dependency resolving logic etc.
 		$cl2 = new \CoreLogic($this->db, null);
 		$jcid = $cl2->deploy(
 			$name, ''/*description*/, $author,
@@ -103,9 +117,10 @@ class CoreLogic {
 			$dateStart, $dateEnd,
 			$useWol, $shutdownWakedAfterCompletion, $restartTimeout,
 			$autoCreateUninstallJobs, $forceInstallSameVersion,
-			$sequenceMode, 0/*priority*/, []/*constraintIpRanges*/, 1/*selfService*/
+			$sequenceMode, $priority, []/*constraintIpRanges*/, 1/*selfService*/
 		);
 
+		// add log entry and return insert id
 		if($jcid) {
 			$jobs = $this->db->selectAllStaticJobByJobContainer($jcid);
 			$this->db->insertLogEntry(\Models\Log::LEVEL_INFO, $author, $jcid, 'oco.self_service.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);

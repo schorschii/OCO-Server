@@ -26,6 +26,7 @@ class PermissionManager {
 	}
 
 	public function getPermissionEntry($ressource, String $method=null) {
+		if(is_object($ressource)) $ressource = get_class($ressource);
 		if(!isset($this->permData[$ressource])) return false;
 		return $this->permData[$ressource];
 	}
