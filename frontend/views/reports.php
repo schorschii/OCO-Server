@@ -92,7 +92,7 @@ try {
 							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='event.preventDefault();downloadTableCsv("tblReportData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button onclick='downloadTableCsv("tblReportData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<button onclick='showDialogMoveReportToGroup(getSelectedCheckBoxValues("report_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('move_to'); ?></button>
 							<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>

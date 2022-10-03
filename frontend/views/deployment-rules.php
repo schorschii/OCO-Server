@@ -165,7 +165,7 @@ if(!empty($_GET['id'])) {
 								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblDeploymentRuleJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button onclick='downloadTableCsv("tblDeploymentRuleJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<button onclick='renewFailedDynamicJobs(<?php echo $container->id; ?>, getSelectedCheckBoxValues("job_id[]", null))' <?php if($failed==0 || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('renew_failed'); ?></button>
 							</div>
 						</div>
@@ -251,7 +251,7 @@ if(!empty($_GET['id'])) {
 								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblDeploymentRuleData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button onclick='downloadTableCsv("tblDeploymentRuleData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<button onclick='removeSelectedDeploymentRule("deployment_rule_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>

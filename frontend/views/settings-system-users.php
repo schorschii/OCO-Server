@@ -118,7 +118,7 @@ try {
 						echo "<td><input type='checkbox' name='system_user_role_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblSystemUserRoleData)'></td>";
 						echo "<td>".htmlspecialchars($r->id)."</td>";
 						echo "<td><span id='spnSystemUserRoleName".$r->id."'>".htmlspecialchars($r->name)."</span></td>";
-						echo "<td class='subbuttons'>".htmlspecialchars(shorter($r->permissions, 100))." <button id='btnSystemUserRolePermissions".$r->id."' onclick='event.preventDefault();showDialog(\"".htmlspecialchars($r->name,ENT_QUOTES)."\",this.getAttribute(\"permissions\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' permissions='".htmlspecialchars(prettyJson($r->permissions),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+						echo "<td class='subbuttons'>".htmlspecialchars(shorter($r->permissions, 100))." <button id='btnSystemUserRolePermissions".$r->id."' onclick='showDialog(\"".htmlspecialchars($r->name,ENT_QUOTES)."\",this.getAttribute(\"permissions\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' permissions='".htmlspecialchars(prettyJson($r->permissions),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
 						echo "<td>".htmlspecialchars($r->system_user_count)."</span></td>";
 						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUserRole(".$r->id.", spnSystemUserRoleName".$r->id.".innerText, btnSystemUserRolePermissions".$r->id.".getAttribute(\"permissions\"))'><img src='img/edit.dyn.svg'></button></td>";
 						echo "</tr>";
@@ -167,7 +167,7 @@ try {
 								echo "<td>".htmlspecialchars($l->host)."</td>";
 								echo "<td>".htmlspecialchars($l->user)."</td>";
 								echo "<td>".htmlspecialchars($l->action)."</td>";
-								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='event.preventDefault();showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
 								echo "</tr>";
 							}
 							?>
@@ -180,7 +180,7 @@ try {
 											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='event.preventDefault();downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<button onclick='downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 											<?php if(empty($_GET['nolimit'])) { ?>
 												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 											<?php } ?>
