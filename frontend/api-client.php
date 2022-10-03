@@ -137,6 +137,22 @@ switch($srcdata['method']) {
 		];
 		break;
 
+	case 'oco.computer.add_to_group':
+		$cl->addComputerToGroup($data['computer_id'] ?? 0, $data['computer_group_id'] ?? 0);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
+		];
+		break;
+
+	case 'oco.computer.remove_from_group':
+		$cl->removeComputerFromGroup($data['computer_id'] ?? 0, $data['computer_group_id'] ?? 0);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
+		];
+		break;
+
 	case 'oco.computer.create':
 		$insertId = $cl->createComputer($data['hostname'] ?? '', $data['notes'] ?? '');
 		$resdata['error'] = null;
@@ -204,6 +220,22 @@ switch($srcdata['method']) {
 				'installations' => $db->selectAllComputerPackageByPackageId($package->id),
 				'pending_jobs' => $db->selectAllPendingJobByPackageId($package->id),
 			]
+		];
+		break;
+
+	case 'oco.package.add_to_group':
+		$cl->addPackageToGroup($data['package_id'] ?? 0, $data['package_group_id'] ?? 0);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
+		];
+		break;
+
+	case 'oco.package.remove_from_group':
+		$cl->removePackageFromGroup($data['package_id'] ?? 0, $data['package_group_id'] ?? 0);
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => true, 'data' => []
 		];
 		break;
 
@@ -320,6 +352,27 @@ switch($srcdata['method']) {
 		$resdata['result'] = [
 			'success' => true, 'data' => $db->selectAllDynamicJobByDeploymentRuleId($dr->id)
 		];
+		break;
+
+	case 'oco.report.list':
+		$resdata['error'] = null;
+		if(empty($data['report_group_id'])) {
+			$resdata['result'] = [
+				'success' => true, 'data' => [
+					'reports' => $cl->getReports(),
+					'groups' => $cl->getReportGroups()
+				]
+			];
+		} else {
+			$group = $cl->getReportGroup($data['report_group_id']);
+			$resdata['result'] = [
+				'success' => true, 'data' => [
+					'name' => $group->name,
+					'reports' => $cl->getReports($group),
+					'groups' => $cl->getReportGroups($group->id)
+				]
+			];
+		}
 		break;
 
 	case 'oco.report.execute':

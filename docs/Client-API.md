@@ -244,6 +244,66 @@ Please have a look at the following API method documentation for JSON-RPC reques
 }
 ```
 
+## `oco.computer.add_to_group` - Add Computer To Group
+### Parameters
+- `computer_id` - computer ID
+- `computer_group_id` - computer group ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.computer.add_to_group",
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"computer_group_id": 102,
+			"computer_id": 257
+		}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": []
+	}
+}
+```
+
+## `oco.computer.remove_from_group` - Remove Computer From Group
+### Parameters
+- `computer_id` - computer ID
+- `computer_group_id` - computer group ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.computer.remove_from_group",
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"computer_group_id": 102,
+			"computer_id": 257
+		}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": []
+	}
+}
+```
+
 ## `oco.computer.create` - Create A New Computer (Pre-Registration)
 ### Parameters
 - `hostname` - the host name of the new computer
@@ -541,6 +601,66 @@ Please have a look at the following API method documentation for JSON-RPC reques
 				}
 			]
 		}
+	}
+}
+```
+
+## `oco.package.add_to_group` - Add Package To Group
+### Parameters
+- `package_id` - package ID
+- `package_group_id` - package group ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.package.add_to_group",
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"package_group_id": 102,
+			"package_id": 257
+		}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": []
+	}
+}
+```
+
+## `oco.package.remove_from_group` - Remove Package From Group
+### Parameters
+- `package_id` - package ID
+- `package_group_id` - package group ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.package.remove_from_group",
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"package_group_id": 102,
+			"package_id": 257
+		}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"data": []
 	}
 }
 ```
@@ -1011,6 +1131,42 @@ no parameters
 			}
 		]
 	}
+}
+```
+
+## `oco.report.list` - List All Reports
+### Parameters
+- `report_group_id` (optional) - report group ID
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.report.list",
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {
+			"report_group_id": 123
+		}
+	}
+}
+```
+```
+{
+    "id": 1,
+    "error": null,
+    "result": {
+        "success": true,
+        "data": [
+            {
+                "id": "5",
+                "report_group_id": "35",
+                "name": "Expired Job Containers",
+                "notes": "",
+                "query": "SELECT id AS job_container_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()"
+            }
+        ]
+    }
 }
 ```
 
