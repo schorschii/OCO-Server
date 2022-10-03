@@ -623,6 +623,41 @@ class DatabaseController {
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
 	}
+	public function selectAllEventQueryRule() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM event_query_rule'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\EventQueryRule');
+	}
+	public function selectLastComputerEventByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_event WHERE computer_id = :computer_id ORDER BY timestamp DESC LIMIT 1'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerEvent') as $row) {
+			return $row;
+		}
+	}
+	public function selectAllComputerEventByComputerId($computer_id, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_event WHERE computer_id = :computer_id ORDER BY timestamp DESC '.(empty($limit)?'':'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerEvent');
+	}
+	public function insertOrUpdateComputerEvent($computer_id, $timestamp, $level, $event_id, $data) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_event (computer_id, timestamp, level, event_id, data) VALUES (:computer_id, :timestamp, :level, :event_id, :data)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':timestamp' => $timestamp,
+			':level' => $level,
+			':event_id' => $event_id,
+			':data' => $data,
+		])) return false;
+	}
 	public function insertComputerGroup($name, $parent_id=null) {
 		if(empty($parent_id) || intval($parent_id) < 0) {
 			$this->stmt = $this->dbh->prepare(

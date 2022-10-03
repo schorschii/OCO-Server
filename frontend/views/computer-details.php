@@ -46,6 +46,7 @@ $commands = Models\Computer::getCommands($ext);
 		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('general_and_hardware'); ?></a>
 		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('packages_and_jobs'); ?></a>
 		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('recognised_software'); ?></a>
+		<a href='#' name='events' class='<?php if($tab=='events') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('events'); ?></a>
 		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('history'); ?></a>
 	</div>
 	<div class='tabcontents'>
@@ -462,6 +463,56 @@ $commands = Models\Computer::getCommands($ext);
 					</table>
 				</div>
 			</div>
+		</div>
+
+		<div name='events' class='<?php if($tab=='events') echo 'active'; ?>'>
+			<?php if($tab == 'events') { ?>
+			<div class='details-abreast'>
+				<div class='stickytable'>
+					<table id='tblComputerEventsData' class='list searchable sortable savesort margintop'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('level'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('event_id'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('data'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							$counter = 0;
+							foreach($db->selectAllComputerEventByComputerId($computer->id, empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $e) {
+								$counter ++;
+								echo "<tr>";
+								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($e->level)."</td>";
+								echo "<td>".htmlspecialchars($e->event_id)."</td>";
+								echo "<td class='subbuttons'>".htmlspecialchars(shorter($e->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($e->timestamp,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($e->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "</tr>";
+							}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<div class='spread'>
+										<div>
+											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+										</div>
+										<div class='controls'>
+											<button onclick='downloadTableCsv("tblComputerEventsData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<?php if(empty($_GET['nolimit'])) { ?>
+												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+											<?php } ?>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+			<?php } ?>
 		</div>
 
 		<div name='history' class='<?php if($tab=='history') echo 'active'; ?>'>

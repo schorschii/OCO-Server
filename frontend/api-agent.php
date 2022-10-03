@@ -262,6 +262,24 @@ switch($srcdata['method']) {
 			$success = true;
 		}
 
+		// get event query rules
+		$events = [];
+		foreach($db->selectAllEventQueryRule() as $rule) {
+			// get and convert timestamp to utc
+			$timestamp = null;
+			try {
+				$tmpTimestamp = $db->selectLastComputerEventByComputerId($computer->id);
+				if(!$tmpTimestamp) throw new Exception();
+				$date = new DateTime($tmpTimestamp->timestamp, new DateTimeZone(date_default_timezone_get()));
+				$date->setTimezone(new DateTimeZone('UTC'));
+				$timestamp = $date->format('Y-m-d H:i:s');
+			} catch(Exception $e) {}
+			$events[] = [
+				'since' => $timestamp ?? date('Y-m-d H:i:s', 0),
+				'log' => $rule->log, 'query' => $rule->query
+			];
+		}
+
 		$resdata['error'] = null;
 		$resdata['result'] = [
 			'success' => $success,
@@ -270,6 +288,72 @@ switch($srcdata['method']) {
 				'agent-key' => $agent_key,   // tell the agent that it should save a new agent key for further requests
 				'update' => $update,         // tell the agent that it should update the inventory data
 				'software-jobs' => $jobs,    // tell the agent all pending software jobs
+				'events' => $events,         // tell the agent to send specific events from local log files
+			]
+		];
+
+		break;
+
+	case 'oco.agent.events':
+		// check parameter
+		if(!isset($params['hostname']) || !isset($params['agent-key']) || empty($params['data'])) {
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE,
+				'invalid JSON data'
+			);
+		}
+
+		$data = $params['data'];
+		if(!isset($data['events']) || !is_array($data['events'])) {
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE,
+				'invalid JSON data'
+			);
+		}
+
+		// check authorization
+		$computer = $db->selectComputerByHostname($params['hostname']);
+		if($computer === null) {
+			errorExit('404 Computer Not Found', $params['hostname'], null, Models\Log::ACTION_AGENT_API_UPDATE,
+				'computer not found'
+			);
+		}
+		if($params['agent-key'] !== $computer->agent_key) {
+			errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE,
+				'computer found but agent key mismatch: '.$params['agent-key']
+			);
+		}
+
+		// execute insert
+		$success = true;
+		$db->updateComputerPing($computer->id);
+		foreach($data['events'] as $event) {
+			if(empty($event['data'])) continue;
+
+			// convert timestamp to local time
+			$timestamp = null;
+			try {
+				if(empty($event['timestamp'])) continue;
+				$date = new DateTime($event['timestamp'], new DateTimeZone('UTC'));
+				$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+				$timestamp = $date->format('Y-m-d H:i:s');
+			} catch(Exception $e) {
+				continue;
+			}
+
+			$success = $db->insertOrUpdateComputerEvent(
+				$computer->id,
+				$timestamp,
+				$event['level'] ?? 0,
+				$event['event_id'] ?? 0,
+				json_encode($event['data'])
+			);
+			if(!$success) break;
+		}
+
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => $success,
+			'params' => [
+				'server-key' => $computer->server_key,
 			]
 		];
 

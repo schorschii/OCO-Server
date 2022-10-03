@@ -476,6 +476,9 @@ return [
 	'self_service_is_disabled' => 'Das Self-Service-Portal ist zurzeit deaktiviert',
 	'password_set' => 'Passwort gesetzt',
 	'individual_agent_key' => 'Individueller Agentenschlüssel',
+	'events' => 'Ereignisse',
+	'level' => 'Level',
+	'event_id' => 'Event-ID',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

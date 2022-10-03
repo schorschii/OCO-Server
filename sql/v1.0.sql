@@ -135,6 +135,19 @@ CREATE TABLE IF NOT EXISTS `package_group_member` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `event_query_rule`
+--
+
+CREATE TABLE IF NOT EXISTS `event_query_rule` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `log` text NOT NULL,
+  `query` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `computer`
 --
 
@@ -169,6 +182,24 @@ CREATE TABLE IF NOT EXISTS `computer` (
   `server_key` text NOT NULL,
   `created` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `computer_event`
+--
+
+CREATE TABLE IF NOT EXISTS `computer_event` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `computer_id` int(11) NOT NULL,
+  `timestamp` datetime NOT NULL,
+  `level` tinyint(4) NOT NULL,
+  `event_id` int(11) NOT NULL,
+  `data` longtext NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `computer_id` (`computer_id`),
+  CONSTRAINT `fk_computer_event_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

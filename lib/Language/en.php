@@ -481,6 +481,9 @@ return [
 	'self_service_is_disabled' => 'The Self Service Portal is currently disabled',
 	'password_set' => 'Password set',
 	'individual_agent_key' => 'Individual Agen Key',
+	'events' => 'Events',
+	'level' => 'Level',
+	'event_id' => 'Event ID',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
