@@ -59,10 +59,10 @@ try {
 			<div class='alert info'><?php echo LANG('no_results'); ?></div>
 		<?php } else { ?>
 
-		<table id='tblReportDetailData' class='list searchable sortable'>
+		<table id='<?php echo 'tblReportDetailData'.$report->id; ?>' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
-				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblReportDetailData, this.checked)'></th>
+				<th><input type='checkbox' onchange='toggleCheckboxesInTable(<?php echo "tblReportDetailData".$report->id; ?>, this.checked)'></th>
 				<?php foreach($results[0] as $key => $value) { ?>
 				<th class='searchable sortable'><?php echo htmlspecialchars($key); ?></th>
 				<?php } ?>
@@ -80,7 +80,7 @@ try {
 			// checkbox
 			$computerId = -1; if(!empty($result['computer_id'])) $computerId = intval($result['computer_id']);
 			$packageId = -1; if(!empty($result['package_id'])) $packageId = intval($result['package_id']);
-			echo "<td><input type='checkbox' name='id[]' computer_id='".$computerId."' package_id='".$packageId."' onchange='refreshCheckedCounter(tblReportDetailData)'></td>";
+			echo "<td><input type='checkbox' name='id[]' computer_id='".$computerId."' package_id='".$packageId."' onchange='refreshCheckedCounter(tblReportDetailData".$report->id.")'></td>";
 
 			// attributes
 			foreach($result as $key => $value) {
@@ -117,7 +117,7 @@ try {
 							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='downloadTableCsv("tblReportDetailData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button onclick='downloadTableCsv("<?php echo "tblReportDetailData".$report->id; ?>")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<?php if($hasComputerIds) { ?>
 								<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 								<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
