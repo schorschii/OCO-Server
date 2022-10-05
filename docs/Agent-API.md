@@ -47,17 +47,32 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 			"server-key": "abc123",
 			"agent-key": "xyz456",
 			"update": 1,
-			"software-jobs": {
-				"id": 123,
-				"container-id": 12,
-				"package-id": 1234,
-				"download": true,
-				"procedure": "msiexec /quiet /i mypackage.msi",
-				"sequence-mode": 0,
-				"restart": null,
-				"shutdown": null,
-				"exit": null
-			}
+			"logins-since": "2000-01-01 00:00:00",
+			"software-jobs": [
+				{
+					"id": 123,
+					"container-id": 456,
+					"package-id": 789,
+					"download": true,
+					"procedure": "msiexec /quiet /i mypackage.msi",
+					"sequence-mode": 0,
+					"restart": null,
+					"shutdown": null,
+					"exit": null
+				}
+			],
+			"events": [
+				{
+					"since": "2022-10-05 15:26:25",
+					"log": "Microsoft-Windows-Windows Defender\/Operational",
+					"query": "<QueryList><Query><Select>*[System[(Level=1 or Level=2 or Level=3)]]<\/Select><\/Query><\/QueryList>"
+				},
+				{
+					"since": "2022-10-05 15:26:25",
+					"log": "System",
+					"query": "<QueryList><Query><Select>*[System[(EventID=1130)]]<\/Select><\/Query><\/QueryList>"
+				}
+			]
 		}
 	}
 }
@@ -88,6 +103,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 - `printers`: printer information (array of objects)
 - `partitions`: partition information (array of objects)
 - `software`: installed software (array of objects)
+- `logins`: user logins since `logins-since` (array of objects)
 ### Example
 ```
 {
@@ -167,6 +183,15 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 				},
 				............
 			],
+			"logins": [
+				{
+					"guid": "00000000-0000-0000-0000-000000000000",
+					"display_name": "Schorschii",
+					"username": "georg",
+					"console": "127.0.0.1",
+					"timestamp": "2022-10-05 16:21:03"
+				}
+			]
 		}
 	}
 }
@@ -218,6 +243,45 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 		"params": {
 			"server-key": "abc123",
 			"job-succeeded": true
+		}
+	}
+}
+```
+
+## `oco.agent.events` - Send Events To The Server
+### Parameters
+- `events`: the events to store
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.agent.events",
+	"params": {
+		"agent-key": "🌈💜👆🚧🛸💩",
+		"uid": "00000000-0000-0000-0000-000000000000",
+		"hostname": "mypc",
+		"data": {
+			"events": [
+				{
+					"event_id": 1002,
+					"level": 3,
+					"timestamp": "2022-10-05 16:21:05",
+					"data": {"Product Name": "Microsoft Defender Antivirus", "Product Version": "4.18.2207.7", "Scan ID": "{00000000-0000-0000-0000-000000000000}", "Scan Type Index": "1", "Scan Type": "Antimalware", "Scan Parameters Index": "1", "Scan Parameters": "Schnell\u00fcberpr\u00fcfung", "Domain": "NT-AUTORIT\u00c4T", "User": "SYSTEM", "SID": "S-1-5-18"}
+				}
+			]
+		}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"params": {
+			"server-key": "abc123"
 		}
 	}
 }
