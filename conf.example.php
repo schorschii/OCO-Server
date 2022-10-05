@@ -20,6 +20,7 @@ const COMPUTER_KEEP_INACTIVE_SCREENS  = true;       // do not delete disconnecte
 const PURGE_SUCCEEDED_JOBS_AFTER      = 14400;      // 4 hours
 const PURGE_FAILED_JOBS_AFTER         = 172800;     // 2 days
 const PURGE_DOMAIN_USER_LOGONS_AFTER  = 31536000;   // 1 year
+const PURGE_EVENTS_AFTER              = 60*60*24*5; // 5 days
 
 const CHECK_UPDATE                    = true;       // check for new OCO versions
 

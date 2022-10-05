@@ -16,6 +16,7 @@ class HouseKeeping {
 		$this->jobHouseKeeping();
 		$this->jobWol();
 		$this->logonHouseKeeping();
+		$this->eventHouseKeeping();
 		$this->logHouseKeeping();
 		if($this->debug) echo('Housekeeping Done.'."\n");
 	}
@@ -114,6 +115,11 @@ class HouseKeeping {
 	private function logonHouseKeeping() {
 		$result = $this->db->deleteDomainUserLogonOlderThan(PURGE_DOMAIN_USER_LOGONS_AFTER);
 		if($this->debug) echo('Purged '.intval($result).' domain user logons older than '.intval(PURGE_DOMAIN_USER_LOGONS_AFTER).' seconds'."\n");
+	}
+
+	private function eventHouseKeeping() {
+		$result = $this->db->deleteComputerEventEntryOlderThan(PURGE_EVENTS_AFTER);
+		if($this->debug) echo('Purged '.intval($result).' events older than '.intval(PURGE_EVENTS_AFTER).' seconds'."\n");
 	}
 
 	private function logHouseKeeping() {

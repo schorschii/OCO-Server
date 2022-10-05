@@ -658,6 +658,14 @@ class DatabaseController {
 			':data' => $data,
 		])) return false;
 	}
+	public function deleteComputerEventEntryOlderThan($seconds) {
+		if(intval($seconds) < 1) return;
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_event WHERE timestamp < NOW() - INTERVAL '.intval($seconds).' SECOND'
+		);
+		if(!$this->stmt->execute()) return false;
+		return $this->stmt->rowCount();
+	}
 	public function insertComputerGroup($name, $parent_id=null) {
 		if(empty($parent_id) || intval($parent_id) < 0) {
 			$this->stmt = $this->dbh->prepare(
