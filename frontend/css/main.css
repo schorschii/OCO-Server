@@ -749,6 +749,9 @@ input.tableSearch {
 	box-shadow: none !important;
 	background-color: transparent !important;
 }
+input.tableSearch:not(:placeholder-shown) {
+	background-color: rgba(255,250,0,0.2) !important;
+}
 table.form input:not([type=checkbox]):not([type=radio]),
 table.form select,
 table.form textarea {
