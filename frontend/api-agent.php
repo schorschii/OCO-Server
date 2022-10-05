@@ -266,19 +266,24 @@ switch($srcdata['method']) {
 		$events = [];
 		foreach($db->selectAllEventQueryRule() as $rule) {
 			// get and convert timestamp to utc
-			$timestamp = null;
+			$timestamp = date('Y-m-d H:i:s', 0);
 			try {
-				$tmpTimestamp = $db->selectLastComputerEventByComputerId($computer->id);
-				if(!$tmpTimestamp) throw new Exception();
-				$date = new DateTime($tmpTimestamp->timestamp, new DateTimeZone(date_default_timezone_get()));
-				$date->setTimezone(new DateTimeZone('UTC'));
-				$timestamp = $date->format('Y-m-d H:i:s');
+				$tmpEvent = $db->selectLastComputerEventByComputerId($computer->id);
+				if(!$tmpEvent) throw new Exception();
+				$timestamp = localTimeToUtc($tmpEvent->timestamp);
 			} catch(Exception $e) {}
 			$events[] = [
-				'since' => $timestamp ?? date('Y-m-d H:i:s', 0),
-				'log' => $rule->log, 'query' => $rule->query
+				'since' => $timestamp, 'log' => $rule->log, 'query' => $rule->query
 			];
 		}
+
+		// get the last login date
+		$loginsSince = date('Y-m-d H:i:s', 0);
+		try {
+			$tmpLogon = $db->selectLastDomainUserLogonByComputerId($computer->id);
+			if(!$tmpLogon) throw new Exception();
+			$loginsSince = localTimeToUtc($tmpLogon->timestamp);
+		} catch(Exception $e) {}
 
 		$resdata['error'] = null;
 		$resdata['result'] = [
@@ -287,6 +292,7 @@ switch($srcdata['method']) {
 				'server-key' => $server_key, // tell the agent our server key, so it can validate the server
 				'agent-key' => $agent_key,   // tell the agent that it should save a new agent key for further requests
 				'update' => $update,         // tell the agent that it should update the inventory data
+				'logins-since' => $loginsSince, // tell the agent to only send logins since the last login date
 				'software-jobs' => $jobs,    // tell the agent all pending software jobs
 				'events' => $events,         // tell the agent to send specific events from local log files
 			]
@@ -332,9 +338,7 @@ switch($srcdata['method']) {
 			$timestamp = null;
 			try {
 				if(empty($event['timestamp'])) continue;
-				$date = new DateTime($event['timestamp'], new DateTimeZone('UTC'));
-				$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
-				$timestamp = $date->format('Y-m-d H:i:s');
+				$timestamp = utcTimeToLocal($event['timestamp']);
 			} catch(Exception $e) {
 				continue;
 			}
@@ -397,9 +401,7 @@ switch($srcdata['method']) {
 			foreach($logins as $key => $login) {
 				try {
 					if(empty($login['timestamp'])) continue;
-					$date = new DateTime($login['timestamp'], new DateTimeZone('UTC'));
-					$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
-					$logins[$key]['timestamp'] = $date->format('Y-m-d H:i:s');
+					$logins[$key]['timestamp'] = utcTimeToLocal($login['timestamp']);
 				} catch(Exception $e) {}
 			}
 			// update inventory data now
@@ -407,24 +409,24 @@ switch($srcdata['method']) {
 				$computer->id,
 				$params['uid'] ?? null,
 				$params['hostname'],
-				$data['os'],
-				$data['os_version'],
+				$data['os'] ?? '',
+				$data['os_version'] ?? '',
 				$data['os_license'] ?? '-',
 				$data['os_language'] ?? '-',
-				$data['kernel_version'],
-				$data['architecture'],
-				$data['cpu'],
-				$data['gpu'],
-				$data['ram'],
-				$data['agent_version'],
+				$data['kernel_version'] ?? '',
+				$data['architecture'] ?? '',
+				$data['cpu'] ?? '',
+				$data['gpu'] ?? '',
+				$data['ram'] ?? '',
+				$data['agent_version'] ?? '?',
 				$_SERVER['REMOTE_ADDR'],
-				$data['serial'],
-				$data['manufacturer'],
-				$data['model'],
-				$data['bios_version'],
+				$data['serial'] ?? '',
+				$data['manufacturer'] ?? '',
+				$data['model'] ?? '',
+				$data['bios_version'] ?? '',
 				intval($data['uptime'] ?? 0),
-				$data['boot_type'],
-				$data['secure_boot'],
+				$data['boot_type'] ?? '',
+				$data['secure_boot'] ?? '',
 				$data['domain'] ?? '',
 				$data['networks'] ?? [],
 				$data['screens'] ?? [],
@@ -435,23 +437,23 @@ switch($srcdata['method']) {
 			);
 			$db->insertLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE, [
 				'hostname' => $params['hostname'],
-				'os' => $data['os'],
-				'os_version' => $data['os_version'],
+				'os' => $data['os'] ?? '',
+				'os_version' => $data['os_version'] ?? '',
 				'os_license' => $data['os_license'] ?? '-',
 				'os_language' => $data['os_language'] ?? '-',
-				'kernel_version' => $data['kernel_version'],
-				'architecture' => $data['architecture'],
-				'cpu' => $data['cpu'],
-				'gpu' => $data['gpu'],
-				'ram' => $data['ram'],
-				'agent_version' => $data['agent_version'],
-				'serial' => $data['serial'],
-				'manufacturer' => $data['manufacturer'],
-				'model' => $data['model'],
-				'bios_version' => $data['bios_version'],
+				'kernel_version' => $data['kernel_version'] ?? '',
+				'architecture' => $data['architecture'] ?? '',
+				'cpu' => $data['cpu'] ?? '',
+				'gpu' => $data['gpu'] ?? '',
+				'ram' => $data['ram'] ?? '',
+				'agent_version' => $data['agent_version'] ?? '?',
+				'serial' => $data['serial'] ?? '',
+				'manufacturer' => $data['manufacturer'] ?? '',
+				'model' => $data['model'] ?? '',
+				'bios_version' => $data['bios_version'] ?? '',
 				'uptime' => intval($data['uptime'] ?? 0),
-				'boot_type' => $data['boot_type'],
-				'secure_boot' => $data['secure_boot'],
+				'boot_type' => $data['boot_type'] ?? '',
+				'secure_boot' => $data['secure_boot'] ?? '',
 				'domain' => $data['domain'] ?? '',
 				'network' => $data['networks'] ?? [],
 				'screens' => $data['screens'] ?? [],

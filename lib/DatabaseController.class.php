@@ -1869,6 +1869,15 @@ class DatabaseController {
 		])) return false;
 		return $this->dbh->lastInsertId();
 	}
+	public function selectLastDomainUserLogonByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM domain_user_logon WHERE computer_id = :computer_id ORDER BY timestamp DESC LIMIT 1'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserLogon') as $row) {
+			return $row;
+		}
+	}
 	public function selectAllDomainUserLogonByDomainUserId($domain_user_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT c.id AS "computer_id", c.hostname AS "computer_hostname", dl.console AS "console", dl.timestamp AS "timestamp"

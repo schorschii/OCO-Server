@@ -88,6 +88,17 @@ function shorter($text, $charsLimit=40, $dots=true) {
 	}
 }
 
+function localTimeToUtc($dateTimeString) {
+	$date = new DateTime($dateTimeString, new DateTimeZone(date_default_timezone_get()));
+	$date->setTimezone(new DateTimeZone('UTC'));
+	return $date->format('Y-m-d H:i:s');
+}
+function utcTimeToLocal($utcTimeString) {
+	$date = new DateTime($utcTimeString, new DateTimeZone('UTC'));
+	$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+	return $date->format('Y-m-d H:i:s');
+}
+
 // converts IPv4 or v6 address to string with bits
 function ipAddressToBits($inet) {
 	$inet = inet_pton($inet);
