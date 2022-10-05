@@ -22,7 +22,23 @@ While it is technically possible, **never** let the agent commuicate in plaintex
 It is recommended to **not** make the OCO server available on the internet to prevent brute force attacks. Make the server only available on your internal company network and use a VPN connection for mobile devices.
 
 ## Updating Computer Inventory Values
-The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in `AGENT_UPDATE_INTERVAL` in the config file.
+The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in `AGENT_UPDATE_INTERVAL` in the config file. The recommended default values is 2 hours. Do not make this time interval too short as the query of the inventory values can produce some CPU load.
+
+## Event Log Query
+You can monitor the Windows event log of your clients by creating Event Query Rules on the OCO server. These rules are communicated with the agent and if an event matches the rule, the agent will send the event data to the server. This feature can be used as a simple central syslog functionality for your managed clients.
+
+The query syntax is the exact same XML format as you would enter it in the Windows event viewer.
+
+### Example Rules
+#### Get Defender Warning, Error and Critical Events
+(including "Malware Detected" events with event ID 1116)
+
+Log: `Microsoft-Windows-Windows Defender/Operational`  
+Query: `<QueryList><Query><Select>*[System[(Level=1 or Level=2 or Level=3)]]</Select></Query></QueryList>`
+
+#### Get All GPO Script Error Events (ID 1130)
+Log: `System`  
+Query: `<QueryList><Query><Select>*[System[(EventID=1130)]]</Select></Query></QueryList>`
 
 ## Wake On Lan (WOL)
 OCO supports sending WOL magic packets. WOL in general only works via Ethernet (not via WiFi!) and if the server has a network card in the same subnet as the target computer because WOL packets are UDP broadcast packets. If you have multiple subnets, you can add a new network card to the server for each subnet or configure "Satellite WOL".
