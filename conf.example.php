@@ -54,7 +54,7 @@ const LDAP_USER_CLASS = 'user'; // Example: 'user' for ActiveDirectory, 'inetorg
 
 // LDAP group / OCO role assignment
 const LDAP_GROUPS          = [ // leave empty if you want to sync all users below LDAP_QUERY_ROOT
-	// 'LDÁP Path' => OCO Role ID
+	// 'LDAP Path' => OCO Role ID
 	// Example: 'CN=OcoAdmins,OU=Benutzer,DC=sieber,DC=systems' => 1,
 ];
 const LDAP_DEFAULT_ROLE_ID = 1; // Default: Role ID 1 = Superadmin. Only used if LDAP_GROUPS is empty.
@@ -76,7 +76,7 @@ const LDAP_ATTR_DESCRIPTION   = 'description';     // Example: 'description' for
 /////////////////////////////////////////////
 const SELF_SERVICE_ENABLED = false;
 const SELF_SERVICE_LDAP_GROUPS = [
-	// 'LDÁP Path' => OCO Role ID
+	// 'LDAP Path' => OCO Role ID
 	// Example: 'CN=OcoSelfService,OU=Benutzer,DC=sieber,DC=systems' => 1,
 ];
 const SELF_SERVICE_DEFAULT_ROLE_ID = 1;
