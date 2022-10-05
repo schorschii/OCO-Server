@@ -346,7 +346,7 @@ switch($srcdata['method']) {
 				$event['event_id'] ?? 0,
 				json_encode($event['data'])
 			);
-			if(!$success) break;
+			if(!$success) throw new Exception('Error while inserting event into database');
 		}
 
 		$resdata['error'] = null;

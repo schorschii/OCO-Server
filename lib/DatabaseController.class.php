@@ -650,13 +650,13 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_event (computer_id, timestamp, level, event_id, data) VALUES (:computer_id, :timestamp, :level, :event_id, :data)'
 		);
-		if(!$this->stmt->execute([
+		return $this->stmt->execute([
 			':computer_id' => $computer_id,
 			':timestamp' => $timestamp,
 			':level' => $level,
 			':event_id' => $event_id,
 			':data' => $data,
-		])) return false;
+		]);
 	}
 	public function deleteComputerEventEntryOlderThan($seconds) {
 		if(intval($seconds) < 1) return;
