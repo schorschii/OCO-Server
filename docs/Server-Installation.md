@@ -63,12 +63,14 @@
    - After you have sucessfully set up HTTPS, please enable the option `php_value session.cookie_secure 1` in the `frontend/.htaccess` file to ensure cookies are only transferred via HTTPS.
 6. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size  
   (pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size` and `max_execution_time`).
-7. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
-8. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
+7. Adjust you Apache config to allow uploading packages of larger size  
+  (pick a value that fit your needs for the settings `LimitRequestBody`, `SSLRenegBufferSize`).
+8. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
+9. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
    ```
    */2 *  * * *  www-data  cd /srv/www/oco && php console.php housekeeping
    ```
-9. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
+10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
 
 ### Obtaining A Let’s Encrypt Certificate
 1. Enable the Apache SSL module: `a2enmod ssl`
