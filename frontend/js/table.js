@@ -152,7 +152,7 @@ var TableSortUltra = function(table) {
 		}
 
 		// save sort state
-		if(savesort) {
+		if(savesort && table.id) {
 			// get prev table state
 			var storage = null;
 			if(localStorage && savesort) {
@@ -197,7 +197,7 @@ var TableSortUltra = function(table) {
 
 	// execute saved/default sort
 	var storage = null;
-	if(localStorage && savesort) {
+	if(localStorage && savesort && table.id) {
 		let tmpStore = localStorage.getItem(table.id);
 		if(tmpStore) storage = JSON.parse(tmpStore);
 	}
@@ -239,7 +239,7 @@ function initTableSearch() {
 		// get prev table state
 		var startSearch = false;
 		var storage = null;
-		if(localStorage) {
+		if(localStorage && table.id) {
 			let tmpStore = localStorage.getItem(table.id);
 			if(tmpStore) storage = JSON.parse(tmpStore);
 		}
@@ -272,7 +272,7 @@ function tableSearch(table) {
 
 	// get prev table state
 	var storage = null;
-	if(localStorage) {
+	if(localStorage && table.id) {
 		let tmpStore = localStorage.getItem(table.id);
 		if(tmpStore) storage = JSON.parse(tmpStore);
 	}
@@ -290,10 +290,12 @@ function tableSearch(table) {
 				if(inputs[m].value != "") active = true;
 
 				// save state
-				if(!storage) storage = {};
-				if(!storage["search"]) storage["search"] = {};
-				storage["search"][n] = inputs[m].value;
-				localStorage.setItem(table.id, JSON.stringify(storage));
+				if(localStorage && table.id) {
+					if(!storage) storage = {};
+					if(!storage["search"]) storage["search"] = {};
+					storage["search"][n] = inputs[m].value;
+					localStorage.setItem(table.id, JSON.stringify(storage));
+				}
 			}
 		}
 	}
@@ -329,7 +331,7 @@ function tableSearch(table) {
 	tfoot = table.getElementsByTagName("tfoot");
 	if(tfoot && tfoot.length == 1) {
 		spnCount = tfoot[0].querySelectorAll("span.counter");
-		if(spnCount || spnCount.length > 0) {
+		if(spnCount && spnCount.length > 0) {
 			spnCount[0].textContent = String(count);
 		}
 	}
