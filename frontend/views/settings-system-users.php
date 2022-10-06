@@ -55,7 +55,7 @@ try {
 						echo "<tr>";
 						echo "<td><input type='checkbox' name='system_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblSystemUserData)'></td>";
 						echo "<td>".htmlspecialchars($u->id)."</td>";
-						echo "<td>";
+						echo "<td sort_key='".htmlspecialchars($u->username,ENT_QUOTES)."'>";
 						if($u->ldap) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
 						if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG('locked')."'>&nbsp;";
 						echo  "<span id='spnSystemUserUid".$u->id."' style='display:none'>".htmlspecialchars($u->uid)."</span>";

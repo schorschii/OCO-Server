@@ -127,7 +127,7 @@ try {
 			if($family==null) echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
 			echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->version)."</a></td>";
 			echo "<td>".htmlspecialchars($p->author)."</td>";
-			echo "<td sort_key='".htmlspecialchars($size)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG('not_found'))."</td>";
+			echo "<td sort_key='".htmlspecialchars($size ? $size : 0)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG('not_found'))."</td>";
 			echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 			echo "<td>".htmlspecialchars($p->created)."</td>";
 

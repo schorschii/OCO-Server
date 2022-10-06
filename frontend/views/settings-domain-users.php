@@ -54,7 +54,7 @@ try {
 						echo "<tr class='".($u->domain_user_role_id==null?'inactive':'')."'>";
 						echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblSelfServiceUserData)'></td>";
 						echo "<td>".htmlspecialchars($u->id)."</td>";
-						echo "<td>";
+						echo "<td sort_key='".htmlspecialchars($u->username,ENT_QUOTES)."'>";
 						if(!empty($u->ldap)) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
 						if(!empty($u->password)) echo "<img src='img/password.dyn.svg' title='".LANG('password_set')."'>&nbsp;";
 						echo  "<span id='spnDomainUserUid".$u->id."' style='display:none'>".htmlspecialchars($u->uid)."</span>";

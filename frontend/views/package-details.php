@@ -205,9 +205,10 @@ try {
 							foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
 								if($p->id === $package->id) continue; // do not show this package
 								$counter ++;
+								$size = $p->getSize();
 								echo '<tr>';
 								echo '<td><a '.explorerLink('views/package-details.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
-								echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
+								echo '<td sort_key="'.htmlspecialchars($size ? $size : 0).'">'.($size ? htmlspecialchars(niceSize($size)) : LANG('not_found')).'</td>';
 								echo '<td>'.$p->created.'</td>';
 								echo '</tr>';
 							}
