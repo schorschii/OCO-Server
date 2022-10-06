@@ -473,10 +473,10 @@ $commands = Models\Computer::getCommands($ext);
 					<table id='tblComputerServicesData' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
-								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('details'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -485,10 +485,10 @@ $commands = Models\Computer::getCommands($ext);
 							foreach($db->selectAllComputerServiceByComputerId($computer->id) as $e) {
 								$counter ++;
 								echo "<tr>";
-								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
-								echo "<td>".htmlspecialchars($e->status)."</td>";
+								echo "<td class='service-status ".$e->getStatusClass()."'>".htmlspecialchars($e->getStatusText())."</td>";
 								echo "<td>".htmlspecialchars($e->name)."</td>";
 								echo "<td>".htmlspecialchars($e->details)."</td>";
+								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
 								echo "</tr>";
 							}
 							?>

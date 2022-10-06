@@ -963,6 +963,23 @@ table.list tfoot .spread > div:last-child {
 	text-align: right;
 }
 
+table.list .service-status {
+	font-weight: bold;
+}
+table.list .service-status.ok {
+	background-color: #13D389;
+}
+table.list .service-status.warn {
+	background-color: #FFD000;
+}
+table.list .service-status.crit {
+	background-color: #E85555;
+	color: white;
+}
+table.list .service-status.unknown {
+	background-color: #FCB97B;
+}
+
 img.small,
 table tr th > img,
 table tr td > img {
