@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `computer` (
 CREATE TABLE IF NOT EXISTS `computer_service` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `computer_id` int(11) NOT NULL,
-  `timestamp` datetime NOT NULL,
+  `timestamp` datetime NOT NULL DEFAULT current_timestamp(),
   `status` tinyint(4) NOT NULL,
   `name` text NOT NULL,
   `metrics` text NOT NULL,
