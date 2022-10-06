@@ -203,8 +203,14 @@ switch($srcdata['method']) {
 				$server_key = $computer->server_key;
 			}
 
-			// update last seen date
+			// update last seen date and service status
 			$db->updateComputerPing($computer->id);
+			if(!empty($data['services'])) foreach($data['services'] as $s) {
+				if(empty($s['name']) || !isset($s['status'])) continue;
+				$prevStatus = $db->selectLastComputerServiceByComputerIdAndServiceName($computer->id, $s['name']);
+				if($prevStatus != null && $prevStatus->status == $s['status']) continue;
+				$db->insertComputerService($computer->id, $s['status'], $s['name'], $s['metrics'] ?? '-', $s['details'] ?? '');
+			}
 
 			// check if agent should update inventory data
 			if(time() - strtotime($computer->last_update) > AGENT_UPDATE_INTERVAL

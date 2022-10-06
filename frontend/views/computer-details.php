@@ -46,6 +46,7 @@ $commands = Models\Computer::getCommands($ext);
 		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('general_and_hardware'); ?></a>
 		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('packages_and_jobs'); ?></a>
 		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('recognised_software'); ?></a>
+		<a href='#' name='services' class='<?php if($tab=='services') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('services'); ?></a>
 		<a href='#' name='events' class='<?php if($tab=='events') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('events'); ?></a>
 		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('history'); ?></a>
 	</div>
@@ -463,6 +464,53 @@ $commands = Models\Computer::getCommands($ext);
 					</table>
 				</div>
 			</div>
+		</div>
+
+		<div name='services' class='<?php if($tab=='services') echo 'active'; ?>'>
+			<?php if($tab == 'services') { ?>
+			<div class='details-abreast'>
+				<div class='stickytable'>
+					<table id='tblComputerServicesData' class='list searchable sortable savesort margintop'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('details'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							$counter = 0;
+							foreach($db->selectAllComputerServiceByComputerId($computer->id) as $e) {
+								$counter ++;
+								echo "<tr>";
+								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($e->status)."</td>";
+								echo "<td>".htmlspecialchars($e->name)."</td>";
+								echo "<td>".htmlspecialchars($e->details)."</td>";
+								echo "</tr>";
+							}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<div class='spread'>
+										<div>
+											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+										</div>
+										<div class='controls'>
+											<button onclick='downloadTableCsv("tblComputerServicesData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+			<?php } ?>
 		</div>
 
 		<div name='events' class='<?php if($tab=='events') echo 'active'; ?>'>

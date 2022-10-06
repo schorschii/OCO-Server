@@ -187,6 +187,25 @@ CREATE TABLE IF NOT EXISTS `computer` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `computer_service`
+--
+
+CREATE TABLE IF NOT EXISTS `computer_service` (
+  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+  `computer_id` int(11) NOT NULL,
+  `timestamp` datetime NOT NULL,
+  `status` tinyint(4) NOT NULL,
+  `name` text NOT NULL,
+  `metrics` text NOT NULL,
+  `details` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `computer_id` (`computer_id`),
+  CONSTRAINT `fk_computer_service_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `computer_event`
 --
 

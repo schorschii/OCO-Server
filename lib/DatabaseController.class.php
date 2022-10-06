@@ -630,6 +630,37 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\EventQueryRule');
 	}
+	public function selectLastComputerServiceByComputerIdAndServiceName($computer_id, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_service WHERE computer_id = :computer_id AND name = :name ORDER BY timestamp DESC LIMIT 1'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id, ':name' => $name]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerService') as $row) {
+			return $row;
+		}
+	}
+	public function insertComputerService($computer_id, $status, $name, $metrics, $details) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_service (computer_id, status, name, metrics, details) VALUES (:computer_id, :status, :name, :metrics, :details)'
+		);
+		return $this->stmt->execute([
+			':computer_id' => $computer_id,
+			':status' => $status,
+			':name' => $name,
+			':metrics' => $metrics,
+			':details' => $details,
+		]);
+	}
+	public function selectAllComputerServiceByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cs.name, (SELECT status FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "status",
+				(SELECT timestamp FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "timestamp",
+				(SELECT details FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "details"
+			FROM computer_service cs WHERE computer_id = :computer_id GROUP BY cs.name'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerService');
+	}
 	public function selectLastComputerEventByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_event WHERE computer_id = :computer_id ORDER BY timestamp DESC LIMIT 1'
