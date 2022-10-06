@@ -40,6 +40,9 @@ Query: `<QueryList><Query><Select>*[System[(Level=1 or Level=2 or Level=3)]]</Se
 Log: `System`  
 Query: `<QueryList><Query><Select>*[System[(EventID=1130)]]</Select></Query></QueryList>`
 
+## Service Monitoring
+OCO offers basic monitoring features. You can check anything by writing your own service check script and placing it into the agent's local check directory. Your script just have to produce standardised output in the CheckMK check format. For more information, please have a look at the documentation in the [agent repo](https://github.com/schorschii/oco-agent).
+
 ## Wake On Lan (WOL)
 OCO supports sending WOL magic packets. WOL in general only works via Ethernet (not via WiFi!) and if the server has a network card in the same subnet as the target computer because WOL packets are UDP broadcast packets. If you have multiple subnets, you can add a new network card to the server for each subnet or configure "Satellite WOL".
 
