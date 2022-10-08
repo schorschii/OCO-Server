@@ -677,13 +677,16 @@ class DatabaseController {
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerEvent');
 	}
-	public function insertOrUpdateComputerEvent($computer_id, $timestamp, $level, $event_id, $data) {
+	public function insertOrUpdateComputerEvent($computer_id, $log, $timestamp, $provider, $level, $event_id, $data) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_event (computer_id, timestamp, level, event_id, data) VALUES (:computer_id, :timestamp, :level, :event_id, :data)'
+			'INSERT INTO computer_event (computer_id, log, timestamp,  provider, level, event_id, data)
+			VALUES (:computer_id, :log, :timestamp, :provider, :level, :event_id, :data)'
 		);
 		return $this->stmt->execute([
 			':computer_id' => $computer_id,
+			':log' => $log,
 			':timestamp' => $timestamp,
+			':provider' => $provider,
 			':level' => $level,
 			':event_id' => $event_id,
 			':data' => $data,

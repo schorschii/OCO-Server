@@ -485,7 +485,7 @@ $commands = Models\Computer::getCommands($ext);
 							foreach($db->selectAllComputerServiceByComputerId($computer->id) as $e) {
 								$counter ++;
 								echo "<tr>";
-								echo "<td class='service-status ".$e->getStatusClass()."'>".htmlspecialchars($e->getStatusText())."</td>";
+								echo "<td class='servicestatus ".$e->getStatusClass()."'>".htmlspecialchars($e->getStatusText())."</td>";
 								echo "<td>".htmlspecialchars($e->name)."</td>";
 								echo "<td>".htmlspecialchars($e->details)."</td>";
 								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
@@ -521,7 +521,9 @@ $commands = Models\Computer::getCommands($ext);
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('log'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('level'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('provider'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('event_id'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('data'); ?></th>
 							</tr>
@@ -533,7 +535,9 @@ $commands = Models\Computer::getCommands($ext);
 								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
-								echo "<td>".htmlspecialchars($e->level)."</td>";
+								echo "<td>".htmlspecialchars($e->log)."</td>";
+								echo "<td class='eventlevel ".$e->getLevelClass()."'>".htmlspecialchars($e->getLevelText())."</td>";
+								echo "<td>".htmlspecialchars($e->provider)."</td>";
 								echo "<td>".htmlspecialchars($e->event_id)."</td>";
 								echo "<td class='subbuttons'>".htmlspecialchars(shorter($e->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($e->timestamp,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($e->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
 								echo "</tr>";

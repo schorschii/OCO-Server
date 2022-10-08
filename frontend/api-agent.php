@@ -352,7 +352,9 @@ switch($srcdata['method']) {
 
 			$success = $db->insertOrUpdateComputerEvent(
 				$computer->id,
+				$event['log'] ?? '',
 				$timestamp,
+				$event['provider'] ?? '',
 				$event['level'] ?? 0,
 				$event['event_id'] ?? 0,
 				json_encode($event['data'])

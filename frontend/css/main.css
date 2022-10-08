@@ -963,21 +963,29 @@ table.list tfoot .spread > div:last-child {
 	text-align: right;
 }
 
-table.list .service-status {
+table.list .servicestatus,
+table.list .eventlevel {
 	font-weight: bold;
 }
-table.list .service-status.ok {
+table.list .servicestatus.ok {
 	background-color: #13D389;
 }
-table.list .service-status.warn {
+table.list .servicestatus.warn,
+table.list .eventlevel.warning {
 	background-color: #FFD000;
 }
-table.list .service-status.crit {
+table.list .servicestatus.crit,
+table.list .eventlevel.critical,
+table.list .eventlevel.error {
 	background-color: #E85555;
 	color: white;
 }
-table.list .service-status.unknown {
+table.list .servicestatus.unknown {
 	background-color: #FCB97B;
+}
+table.list .eventlevel.info,
+table.list .eventlevel.verbose {
+	background-color: #A8D1DF;
 }
 
 img.small,

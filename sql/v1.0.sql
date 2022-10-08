@@ -212,7 +212,9 @@ CREATE TABLE IF NOT EXISTS `computer_service` (
 CREATE TABLE IF NOT EXISTS `computer_event` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `computer_id` int(11) NOT NULL,
+  `log` text NOT NULL,
   `timestamp` datetime NOT NULL,
+  `provider` text NOT NULL,
   `level` tinyint(4) NOT NULL,
   `event_id` int(11) NOT NULL,
   `data` longtext NOT NULL,
