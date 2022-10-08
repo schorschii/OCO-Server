@@ -477,6 +477,7 @@ $commands = Models\Computer::getCommands($ext);
 								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('details'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -489,6 +490,7 @@ $commands = Models\Computer::getCommands($ext);
 								echo "<td>".htmlspecialchars($e->name)."</td>";
 								echo "<td>".htmlspecialchars($e->details)."</td>";
 								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($e->updated)."</td>";
 								echo "</tr>";
 							}
 							?>

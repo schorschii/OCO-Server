@@ -7,6 +7,7 @@ class ComputerService {
 	public $id;
 	public $computer_id;
 	public $timestamp;
+	public $updated;
 	public $status;
 	public $name;
 	public $metrics;

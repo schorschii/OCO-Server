@@ -661,16 +661,20 @@ class DatabaseController {
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
-	public function selectLastComputerServiceByComputerIdAndServiceName($computer_id, $name) {
+	public function insertOrUpdateComputerService($computer_id, $status, $name, $metrics, $details) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer_service WHERE computer_id = :computer_id AND name = :name ORDER BY timestamp DESC LIMIT 1'
+			'UPDATE computer_service SET id = LAST_INSERT_ID(id), updated = CURRENT_TIMESTAMP
+			WHERE computer_id = :computer_id AND status = :status AND name = :name AND metrics = :metrics AND details = :details LIMIT 1'
 		);
-		$this->stmt->execute([':computer_id' => $computer_id, ':name' => $name]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerService') as $row) {
-			return $row;
-		}
-	}
-	public function insertComputerService($computer_id, $status, $name, $metrics, $details) {
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':status' => $status,
+			':name' => $name,
+			':metrics' => $metrics,
+			':details' => $details,
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_service (computer_id, status, name, metrics, details) VALUES (:computer_id, :status, :name, :metrics, :details)'
 		);
@@ -686,6 +690,7 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cs.name, (SELECT status FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "status",
 				(SELECT timestamp FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "timestamp",
+				(SELECT updated FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "updated",
 				(SELECT details FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "details"
 			FROM computer_service cs WHERE computer_id = :computer_id GROUP BY cs.name'
 		);
