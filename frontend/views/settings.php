@@ -19,5 +19,6 @@ $showDeletedObjects = $cl->checkPermission(null, PermissionManager::SPECIAL_PERM
 	<a <?php echo explorerLink('views/settings-own.php'); ?>>&rarr;&nbsp;<?php echo htmlspecialchars(str_replace('%',$currentSystemUser->username,LANG('system_user_placeholder'))); ?></a>
 	<a <?php echo explorerLink('views/settings-system-users.php'); ?>>&rarr;&nbsp;<?php echo LANG('system_user_management'); ?></a>
 	<a <?php echo explorerLink('views/settings-domain-users.php'); ?>>&rarr;&nbsp;<?php echo LANG('self_service_management'); ?></a>
+	<a <?php echo explorerLink('views/settings-event-query-rules.php'); ?>>&rarr;&nbsp;<?php echo LANG('event_query_rules'); ?></a>
 	<a <?php echo explorerLink('views/settings-deleted-objects.php'); ?>>&rarr;&nbsp;<?php echo LANG('deleted_objects_history'); ?></a>
 </div>

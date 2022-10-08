@@ -1716,4 +1716,44 @@ class CoreLogic {
 		return $result;
 	}
 
+	public function createEventQueryRule($log, $query) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_EVENT_QUERY_RULES);
+
+		if(empty(trim($log)) || empty(trim($query))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+
+		$insertId = $this->db->insertEventQueryRule($log, $query);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.event_query_rule.create', [
+			'log'=>$log,
+			'query'=>$query,
+		]);
+		return $insertId;
+	}
+	public function editEventQueryRule($id, $log, $query) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_EVENT_QUERY_RULES);
+
+		if(empty(trim($log)) || empty(trim($query))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+
+		$this->db->updateEventQueryRule($id, $log, $query);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.event_query_rule.update', [
+			'log'=>$log,
+			'query'=>$query,
+		]);
+	}
+	public function removeEventQueryRule($id) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_EVENT_QUERY_RULES);
+
+		$u = $this->db->selectEventQueryRule($id);
+		if($u === null) throw new NotFoundException();
+
+		$result = $this->db->deleteEventQueryRule($id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $u->id, 'oco.event_query_rule.delete', []);
+		return $result;
+	}
+
 }

@@ -2205,6 +2205,54 @@ function confirmRemoveSelectedSystemUserRole(checkboxName) {
 }
 
 // ======== SYSTEM OPERATIONS ========
+function showDialogEditEventQueryRule(id=-1, log='', query='') {
+	title = L__CHANGE;
+	buttonText = L__CHANGE;
+	if(id == -1) {
+		title = L__CREATE;
+		buttonText = L__CREATE;
+	}
+	showDialogAjax(title, 'views/dialog-event-query-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditEventQueryRuleId.value = id;
+		txtEditEventQueryRuleLog.value = log;
+		txtEditEventQueryRuleQuery.value = query;
+		spnBtnUpdateEventQueryRule.innerText = buttonText;
+	});
+}
+function editEventQueryRule(id, log, query) {
+	var params = [];
+	params.push({'key':'edit_event_query_rule_id', 'value':id});
+	params.push({'key':'log', 'value':log});
+	params.push({'key':'query', 'value':query});
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+		hideDialog(); refreshContent();
+		emitMessage(L__SAVED, log, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function confirmRemoveSelectedEventQueryRule(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(L__NO_ELEMENTS_SELECTED, '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_event_query_rule_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(L__CONFIRM_DELETE)) {
+		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(L__OBJECT_DELETED, '', MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+
 function ldapSyncSystemUsers() {
 	var params = [];
 	params.push({'key':'ldap_sync_system_users', 'value':1});

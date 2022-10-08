@@ -969,10 +969,12 @@ table.list .eventlevel {
 }
 table.list .servicestatus.ok {
 	background-color: #13D389;
+	color: rgba(25,25,25);
 }
 table.list .servicestatus.warn,
 table.list .eventlevel.warning {
 	background-color: #FFD000;
+	color: rgba(25,25,25);
 }
 table.list .servicestatus.crit,
 table.list .eventlevel.critical,
@@ -982,10 +984,12 @@ table.list .eventlevel.error {
 }
 table.list .servicestatus.unknown {
 	background-color: #FCB97B;
+	color: rgba(25,25,25);
 }
 table.list .eventlevel.info,
 table.list .eventlevel.verbose {
 	background-color: #A8D1DF;
+	color: rgba(25,25,25);
 }
 
 img.small,
@@ -1651,6 +1655,27 @@ div.details-abreast > div.stickytable > table.list tfoot {
 		background: #AC142C;
 		color: rgb(233,236,239);
 		border: 1px solid rgba(255,255,255,0.2);
+	}
+	table.list .servicestatus.ok {
+		background-color: #4cb67f;
+	}
+	table.list .servicestatus.warn,
+	table.list .eventlevel.warning {
+		background-color: #ffff26;
+	}
+	table.list .servicestatus.crit,
+	table.list .eventlevel.critical,
+	table.list .eventlevel.error {
+		background-color: #ff2f27;
+		color: white;
+	}
+	table.list .servicestatus.unknown {
+		background-color: #ffb400;
+	}
+	table.list .eventlevel.info,
+	table.list .eventlevel.verbose {
+		background-color: #0D516E;
+		color: white;
 	}
 }
 

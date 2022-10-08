@@ -145,6 +145,31 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['edit_event_query_rule_id'])
+	&& isset($_POST['log'])
+	&& isset($_POST['query'])) {
+		if($_POST['edit_event_query_rule_id'] == '-1') {
+			die($cl->createEventQueryRule(
+				$_POST['log'],
+				$_POST['query']
+			));
+		} else {
+			$cl->editEventQueryRule(
+				$_POST['edit_event_query_rule_id'],
+				$_POST['log'],
+				$_POST['query']
+			);
+		}
+		die();
+	}
+
+	if(!empty($_POST['remove_event_query_rule_id']) && is_array($_POST['remove_event_query_rule_id'])) {
+		foreach($_POST['remove_event_query_rule_id'] as $id) {
+			$cl->removeEventQueryRule($id);
+		}
+		die();
+	}
+
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
 	die(LANG('permission_denied'));

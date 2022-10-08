@@ -624,11 +624,42 @@ class DatabaseController {
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
 	}
 	public function selectAllEventQueryRule() {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM event_query_rule'
-		);
+		$this->stmt = $this->dbh->prepare('SELECT * FROM event_query_rule');
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\EventQueryRule');
+	}
+	public function selectEventQueryRule($id) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM event_query_rule WHERE id = :id');
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\EventQueryRule') as $row) {
+			return $row;
+		}
+	}
+	public function insertEventQueryRule($log, $query) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO event_query_rule (log, query) VALUES (:log, :query)'
+		);
+		return $this->stmt->execute([
+			':log' => $log,
+			':query' => $query,
+		]);
+	}
+	public function updateEventQueryRule($id, $log, $query) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE event_query_rule SET log = :log, query = :query WHERE id = :id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':log' => $log,
+			':query' => $query,
+		]);
+	}
+	public function deleteEventQueryRule($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM event_query_rule WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
 	}
 	public function selectLastComputerServiceByComputerIdAndServiceName($computer_id, $name) {
 		$this->stmt = $this->dbh->prepare(
@@ -679,10 +710,9 @@ class DatabaseController {
 	}
 	public function insertOrUpdateComputerEvent($computer_id, $log, $timestamp, $provider, $level, $event_id, $data) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_event (computer_id, log, timestamp,  provider, level, event_id, data)
-			VALUES (:computer_id, :log, :timestamp, :provider, :level, :event_id, :data)'
+			'SELECT id FROM computer_event WHERE computer_id = :computer_id AND log = :log AND timestamp = :timestamp AND provider = :provider AND level = :level AND event_id = :event_id AND data = :data LIMIT 1'
 		);
-		return $this->stmt->execute([
+		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
 			':log' => $log,
 			':timestamp' => $timestamp,
@@ -690,7 +720,25 @@ class DatabaseController {
 			':level' => $level,
 			':event_id' => $event_id,
 			':data' => $data,
-		]);
+		])) return false;
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerEvent') as $row) {
+			return $row->id;
+		}
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_event (computer_id, log, timestamp,  provider, level, event_id, data)
+			VALUES (:computer_id, :log, :timestamp, :provider, :level, :event_id, :data)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':log' => $log,
+			':timestamp' => $timestamp,
+			':provider' => $provider,
+			':level' => $level,
+			':event_id' => $event_id,
+			':data' => $data,
+		])) return false;
+		return $this->dbh->lastInsertId();
 	}
 	public function deleteComputerEventEntryOlderThan($seconds) {
 		if(intval($seconds) < 1) return;

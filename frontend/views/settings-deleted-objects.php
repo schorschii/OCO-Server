@@ -16,53 +16,53 @@ try {
 	<h1><img src='img/settings.dyn.svg'><span id='page-title'><?php echo LANG('deleted_objects_history'); ?></span></h1>
 </div>
 
-			<div class='details-abreast'>
-				<div class='stickytable'>
-					<table id='tblUserLogData' class='list searchable sortable savesort margintop'>
-						<thead>
-							<tr>
-								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('ip_address'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('user'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('action'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('object_id'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('data'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							$counter = 0;
-							foreach($db->selectAllLogEntryByObjectIdAndActions(false, ['oco.computer.delete', 'oco.package.delete', 'oco.package_family.delete', 'oco.job_container.delete', 'oco.deployment_rule.delete', 'oco.domain_user.delete', 'oco.report.delete'], empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
-								$counter ++;
-								echo "<tr>";
-								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
-								echo "<td>".htmlspecialchars($l->host)."</td>";
-								echo "<td>".htmlspecialchars($l->user)."</td>";
-								echo "<td>".htmlspecialchars($l->action)."</td>";
-								echo "<td>".htmlspecialchars($l->object_id)."</td>";
-								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
-								echo "</tr>";
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<div class='spread'>
-										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
-										</div>
-										<div class='controls'>
-											<button onclick='downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-											<?php if(empty($_GET['nolimit'])) { ?>
-												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
-											<?php } ?>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div>
+<div class='details-abreast'>
+	<div class='stickytable'>
+		<table id='tblUserLogData' class='list searchable sortable savesort margintop'>
+			<thead>
+				<tr>
+					<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('ip_address'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('user'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('action'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('object_id'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('data'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				$counter = 0;
+				foreach($db->selectAllLogEntryByObjectIdAndActions(false, ['oco.computer.delete', 'oco.package.delete', 'oco.package_family.delete', 'oco.job_container.delete', 'oco.deployment_rule.delete', 'oco.domain_user.delete', 'oco.report.delete'], empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+					$counter ++;
+					echo "<tr>";
+					echo "<td>".htmlspecialchars($l->timestamp)."</td>";
+					echo "<td>".htmlspecialchars($l->host)."</td>";
+					echo "<td>".htmlspecialchars($l->user)."</td>";
+					echo "<td>".htmlspecialchars($l->action)."</td>";
+					echo "<td>".htmlspecialchars($l->object_id)."</td>";
+					echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+					echo "</tr>";
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<div class='spread'>
+							<div>
+								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+							</div>
+							<div class='controls'>
+								<button onclick='downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<?php if(empty($_GET['nolimit'])) { ?>
+									<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+								<?php } ?>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
 
