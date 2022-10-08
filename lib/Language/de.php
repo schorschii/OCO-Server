@@ -483,6 +483,7 @@ return [
 	'provider' => 'Provider',
 	'event_query_rules' => 'Ereignis-Abfrageregeln',
 	'event_query_rules_description' => 'Mit Ereignis-Abfrageregeln definieren Sie, welche Ereignisse aus den Logs der verwalteten Geräte an den Server gesendet werden sollen.',
+	'updated' => 'Aktualisiert',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
