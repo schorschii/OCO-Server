@@ -159,7 +159,7 @@ switch($srcdata['method']) {
 				$server_key = randomString();
 				$agent_key = randomString();
 				$update = 1;
-				if($db->insertComputer(
+				if($insert_id = $db->insertComputer(
 					$params['hostname'],
 					$data['agent_version'] ?? '?',
 					$data['networks'] ?? [],
@@ -168,6 +168,7 @@ switch($srcdata['method']) {
 					$server_key
 				)) {
 					$success = true;
+					$computer = $db->selectComputer($insert_id);
 				}
 			} else {
 				errorExit('403 Client Self-Registration Disabled', $params['hostname'], null, Models\Log::ACTION_AGENT_API_HELLO,
