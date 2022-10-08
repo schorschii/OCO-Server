@@ -246,10 +246,12 @@ if(!empty($_GET['id'])) {
 
 	<h1><img src='img/<?php echo $selfService ? 'self-service' : 'container'; ?>.dyn.svg'><span id='page-title'><?php echo $selfService ? LANG('self_service_job_containers') : LANG('system_users_job_containers'); ?></span></h1>
 
+	<?php if(!$selfService) { ?>
 	<div class='controls'>
 		<button onclick='refreshContentDeploy()' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_job_container'); ?></button>
 		<span class='filler'></span>
 	</div>
+	<?php } ?>
 
 	<div class='details-abreast'>
 	<div class='stickytable'>
