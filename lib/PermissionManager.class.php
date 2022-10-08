@@ -170,7 +170,7 @@ class PermissionManager {
 
 			// 2nd try: check if specific ressource ID is defined in access list
 			foreach($this->permData[$ressourceType] as $key => $item) {
-				if($key === $ressource->id && isset($item[$method]))
+				if(strval($key) === strval($ressource->id) && isset($item[$method]))
 					return ((bool) $item[$method]);
 			}
 
