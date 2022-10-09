@@ -170,6 +170,14 @@ try {
 		die();
 	}
 
+	if(!empty($_FILES['edit_license'])) {
+		// use file from user upload
+		$tmpFilePath = $_FILES['edit_license']['tmp_name'];
+		$tmpFileName = $_FILES['edit_license']['name'];
+		$cl->editLicense(file_get_contents($tmpFilePath));
+		die();
+	}
+
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
 	die(LANG('permission_denied'));

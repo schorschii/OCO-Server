@@ -81,6 +81,7 @@ var L__CREATE_DOMAIN_USER_ROLE = "<?php echo LANG('create_domain_user_role'); ?>
 var L__EDIT_DOMAIN_USER_ROLE = "<?php echo LANG('edit_domain_user_role'); ?>";
 var L__CREATE_DOMAIN_USER = "<?php echo LANG('create_domain_user'); ?>";
 var L__EDIT_DOMAIN_USER = "<?php echo LANG('edit_domain_user'); ?>";
+var L__LICENSE = "<?php echo LANG('license'); ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG('desktop_notifications_not_supported'); ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG('desktop_notifications_denied'); ?>";

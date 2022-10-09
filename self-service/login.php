@@ -1,6 +1,8 @@
 <?php
 require_once('../loader.inc.php');
 
+$license = new LicenseCheck($db);
+
 $info = null;
 $infoclass = null;
 
@@ -68,6 +70,8 @@ if(!empty($_SESSION['oco_self_service_user_id']) && SELF_SERVICE_ENABLED) {
 		<div id='login-form'>
 			<?php if(isIE()) { ?>
 				<img src='img/ietroll.png'>
+			<?php } elseif(!$license->isValid()) { ?>
+				<div class='alert bold error'><?php echo LANG('your_license_is_invalid'); ?></div>
 			<?php } elseif(SELF_SERVICE_ENABLED) { ?>
 				<form method='POST' action='login.php' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
 					<h1><?php echo LANG('login'); ?></h1>

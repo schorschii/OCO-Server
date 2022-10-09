@@ -52,5 +52,8 @@ Quick Links:
 - [Overview](docs/README.md)
 - [Installation Guide](docs/Server-Installation.md)
 
+## License
+The Open Computer Orchestration Project is open source, which means you have the freedom to view the source code, report issues and submit improvements on GitHub, which are very welcome. However, a license is required if you want to manage more than 20 computers with this system. Please buy the appropriate licenses [here](https://georg-sieber.de/?page=oco).
+
 ## Support & Specific Adjustments
 You need support or specific adjustments for your environment? You can hire me to extend OCO to your needs or to write custom reports etc. Please [contact me](https://georg-sieber.de/?page=impressum) if you are interested.

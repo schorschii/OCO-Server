@@ -16,6 +16,8 @@ if(is_file('/proc/cpuinfo')) {
 $total = disk_total_space(PACKAGE_PATH);
 $free = disk_free_space(PACKAGE_PATH);
 $used = $total - $free;
+
+$license = new LicenseCheck($db);
 ?>
 
 <div id='homepage'>
@@ -24,6 +26,10 @@ $used = $total - $free;
 		<div class='title'>[ <?php echo LANG('project_name'); ?> ]</div>
 		<div class='subtitle'><?php echo LANG('app_subtitle'); ?></div>
 	</p>
+
+	<?php if(!$license->isValid()) { ?>
+		<div class='alert bold error'><?php echo LANG('your_license_is_invalid'); ?></div>
+	<?php } ?>
 
 	<table class='list fullwidth margintop fixed largepadding'>
 		<tr>

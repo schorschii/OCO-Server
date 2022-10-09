@@ -2253,6 +2253,26 @@ function confirmRemoveSelectedEventQueryRule(checkboxName) {
 	}
 }
 
+function showDialogEditLicense() {
+	showDialogAjax(L__LICENSE, 'views/dialog-license-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+}
+function editLicense(license) {
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('edit_license', license);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				hideDialog(); refreshContent();
+				emitMessage(L__SAVED, L__LICENSE, MESSAGE_TYPE_SUCCESS);
+			} else {
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+			}
+		}
+	};
+	req.open('POST', 'ajax-handler/settings.php');
+	req.send(formData);
+}
 function ldapSyncSystemUsers() {
 	var params = [];
 	params.push({'key':'ldap_sync_system_users', 'value':1});

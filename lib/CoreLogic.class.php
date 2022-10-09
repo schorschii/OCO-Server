@@ -1756,4 +1756,15 @@ class CoreLogic {
 		return $result;
 	}
 
+	public function editLicense($license) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+
+		$insertId = $this->db->insertOrUpdateSettingByKey('license', $license);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
+			'license'=>$license,
+		]);
+		return $insertId;
+	}
+
 }

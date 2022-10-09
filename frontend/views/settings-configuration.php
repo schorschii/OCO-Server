@@ -2,6 +2,8 @@
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
 require_once('../session.php');
+
+$license = new LicenseCheck($db);
 ?>
 
 <div class='details-header'>
@@ -50,7 +52,25 @@ require_once('../session.php');
 			</tr>
 		</table>
 		<p><?php echo LANG('change_settings_in_config_file'); ?></p>
+
+		<h2><?php echo LANG('license'); ?></h2>
+		<div class='controls'>
+			<button onclick='showDialogEditLicense()' <?php if(!$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION, false)) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<div class='filler'></div>
+			<span><a href='https://georg-sieber.de/?page=oco' target='_blank'>Lizenz kaufen</a></span>
+		</div>
+		<table class='list'>
+			<tr>
+				<th><?php echo LANG('company'); ?>:</th>
+				<td><?php echo htmlspecialchars($license->getCompany()); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('status'); ?>:</th>
+				<td><div class='alert <?php echo $license->isValid() ? 'success' : 'error'; ?>'><?php echo htmlspecialchars($license->getLicenseText()); ?></div></td>
+			</tr>
+		</table>
 	</div>
+
 	<div>
 		<h2><?php echo LANG('server_environment'); ?></h2>
 		<table class='list'>
@@ -87,10 +107,7 @@ require_once('../session.php');
 				<td><?php echo htmlspecialchars(ini_get('memory_limit')); ?></td>
 			</tr>
 		</table>
-	</div>
-</div>
-<div class='details-abreast'>
-	<div>
+
 		<h2><?php echo LANG('wol_satellites'); ?></h2>
 		<?php if(count(SATELLITE_WOL_SERVER) == 0) { ?>
 			<div class='alert info'>Keine WOL-Satelliten-Server definiert</div>
@@ -108,9 +125,8 @@ require_once('../session.php');
 			<?php } ?>
 		</table>
 		<?php } ?>
-	</div>
-	<div>
-	<h2><?php echo LANG('extensions'); ?></h2>
+
+		<h2><?php echo LANG('extensions'); ?></h2>
 		<?php if(count($ext->getLoadedExtensions()) == 0) { ?>
 			<div class='alert info'>Keine Erweiterungen geladen</div>
 		<?php } else { ?>
@@ -133,4 +149,3 @@ require_once('../session.php');
 		<?php } ?>
 	</div>
 </div>
-

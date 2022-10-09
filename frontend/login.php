@@ -1,6 +1,8 @@
 <?php
 require_once('../loader.inc.php');
 
+$license = new LicenseCheck($db);
+
 $info = null;
 $infoclass = null;
 
@@ -82,6 +84,9 @@ if(!empty($_SESSION['oco_user_id'])) {
 			<?php } else { ?>
 				<form method='POST' action='login.php' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
 					<h1><?php echo LANG('login'); ?></h1>
+					<?php if(!$license->isValid()) { ?>
+						<div class='alert bold error'><?php echo LANG('your_license_is_invalid'); ?></div>
+					<?php } ?>
 					<?php if($info !== null) { ?>
 						<div class='alert bold <?php echo $infoclass; ?>'><?php echo $info; ?></div>
 					<?php } ?>
