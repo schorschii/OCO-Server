@@ -21,6 +21,7 @@ class LicenseCheck {
 
 	function __construct($db) {
 		$this->currentObjectCount = count($db->selectAllComputer());
+		$this->licenseCompany = LANG('unregistered');
 		$this->licenseValid =
 			$this->checkLicense(json_decode($db->selectSettingByKey('license'), true))
 			|| $this->checkFreeLicense();
