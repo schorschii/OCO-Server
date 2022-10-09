@@ -4,6 +4,7 @@ header('Content-Type: text/javascript');
 ?>
 
 var L__DEFAULT_PAGE_TITLE = "<?php echo LANG('app_name'); ?>";
+var L__CREATED = "<?php echo LANG('created'); ?>";
 var L__PACKAGE_CREATED = "<?php echo LANG('package_created'); ?>";
 var L__COMPUTER_CREATED = "<?php echo LANG('computer_created'); ?>";
 var L__JOBS_CREATED = "<?php echo LANG('jobs_created'); ?>";
@@ -46,6 +47,8 @@ var L__CREATE_COMPUTER = "<?php echo LANG('create_computer'); ?>";
 var L__CREATE_SYSTEM_USER = "<?php echo LANG('create_system_user'); ?>";
 var L__CREATE_SYSTEM_USER_ROLE = "<?php echo LANG('create_system_user_role'); ?>";
 var L__CREATE_REPORT = "<?php echo LANG('create_report'); ?>";
+var L__CREATE_DOMAIN_USER_ROLE = "<?php echo LANG('create_domain_user_role'); ?>";
+var L__CREATE_DOMAIN_USER = "<?php echo LANG('create_domain_user'); ?>";
 var L__PASSWORDS_DO_NOT_MATCH = "<?php echo LANG('passwords_do_not_match'); ?>";
 var L__WELCOME_TEXT = "<?php echo LANG('welcome_text'); ?>";
 var L__WELCOME_DESCRIPTION = "<?php echo LANG('welcome_description'); ?>";
@@ -72,15 +75,13 @@ var L__EDIT_PACKAGE = "<?php echo LANG('edit_package'); ?>";
 var L__EDIT_PACKAGE_FAMILY = "<?php echo LANG('edit_package_family'); ?>";
 var L__EDIT_JOB_CONTAINER = "<?php echo LANG('edit_job_container'); ?>";
 var L__EDIT_DEPLOYMENT_RULE = "<?php echo LANG('edit_deployment_rule'); ?>";
+var L__EDIT_DOMAIN_USER_ROLE = "<?php echo LANG('edit_domain_user_role'); ?>";
+var L__EDIT_DOMAIN_USER = "<?php echo LANG('edit_domain_user'); ?>";
 var L__JOB_CONTAINERS = "<?php echo LANG('job_container'); ?>";
 var L__REEVALUATED = "<?php echo LANG('reevaluated'); ?>";
 var L__CREATE = "<?php echo LANG('create'); ?>";
 var L__CHANGE = "<?php echo LANG('change'); ?>";
 var L__NEW_DEPLOYMENT_RULE = "<?php echo LANG('new_deployment_rule'); ?>";
-var L__CREATE_DOMAIN_USER_ROLE = "<?php echo LANG('create_domain_user_role'); ?>";
-var L__EDIT_DOMAIN_USER_ROLE = "<?php echo LANG('edit_domain_user_role'); ?>";
-var L__CREATE_DOMAIN_USER = "<?php echo LANG('create_domain_user'); ?>";
-var L__EDIT_DOMAIN_USER = "<?php echo LANG('edit_domain_user'); ?>";
 var L__LICENSE = "<?php echo LANG('license'); ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG('desktop_notifications_not_supported'); ?>";

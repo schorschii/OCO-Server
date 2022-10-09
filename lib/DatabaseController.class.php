@@ -15,7 +15,7 @@ class DatabaseController {
 		 - "By<Attribute>" suffix if objects are filtered by attributes other than the own object id (e.g. "ByHostname")
 	*/
 
-	private $dbh;
+	protected $dbh;
 	private $stmt;
 
 	function __construct() {

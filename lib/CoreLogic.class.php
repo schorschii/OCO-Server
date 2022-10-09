@@ -14,9 +14,9 @@ class CoreLogic {
 		 - entity name singular for single objects (e.g. "Computer") or plural if an array is returned (e.g. "Computers")
 	*/
 
-	private /*DatabaseController*/ $db;
-	private /*Models\SystemUser*/ $su;
-	private /*PermissionManager*/ $pm;
+	protected /*DatabaseController*/ $db;
+	protected /*Models\SystemUser*/ $su;
+	protected /*PermissionManager*/ $pm;
 
 	function __construct($db, $systemUser=null) {
 		$this->db = $db;
