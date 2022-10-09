@@ -2,6 +2,7 @@
 <link rel='apple-touch-icon' sizes='1024x1024' href='img/logo.png'>
 
 <link rel='stylesheet' type='text/css' href='css/main.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
+<link rel='stylesheet' type='text/css' href='css/self-service.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
 
 <script src='js/strings.js.php?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 <script src='js/main.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
