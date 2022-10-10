@@ -54,7 +54,7 @@ foreach($db->searchAllReport($_GET['query']) as $r) {
 // extension search
 foreach($ext->getAggregatedConf('frontend-search-function') as $func) {
 	$counter = 0;
-	foreach(call_user_func($func, $_GET['query'], $db) as $sr) {
+	foreach(call_user_func($func, $_GET['query'], $cl, $db) as $sr) {
 		if(!$sr instanceof Models\SearchResult) continue;
 		$counter ++;
 		if($counter > $maxResults) { $moreAvail = true; break; }
