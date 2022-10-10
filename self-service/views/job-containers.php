@@ -191,8 +191,8 @@ try {
 				$counter ++;
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."' onchange='refreshCheckedCounter(tblJobContainerJobData)'></td>";
-				echo "<td><a ".explorerLink('views/computer-details.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
-				echo "<td><a ".explorerLink('views/package-details.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
+				echo "<td><a ".explorerLink('views/computers.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
+				echo "<td><a ".explorerLink('views/packages.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle monospace' title='".htmlspecialchars($job->procedure, ENT_QUOTES)."'>";
 				if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
 				else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";

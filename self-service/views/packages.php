@@ -67,16 +67,6 @@ try {
 					<h2><?php echo LANG('general'); ?></h2>
 					<table class='list metadata'>
 						<tr>
-							<th><?php echo LANG('id'); ?></th>
-							<td><?php echo htmlspecialchars($package->id); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('version'); ?></th>
-							<td>
-								<span id='spnPackageVersion'><?php echo htmlspecialchars($package->version); ?></span>
-							</td>
-						</tr>
-						<tr>
 							<th><?php echo LANG('compatible_os'); ?></th>
 							<td>
 								<span id='spnPackageCompatibleOs'><?php echo htmlspecialchars($package->compatible_os); ?></span>
@@ -89,11 +79,11 @@ try {
 							</td>
 						</tr>
 						<tr>
-							<th><?php echo LANG('zip_archive'); ?></th>
+							<th><?php echo LANG('size'); ?></th>
 							<td>
 								<?php
 								$size = $package->getSize();
-								if($size) echo niceSize($size, true).', '.niceSize($size, false).' ';
+								if($size) echo niceSize($size, true).' ';
 								else echo LANG('not_found');
 								?>
 							</td>
@@ -114,18 +104,6 @@ try {
 					<h2><?php echo LANG('installation'); ?></h2>
 					<table class='list metadata'>
 						<tr>
-							<th><?php echo LANG('install_procedure'); ?></th>
-							<td>
-								<span id='spnPackageInstallProcedure' class='monospace'><?php echo nl2br(htmlspecialchars($package->install_procedure)); ?></span>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('success_return_codes'); ?></th>
-							<td>
-								<span id='spnPackageInstallProcedureSuccessReturnCodes'><?php echo htmlspecialchars($package->install_procedure_success_return_codes); ?></span>
-							</td>
-						</tr>
-						<tr>
 							<th><?php echo LANG('after_completion'); ?></th>
 							<td>
 								<span id='spnPackageInstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->install_procedure_post_action); ?></span>
@@ -143,18 +121,6 @@ try {
 					</table>
 					<h2><?php echo LANG('uninstallation'); ?></h2>
 					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG('uninstall_procedure'); ?></th>
-							<td>
-								<span id='spnPackageUninstallProcedure' class='monospace'><?php echo nl2br(htmlspecialchars($package->uninstall_procedure)); ?></span>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('success_return_codes'); ?></th>
-							<td>
-								<span id='spnPackageUninstallProcedureSuccessReturnCodes'><?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes); ?></span>
-							</td>
-						</tr>
 						<tr>
 							<th><?php echo LANG('after_completion'); ?></th>
 							<td>
@@ -230,8 +196,8 @@ try {
 							foreach($db->selectAllPackageDependencyByPackageId($package->id) as $dp) {
 								$counter ++;
 								echo '<tr>';
-								echo '<td><a '.explorerLink('views/packages.php?package_family_id='.$dp->package_family_id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
-								echo '<td><a '.explorerLink('views/package-details.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
+								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
+								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
 								echo '</tr>';
 							}
 							?>
@@ -267,8 +233,8 @@ try {
 							foreach($db->selectAllPackageDependencyByDependentPackageId($package->id) as $dp) {
 								$counter ++;
 								echo '<tr>';
-								echo '<td><a '.explorerLink('views/packages.php?package_family_id='.$dp->package_family_id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
-								echo '<td><a '.explorerLink('views/package-details.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
+								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
+								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
 								echo '</tr>';
 							}
 							?>
@@ -313,7 +279,7 @@ try {
 								$counter ++;
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
-								echo '<td><a '.explorerLink('views/computer-details.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
+								echo '<td><a '.explorerLink('views/computers.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
 								echo '<td>'.htmlspecialchars($p->installed_by).'</td>';
 								echo '<td>'.htmlspecialchars($p->installed).'</td>';
 								echo '</tr>';
