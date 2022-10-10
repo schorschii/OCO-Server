@@ -23,6 +23,6 @@ $ext = new ExtensionController();
 
 // housekeeping without cron
 if(DO_HOUSEKEEPING_BY_WEB_REQUESTS) {
-	$houseKeeping = new HouseKeeping($db);
+	$houseKeeping = new HouseKeeping($db, $ext);
 	$houseKeeping->cleanup();
 }

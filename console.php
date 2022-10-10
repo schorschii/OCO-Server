@@ -12,7 +12,7 @@ try {
 	switch($argv[1]) {
 
 		case 'housekeeping':
-			$houseKeeping = new HouseKeeping($db, true);
+			$houseKeeping = new HouseKeeping($db, $ext, true);
 			$houseKeeping->cleanup();
 			break;
 
