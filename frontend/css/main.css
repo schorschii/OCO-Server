@@ -918,6 +918,7 @@ table.list tr:last-child td:last-child {
 table.list.actioncolumn thead tr th:last-child,
 table.list.actioncolumn tbody tr td:last-child {
 	text-align: right;
+	white-space: nowrap;
 }
 table.metadata tr th:first-child {
 	width: 40%;
