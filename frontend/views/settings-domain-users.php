@@ -23,6 +23,7 @@ try {
 	<div class='tabbuttons'>
 		<a href='#' name='users' class='<?php if($tab=='users') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('domain_users_with_self_service_permissions'); ?></a>
 		<a href='#' name='roles' class='<?php if($tab=='roles') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('roles'); ?></a>
+		<a href='#' name='log' class='<?php if($tab=='log') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlSettings,this.getAttribute("name"))'><?php echo LANG('user_log'); ?></a>
 	</div>
 	<div class='tabcontents'>
 
@@ -134,6 +135,56 @@ try {
 							</td>
 						</tr>
 					</tfoot>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div name='log' class='<?php if($tab=='log') echo 'active'; ?>'>
+			<div class='details-abreast'>
+				<div class='stickytable'>
+					<table id='tblUserLogData' class='list searchable sortable savesort margintop'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('ip_address'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('user'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('action'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('data'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							$counter = 0;
+							foreach($db->selectAllLogEntryByObjectIdAndActions(null, 'oco.self_service', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+								$counter ++;
+								echo "<tr>";
+								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($l->host)."</td>";
+								echo "<td>".htmlspecialchars($l->user)."</td>";
+								echo "<td>".htmlspecialchars($l->action)."</td>";
+								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "</tr>";
+							}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<div class='spread'>
+										<div>
+											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+										</div>
+										<div class='controls'>
+											<button onclick='downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<?php if(empty($_GET['nolimit'])) { ?>
+												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+											<?php } ?>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
 					</table>
 				</div>
 			</div>
