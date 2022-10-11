@@ -1421,6 +1421,12 @@ class CoreLogic {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 		return $this->db->selectAllDomainUserRole();
 	}
+	public function getDomainUserRole($id) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+		$domainUserRole = $this->db->selectDomainUserRole($id);
+		if(empty($domainUserRole)) throw new NotFoundException();
+		return $domainUserRole;
+	}
 	public function createDomainUserRole($name, $permissions) {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 
@@ -1465,7 +1471,7 @@ class CoreLogic {
 
 		$r = $this->db->selectDomainUserRole($id);
 		if($r === null) throw new NotFoundException();
-		if($r->system_user_count > 0) {
+		if($r->domain_user_count > 0) {
 			throw new InvalidRequestException(LANG('role_cannot_be_deleted_still_assigned'));
 		}
 
@@ -1526,6 +1532,12 @@ class CoreLogic {
 	public function getSystemUserRoles() {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 		return $this->db->selectAllSystemUserRole();
+	}
+	public function getSystemUserRole($id) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
+		$systemUserRole = $this->db->selectSystemUserRole($id);
+		if(empty($systemUserRole)) throw new NotFoundException();
+		return $systemUserRole;
 	}
 	public function createSystemUserRole($name, $permissions) {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);

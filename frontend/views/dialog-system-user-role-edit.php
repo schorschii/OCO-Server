@@ -2,17 +2,22 @@
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
 require_once('../session.php');
+
+$systemUserRole = null;
+try {
+	$systemUserRole = $cl->getSystemUserRole($_GET['id'] ?? -1);
+} catch(Exception $ignored) {}
 ?>
 
-<input type='hidden' id='txtEditSystemUserRoleId'></input>
+<input type='hidden' id='txtEditSystemUserRoleId' value='<?php echo $systemUserRole->id??-1; ?>'></input>
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('name'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditSystemUserRoleName' autofocus='true'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditSystemUserRoleName' autofocus='true' value='<?php echo $systemUserRole->name??''; ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('permission_json'); ?></th>
-		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditSystemUserRolePermissions' rows='8'></textarea></td>
+		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditSystemUserRolePermissions' rows='8'><?php echo $systemUserRole->permissions??''; ?></textarea></td>
 	</tr>
 	<tr>
 		<th></th>
@@ -30,5 +35,5 @@ require_once('../session.php');
 		txtEditSystemUserRoleId.value,
 		txtEditSystemUserRoleName.value,
 		txtEditSystemUserRolePermissions.value,
-	)'><img src='img/send.white.svg'>&nbsp;<span id='spnBtnUpdateSystemUserRole'><?php echo LANG('change'); ?></span></button>
+	)'><img src='img/send.white.svg'>&nbsp;<span id='spnBtnUpdateSystemUserRole'><?php echo $systemUserRole ? LANG('change') : LANG('create'); ?></span></button>
 </div>

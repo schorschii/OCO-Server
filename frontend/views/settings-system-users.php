@@ -58,15 +58,13 @@ try {
 						echo "<td sort_key='".htmlspecialchars($u->username,ENT_QUOTES)."'>";
 						if($u->ldap) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
 						if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG('locked')."'>&nbsp;";
-						echo  "<span id='spnSystemUserUid".$u->id."' style='display:none'>".htmlspecialchars($u->uid)."</span>";
-						echo  "<span id='spnSystemUserDescription".$u->id."' style='display:none'>".htmlspecialchars($u->description)."</span>";
-						echo  "<span id='spnSystemUserUsername".$u->id."'>".htmlspecialchars($u->username)."</span>";
+						echo htmlspecialchars($u->username);
 						echo "</td>";
-						echo "<td id='spnSystemUserDisplayName".$u->id."'>".htmlspecialchars($u->display_name)."</td>";
-						echo "<td id='spnSystemUserRole".$u->id."' rawvalue='".$u->system_user_role_id."'>".htmlspecialchars($u->system_user_role_name)."</td>";
+						echo "<td>".htmlspecialchars($u->display_name)."</td>";
+						echo "<td>".htmlspecialchars($u->system_user_role_name)."</td>";
 						echo "<td>".htmlspecialchars($u->last_login)."</td>";
 						echo "<td>".htmlspecialchars($u->created)."</td>";
-						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUser(".$u->id.", spnSystemUserUid".$u->id.".innerText, spnSystemUserUsername".$u->id.".innerText, spnSystemUserDisplayName".$u->id.".innerText, spnSystemUserDescription".$u->id.".innerText, spnSystemUserRole".$u->id.".getAttribute(\"rawvalue\"), ".$u->ldap.")'><img src='img/edit.dyn.svg'></button></td>";
+						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUser(".$u->id.")'><img src='img/edit.dyn.svg'></button></td>";
 						echo "</tr>";
 					}
 					?>
@@ -117,10 +115,10 @@ try {
 						echo "<tr>";
 						echo "<td><input type='checkbox' name='system_user_role_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblSystemUserRoleData)'></td>";
 						echo "<td>".htmlspecialchars($r->id)."</td>";
-						echo "<td><span id='spnSystemUserRoleName".$r->id."'>".htmlspecialchars($r->name)."</span></td>";
+						echo "<td>".htmlspecialchars($r->name)."</td>";
 						echo "<td class='subbuttons'>".htmlspecialchars(shorter($r->permissions, 100))." <button id='btnSystemUserRolePermissions".$r->id."' onclick='showDialog(\"".htmlspecialchars($r->name,ENT_QUOTES)."\",this.getAttribute(\"permissions\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' permissions='".htmlspecialchars(prettyJson($r->permissions),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
-						echo "<td>".htmlspecialchars($r->system_user_count)."</span></td>";
-						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUserRole(".$r->id.", spnSystemUserRoleName".$r->id.".innerText, btnSystemUserRolePermissions".$r->id.".getAttribute(\"permissions\"))'><img src='img/edit.dyn.svg'></button></td>";
+						echo "<td>".htmlspecialchars($r->system_user_count)."</td>";
+						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUserRole(".$r->id.")'><img src='img/edit.dyn.svg'></button></td>";
 						echo "</tr>";
 					}
 					?>

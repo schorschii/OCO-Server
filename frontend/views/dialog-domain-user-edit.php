@@ -2,40 +2,45 @@
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
 require_once('../session.php');
+
+$domainUser = null;
+try {
+	$domainUser = $cl->getDomainUser($_GET['id'] ?? -1);
+} catch(Exception $ignored) {}
 ?>
 
-<input type='hidden' id='txtEditDomainUserId'></input>
+<input type='hidden' id='txtEditDomainUserId' value='<?php echo $domainUser->id??-1; ?>'></input>
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('uid'); ?></th>
-		<td><input type='text' class='fullwidth' id='txtEditDomainUserUid' disabled='true'></input></td>
+		<td><input type='text' class='fullwidth' id='txtEditDomainUserUid' disabled='true' value='<?php echo $domainUser->uid??''; ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('username'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditDomainUserUsername' disabled='true'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditDomainUserUsername' disabled='true' value='<?php echo $domainUser->username??''; ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('display_name'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditDomainUserDisplayName' disabled='true'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditDomainUserDisplayName' disabled='true' value='<?php echo $domainUser->display_name??''; ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('role'); ?></th>
 		<td>
-			<select class='fullwidth' id='sltEditDomainUserRole' autofocus='true'>
+			<select class='fullwidth' id='sltEditDomainUserRole' autofocus='true' <?php if($domainUser&&!empty($domainUser->ldap)) echo 'disabled'; ?>>
 				<option value=''>=== <?php echo LANG('no_role'); ?> ===</option>
 				<?php foreach($cl->getDomainUserRoles() as $role) { ?>
-					<option value='<?php echo htmlspecialchars($role->id); ?>'><?php echo htmlspecialchars($role->name); ?></option>
+					<option value='<?php echo htmlspecialchars($role->id); ?>' <?php if($domainUser && $role->id==$domainUser->domain_user_role_id) echo 'selected'; ?>><?php echo htmlspecialchars($role->name); ?></option>
 				<?php } ?>
 			</select>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('new_password'); ?></th>
-		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtEditDomainUserNewPassword'></input></td>
+		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtEditDomainUserNewPassword' placeholder='<?php if($domainUser) echo LANG('optional'); ?>' <?php if($domainUser&&!empty($domainUser->ldap)) echo 'readonly'; ?>></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('confirm_password'); ?></th>
-		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtEditDomainUserConfirmNewPassword'></input></td>
+		<td><input type='password' class='fullwidth' autocomplete='new-password' id='txtEditDomainUserConfirmNewPassword' placeholder='<?php if($domainUser) echo LANG('optional'); ?>' <?php if($domainUser&&!empty($domainUser->ldap)) echo 'readonly'; ?>></input></td>
 	</tr>
 </table>
 

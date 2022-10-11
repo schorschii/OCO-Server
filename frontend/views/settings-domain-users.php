@@ -57,14 +57,13 @@ try {
 						echo "<td sort_key='".htmlspecialchars($u->username,ENT_QUOTES)."'>";
 						if(!empty($u->ldap)) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
 						if(!empty($u->password)) echo "<img src='img/password.dyn.svg' title='".LANG('password_set')."'>&nbsp;";
-						echo  "<span id='spnDomainUserUid".$u->id."' style='display:none'>".htmlspecialchars($u->uid)."</span>";
-						echo  "<span id='spnDomainUserUsername".$u->id."'><a ".explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a></span>";
+						echo "<a ".explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a>";
 						echo "</td>";
-						echo "<td id='spnDomainUserDisplayName".$u->id."'>".htmlspecialchars($u->display_name)."</td>";
-						echo "<td id='spnDomainUserRole".$u->id."' rawvalue='".$u->domain_user_role_id."'>".htmlspecialchars($u->domain_user_role_name)."</td>";
+						echo "<td>".htmlspecialchars($u->display_name)."</td>";
+						echo "<td>".htmlspecialchars($u->domain_user_role_name)."</td>";
 						echo "<td>".htmlspecialchars($u->last_login)."</td>";
 						echo "<td>".htmlspecialchars($u->created)."</td>";
-						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditDomainUser(".$u->id.", spnDomainUserUid".$u->id.".innerText, spnDomainUserUsername".$u->id.".innerText, spnDomainUserDisplayName".$u->id.".innerText, spnDomainUserRole".$u->id.".getAttribute(\"rawvalue\"), ".$u->ldap.")'><img src='img/edit.dyn.svg'></button></td>";
+						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditDomainUser(".$u->id.")'><img src='img/edit.dyn.svg'></button></td>";
 						echo "</tr>";
 					}
 					?>
@@ -111,12 +110,12 @@ try {
 					foreach($cl->getDomainUserRoles() as $r) {
 						$counter ++;
 						echo "<tr>";
-						echo "<td><input type='checkbox' name='domain_user_role_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblSystemUserRoleData)'></td>";
+						echo "<td><input type='checkbox' name='domain_user_role_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblDomainUserRoleData)'></td>";
 						echo "<td>".htmlspecialchars($r->id)."</td>";
-						echo "<td><span id='spnDomainUserRoleName".$r->id."'>".htmlspecialchars($r->name)."</span></td>";
+						echo "<td>".htmlspecialchars($r->name)."</td>";
 						echo "<td class='subbuttons'>".htmlspecialchars(shorter($r->permissions, 100))." <button id='btnDomainUserRolePermissions".$r->id."' onclick='showDialog(\"".htmlspecialchars($r->name,ENT_QUOTES)."\",this.getAttribute(\"permissions\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' permissions='".htmlspecialchars(prettyJson($r->permissions),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
-						echo "<td>".htmlspecialchars($r->domain_user_count)."</span></td>";
-						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditDomainUserRole(".$r->id.", spnDomainUserRoleName".$r->id.".innerText, btnDomainUserRolePermissions".$r->id.".getAttribute(\"permissions\"))'><img src='img/edit.dyn.svg'></button></td>";
+						echo "<td>".htmlspecialchars($r->domain_user_count)."</td>";
+						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditDomainUserRole(".$r->id.")'><img src='img/edit.dyn.svg'></button></td>";
 						echo "</tr>";
 					}
 					?>

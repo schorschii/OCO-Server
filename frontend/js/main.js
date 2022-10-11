@@ -1808,19 +1808,10 @@ function renewFailedDynamicJobs(id, jobId) {
 }
 
 // ======== DOMAIN USER OPERATIONS ========
-function showDialogEditDomainUserRole(id=-1, name='', permissions='') {
+function showDialogEditDomainUserRole(id=-1) {
 	title = L__EDIT_DOMAIN_USER_ROLE;
-	buttonText = L__CHANGE;
-	if(id == -1) {
-		title = L__CREATE_DOMAIN_USER_ROLE;
-		buttonText = L__CREATE;
-	}
-	showDialogAjax(title, 'views/dialog-domain-user-role-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditDomainUserRoleId.value = id;
-		txtEditDomainUserRoleName.value = name;
-		txtEditDomainUserRolePermissions.value = permissions;
-		spnBtnUpdateDomainUserRole.innerText = buttonText;
-	});
+	if(id == -1) title = L__CREATE_DOMAIN_USER_ROLE;
+	showDialogAjax(title, 'views/dialog-domain-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editDomainUserRole(id, name, permissions) {
 	var params = [];
@@ -1855,26 +1846,10 @@ function confirmRemoveSelectedDomainUserRole(checkboxName) {
 		});
 	}
 }
-function showDialogEditDomainUser(id=-1, uid='', username='', displayName='', roleId=-1, ldap=0) {
+function showDialogEditDomainUser(id=-1) {
 	title = L__EDIT_DOMAIN_USER;
-	buttonText = L__CHANGE;
-	if(id == -1) {
-		title = L__CREATE_DOMAIN_USER;
-		buttonText = L__CREATE;
-	}
-	showDialogAjax(title, 'views/dialog-domain-user-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtEditDomainUserId.value = id;
-		txtEditDomainUserUid.value = uid;
-		txtEditDomainUserUsername.value = username;
-		txtEditDomainUserDisplayName.value = displayName;
-		sltEditDomainUserRole.value = roleId;
-		if(ldap) {
-			txtEditDomainUserNewPassword.readOnly = true;
-			txtEditDomainUserConfirmNewPassword.readOnly = true;
-			sltEditDomainUserRole.disabled = true;
-		}
-		spnBtnEditDomainUser.innerText = buttonText;
-	});
+	if(id == -1) title = L__CREATE_DOMAIN_USER;
+	showDialogAjax(title, 'views/dialog-domain-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editDomainUser(id, username, password, roleId) {
 	var params = [];
@@ -2116,30 +2091,10 @@ function editOwnSystemUserPassword(oldPassword, newPassword) {
 		emitMessage(L__SAVED, '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditSystemUser(id=-1, uid='', username='', displayName='', description='', roleId=-1, ldap=0) {
+function showDialogEditSystemUser(id=-1) {
 	title = L__EDIT_SYSTEM_USER;
-	buttonText = L__CHANGE;
-	if(id == -1) {
-		title = L__CREATE_SYSTEM_USER;
-		buttonText = L__CREATE;
-	}
-	showDialogAjax(title, 'views/dialog-system-user-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtEditSystemUserId.value = id;
-		txtEditSystemUserUid.value = uid;
-		txtEditSystemUserUsername.value = username;
-		txtEditSystemUserDisplayName.value = displayName;
-		txtEditSystemUserDescription.value = description;
-		sltEditSystemUserRole.value = roleId;
-		if(ldap) {
-			txtEditSystemUserUsername.readOnly = true;
-			txtEditSystemUserDisplayName.readOnly = true;
-			txtEditSystemUserDescription.readOnly = true;
-			txtEditSystemUserNewPassword.readOnly = true;
-			txtEditSystemUserConfirmNewPassword.readOnly = true;
-			sltEditSystemUserRole.disabled = true;
-		}
-		spnBtnEditSystemUser.innerText = buttonText;
-	});
+	if(id == -1) title = L__CREATE_SYSTEM_USER;
+	showDialogAjax(title, 'views/dialog-system-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editSystemUser(id, username, displayName, description, password, roleId) {
 	var params = [];
@@ -2156,19 +2111,10 @@ function editSystemUser(id, username, displayName, description, password, roleId
 		emitMessage(L__SAVED, username, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditSystemUserRole(id=-1, name='', permissions='') {
+function showDialogEditSystemUserRole(id=-1) {
 	title = L__EDIT_SYSTEM_USER_ROLE;
-	buttonText = L__CHANGE;
-	if(id == -1) {
-		title = L__CREATE_SYSTEM_USER_ROLE;
-		buttonText = L__CREATE;
-	}
-	showDialogAjax(title, 'views/dialog-system-user-role-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditSystemUserRoleId.value = id;
-		txtEditSystemUserRoleName.value = name;
-		txtEditSystemUserRolePermissions.value = permissions;
-		spnBtnUpdateSystemUserRole.innerText = buttonText;
-	});
+	if(id == -1) title = L__CREATE_SYSTEM_USER_ROLE;
+	showDialogAjax(title, 'views/dialog-system-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editSystemUserRole(id, name, permissions) {
 	var params = [];
