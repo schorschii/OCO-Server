@@ -3,9 +3,10 @@ if(php_sapi_name() != 'cli')
 	die('This script must be executed from command line.'."\n");
 
 if(!isset($argv[1]))
-	die('Please specify an action as first parameter (housekeeping|ldapsync).'."\n");
+	die('Please specify an action as first parameter.'."\n");
 
 require_once(__DIR__.'/loader.inc.php');
+$extensionMethods = $ext->getAggregatedConf('console-methods');
 
 try {
 
@@ -25,6 +26,10 @@ try {
 			break;
 
 		default:
+			if(array_key_exists($argv[1], $extensionMethods)) {
+				call_user_func($extensionMethods[$argv[1]], $db);
+				die();
+			}
 			throw new Exception('unknown command');
 
 	}
