@@ -146,14 +146,14 @@ class PermissionManager {
 				$groupRessource = $parentGroup;
 			}
 
-		} elseif($groupRessource instanceof Models\PackageGroup) {
+		} else if($groupRessource instanceof Models\PackageGroup) {
 			while($groupRessource->getParentId() != null) {
 				$parentGroup = $this->db->selectPackageGroup($groupRessource->getParentId());
 				$parentGroups[] = $parentGroup;
 				$groupRessource = $parentGroup;
 			}
 
-		} elseif($groupRessource instanceof Models\ReportGroup) {
+		} else if($groupRessource instanceof Models\ReportGroup) {
 			while($groupRessource->getParentId() != null) {
 				$parentGroup = $this->db->selectReportGroup($groupRessource->getParentId());
 				$parentGroups[] = $parentGroup;
@@ -163,6 +163,7 @@ class PermissionManager {
 		} else {
 			throw new InvalidArgumentException('Permission check for this ressource type is not implemented');
 		}
+
 		return $parentGroups;
 	}
 
