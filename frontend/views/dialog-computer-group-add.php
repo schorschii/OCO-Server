@@ -8,7 +8,7 @@ require_once('../session.php');
 <div class='gallery'>
 	<div>
 		<select id='sltNewComputerGroup' class='resizeVertical' size='10' multiple='true'>
-			<?php echoComputerGroupOptions($db); ?>
+			<?php echoComputerGroupOptions($cl); ?>
 		</select>
 	</div>
 </div>

@@ -133,22 +133,22 @@ function GUIDtoStr($binary_guid) {
 	return sprintf('%08x-%04x-%04x-%04x-%04x%08x', $unpacked['a'], $unpacked['b1'], $unpacked['b2'], $unpacked['c1'], $unpacked['c2'], $unpacked['d']);
 }
 
-function echoComputerGroupOptions($db, $parentId=null, $indent=0, $preselect=-1) {
-	foreach($db->selectAllComputerGroupByParentComputerGroupId($parentId) as $g) {
+function echoComputerGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
+	foreach($cl->getComputerGroups($parentId) as $g) {
 		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
-		echoComputerGroupOptions($db, $g->id, $indent+1, $preselect);
+		echoComputerGroupOptions($cl, $g->id, $indent+1, $preselect);
 	}
 }
-function echoPackageGroupOptions($db, $parentId=null, $indent=0, $preselect=-1) {
-	foreach($db->selectAllPackageGroupByParentPackageGroupId($parentId) as $g) {
+function echoPackageGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
+	foreach($cl->getPackageGroups($parentId) as $g) {
 		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
-		echoPackageGroupOptions($db, $g->id, $indent+1, $preselect);
+		echoPackageGroupOptions($cl, $g->id, $indent+1, $preselect);
 	}
 }
-function echoReportGroupOptions($db, $parentId=null, $indent=0, $preselect=-1) {
-	foreach($db->selectAllReportGroupByParentReportGroupId($parentId) as $g) {
+function echoReportGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
+	foreach($cl->getReportGroups($parentId) as $g) {
 		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
-		echoReportGroupOptions($db, $g->id, $indent+1, $preselect);
+		echoReportGroupOptions($cl, $g->id, $indent+1, $preselect);
 	}
 }
 

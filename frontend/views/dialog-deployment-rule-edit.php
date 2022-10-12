@@ -18,7 +18,7 @@ require_once('../session.php');
 		<th><?php echo LANG('computer_group'); ?></th>
 		<td>
 			<select id='sltEditDeploymentRuleComputerGroupId' class='fullwidth'>
-				<?php echoComputerGroupOptions($db); ?>
+				<?php echoComputerGroupOptions($cl); ?>
 			</select>
 		</td>
 	</tr>
@@ -26,7 +26,7 @@ require_once('../session.php');
 		<th><?php echo LANG('package_group'); ?></th>
 		<td>
 			<select id='sltEditDeploymentRulePackageGroupId' class='fullwidth'>
-				<?php echoPackageGroupOptions($db); ?>
+				<?php echoPackageGroupOptions($cl); ?>
 			</select>
 		</td>
 	</tr>

@@ -8,7 +8,7 @@ require_once('../session.php');
 <div class='gallery'>
 	<div>
 		<select id='sltNewPackageGroup' class='resizeVertical' size='10' multiple='true'>
-			<?php echoPackageGroupOptions($db); ?>
+			<?php echoPackageGroupOptions($cl); ?>
 		</select>
 	</div>
 </div>
