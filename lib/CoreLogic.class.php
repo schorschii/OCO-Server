@@ -24,11 +24,11 @@ class CoreLogic {
 	}
 
 	/*** Permission Check Logic ***/
-	public function checkPermission($ressource, String $method, Bool $throw=true) {
+	public function checkPermission($ressource, String $method, Bool $throw=true, $ressourceParentGroups=null) {
 		// do not check permissions if CoreLogic is used in system context (e.g. cron jobs)
 		if($this->su !== null && $this->su instanceof Models\SystemUser) {
 			if($this->pm === null) $this->pm = new \PermissionManager($this->db, $this->su);
-			$checkResult = $this->pm->hasPermission($ressource, $method);
+			$checkResult = $this->pm->hasPermission($ressource, $method, $ressourceParentGroups);
 			if(!$checkResult && $throw) throw new \PermissionException();
 			return $checkResult;
 		} else {
