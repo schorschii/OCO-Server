@@ -42,7 +42,7 @@ try {
 					echo "<tr>";
 					echo "<td><input type='checkbox' name='event_query_rule_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblEventQueryRules)'></td>";
 					echo "<td id='spnEventQueryRuleLog".$r->id."'>".htmlspecialchars($r->log)."</td>";
-					echo "<td id='spnEventQueryRuleQuery".$r->id."'>".htmlspecialchars($r->query)."</td>";
+					echo "<td id='spnEventQueryRuleQuery".$r->id."' class='monospace'>".htmlspecialchars($r->query)."</td>";
 					echo "<td><button onclick='showDialogEditEventQueryRule(".$r->id.", spnEventQueryRuleLog".$r->id.".innerText, spnEventQueryRuleQuery".$r->id.".innerText)' title='".LANG('edit')."'><img src='img/edit.dyn.svg'></button></td>";
 					echo "</tr>";
 				}
