@@ -124,15 +124,6 @@ function isIpInRange($ip, $range) {
 	return ($ipNetBits === $netBits);
 }
 
-function GUIDtoStr($binary_guid) {
-	$unpacked = unpack('Va/v2b/n2c/Nd', $binary_guid);
-	if(!$unpacked) {
-		// fallback string representation (base64) if we got unexpected input
-		return base64_encode($binary_guid);
-	}
-	return sprintf('%08x-%04x-%04x-%04x-%04x%08x', $unpacked['a'], $unpacked['b1'], $unpacked['b2'], $unpacked['c1'], $unpacked['c2'], $unpacked['d']);
-}
-
 function echoComputerGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
 	foreach($cl->getComputerGroups($parentId) as $g) {
 		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";

@@ -10,6 +10,15 @@ class LdapSync {
 		$this->debug = $debug;
 	}
 
+	private static function GUIDtoStr($binary_guid) {
+		$unpacked = unpack('Va/v2b/n2c/Nd', $binary_guid);
+		if(!$unpacked) {
+			// fallback string representation (base64) if we got unexpected input
+			return base64_encode($binary_guid);
+		}
+		return sprintf('%08x-%04x-%04x-%04x-%04x%08x', $unpacked['a'], $unpacked['b1'], $unpacked['b2'], $unpacked['c1'], $unpacked['c2'], $unpacked['d']);
+	}
+
 	public function syncSystemUsers() {
 		if(!LDAP_SERVER) {
 			throw new Exception('LDAP sync not configured');
@@ -48,7 +57,7 @@ class LdapSync {
 			if(empty($data[$i][LDAP_ATTR_UID][0])) {
 				continue;
 			}
-			$uid         = GUIDtoStr($data[$i][LDAP_ATTR_UID][0]);
+			$uid = self::GUIDtoStr($data[$i][LDAP_ATTR_UID][0]);
 			if(array_key_exists($uid, $foundLdapUsers)) {
 				throw new Exception('Duplicate UID '.$uid.'!');
 			}
@@ -199,7 +208,7 @@ class LdapSync {
 			if(empty($data[$i][LDAP_ATTR_UID][0])) {
 				continue;
 			}
-			$uid         = GUIDtoStr($data[$i][LDAP_ATTR_UID][0]);
+			$uid = self::GUIDtoStr($data[$i][LDAP_ATTR_UID][0]);
 			if(array_key_exists($uid, $foundLdapUsers)) {
 				throw new Exception('Duplicate UID '.$uid.'!');
 			}
