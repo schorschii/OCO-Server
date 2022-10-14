@@ -11,6 +11,9 @@ class LanguageController {
 	// extra language directories
 	protected $langDirs = [self::DEFAULT_LANG_DIR];
 
+	// language codes in the preferred order to load
+	protected $langCodes = [];
+
 	// compiled messages (base language + translated strings)
 	private $messages = [];
 
@@ -19,10 +22,22 @@ class LanguageController {
 	private static $singleton;
 
 	function __construct($langCodes=[]) {
-		$this->loadTranslations($langCodes);
+		// read language preferences
+		$this->langCodes = $langCodes;
+		if(!empty($_POST['lang'])) { // evaluate POST parameter (API calls)
+			$this->langCodes[] = $_POST['lang'];
+		}
+		if(!empty($_SESSION['lang'])) { // evaluate SESSION parameter
+			$this->langCodes[] = $_SESSION['lang'];
+		}
+		elseif(!empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) { // evaluate HTTP header (webfrontend)
+			$this->langCodes[] = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
+		}
+
+		$this->loadTranslations();
 	}
 
-	private function loadTranslations($langCodes=[]) {
+	private function loadTranslations() {
 		$this->messages = [];
 
 		// load default language
@@ -31,13 +46,7 @@ class LanguageController {
 		}
 
 		// override default messages with translated messages of user's desired language
-		if(!empty($_POST['lang'])) { // evaluate POST parameter (API calls)
-			$langCodes[] = $_POST['lang'];
-		}
-		elseif(!empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) { // evaluate HTTP header (webfrontend)
-			$langCodes[] = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
-		}
-		foreach($langCodes as $langCode) {
+		foreach($this->langCodes as $langCode) {
 			$this->messages = array_merge( $this->messages, $this->loadTranslationFile($langCode) );
 		}
 	}
@@ -59,21 +68,35 @@ class LanguageController {
 		return $messages;
 	}
 
-	private static function initializeSingleton() {
+	public static function getSingleton() {
 		if(!isset(self::$singleton)) {
 			self::$singleton = new LanguageController();
 		}
+		return self::$singleton;
 	}
 
 	public static function getMessageFromSingleton($key) {
-		self::initializeSingleton();
+		self::getSingleton();
 		return self::$singleton->getMessage($key);
 	}
 
 	public static function registerTranslationDirInSingleton($dir) {
-		self::initializeSingleton();
+		self::getSingleton();
 		self::$singleton->langDirs[] = $dir;
 		self::$singleton->loadTranslations();
+	}
+
+	public static function getTranslations() {
+		$langCodes = [];
+		foreach(glob(self::DEFAULT_LANG_DIR.'/*.{php}', GLOB_BRACE) as $file) {
+			$langCodes[] = explode('.', basename($file))[0];
+		}
+		return $langCodes;
+	}
+
+	public function getCurrentLangCode() {
+		if(empty($this->langCodes)) return null;
+		else return $this->langCodes[0];
 	}
 
 }
