@@ -95,9 +95,6 @@ if(!empty($_GET['view'])) {
 	<div id='message-container'>
 	</div>
 
-	<div id='dialog-contents'>
-	</div>
-
 	<button id='btnHidden' onclick='toggleEquip()'></button>
 
 	<script>
