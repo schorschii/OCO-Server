@@ -30,6 +30,7 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
   - 4 CPU cores
   - 8GB RAM
   - 20GB HDD + storage for your packages, depending on what you want to deploy
+  - at least Gigabit Ethernet, 10G recommended
   - for WOL & OS installation via network: network card in every network where your client computers are
 
 ### (Admin) Client
