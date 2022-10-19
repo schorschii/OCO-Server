@@ -25,20 +25,29 @@ return [
 	# folder which should be registered for class autoloading
 	'autoload' => __DIR__.'/lib',
 
+	# extend the global search function of the web console
+	# your search function should take the arguments: string $searchTerm, CoreLogic $cl, DatabaseController $db
+	# and return an array of Models\SearchResult
+	'frontend-search-function' => 'IscDhcpReservationsController::search',
+
 	# web frontend sidebar HTML include
 	'frontend-tree' => __DIR__.'/frontend/views/isc-dhcp-reservations.tree.php',
+
 	# web frontend views provided by the extension
 	'frontend-views' => [
 		'isc-dhcp-reservations.php' => __DIR__.'/frontend/views/isc-dhcp-reservations.php',
 	],
+
 	# JavaScript which should be included in the web frontend
 	'frontend-js' => [
 		'isc-dhcp-reservations.js' => __DIR__.'/frontend/js/isc-dhcp-reservations.js'
 	],
+
 	# CSS which should be included in the web frontend
 	'frontend-css' => [
 		'isc-dhcp-reservations.css' => __DIR__.'/frontend/css/isc-dhcp-reservations.css'
 	],
+
 	# (optional) images provided by the extension
 	'frontend-img' => [
 		'dhcp.dyn.svg' => __DIR__.'/frontend/img/dhcp.dyn.svg',
@@ -56,10 +65,17 @@ return [
 	],
 
 	# agent communication filter let you manipulate the JSON requests/responses
-	# two parameters will be delivered to this functions: Array $data, Models\Computer $computer
+	# two parameters will be delivered to this functions: array $data, Models\Computer $computer
 	# those function MUST return the (modified) $data array, which will then be used for further agent communication
 	'agent-request-filter' => 'MyController::injectComputerShutdownInAgentRequest',
 	'agent-response-filter' => 'MyController::injectComputerShutdownInAgentRespone',
+
+	# extensions for the client API
+	# you function should take the arguments: array $jsonRequestData
+	# and return an array with the response data
+	'client-api-methods' => [
+		'oco.extension.do_something' => 'MyController::myApiMethod',
+	],
 ];
 ```
 

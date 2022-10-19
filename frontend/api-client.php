@@ -383,7 +383,13 @@ switch($srcdata['method']) {
 		break;
 
 	default:
-		throw new InvalidRequestException(LANG('unknown_method'));
+		$extensionMethods = $ext->getAggregatedConf('client-api-methods');
+		if(array_key_exists($srcdata['method'], $extensionMethods)) {
+			$resdata['error'] = null;
+			$resdata['result'] = call_user_func($extensionMethods[$srcdata['method']], $data, $cl, $db);
+		} else {
+			throw new InvalidRequestException(LANG('unknown_method'));
+		}
 }
 
 } catch(NotFoundException $e) {
