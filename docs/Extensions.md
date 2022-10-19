@@ -70,8 +70,8 @@ return [
 	'agent-request-filter' => 'MyController::injectComputerShutdownInAgentRequest',
 	'agent-response-filter' => 'MyController::injectComputerShutdownInAgentRespone',
 
-	# extensions for the client API
-	# you function should take the arguments: array $jsonRequestData
+	# extensions for the client JSON RPC API (api-client.php)
+	# your function should take the arguments: array $jsonRequestData
 	# and return an array with the response data
 	'client-api-methods' => [
 		'oco.extension.do_something' => 'MyController::myApiMethod',
