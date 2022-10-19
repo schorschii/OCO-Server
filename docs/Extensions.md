@@ -46,6 +46,20 @@ return [
 
 	# translation files directory (should contain files like the original OCO server translation files en.php and de.php)
 	'translation-dir' => __DIR__.'/lang',
+
+	# function to call when `console.php housekeeping` is exeuted
+	'housekeeping-function' => 'MyController::cleanup',
+
+	# custom console command entry point for your extension, e.g. `console.php myfunction`
+	'console-methods' => [
+		'myfunction' => 'MyController::myFunction',
+	],
+
+	# agent communication filter let you manipulate the JSON requests/responses
+	# two parameters will be delivered to this functions: Array $data, Models\Computer $computer
+	# those function MUST return the (modified) $data array, which will then be used for further agent communication
+	'agent-request-filter' => 'MyController::injectComputerShutdownInAgentRequest',
+	'agent-response-filter' => 'MyController::injectComputerShutdownInAgentRespone',
 ];
 ```
 

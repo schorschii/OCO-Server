@@ -40,6 +40,11 @@ if($srcdata === null || !isset($srcdata['jsonrpc']) || $srcdata['jsonrpc'] != '2
 	errorExit('400 Payload Corrupt', null, null, Models\Log::ACTION_AGENT_API, 'invalid JSON data');
 }
 
+// apply extension filters
+foreach($ext->getAggregatedConf('agent-request-filter') as $filterMethod) {
+	$srcdata = call_user_func($filterMethod, $srcdata, null/*computer object*/);
+}
+
 $resdata = ['id' => $srcdata['id']];
 $params = $srcdata['params'];
 switch($srcdata['method']) {
@@ -489,6 +494,11 @@ switch($srcdata['method']) {
 		errorExit('400 Unknown Method', null, null, Models\Log::ACTION_AGENT_API,
 			'unknown method'
 		);
+}
+
+// apply extension filters
+foreach($ext->getAggregatedConf('agent-response-filter') as $filterMethod) {
+	$resdata = call_user_func($filterMethod, $resdata, empty($computer)?null:$computer);
 }
 
 // return response
