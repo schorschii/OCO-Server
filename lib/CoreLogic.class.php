@@ -839,21 +839,8 @@ class CoreLogic {
 					$targetJobState = Models\Job::STATE_WAITING_FOR_AGENT;
 
 					// check OS compatibility
-					if(!empty($package['compatible_os']) && !empty($tmpComputer->os)
-					&& $package['compatible_os'] != $tmpComputer->os) {
-						// create failed job
-						if($this->db->insertStaticJob($jcid, $computer_id,
-							$pid, $package['procedure'], $package['success_return_codes'],
-							0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
-							$package['install_procedure_post_action'], $restartTimeout,
-							$sequence, Models\Job::STATE_OS_INCOMPATIBLE
-						)) {
-							$sequence ++;
-						}
-						continue;
-					}
-					if(!empty($package['compatible_os_version']) && !empty($tmpComputer->os_version)
-					&& $package['compatible_os_version'] != $tmpComputer->os_version) {
+					if(!$this->isOsCompatible($tmpComputer, $package['compatible_os'])
+					|| !$this->isOsVersionCompatible($tmpComputer, $package['compatible_os_version'])) {
 						// create failed job
 						if($this->db->insertStaticJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
@@ -922,6 +909,30 @@ class CoreLogic {
 		$jobs = $this->db->selectAllStaticJobByJobContainer($jcid);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $author, $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 		return $jcid;
+	}
+	private function isOsCompatible(Models\Computer $computer, $compatibleOs) {
+		if(empty($compatibleOs) || empty($computer->os)) {
+			return true;
+		} else {
+			foreach(explode(',', $compatibleOs) as $os) {
+				if(trim($os) === trim($computer->os)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+	private function isOsVersionCompatible(Models\Computer $computer, $compatibleOsVersion) {
+		if(empty($compatibleOsVersion) || empty($computer->os_version)) {
+			return true;
+		} else {
+			foreach(explode(',', $compatibleOsVersion) as $osVersion) {
+				if(trim($osVersion) === trim($computer->os_version)) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 	private function compileIpRanges(Array $constraintIpRanges) {
 		$validatedIpRanges = [];
