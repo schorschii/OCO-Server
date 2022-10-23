@@ -12,7 +12,7 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG('query'); ?></th>
-		<td><textarea class='fullwidth' autocomplete='new-password' id='txtEditEventQueryRuleQuery' rows='5'></textarea></td>
+		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditEventQueryRuleQuery' rows='5'></textarea></td>
 	</tr>
 </table>
 
