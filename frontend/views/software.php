@@ -32,9 +32,7 @@ if(!empty($_GET['id'])) {
 				</tr>
 			</thead>
 			<?php
-			$counter = 0;
 			foreach($db->selectAllComputerBySoftwareId($_GET['id']) as $c) {
-				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($c->os)."</td>";
@@ -47,10 +45,10 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='downloadTableCsv("tblSoftwareComputerData1")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -80,9 +78,7 @@ if(!empty($_GET['id'])) {
 				</tr>
 			</thead>
 			<?php
-			$counter = 0;
 			foreach($db->selectAllComputerBySoftwareName($_GET['name']) as $c) {
-				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
 				echo "<td><a ".explorerLink('views/software.php?id='.$c->software_id).">".htmlspecialchars($c->software_version)."</a></td>";
@@ -94,10 +90,10 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='downloadTableCsv("tblSoftwareComputerData2")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -139,9 +135,7 @@ if(!empty($_GET['id'])) {
 			</tr>
 		</thead>
 		<?php
-		$counter = 0;
 		foreach($software as $s) {
-			$counter ++;
 			echo "<tr>";
 			echo "<td><a ".explorerLink('views/software.php?name='.urlencode($s->name)).">".htmlspecialchars($s->name)."</a></td>";
 			echo "<td>".$s->installations."</td>";
@@ -153,10 +147,10 @@ if(!empty($_GET['id'])) {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>
+							<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='downloadTableCsv("tblSoftwareData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 						</div>
 					</div>
 				</td>

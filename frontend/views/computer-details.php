@@ -338,7 +338,7 @@ $commands = Models\Computer::getCommands($ext);
 					<table id='tblInstalledPackageData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
-								<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblInstalledPackageData, this.checked)'></th>
+								<th><input type='checkbox' class='toggleAllChecked'></th>
 								<th class='searchable sortable'><?php echo LANG('package'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('initiator'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('installation_date'); ?></th>
@@ -346,11 +346,9 @@ $commands = Models\Computer::getCommands($ext);
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllComputerPackageByComputerId($computer->id) as $p) {
-								$counter ++;
 								echo '<tr>';
-								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" package_id="'.$p->package_id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
+								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" package_id="'.$p->package_id.'"></td>';
 								echo '<td><a '.explorerLink('views/package-details.php?id='.$p->package_id).'>'.htmlspecialchars($p->package_family_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 								echo '<td>'.htmlspecialchars($p->installed_by).'</td>';
 								echo '<td>'.htmlspecialchars($p->installed).'</td>';
@@ -363,8 +361,8 @@ $commands = Models\Computer::getCommands($ext);
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
 											<button onclick='deploySelectedPackage("package_id[]", "package_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
@@ -391,9 +389,7 @@ $commands = Models\Computer::getCommands($ext);
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPendingJobByComputerId($computer->id) as $j) {
-								$counter ++;
 								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
@@ -414,7 +410,7 @@ $commands = Models\Computer::getCommands($ext);
 						<tfoot>
 							<tr>
 								<td colspan='999'>
-									<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 								</td>
 							</tr>
 						</tfoot>
@@ -436,9 +432,7 @@ $commands = Models\Computer::getCommands($ext);
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllComputerSoftwareByComputerId($computer->id) as $s) {
-								$counter ++;
 								echo "<tr>";
 								echo "<td><a ".explorerLink('views/software.php?name='.urlencode($s->software_name)).">".htmlspecialchars($s->software_name)."</a></td>";
 								echo "<td><a ".explorerLink('views/software.php?id='.$s->software_id).">".htmlspecialchars($s->software_version)."</a></td>";
@@ -452,10 +446,10 @@ $commands = Models\Computer::getCommands($ext);
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 										</div>
 									</div>
 								</td>
@@ -482,9 +476,7 @@ $commands = Models\Computer::getCommands($ext);
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllComputerServiceByComputerId($computer->id) as $e) {
-								$counter ++;
 								echo "<tr>";
 								echo "<td class='servicestatus ".$e->getStatusClass()."'>".htmlspecialchars($e->getStatusText())."</td>";
 								echo "<td>".htmlspecialchars($e->name)."</td>";
@@ -500,10 +492,10 @@ $commands = Models\Computer::getCommands($ext);
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='downloadTableCsv("tblComputerServicesData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 										</div>
 									</div>
 								</td>
@@ -532,9 +524,7 @@ $commands = Models\Computer::getCommands($ext);
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllComputerEventByComputerId($computer->id, empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $e) {
-								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($e->log)."</td>";
@@ -551,10 +541,10 @@ $commands = Models\Computer::getCommands($ext);
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='downloadTableCsv("tblComputerEventsData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 											<?php if(empty($_GET['nolimit'])) { ?>
 												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 											<?php } ?>
@@ -585,9 +575,7 @@ $commands = Models\Computer::getCommands($ext);
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllLogEntryByObjectIdAndActions($computer->id, 'oco.computer', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
-								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($l->host)."</td>";
@@ -603,10 +591,10 @@ $commands = Models\Computer::getCommands($ext);
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='downloadTableCsv("tblComputerHistoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 											<?php if(empty($_GET['nolimit'])) { ?>
 												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 											<?php } ?>

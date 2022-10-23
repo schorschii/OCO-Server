@@ -320,7 +320,7 @@ $commands = Models\Computer::getCommands($ext);
 					<table id='tblInstalledPackageData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
-								<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblInstalledPackageData, this.checked)'></th>
+								<th><input type='checkbox' class='toggleAllChecked'></th>
 								<th class='searchable sortable'><?php echo LANG('package'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('initiator'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('installation_date'); ?></th>
@@ -328,12 +328,10 @@ $commands = Models\Computer::getCommands($ext);
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllComputerPackageByComputerId($computer->id) as $p) {
 								if(!$cl->checkPermission($db->selectPackage($p->package_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
-								$counter ++;
 								echo '<tr>';
-								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" package_id="'.$p->package_id.'" onchange="refreshCheckedCounter(tblInstalledPackageData)"></td>';
+								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" package_id="'.$p->package_id.'"></td>';
 								echo '<td><a '.explorerLink('views/packages.php?id='.$p->package_id).'>'.htmlspecialchars($p->package_family_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 								echo '<td>'.htmlspecialchars($p->installed_by).'</td>';
 								echo '<td>'.htmlspecialchars($p->installed).'</td>';
@@ -346,8 +344,8 @@ $commands = Models\Computer::getCommands($ext);
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
 										</div>
@@ -370,10 +368,8 @@ $commands = Models\Computer::getCommands($ext);
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPendingJobByComputerId($computer->id) as $j) {
 								if(!$cl->checkPermission($db->selectPackage($j->package_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
-								$counter ++;
 								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
@@ -394,7 +390,7 @@ $commands = Models\Computer::getCommands($ext);
 						<tfoot>
 							<tr>
 								<td colspan='999'>
-									<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 								</td>
 							</tr>
 						</tfoot>

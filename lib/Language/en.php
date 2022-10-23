@@ -56,7 +56,7 @@ return [
 	'last_seen' => 'Last Seen',
 	'last_updated' => 'Last Refreshed',
 	'elements' => 'Object(s)',
-	'elements_checked' => 'Object(s) selected',
+	'selected' => 'selected',
 	'deploy' => 'Deploy',
 	'selected_elements' => 'Selected Objects',
 	'delete' => 'Delete',

@@ -37,9 +37,7 @@ if(!empty($_GET['id'])) {
 				</tr>
 			</thead>
 			<?php
-			$counter = 0;
 			foreach($db->selectAllAggregatedDomainUserLogonByDomainUserId($domainUser->id) as $logon) {
-				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
@@ -52,10 +50,10 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='downloadTableCsv("tblDomainUserDetailData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -93,10 +91,10 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='downloadTableCsv("tblDomainUserHistoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							</div>
 						</div>
 					</td>
@@ -129,7 +127,7 @@ if(!empty($_GET['id'])) {
 		<table id='tblDomainUserData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
-				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDomainUserData, this.checked)'></th>
+				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<th class='searchable sortable'><?php echo LANG('login_name'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('logons'); ?></th>
@@ -138,11 +136,9 @@ if(!empty($_GET['id'])) {
 			</tr>
 		</thead>
 		<?php
-		$counter = 0;
 		foreach($domainUsers as $u) {
-			$counter ++;
 			echo "<tr>";
-			echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblDomainUserData)'></td>";
+			echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."'></td>";
 			echo "<td><a ".explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a></td>";
 			echo "<td>".htmlspecialchars($u->display_name)."</td>";
 			echo "<td>".htmlspecialchars($u->logon_amount)."</td>";
@@ -156,11 +152,11 @@ if(!empty($_GET['id'])) {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+							<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+							<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='downloadTableCsv("tblDomainUserData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<button onclick='confirmRemoveSelectedDomainUser("domain_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>

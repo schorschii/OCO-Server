@@ -31,9 +31,7 @@ try {
 			</thead>
 			<tbody>
 				<?php
-				$counter = 0;
 				foreach($db->selectAllLogEntryByObjectIdAndActions(false, ['oco.computer.delete', 'oco.package.delete', 'oco.package_family.delete', 'oco.job_container.delete', 'oco.deployment_rule.delete', 'oco.domain_user.delete', 'oco.report.delete'], empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
-					$counter ++;
 					echo "<tr>";
 					echo "<td>".htmlspecialchars($l->timestamp)."</td>";
 					echo "<td>".htmlspecialchars($l->host)."</td>";
@@ -50,10 +48,10 @@ try {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<?php if(empty($_GET['nolimit'])) { ?>
 									<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 								<?php } ?>

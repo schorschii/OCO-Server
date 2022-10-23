@@ -201,10 +201,8 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
 								if($p->id === $package->id) continue; // do not show this package
-								$counter ++;
 								$size = $p->getSize();
 								echo '<tr>';
 								echo '<td><a '.explorerLink('views/package-details.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
@@ -217,7 +215,7 @@ try {
 						<tfoot>
 							<tr>
 								<td colspan='999'>
-									<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 								</td>
 							</tr>
 						</tfoot>
@@ -234,18 +232,16 @@ try {
 					<table id='tblDependencyPackageData' class='list sortable savesort'>
 						<thead>
 							<tr>
-								<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDependencyPackageData, this.checked)'></th>
+								<th><input type='checkbox' class='toggleAllChecked'></th>
 								<th class='sortable'><?php echo LANG('name'); ?></th>
 								<th class='sortable'><?php echo LANG('version'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPackageDependencyByPackageId($package->id) as $dp) {
-								$counter ++;
 								echo '<tr>';
-								echo '<td><input type="checkbox" name="dependency_package_id[]" value="'.$dp->id.'" onchange="refreshCheckedCounter(tblDependencyPackageData)"></td>';
+								echo '<td><input type="checkbox" name="dependency_package_id[]" value="'.$dp->id.'"></td>';
 								echo '<td><a '.explorerLink('views/packages.php?package_family_id='.$dp->package_family_id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
 								echo '<td><a '.explorerLink('views/package-details.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
 								echo '</tr>';
@@ -257,8 +253,8 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
 											<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG('remove_assignment'); ?></button>
@@ -277,18 +273,16 @@ try {
 					<table id='tblDependentPackageData' class='list sortable savesort'>
 						<thead>
 							<tr>
-								<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDependentPackageData, this.checked)'></th>
+								<th><input type='checkbox' class='toggleAllChecked'></th>
 								<th class='sortable'><?php echo LANG('name'); ?></th>
 								<th class='sortable'><?php echo LANG('version'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPackageDependencyByDependentPackageId($package->id) as $dp) {
-								$counter ++;
 								echo '<tr>';
-								echo '<td><input type="checkbox" name="dependent_package_id[]" value="'.$dp->id.'" onchange="refreshCheckedCounter(tblDependentPackageData)"></td>';
+								echo '<td><input type="checkbox" name="dependent_package_id[]" value="'.$dp->id.'"></td>';
 								echo '<td><a '.explorerLink('views/packages.php?package_family_id='.$dp->package_family_id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
 								echo '<td><a '.explorerLink('views/package-details.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
 								echo '</tr>';
@@ -300,8 +294,8 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
 											<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG('remove_assignment'); ?></button>
@@ -344,11 +338,10 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>;
 											<?php echo LANG('total').': '.$counter.' '.LANG('elements').', '.niceSize($totalSize, true).', '.niceSize($totalSize, false); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='downloadTableCsv("tblArchiveContents")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 										</div>
 									</div>
 								</td>
@@ -369,7 +362,7 @@ try {
 					<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
-								<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageAssignedComputersData, this.checked)'></th>
+								<th><input type='checkbox' class='toggleAllChecked'></th>
 								<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('initiator'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('installation_date'); ?></th>
@@ -377,11 +370,9 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllComputerPackageByPackageId($package->id) as $p) {
-								$counter ++;
 								echo '<tr>';
-								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
+								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'"></td>';
 								echo '<td><a '.explorerLink('views/computer-details.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
 								echo '<td>'.htmlspecialchars($p->installed_by).'</td>';
 								echo '<td>'.htmlspecialchars($p->installed).'</td>';
@@ -394,8 +385,8 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
 											<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
@@ -422,9 +413,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPendingJobByPackageId($package->id) as $j) {
-								$counter ++;
 								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
@@ -445,7 +434,7 @@ try {
 						<tfoot>
 							<tr>
 								<td colspan='999'>
-									<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 								</td>
 							</tr>
 						</tfoot>
@@ -470,9 +459,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllLogEntryByObjectIdAndActions($package->id, 'oco.package', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
-								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($l->host)."</td>";
@@ -488,10 +475,10 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='downloadTableCsv("tblPackageHistoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 											<?php if(empty($_GET['nolimit'])) { ?>
 												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 											<?php } ?>

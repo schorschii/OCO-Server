@@ -176,7 +176,7 @@ try {
 		<table id='tblJobContainerJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobContainerJobData, this.checked)'></th>
+					<th><input type='checkbox' class='toggleAllChecked'></th>
 					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('package'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('procedure'); ?></th>
@@ -186,11 +186,10 @@ try {
 				</tr>
 			</thead>
 			<tbody>
-			<?php $counter = 0;
+			<?php
 			foreach($jobs as $job) {
-				$counter ++;
 				echo "<tr>";
-				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."' onchange='refreshCheckedCounter(tblJobContainerJobData)'></td>";
+				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."'></td>";
 				echo "<td><a ".explorerLink('views/computers.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
 				echo "<td><a ".explorerLink('views/packages.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle monospace' title='".htmlspecialchars($job->procedure, ENT_QUOTES)."'>";
@@ -221,11 +220,11 @@ try {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='event.preventDefault();downloadTableCsv("tblJobContainerJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>

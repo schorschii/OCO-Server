@@ -28,7 +28,7 @@ try {
 		<table id='tblEventQueryRules' class='list searchable sortable savesort actioncolumn'>
 			<thead>
 				<tr>
-					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblEventQueryRules, this.checked)'></th>
+					<th><input type='checkbox' class='toggleAllChecked'></th>
 					<th class='searchable sortable'><?php echo LANG('log'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('query'); ?></th>
 					<th class=''><?php echo LANG('action'); ?></th>
@@ -36,11 +36,9 @@ try {
 			</thead>
 			<tbody>
 				<?php
-				$counter = 0;
 				foreach($db->selectAllEventQueryRule() as $r) {
-					$counter ++;
 					echo "<tr>";
-					echo "<td><input type='checkbox' name='event_query_rule_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblEventQueryRules)'></td>";
+					echo "<td><input type='checkbox' name='event_query_rule_id[]' value='".$r->id."'></td>";
 					echo "<td id='spnEventQueryRuleLog".$r->id."'>".htmlspecialchars($r->log)."</td>";
 					echo "<td id='spnEventQueryRuleQuery".$r->id."' class='monospace'>".htmlspecialchars($r->query)."</td>";
 					echo "<td><button onclick='showDialogEditEventQueryRule(".$r->id.", spnEventQueryRuleLog".$r->id.".innerText, spnEventQueryRuleQuery".$r->id.".innerText)' title='".LANG('edit')."'><img src='img/edit.dyn.svg'></button></td>";
@@ -53,9 +51,10 @@ try {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 							</div>
 							<div class='controls'>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<button onclick='confirmRemoveSelectedEventQueryRule("event_query_rule_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>

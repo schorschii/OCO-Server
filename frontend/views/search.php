@@ -70,34 +70,45 @@ if(count($items) == 0) {
 <?php if($more) { ?>
 
 <h2><?php echo str_replace('%s', htmlspecialchars($_GET['query']), LANG('search_results_for')); ?></h2>
-<table class='list searchable sortable savesort fullwidth'>
-	<thead>
-		<tr>
-			<th class='searchable sortable'><?php echo LANG('type'); ?></th>
-			<th class='searchable sortable'><?php echo LANG('name'); ?></th>
-		</tr>
-	</thead>
-	<tbody>
-	<?php foreach($items as $item) { ?>
-		<tr>
-			<td>
-				<img src='<?php echo htmlspecialchars($item->icon); ?>'>
-				<?php echo htmlspecialchars($item->type); ?>
-			</td>
-			<td>
-				<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink($item->link); ?>><?php echo htmlspecialchars($item->text); ?></a>
-			</td>
-		</tr>
-	<?php } ?>
-	</tbody>
-	<tfoot>
-		<tr>
-			<td colspan='999'>
-				<span class='counter'><?php echo count($items); ?></span> <?php echo LANG('elements'); ?>
-			</td>
-		</tr>
-	</tfoot>
-</table>
+<div class='details-abreast'>
+	<div class='stickytable'>
+		<table class='list searchable sortable savesort fullwidth'>
+			<thead>
+				<tr>
+					<th class='searchable sortable'><?php echo LANG('type'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+			<?php foreach($items as $item) { ?>
+				<tr>
+					<td>
+						<img src='<?php echo htmlspecialchars($item->icon); ?>'>
+						<?php echo htmlspecialchars($item->type); ?>
+					</td>
+					<td>
+						<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink($item->link); ?>><?php echo htmlspecialchars($item->text); ?></a>
+					</td>
+				</tr>
+			<?php } ?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<div class='spread'>
+							<div>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
+							</div>
+							<div class='controls'>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
 
 <?php } else { ?>
 

@@ -38,7 +38,7 @@ try {
 					<table id='tblSelfServiceUserData' class='list searchable sortable savesort actioncolumn'>
 					<thead>
 						<tr>
-							<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblSelfServiceUserData, this.checked)'></th>
+							<th><input type='checkbox' class='toggleAllChecked'></th>
 							<th class='searchable sortable'><?php echo LANG('id'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('login_name'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
@@ -49,11 +49,9 @@ try {
 						</tr>
 					</thead>
 					<?php
-					$counter = 0;
 					foreach($cl->getDomainUsers() as $u) {
-						$counter ++;
 						echo "<tr class='".($u->domain_user_role_id==null?'inactive':'')."'>";
-						echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."' onchange='refreshCheckedCounter(tblSelfServiceUserData)'></td>";
+						echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."'></td>";
 						echo "<td>".htmlspecialchars($u->id)."</td>";
 						echo "<td sort_key='".htmlspecialchars($u->username,ENT_QUOTES)."'>";
 						if(!empty($u->ldap)) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
@@ -73,8 +71,8 @@ try {
 							<td colspan='999'>
 								<div class='spread'>
 									<div>
-										<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-										<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+										<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+										<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 									</div>
 									<div class='controls'>
 										<button onclick='confirmRemoveSelectedDomainUser("domain_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
@@ -98,7 +96,7 @@ try {
 					<table id='tblDomainUserRoleData' class='list searchable sortable savesort actioncolumn'>
 					<thead>
 						<tr>
-							<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDomainUserRoleData, this.checked)'></th>
+							<th><input type='checkbox' class='toggleAllChecked'></th>
 							<th class='searchable sortable'><?php echo LANG('id'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('permission_json'); ?></th>
@@ -107,11 +105,9 @@ try {
 						</tr>
 					</thead>
 					<?php
-					$counter = 0;
 					foreach($cl->getDomainUserRoles() as $r) {
-						$counter ++;
 						echo "<tr>";
-						echo "<td><input type='checkbox' name='domain_user_role_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblDomainUserRoleData)'></td>";
+						echo "<td><input type='checkbox' name='domain_user_role_id[]' value='".$r->id."'></td>";
 						echo "<td>".htmlspecialchars($r->id)."</td>";
 						echo "<td>".htmlspecialchars($r->name)."</td>";
 						echo "<td class='subbuttons'>".htmlspecialchars(shorter($r->permissions, 100))." <button id='btnDomainUserRolePermissions".$r->id."' onclick='showDialog(\"".htmlspecialchars($r->name,ENT_QUOTES)."\",this.getAttribute(\"permissions\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' permissions='".htmlspecialchars(prettyJson($r->permissions),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
@@ -125,8 +121,8 @@ try {
 							<td colspan='999'>
 								<div class='spread'>
 									<div>
-										<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-										<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+										<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+										<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 									</div>
 									<div class='controls'>
 										<button onclick='confirmRemoveSelectedDomainUserRole("domain_user_role_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
@@ -155,9 +151,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllLogEntryByObjectIdAndActions(null, 'oco.self_service', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
-								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($l->host)."</td>";
@@ -173,10 +167,10 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='downloadTableCsv("tblSoftwareInventoryData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 											<?php if(empty($_GET['nolimit'])) { ?>
 												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 											<?php } ?>

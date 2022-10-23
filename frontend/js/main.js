@@ -255,8 +255,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 					if(titleObject != null) document.title = titleObject.innerText;
 					else document.title = L__DEFAULT_PAGE_TITLE;
 					// init newly loaded tables
-					initTableSort()
-					initTableSearch()
+					initTables()
 				}
 			}
 			if(callback != undefined && typeof callback == 'function') {
@@ -291,8 +290,7 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 			if(obj(objID) != null) {
 				obj(objID).innerHTML = this.responseText;
 				if(objID == 'explorer-content') {
-					initTableSort()
-					initTableSearch()
+					initTables() // init newly loaded tables
 				}
 			}
 			if(callback != undefined && typeof callback == 'function') {

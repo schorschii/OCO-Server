@@ -69,7 +69,7 @@ try {
 		<table id='tblReportData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
-				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblReportData, this.checked)'></th>
+				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('description'); ?></th>
 			</tr>
@@ -77,7 +77,7 @@ try {
 		<tbody>
 			<?php foreach($reports as $r) {
 				echo "<tr>";
-				echo "<td><input type='checkbox' name='report_id[]' value='".$r->id."' onchange='refreshCheckedCounter(tblReportData)'></td>";
+				echo "<td><input type='checkbox' name='report_id[]' value='".$r->id."'></td>";
 				echo "<td><a ".explorerLink('views/report-details.php?id='.$r->id).">".htmlspecialchars($r->name)."</a></td>";
 				echo "<td>".htmlspecialchars(shorter($r->notes))."</td>";
 				echo "</tr>";
@@ -88,11 +88,11 @@ try {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo count($reports); ?></span> <?php echo LANG('elements'); ?>,
-							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+							<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+							<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='downloadTableCsv("tblReportData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<button onclick='showDialogMoveReportToGroup(getSelectedCheckBoxValues("report_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('move_to'); ?></button>
 							<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>

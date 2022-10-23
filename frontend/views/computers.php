@@ -69,7 +69,7 @@ try {
 		<table id='tblComputerData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
-				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblComputerData, this.checked)'></th>
+				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<th class='searchable sortable'><?php echo LANG('hostname'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('os'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('version'); ?></th>
@@ -85,9 +85,7 @@ try {
 		</thead>
 		<tbody>
 		<?php
-		$counter = 0;
 		foreach($computers as $c) {
-			$counter ++;
 			$ip_addresses = [];
 			$mac_addresses = [];
 			$cnetwork = $db->selectAllComputerNetworkByComputerId($c->id);
@@ -97,7 +95,7 @@ try {
 			}
 			$online = $c->isOnline();
 			echo "<tr>";
-			echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."' onchange='refreshCheckedCounter(tblComputerData)'></td>";
+			echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."'></td>";
 			echo "<td>";
 			echo  "<img src='".$c->getIcon()."' class='".($online ? 'online' : 'offline')."' title='".($online ? LANG('online') : LANG('offline'))."'>&nbsp;";
 			echo  "<a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a>";
@@ -121,11 +119,11 @@ try {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>,
-							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+							<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+							<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='downloadTableCsv("tblComputerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<button onclick='deploySelectedComputer("computer_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 							<button onclick='wolSelectedComputer("computer_id[]")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
 							<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("computer_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>

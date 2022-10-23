@@ -116,7 +116,7 @@ if(!empty($_GET['id'])) {
 		<table id='tblDeploymentRuleJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDeploymentRuleJobData, this.checked)'></th>
+				<th><input type='checkbox' class='toggleAllChecked'></th>
 					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('package'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('procedure'); ?></th>
@@ -126,11 +126,10 @@ if(!empty($_GET['id'])) {
 				</tr>
 			</thead>
 			<tbody>
-			<?php $counter = 0;
+			<?php
 			foreach($jobs as $job) {
-				$counter ++;
 				echo "<tr>";
-				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."' onchange='refreshCheckedCounter(tblDeploymentRuleJobData)'></td>";
+				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."'></td>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
 				echo "<td><a ".explorerLink('views/package-details.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle monospace' title='".htmlspecialchars($job->procedure, ENT_QUOTES)."'>";
@@ -161,11 +160,11 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='downloadTableCsv("tblDeploymentRuleJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<button onclick='renewFailedDynamicJobs(<?php echo $container->id; ?>, getSelectedCheckBoxValues("job_id[]", null))' <?php if($failed==0 || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('renew_failed'); ?></button>
 							</div>
 						</div>
@@ -203,7 +202,7 @@ if(!empty($_GET['id'])) {
 		<table id='tblDeploymentRuleData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblDeploymentRuleData, this.checked)'></th>
+					<th><input type='checkbox' class='toggleAllChecked'></th>
 					<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('author'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('computer_group'); ?></th>
@@ -215,9 +214,8 @@ if(!empty($_GET['id'])) {
 				</tr>
 			</thead>
 			<tbody>
-			<?php $counter = 0;
+			<?php
 			foreach($rules as $dr) {
-				$counter ++;
 				$done = 0; $percent = 0;
 				$jobs = $db->selectAllDynamicJobByDeploymentRuleId($dr->id);
 				if(count($jobs) > 0) {
@@ -227,7 +225,7 @@ if(!empty($_GET['id'])) {
 					$percent = $done/count($jobs)*100;
 				}
 				echo "<tr>";
-				echo "<td><input type='checkbox' name='deployment_rule_id[]' value='".$dr->id."' onchange='refreshCheckedCounter(tblDeploymentRuleData)'></td>";
+				echo "<td><input type='checkbox' name='deployment_rule_id[]' value='".$dr->id."'></td>";
 				echo "<td class='middle'>";
 				echo  "<img src='img/".$dr->getStatus($jobs).".dyn.svg' class='".($dr->enabled?'online':'offline')."'>&nbsp;";
 				echo  "<a ".explorerLink('views/deployment-rules.php?id='.$dr->id).">".htmlspecialchars($dr->name)."</a>";
@@ -247,11 +245,11 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='downloadTableCsv("tblDeploymentRuleData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<button onclick='removeSelectedDeploymentRule("deployment_rule_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>

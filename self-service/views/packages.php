@@ -157,10 +157,8 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
 								if($p->id === $package->id) continue; // do not show this package
-								$counter ++;
 								echo '<tr>';
 								echo '<td><a '.explorerLink('views/package-details.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
 								echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
@@ -172,7 +170,7 @@ try {
 						<tfoot>
 							<tr>
 								<td colspan='999'>
-									<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 								</td>
 							</tr>
 						</tfoot>
@@ -192,9 +190,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPackageDependencyByPackageId($package->id) as $dp) {
-								$counter ++;
 								echo '<tr>';
 								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
 								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
@@ -207,8 +203,8 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
 										</div>
@@ -229,9 +225,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPackageDependencyByDependentPackageId($package->id) as $dp) {
-								$counter ++;
 								echo '<tr>';
 								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
 								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
@@ -244,8 +238,8 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
 										</div>
@@ -265,7 +259,7 @@ try {
 					<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
-								<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageAssignedComputersData, this.checked)'></th>
+								<th><input type='checkbox' class='toggleAllChecked'></th>
 								<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('initiator'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('installation_date'); ?></th>
@@ -273,12 +267,10 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllComputerPackageByPackageId($package->id) as $p) {
 								if(!$cl->checkPermission($db->selectComputer($p->computer_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
-								$counter ++;
 								echo '<tr>';
-								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'" onchange="refreshCheckedCounter(tblPackageAssignedComputersData)"></td>';
+								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'"></td>';
 								echo '<td><a '.explorerLink('views/computers.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
 								echo '<td>'.htmlspecialchars($p->installed_by).'</td>';
 								echo '<td>'.htmlspecialchars($p->installed).'</td>';
@@ -291,8 +283,8 @@ try {
 								<td colspan='999'>
 									<div class='spread'>
 										<div>
-											<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-											<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
 											<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
@@ -316,10 +308,8 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							$counter = 0;
 							foreach($db->selectAllPendingJobByPackageId($package->id) as $j) {
 								if(!$cl->checkPermission($db->selectComputer($j->computer_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
-								$counter ++;
 								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
@@ -340,7 +330,7 @@ try {
 						<tfoot>
 							<tr>
 								<td colspan='999'>
-									<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>
+									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
 								</td>
 							</tr>
 						</tfoot>

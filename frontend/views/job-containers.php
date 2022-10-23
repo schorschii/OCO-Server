@@ -166,7 +166,7 @@ if(!empty($_GET['id'])) {
 		<table id='tblJobContainerJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobContainerJobData, this.checked)'></th>
+					<th><input type='checkbox' class='toggleAllChecked'></th>
 					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('package'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('procedure'); ?></th>
@@ -176,11 +176,10 @@ if(!empty($_GET['id'])) {
 				</tr>
 			</thead>
 			<tbody>
-			<?php $counter = 0;
+			<?php
 			foreach($jobs as $job) {
-				$counter ++;
 				echo "<tr>";
-				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."' onchange='refreshCheckedCounter(tblJobContainerJobData)'></td>";
+				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."'></td>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
 				echo "<td><a ".explorerLink('views/package-details.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
 				echo "<td class='middle monospace' title='".htmlspecialchars($job->procedure, ENT_QUOTES)."'>";
@@ -211,11 +210,11 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='downloadTableCsv("tblJobContainerJobData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<button onclick='showDialogMoveStaticJobToJobContainer(getSelectedCheckBoxValues("job_id[]", null, true))' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/move.dyn.svg'>&nbsp;<?php echo LANG('move'); ?></button>
 								<button onclick='showDialogRenewFailedStaticJobs(<?php echo $container->id; ?>, spnJobContainerName.innerText+" - <?php echo LANG('renew'); ?>", getSelectedCheckBoxValues("job_id[]", null))' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('renew_failed'); ?></button>
 								<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
@@ -258,7 +257,7 @@ if(!empty($_GET['id'])) {
 		<table id='tblJobcontainerData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblJobcontainerData, this.checked)'></th>
+					<th><input type='checkbox' class='toggleAllChecked'></th>
 					<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('author'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
@@ -270,9 +269,8 @@ if(!empty($_GET['id'])) {
 				</tr>
 			</thead>
 			<tbody>
-			<?php $counter = 0;
+			<?php
 			foreach($containers as $jc) {
-				$counter ++;
 				$done = 0; $percent = 0;
 				$jobs = $db->selectAllStaticJobByJobContainer($jc->id);
 				if(count($jobs) > 0) {
@@ -282,7 +280,7 @@ if(!empty($_GET['id'])) {
 					$percent = $done/count($jobs)*100;
 				}
 				echo "<tr>";
-				echo "<td><input type='checkbox' name='job_container_id[]' value='".$jc->id."' onchange='refreshCheckedCounter(tblJobcontainerData)'></td>";
+				echo "<td><input type='checkbox' name='job_container_id[]' value='".$jc->id."'></td>";
 				echo "<td class='middle'>";
 				echo  "<img src='img/".$jc->getStatus($jobs).".dyn.svg' class='".($jc->enabled?'online':'offline')."'>&nbsp;";
 				echo  "<a ".explorerLink('views/job-containers.php?id='.$jc->id).">".htmlspecialchars($jc->name)."</a>";
@@ -302,11 +300,11 @@ if(!empty($_GET['id'])) {
 					<td colspan='999'>
 						<div class='spread'>
 							<div>
-								<span class='counter'><?php echo $counter; ?></span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='downloadTableCsv("tblJobcontainerData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<button onclick='removeSelectedJobContainer("job_container_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>

@@ -62,7 +62,7 @@ try {
 		<table id='<?php echo 'tblReportDetailData'.$report->id; ?>' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
-				<th><input type='checkbox' onchange='toggleCheckboxesInTable(<?php echo "tblReportDetailData".$report->id; ?>, this.checked)'></th>
+				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<?php foreach($results[0] as $key => $value) { ?>
 				<th class='searchable sortable'><?php echo htmlspecialchars($key); ?></th>
 				<?php } ?>
@@ -72,15 +72,13 @@ try {
 		<?php
 		$hasComputerIds = false;
 		$hasPackageIds = false;
-		$counter = 0;
 		foreach($results as $result) {
-			$counter ++;
 			echo "<tr>";
 
 			// checkbox
 			$computerId = -1; if(!empty($result['computer_id'])) $computerId = intval($result['computer_id']);
 			$packageId = -1; if(!empty($result['package_id'])) $packageId = intval($result['package_id']);
-			echo "<td><input type='checkbox' name='id[]' computer_id='".$computerId."' package_id='".$packageId."' onchange='refreshCheckedCounter(tblReportDetailData".$report->id.")'></td>";
+			echo "<td><input type='checkbox' name='id[]' computer_id='".$computerId."' package_id='".$packageId."'></td>";
 
 			// attributes
 			foreach($result as $key => $value) {
@@ -113,11 +111,11 @@ try {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+							<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+							<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='downloadTableCsv("<?php echo "tblReportDetailData".$report->id; ?>")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<?php if($hasComputerIds) { ?>
 								<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 								<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>

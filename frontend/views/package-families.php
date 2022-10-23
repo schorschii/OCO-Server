@@ -41,7 +41,7 @@ try {
 		<table id='tblPackageFamilyData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
-				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageFamilyData, this.checked)'></th>
+				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('description'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('count'); ?></th>
@@ -51,11 +51,9 @@ try {
 		</thead>
 		<tbody>
 		<?php
-		$counter = 0;
 		foreach($families as $p) {
-			$counter ++;
 			echo "<tr>";
-			echo "<td><input type='checkbox' name='package_family_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageFamilyData)'></td>";
+			echo "<td><input type='checkbox' name='package_family_id[]' value='".$p->id."'></td>";
 			echo "<td><a ".explorerLink('views/packages.php?package_family_id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
 			echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 			echo "<td>".htmlspecialchars($p->package_count)."</td>";
@@ -70,11 +68,11 @@ try {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+							<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+							<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='downloadTableCsv("tblPackageFamilyData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<button onclick='removeSelectedPackageFamily("package_family_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>

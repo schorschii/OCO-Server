@@ -100,7 +100,7 @@ try {
 		<table id='tblPackageData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
-				<th><input type='checkbox' onchange='toggleCheckboxesInTable(tblPackageData, this.checked)'></th>
+				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<?php if($family==null) { ?><th class='searchable sortable'><?php echo LANG('name'); ?></th><?php } ?>
 				<th class='searchable sortable'><?php echo LANG('version'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('author'); ?></th>
@@ -115,14 +115,12 @@ try {
 		</thead>
 		<tbody>
 		<?php
-		$counter = 0;
 		foreach($packages as $p) {
-			$counter ++;
 			$size = $p->getSize();
 			if($group !== null) echo "<tr class='draggable nodrag' ondragstart='return dragStartPackageTable(event)' ondragover='dragOverPackageTable(event)' ondragend='return dragEndPackageTable(event, ".$group->id.")'>"; else echo "<tr>";
 
-			if($group !== null) echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)' onkeyup='handlePackageReorderByKeyboard(event, ".$group->id.", ".$p->package_group_member_sequence.")'></td>";
-			else echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onchange='refreshCheckedCounter(tblPackageData)'></td>";
+			if($group !== null) echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onkeyup='handlePackageReorderByKeyboard(event, ".$group->id.", ".$p->package_group_member_sequence.")'></td>";
+			else echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."'></td>";
 
 			if($family==null) echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
 			echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->version)."</a></td>";
@@ -144,11 +142,11 @@ try {
 				<td colspan='999'>
 					<div class='spread'>
 						<div>
-							<span class='counter'><?php echo $counter; ?></span> <?php echo LANG('elements'); ?>,
-							<span class='counter-checked'>0</span>&nbsp;<?php echo LANG('elements_checked'); ?>
+							<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+							<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 						</div>
 						<div class='controls'>
-							<button onclick='downloadTableCsv("tblPackageData")'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<button onclick='deploySelectedPackage("package_id[]")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 							<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("package_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
 							<?php if($group !== null) { ?>
