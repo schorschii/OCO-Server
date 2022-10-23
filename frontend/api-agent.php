@@ -342,7 +342,7 @@ switch($srcdata['method']) {
 		$success = true;
 		$db->updateComputerPing($computer->id);
 		foreach($data['events'] as $event) {
-			if(empty($event['data'])) continue;
+			if(empty($event['log'])) continue;
 
 			// convert timestamp to local time
 			$timestamp = null;
@@ -355,7 +355,7 @@ switch($srcdata['method']) {
 
 			$success = $db->insertOrUpdateComputerEvent(
 				$computer->id,
-				$event['log'] ?? '',
+				$event['log'],
 				$timestamp,
 				$event['provider'] ?? '',
 				$event['level'] ?? 0,
