@@ -1175,16 +1175,16 @@ div.details-abreast > div > table {
 div.details-abreast > div.stickytable {
 	overflow: visible;
 }
-div.details-abreast > div.stickytable > table.list thead,
-div.details-abreast > div.stickytable > table.list tfoot {
+div.stickytable > table.list thead,
+div.stickytable > table.list tfoot {
 	position: sticky;
 	background-color: white;
 	z-index: 2;
 }
-div.details-abreast > div.stickytable > table.list thead {
+div.stickytable > table.list thead {
 	inset-block-start: -20px;
 }
-div.details-abreast > div.stickytable > table.list tfoot {
+div.stickytable > table.list tfoot {
 	inset-block-end: -20px;
 }
 
@@ -1568,8 +1568,8 @@ div.details-abreast > div.stickytable > table.list tfoot {
 		border-color: rgba(255,255,255,0.1);
 	}
 	table.list, .box,
-	div.details-abreast > div.stickytable > table.list thead,
-	div.details-abreast > div.stickytable > table.list tfoot {
+	div.stickytable > table.list thead,
+	div.stickytable > table.list tfoot {
 		background-color: #161b22;
 	}
 	table.list tr th, table.list tr td {
