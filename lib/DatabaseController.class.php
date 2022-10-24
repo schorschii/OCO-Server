@@ -1598,7 +1598,7 @@ class DatabaseController {
 	}
 	private function selectAllLastComputerStaticJobByJobContainer($job_container_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT computer_id, MAX(sequence) AS "max_sequence" FROM job
+			'SELECT computer_id, MAX(sequence) AS "max_sequence" FROM job_container_job
 			WHERE job_container_id = :job_container_id GROUP BY computer_id'
 		);
 		if(!$this->stmt->execute([':job_container_id' => $job_container_id])) return false;
