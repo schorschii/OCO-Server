@@ -288,6 +288,9 @@ class CoreLogic {
 		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction,
 		$compatibleOs, $compatibleOsVersion, $tmpFilePath, $fileName=null) {
 
+		$license = new LicenseCheck($this->db);
+		if(!$license->isValid()) throw new Exception(LANG('your_license_is_invalid'));
+
 		$this->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE);
 
 		if($fileName == null && $tmpFilePath != null) {
