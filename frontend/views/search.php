@@ -49,7 +49,7 @@ foreach($db->searchAllReport($_GET['query']) as $r) {
 	$counter ++;
 	if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
-	$items[] = new Models\SearchResult($r->name, LANG('domain_user'), 'views/report-users.php?id='.$r->id, 'img/report.dyn.svg');
+	$items[] = new Models\SearchResult($r->name, LANG('domain_user'), 'views/report-details.php?id='.$r->id, 'img/report.dyn.svg');
 }
 // extension search
 foreach($ext->getAggregatedConf('frontend-search-function') as $func) {
