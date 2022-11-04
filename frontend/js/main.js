@@ -651,7 +651,7 @@ function updatePackageProcedureTemplates() {
 	}
 }
 function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version) {
-	if(typeof archive === 'undefined') {
+	if(typeof archive === 'undefined' || archive.length == 0) {
 		if(!confirm(L__CONFIRM_CREATE_EMPTY_PACKAGE)) {
 			return;
 		}

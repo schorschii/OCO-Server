@@ -141,7 +141,9 @@ try {
 		die();
 	}
 
-	if(isset($_POST['create_package'])) {
+	if(isset($_POST['create_package'])
+	&& isset($_POST['version'])
+	&& isset($_POST['install_procedure'])) {
 		// no payload by default
 		$tmpFiles = [];
 		if(!empty($_FILES['archive']) && is_array($_FILES['archive']['tmp_name'])) {
