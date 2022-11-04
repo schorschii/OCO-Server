@@ -240,21 +240,27 @@ switch($srcdata['method']) {
 		break;
 
 	case 'oco.package.create':
-		// prepare file (extract content from base64 encoded JSON)
-		$tmpFilePath = null;
-		if(!empty($data['file'])) {
-			$tmpFilePath = '/tmp/ocotmp';
-			$fileContent = base64_decode($data['file'], true);
-			if(!$fileContent) {
-				throw new InvalidRequestException(LANG('payload_corrupt'));
+		// prepare files (extract content from base64 encoded JSON)
+		$tmpFiles = [];
+		if(!empty($data['files']) && is_array($data['files'])) {
+			$counter = 0;
+			foreach($data['files'] as $file) {
+				$counter ++;
+				if(empty($file['name']) || empty($file['content'])) continue;
+				$tmpFilePath = '/tmp/ocotmp'.$counter;
+				$fileContent = base64_decode($file['content'], true);
+				if(!$fileContent) {
+					throw new InvalidRequestException(LANG('payload_corrupt'));
+				}
+				file_put_contents($tmpFilePath, $fileContent);
+				$tmpFiles[$file['name']] = $tmpFilePath;
 			}
-			file_put_contents($tmpFilePath, $fileContent);
 		}
 		// insert into database
 		$insertId = $cl->createPackage($data['package_family_name'] ?? '', $data['version'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
 			$data['install_procedure'] ?? '', $data['install_procedure_success_return_codes'] ?? '0', $data['install_procedure_post_action'] ?? 0,
 			$data['uninstall_procedure'] ?? '', $data['uninstall_procedure_success_return_codes'] ?? '0', $data['download_for_uninstall'] ?? 0, $data['uninstall_procedure_post_action'] ?? 0,
-			$data['compatible_os'] ?? '', $data['compatible_os_version'] ?? '', $tmpFilePath, $data['file_name'] ?? 'file'
+			$data['compatible_os'] ?? '', $data['compatible_os_version'] ?? '', $tmpFiles
 		);
 		$resdata['error'] = null;
 		$resdata['result'] = [

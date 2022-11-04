@@ -679,8 +679,9 @@ Please have a look at the following API method documentation for JSON-RPC reques
 - `uninstall_procedure_post_action` - enable/disable restart or shutdown after uninstallation (0, 1 or 2)
 - `compatible_os` - compatible operating system name (optional)
 - `compatible_os_version` - compatible operating systen version (optional)
-- `file` - package payload: base64 encoded ZIP file content (optional - leave empty to create a package without payload)
-- `file_name` - file name for usage in (un)install procedure (if base64 encoded content is NOT a ZIP file) (optional)
+- `files` - array of files with `name` and `content` (base64 encoded) for package payload (optional - leave empty to create a package without payload)
+  - can be one single ZIP file or
+  - one or more files of other types - this will automatically create a ZIP archive with them
 ### Example
 ```
 {
@@ -702,8 +703,9 @@ Please have a look at the following API method documentation for JSON-RPC reques
 			"uninstall_procedure_post_action": 0,
 			"compatible_os": "Windows 10 Home",
 			"compatible_os_version": "10.0.18363",
-			"file":"base64 string .....",
-			"file_name":"test.msi"
+			"files": [
+				{ "name": "test.msi", "content": "<base64 string .....>" }
+			]
 		}
 	}
 }

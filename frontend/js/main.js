@@ -666,7 +666,9 @@ function createPackage(name, version, description, archive, install_procedure, i
 	formData.append('create_package', name);
 	formData.append('version', version);
 	formData.append('description', description);
-	formData.append('archive', archive);
+	for(i = 0; i <= archive.length; i++) {
+		formData.append('archive[]', archive[i]);
+	}
 	formData.append('install_procedure', install_procedure);
 	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
 	formData.append('install_procedure_post_action', install_procedure_post_action);

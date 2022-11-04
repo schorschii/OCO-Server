@@ -286,37 +286,57 @@ class CoreLogic {
 	public function createPackage($name, $version, $description, $author,
 		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction,
 		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction,
-		$compatibleOs, $compatibleOsVersion, $tmpFilePath, $fileName=null) {
+		$compatibleOs, $compatibleOsVersion, $tmpFiles) {
 
+		// permission/input checks
 		$license = new LicenseCheck($this->db);
 		if(!$license->isValid()) throw new Exception(LANG('your_license_is_invalid'));
 
 		$this->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE);
 
-		if($fileName == null && $tmpFilePath != null) {
-			$fileName = basename($tmpFilePath);
-		}
 		if(empty($name) || empty($installProcedure) || empty($version)) {
 			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
 		if(!empty($this->db->selectAllPackageByPackageFamilyNameAndVersion($name, $version))) {
 			throw new InvalidRequestException(LANG('package_exists_with_version'));
 		}
-		// decide what to do with uploaded file
-		if($tmpFilePath != null && file_exists($tmpFilePath)) {
-			$mimeType = mime_content_type($tmpFilePath);
+
+		// decide what to do with uploaded files
+		$tmpArchivePath = null;
+		if(count($tmpFiles) == 1 && file_exists(array_values($tmpFiles)[0])) {
+			// create zip with uploaded file if uploaded file is not already a single zip file
+			$filePath = array_values($tmpFiles)[0];
+			$fileName = array_keys($tmpFiles)[0];
+			$mimeType = mime_content_type($filePath);
 			if($mimeType != 'application/zip') {
-				// create zip with uploaded file if uploaded file is not a zip file
 				$newTmpFilePath = '/tmp/ocotmparchive.zip';
 				$zip = new ZipArchive();
 				if(!$zip->open($newTmpFilePath, ZipArchive::CREATE)) {
 					throw new Exception(LANG('cannot_create_zip_file'));
 				}
-				$zip->addFile($tmpFilePath, basename($fileName));
+				$zip->addFile($filePath, basename($fileName));
 				$zip->close();
-				$tmpFilePath = $newTmpFilePath;
+				$tmpArchivePath = $newTmpFilePath;
+			} else {
+				$tmpArchivePath = $filePath;
 			}
+		} elseif(count($tmpFiles) > 1) {
+			// create zip with uploaded files
+			$newTmpFilePath = '/tmp/ocotmparchive.zip';
+			$zip = new ZipArchive();
+			if(!$zip->open($newTmpFilePath, ZipArchive::CREATE)) {
+				throw new Exception(LANG('cannot_create_zip_file'));
+			}
+			$atleastOne = false;
+			foreach($tmpFiles as $fileName => $filePath) {
+				if(!file_exists($filePath)) continue;
+				$zip->addFile($filePath, $fileName);
+				$atleastOne = true;
+			}
+			$zip->close();
+			if($atleastOne) $tmpArchivePath = $newTmpFilePath;
 		}
+
 		// insert into database
 		$packageFamilyId = null;
 		$existingPackageFamily = $this->db->selectPackageFamilyByName($name);
@@ -347,17 +367,19 @@ class CoreLogic {
 		if(!$insertId) {
 			throw new Exception(LANG('database_error'));
 		}
+
 		// move file to payload dir
-		if($tmpFilePath != null && file_exists($tmpFilePath)) {
+		if($tmpArchivePath != null && file_exists($tmpArchivePath)) {
 			$finalFileName = intval($insertId).'.zip';
 			$finalFilePath = PACKAGE_PATH.'/'.$finalFileName;
-			$result = rename($tmpFilePath, $finalFilePath);
+			$result = rename($tmpArchivePath, $finalFilePath);
 			if(!$result) {
 				error_log('Can not move uploaded file to: '.$finalFilePath);
 				$this->db->deletePackage($insertId);
 				throw new Exception(LANG('cannot_move_uploaded_file'));
 			}
 		}
+
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.package.create', ['package_family_id'=>$packageFamilyId, 'version'=>$version]);
 		return $insertId;
 	}

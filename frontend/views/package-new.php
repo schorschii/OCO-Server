@@ -82,7 +82,7 @@ require_once('../session.php');
 	<tr><td colspan='2'><h2><?php echo LANG('package_content'); ?></h2></td></tr>
 	<tr>
 		<th><?php echo LANG('zip_archive'); ?></th>
-		<td colspan='3'><input type='file' id='fleArchive' onchange='updatePackageProcedureTemplates()'></td>
+		<td colspan='3'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()'></td>
 	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG('installation'); ?></h2></td></tr>
@@ -132,7 +132,21 @@ require_once('../session.php');
 		<div class='content-foot'>
 			<div class='filler'></div>
 			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadText', 'hidden big'); ?>
-			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(txtName.value, txtVersion.value, txtDescription.value, fleArchive.files[0], txtInstallProcedure.value, txtInstallProcedureSuccessReturnCodes.value, getCheckedRadioValue("install_post_action"), txtUninstallProcedure.value, txtUninstallProcedureSuccessReturnCodes.value, chkDownloadForUninstall.checked, getCheckedRadioValue("uninstall_post_action"), txtCompatibleOs.value, txtCompatibleOsVersion.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create_package'); ?></button>
+			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(
+				txtName.value,
+				txtVersion.value,
+				txtDescription.value,
+				fleArchive.files,
+				txtInstallProcedure.value,
+				txtInstallProcedureSuccessReturnCodes.value,
+				getCheckedRadioValue("install_post_action"),
+				txtUninstallProcedure.value,
+				txtUninstallProcedureSuccessReturnCodes.value,
+				chkDownloadForUninstall.checked,
+				getCheckedRadioValue("uninstall_post_action"),
+				txtCompatibleOs.value,
+				txtCompatibleOsVersion.value)
+			'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create_package'); ?></button>
 		</div>
 		</td>
 	</tr>

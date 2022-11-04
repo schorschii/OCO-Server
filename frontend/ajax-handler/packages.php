@@ -143,18 +143,20 @@ try {
 
 	if(isset($_POST['create_package'])) {
 		// no payload by default
-		$tmpFilePath = null;
-		$tmpFileName = null;
-		if(!empty($_FILES['archive'])) {
-			// use file from user upload
-			$tmpFilePath = $_FILES['archive']['tmp_name'];
-			$tmpFileName = $_FILES['archive']['name'];
+		$tmpFiles = [];
+		if(!empty($_FILES['archive']) && is_array($_FILES['archive']['tmp_name'])) {
+			// use files from user upload
+			for($i=0; $i < count($_FILES['archive']['tmp_name']); $i++) {
+				if(isset($_FILES['archive']['tmp_name'][$i]) && isset($_FILES['archive']['name'][$i])) {
+					$tmpFiles[$_FILES['archive']['name'][$i]] = $_FILES['archive']['tmp_name'][$i];
+				}
+			}
 		}
 		// create package
 		$insertId = $cl->createPackage($_POST['create_package'], $_POST['version'], $_POST['description'] ?? '', $currentSystemUser->username,
 			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_post_action'] ?? null,
 			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'], $_POST['uninstall_procedure_post_action'] ?? null,
-			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $tmpFilePath, $tmpFileName
+			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $tmpFiles
 		);
 		die(strval(intval($insertId)));
 	}
