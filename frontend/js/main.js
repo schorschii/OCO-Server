@@ -49,6 +49,15 @@ function toggleTextBoxMultiLine(element) {
 	newElement.placeholder = element.placeholder;
 	element.replaceWith(newElement);
 }
+function toggleInputDirectory(element) {
+	if(element.getAttribute('webkitdirectory') != 'true') {
+		element.setAttribute('webkitdirectory', true);
+		element.setAttribute('directory', true);
+	} else {
+		element.removeAttribute('webkitdirectory');
+		element.removeAttribute('directory');
+	}
+}
 
 function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}) {
 	// compile parameters to replace from ajax request URL

@@ -149,8 +149,13 @@ try {
 		if(!empty($_FILES['archive']) && is_array($_FILES['archive']['tmp_name'])) {
 			// use files from user upload
 			for($i=0; $i < count($_FILES['archive']['tmp_name']); $i++) {
-				if(isset($_FILES['archive']['tmp_name'][$i]) && isset($_FILES['archive']['name'][$i])) {
-					$tmpFiles[$_FILES['archive']['name'][$i]] = $_FILES['archive']['tmp_name'][$i];
+				if(isset($_FILES['archive']['name'][$i]) && file_exists($_FILES['archive']['tmp_name'][$i])) {
+					$fileName = $_FILES['archive']['name'][$i];
+					if(isset($_FILES['archive']['full_path'][$i])) {
+						// PHP 8.1 allows to view the complete path transmitted by the browser
+						$fileName = $_FILES['archive']['full_path'][$i];
+					}
+					$tmpFiles[$fileName] = $_FILES['archive']['tmp_name'][$i];
 				}
 			}
 		}

@@ -309,7 +309,7 @@ class CoreLogic {
 			$fileName = array_keys($tmpFiles)[0];
 			$mimeType = mime_content_type($filePath);
 			if($mimeType != 'application/zip') {
-				$newTmpFilePath = '/tmp/ocotmparchive.zip';
+				$newTmpFilePath = '/tmp/oco-'.uniqid().'.tmp.zip';
 				$zip = new ZipArchive();
 				if(!$zip->open($newTmpFilePath, ZipArchive::CREATE)) {
 					throw new Exception(LANG('cannot_create_zip_file'));
@@ -322,7 +322,7 @@ class CoreLogic {
 			}
 		} elseif(count($tmpFiles) > 1) {
 			// create zip with uploaded files
-			$newTmpFilePath = '/tmp/ocotmparchive.zip';
+			$newTmpFilePath = '/tmp/oco-'.uniqid().'.tmp.zip';
 			$zip = new ZipArchive();
 			if(!$zip->open($newTmpFilePath, ZipArchive::CREATE)) {
 				throw new Exception(LANG('cannot_create_zip_file'));

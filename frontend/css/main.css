@@ -1389,7 +1389,8 @@ div.stickytable > table.list tfoot {
 	margin-right: 4px;
 	pointer-events: none;
 }
-.inputwithbutton {
+.inputwithbutton,
+.fileinputwithbutton {
 	position: relative;
 }
 .inputwithbutton input,
@@ -1404,7 +1405,20 @@ div.stickytable > table.list tfoot {
 	left: 8px;
 	padding: 0px;
 }
-.inputwithbutton button img {
+.fileinputwithbutton input,
+.fileinputwithbutton textarea {
+	padding-right: 25px;
+}
+.fileinputwithbutton button {
+	position: absolute;
+	border: none;
+	background-color: transparent;
+	top: 14px;
+	right: 10px;
+	padding: 0px;
+}
+.inputwithbutton button img,
+.fileinputwithbutton button img {
 	height: 16px;
 	display: flex;
 }

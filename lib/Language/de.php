@@ -402,6 +402,7 @@ return [
 	'uninstallation' => 'Deinstallation',
 	'package_content' => 'Paketinhalt',
 	'toggle_multi_line' => 'Mehrzeiliges Textfeld umschalten',
+	'toggle_directory_upload' => 'Zwischen Verzeichnis- und Datei-Upload umschalten',
 	'initiator' => 'Initiator',
 	'report_groups' => 'Reportgruppen',
 	'expand_or_collapse_tree' => '(Doppel-)Klicken, um Baum aus- oder einzuklappen',

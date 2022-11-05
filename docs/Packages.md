@@ -32,9 +32,15 @@ There are mainly two strategies how to deal with software for multiple operating
 ## Create Packages
 Packages can be created in the web frontend or via the [API](Client-API.md).
 
-Since OCO supports Linux, macOS and Windows, a package is a simple `.zip` archive containing the necessary (operating system specific) installer files. An OCO package can therefore contains `.deb` files for Debian-based Linux Distros, `.dmg` files for MacOS and `.exe` or `.msi` files for Windows.
+Since OCO supports Linux, macOS and Windows, a package is a simple `.zip` archive containing the necessary (operating system specific) installer files. For example, an OCO package can contain `.deb` files for Debian-based Linux Distros, `.dmg` files for MacOS and `.exe` or `.msi` files for Windows.
 
-You can decide to not upload any file. Then, no archive will be downloaded when deploying this package. This can be useful if you just want to execute a command to install software from a network share or via `apt` package manager from software repositories on Linux.
+If you upload a file type other than a `.zip` archive, a `.zip` archive is automatically created with the uploaded file(s).
+
+On the web frontend, you can toggle the upload input between multi-file or single-directory selection. Due to the (current) limitations of the HTML file input element, it is not possible to select files and directory or multiple directories at once. Please organize your setup files into a single directory before selecting it on the web frontend.
+
+Please note that creating an archive with the directory structure of the original directory is only available when using PHP 8.1 or newer. Only PHP 8.1 delivers the full path of the uploaded files to the PHP script.
+
+You can also decide to not upload any file. Then, no archive will be downloaded on the target machine when deploying the package. This can be useful if you just want to execute a command that installs software from a network share or via `apt` package manager from software repositories on Linux.
 
 ### Continuous Integration/Delivery/Deployment
 The OCO API can for example be used to automatically create packages from a Continuous Integration service like GitLab CI/CD. Your CI pipeline will then call the OCO API after builing the binaries, and create a package with them. OCO can act as Continuous Delivery or Continuous Deployment service, which automatically deploys your binaries on tester's or user's computers.

@@ -407,6 +407,7 @@ return [
 	'uninstallation' => 'Uninstallation',
 	'package_content' => 'Package Content',
 	'toggle_multi_line' => 'Toggle multi line text field',
+	'toggle_directory_upload' => 'Toggle between directory and file upload',
 	'initiator' => 'Initiator',
 	'report_groups' => 'Report Groups',
 	'expand_or_collapse_tree' => '(Double) click to exapnd or collapse tree',

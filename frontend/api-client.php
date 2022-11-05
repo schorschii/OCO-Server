@@ -247,7 +247,7 @@ switch($srcdata['method']) {
 			foreach($data['files'] as $file) {
 				$counter ++;
 				if(empty($file['name']) || empty($file['content'])) continue;
-				$tmpFilePath = '/tmp/ocotmp'.$counter;
+				$tmpFilePath = '/tmp/oco-'.uniqid().'-'.$counter.'.tmp';
 				$fileContent = base64_decode($file['content'], true);
 				if(!$fileContent) {
 					throw new InvalidRequestException(LANG('payload_corrupt'));
