@@ -93,7 +93,7 @@ class DatabaseController {
 			}
 		}
 		$groupStrings = array_reverse($groupStrings);
-		return implode($groupStrings, ' » ');
+		return implode(' » ', $groupStrings);
 	}
 	public function getPackageGroupBreadcrumbString($id) {
 		$currentGroupId = $id;
@@ -108,7 +108,7 @@ class DatabaseController {
 			}
 		}
 		$groupStrings = array_reverse($groupStrings);
-		return implode($groupStrings, ' » ');
+		return implode(' » ', $groupStrings);
 	}
 	public function getReportGroupBreadcrumbString($id) {
 		$currentGroupId = $id;
@@ -123,7 +123,7 @@ class DatabaseController {
 			}
 		}
 		$groupStrings = array_reverse($groupStrings);
-		return implode($groupStrings, ' » ');
+		return implode(' » ', $groupStrings);
 	}
 
 	// Computer Operations
@@ -2487,7 +2487,7 @@ class DatabaseController {
 		}
 		$actionSql .= ')';
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM log WHERE '.($object_id===null ? 'object_id IS NULL' : $object_id===false ? '1=1' : 'object_id = :object_id').' AND '.$actionSql.' ORDER BY timestamp DESC '.($limit ? 'LIMIT '.intval($limit) : '')
+			'SELECT * FROM log WHERE '.($object_id===null ? 'object_id IS NULL' : ($object_id===false ? '1=1' : 'object_id = :object_id')).' AND '.$actionSql.' ORDER BY timestamp DESC '.($limit ? 'LIMIT '.intval($limit) : '')
 		);
 		if($object_id !== null && $object_id !== false) {
 			$params[':object_id'] = $object_id;

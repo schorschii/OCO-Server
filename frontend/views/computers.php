@@ -103,8 +103,8 @@ try {
 			echo "<td>".htmlspecialchars($c->os)."</td>";
 			echo "<td>".htmlspecialchars($c->os_version)."</td>";
 			echo "<td sort_key='".htmlspecialchars($c->ram)."'>".htmlspecialchars(niceSize($c->ram, true, 0))."</td>";
-			echo "<td>".htmlspecialchars(implode($ip_addresses,', '))."</td>";
-			echo "<td>".htmlspecialchars(implode($mac_addresses,', '))."</td>";
+			echo "<td>".htmlspecialchars(implode(', ',$ip_addresses))."</td>";
+			echo "<td>".htmlspecialchars(implode(', ',$mac_addresses))."</td>";
 			echo "<td>".htmlspecialchars($c->manufacturer.' '.$c->model)."</td>";
 			echo "<td>".htmlspecialchars($c->serial)."</td>";
 			echo "<td>".htmlspecialchars($c->agent_version)."</td>";
