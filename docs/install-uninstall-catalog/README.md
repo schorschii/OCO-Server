@@ -1,4 +1,4 @@
 # Install/Uninstall Command Catalog
-This directory contains software-specific installation and unstallation commands.
+This directory contains software-specific commands for silent installation and unstallation via OCO.
 
 Contributions welcome.

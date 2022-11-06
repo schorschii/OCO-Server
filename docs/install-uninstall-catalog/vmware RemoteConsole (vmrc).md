@@ -32,4 +32,5 @@ The necessary parameters were figured out by manually extracting the bundle and 
 
 ## Links:
 [1] https://docs.vmware.com/en/VMware-Remote-Console/12.0/com.vmware.vmrc.vra.doc/GUID-5E84D36C-5676-4CB6-BA4E-970051F72E43.html
+
 [2] https://docs.vmware.com/en/VMware-Remote-Console/12.0/com.vmware.vmrc.vra.doc/GUID-121D9620-3036-4CF5-B19B-BBD629406430.html

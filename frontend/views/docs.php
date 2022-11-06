@@ -6,19 +6,27 @@ require_once('../session.php');
 const DOCS_PATH      = __DIR__.'/../../docs';
 const DECISIONS_DIR  = 'decisions';
 const DECISIONS_PATH = DOCS_PATH.'/'.DECISIONS_DIR;
+const CATALOG_DIR  = 'install-uninstall-catalog';
+const CATALOG_PATH = DOCS_PATH.'/'.CATALOG_DIR;
 
 $decisionFiles = [];
-foreach(scandir(DECISIONS_PATH) as $decision) {
-	if(startsWith($decision, '.')) continue;
-	$decisionFiles[] = DECISIONS_DIR.'/'.$decision;
+foreach(scandir(DECISIONS_PATH) as $file) {
+	if(startsWith($file, '.')) continue;
+	$decisionFiles[] = DECISIONS_DIR.'/'.$file;
+}
+$catalogFiles = [];
+foreach(scandir(CATALOG_PATH) as $file) {
+	if(startsWith($file, '.')) continue;
+	$catalogFiles[] = CATALOG_DIR.'/'.$file;
 }
 
 $fileName = 'README.md';
 if(!empty($_GET['page'])
-&& in_array($_GET['page'], array_merge(['../README.md'], scandir(DOCS_PATH), $decisionFiles)))
+&& in_array($_GET['page'], array_merge(['../README.md'], scandir(DOCS_PATH), $decisionFiles, $catalogFiles)))
 	$fileName = $_GET['page'];
 
-if(file_exists(DOCS_PATH.'/'.$fileName) && is_file(DOCS_PATH.'/'.$fileName)) {
+if(file_exists(DOCS_PATH.'/'.$fileName) && is_file(DOCS_PATH.'/'.$fileName)) { // render MarkDown as HTML
+
 	$Parsedown = new Parsedown();
 	$content = file_get_contents(DOCS_PATH.'/'.$fileName);
 	if(empty($content)) die("<div class='alert error'>".LANG('not_found')."</div>");
@@ -46,12 +54,25 @@ if(file_exists(DOCS_PATH.'/'.$fileName) && is_file(DOCS_PATH.'/'.$fileName)) {
 		}
 	}
 	echo $dom->saveHTML();
-} elseif($fileName == 'decisions') {
+
+} elseif($fileName == DECISIONS_DIR) { // directory listing
+
 	echo "<ul>";
-	foreach($decisionFiles as $decision) {
-		echo "<li><a href='index.php?view=docs&page=decisions/".urlencode(basename($decision))."'>".htmlspecialchars(basename($decision))."</a></href>";
+	foreach($decisionFiles as $file) {
+		echo "<li><a href='index.php?view=docs&page=".urlencode($fileName)."/".urlencode(basename($file))."'>".htmlspecialchars(basename($file))."</a></href>";
 	}
 	echo "</ul>";
+
+} elseif($fileName == CATALOG_DIR) { // directory listing
+
+	echo "<ul>";
+	foreach($catalogFiles as $file) {
+		echo "<li><a href='index.php?view=docs&page=".urlencode($fileName)."/".urlencode(basename($file))."'>".htmlspecialchars(basename($file))."</a></href>";
+	}
+	echo "</ul>";
+
 } else {
+
 	echo "<div class='alert error'>".LANG('not_found')."</div>";
+
 }
