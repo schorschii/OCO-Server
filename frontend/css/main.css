@@ -1,10 +1,12 @@
 /*** Fonts ***/
 @font-face {
 	font-family: 'Quicksand';
+	font-weight: 100 1000;
 	src: url('../fonts/Quicksand-VariableFont_wght.ttf');
 }
 @font-face {
 	font-family: 'SourceCodePro';
+	font-weight: 100 1000;
 	src: url('../fonts/SourceCodePro-VariableFont_wght.ttf');
 }
 
