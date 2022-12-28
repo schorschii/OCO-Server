@@ -1,5 +1,10 @@
-<link rel='icon' href='img/logo.dyn.svg' type='image/svg'>
-<link rel='apple-touch-icon' sizes='1024x1024' href='img/logo.png'>
+<meta charset='utf-8'/>
+<meta name='viewport' content='width=device-width'>
+<meta name='author' content='Georg Sieber'>
+
+<link rel='icon' href='img/logo.png' type='image/png'><!-- fallback PNG favicon for Safari (the new Internet Explorer) -->
+<link rel='icon' href='img/logo.dyn.svg' type='image/svg'><!-- dynamic SVG favicon for all real browsers -->
+<link rel='apple-touch-icon' sizes='1024x1024' href='img/logo.png'><!-- Extrawurst for super special Apple devices -->
 
 <link rel='stylesheet' type='text/css' href='css/main.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
 <link rel='stylesheet' type='text/css' href='css/self-service.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
@@ -27,6 +32,3 @@ foreach($ext->getAggregatedConf('self-service-css') as $filename) {
 <link rel='prefetch' as='image' href='img/success.message.svg'>
 <link rel='prefetch' as='image' href='img/warning.message.svg'>
 <link rel='prefetch' as='image' href='img/error.message.svg'>
-
-<meta name='viewport' content='width=device-width'>
-<meta name='author' content='Georg Sieber'>
