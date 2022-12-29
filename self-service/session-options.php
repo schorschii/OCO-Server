@@ -1,11 +1,14 @@
 <?php
 
 // prepare PHP session options
+session_name('OCOSESSID');
+
 $secure = false;
 if(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
 	$secure = true;
 	header('strict-transport-security: max-age=15552000; includeSubDomains');
 }
+
 if(version_compare(PHP_VERSION, '7.3.0') >= 0) {
 	session_set_cookie_params([
 		'lifetime' => 0,
