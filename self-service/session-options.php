@@ -1,7 +1,7 @@
 <?php
 
 // prepare PHP session options
-session_name('OCOSESSID');
+session_name('OCOSESSID_SELF_SERVICE');
 
 $secure = false;
 if(!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
