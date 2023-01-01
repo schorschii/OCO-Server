@@ -2,9 +2,12 @@
 <meta name='viewport' content='width=device-width'>
 <meta name='author' content='Georg Sieber'>
 
-<link rel='icon' href='img/logo.png' type='image/png'><!-- fallback PNG favicon for Safari (the new Internet Explorer) -->
-<link rel='icon' href='img/logo.dyn.svg' type='image/svg'><!-- dynamic SVG favicon for all real browsers -->
-<link rel='apple-touch-icon' sizes='1024x1024' href='img/logo.png'><!-- Extrawurst for super special Apple devices -->
+<meta name='theme-color' content='#314351'>
+<!-- dynamic light/dark SVG favicon for all real browsers -->
+<link rel='icon' href='img/logo.dyn.svg' type='image/svg'>
+<!-- Extrawurst for the super special Apple browser (Safari, the new Internet Explorer, does not render SVGs in "<link rel='icon'>") -->
+<link rel='mask-icon' href='img/logo.dyn.svg' color='#314351'>
+<link rel='apple-touch-icon' sizes='1024x1024' href='img/touchicon.png'>
 
 <link rel='stylesheet' type='text/css' href='css/main.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
 
