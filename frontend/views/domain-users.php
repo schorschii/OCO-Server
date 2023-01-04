@@ -10,8 +10,10 @@ if(!empty($_GET['id'])) {
 		$domainUser = $cl->getDomainUser($_GET['id']);
 
 		$historyLimit = null;
+		$computerHistoryLimit = null;
 		$permissionEntry = $cl->getPermissionEntry(PermissionManager::SPECIAL_PERMISSION_DOMAIN_USER, PermissionManager::METHOD_READ);
 		if(isset($permissionEntry['history_limit'])) $historyLimit = intval($permissionEntry['history_limit']);
+		if(isset($permissionEntry['computer_history_limit'])) $computerHistoryLimit = intval($permissionEntry['computer_history_limit']);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG('not_found')."</div>");
 	} catch(PermissionException $e) {
@@ -37,12 +39,18 @@ if(!empty($_GET['id'])) {
 				</tr>
 			</thead>
 			<?php
+			$counter = 0;
 			foreach($db->selectAllAggregatedDomainUserLogonByDomainUserId($domainUser->id) as $logon) {
+				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 				echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
 				echo "</tr>";
+				if(!empty($computerHistoryLimit) && $counter >= $computerHistoryLimit) {
+					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
+					break;
+				}
 			}
 			?>
 			<tfoot>
