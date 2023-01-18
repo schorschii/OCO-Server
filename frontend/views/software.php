@@ -31,6 +31,7 @@ if(!empty($_GET['id'])) {
 					<th class='searchable sortable'><?php echo LANG('version'); ?></th>
 				</tr>
 			</thead>
+			<tbody>
 			<?php
 			foreach($db->selectAllComputerBySoftwareId($_GET['id']) as $c) {
 				echo "<tr>";
@@ -40,6 +41,7 @@ if(!empty($_GET['id'])) {
 				echo "</tr>";
 			}
 			?>
+			</tbody>
 			<tfoot>
 				<tr>
 					<td colspan='999'>
@@ -77,6 +79,7 @@ if(!empty($_GET['id'])) {
 					<th class='searchable sortable'><?php echo LANG('version'); ?></th>
 				</tr>
 			</thead>
+			<tbody>
 			<?php
 			foreach($db->selectAllComputerBySoftwareName($_GET['name']) as $c) {
 				echo "<tr>";
@@ -85,6 +88,7 @@ if(!empty($_GET['id'])) {
 				echo "</tr>";
 			}
 			?>
+			</tbody>
 			<tfoot>
 				<tr>
 					<td colspan='999'>
@@ -134,6 +138,7 @@ if(!empty($_GET['id'])) {
 				<th class='searchable sortable'><?php echo LANG('installations'); ?></th>
 			</tr>
 		</thead>
+		<tbody>
 		<?php
 		foreach($software as $s) {
 			echo "<tr>";
@@ -142,6 +147,7 @@ if(!empty($_GET['id'])) {
 			echo "</tr>";
 		}
 		?>
+		</tbody>
 		<tfoot>
 			<tr>
 				<td colspan='999'>
