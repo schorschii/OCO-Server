@@ -480,7 +480,7 @@ $commands = Models\Computer::getCommands($ext);
 								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('details'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('status_reported'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
 							</tr>
 						</thead>
