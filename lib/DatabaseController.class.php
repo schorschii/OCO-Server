@@ -1129,7 +1129,7 @@ class DatabaseController {
 		}
 		return $insertId;
 	}
-	public function reorderPackageInGroup($package_group_id, $old_seq, $new_seq) {
+	public function reorderPackageInGroup($package_group_id, int $old_seq, int $new_seq) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE package_group_member
 			SET sequence = CASE
@@ -1141,8 +1141,8 @@ class DatabaseController {
 			AND sequence BETWEEN LEAST(:newpos, :oldpos) AND GREATEST(:newpos, :oldpos)'
 		);
 		$this->stmt->bindParam(':package_group_id', $package_group_id, PDO::PARAM_INT);
-		$this->stmt->bindParam(':oldpos', intval($old_seq), PDO::PARAM_INT);
-		$this->stmt->bindParam(':newpos', intval($new_seq), PDO::PARAM_INT);
+		$this->stmt->bindParam(':oldpos', $old_seq, PDO::PARAM_INT);
+		$this->stmt->bindParam(':newpos', $new_seq, PDO::PARAM_INT);
 		if(!$this->stmt->execute()) return false;
 		return $this->renewPackageGroupOrder($package_group_id);
 	}

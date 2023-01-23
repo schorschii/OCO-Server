@@ -573,7 +573,7 @@ class CoreLogic {
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
 
-		$this->db->reorderPackageInGroup($packageGroup->id, $oldPos, $newPos);
+		$this->db->reorderPackageInGroup($packageGroup->id, intval($oldPos), intval($newPos));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $packageGroup->id, 'oco.package_group.reorder', ['old_pos'=>$oldPos, 'new_pos'=>$newPos]);
 	}
 	public function renamePackageGroup($id, $newName) {
