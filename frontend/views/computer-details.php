@@ -201,7 +201,7 @@ $commands = Models\Computer::getCommands($ext);
 								echo "<td><a ".explorerLink('views/domain-users.php?id='.$logon->domain_user_id).">".htmlspecialchars($logon->domain_user_username)."</a></td>";
 								echo "<td>".htmlspecialchars($logon->domain_user_display_name)."</td>";
 								echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
-								echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
 								echo "</tr>";
 								if(!empty($computerHistoryLimit) && $counter >= $computerHistoryLimit) {
 									echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";

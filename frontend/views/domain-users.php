@@ -45,7 +45,7 @@ if(!empty($_GET['id'])) {
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
-				echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
+				echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
 				echo "</tr>";
 				if(!empty($computerHistoryLimit) && $counter >= $computerHistoryLimit) {
 					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
@@ -86,7 +86,7 @@ if(!empty($_GET['id'])) {
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->console)."</td>";
-				echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
+				echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
 				echo "</tr>";
 				if(!empty($historyLimit) && $counter >= $historyLimit) {
 					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
@@ -151,7 +151,7 @@ if(!empty($_GET['id'])) {
 			echo "<td>".htmlspecialchars($u->display_name)."</td>";
 			echo "<td>".htmlspecialchars($u->logon_amount)."</td>";
 			echo "<td>".htmlspecialchars($u->computer_amount)."</td>";
-			echo "<td>".htmlspecialchars($u->timestamp)."</td>";
+			echo "<td>".htmlspecialchars($u->timestamp?$cl->formatLoginDate($u->timestamp):'')."</td>";
 			echo "</tr>";
 		}
 		?>

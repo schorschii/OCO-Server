@@ -1815,4 +1815,10 @@ class CoreLogic {
 		return $insertId;
 	}
 
+	public function formatLoginDate(string $date) {
+		$permissionEntry = $this->getPermissionEntry(PermissionManager::SPECIAL_PERMISSION_DOMAIN_USER, PermissionManager::METHOD_READ);
+		$format = $permissionEntry['login_display_date_format'] ?? 'Y-m-d H:i:s';
+		return date($format, strtotime($date));
+	}
+
 }
