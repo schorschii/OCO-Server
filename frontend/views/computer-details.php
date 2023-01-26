@@ -196,6 +196,10 @@ $commands = Models\Computer::getCommands($ext);
 							<?php
 							$counter = 0;
 							foreach($db->selectAllDomainUserLogonByComputerId($computer->id) as $logon) {
+								if(is_int($computerHistoryLimit) && $counter >= $computerHistoryLimit) {
+									echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
+									break;
+								}
 								$counter ++;
 								echo "<tr>";
 								echo "<td><a ".explorerLink('views/domain-users.php?id='.$logon->domain_user_id).">".htmlspecialchars($logon->domain_user_username)."</a></td>";
@@ -203,10 +207,6 @@ $commands = Models\Computer::getCommands($ext);
 								echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 								echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
 								echo "</tr>";
-								if(!empty($computerHistoryLimit) && $counter >= $computerHistoryLimit) {
-									echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
-									break;
-								}
 							}
 							?>
 						</tbody>

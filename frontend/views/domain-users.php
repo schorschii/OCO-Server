@@ -38,21 +38,23 @@ if(!empty($_GET['id'])) {
 					<th class='searchable sortable'><?php echo LANG('last_login'); ?></th>
 				</tr>
 			</thead>
+			<tbody>
 			<?php
 			$counter = 0;
 			foreach($db->selectAllAggregatedDomainUserLogonByDomainUserId($domainUser->id) as $logon) {
+				if(is_int($computerHistoryLimit) && $counter >= $computerHistoryLimit) {
+					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
+					break;
+				}
 				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 				echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
 				echo "</tr>";
-				if(!empty($computerHistoryLimit) && $counter >= $computerHistoryLimit) {
-					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
-					break;
-				}
 			}
 			?>
+			</tbody>
 			<tfoot>
 				<tr>
 					<td colspan='999'>
@@ -79,21 +81,23 @@ if(!empty($_GET['id'])) {
 					<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
 				</tr>
 			</thead>
+			<tbody>
 			<?php
 			$counter = 0;
 			foreach($db->selectAllDomainUserLogonByDomainUserId($domainUser->id) as $logon) {
+				if(is_int($historyLimit) && $counter >= $historyLimit) {
+					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
+					break;
+				}
 				$counter ++;
 				echo "<tr>";
 				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->console)."</td>";
 				echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
 				echo "</tr>";
-				if(!empty($historyLimit) && $counter >= $historyLimit) {
-					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
-					break;
-				}
 			}
 			?>
+			</tbody>
 			<tfoot>
 				<tr>
 					<td colspan='999'>
@@ -143,6 +147,7 @@ if(!empty($_GET['id'])) {
 				<th class='searchable sortable'><?php echo LANG('last_login'); ?></th>
 			</tr>
 		</thead>
+		<tbody>
 		<?php
 		foreach($domainUsers as $u) {
 			echo "<tr>";
@@ -155,6 +160,7 @@ if(!empty($_GET['id'])) {
 			echo "</tr>";
 		}
 		?>
+		</tbody>
 		<tfoot>
 			<tr>
 				<td colspan='999'>
