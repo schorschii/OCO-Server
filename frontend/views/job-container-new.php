@@ -109,13 +109,9 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 
 	</div>
 	<div class='tabcontents'>
-
-		<div id='tabSimple' name='simple' class='<?php if($tab=='simple') echo 'active'; ?>'>
-		</div>
-
-		<div id='tabAdvanced' name='advanced' class='<?php if($tab=='advanced') echo 'active'; ?>'>
-		</div>
-
+		<!-- dummy tab contents -->
+		<div id='tabSimple' name='simple' class='<?php if($tab=='simple') echo 'active'; ?>'></div>
+		<div id='tabAdvanced' name='advanced' class='<?php if($tab=='advanced') echo 'active'; ?>'></div>
 	</div>
 
 	<div class='gallery margintop'>

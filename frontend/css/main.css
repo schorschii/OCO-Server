@@ -694,11 +694,6 @@ table.aligned tr > *:first-child {
 table.aligned tr > *:last-child {
 	padding-right: 0px;
 }
-
-#txtDescription {
-	width: 100%;
-	resize: vertical;
-}
 table.list, .boxshadow {
 	box-shadow: 1px 1px 4px 0 rgba(0,0,0,0.08);
 }
@@ -755,6 +750,10 @@ table.form input:not([type=checkbox]):not([type=radio]),
 table.form select,
 table.form textarea {
 	width: 100%;
+}
+table.form textarea {
+	resize: vertical;
+	height: 70px;
 }
 table.form th:not(:first-child) {
 	padding-left: 25px;
@@ -1353,7 +1352,7 @@ div.stickytable > table.list tfoot {
 .box.listSearchList {
 	resize: vertical;
 	min-height: 100px;
-	height: 160px;
+	height: 155px;
 	overflow-y: scroll;
 	padding: 0px;
 

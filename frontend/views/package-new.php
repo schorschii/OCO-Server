@@ -60,7 +60,7 @@ require_once('../session.php');
 	<?php } ?>
 </datalist>
 
-<table id='frmNewPackage' class='form'>
+<table id='frmNewPackage' class='form fullwidth'>
 	<tr><td colspan='2'><h2><?php echo LANG('general'); ?></h2></td></tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('package_family_name'); ?></th>
