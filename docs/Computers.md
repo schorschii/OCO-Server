@@ -29,6 +29,8 @@ You can monitor the Windows event log of your clients by creating Event Query Ru
 
 The query syntax is the exact same XML format as you would enter it in the Windows event viewer.
 
+Please note that Windows generates many log entries. A meaningful filter should always be applied to not spam the database with unnecessary events.
+
 ### Example Rules
 #### Get Defender Warning, Error and Critical Events
 (including "Malware Detected" events with event ID 1116)

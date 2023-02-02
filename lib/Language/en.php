@@ -234,6 +234,8 @@ return [
 	'report_less_than_20gib_on_drive_c' => 'Computers with less than 20 GiB on Drive C:',
 	'report_total_disk_space' => 'Total Disk Space (All Computers)',
 	'report_total_ram_space' => 'Total RAM Space (All Computers)',
+	'report_critical_services' => 'Critical Services',
+	'report_critical_events' => 'Critical Events',
 	'success_return_codes' => 'Success Return Codes',
 	'success_return_codes_comma_separated' => 'Separate multiple codes with a comma',
 	'uninstall_old_package_versions' => 'Uninstall old package versions',

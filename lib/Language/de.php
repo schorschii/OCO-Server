@@ -229,6 +229,8 @@ return [
 	'report_less_than_20gib_on_drive_c' => 'Computer mit weniger als 20 GiB Speicherplatz auf C:',
 	'report_total_disk_space' => 'Gesamter Festplattenspeicher (alle Computer)',
 	'report_total_ram_space' => 'Gesamter Arbeitsspeicher (alle Computer)',
+	'report_critical_services' => 'Kritische Services',
+	'report_critical_events' => 'Kritische Ereignisse',
 	'success_return_codes' => 'Erfolgreiche Return-Codes',
 	'success_return_codes_comma_separated' => 'Mehrere Return-Codes mit Komma trennen',
 	'uninstall_old_package_versions' => 'Alte Paketversionen deinstallieren',

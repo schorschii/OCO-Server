@@ -603,7 +603,7 @@ CREATE TABLE IF NOT EXISTS `report` (
   PRIMARY KEY (`id`),
   KEY `fk_report_1` (`report_group_id`),
   CONSTRAINT `fk_report_1` FOREIGN KEY (`report_group_id`) REFERENCES `report_group` (`id`) ON DELETE SET NULL ON UPDATE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT=1000;
 
 --
 -- Daten für Tabelle `report`
@@ -621,7 +621,9 @@ REPLACE INTO `report` (`id`, `report_group_id`, `name`, `notes`, `query`) VALUES
 (9, 1, 'report_total_disk_space', '', 'SELECT ROUND(SUM(free)/1024/1024/1024/1024, 2) AS \'Free Space (TiB)\', ROUND(SUM(size)/1024/1024/1024/1024, 2) AS \'Total Space (TiB)\' FROM computer_partition'),
 (10, 1, 'report_total_ram_space', '', 'SELECT ROUND(SUM(ram)/1024/1024/1024, 2) AS \'Total RAM (GiB)\' FROM computer'),
 (11, 1, 'report_all_19_monitors', '', 'SELECT c.hostname, cs.*, ROUND(SQRT(POW(SUBSTRING_INDEX(cs.size, \" x \", 1),2) + POW(SUBSTRING_INDEX(cs.size, \" x \", -1),2)) * 0.393701) AS \'Size (inches)\' FROM `computer_screen` cs INNER JOIN `computer` c ON c.id = cs.computer_id WHERE cs.serialno != \"\" HAVING `Size (inches)` <= 19 AND `Size (inches)` > 0'),
-(12, 1, 'report_less_than_20gib_on_drive_c', '', 'SELECT c.id AS \'computer_id\', c.hostname, ROUND((SELECT cp.free FROM computer_partition cp WHERE cp.computer_id = c.id AND cp.mountpoint LIKE \'C:\')/1024/1024/1024) AS \'Free Space (GiB)\' FROM computer c HAVING `Free Space (GiB)` < 20');
+(12, 1, 'report_less_than_20gib_on_drive_c', '', 'SELECT c.id AS \'computer_id\', c.hostname, ROUND((SELECT cp.free FROM computer_partition cp WHERE cp.computer_id = c.id AND cp.mountpoint LIKE \'C:\')/1024/1024/1024) AS \'Free Space (GiB)\' FROM computer c HAVING `Free Space (GiB)` < 20'),
+(13, 1, 'report_critical_services', '', 'SELECT cs.computer_id, c.hostname, cs.status, cs.timestamp, cs.updated, cs.details FROM computer_service cs INNER JOIN computer c ON c.id = cs.computer_id WHERE cs.id IN (SELECT MAX(cs2.id) FROM computer_service cs2 GROUP BY cs2.computer_id, cs2.name) AND cs.status != 0 ORDER BY c.hostname ASC'),
+(14, 1, 'report_critical_events', '', 'SELECT timestamp, computer_id, hostname, event_id, IF(level=2, "ERROR", IF(level=3, "WARNING", level)) AS "level", data AS "Error Description" FROM computer_event ce INNER JOIN computer c ON c.id = ce.computer_id ORDER BY timestamp DESC');
 
 -- --------------------------------------------------------
 
