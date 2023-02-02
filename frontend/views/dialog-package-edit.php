@@ -48,7 +48,7 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG('success_return_codes'); ?></th>
-		<td><input class='fullwidth' autocomplete='new-password' id='txtEditPackageInstallProcedureSuccessReturnCodes'></input></td>
+		<td><input class='fullwidth' autocomplete='new-password' id='txtEditPackageInstallProcedureSuccessReturnCodes' title='<?php echo LANG('success_return_codes_comma_separated'); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('after_completion'); ?></th>
@@ -72,7 +72,7 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG('success_return_codes'); ?></th>
-		<td><input class='fullwidth' autocomplete='new-password' id='txtEditPackageUninstallProcedureSuccessReturnCodes'></input></td>
+		<td><input class='fullwidth' autocomplete='new-password' id='txtEditPackageUninstallProcedureSuccessReturnCodes' title='<?php echo LANG('success_return_codes_comma_separated'); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('after_completion'); ?></th>
