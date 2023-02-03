@@ -25,6 +25,7 @@ class LdapSync {
 		}
 
 		// connect to server
+		$availSystemUserRoleIds = array_map(function($o){return $o->id;}, $this->db->selectAllSystemUserRole());
 		$ldapconn = ldap_connect(LDAP_SERVER);
 		if(!$ldapconn) {
 			throw new Exception('ldap_connect failed');
@@ -107,7 +108,7 @@ class LdapSync {
 			/* We currently do not modify the OCO locked flag via LDAP sync.
 			   If the user is disabled in AD, then the login function (which tries an LDAP simple bind) will fail anyway. */
 
-		   // check group membership and determine role ID
+			// check group membership and determine role ID
 			$groupCheck = null;
 			if(empty(LDAP_GROUPS)) {
 				$groupCheck = LDAP_DEFAULT_ROLE_ID;
@@ -115,6 +116,10 @@ class LdapSync {
 				for($n=0; $n<$account["memberof"]["count"]; $n++) {
 					foreach(LDAP_GROUPS as $ldapGroupPath => $roleId) {
 						if($account["memberof"][$n] == $ldapGroupPath) {
+							if(!in_array($roleId, $availSystemUserRoleIds)) {
+								if($this->debug) echo '-> '.$username.': configured role id '.$roleId.' does not exist, skipping !!!'."\n";
+								break 2;
+							}
 							$groupCheck = $roleId;
 							break 2;
 						}
@@ -191,6 +196,7 @@ class LdapSync {
 		}
 
 		// connect to server
+		$availDomainUserRoleIds = array_map(function($o){return $o->id;}, $this->db->selectAllDomainUserRole());
 		$ldapconn = ldap_connect(LDAP_SERVER);
 		if(!$ldapconn) {
 			throw new Exception('ldap_connect failed');
@@ -274,7 +280,7 @@ class LdapSync {
 			/* We currently do not modify the OCO locked flag via LDAP sync.
 			   If the user is disabled in AD, then the login function (which tries an LDAP simple bind) will fail anyway. */
 
-		   // check group membership and determine role ID
+			// check group membership and determine role ID
 			$groupCheck = null;
 			if(empty(SELF_SERVICE_LDAP_GROUPS)) {
 				$groupCheck = SELF_SERVICE_DEFAULT_ROLE_ID;
@@ -282,6 +288,10 @@ class LdapSync {
 				for($n=0; $n<$account["memberof"]["count"]; $n++) {
 					foreach(SELF_SERVICE_LDAP_GROUPS as $ldapGroupPath => $roleId) {
 						if($account["memberof"][$n] == $ldapGroupPath) {
+							if(!in_array($roleId, $availDomainUserRoleIds)) {
+								if($this->debug) echo '-> '.$username.': configured role id '.$roleId.' does not exist, skipping !!!'."\n";
+								break 2;
+							}
 							$groupCheck = $roleId;
 							break 2;
 						}
