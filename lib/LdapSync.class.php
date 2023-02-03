@@ -24,12 +24,14 @@ class LdapSync {
 			throw new Exception('LDAP sync not configured');
 		}
 
+		// connect to server
 		$ldapconn = ldap_connect(LDAP_SERVER);
 		if(!$ldapconn) {
 			throw new Exception('ldap_connect failed');
 		}
-
 		if($this->debug) echo "<=== ldap_connect OK ===>\n";
+
+		// set options and authenticate
 		ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
 		ldap_set_option($ldapconn, LDAP_OPT_NETWORK_TIMEOUT, 5);
 		ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0 );
@@ -37,33 +39,47 @@ class LdapSync {
 		if(!$ldapbind) {
 			throw new Exception('ldap_bind failed: '.ldap_error($ldapconn));
 		}
-
 		if($this->debug) echo "<=== ldap_bind OK ===>\n";
-		$result = ldap_search($ldapconn, LDAP_QUERY_ROOT, "(objectClass=".ldap_escape(LDAP_USER_CLASS).")");
-		if(!$result) {
-			throw new Exception('ldap_search failed: '.ldap_error($ldapconn));
-		}
 
-		$data = ldap_get_entries($ldapconn, $result);
-
-		if($this->debug) echo "<=== ldap_search OK - processing ".$data["count"]." entries... ===>\n";
+		// ldap search with paging support
+		$data = [];
+		$cookie = null;
+		do {
+			$result = ldap_search(
+				$ldapconn, LDAP_QUERY_ROOT, "(objectClass=".ldap_escape(LDAP_USER_CLASS).")",
+				[] /*attributes*/, 0 /*attributes_only*/, -1 /*sizelimit*/, -1 /*timelimit*/, LDAP_DEREF_NEVER,
+				[ ['oid' => LDAP_CONTROL_PAGEDRESULTS, 'value' => ['size' => 750, 'cookie' => $cookie]] ]
+			);
+			if(!$result) {
+				throw new Exception('ldap_search failed: '.ldap_error($ldapconn));
+			}
+			ldap_parse_result($ldapconn, $result, $errcode, $matcheddn, $errmsg, $referrals, $controls);
+			$data = array_merge($data, ldap_get_entries($ldapconn, $result));
+			if(isset($controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'])) {
+				$cookie = $controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'];
+			} else {
+				$cookie = null;
+			}
+		} while(!empty($cookie));
+		if($this->debug) echo "<=== ldap_search OK - processing entries... ===>\n";
 
 		// iterate over results array
 		$foundLdapUsers = [];
 		$counter = 1;
-		for($i=0; $i<$data["count"]; $i++) {
-			#var_dump($data[$i]); die(); // debug
+		foreach($data as $key => $account) {
+			if(!is_numeric($key)) continue; // skip "count" entry
+			#var_dump($account); die(); // debug
 
-			if(empty($data[$i][LDAP_ATTR_UID][0])) {
+			if(empty($account[LDAP_ATTR_UID][0])) {
 				continue;
 			}
-			$uid = self::GUIDtoStr($data[$i][LDAP_ATTR_UID][0]);
+			$uid = self::GUIDtoStr($account[LDAP_ATTR_UID][0]);
 			if(array_key_exists($uid, $foundLdapUsers)) {
 				throw new Exception('Duplicate UID '.$uid.'!');
 			}
 
 			// parse LDAP values
-			$username    = $data[$i][LDAP_ATTR_USERNAME][0];
+			$username    = $account[LDAP_ATTR_USERNAME][0];
 			$firstname   = "?";
 			$lastname    = "?";
 			$displayname = "?";
@@ -72,22 +88,22 @@ class LdapSync {
 			$mobile      = null;
 			$description = null;
 			$locked      = 0;
-			if(isset($data[$i][LDAP_ATTR_FIRST_NAME][0]))
-				$firstname = $data[$i][LDAP_ATTR_FIRST_NAME][0];
-			if(isset($data[$i][LDAP_ATTR_LAST_NAME][0]))
-				$lastname = $data[$i][LDAP_ATTR_LAST_NAME][0];
-			if(isset($data[$i][LDAP_ATTR_DISPLAY_NAME][0]))
-				$displayname = $data[$i][LDAP_ATTR_DISPLAY_NAME][0];
-			if(isset($data[$i][LDAP_ATTR_EMAIL][0]))
-				$mail = $data[$i][LDAP_ATTR_EMAIL][0];
-			if(isset($data[$i][LDAP_ATTR_PHONE][0]))
-				$phone = $data[$i][LDAP_ATTR_PHONE][0];
-			if(isset($data[$i][LDAP_ATTR_MOBILE][0]))
-				$mobile = $data[$i][LDAP_ATTR_MOBILE][0];
-			if(isset($data[$i][LDAP_ATTR_DESCRIPTION][0]))
-				$description = $data[$i][LDAP_ATTR_DESCRIPTION][0];
-			#if(isset($data[$i]["useraccountcontrol"][0]))
-			#	$locked = (intval($data[$i]["useraccountcontrol"][0]) & 2) ? 1 : 0;
+			if(isset($account[LDAP_ATTR_FIRST_NAME][0]))
+				$firstname = $account[LDAP_ATTR_FIRST_NAME][0];
+			if(isset($account[LDAP_ATTR_LAST_NAME][0]))
+				$lastname = $account[LDAP_ATTR_LAST_NAME][0];
+			if(isset($account[LDAP_ATTR_DISPLAY_NAME][0]))
+				$displayname = $account[LDAP_ATTR_DISPLAY_NAME][0];
+			if(isset($account[LDAP_ATTR_EMAIL][0]))
+				$mail = $account[LDAP_ATTR_EMAIL][0];
+			if(isset($account[LDAP_ATTR_PHONE][0]))
+				$phone = $account[LDAP_ATTR_PHONE][0];
+			if(isset($account[LDAP_ATTR_MOBILE][0]))
+				$mobile = $account[LDAP_ATTR_MOBILE][0];
+			if(isset($account[LDAP_ATTR_DESCRIPTION][0]))
+				$description = $account[LDAP_ATTR_DESCRIPTION][0];
+			#if(isset($account["useraccountcontrol"][0]))
+			#	$locked = (intval($account["useraccountcontrol"][0]) & 2) ? 1 : 0;
 			/* We currently do not modify the OCO locked flag via LDAP sync.
 			   If the user is disabled in AD, then the login function (which tries an LDAP simple bind) will fail anyway. */
 
@@ -95,10 +111,10 @@ class LdapSync {
 			$groupCheck = null;
 			if(empty(LDAP_GROUPS)) {
 				$groupCheck = LDAP_DEFAULT_ROLE_ID;
-			} else if(isset($data[$i]["memberof"])) {
-				for($n=0; $n<$data[$i]["memberof"]["count"]; $n++) {
+			} else if(isset($account["memberof"])) {
+				for($n=0; $n<$account["memberof"]["count"]; $n++) {
 					foreach(LDAP_GROUPS as $ldapGroupPath => $roleId) {
-						if($data[$i]["memberof"][$n] == $ldapGroupPath) {
+						if($account["memberof"][$n] == $ldapGroupPath) {
 							$groupCheck = $roleId;
 							break 2;
 						}
@@ -174,12 +190,14 @@ class LdapSync {
 			throw new Exception('LDAP sync not configured');
 		}
 
+		// connect to server
 		$ldapconn = ldap_connect(LDAP_SERVER);
 		if(!$ldapconn) {
 			throw new Exception('ldap_connect failed');
 		}
-
 		if($this->debug) echo "<=== ldap_connect OK ===>\n";
+
+		// set options and authenticate
 		ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
 		ldap_set_option($ldapconn, LDAP_OPT_NETWORK_TIMEOUT, 5);
 		ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0 );
@@ -187,34 +205,48 @@ class LdapSync {
 		if(!$ldapbind) {
 			throw new Exception('ldap_bind failed: '.ldap_error($ldapconn));
 		}
-
 		if($this->debug) echo "<=== ldap_bind OK ===>\n";
-		$result = ldap_search($ldapconn, LDAP_QUERY_ROOT, "(objectClass=".ldap_escape(LDAP_USER_CLASS).")");
-		if(!$result) {
-			throw new Exception('ldap_search failed: '.ldap_error($ldapconn));
-		}
 
-		$data = ldap_get_entries($ldapconn, $result);
-
-		if($this->debug) echo "<=== ldap_search OK - processing ".$data["count"]." entries... ===>\n";
+		// ldap search with paging support
+		$data = [];
+		$cookie = null;
+		do {
+			$result = ldap_search(
+				$ldapconn, LDAP_QUERY_ROOT, "(objectClass=".ldap_escape(LDAP_USER_CLASS).")",
+				[] /*attributes*/, 0 /*attributes_only*/, -1 /*sizelimit*/, -1 /*timelimit*/, LDAP_DEREF_NEVER,
+				[ ['oid' => LDAP_CONTROL_PAGEDRESULTS, 'value' => ['size' => 750, 'cookie' => $cookie]] ]
+			);
+			if(!$result) {
+				throw new Exception('ldap_search failed: '.ldap_error($ldapconn));
+			}
+			ldap_parse_result($ldapconn, $result, $errcode, $matcheddn, $errmsg, $referrals, $controls);
+			$data = array_merge($data, ldap_get_entries($ldapconn, $result));
+			if(isset($controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'])) {
+				$cookie = $controls[LDAP_CONTROL_PAGEDRESULTS]['value']['cookie'];
+			} else {
+				$cookie = null;
+			}
+		} while(!empty($cookie));
+		if($this->debug) echo "<=== ldap_search OK - processing entries... ===>\n";
 
 		// iterate over results array
 		$foundDomainUsers = [];
 		$foundLdapUsers = [];
 		$counter = 1;
-		for($i=0; $i<$data["count"]; $i++) {
-			#var_dump($data[$i]); die(); // debug
+		foreach($data as $key => $account) {
+			if(!is_numeric($key)) continue; // skip "count" entry
+			#var_dump($account); die(); // debug
 
-			if(empty($data[$i][LDAP_ATTR_UID][0])) {
+			if(empty($account[LDAP_ATTR_UID][0])) {
 				continue;
 			}
-			$uid = self::GUIDtoStr($data[$i][LDAP_ATTR_UID][0]);
+			$uid = self::GUIDtoStr($account[LDAP_ATTR_UID][0]);
 			if(array_key_exists($uid, $foundLdapUsers)) {
 				throw new Exception('Duplicate UID '.$uid.'!');
 			}
 
 			// parse LDAP values
-			$username    = $data[$i][LDAP_ATTR_USERNAME][0];
+			$username    = $account[LDAP_ATTR_USERNAME][0];
 			$firstname   = "?";
 			$lastname    = "?";
 			$displayname = "?";
@@ -223,22 +255,22 @@ class LdapSync {
 			$mobile      = null;
 			$description = null;
 			$locked      = 0;
-			if(isset($data[$i][LDAP_ATTR_FIRST_NAME][0]))
-				$firstname = $data[$i][LDAP_ATTR_FIRST_NAME][0];
-			if(isset($data[$i][LDAP_ATTR_LAST_NAME][0]))
-				$lastname = $data[$i][LDAP_ATTR_LAST_NAME][0];
-			if(isset($data[$i][LDAP_ATTR_DISPLAY_NAME][0]))
-				$displayname = $data[$i][LDAP_ATTR_DISPLAY_NAME][0];
-			if(isset($data[$i][LDAP_ATTR_EMAIL][0]))
-				$mail = $data[$i][LDAP_ATTR_EMAIL][0];
-			if(isset($data[$i][LDAP_ATTR_PHONE][0]))
-				$phone = $data[$i][LDAP_ATTR_PHONE][0];
-			if(isset($data[$i][LDAP_ATTR_MOBILE][0]))
-				$mobile = $data[$i][LDAP_ATTR_MOBILE][0];
-			if(isset($data[$i][LDAP_ATTR_DESCRIPTION][0]))
-				$description = $data[$i][LDAP_ATTR_DESCRIPTION][0];
-			#if(isset($data[$i]["useraccountcontrol"][0]))
-			#	$locked = (intval($data[$i]["useraccountcontrol"][0]) & 2) ? 1 : 0;
+			if(isset($account[LDAP_ATTR_FIRST_NAME][0]))
+				$firstname = $account[LDAP_ATTR_FIRST_NAME][0];
+			if(isset($account[LDAP_ATTR_LAST_NAME][0]))
+				$lastname = $account[LDAP_ATTR_LAST_NAME][0];
+			if(isset($account[LDAP_ATTR_DISPLAY_NAME][0]))
+				$displayname = $account[LDAP_ATTR_DISPLAY_NAME][0];
+			if(isset($account[LDAP_ATTR_EMAIL][0]))
+				$mail = $account[LDAP_ATTR_EMAIL][0];
+			if(isset($account[LDAP_ATTR_PHONE][0]))
+				$phone = $account[LDAP_ATTR_PHONE][0];
+			if(isset($account[LDAP_ATTR_MOBILE][0]))
+				$mobile = $account[LDAP_ATTR_MOBILE][0];
+			if(isset($account[LDAP_ATTR_DESCRIPTION][0]))
+				$description = $account[LDAP_ATTR_DESCRIPTION][0];
+			#if(isset($account["useraccountcontrol"][0]))
+			#	$locked = (intval($account["useraccountcontrol"][0]) & 2) ? 1 : 0;
 			/* We currently do not modify the OCO locked flag via LDAP sync.
 			   If the user is disabled in AD, then the login function (which tries an LDAP simple bind) will fail anyway. */
 
@@ -246,10 +278,10 @@ class LdapSync {
 			$groupCheck = null;
 			if(empty(SELF_SERVICE_LDAP_GROUPS)) {
 				$groupCheck = SELF_SERVICE_DEFAULT_ROLE_ID;
-			} else if(isset($data[$i]["memberof"])) {
-				for($n=0; $n<$data[$i]["memberof"]["count"]; $n++) {
+			} else if(isset($account["memberof"])) {
+				for($n=0; $n<$account["memberof"]["count"]; $n++) {
 					foreach(SELF_SERVICE_LDAP_GROUPS as $ldapGroupPath => $roleId) {
-						if($data[$i]["memberof"][$n] == $ldapGroupPath) {
+						if($account["memberof"][$n] == $ldapGroupPath) {
 							$groupCheck = $roleId;
 							break 2;
 						}
