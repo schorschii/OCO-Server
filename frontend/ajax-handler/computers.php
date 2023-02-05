@@ -9,7 +9,7 @@ try {
 		$finalArray = [];
 		foreach($_POST['get_computer_names'] as $id) {
 			$c = $cl->getComputer($id);
-			if(!empty($c)) $finalArray[$c->id] = $c->hostname;
+			if(!empty($c)) $finalArray[] = ['id'=>$c->id, 'name'=>$c->hostname];
 		}
 		die(json_encode($finalArray));
 	}

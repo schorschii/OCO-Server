@@ -9,7 +9,7 @@ try {
 		$finalArray = [];
 		foreach($_POST['get_package_names'] as $id) {
 			$p = $cl->getPackage($id);
-			if(!empty($p)) $finalArray[$p->id] = $p->getFullName();
+			if(!empty($p)) $finalArray[] = ['id'=>$p->id, 'name'=>$p->getFullName()];
 		}
 		die(json_encode($finalArray));
 	}

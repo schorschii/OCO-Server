@@ -50,7 +50,7 @@ $commands = Models\Computer::getCommands($ext);
 	<div class='details-header'>
 	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline() ? LANG('online') : LANG('offline')); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentDeploy([],[],{<?php echo $computer->id; ?>:spnComputerName.innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+		<button onclick='refreshContentDeploy([],[],{"id":<?php echo $computer->id; ?>,"name":spnComputerName.innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
 		<span class='filler'></span>
 		<?php

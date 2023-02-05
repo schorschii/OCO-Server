@@ -1118,7 +1118,7 @@ function getSelectedNodes(root, name=null, warnIfEmpty=false) {
 	for(var i = 0; i < elements.length; i++) {
 		if(name == null || name == elements[i].name) {
 			if(elements[i].checked) {
-				items[elements[i].value] = elements[i].parentNode.innerText;
+				items.push({'id':elements[i].value, 'name':elements[i].parentNode.innerText});
 			}
 		}
 	}
@@ -1153,23 +1153,26 @@ function addSelectedPackagesToDeployTarget() {
 	}
 }
 function addToDeployTarget(items, targetContainer, inputName) {
-	for(var key in items) { // check if it is already in target list
+	if(!Array.isArray(items)) items = [items];
+	items.forEach(item => {
+		// check if it is already in target list
 		var found = false;
 		var elements = targetContainer.getElementsByTagName('input')
 		for(var i = 0; i < elements.length; i++) {
-			if(elements[i].name == inputName && elements[i].value == key) {
+			if(elements[i].name == inputName && elements[i].value == item['id']) {
 				found = true;
-				emitMessage(L__ELEMENT_ALREADY_EXISTS, items[key], MESSAGE_TYPE_WARNING);
+				emitMessage(L__ELEMENT_ALREADY_EXISTS, item['name'], MESSAGE_TYPE_WARNING);
 				break;
 			}
 		}
-		if(!found) { // add to target list
+		// add to target list
+		if(!found) {
 			var newLabel = document.createElement('label');
 			newLabel.classList.add('blockListItem');
 			var newCheckbox = document.createElement('input');
 			newCheckbox.type = 'checkbox';
 			newCheckbox.name = inputName;
-			newCheckbox.value = key;
+			newCheckbox.value = item['id'];
 			newLabel.appendChild(newCheckbox);
 			var newIcon = document.createElement('img');
 			newIcon.draggable = false;
@@ -1185,7 +1188,7 @@ function addToDeployTarget(items, targetContainer, inputName) {
 				newIcon.src = 'img/warning.dyn.svg';
 			}
 			newLabel.appendChild(newIcon);
-			var newContent = document.createTextNode(items[key]);
+			var newContent = document.createTextNode(item['name']);
 			newLabel.appendChild(newContent);
 
 			if(inputName=='target_packages' || inputName=='target_package_groups' || inputName=='target_package_reports') {
@@ -1219,7 +1222,7 @@ function addToDeployTarget(items, targetContainer, inputName) {
 			}
 			targetContainer.appendChild(newLabel);
 		}
-	}
+	});
 	refreshDeployTargetCount();
 }
 function removeSelectedTargets(root, warnIfEmpty=true) {

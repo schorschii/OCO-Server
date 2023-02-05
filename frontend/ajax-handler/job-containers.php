@@ -16,7 +16,7 @@ try {
 		foreach($computers as $c) {
 			if(!$cl->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$c->id.": this.innerText}, divTargetComputerList, \"target_computers\")'><input type='checkbox' name='computers' onclick='refreshDeployComputerCount()' value='".$c->id."' />".htmlspecialchars($c->hostname)."</label>";
+			echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$c->id.",\"name\":this.innerText}, divTargetComputerList, \"target_computers\")'><input type='checkbox' name='computers' onclick='refreshDeployComputerCount()' value='".$c->id."' />".htmlspecialchars($c->hostname)."</label>";
 		}
 		die();
 	}
@@ -29,7 +29,7 @@ try {
 			$c = $db->selectComputer($row['computer_id']);
 			if(!$cl->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$c->id.": this.innerText}, divTargetComputerList, \"target_computers\")'><input type='checkbox' name='computers' onclick='refreshDeployComputerCount()' value='".$c->id."' />".htmlspecialchars($c->hostname)."</label>";
+			echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$c->id.",\"name\":this.innerText}, divTargetComputerList, \"target_computers\")'><input type='checkbox' name='computers' onclick='refreshDeployComputerCount()' value='".$c->id."' />".htmlspecialchars($c->hostname)."</label>";
 		}
 		die();
 	}
@@ -43,7 +43,7 @@ try {
 		foreach($packages as $p) {
 			if(!$cl->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$p->id.": this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
+			echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$p->id.",\"name\":this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
 		}
 		die();
 	}
@@ -56,7 +56,7 @@ try {
 			$p = $db->selectPackage($row['package_id']);
 			if(!$cl->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-			echo "<label class='blockListItem' ondblclick='addToDeployTarget({".$p->id.": this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
+			echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$p->id.",\"name\":this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
 		}
 		die();
 	}

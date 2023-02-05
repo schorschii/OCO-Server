@@ -49,7 +49,7 @@ try {
 <div class='details-header'>
 	<h1><img src='<?php echo $package->getIcon(); ?>'><span id='page-title'><?php echo htmlspecialchars($package->getFullName()); ?></span><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->package_family_name); ?></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentDeploy({<?php echo $package->id; ?>:obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+		<button onclick='refreshContentDeploy({"id":<?php echo $package->id; ?>,"name":obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 		<button onclick='window.open("package-download.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
 		<span class='filler'></span>
 	</div>
