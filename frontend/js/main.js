@@ -2231,6 +2231,46 @@ function editLicense(license) {
 	req.open('POST', 'ajax-handler/settings.php');
 	req.send(formData);
 }
+function showDialogEditLdapConfigSystemUsers() {
+	showDialogAjax(L__LDAP_CONFIG, 'views/dialog-system-user-ldap-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+}
+function editLdapConfigSystemUsers(jsonConfig) {
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('edit_system_user_ldap_sync', jsonConfig);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				hideDialog(); refreshContent();
+				emitMessage(L__SAVED, L__LDAP_CONFIG, MESSAGE_TYPE_SUCCESS);
+			} else {
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+			}
+		}
+	};
+	req.open('POST', 'ajax-handler/settings.php');
+	req.send(formData);
+}
+function showDialogEditLdapConfigDomainUsers() {
+	showDialogAjax(L__LDAP_CONFIG, 'views/dialog-domain-user-ldap-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+}
+function editLdapConfigDomainUsers(jsonConfig) {
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('edit_domain_user_ldap_sync', jsonConfig);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				hideDialog(); refreshContent();
+				emitMessage(L__SAVED, L__LDAP_CONFIG, MESSAGE_TYPE_SUCCESS);
+			} else {
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+			}
+		}
+	};
+	req.open('POST', 'ajax-handler/settings.php');
+	req.send(formData);
+}
 function ldapSyncSystemUsers() {
 	var params = [];
 	params.push({'key':'ldap_sync_system_users', 'value':1});

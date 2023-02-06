@@ -417,6 +417,7 @@ return [
 	'finished' => 'Finished',
 	'execution_time' => 'Execution Time',
 	'order_by' => 'Order By',
+	'ldap_config' => 'LDAP Configuration',
 	'ldap_sync' => 'LDAP Sync',
 	'default_view' => 'Default View',
 	'advanced_view' => 'Advanced View',
@@ -502,6 +503,8 @@ return [
 	'event_query_rules_description' => 'With event query rules you define which events from the logs of the managed devices should be sent to the server.',
 	'updated' => 'Updated',
 	'status_reported' => 'Status Reported',
+	'configuration_json' => 'Configuration (JSON format)',
+	'configuration_json_docs' => 'Please read the docs how to write the JSON configuration.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

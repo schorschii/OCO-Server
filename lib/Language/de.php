@@ -412,6 +412,7 @@ return [
 	'finished' => 'Abgeschlossen',
 	'execution_time' => 'Ausführungszeit',
 	'order_by' => 'Sortiere nach',
+	'ldap_config' => 'LDAP-Konfiguration',
 	'ldap_sync' => 'LDAP-Synchronisierung',
 	'default_view' => 'Standardansicht',
 	'advanced_view' => 'Erweiterte Ansicht',
@@ -497,6 +498,8 @@ return [
 	'event_query_rules_description' => 'Mit Ereignis-Abfrageregeln definieren Sie, welche Ereignisse aus den Logs der verwalteten Geräte an den Server gesendet werden sollen.',
 	'updated' => 'Aktualisiert',
 	'status_reported' => 'Status gemeldet',
+	'configuration_json' => 'Konfiguration (JSON-Format)',
+	'configuration_json_docs' => 'Bitte lesen Sie die Dokumentation um zu erfahren, wie die Konfiguration auszusehen hat.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

@@ -1814,6 +1814,32 @@ class CoreLogic {
 		]);
 		return $insertId;
 	}
+	public function editSystemUserLdapSync($jsonConfig) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+
+		if(!json_decode($jsonConfig)) {
+			throw new InvalidRequestException(LANG('json_syntax_error'));
+		}
+		$insertId = $this->db->insertOrUpdateSettingByKey('system-user-ldapsync', $jsonConfig);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
+			'system-user-ldapsync'=>$jsonConfig,
+		]);
+		return $insertId;
+	}
+	public function editDomainUserLdapSync($jsonConfig) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+
+		if(!json_decode($jsonConfig)) {
+			throw new InvalidRequestException(LANG('json_syntax_error'));
+		}
+		$insertId = $this->db->insertOrUpdateSettingByKey('domain-user-ldapsync', $jsonConfig);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
+			'domain-user-ldapsync'=>$jsonConfig,
+		]);
+		return $insertId;
+	}
 
 	public function formatLoginDate(string $date) {
 		$permissionEntry = $this->getPermissionEntry(PermissionManager::SPECIAL_PERMISSION_DOMAIN_USER, PermissionManager::METHOD_READ);

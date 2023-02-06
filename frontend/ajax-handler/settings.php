@@ -178,6 +178,15 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['edit_system_user_ldap_sync'])) {
+		$cl->editSystemUserLdapSync($_POST['edit_system_user_ldap_sync']);
+		die();
+	}
+	if(!empty($_POST['edit_domain_user_ldap_sync'])) {
+		$cl->editDomainUserLdapSync($_POST['edit_domain_user_ldap_sync']);
+		die();
+	}
+
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
 	die(LANG('permission_denied'));

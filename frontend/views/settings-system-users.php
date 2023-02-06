@@ -37,6 +37,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 					<div class='controls'>
 						<button onclick='showDialogEditSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('create_system_user'); ?></button>
 						<span class='filler'></span>
+						<button onclick='showDialogEditLdapConfigSystemUsers()'><img src='img/ldap-directory.dyn.svg'>&nbsp;<?php echo LANG('ldap_config'); ?></button>
 						<button onclick='ldapSyncSystemUsers()' <?php if(!$ldapActive) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
 					</div>
 					<table id='tblSystemUserData' class='list searchable sortable savesort actioncolumn'>
