@@ -50,19 +50,15 @@ Last, the self service user is allowed to create job containers with a priority 
 The password and role can be manually set in the settings of the OCO admin web frontend. System user management permissions are required in order to do this.
 
 ### LDAP Sync
-The second way to authorize a domain user for the portal is to set the LDAP flag and role through the LDAP sync. It requires that the config options `LDAP_SERVER`, `LDAP_USER`, `LDAP_PASS`, `LDAP_DOMAIN`, `LDAP_QUERY_ROOT` are set. Please have a look at the [server installation guide](Server-Installation.md) for more information.
+The second way to authorize a domain user for the portal is to set the LDAP flag and role through the LDAP sync.
 
-In addition to that, please configure the domain user LDAP sync by setting the following values. The role ID can be viewed in the admin web interface on the self service roles settings page.
-```
-const SELF_SERVICE_LDAP_GROUPS = [
-	// 'LDÁP Path' => OCO Role ID
-	'CN=OcoSelfService,OU=Benutzer,DC=sieber,DC=systems' => 1,
-];
-const SELF_SERVICE_DEFAULT_ROLE_ID = 1;
-```
-After that, start the first domain user LDAP sync manually in the OCO web frontend and check its output for errors.
+Please configure the domain user LDAP sync by adjusting the config on the "Settings" > "Self Service" page in the web frontend. The syntax for the JSON configuration string is exactly the same as for the system users. Please have a look at [Server Installation Guide](Server-Installation.md) for more information. The role ID can be viewed in the admin web interface on the self service roles settings page.
+
+After setting up the LDAP sync, start the first domain user sync manually in the OCO web frontend and check its output for errors.
 
 The LDAP sync will assign the ldap flag and role with the given ID to the domain user if the UUID in the `domain_user` table (as reported by the agent) matches with the LDAP GUID attribute (`objectGUID`).
+
+Please note that **no** user attributes will be synced via LDAP. The OCO agent is the only data source for domain user information.
 
 ## Self Service Jobs
 Self service jobs can be monitored and changed by admins in the admin web frontend. Self service job containers are displayed separately besides normal job containers, created by system users.

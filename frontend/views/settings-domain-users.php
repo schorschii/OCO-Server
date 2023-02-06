@@ -13,6 +13,10 @@ try {
 } catch(InvalidRequestException $e) {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
+
+$ldapActive = false;
+$ldapServers = json_decode($db->selectSettingByKey('domain-user-ldapsync'), true);
+if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 ?>
 
 <div class='details-header'>
@@ -32,7 +36,7 @@ try {
 				<div class='stickytable'>
 					<div class='controls'>
 						<span class='filler'></span>
-						<button onclick='ldapSyncDomainUsers()' <?php if(empty(LDAP_SERVER)) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
+						<button onclick='ldapSyncDomainUsers()' <?php if(!$ldapActive) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
 					</div>
 					<p><?php echo LANG('domain_user_self_service_management_hint'); ?>
 					<table id='tblSelfServiceUserData' class='list searchable sortable savesort actioncolumn'>

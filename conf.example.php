@@ -39,48 +39,10 @@ const DB_USER = 'oco';
 const DB_PASS = 'PASSWORD';
 
 
-/////////////////////////////////////////
-///// LDAP CONFIGURATION (optional) /////
-/////////////////////////////////////////
-/*
- If you want to use LDAP user sync and login, please fill the following config lines. Otherwise, please set LDAP_SERVER to »null«.
- To sync LDAP users with the OCO system user database, please execute `php cron.php ldapsync` (via cron).
-*/
-const LDAP_SERVER     = null; // Example: 'ldap://192.168.56.101' (single) or 'ldaps://192.168.56.101' (secure) or 'ldaps://192.168.56.101 ldaps://192.168.56.102' (multiple) or »null« (disabled)
-const LDAP_USER       = '';
-const LDAP_PASS       = '';
-const LDAP_DOMAIN     = '';     // Example: 'subdomain.domain.tld'
-const LDAP_QUERY_ROOT = '';     // Example: 'OU=Benutzer,DC=sieber,DC=systems'
-const LDAP_USER_CLASS = 'user'; // Example: 'user' for ActiveDirectory, 'inetorgperson' for OpenLDAP
-
-// LDAP group / OCO role assignment
-const LDAP_GROUPS          = [ // leave empty if you want to sync all users below LDAP_QUERY_ROOT
-	// 'LDAP Path' => OCO Role ID
-	// Example: 'CN=OcoAdmins,OU=Benutzer,DC=sieber,DC=systems' => 1,
-];
-const LDAP_DEFAULT_ROLE_ID = 1; // Default: Role ID 1 = Superadmin. Only used if LDAP_GROUPS is empty.
-
-// LDAP attribute configuration
-const LDAP_ATTR_UID           = 'objectguid';      // Example: 'objectguid' for ActiveDirectory, 'entryUUID' for OpenLDAP
-const LDAP_ATTR_USERNAME      = 'samaccountname';  // Example: 'samaccountname' for ActiveDirectory, 'cn' for OpenLDAP
-const LDAP_ATTR_FIRST_NAME    = 'givenname';       // Example: 'givenname' for ActiveDirectory & OpenLDAP
-const LDAP_ATTR_LAST_NAME     = 'sn';              // Example: 'sn' for ActiveDirectory & OpenLDAP
-const LDAP_ATTR_DISPLAY_NAME  = 'displayname';     // Example: 'displayname' for ActiveDirectory & OpenLDAP
-const LDAP_ATTR_EMAIL         = 'mail';            // Example: 'mail' for ActiveDirectory & OpenLDAP
-const LDAP_ATTR_PHONE         = 'telephonenumber'; // Example: 'telephonenumber' for ActiveDirectory & OpenLDAP
-const LDAP_ATTR_MOBILE        = 'mobile';          // Example: 'mobile' for ActiveDirectory & OpenLDAP
-const LDAP_ATTR_DESCRIPTION   = 'description';     // Example: 'description' for ActiveDirectory & OpenLDAP
-
-
 /////////////////////////////////////////////
 ///// SELF SERVICE PORTAL CONFIGURATION /////
 /////////////////////////////////////////////
 const SELF_SERVICE_ENABLED = false;
-const SELF_SERVICE_LDAP_GROUPS = [
-	// 'LDAP Path' => OCO Role ID
-	// Example: 'CN=OcoSelfService,OU=Benutzer,DC=sieber,DC=systems' => 1,
-];
-const SELF_SERVICE_DEFAULT_ROLE_ID = 1;
 
 
 //////////////////////////////////////////////////

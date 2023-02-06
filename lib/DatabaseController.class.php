@@ -2504,6 +2504,7 @@ class DatabaseController {
 		return $this->stmt->rowCount();
 	}
 
+	// Setting Operations
 	public function selectSettingByKey($key) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM setting WHERE `key` = :key LIMIT 1'

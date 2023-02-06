@@ -86,24 +86,52 @@ You can set up fail2ban for OCO to prevent brute force attacks. Example configur
 ### LDAP Sync & Authentication
 If you want to use LDAP to authenticate admin users on the web frontend, please follow this steps.
 
-1. Enter your LDAP details in `conf.php`:
-   - `LDAP_SERVER`: 'ldap://192.168.56.101' (single) or 'ldaps://192.168.56.101' (secure) or 'ldaps://192.168.56.101 ldaps://192.168.56.102' (multiple) or »null« (disabled).
-   - `LDAP_USER`: The username of the LDAP reader user.
-   - `LDAP_PASS`: The password of the LDAP reader user.
-   - `LDAP_DOMAIN`: Your domain, e.g. 'subdomain.domain.tld'.
-   - `LDAP_QUERY_ROOT`: The query root, e.g. 'OU=Benutzer,DC=sieber,DC=systems'.
-   - `LDAP_USER_CLASS`: The class for user objects, e.g. 'user' for ActiveDirectory, 'inetorgperson' for OpenLDAP.
-   - `LDAP_GROUPS`: Array of LDAP groups to sync. The key must me an LDAP group path and the value must be an OCO role ID. The role ID can be viewed in the admin web interface on the system users/roles settings page.
-     - Example: `'CN=OcoAdmins,OU=Benutzer,DC=sieber,DC=systems' => 1,`
-     - The order of the groups is important: the first matching group is used for determining the role ID.
-   - `LDAP_DEFAULT_ROLE_ID`: OCO role ID, which should be assigned to the LDAP users (Role ID 1 = Superadmin). Only used if `LDAP_GROUPS` is empty because otherwise the role IDs are defined there.
-   - `LDAP_ATTR_UID`, `LDAP_ATTR_USERNAME`, `LDAP_ATTR_FIRST_NAME`, `LDAP_ATTR_LAST_NAME`, `LDAP_ATTR_DISPLAY_NAME`, `LDAP_ATTR_EMAIL`, `LDAP_ATTR_PHONE`, `LDAP_ATTR_MOBILE`, `LDAP_ATTR_DESCRIPTION`: LDAP attributes to query. Set for Active Directory by default; you can adjust it if you are using an other LDAP server like OpenLDAP.
-2. Set up a cron job executing `php console.php ldapsync` every 30 minutes as webserver user (`www-data`).
+1. Set up the LDAP configuration as administrator on the "Settings" > "System User" page in the web frontend.  
+   The LDAP configuration is stored as a JSON array, allowing multiple LDAP servers of different types and syncing multiple groups:
+   ```
+   {
+     "ldap://192.168.56.101": {
+       "username": "ldap-reader@sieber.systems",
+       "password": "<PASSWORD>",
+       "query-root": "DC=sieber,DC=systems",
+       "queries": {
+         "(&(objectClass=user)(memberof=CN=OcoAdmins,OU=Benutzer,DC=sieber,DC=systems))": 1,
+         "(&(objectClass=user)(memberof=CN=OcoUsers,OU=Benutzer,DC=sieber,DC=systems))": 2
+       },
+       "login-binddn-query": "(&(objectClass=user)(samaccountname=%s))"
+       "attribute-matching": {}
+     }
+     ... more servers here ...
+   }
+   ```
+   - Array Key: Server IP address or DNS name, e.g. 'ldap://192.168.56.101' (single) or 'ldaps://192.168.56.101' (secure) or 'ldaps://192.168.56.101 ldaps://192.168.56.102' (multiple).
+   - `username`: The username of the LDAP reader user.
+   - `password`: The password of the LDAP reader user.
+   - `query-root`: The LDAP query root, e.g. 'OU=Benutzer,DC=sieber,DC=systems'.
+   - `queries`: Array of LDAP queries and role IDs for syncing. The array key must me a valid LDAP query and the value must be an OCO role ID. The role ID can be viewed in the admin web interface on the system users/roles settings page.
+     - The order of the groups is important: the first matching group is used for determining the role ID of a user.
+     - You can use any LDAP filter you like. If supported by your LDAP server, you can also resolve recursive group memberships ("group in group"), e.g. with a filter like: `(memberof:1.2.840.113556.1.4.1941:=cn=testgroup,dc=domain,dc=tld)`.
+   - `login-binddn-query`: The LDAP query to determine the login DN for LDAP authentication attempts. If you leave this empty, `(&(objectClass=user)(samaccountname=%s))` will be used for use with Active Directory. Note: AD allows LDAP bind in form `DOMAIN\username` or `username@domain.tld`, but other LDAP servers require the login via DN as username (e.g. `cn=user,dc=domain,dc=tld`). `%s` is used as placeholder for the entered username.
+   - `attribute-matching`: LDAP attribute matching. You can leave this empty if you are using Active Directory - the Active Directory attribute names will be used as default. You can adjust it if you are using an other LDAP servers like OpenLDAP, e.g.:
+     ```
+     "attribute-matching": {
+       "uid": "entryUUID",
+       "username": "cn",
+       "first_name": "givenname",
+       "last_name": "sn",
+       "display_name": "displayname",
+       "email": "mail",
+       "phone": "telephonenumber",
+       "mobile": "mobile",
+       "description": "description"
+     }
+     ```
+2. Start the first sync manually by executing `cd /srv/www/oco && php console.php ldapsync`.  
+   Now you can log in with the synced accounts on the web frontend.
+3. Set up a cron job executing `php console.php ldapsync` every 30 minutes as webserver user (`www-data`).
    ```
    */10 *  * * *  www-data  cd /srv/www/oco && php console.php ldapsync
    ```
-3. Start the first sync manually by executing `cd /srv/www/oco && php console.php ldapsync`.  
-   Now you can log in with the synced accounts on the web frontend.
 
 ### Only Provide Agent API On Virtual Host
 Ou may only want to provide the agent api and not the full web interface with client API on a virtual host. In this case, please use `api-agent` as web server root directory (instead of `frontend`).
