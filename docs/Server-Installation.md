@@ -1,9 +1,10 @@
 # OCO: Server Installation
 
 ## Basic Setup
-0. Install PHP 7.x (with ZIP & DOM modules), MySQL/MariaDB and Apache2 on a Linux server (Debian recommended).
+0. Install PHP (7.3 or newer) with ZIP & DOM modules, MySQL/MariaDB and Apache2 on a Linux server (Debian recommended).
    ```
    apt install php php-zip php-dom mariadb-server apache2 libapache2-mod-php
+   php --version
    ```
 1. Download the [latest release](https://github.com/schorschii/oco-server/releases) and copy/extract all files into `/srv/www/oco`.
 2. Configure your Apache webserver
