@@ -46,6 +46,7 @@ class LdapSync {
 			$attributes = self::applyDefaultLdapAttrs($details['attribute-matching'] ?? []);
 			if(empty($address) || empty($details['username']) || empty($details['password']) || empty($details['query-root']) || empty($details['queries']) || !is_array($details['queries'])) {
 				if($this->debug) echo '===> '.$address.': missing configuration values, skipping!'."\n";
+				continue;
 			}
 
 			// connect to server
@@ -212,6 +213,7 @@ class LdapSync {
 			$attributes = self::applyDefaultLdapAttrs($details['attribute-matching'] ?? []);
 			if(empty($address) || empty($details['username']) || empty($details['password']) || empty($details['query-root']) || empty($details['queries']) || !is_array($details['queries'])) {
 				if($this->debug) echo "===> ".$address.": missing configuration values, skipping!\n";
+				continue;
 			}
 
 			// connect to server
