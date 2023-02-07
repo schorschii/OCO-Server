@@ -476,7 +476,7 @@ $isOnline = $computer->isOnline($db);
 			<div class='details-abreast'>
 				<div class='stickytable'>
 					<div class='controls'>
-						<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"service-history":null}, true)'><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_services'); ?></button>
+						<button onclick='rewriteUrlContentParameter({"service-history":null}, true)'><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_services'); ?></button>
 						<div class='filler'></div>
 					</div>
 					<table id='tblComputerServicesData' class='list searchable sortable savesort margintop'>
@@ -542,7 +542,7 @@ $isOnline = $computer->isOnline($db);
 								echo "<td>".htmlspecialchars($e->details)."</td>";
 								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($e->updated)."</td>";
-								echo "<td><button title='".LANG('history')."' onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {\"service-history\":service".$counter.".innerText}, true)'><img src='img/schedule.dyn.svg'></button></td>";
+								echo "<td><button title='".LANG('history')."' onclick='rewriteUrlContentParameter({\"service-history\":service".$counter.".innerText}, true)'><img src='img/schedule.dyn.svg'></button></td>";
 								echo "</tr>";
 								$counter ++;
 							}
@@ -607,7 +607,7 @@ $isOnline = $computer->isOnline($db);
 										<div class='controls'>
 											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 											<?php if(empty($_GET['nolimit'])) { ?>
-												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1}, true)'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+												<button onclick='rewriteUrlContentParameter({"nolimit":1}, true)'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 											<?php } ?>
 										</div>
 									</div>
@@ -657,7 +657,7 @@ $isOnline = $computer->isOnline($db);
 										<div class='controls'>
 											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 											<?php if(empty($_GET['nolimit'])) { ?>
-												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1}, true)'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+												<button onclick='rewriteUrlContentParameter({"nolimit":1}, true)'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 											<?php } ?>
 										</div>
 									</div>

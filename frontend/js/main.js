@@ -59,9 +59,9 @@ function toggleInputDirectory(element) {
 	}
 }
 
-function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}, refresh=false) {
+function rewriteUrlContentParameter(paramsToReplace={}, refresh=false) {
 	// compile parameters to replace from ajax request URL
-	var url = new URL(ajaxRequestUrl, location);
+	var url = new URL(currentExplorerContentUrl, location);
 	paramsToReplace['view'] = url.pathname.split(/[\\/]/).pop().split('.')[0];
 	// replace the params in current URL
 	var parameters = [];
@@ -122,7 +122,7 @@ function openTab(tabControl, tabName, forceRefresh=false) {
 		}
 	}
 	let refresh = (forceRefresh && getCurrentUrlParameter('tab') != tabName);
-	rewriteUrlContentParameter(currentExplorerContentUrl, {'tab':tabName});
+	rewriteUrlContentParameter({'tab':tabName});
 	if(refresh) refreshContent();
 }
 
@@ -264,7 +264,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 				obj(objID).innerHTML = this.responseText;
 				if(objID == 'explorer-content') {
 					// add to history
-					if(addToHistory) rewriteUrlContentParameter(currentExplorerContentUrl);
+					if(addToHistory) rewriteUrlContentParameter();
 					// set page title
 					let titleObject = obj('page-title');
 					if(titleObject != null) document.title = titleObject.innerText;
