@@ -6,13 +6,11 @@ require_once('../session.php');
 
 <table class='fullwidth aligned'>
 	<tr>
-		<th><?php echo LANG('configuration_json'); ?></th>
 		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditSystemUserLdapSync' rows='8'><?php echo $db->selectSettingByKey('system-user-ldapsync'); ?></textarea></td>
 	</tr>
 	<tr>
-		<th></th>
 		<td>
-			<div class='alert warning' style='margin-top:0px;width:350px;min-width:100%'>
+			<div class='alert warning' style='margin-top:0px;width:420px;min-width:100%'>
 				<?php echo LANG('configuration_json_docs'); ?>
 			</div>
 		</td>

@@ -338,7 +338,7 @@ class DatabaseController {
 		// remove screens which can not be found in agent output
 		list($in_placeholders, $in_params) = self::compileSqlInValues($sids);
 		$this->stmt = $this->dbh->prepare(
-			COMPUTER_KEEP_INACTIVE_SCREENS
+			$this->selectSettingByKey('computer-keep-inactive-screens')
 			? 'UPDATE computer_screen SET active=0 WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
 			: 'DELETE FROM computer_screen WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
 		);
@@ -1592,7 +1592,7 @@ class DatabaseController {
 		if(empty($tmpJobContainer->shutdown_waked_after_completion)) return;
 		foreach($this->selectAllLastComputerStaticJobByJobContainer($job_container_id) as $j) {
 			$tmpComputer = $this->selectComputer($j->computer_id);
-			if(!$tmpComputer->isOnline())
+			if(!$tmpComputer->isOnline($this))
 				$this->setWolShutdownStaticJobInJobContainer($job_container_id, $tmpComputer->id, $j->max_sequence);
 		}
 	}
@@ -2458,7 +2458,7 @@ class DatabaseController {
 
 	// Log Operations
 	public function insertLogEntry($level, $user, $object_id, $action, $data) {
-		if($level < LOG_LEVEL) return;
+		if($level < intval($this->selectSettingByKey('log_level'))) return;
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO log (level, host, user, object_id, action, data)
 			VALUES (:level, :host, :user, :object_id, :action, :data)'
@@ -2505,14 +2505,45 @@ class DatabaseController {
 	}
 
 	// Setting Operations
+	const DEFAULT_SETTINGS = [
+		'client-api-enabled' => 0, // enable/disable the api-client.php
+		'client-api-key' => '<randomly-generated-by-setup>', // key for using the API
+
+		'agent-self-registration-enabled' => 0, // enable/disable automatic/unattended agent registration
+		'agent-registration-key' => '<randomly-generated-by-setup>', // agent registration key
+
+		'computer-keep-inactive-screens' => false, // do not delete disconnected screens from database (to keep track of serial numbers)
+
+		'self-service-enabled' => false,    // enable/disable the self service portal
+
+		'computer-offline-seconds' => 125,  // seconds after last agent communication a computer is considered as offline
+		'wol-shutdown-expiry' => 60*5,      // assume WOL did not worked after 5 minutes
+		'agent-update-interval' => 60*60*2, // update computer details every 2 hours
+
+		'purge-succeeded-jobs-after' => 60*60*4,
+		'purge-failed-jobs-after' => 60*60*24*2,
+		'purge-logs-after' => 60*60*24*14,
+		'purge-domain-user-logons-after' => 60*60*24*365,
+		'purge-events-after' => 60*60*24*7,
+
+		'log-level' => 1, // 0 -> DEBUG, 1 -> INFO, 2 -> WARNING, 3 -> ERROR, 4 -> NO LOGGING
+		'check-update' => true, // check for server updates when loading the web console
+		'do-housekeeping-by-web-requests' => false, // db cleanup method - normally done via cron job but can be done on every web request (not recommended)
+	];
 	public function selectSettingByKey($key) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM setting WHERE `key` = :key LIMIT 1'
 		);
+		$value = null;
 		$this->stmt->execute([':key' => $key]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Setting') as $row) {
-			return $row->value;
+			$value = $row->value;
 		}
+		if($value === null && array_key_exists($key, self::DEFAULT_SETTINGS)) {
+			// apply defaults
+			$value = self::DEFAULT_SETTINGS[$key];
+		}
+		return $value;
 	}
 	public function insertOrUpdateSettingByKey($key, $value) {
 		$this->stmt = $this->dbh->prepare(

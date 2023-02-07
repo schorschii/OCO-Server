@@ -93,7 +93,7 @@ try {
 				if(!(empty($n->address) || $n->address == '-' || $n->address == '?')) $ip_addresses[] = $n->address;
 				if(!(empty($n->mac) || $n->mac == '-' || $n->mac == '?')) $mac_addresses[] = $n->mac;
 			}
-			$online = $c->isOnline();
+			$online = $c->isOnline($db);
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."'></td>";
 			echo "<td>";

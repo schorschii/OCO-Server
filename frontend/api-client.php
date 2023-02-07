@@ -2,7 +2,7 @@
 require_once('../loader.inc.php');
 
 // check API enabled
-if(!CLIENT_API_ENABLED) {
+if(!$db->selectSettingByKey('client-api-enabled')) {
 	header('HTTP/1.1 405 API Disabled'); die();
 }
 
@@ -57,7 +57,8 @@ $params = $srcdata['params'] ?? [];
 $data = $params['data'] ?? [];
 
 // check API key
-if(!empty(CLIENT_API_KEY) && CLIENT_API_KEY !== ($params['api_key'] ?? '')) {
+$apiKey = $db->selectSettingByKey('client-api-key');
+if(!empty($apiKey) && $apiKey !== ($params['api_key'] ?? '')) {
 	header('Content-Type: application/json');
 	$resdata['error'] = LANG('invalid_api_key');
 	$resdata['result'] = [ 'success' => false, 'data' => [] ];

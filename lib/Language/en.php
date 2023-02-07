@@ -173,6 +173,7 @@ return [
 	'unlock' => 'Unlock',
 	'installations' => 'Installations',
 	'agent_registration_enabled' => 'Agent self registration enabled',
+	'agent_registration_key' => 'Agent registration key',
 	'agent_key' => 'Agent Key',
 	'agent_update_interval' => 'Agent update interval',
 	'purge_succeeded_jobs_after' => 'Purge succeded job containers after',
@@ -180,6 +181,9 @@ return [
 	'assume_computer_offline_after' => 'Assume that computers are offline after',
 	'purge_logs_after' => 'Purge log entries after',
 	'purge_domain_user_logons_after' => 'Purge domain user logons after',
+	'purge_events_after' => 'Purge events after',
+	'keep_inactive_screens' => 'Keep inactive computer screens',
+	'self_service_enabled' => 'Self Service Portal enabled',
 	'save' => 'Save',
 	'saved' => 'Saved',
 	'add' => 'Add',
@@ -335,8 +339,8 @@ return [
 	'priority' => 'Priority',
 	'priority_description' => 'Job Container with higher priority will be executed first.',
 	'force_update' => 'Force Update',
-	'change_settings_in_config_file' => 'You can change the settings in the OCO config file (conf.php).',
 	'client_api_enabled' => 'API enabled',
+	'client_api_key' => 'API key',
 	'reorder_via_drag_drop' => 'Change sequence via Drag & Drop',
 	'reorder_drag_drop_description' => 'Change sequence via Drag & Drop'."\n".'(only available if table is sorted by sequence)',
 	'enter_new_sequence_number' => 'Please enter the new position number, to which the object should be moved to.',
@@ -505,6 +509,10 @@ return [
 	'status_reported' => 'Status Reported',
 	'configuration_json' => 'Configuration (JSON format)',
 	'configuration_json_docs' => 'Please read the docs how to write the JSON configuration.',
+	'buy_license' => 'Buy License',
+	'package_depot_path' => 'Package Depot Path',
+	'no_wol_satellite_server_configured' => 'No WOL satellite servers configured',
+	'no_extensions_loaded' => 'No extensions loaded',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

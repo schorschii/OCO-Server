@@ -5,11 +5,12 @@ $info = null;
 $infoclass = null;
 $step = 0;
 
-// exit if setup was already done
+// check if schema exists first
 if(!$db->existsSchema()) {
 	$info = LANG('please_import_database_schema_first');
 	$infoclass = 'warning';
 } else {
+	// exit if setup was already done
 	if(count($db->selectAllSystemUser()) > 0) {
 		header('Location: index.php');
 		die();
@@ -37,6 +38,11 @@ if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['passw
 				0/*ldap flag*/, null, null, null, 'initial admin user', 0/*locked*/, 1/*default role: superadmin*/
 			)
 		) {
+			// create random default keys
+			$db->insertOrUpdateSettingByKey('client-api-key', randomString(15));
+			$db->insertOrUpdateSettingByKey('agent-registration-key', randomString(15));
+
+			// setup finished - redirect to web frontend
 			header('Location: login.php');
 			die();
 		} else {

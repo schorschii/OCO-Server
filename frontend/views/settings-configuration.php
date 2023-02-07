@@ -4,6 +4,7 @@ require_once('../../loader.inc.php');
 require_once('../session.php');
 
 $license = new LicenseCheck($db);
+$permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION, false);
 ?>
 
 <div class='details-header'>
@@ -12,52 +13,11 @@ $license = new LicenseCheck($db);
 
 <div class='details-abreast'>
 	<div>
-		<h2><?php echo LANG('oco_configuration'); ?></h2>
-		<table class='list metadata'>
-			<tr>
-				<th><?php echo LANG('client_api_enabled'); ?>:</th>
-				<td><?php if(CLIENT_API_ENABLED) echo LANG('yes'); else echo LANG('no'); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('agent_registration_enabled'); ?>:</th>
-				<td><?php if(AGENT_SELF_REGISTRATION_ENABLED) echo LANG('yes'); else echo LANG('no'); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('assume_computer_offline_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime(COMPUTER_OFFLINE_SECONDS)); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('wol_shutdown_expiry_seconds'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime(WOL_SHUTDOWN_EXPIRY_SECONDS)); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('agent_update_interval'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime(AGENT_UPDATE_INTERVAL)); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('purge_succeeded_jobs_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime(PURGE_SUCCEEDED_JOBS_AFTER)); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('purge_failed_jobs_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime(PURGE_FAILED_JOBS_AFTER)); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('purge_logs_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime(PURGE_LOGS_AFTER)); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('purge_domain_user_logons_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime(PURGE_DOMAIN_USER_LOGONS_AFTER)); ?></td>
-			</tr>
-		</table>
-		<p><?php echo LANG('change_settings_in_config_file'); ?></p>
-
 		<h2><?php echo LANG('license'); ?></h2>
 		<div class='controls'>
-			<button onclick='showDialogEditLicense()' <?php if(!$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION, false)) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<button onclick='showDialogEditLicense()' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 			<div class='filler'></div>
-			<span><a href='https://georg-sieber.de/?page=oco' target='_blank'>Lizenz kaufen</a></span>
+			<span><a href='https://georg-sieber.de/?page=oco' target='_blank'><?php echo LANG('buy_license'); ?></a></span>
 		</div>
 		<table class='list'>
 			<tr>
@@ -67,6 +27,74 @@ $license = new LicenseCheck($db);
 			<tr>
 				<th><?php echo LANG('status'); ?>:</th>
 				<td><div class='alert <?php echo $license->isValid() ? 'success' : 'error'; ?>'><?php echo htmlspecialchars($license->getLicenseText()); ?></div></td>
+			</tr>
+		</table>
+
+		<h2><?php echo LANG('oco_configuration'); ?></h2>
+		<div class='controls'>
+			<button onclick='showDialogEditGeneralConfig()' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<div class='filler'></div>
+		</div>
+		<table class='list metadata'>
+			<tr>
+				<th><?php echo LANG('client_api_enabled'); ?>:</th>
+				<td><?php if($db->selectSettingByKey('client-api-enabled')) echo LANG('yes'); else echo LANG('no'); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('client_api_key'); ?>:</th>
+				<td><?php echo $permGeneral ? htmlspecialchars($db->selectSettingByKey('client-api-key')) : '<i>'.LANG('permission_denied').'</i>'; ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('agent_registration_enabled'); ?>:</th>
+				<td><?php if($db->selectSettingByKey('agent-self-registration-enabled')) echo LANG('yes'); else echo LANG('no'); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('agent_registration_key'); ?>:</th>
+				<td><?php echo $permGeneral ? htmlspecialchars($db->selectSettingByKey('agent-registration-key')) : '<i>'.LANG('permission_denied').'</i>'; ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('package_depot_path'); ?>:</th>
+				<td><?php echo htmlspecialchars(PACKAGE_PATH); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('assume_computer_offline_after'); ?>:</th>
+				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('computer-offline-seconds'))); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('wol_shutdown_expiry_seconds'); ?>:</th>
+				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('wol-shutdown-expiry'))); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('agent_update_interval'); ?>:</th>
+				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('agent-update-interval'))); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('purge_succeeded_jobs_after'); ?>:</th>
+				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-succeeded-jobs-after'))); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('purge_failed_jobs_after'); ?>:</th>
+				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-failed-jobs-after'))); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('purge_logs_after'); ?>:</th>
+				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-logs-after'))); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('purge_domain_user_logons_after'); ?>:</th>
+				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-domain-user-logons-after'))); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('purge_events_after'); ?>:</th>
+				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-events-after'))); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('keep_inactive_screens'); ?>:</th>
+				<td><?php if($db->selectSettingByKey('computer-keep-inactive-screens')) echo LANG('yes'); else echo LANG('no'); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('self_service_enabled'); ?>:</th>
+				<td><?php if($db->selectSettingByKey('self-service-enabled')) echo LANG('yes'); else echo LANG('no'); ?></td>
 			</tr>
 		</table>
 	</div>
@@ -110,7 +138,7 @@ $license = new LicenseCheck($db);
 
 		<h2><?php echo LANG('wol_satellites'); ?></h2>
 		<?php if(count(SATELLITE_WOL_SERVER) == 0) { ?>
-			<div class='alert info'>Keine WOL-Satelliten-Server definiert</div>
+			<div class='alert info'><?php echo LANG('no_wol_satellite_server_configured'); ?></div>
 		<?php } else { ?>
 		<table class='list'>
 			<tr>
@@ -128,7 +156,7 @@ $license = new LicenseCheck($db);
 
 		<h2><?php echo LANG('extensions'); ?></h2>
 		<?php if(count($ext->getLoadedExtensions()) == 0) { ?>
-			<div class='alert info'>Keine Erweiterungen geladen</div>
+			<div class='alert info'><?php echo LANG('no_extensions_loaded'); ?></div>
 		<?php } else { ?>
 		<table class='list'>
 			<tr>

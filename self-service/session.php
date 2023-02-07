@@ -3,7 +3,8 @@
 require_once('session-options.php');
 
 // check if user has a valid session and is authenticated (logged in)
-if(!isset($_SESSION['oco_self_service_user_id']) || !SELF_SERVICE_ENABLED) {
+$selfServiceEnabled = boolval($db->selectSettingByKey('self-service-enabled'));
+if(!isset($_SESSION['oco_self_service_user_id']) || !$selfServiceEnabled) {
 	redirectToLogin();
 }
 // check if user account still exists and is not locked

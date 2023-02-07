@@ -6,7 +6,7 @@ After you have installed the agent on the client computer, you have to set the s
 There are 2 methods for registering new computers:
 
 ### 1. Agent Self-Registration
-This feature must be activated first in the config file `conf.php` by setting `AGENT_SELF_REGISTRATION_ENABLED` to `true`. Then, every agent knowing the correct agent key (defined in the server config file) can registrate itself on the server. During the first communication with the server, a unique agent key will be set for the new computer.
+This feature must be activated first by enabling "Agent Self-Registration" on the config page. Then, every agent knowing the correct agent key (defined in the server config file) can registrate itself on the server. During the first communication with the server, a unique agent key will be set for the new computer.
 
 ### 2. Manual (Pre-)Registration
 For this method, a new computer object must be created first in the web frontend or using the client API. The name which you enter on the dialog must exactly match the new computers hostname. Then, the computer is able update its inventory values using the global agent key (defined in the server config file; key can also be set to an empty string - this allows you to install and use the agent without further configuration on the client computer). During the first communication with the server, a unique agent key will be set for the new computer.
@@ -22,7 +22,7 @@ While it is technically possible, **never** let the agent commuicate in plaintex
 It is recommended to **not** make the OCO server available on the internet to prevent brute force attacks. Make the server only available on your internal company network and use a VPN connection for mobile devices.
 
 ## Updating Computer Inventory Values
-The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in `AGENT_UPDATE_INTERVAL` in the config file. The recommended default values is 2 hours. Do not make this time interval too short as the query of the inventory values can produce some CPU load.
+The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in "Agent Update Interval" on the config page. The recommended default value is 2 hours. Do not make this time interval too short as the query of the inventory values can produce some CPU load.
 
 ## Event Log Query
 You can monitor the Windows event log of your clients by creating Event Query Rules on the OCO server. These rules are communicated with the agent and if an event matches the rule, the agent will send the event data to the server. This feature can be used as a simple central syslog functionality for your managed clients.

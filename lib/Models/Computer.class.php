@@ -44,8 +44,9 @@ class Computer {
 		elseif(strpos($this->os, 'macOS') !== false) return 'img/apple.dyn.svg';
 		else return 'img/linux.dyn.svg';
 	}
-	function isOnline() {
-		return time() - strtotime($this->last_ping) < COMPUTER_OFFLINE_SECONDS;
+	function isOnline($db) {
+		if(!$db instanceof \DatabaseController) throw new Exception('Missing DatabaseController Reference');
+		return time() - strtotime($this->last_ping) < intval($db->selectSettingByKey('computer-offline-seconds'));
 	}
 
 	const DEFAULT_COMPUTER_COMMANDS = [

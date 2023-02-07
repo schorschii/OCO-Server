@@ -28,7 +28,6 @@
 4. Create the configuration file `conf.php` (create this file by copying the template `conf.example.php`).
    - Enter your MySQL credentials in `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`. Use a separate database user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.
    - Make sure that the defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
-   - Generate your own `CLIENT_API_KEY` and `AGENT_REGISTRATION_KEY`, e.g. by using `pwgen`.
 5. **Important:** set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
    - It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any (malicious) software packages to your client!!!
    - Redirect all HTTP requests to HTTPS using appropriate rewrite rules.  

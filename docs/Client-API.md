@@ -1,11 +1,7 @@
 # General
 This document describes the JSON-REST-API provided by the OCO server. By implementing this protocol you can automate your workflows and integrate OCO into your environment to make it more convenient.
 
-You first need to activate the API and set an individual API key in the OCO config file:
-```
-const CLIENT_API_ENABLED = true; # this is false by default
-const CLIENT_API_KEY     = 'your custom key here...';
-```
+You first need to activate the API and set an individual API key on the settings page in the web frontend.
 
 # The JSON-RPC Package
 A valid JSON-RPC request is sent via HTTP(S) with the HTTP header `Content-Type: application/json` to the API endpoint `api-client.php`.

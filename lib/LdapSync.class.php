@@ -194,7 +194,7 @@ class LdapSync {
 	}
 
 	public function syncDomainUsers() {
-		if(!defined('SELF_SERVICE_ENABLED') || !SELF_SERVICE_ENABLED) {
+		if(!$this->db->selectSettingByKey('self-service-enabled')) {
 			echo LANG('self_service_is_disabled')."\n";
 			return;
 		}

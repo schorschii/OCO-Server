@@ -154,13 +154,13 @@ switch($srcdata['method']) {
 		$jobs = []; $update = 0; $server_key = null; $agent_key = null; $success = false;
 
 		if($computer == null) {
-			if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
+			if($params['agent-key'] !== $db->selectSettingByKey('agent-registration-key')) {
 				errorExit('401 Client Not Authorized', $params['hostname'], null, Models\Log::ACTION_AGENT_API_HELLO,
 					'computer not found and agent registration key mismatch: '.$params['agent-key']
 				);
 			}
 
-			if(AGENT_SELF_REGISTRATION_ENABLED) {
+			if($db->selectSettingByKey('agent-self-registration-enabled')) {
 				$server_key = randomString();
 				$agent_key = randomString();
 				$update = 1;
@@ -183,7 +183,7 @@ switch($srcdata['method']) {
 		} else {
 			if(empty($computer->agent_key)) {
 				// computer was pre-registered in the web frontend: check global key and generate individual key
-				if($params['agent-key'] !== AGENT_REGISTRATION_KEY) {
+				if($params['agent-key'] !== $db->selectSettingByKey('agent-registration-key')) {
 					errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_HELLO,
 						'computer is pre-registered but agent registration key mismatch: '.$params['agent-key']
 					);
@@ -217,7 +217,7 @@ switch($srcdata['method']) {
 			}
 
 			// check if agent should update inventory data
-			if(time() - strtotime($computer->last_update) > AGENT_UPDATE_INTERVAL
+			if(time() - strtotime($computer->last_update) > intval($db->selectSettingByKey('agent-update-interval'))
 			|| !empty($computer->force_update)) {
 				$update = 1;
 			}
@@ -402,7 +402,7 @@ switch($srcdata['method']) {
 		// execute update
 		$success = false;
 		$db->updateComputerPing($computer->id);
-		if((time() - strtotime($computer->last_update) > AGENT_UPDATE_INTERVAL || !empty($computer->force_update))
+		if((time() - strtotime($computer->last_update) > intval($db->selectSettingByKey('agent-update-interval')) || !empty($computer->force_update))
 		&& !empty($data)) {
 			// convert login timestamps to local time,
 			// because other timestamps in the database are also in local time

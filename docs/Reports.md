@@ -7,4 +7,4 @@ OCO comes with a hand full of sample reports which you could use to copy and mod
 If your report contains one or more of the following special columns, it will be automatically displayed as a link, so you can navigate to the target object with one click on the web frontend: `computer_id`, `package_id`, `software_id`, `domain_user_id`, `job_container_id`
 
 ## Security Note
-Only administrators should have permission to create new reports, as by creating a report, you can display every (sensitive) information you like from the database. This means that every user which has the permission to create reports can e.g. display the agent/server key of your managed computers!
+Only a small group of administrators should have permission to create new reports, as by creating a report, you can display every (sensitive) information you like from the database. This means that every user which has this permission can e.g. display the settings table and the agent/server key of your managed computers!

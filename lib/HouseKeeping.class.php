@@ -32,17 +32,20 @@ class HouseKeeping {
 	}
 
 	private function jobHouseKeeping() {
+		$purgeSucceededJobsAfter = $this->db->selectSettingByKey('purge-succeeded-jobs-after');
+		$purgeFailedJobsAfter = $this->db->selectSettingByKey('purge-failed-jobs-after');
+
 		foreach($this->db->selectAllJobContainer() as $container) {
 			// purge old jobs
 			$status = $container->getStatus($this->db->selectAllStaticJobByJobContainer($container->id));
 			if($status == Models\JobContainer::STATUS_SUCCEEDED) {
-				if(time() - strtotime($container->execution_finished) > PURGE_SUCCEEDED_JOBS_AFTER) {
+				if(time() - strtotime($container->execution_finished) > $purgeSucceededJobsAfter) {
 					if($this->debug) echo('Remove succeeded job container #'.$container->id.' ('.$container->name.')'."\n");
 					$this->db->deleteJobContainer($container->id);
 				}
 			}
 			elseif($status == Models\JobContainer::STATUS_FAILED) {
-				if(time() - strtotime($container->execution_finished) > PURGE_FAILED_JOBS_AFTER) {
+				if(time() - strtotime($container->execution_finished) > $purgeFailedJobsAfter) {
 					if($this->debug) echo('Remove failed job container #'.$container->id.' ('.$container->name.')'."\n");
 					$this->db->deleteJobContainer($container->id);
 				}
@@ -64,6 +67,8 @@ class HouseKeeping {
 	}
 
 	private function jobWol() {
+		$wolShutdownExpirySeconds = $this->db->selectSettingByKey('wol-shutdown-expiry');
+
 		foreach($this->db->selectAllJobContainer() as $container) {
 			if($container->wol_sent == 0) {
 				if(strtotime($container->start_time) <= time()) {
@@ -106,13 +111,13 @@ class HouseKeeping {
 						$c = $this->db->selectComputer($j->computer_id); if(!$c) continue;
 						// The computer came up in the defined time range, this means WOL worked.
 						// Remove the "WOL Shutdown Set" flag to keep the shutdown forever.
-						if($c->isOnline() && time() - strtotime($j->wol_shutdown_set) < WOL_SHUTDOWN_EXPIRY_SECONDS) {
+						if($c->isOnline($this->db) && time() - strtotime($j->wol_shutdown_set) < $wolShutdownExpirySeconds) {
 							if($this->debug) echo('Host came up before WOL shutdown expiry. Keep shutdown of job #'.$j->id.' (in container #'.$container->id.' '.$container->name.') forever'."\n");
 							$this->db->removeWolShutdownStaticJobInJobContainer($container->id, $j->id, Models\Package::POST_ACTION_SHUTDOWN);
 						}
 						// If the computer does not came up with WOL after a certain time, WOL didn't work -> remove the shutdown.
 						// It is likely that a user has now manually powered on the machine. Then, an automatic shutdown is not desired anymore.
-						if(time() - strtotime($j->wol_shutdown_set) > WOL_SHUTDOWN_EXPIRY_SECONDS) {
+						if(time() - strtotime($j->wol_shutdown_set) > $wolShutdownExpirySeconds) {
 							if($this->debug) echo('Remove expired WOL shutdown for job #'.$j->id.' (in container #'.$container->id.' '.$container->name.')'."\n");
 							$this->db->removeWolShutdownStaticJobInJobContainer($container->id, $j->id, Models\Package::POST_ACTION_NONE);
 						}
@@ -123,17 +128,20 @@ class HouseKeeping {
 	}
 
 	private function logonHouseKeeping() {
-		$result = $this->db->deleteDomainUserLogonOlderThan(PURGE_DOMAIN_USER_LOGONS_AFTER);
-		if($this->debug) echo('Purged '.intval($result).' domain user logons older than '.intval(PURGE_DOMAIN_USER_LOGONS_AFTER).' seconds'."\n");
+		$purgeDomainUserLogonsAfter = $this->db->selectSettingByKey('purge-domain-user-logons-after');
+		$result = $this->db->deleteDomainUserLogonOlderThan($purgeDomainUserLogonsAfter);
+		if($this->debug) echo('Purged '.intval($result).' domain user logons older than '.intval($purgeDomainUserLogonsAfter).' seconds'."\n");
 	}
 
 	private function eventHouseKeeping() {
-		$result = $this->db->deleteComputerEventEntryOlderThan(PURGE_EVENTS_AFTER);
-		if($this->debug) echo('Purged '.intval($result).' events older than '.intval(PURGE_EVENTS_AFTER).' seconds'."\n");
+		$purgeEventsAfter = $this->db->selectSettingByKey('purge-events-after');
+		$result = $this->db->deleteComputerEventEntryOlderThan($purgeEventsAfter);
+		if($this->debug) echo('Purged '.intval($result).' events older than '.intval($purgeEventsAfter).' seconds'."\n");
 	}
 
 	private function logHouseKeeping() {
-		$result = $this->db->deleteLogEntryOlderThan(PURGE_LOGS_AFTER);
-		if($this->debug) echo('Purged '.intval($result).' log entries older than '.intval(PURGE_LOGS_AFTER).' seconds'."\n");
+		$purgeLogsAfter = $this->db->selectSettingByKey('purge-logs-after');
+		$result = $this->db->deleteLogEntryOlderThan($purgeLogsAfter);
+		if($this->debug) echo('Purged '.intval($result).' log entries older than '.intval($purgeLogsAfter).' seconds'."\n");
 	}
 }

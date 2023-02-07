@@ -168,6 +168,7 @@ return [
 	'unlock' => 'Entsperren',
 	'installations' => 'Installationen',
 	'agent_registration_enabled' => 'Agent Selbst-Registrierung aktiviert',
+	'agent_registration_key' => 'Agent-Registrierungsschlüssel',
 	'agent_key' => 'Agent-Key',
 	'agent_update_interval' => 'Agent Update-Intervall',
 	'purge_succeeded_jobs_after' => 'Lösche erfolgreiche Jobcontainer nach',
@@ -175,6 +176,9 @@ return [
 	'assume_computer_offline_after' => 'Computer als offline annehmen nach',
 	'purge_logs_after' => 'Logeinträge löschen nach',
 	'purge_domain_user_logons_after' => 'Domänenbenutzer-Anmeldungen löschen nach',
+	'purge_events_after' => 'Ereignisse löschen nach',
+	'keep_inactive_screens' => 'Inaktive Computerbildschirme beibehalten',
+	'self_service_enabled' => 'Self-Service-Portal aktiviert',
 	'save' => 'Speichern',
 	'saved' => 'Gespeichert',
 	'add' => 'Hinzufügen',
@@ -330,8 +334,8 @@ return [
 	'priority' => 'Priorität',
 	'priority_description' => 'Jobcontainer mit höherer Priorität werden zuerst ausgeführt.',
 	'force_update' => 'Update erzwingen',
-	'change_settings_in_config_file' => 'Sie können die Einstellungen in der OCO-Konfigurationsdatei (conf.php) ändern.',
 	'client_api_enabled' => 'API aktiviert',
+	'client_api_key' => 'API-Schlüssel',
 	'reorder_via_drag_drop' => 'Reihenfolge via Drag & Drop ändern',
 	'reorder_drag_drop_description' => 'Reihenfolge via Drag & Drop ändern'."\n".'(nur verfügbar, wenn die Tabelle nach Reihenfolge sortiert ist)',
 	'enter_new_sequence_number' => 'Bitte geben Sie die neue Positions-Nummer ein, an die das Objekt geschoben werden soll.',
@@ -500,6 +504,10 @@ return [
 	'status_reported' => 'Status gemeldet',
 	'configuration_json' => 'Konfiguration (JSON-Format)',
 	'configuration_json_docs' => 'Bitte lesen Sie die Dokumentation um zu erfahren, wie die Konfiguration auszusehen hat.',
+	'buy_license' => 'Lizenz kaufen',
+	'package_depot_path' => 'Paket-Depot-Pfad',
+	'no_wol_satellite_server_configured' => 'Keine WOL-Satelliten-Server konfiguriert',
+	'no_extensions_loaded' => 'Keine Erweiterungen geladen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

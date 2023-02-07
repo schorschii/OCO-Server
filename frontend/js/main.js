@@ -2211,6 +2211,40 @@ function confirmRemoveSelectedEventQueryRule(checkboxName) {
 	}
 }
 
+function showDialogEditGeneralConfig() {
+	showDialogAjax(L__OCO_CONFIGURATION, 'views/dialog-general-config-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+}
+function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnabled, agentRegistrationKey, assumeComputerOfflineAfter, wolShutdownExpiry, agentUpdateInterval, purgeSucceededJobsAfter, purgeFailedJobsAfter, purgeLogsAfter, purgeDomainUserLogonsAfter, purgeEventsAfter, keepInactiveScreens, selfServiceEnabled) {
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('edit_general_config', 1);
+	formData.append('client_api_enabled', clientApiEnabled);
+	formData.append('client_api_key', clientApiKey);
+	formData.append('agent_registration_enabled', agentRegistrationEnabled);
+	formData.append('agent_registration_key', agentRegistrationKey);
+	formData.append('assume_computer_offline_after', assumeComputerOfflineAfter);
+	formData.append('wol_shutdown_expiry', wolShutdownExpiry);
+	formData.append('agent_update_interval', agentUpdateInterval);
+	formData.append('purge_succeeded_jobs_after', purgeSucceededJobsAfter);
+	formData.append('purge_failed_jobs_after', purgeFailedJobsAfter);
+	formData.append('purge_logs_after', purgeLogsAfter);
+	formData.append('purge_domain_user_logons_after', purgeDomainUserLogonsAfter);
+	formData.append('purge_events_after', purgeEventsAfter);
+	formData.append('computer_keep_inactive_screens', keepInactiveScreens);
+	formData.append('self_service_enabled', selfServiceEnabled);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				hideDialog(); refreshContent();
+				emitMessage(L__SAVED, L__LICENSE, MESSAGE_TYPE_SUCCESS);
+			} else {
+				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+			}
+		}
+	};
+	req.open('POST', 'ajax-handler/settings.php');
+	req.send(formData);
+}
 function showDialogEditLicense() {
 	showDialogAjax(L__LICENSE, 'views/dialog-license-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }

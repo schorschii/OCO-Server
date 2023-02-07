@@ -6,9 +6,11 @@ $license = new LicenseCheck($db);
 $info = null;
 $infoclass = null;
 
+$selfServiceEnabled = boolval($db->selectSettingByKey('self-service-enabled'));
+
 // execute login if requested
 require_once('session-options.php');
-if(isset($_POST['username']) && isset($_POST['password']) && SELF_SERVICE_ENABLED) {
+if(isset($_POST['username']) && isset($_POST['password']) && $selfServiceEnabled) {
 	try {
 		$authenticator = new SelfService\AuthenticationController($db);
 		$user = $authenticator->login($_POST['username'], $_POST['password']);
@@ -43,7 +45,7 @@ elseif(isset($_GET['logout'])) {
 }
 
 // redirect to index.php if already logged in
-if(!empty($_SESSION['oco_self_service_user_id']) && SELF_SERVICE_ENABLED) {
+if(!empty($_SESSION['oco_self_service_user_id']) && $selfServiceEnabled) {
 	header('Location: index.php');
 	die();
 }
@@ -72,7 +74,7 @@ if(!empty($_SESSION['oco_self_service_user_id']) && SELF_SERVICE_ENABLED) {
 				<img src='img/ietroll.png'>
 			<?php } elseif(!$license->isValid()) { ?>
 				<div class='alert bold error'><?php echo LANG('your_license_is_invalid'); ?></div>
-			<?php } elseif(SELF_SERVICE_ENABLED) { ?>
+			<?php } elseif($selfServiceEnabled) { ?>
 				<form method='POST' action='login.php' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
 					<h1><?php echo LANG('login'); ?></h1>
 					<?php if($info !== null) { ?>

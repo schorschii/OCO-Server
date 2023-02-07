@@ -38,7 +38,7 @@ $commands = Models\Computer::getCommands($ext);
 		<div class='gallery gap'>
 		<?php foreach($computers as $c) { ?>
 			<a class='item blue' <?php echo explorerLink('views/computers.php?id='.$c->id); ?>>
-				<img src='<?php echo $c->getIcon(); ?>' class='<?php if(!$c->isOnline()) echo 'offline'; ?>'>
+				<img src='<?php echo $c->getIcon(); ?>' class='<?php if(!$c->isOnline($db)) echo 'offline'; ?>'>
 				<h3><?php echo htmlspecialchars($c->hostname); ?></h3>
 			</a>
 		<?php } ?>
@@ -48,7 +48,7 @@ $commands = Models\Computer::getCommands($ext);
 <?php } else { ?>
 
 	<div class='details-header'>
-	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline() ? LANG('online') : LANG('offline')); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
+	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline($db) ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline($db) ? LANG('online') : LANG('offline')); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentDeploy([],[],{"id":<?php echo $computer->id; ?>,"name":spnComputerName.innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>

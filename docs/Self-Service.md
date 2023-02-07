@@ -4,7 +4,7 @@ The OCO Self Service Portal is a web interface for non-admin users which allows 
 ## Setup
 In order to provide the Self Service Portal to your users please create a new virtual host on your webserver, using the `self-service` folder as webroot (similar to the `frontend` directory).
 
-The portal must then be enabled by setting the config option `SELF_SERVICE_ENABLED` to true.
+The portal must then be enabled by setting the config option "Self Service Enabled" on the settings page.
 
 ## Access And Permissions
 To log in into the Self Service Portal, accounts from the table `domain_user` are used. These accounts are created and assigned to computers by the [OCO agent](https://github.com/schorschii/oco-agent) only. Manual creation of domain users is not supported.

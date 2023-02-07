@@ -11,7 +11,7 @@ You can select a start date in the future. Then, the jobs are schedules and exec
 ## WOL/Shutdown
 You can enable sending Wake On Lan packets on the job start time and automatic shutdown after completion. This will only shutdown computers, which could be waked up - all computers, which are already powered on will not be shutted down (in order to not shut down computers which have to be always on, like machine control computers).
 
-If a computer could be waked up for package installation is determined by a time frame defined in `WOL_SHUTDOWN_EXPIRY_SECONDS` in the config file. If a computer does not came up within this time frame, it is assumed that WOL did not work and the automatic shutdown will be removed from this job, so that the computer is not shutted down automatically if a user powered it on later manually.
+If a computer could be waked up for package installation is determined by a time frame defined in "WOL Shutdown Expiry" on the config page. If a computer does not came up within this time frame, it is assumed that WOL did not work and the automatic shutdown will be removed from this job, so that the computer is not shutted down automatically if a user powered it on later manually.
 
 Please also have a look at the WOL section in [Computers.md](Computers.md).
 
