@@ -686,15 +686,23 @@ class DatabaseController {
 			':details' => $details,
 		]);
 	}
-	public function selectAllComputerServiceByComputerId($computer_id) {
+	public function selectAllCurrentComputerServiceByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cs.name, (SELECT status FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "status",
 				(SELECT timestamp FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "timestamp",
 				(SELECT updated FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "updated",
 				(SELECT details FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "details"
-			FROM computer_service cs WHERE computer_id = :computer_id GROUP BY cs.name'
+			FROM computer_service cs WHERE computer_id = :computer_id GROUP BY cs.name ORDER BY cs.name ASC'
 		);
 		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerService');
+	}
+	public function selectAllComputerServiceByComputerIdAndServiceName($computer_id, $service_name) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cs.name, cs.status, cs.timestamp, cs.updated, cs.details
+			FROM computer_service cs WHERE computer_id = :computer_id AND cs.name = :service_name ORDER BY timestamp DESC'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id, ':service_name' => $service_name]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerService');
 	}
 	public function selectLastComputerEventByComputerId($computer_id) {

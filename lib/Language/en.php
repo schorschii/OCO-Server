@@ -498,6 +498,8 @@ return [
 	'self_service_is_disabled' => 'The Self Service Portal is currently disabled',
 	'password_set' => 'Password set',
 	'individual_agent_key' => 'Individual Agen Key',
+	'services' => 'Services',
+	'all_services' => 'All Services',
 	'events' => 'Events',
 	'level' => 'Level',
 	'event_id' => 'Event ID',

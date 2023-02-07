@@ -472,9 +472,13 @@ $isOnline = $computer->isOnline($db);
 		</div>
 
 		<div name='services' class='<?php if($tab=='services') echo 'active'; ?>'>
-			<?php if($tab == 'services') { ?>
+			<?php if($tab == 'services' && !empty($_GET['service-history'])) { ?>
 			<div class='details-abreast'>
 				<div class='stickytable'>
+					<div class='controls'>
+						<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"service-history":null}, true)'><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_services'); ?></button>
+						<div class='filler'></div>
+					</div>
 					<table id='tblComputerServicesData' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
@@ -487,7 +491,7 @@ $isOnline = $computer->isOnline($db);
 						</thead>
 						<tbody>
 							<?php
-							foreach($db->selectAllComputerServiceByComputerId($computer->id) as $e) {
+							foreach($db->selectAllComputerServiceByComputerIdAndServiceName($computer->id, $_GET['service-history']) as $e) {
 								echo "<tr>";
 								echo "<td class='servicestatus ".$e->getStatusClass()."'>".htmlspecialchars($e->getStatusText())."</td>";
 								echo "<td>".htmlspecialchars($e->name)."</td>";
@@ -495,6 +499,52 @@ $isOnline = $computer->isOnline($db);
 								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($e->updated)."</td>";
 								echo "</tr>";
+							}
+							?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<div class='spread'>
+										<div>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
+										</div>
+										<div class='controls'>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+			</div>
+			<?php } elseif($tab == 'services') { ?>
+			<div class='details-abreast'>
+				<div class='stickytable'>
+					<table id='tblComputerServicesData' class='list searchable sortable savesort margintop actioncolumn'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('details'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('status_reported'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
+								<th class=''><?php echo LANG('history'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php $counter = 0;
+							foreach($db->selectAllCurrentComputerServiceByComputerId($computer->id) as $e) {
+								echo "<tr>";
+								echo "<td class='servicestatus ".$e->getStatusClass()."'>".htmlspecialchars($e->getStatusText())."</td>";
+								echo "<td id='service".$counter."'>".htmlspecialchars($e->name)."</td>";
+								echo "<td>".htmlspecialchars($e->details)."</td>";
+								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($e->updated)."</td>";
+								echo "<td><button title='".LANG('history')."' onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {\"service-history\":service".$counter.".innerText}, true)'><img src='img/schedule.dyn.svg'></button></td>";
+								echo "</tr>";
+								$counter ++;
 							}
 							?>
 						</tbody>
@@ -557,7 +607,7 @@ $isOnline = $computer->isOnline($db);
 										<div class='controls'>
 											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 											<?php if(empty($_GET['nolimit'])) { ?>
-												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1}, true)'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 											<?php } ?>
 										</div>
 									</div>
@@ -607,7 +657,7 @@ $isOnline = $computer->isOnline($db);
 										<div class='controls'>
 											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 											<?php if(empty($_GET['nolimit'])) { ?>
-												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1});refreshContent()'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
+												<button onclick='rewriteUrlContentParameter(currentExplorerContentUrl, {"nolimit":1}, true)'><img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_all'); ?></button>
 											<?php } ?>
 										</div>
 									</div>

@@ -493,6 +493,8 @@ return [
 	'self_service_is_disabled' => 'Das Self-Service-Portal ist zurzeit deaktiviert',
 	'password_set' => 'Passwort gesetzt',
 	'individual_agent_key' => 'Individueller Agentenschlüssel',
+	'services' => 'Services',
+	'all_services' => 'Alle Services',
 	'events' => 'Ereignisse',
 	'level' => 'Level',
 	'event_id' => 'Event-ID',

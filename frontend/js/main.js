@@ -59,7 +59,7 @@ function toggleInputDirectory(element) {
 	}
 }
 
-function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}) {
+function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}, refresh=false) {
 	// compile parameters to replace from ajax request URL
 	var url = new URL(ajaxRequestUrl, location);
 	paramsToReplace['view'] = url.pathname.split(/[\\/]/).pop().split('.')[0];
@@ -67,7 +67,9 @@ function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}) {
 	var parameters = [];
 	for(const [key, value] of url.searchParams) {
 		if(key in paramsToReplace) {
-			parameters[key] = paramsToReplace[key];
+			if(paramsToReplace[key] !== null) {
+				parameters[key] = paramsToReplace[key];
+			}
 		} else {
 			parameters[key] = value;
 		}
@@ -75,7 +77,9 @@ function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}) {
 	// add missing additional params
 	Object.keys(paramsToReplace).forEach(function(key) {
 		if(!(key in parameters)) {
-			parameters[key] = paramsToReplace[key];
+			if(paramsToReplace[key] !== null) {
+				parameters[key] = paramsToReplace[key];
+			}
 		}
 	});
 	// add new entry to browser history
@@ -91,6 +95,8 @@ function rewriteUrlContentParameter(ajaxRequestUrl, paramsToReplace={}) {
 		document.title,
 		document.location.pathname+'?'+keyValuePairs.join('&')
 	);
+	// reload content with new query parameters
+	if(refresh) refreshContent();
 }
 function getCurrentUrlParameter(param) {
 	var url = new URL(location);
