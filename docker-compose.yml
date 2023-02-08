@@ -9,6 +9,7 @@ services:
       # and change db parameters to the ones used below
       # (DB_HOST = 'oco-db')
       - ./conf.php:/var/www/oco/conf.php
+      - ./depot:/var/www/oco/depot
   oco-db:
     image: mariadb
     environment:
