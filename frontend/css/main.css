@@ -369,6 +369,9 @@ h3 {
 	background-color: rgb(0,0,0,0.1);
 	flex-grow: 1;
 }
+.filler.invisible {
+	background-color: transparent;
+}
 
 #homepage {
 	text-align: center;
@@ -618,6 +621,7 @@ h3 {
 }
 .controls h1, .controls h2, .controls h3 {
 	margin: 0px !important;
+	align-self: center;
 }
 .controls:last-child {
 	margin-bottom: 0px;
@@ -1157,8 +1161,17 @@ div.details-abreast {
 }
 div.details-abreast > div h1,
 div.details-abreast > div h2,
+div.details-abreast > div h3,
+div.details-abreast > div .controls.heading {
+	margin-top: 20px;
+	margin-bottom: 12px;
+	min-height: 41px; /*for alignment with .controls.heading*/
+}
+div.details-abreast > div h1,
+div.details-abreast > div h2,
 div.details-abreast > div h3 {
-	margin-top: 25px;
+	display: flex !important;
+	align-items: center;
 }
 div.details-abreast > div {
 	flex-grow: 1;

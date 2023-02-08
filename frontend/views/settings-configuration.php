@@ -13,11 +13,11 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 
 <div class='details-abreast'>
 	<div>
-		<h2><?php echo LANG('license'); ?></h2>
-		<div class='controls'>
-			<button onclick='showDialogEditLicense()' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
-			<div class='filler'></div>
+		<div class='controls heading'>
+			<h2><?php echo LANG('license'); ?></h2>
+			<div class='filler invisible'></div>
 			<span><a href='https://georg-sieber.de/?page=oco' target='_blank'><?php echo LANG('buy_license'); ?></a></span>
+			<button onclick='showDialogEditLicense()' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		</div>
 		<table class='list'>
 			<tr>
@@ -30,10 +30,10 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 			</tr>
 		</table>
 
-		<h2><?php echo LANG('oco_configuration'); ?></h2>
-		<div class='controls'>
+		<div class='controls heading'>
+			<h2><?php echo LANG('oco_configuration'); ?></h2>
+			<div class='filler invisible'></div>
 			<button onclick='showDialogEditGeneralConfig()' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
-			<div class='filler'></div>
 		</div>
 		<table class='list metadata'>
 			<tr>

@@ -185,8 +185,9 @@ try {
 					</table>
 				</div>
 				<div>
-					<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
-					<div class='controls'>
+					<div class='controls heading'>
+						<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
+						<div class='filler invisible'></div>
 						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
 						<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.dyn.svg'>&nbsp;<?php echo LANG('details'); ?></button>
 					</div>
@@ -225,8 +226,9 @@ try {
 
 			<div class='details-abreast'>
 				<div>
-					<h2><?php echo LANG('depends_on'); ?></h2>
-					<div class='controls'>
+					<div class='controls heading'>
+						<h2><?php echo LANG('depends_on'); ?></h2>
+						<div class='filler invisible'></div>
 						<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 					</div>
 					<table id='tblDependencyPackageData' class='list sortable savesort'>
@@ -266,8 +268,9 @@ try {
 					</table>
 				</div>
 				<div>
-					<h2><?php echo LANG('dependent_packages'); ?></h2>
-					<div class='controls'>
+					<div class='controls heading'>
+						<h2><?php echo LANG('dependent_packages'); ?></h2>
+						<div class='filler invisible'></div>
 						<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 					</div>
 					<table id='tblDependentPackageData' class='list sortable savesort'>

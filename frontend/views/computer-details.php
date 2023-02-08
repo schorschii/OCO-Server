@@ -476,14 +476,14 @@ $isOnline = $computer->isOnline($db);
 			<div class='details-abreast'>
 				<div class='stickytable'>
 					<div class='controls'>
+						<h2><?php echo htmlspecialchars($_GET['service-history']); ?></h2>
+						<div class='filler invisible'></div>
 						<button onclick='rewriteUrlContentParameter({"service-history":null}, true)'><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_services'); ?></button>
-						<div class='filler'></div>
 					</div>
 					<table id='tblComputerServicesData' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('details'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('status_reported'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
@@ -494,7 +494,6 @@ $isOnline = $computer->isOnline($db);
 							foreach($db->selectAllComputerServiceByComputerIdAndServiceName($computer->id, $_GET['service-history']) as $e) {
 								echo "<tr>";
 								echo "<td class='servicestatus ".$e->getStatusClass()."'>".htmlspecialchars($e->getStatusText())."</td>";
-								echo "<td>".htmlspecialchars($e->name)."</td>";
 								echo "<td>".htmlspecialchars($e->details)."</td>";
 								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($e->updated)."</td>";
