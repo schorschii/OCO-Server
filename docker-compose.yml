@@ -1,0 +1,22 @@
+version: "2"
+services:
+  oco-server:
+    build: .
+    ports:
+      - 8088:80
+    volumes:
+      # You need to copy the conf.example.php to conf.php
+      # and change db parameters to the ones used below
+      # (DB_HOST = 'oco-db')
+      - ./conf.php:/var/www/oco/conf.php
+      - ./depot:/var/www/oco/depot
+  oco-db:
+    image: mariadb
+    environment:
+      - MARIADB_RANDOM_ROOT_PASSWORD=true
+      - MARIADB_DATABASE=oco
+      - MARIADB_USER=oco
+      - MARIADB_PASSWORD=Ch@ngem4
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+      - ./depot/db:/var/lib/mysql
