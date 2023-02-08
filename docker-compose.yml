@@ -19,3 +19,4 @@ services:
       - MARIADB_PASSWORD=Ch@ngem4
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
+      - ./depot/db:/var/lib/mysql
