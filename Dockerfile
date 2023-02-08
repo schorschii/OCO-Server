@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y libzip-dev libldap2-dev && \
     docker-php-ext-install pdo_mysql zip ldap
 
 # copy web app files
-COPY . /var/www/oco
+COPY . ${WEBAPP_ROOT}
+RUN if [ ! -f "$WEBAPP_ROOT/conf.php" ]; then echo 'config.php missing - please create it from config.example.php!'; exit 1; fi
 
 # set up cron jobs
 RUN apt-get install -y cron && \
