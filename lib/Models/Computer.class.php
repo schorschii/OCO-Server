@@ -5,9 +5,12 @@ namespace Models;
 class Computer {
 
 	public $id;
+	public $uid;
 	public $hostname;
 	public $os;
 	public $os_version;
+	public $os_license;
+	public $os_locale;
 	public $kernel_version;
 	public $architecture;
 	public $cpu;
@@ -46,7 +49,7 @@ class Computer {
 	}
 	function isOnline($db) {
 		if(!$db instanceof \DatabaseController) throw new Exception('Missing DatabaseController Reference');
-		return time() - strtotime($this->last_ping) < intval($db->selectSettingByKey('computer-offline-seconds'));
+		return time() - strtotime($this->last_ping??0) < intval($db->selectSettingByKey('computer-offline-seconds'));
 	}
 
 	const DEFAULT_COMPUTER_COMMANDS = [

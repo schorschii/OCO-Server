@@ -43,7 +43,7 @@ function niceTime($seconds) {
 	if($seconds < 60)
 		return sprintf('%d '.LANG('seconds'), $seconds);
 	elseif($seconds < 60*60*24)
-		return sprintf('%d '.LANG('hours').', %d '.LANG('minutes'), ($seconds/3600), ($seconds/60%60));
+		return sprintf('%d '.LANG('hours').', %d '.LANG('minutes'), ($seconds/3600), (intval($seconds/60)%60));
 	else return round($seconds/60/60/24).' '.LANG('days');
 }
 

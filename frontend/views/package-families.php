@@ -57,8 +57,8 @@ try {
 			echo "<td><a ".explorerLink('views/packages.php?package_family_id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
 			echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 			echo "<td>".htmlspecialchars($p->package_count)."</td>";
-			echo "<td>".htmlspecialchars($p->newest_package_created)."</td>";
-			echo "<td>".htmlspecialchars($p->oldest_package_created)."</td>";
+			echo "<td>".htmlspecialchars($p->newest_package_created??'')."</td>";
+			echo "<td>".htmlspecialchars($p->oldest_package_created??'')."</td>";
 			echo "</tr>";
 		}
 		?>

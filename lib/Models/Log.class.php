@@ -5,7 +5,9 @@ namespace Models;
 class Log {
 
 	public $id;
+	public $timestamp;
 	public $level;
+	public $host;
 	public $user;
 	public $object_id;
 	public $action;

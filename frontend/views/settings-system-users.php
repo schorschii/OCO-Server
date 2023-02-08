@@ -15,7 +15,7 @@ try {
 }
 
 $ldapActive = false;
-$ldapServers = json_decode($db->selectSettingByKey('system-user-ldapsync'), true);
+$ldapServers = json_decode($db->selectSettingByKey('system-user-ldapsync')??'', true);
 if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 ?>
 
@@ -53,6 +53,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 							<th class=''><?php echo LANG('action'); ?></th>
 						</tr>
 					</thead>
+					<tbody>
 					<?php
 					foreach($cl->getSystemUsers() as $u) {
 						echo "<tr>";
@@ -71,6 +72,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 						echo "</tr>";
 					}
 					?>
+					</tbody>
 					<tfoot>
 						<tr>
 							<td colspan='999'>
@@ -111,6 +113,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 							<th class=''><?php echo LANG('action'); ?></th>
 						</tr>
 					</thead>
+					<tbody>
 					<?php
 					foreach($cl->getSystemUserRoles() as $r) {
 						echo "<tr>";
@@ -123,6 +126,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 						echo "</tr>";
 					}
 					?>
+					</tbody>
 					<tfoot>
 						<tr>
 							<td colspan='999'>

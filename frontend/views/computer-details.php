@@ -148,7 +148,7 @@ $isOnline = $computer->isOnline($db);
 						</tr>
 						<tr>
 							<th><?php echo LANG('last_seen'); ?></th>
-							<td><?php echo htmlspecialchars($computer->last_ping); ?></td>
+							<td><?php echo htmlspecialchars($computer->last_ping??''); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('last_updated'); ?></th>

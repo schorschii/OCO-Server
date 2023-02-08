@@ -97,7 +97,7 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG('agent_ip_range'); ?></th>
 				<td>
-					<span id='spnJobContainerAgentIpRanges'><?php echo htmlspecialchars($container->agent_ip_ranges); ?></span>
+					<span id='spnJobContainerAgentIpRanges'><?php echo htmlspecialchars($container->agent_ip_ranges??''); ?></span>
 				</td>
 			</tr>
 			<tr>
@@ -201,7 +201,7 @@ if(!empty($_GET['id'])) {
 				}
 				$downloadTime = (!empty($job->download_started)&&!empty($job->execution_started)) ? strtotime($job->execution_started)-strtotime($job->download_started) : 0;
 				$executionTime = (!empty($job->execution_started)&&!empty($job->execution_finished)) ? strtotime($job->execution_finished)-strtotime($job->execution_started) : 0;
-				echo "<td title='".LANG('execution_time').': '.niceTime($downloadTime+$executionTime)."'>".htmlspecialchars($job->execution_finished)."</td>";
+				echo "<td title='".LANG('execution_time').': '.niceTime($downloadTime+$executionTime)."'>".htmlspecialchars($job->execution_finished??'')."</td>";
 				echo "</tr>";
 			} ?>
 			</tbody>

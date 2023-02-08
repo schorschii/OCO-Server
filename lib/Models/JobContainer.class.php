@@ -6,6 +6,7 @@ class JobContainer {
 
 	public $id;
 	public $name;
+	public $author;
 	public $enabled;
 	public $start_time;
 	public $end_time;
@@ -15,6 +16,7 @@ class JobContainer {
 	public $sequence_mode;
 	public $priority;
 	public $agent_ip_ranges;
+	public $self_service;
 	public $created;
 
 	// aggregated values
