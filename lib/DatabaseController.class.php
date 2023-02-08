@@ -731,6 +731,9 @@ class DatabaseController {
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerEvent');
 	}
 	public function insertOrUpdateComputerEvent($computer_id, $log, $timestamp, $provider, $level, $event_id, $data) {
+		$level = empty($level) ? -1 : $level;
+		$event_id = empty($event_id) ? -1 : $event_id;
+
 		$this->stmt = $this->dbh->prepare(
 			'SELECT id FROM computer_event WHERE computer_id = :computer_id AND log = :log AND timestamp = :timestamp AND provider = :provider AND level = :level AND event_id = :event_id AND data = :data LIMIT 1'
 		);

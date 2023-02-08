@@ -358,8 +358,8 @@ switch($srcdata['method']) {
 				$event['log'],
 				$timestamp,
 				$event['provider'] ?? '',
-				$event['level'] ?? 0,
-				$event['event_id'] ?? 0,
+				$event['level'] ?? -1,
+				$event['event_id'] ?? -1,
 				json_encode($event['data'])
 			);
 			if(!$success) throw new Exception('Error while inserting event into database');

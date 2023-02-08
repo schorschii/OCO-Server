@@ -25,22 +25,36 @@ It is recommended to **not** make the OCO server available on the internet to pr
 The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in "Agent Update Interval" on the config page. The recommended default value is 2 hours. Do not make this time interval too short as the query of the inventory values can produce some CPU load.
 
 ## Event Log Query
-You can monitor the Windows event log of your clients by creating Event Query Rules on the OCO server. These rules are communicated with the agent and if an event matches the rule, the agent will send the event data to the server. This feature can be used as a simple central syslog functionality for your managed clients.
+You can monitor the Windows event log and journalctl on Linux by creating Event Query Rules on the OCO server. These rules are communicated with the agent and if an event matches the rule, the agent will send the event data to the server. This feature can be used as a simple central syslog functionality for your managed clients.
 
-The query syntax is the exact same XML format as you would enter it in the Windows event viewer.
+For Windows, the query syntax is the exact same XML format as you would enter it in the Windows event viewer.
 
-Please note that Windows generates many log entries. A meaningful filter should always be applied to not spam the database with unnecessary events.
+For Linux, as log name, please enter `journalctl` - this is currently the only supported datasource on Linux. As query, a JSON string with the following filter options can be set:
+```
+{
+    "unit":"udisks2.service",  <-- systemd unit to monitor (journalctl -u ...)
+    "identifier":"",  <-- entries with the specified syslog identifier (journalctl -t ...)
+    "priority":"0,1,2,3",  <-- entries with the specified priority (journalctl -p ...)
+    "grep":"mounted"  <-- entries with matching pattern (journalctl -g ...)
+}
+```
+
+Please note that the operating systems are producing many log entries. A meaningful filter should always be applied to not spam the database with unnecessary events.
 
 ### Example Rules
-#### Get Defender Warning, Error and Critical Events
+#### Windows: Get Defender Warning, Error and Critical Events
 (including "Malware Detected" events with event ID 1116)
 
 Log: `Microsoft-Windows-Windows Defender/Operational`  
 Query: `<QueryList><Query><Select>*[System[(Level=1 or Level=2 or Level=3)]]</Select></Query></QueryList>`
 
-#### Get All GPO Script Error Events (ID 1130)
+#### Windows: Get All GPO Script Error Events (ID 1130)
 Log: `System`  
 Query: `<QueryList><Query><Select>*[System[(EventID=1130)]]</Select></Query></QueryList>`
+
+#### Linux: Get Mount Attempts
+Log: `journalctl`  
+Query: `{"unit":"udisks2.service", "priority":"0,1,2,3,4,5", "grep":"mounted"}`
 
 ## Service Monitoring
 OCO offers basic monitoring features. You can check anything by writing your own service check script and placing it into the agent's local check directory. Your script just have to produce standardised output in the CheckMK check format. For more information, please have a look at the documentation in the [agent repo](https://github.com/schorschii/oco-agent).

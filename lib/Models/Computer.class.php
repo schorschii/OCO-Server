@@ -40,12 +40,26 @@ class Computer {
 	// joined network attributes
 	public $computer_network_mac;
 
+	// constants
+	const OS_TYPE_UNKNOWN = 0;
+	const OS_TYPE_WINDOWS = 1;
+	const OS_TYPE_MACOS   = 2;
+	const OS_TYPE_LINUX   = 3;
+
 	// functions
+	function getOsType() {
+		if(empty(trim($this->os))) return self::OS_TYPE_UNKNOWN;
+		elseif(strpos($this->os, 'Windows') !== false) return self::OS_TYPE_WINDOWS;
+		elseif(strpos($this->os, 'macOS') !== false) return self::OS_TYPE_MACOS;
+		else return self::OS_TYPE_LINUX;
+	}
 	function getIcon() {
-		if(empty(trim($this->os))) return 'img/computer.dyn.svg';
-		elseif(strpos($this->os, 'Windows') !== false) return 'img/windows.dyn.svg';
-		elseif(strpos($this->os, 'macOS') !== false) return 'img/apple.dyn.svg';
-		else return 'img/linux.dyn.svg';
+		$type = $this->getOsType();
+		if($type == self::OS_TYPE_UNKNOWN) return 'img/computer.dyn.svg';
+		elseif($type == self::OS_TYPE_WINDOWS) return 'img/windows.dyn.svg';
+		elseif($type == self::OS_TYPE_MACOS) return 'img/apple.dyn.svg';
+		elseif($type == self::OS_TYPE_LINUX) return 'img/linux.dyn.svg';
+		else return '';
 	}
 	function isOnline($db) {
 		if(!$db instanceof \DatabaseController) throw new Exception('Missing DatabaseController Reference');

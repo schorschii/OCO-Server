@@ -588,7 +588,7 @@ $isOnline = $computer->isOnline($db);
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($e->log)."</td>";
-								echo "<td class='eventlevel ".$e->getLevelClass()."'>".htmlspecialchars($e->getLevelText())."</td>";
+								echo "<td class='eventlevel ".$e->getLevelClass($computer->getOsType())."'>".htmlspecialchars($e->getLevelText($computer->getOsType()))."</td>";
 								echo "<td>".htmlspecialchars($e->provider)."</td>";
 								echo "<td>".htmlspecialchars($e->event_id)."</td>";
 								echo "<td class='subbuttons'>".htmlspecialchars(shorter($e->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($e->timestamp,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($e->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
