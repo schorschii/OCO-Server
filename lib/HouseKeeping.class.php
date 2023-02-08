@@ -15,10 +15,13 @@ class HouseKeeping {
 	}
 
 	public function cleanup() {
+		if($this->debug) echo('===== Housekeeping '.date('Y-m-d H:i:s').' ====='."\n");
+
 		// core housekeeping
 		$this->jobHouseKeeping();
 		$this->jobWol();
 		$this->logonHouseKeeping();
+		$this->serviceHouseKeeping();
 		$this->eventHouseKeeping();
 		$this->logHouseKeeping();
 
@@ -28,7 +31,7 @@ class HouseKeeping {
 			call_user_func($func, $this->db);
 		}
 
-		if($this->debug) echo('Housekeeping Done.'."\n");
+		if($this->debug) echo('Done.'."\n");
 	}
 
 	private function jobHouseKeeping() {
@@ -133,9 +136,15 @@ class HouseKeeping {
 		if($this->debug) echo('Purged '.intval($result).' domain user logons older than '.intval($purgeDomainUserLogonsAfter).' seconds'."\n");
 	}
 
+	private function serviceHouseKeeping() {
+		$purgeServiceHistoryAfter = $this->db->selectSettingByKey('purge-events-after');
+		$result = $this->db->deleteComputerServiceHistoryOlderThan($purgeServiceHistoryAfter);
+		if($this->debug) echo('Purged '.intval($result).' service history entries older than '.intval($purgeServiceHistoryAfter).' seconds'."\n");
+	}
+
 	private function eventHouseKeeping() {
 		$purgeEventsAfter = $this->db->selectSettingByKey('purge-events-after');
-		$result = $this->db->deleteComputerEventEntryOlderThan($purgeEventsAfter);
+		$result = $this->db->deleteComputerEventOlderThan($purgeEventsAfter);
 		if($this->debug) echo('Purged '.intval($result).' events older than '.intval($purgeEventsAfter).' seconds'."\n");
 	}
 

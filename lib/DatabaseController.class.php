@@ -705,6 +705,15 @@ class DatabaseController {
 		$this->stmt->execute([':computer_id' => $computer_id, ':service_name' => $service_name]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerService');
 	}
+	public function deleteComputerServiceHistoryOlderThan($seconds) {
+		if(intval($seconds) < 1) return;
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_service WHERE updated < NOW() - INTERVAL '.intval($seconds).' SECOND
+			AND id NOT IN (SELECT MAX(cs2.id) FROM (SELECT * FROM computer_service) cs2 GROUP BY cs2.computer_id, cs2.name)'
+		);
+		if(!$this->stmt->execute()) return false;
+		return $this->stmt->rowCount();
+	}
 	public function selectLastComputerEventByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer_event WHERE computer_id = :computer_id ORDER BY timestamp DESC LIMIT 1'
@@ -753,7 +762,7 @@ class DatabaseController {
 		])) return false;
 		return $this->dbh->lastInsertId();
 	}
-	public function deleteComputerEventEntryOlderThan($seconds) {
+	public function deleteComputerEventOlderThan($seconds) {
 		if(intval($seconds) < 1) return;
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_event WHERE timestamp < NOW() - INTERVAL '.intval($seconds).' SECOND'
