@@ -255,6 +255,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 		if(showFullscreenLoader) timer = setTimeout(function(){ showLoader2(true) }, 200);
 	}
 	var xhttp = new XMLHttpRequest();
+	xhttp.userCancelled = false;
 	xhttp.onreadystatechange = function() {
 		if(this.readyState != 4) {
 			return;
@@ -279,10 +280,12 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 		} else if(this.status == 401) {
 			window.location.href = 'login.php';
 		} else {
-			if(this.status == 0) {
-				emitMessage(L__NO_CONNECTION_TO_SERVER, L__PLEASE_CHECK_NETWORK, MESSAGE_TYPE_ERROR);
-			} else {
-				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
+			if(!this.userCancelled) {
+				if(this.status == 0) {
+					emitMessage(L__NO_CONNECTION_TO_SERVER, L__PLEASE_CHECK_NETWORK, MESSAGE_TYPE_ERROR);
+				} else {
+					emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
+				}
 			}
 			if(errorCallback != undefined && typeof errorCallback == 'function') {
 				errorCallback(this.responseText);
@@ -297,6 +300,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 	};
 	xhttp.open('GET', url, true);
 	xhttp.send();
+	return xhttp;
 }
 function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 	var xhttp = new XMLHttpRequest();
@@ -322,6 +326,7 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 	xhttp.open('POST', url, true);
 	xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhttp.send(body);
+	return xhttp;
 }
 function urlencodeObject(srcjson) {
 	if(typeof srcjson !== 'object') return null;
@@ -580,8 +585,13 @@ function refreshContentDeploy(packages=[], packageGroups=[], computers=[], compu
 }
 
 // ======== SEARCH OPERATIONS ========
+var previousSearchOperation = null;
 function doSearch(query) {
-	ajaxRequest('views/search.php?query='+encodeURIComponent(query), 'search-results');
+	if(previousSearchOperation !== null && previousSearchOperation.status === 0) {
+		previousSearchOperation.userCancelled = true;
+		previousSearchOperation.abort();
+	}
+	previousSearchOperation = ajaxRequest('views/search.php?query='+encodeURIComponent(query), 'search-results');
 	openSearchResults();
 }
 function closeSearchResults() {

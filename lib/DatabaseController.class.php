@@ -134,6 +134,13 @@ class DatabaseController {
 		$this->stmt->execute([':hostname' => '%'.$hostname.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer');
 	}
+	public function searchAllComputerGroup($name, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_group WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':name' => '%'.$name.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
+	}
 	public function selectAllComputer() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM computer ORDER BY hostname ASC'
@@ -1054,6 +1061,13 @@ class DatabaseController {
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily');
+	}
+	public function searchAllPackageGroup($name, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM package_group WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':name' => '%'.$name.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup');
 	}
 	public function selectAllPackageByPackageFamilyNameAndVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
@@ -2437,6 +2451,13 @@ class DatabaseController {
 		});
 		if($limit == null) return $reports;
 		else return array_slice($reports, 0, intval($limit));
+	}
+	public function searchAllReportGroup($name, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM report_group WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':name' => '%'.$name.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup');
 	}
 	public function selectAllReportByReportGroupId($report_group_id) {
 		if($report_group_id == null) $sql = 'SELECT * FROM report WHERE report_group_id IS NULL ORDER BY name';

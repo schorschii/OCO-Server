@@ -51,6 +51,27 @@ foreach($db->searchAllReport($_GET['query']) as $r) {
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = new Models\SearchResult($r->name, LANG('domain_user'), 'views/report-details.php?id='.$r->id, 'img/report.dyn.svg');
 }
+$counter = 0;
+foreach($db->searchAllComputerGroup($_GET['query']) as $r) {
+	$counter ++;
+	if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = new Models\SearchResult($r->name, LANG('computer_group'), 'views/computers.php?id='.$r->id, 'img/folder.dyn.svg');
+}
+$counter = 0;
+foreach($db->searchAllPackageGroup($_GET['query']) as $r) {
+	$counter ++;
+	if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = new Models\SearchResult($r->name, LANG('package_group'), 'views/packages.php?id='.$r->id, 'img/folder.dyn.svg');
+}
+$counter = 0;
+foreach($db->searchAllReportGroup($_GET['query']) as $r) {
+	$counter ++;
+	if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = new Models\SearchResult($r->name, LANG('report_group'), 'views/reports.php?id='.$r->id, 'img/folder.dyn.svg');
+}
 // extension search
 foreach($ext->getAggregatedConf('frontend-search-function') as $func) {
 	$counter = 0;
@@ -64,6 +85,8 @@ foreach($ext->getAggregatedConf('frontend-search-function') as $func) {
 
 if(count($items) == 0) {
 	die('<div class="alert warning nomargin">'.LANG('no_search_results').'</div>');
+} elseif(count($items) > 25) {
+	$items = array_chunk($items, 25)[0];
 }
 ?>
 
