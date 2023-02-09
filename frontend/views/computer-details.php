@@ -541,7 +541,7 @@ $isOnline = $computer->isOnline($db);
 								echo "<td>".htmlspecialchars($e->details)."</td>";
 								echo "<td>".htmlspecialchars($e->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($e->updated)."</td>";
-								echo "<td><button title='".LANG('history')."' onclick='rewriteUrlContentParameter({\"service-history\":service".$counter.".innerText}, true)'><img src='img/schedule.dyn.svg'></button></td>";
+								echo "<td><button title='".LANG('history')."' onclick='rewriteUrlContentParameter({\"service-history\":service".$counter.".innerText}, true)' ".($e->history_count?'':'disabled')."><img src='img/schedule.dyn.svg'></button></td>";
 								echo "</tr>";
 								$counter ++;
 							}

@@ -13,6 +13,9 @@ class ComputerService {
 	public $metrics;
 	public $details;
 
+	// aggregated values
+	public $history_count;
+
 	// functions
 	public function getStatusText() {
 		if($this->status == 0) return 'OK';

@@ -688,11 +688,8 @@ class DatabaseController {
 	}
 	public function selectAllCurrentComputerServiceByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cs.name, (SELECT status FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "status",
-				(SELECT timestamp FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "timestamp",
-				(SELECT updated FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "updated",
-				(SELECT details FROM computer_service cs2 WHERE cs2.computer_id = :computer_id AND cs2.name = cs.name ORDER BY timestamp DESC LIMIT 1) AS "details"
-			FROM computer_service cs WHERE computer_id = :computer_id GROUP BY cs.name ORDER BY cs.name ASC'
+			'SELECT cs.*, (SELECT (COUNT(*) - 1) FROM computer_service cs3 WHERE cs3.computer_id = cs.computer_id AND cs3.name = cs.name) AS "history_count"
+			FROM computer_service cs INNER JOIN computer c ON c.id = cs.computer_id WHERE cs.id IN (SELECT MAX(cs2.id) FROM computer_service cs2 GROUP BY cs2.computer_id, cs2.name) AND cs.computer_id = :computer_id'
 		);
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerService');
