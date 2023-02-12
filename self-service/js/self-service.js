@@ -21,9 +21,9 @@ function deploySelfService(title, computers, packages, useWol, shutdownWakedAfte
 			if(this.status == 200) {
 				refreshContentExplorer('views/job-containers.php?id='+parseInt(this.responseText));
 				refreshSidebar();
-				emitMessage(L__JOBS_CREATED, title, MESSAGE_TYPE_SUCCESS);
+				emitMessage(LANG['jobs_created'], title, MESSAGE_TYPE_SUCCESS);
 			} else {
-				emitMessage(L__ERROR+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 				btnDeploy.disabled = false;
 				btnDeploy.classList.remove('hidden');
 				prgDeploy.classList.add('hidden');

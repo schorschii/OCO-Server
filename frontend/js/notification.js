@@ -2,13 +2,13 @@ const STORAGE_KEY_PRESENTED_NOTIFICATIONS = 'presented-notifications';
 
 function askNotificationPermission() {
 	if(!Notification) {
-		emitMessage(L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED, '', MESSAGE_TYPE_ERROR);
+		emitMessage(LANG['desktop_notifications_not_supported'], '', MESSAGE_TYPE_ERROR);
 		return;
 	}
 	if(Notification.permission !== 'granted') {
 		Notification.requestPermission().then(function(result) {
 			if(result === 'denied') {
-				emitMessage(L__DESKTOP_NOTIFICATIONS_DENIED, '', MESSAGE_TYPE_WARNING);
+				emitMessage(LANG['desktop_notifications_denied'], '', MESSAGE_TYPE_WARNING);
 			}
 			if(result === 'granted') {
 				// start watching for notifications
@@ -16,7 +16,7 @@ function askNotificationPermission() {
 			}
 		});
 	} else {
-		emitMessage(L__DESKTOP_NOTIFICATIONS_ALREADY_PERMITTED, '', MESSAGE_TYPE_INFO);
+		emitMessage(LANG['desktop_notifications_already_permitted'], '', MESSAGE_TYPE_INFO);
 	}
 }
 
@@ -48,7 +48,7 @@ function checkNotification(newNotificationInfo) {
 		newNotificationInfo['job_container'].forEach(function(item1) {
 			notificationInfo['job_container'].forEach(function(item2) {
 				if(item1.id == item2.id && item1.state != item2.state) {
-					notify('['+item1.state_description+'] '+item1.name, L__JOB_CONTAINER_STATUS_CHANGED, 'img/job.dyn.svg',
+					notify('['+item1.state_description+'] '+item1.name, LANG['job_container_status_changed'], 'img/job.dyn.svg',
 						'index.php?view=job-containers&id='+encodeURIComponent(item1.id),
 						'job#'+item1.id+'#'+item1.state
 					);

@@ -55,6 +55,9 @@ class LanguageController {
 		if(isset($this->messages[$key])) return $this->messages[$key];
 		else return $key; // fallback
 	}
+	public function getMessages() {
+		return $this->messages;
+	}
 
 	private function loadTranslationFile($langCode) {
 		if(empty($langCode)) return [];

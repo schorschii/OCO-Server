@@ -50,7 +50,7 @@ function initTables() {
 				var thSearch = document.createElement('th');
 				if(ths[n].classList.contains('searchable')) {
 					let txtSearch = document.createElement('input');
-					txtSearch.setAttribute('placeholder', L__SEARCH_PLACEHOLDER);
+					txtSearch.setAttribute('placeholder', LANG['search_placeholder']);
 					txtSearch.classList.add('tableSearch');
 					txtSearch.addEventListener('input', function(){ tableSearch(table) });
 					txtSearch.addEventListener('paste', function(){ tableSearch(table) });
@@ -121,7 +121,7 @@ var TableSortUltra = function(table) {
 		}
 		var sortbutton = document.createElement('button');
 		sortbutton.innerHTML = tabletitel[col].innerHTML;
-		sortbutton.title = L__ORDER_BY + ' ' + tabletitel[col].innerHTML;
+		sortbutton.title = LANG['order_by'] + ' ' + tabletitel[col].innerHTML;
 		sortbutton.className = 'sortbutton';
 		sortbutton.type = 'button';
 		sortbuttons[col] = sortbutton;
@@ -480,14 +480,14 @@ function handlePackageReorderByKeyboard(e, gid, sequence) {
 	if(e.keyCode == 13) {
 		if(e.shiftKey) {
 			// move relative to current position
-			var newValue = prompt(L__ENTER_NEW_SEQUENCE_NUMBER);
+			var newValue = prompt(LANG['enter_new_sequence_number']);
 			if(newValue == null || newValue == '') return;
 			var newValueInt = parseInt(newValue);
 			if(isNaN(newValueInt)) return;
 			reorderPackageInGroup(gid, sequence, sequence+newValueInt);
 		} else {
 			// move to absolute position
-			var newValue = prompt(L__ENTER_NEW_SEQUENCE_NUMBER);
+			var newValue = prompt(LANG['enter_new_sequence_number']);
 			if(newValue == null || newValue == '') return;
 			var newValueInt = parseInt(newValue);
 			if(isNaN(newValueInt)) return;

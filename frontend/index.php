@@ -108,7 +108,7 @@ if(!empty($_GET['view'])) {
 	<?php if(empty($_SESSION['oco_last_login'])) {
 		$_SESSION['oco_last_login'] = true;
 		echo "topConfettiRain();";
-		echo "emitMessage(L__WELCOME_TEXT, L__WELCOME_DESCRIPTION, MESSAGE_TYPE_INFO);";
+		echo "emitMessage(LANG['welcome_text'], LANG['welcome_description'], MESSAGE_TYPE_INFO);";
 	} ?>
 	<?php if(boolval($db->selectSettingByKey('check-update'))) { echo "window.setTimeout(checkUpdate, 1000);"; } ?>
 	</script>
