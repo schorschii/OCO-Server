@@ -64,7 +64,7 @@ try {
 		<?php if(!empty($family->icon)) { ?>
 			<button onclick='removePackageFamilyIcon(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-remove.dyn.svg'>&nbsp;<?php echo LANG('remove_icon'); ?></button>
 		<?php } ?>
-		<button onclick='currentExplorerContentUrl="views/package-families.php";confirmRemovePackageFamily([<?php echo htmlspecialchars($family->id,ENT_QUOTES); ?>], spnPackageFamilyName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_package_family'); ?></button>
+		<button onclick='confirmRemovePackageFamily([<?php echo htmlspecialchars($family->id,ENT_QUOTES); ?>], spnPackageFamilyName.innerText, "views/package-families.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_package_family'); ?></button>
 		<span class='filler'></span>
 		<span><a <?php echo explorerLink('views/package-families.php'); ?>><?php echo LANG('package_families'); ?></a></span>
 	</div>

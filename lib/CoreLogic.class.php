@@ -1369,8 +1369,11 @@ class CoreLogic {
 			$this->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
 		}
 
-		if(empty(trim($name)) || empty(trim($query))) {
+		if(empty(trim($name))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+		if(empty(trim($query))) {
+			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
 		$insertId = $this->db->insertReport($groupId, $name, $notes, $query);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));

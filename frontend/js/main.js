@@ -855,7 +855,7 @@ function removeSelectedPackage(checkboxName, attributeName=null, event=null) {
 	}
 	confirmRemovePackage(ids, event);
 }
-function confirmRemovePackage(ids, event=null, infoText='') {
+function confirmRemovePackage(ids, event=null, infoText='', redirect=null, installedOnComputers=null) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
@@ -864,9 +864,10 @@ function confirmRemovePackage(ids, event=null, infoText='') {
 		params.push({'key':'force', 'value':'1'});
 	}
 	var paramString = urlencodeArray(params);
-	if(confirm(L__CONFIRM_DELETE_PACKAGE)) {
+	if(confirm( (installedOnComputers != null ? L__PACKAGE_IS_INSTALLED_ON_COMPUTERS.replace('%1',installedOnComputers)+' ' : '') + L__CONFIRM_DELETE_PACKAGE) ) {
 		ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
-			refreshContent();
+			if(redirect != null) currentExplorerContentUrl = redirect;
+			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(L__OBJECT_DELETED, infoText, MESSAGE_TYPE_SUCCESS);
 		});
 	}
@@ -913,7 +914,7 @@ function removeSelectedPackageFamily(checkboxName, attributeName=null) {
 	}
 	confirmRemovePackageFamily(ids);
 }
-function confirmRemovePackageFamily(ids, infoText='') {
+function confirmRemovePackageFamily(ids, infoText='', redirect=null) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_package_family_id[]', 'value':entry});
@@ -921,7 +922,8 @@ function confirmRemovePackageFamily(ids, infoText='') {
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
 		ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
-			refreshContent();
+			if(redirect != null) currentExplorerContentUrl = redirect;
+			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(L__OBJECT_DELETED, infoText, MESSAGE_TYPE_SUCCESS);
 		});
 	}
@@ -1362,7 +1364,7 @@ function removeSelectedComputer(checkboxName, attributeName=null, event=null) {
 	}
 	confirmRemoveComputer(ids, event);
 }
-function confirmRemoveComputer(ids, event=null, infoText='') {
+function confirmRemoveComputer(ids, event=null, infoText='', redirect=null) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
@@ -1373,7 +1375,8 @@ function confirmRemoveComputer(ids, event=null, infoText='') {
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE_COMPUTER)) {
 		ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
-			refreshContent();
+			if(redirect != null) currentExplorerContentUrl = redirect;
+			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(L__OBJECT_DELETED, infoText, MESSAGE_TYPE_SUCCESS);
 		});
 	}
@@ -2006,7 +2009,7 @@ function removeSelectedReport(checkboxName, attributeName=null) {
 	}
 	confirmRemoveReport(ids);
 }
-function confirmRemoveReport(ids, infoText='') {
+function confirmRemoveReport(ids, infoText='', redirect=null) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
@@ -2014,7 +2017,8 @@ function confirmRemoveReport(ids, infoText='') {
 	var paramString = urlencodeArray(params);
 	if(confirm(L__CONFIRM_DELETE)) {
 		ajaxRequestPost('ajax-handler/reports.php', paramString, null, function() {
-			refreshContent();
+			if(redirect != null) currentExplorerContentUrl = redirect;
+			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(L__OBJECT_DELETED, infoText, MESSAGE_TYPE_SUCCESS);
 		});
 	}

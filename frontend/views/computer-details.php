@@ -36,7 +36,7 @@ $isOnline = $computer->isOnline($db);
 		<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
 		<button onclick='showDialogEditComputer(<?php echo $computer->id; ?>, spnComputerName.innerText, spnComputerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button onclick='showDialogAddComputerToGroup(<?php echo $computer->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
-		<button onclick='currentExplorerContentUrl="views/computers.php";confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+		<button onclick='confirmRemoveComputer([<?php echo $computer->id; ?>], event, spnComputerName.innerText, "views/computers.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
 		<?php
 		foreach($commands as $command) {

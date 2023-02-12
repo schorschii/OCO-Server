@@ -29,7 +29,7 @@ try {
 	<h1><img src='img/report.dyn.svg'><span id='page-title'><span id='spnReportName'><?php echo htmlspecialchars($report->name); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='showDialogEditReport("<?php echo $report->id; ?>", spnReportName.innerText, spnReportNotes.innerText, spnReportQuery.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
-		<button onclick='currentExplorerContentUrl="views/reports.php";confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+		<button onclick='confirmRemoveReport([<?php echo $report->id; ?>], spnReportName.innerText, "views/reports.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
 	</div>
 </div>

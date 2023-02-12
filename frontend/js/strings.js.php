@@ -85,6 +85,7 @@ var L__CHANGE = "<?php echo LANG('change'); ?>";
 var L__NEW_DEPLOYMENT_RULE = "<?php echo LANG('new_deployment_rule'); ?>";
 var L__LICENSE = "<?php echo LANG('license'); ?>";
 var L__OCO_CONFIGURATION = "<?php echo LANG('oco_configuration'); ?>";
+var L__PACKAGE_IS_INSTALLED_ON_COMPUTERS = "<?php echo LANG('package_is_installed_on_computers'); ?>";
 
 var L__DESKTOP_NOTIFICATIONS_NOT_SUPPORTED = "<?php echo LANG('desktop_notifications_not_supported'); ?>";
 var L__DESKTOP_NOTIFICATIONS_DENIED = "<?php echo LANG('desktop_notifications_denied'); ?>";
