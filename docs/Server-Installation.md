@@ -1,5 +1,8 @@
 # OCO: Server Installation
 
+## Docker
+Docker is currently used for development/testing purposes only. For productive environments, please set up a dedicated server as described below.
+
 ## Basic Setup
 0. Install PHP (7.3 or newer) with ZIP & DOM modules, MySQL/MariaDB and Apache2 on a Linux server (Debian recommended).
    ```
@@ -30,6 +33,7 @@
    - Make sure that the defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
 5. **Important:** set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
    - It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any (malicious) software packages to your client!!!
+   - Enable the Apache SSL module using `a2enmod ssl`.
    - Redirect all HTTP requests to HTTPS using appropriate rewrite rules.  
      <details>
      <summary>/etc/apache2/sites-enabled/000-default.conf</summary>
@@ -59,9 +63,8 @@
      </VirtualHost>
      ```
      </details>
-   - The next section describes in detail how to obtain a LetsEncrypt certificate. It is also possible to use a self-signed certificate if necessary. Then, you have to import your own CA certificate into the trust store of every agent's operating system.
-   - After you have sucessfully set up HTTPS, please enable the option `php_value session.cookie_secure 1` in the `frontend/.htaccess` file to ensure cookies are only transferred via HTTPS.
-6. Adjust your PHP config (`/etc/php/7.x/apache2/php.ini`) to allow uploading packages of larger size  
+   - Please refer to the section "Certificate Setup" how to obtain appropriate certificates.
+6. Adjust your PHP config (`/etc/php/x.x/apache2/php.ini`) to allow uploading packages of larger size  
   (pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size` and `max_execution_time`).
 7. Adjust you Apache config to allow uploading packages of larger size  
   (pick a value that fit your needs for the settings `LimitRequestBody`, `SSLRenegBufferSize`).
@@ -72,18 +75,77 @@
    ```
 10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
 
-### Obtaining A Let’s Encrypt Certificate
-1. Enable the Apache SSL module: `a2enmod ssl`
-2. Install LetsEncrypts certbot: `apt-get install python-certbot-apache`
-3. Obtain a certificate: `certbot --apache certonly -d example.com`.  
-   This requires that your server is (temporarily) available from the internet, so that LetsEncrypt can contact it.  
-   Certificate files (private key + certificate, chain) will be saved in '/etc/letsencrypt/live/example.com'.
-4. Certificate can be renewed using `certbot --apache renew`.
+## Certificate Setup
+There are two common ways to get a certificate for your OCO server. Based on your needs, you have to decide which one you want to go.
+
+### Self-Signed Certificate (Own Certificate Authority)
+You can set up your own certificate authority (CA) in order to create self-signed certificate for your server, but your CA must be manually imported/trusted in your operating systems's and browser's certificate store.
+
+```
+CANAME="My Own Root CA"
+
+# generate encrypted CA private key, choose a strong passphrase!
+openssl genrsa -aes256 -out "$CANAME.key" 4096
+
+# create CA certificate, 3650 days = 100 years
+openssl req -x509 -new -nodes -key "$CANAME.key" -sha256 -days 36500 -out "$CANAME.crt"
+
+# create certificate for your OCO webserver
+SRVNAME="myserver.local"
+openssl req -new -nodes -out "$SRVNAME.csr" -newkey rsa:4096 -keyout "$SRVNAME.key"
+
+# create an openssl config file in order to integrate "subject alt names" (IP and/or DNS name) into server certificate
+cat > "$SRVNAME.v3.ext" << EOF
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+subjectAltName = @alt_names
+[alt_names]
+DNS.1 = myserver.local
+DNS.2 = myserver1.local
+IP.1 = 192.168.1.1
+IP.2 = 192.168.2.1
+EOF
+
+# create server certificate using our own CA
+openssl x509 -req -in "$SRVNAME.csr" -CA "$CANAME.crt" -CAkey "$CANAME.key" -CAcreateserial -out "$SRVNAME.crt" -days 730 -sha256 -extfile "$SRVNAME.v3.ext"
+
+# now, copy "$SRVNAME.crt" and "$SRVNAME.key" into the Apache config folder and set the paths to the files (`SSLCertificateFile` and `SSLCertificateFile`)
+
+# keep "$CANAME.key" and it's passphrase to renew your server certificate and to issue new certificates later
+
+# import "$CANAME.crt" in the client's system trust store now to verify the server certificate on your clients:
+# Debian, Ubuntu: sudo cp "$CANAME.crt" /usr/local/share/ca-certificates && sudo update-ca-certificates
+# Fedora, CentOS: sudo cp "$CANAME.crt" /etc/pki/ca-trust/source/anchors && sudo update-ca-trust
+# Windows GUI: Open the .crt file and install it for all users to "Trusted Root Certificate Authorities"
+# Windows cmd: certutil.exe -addstore root "$CANAME.crt"
+```
+
+### Let’s Encrypt Certificate
+Let's Encrypt Certificates are trusted by default in nearly all operating systems and browsers, but to obtain a certificate, your server must be available from the internet for the verification process.
+
+1. Install the LetsEncrypts certbot: `apt-get install python-certbot-apache`
+2. Ensure that the DNS entries for your server are correct and obtain a certificate: `certbot --apache certonly -d oco.example.com`.  
+   This requires that your server is available from the internet, so that LetsEncrypt can contact it.  
+   Certificate files (private key + certificate, chain) will be saved in '/etc/letsencrypt/live/'.
+3. Certificate will be renewed automatically (use `certbot --apache renew` for manual renewal).
+
+## Server Hardening
+While it is technically possible, **never** let the agent commuicate in plaintext HTTP with the server! Attackers can do a man-in-the-middle attack to send any malicious software package to your agent. **Always** configure your (Apache) web server to use HTTPS with a valid certificate. Redirect **all** HTTP requests to HTTPS using appropriate rewrite rules as described in the installation guide.
+
+It is recommended to not make the OCO server available on the internet to prevent brute force attacks. If possible, make the server only available in your internal company network and use a VPN connection for mobile devices.
+
+It is also possible to use a self-signed certificate if necessary. Then, you have to import your own CA certificate into the trust store of your agent's operating system.
 
 ### fail2ban
-You can set up fail2ban for OCO to prevent brute force attacks. Example configuration can be found in the `examples/fail2ban` directory.
+You can set up fail2ban to prevent brute force attacks. Example configuration can be found in the `examples/fail2ban` directory.
 
-### LDAP Sync & Authentication
+### Only Provide Agent API On Virtual Host
+Ou may only want to provide the agent API and not the full web interface with client API on a virtual host. In this case, please use `api-agent` as web server root directory for the virtual host (instead of `frontend`).
+
+The web interface and client API can then be made available on a separate, internal-only web server or virtual host, which has additional security options set in the web server config (e.g. IP address restrictions or an additional HTTP basic auth).
+
+## Set Up LDAP Sync & Authentication
 If you want to use LDAP to authenticate admin users on the web frontend, please follow this steps.
 
 1. Set up the LDAP configuration as administrator on the "Settings" > "System User" page in the web frontend.  
@@ -133,15 +195,10 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
    */10 *  * * *  www-data  cd /srv/www/oco && php console.php ldapsync
    ```
 
-### Only Provide Agent API On Virtual Host
-Ou may only want to provide the agent api and not the full web interface with client API on a virtual host. In this case, please use `api-agent` as web server root directory (instead of `frontend`).
-
-The web client can then be made available on a separate, internal-only web server or virtual host, which has additional security options set in the web server config (e.g. IP address restrictions or an additional HTTP basic auth).
-
-### Self Service Portal
+## Self Service Portal
 If you want to provide the Self Service Portal to your users please read [Self-Service.md](Self-Service.md).
 
-### Server Cluster
+## Server Cluster
 You can install this webapp on multiple web servers for failure safety.
 
 In a multi-server configuration, the easiest way to load balance is through multiple DNS records or by using a dedicated load balancer / reverse proxy.
