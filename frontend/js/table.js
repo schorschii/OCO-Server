@@ -1,5 +1,5 @@
-function initTables() {
-	var tables = document.querySelectorAll('table');
+function initTables(root=document) {
+	var tables = root.querySelectorAll('table');
 	for(var i = 0; i < tables.length; i++) {
 		let table = tables[i];
 

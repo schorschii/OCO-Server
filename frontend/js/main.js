@@ -261,8 +261,9 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 			return;
 		}
 		if(this.status == 200) {
-			if(obj(objID) != null) {
-				obj(objID).innerHTML = this.responseText;
+			var object = obj(objID);
+			if(object != null) {
+				object.innerHTML = this.responseText;
 				if(objID == 'explorer-content') {
 					// add to history
 					if(addToHistory) rewriteUrlContentParameter();
@@ -271,8 +272,10 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 					if(titleObject != null) document.title = titleObject.innerText;
 					else document.title = LANG['app_name'];
 					// init newly loaded tables
-					initTables()
+					initTables(object)
 				}
+				// init explorer links
+				initLinks(object)
 			}
 			if(callback != undefined && typeof callback == 'function') {
 				callback(this.responseText);
@@ -306,10 +309,11 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
-			if(obj(objID) != null) {
-				obj(objID).innerHTML = this.responseText;
+			var object = obj(objID);
+			if(object != null) {
+				object.innerHTML = this.responseText;
 				if(objID == 'explorer-content') {
-					initTables() // init newly loaded tables
+					initTables(object) // init newly loaded tables
 				}
 			}
 			if(callback != undefined && typeof callback == 'function') {
@@ -346,6 +350,22 @@ function urlencodeArray(src) {
 		if(i < (src.length-1)) urljson+='&';
 	}
 	return urljson;
+}
+function initLinks(root) {
+	var links = root.querySelectorAll('a');
+	for(var i = 0; i < links.length; i++) {
+		if(!links[i].getAttribute('href').startsWith('index.php?view=')) continue;
+		// open explorer-content links via AJAX, do not reload the complete page
+		links[i].addEventListener('click', function(e) {
+			e.preventDefault();
+			var urlParams = new URLSearchParams(this.getAttribute('href').split('?')[1]);
+			var ajaxUrlParams = [];
+			for(const entry of urlParams.entries()) {
+				ajaxUrlParams.push(encodeURIComponent(entry[0])+'='+entry[1]);
+			}
+			refreshContentExplorer('views/'+encodeURIComponent(urlParams.get('view'))+'.php?'+ajaxUrlParams.join('&'));
+		});
+	}
 }
 
 function showLoader(state) {

@@ -61,11 +61,11 @@ function progressBar($percent, $cid=null, $tid=null, $class=''/*hidden big stret
 		.'</span>';
 }
 
-function explorerLink($explorerContentUrl, $extraJs='') {
+function explorerLink($explorerContentUrl, $extraJs=null) {
 	$fileString = basename(parse_url($explorerContentUrl, PHP_URL_PATH), '.php');
 	$parameterString = parse_url($explorerContentUrl, PHP_URL_QUERY);
 	return "href='index.php?view=".urlencode($fileString)."&".$parameterString."'"
-		." onclick='event.preventDefault();".$extraJs.";refreshContentExplorer(\"".$explorerContentUrl."\")'";
+		.($extraJs===null ? "" : " onclick='event.preventDefault();".$extraJs."'");
 }
 
 function randomString($length = 30) {
