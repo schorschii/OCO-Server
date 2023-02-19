@@ -80,8 +80,8 @@ Several installer systems have become established under Windows. Please check wh
 - detailed parameter documentation can be found in the [Microsoft docs](https://docs.microsoft.com/en-us/windows-server/administration/windows-commands/msiexec)
 
 ##### Inno Setup
-- silent EXE installation: `installer.exe /SILENT`
-- silent EXE uninstallation: `C:\Program Files\MyProgram\unins000.exe /SILENT`
+- silent EXE installation: `installer.exe /SILENT /SUPPRESSMSGBOXES`
+- silent EXE uninstallation: `C:\Program Files\MyProgram\unins000.exe /SILENT /SUPPRESSMSGBOXES`
 - additional parameters
   - `/DIR="x:\dirname"`: install directory
   - `/NORESTART`: prevent automatic restart - if your product needs a restart, you should set this option and use the OCO restart feature ("post action") instead
@@ -121,7 +121,7 @@ In both cases, make sure to inform the user that a reboot or program termination
 #### Debian/Ubuntu Linux: `apt`/`gdebi`
 - package from official repository: `apt install -y gimp`
 - package from official repository uninstallation: `apt remove -y gimp`
-- DEB package: `gdebi -n package.deb`
+- DEB package: `apt install -y ./package.deb` or `gdebi -n package.deb`
 - DEB package uninstallation: `apt remove -y packagename`
 
 #### macOS
@@ -137,30 +137,7 @@ You can run own scripts which may contain multiple commands or more complex logi
 - own Shell script for Linux/macOS: `myscript.sh`
 
 ### Specific Examples
-#### Example: Create OCO Windows Agent Update Package
-Please keep the agent on your managed computers always up-to-date. It can be easily updated with regular installation procedures, e.g. on Windows: `oco-agent.exe /SILENT` or for Debian/Ubuntu Linux: `gdebi -n oco-agent.deb` or on macOS: `installer -pkg oco-agent.pkg -target /`. Set the action after installation: "Restart Agent" to instantly use the new version.
-
-The agent installer does not overwrite an existing config file. After (manual) agent update installation, a restart is required in order to load the new agent binary.
-
-#### Example: Windows-Upgrade
-It is possible to even update your Windows installation to a newer build using a OCO software job!
-1. Extract the contents of the new Windows `.iso` file and add them into a `.zip` file. Upload this `.zip` file on the OCO web console.
-2. Choose the following command line as installation procedure: `setup.exe /auto upgrade /showoobe None /noreboot`
-3. Choose "Reboot" as action after package installation.
-
-### Example: Java Installation on Windows
-Oracle provides an EXE setup for installing Java. This EXE contains a MSI file, which is automatically extracted into `C:\Users\%username%\AppData\LocalLow\Oracle\Java\` when starting the EXE file. You should use this MSI file for creating a package in OCO because of the easy uninstallation with `msiexec /x`.
-
-### Example: Arduino IDE with Drivers on Windows
-Driver installations are tricky. The installers will call a windows driver installation utility, which displays a confirmation dialog to the user if the driver certificate is not already in the system trust store. Since the OCO agent is running as a service, this dialog is never visible on the screen. That's why we have to import those certificates first.
-
-1. Get the certificate file by right-clicking you driver's `.cat` file -> Properties -> Digital Signatures -> Details-> View Certificate -> Details tab -> Copy to File…
-   - For Arduino IDE, you have to to this with these 3 files: `AdafruitCircuitPlayground.cat`, `arduino.cat`, `linino-boards_amd64.cat` and save the certificate as `*.cer` file.
-2. Create a ZIP package with those 3 certificate files plus the setup EXE. Use this ZIP as archive for your OCO package.
-3. Use the following commands as OCO installation procedure. This will install the certificates first and then execute the regular setup (a common Nullsoft Installer which understands the `/S` parameter for silent installation).
-   ```
-   certutil -addstore "TrustedPublisher" ".\AdafruitCircuitPlayground.cer" && certutil -addstore "TrustedPublisher" ".\arduino.cer" && certutil -addstore "TrustedPublisher" ".\linino-boards_amd64.cer" && arduino-x.y.z-windows.exe /S
-   ```
+Please have a look at the [Silent Install/Uninstall Commands Catalog](install-uninstall-catalog).
 
 ## Group Packages
 You can group multiple package (versions) together - e.g. into a group called 'Base Packages' to easily install all basic software packages (which should be available on all computers in your domain) on new computers.
