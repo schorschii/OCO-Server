@@ -118,7 +118,7 @@ abstract class Job {
 	}
 	public function getStateString() {
 		$returnCodeString = '';
-		if($this->return_code != null) {
+		if($this->return_code !== null) {
 			$returnCodeString = ' ('.htmlspecialchars($this->return_code).')';
 		}
 		if($this->state == self::STATE_WAITING_FOR_AGENT) {
