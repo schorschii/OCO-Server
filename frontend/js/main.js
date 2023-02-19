@@ -354,7 +354,8 @@ function urlencodeArray(src) {
 function initLinks(root) {
 	var links = root.querySelectorAll('a');
 	for(var i = 0; i < links.length; i++) {
-		if(!links[i].getAttribute('href').startsWith('index.php?view=')) continue;
+		var linkUrl = links[i].getAttribute('href');
+		if(linkUrl == null || !linkUrl.startsWith('index.php?view=')) continue;
 		// open explorer-content links via AJAX, do not reload the complete page
 		links[i].addEventListener('click', function(e) {
 			e.preventDefault();
