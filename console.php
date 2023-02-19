@@ -26,6 +26,15 @@ try {
 			$ldapSync->syncDomainUsers();
 			break;
 
+		case 'upgradeschema':
+			$migrator = new DatabaseMigrationController($db->getDbHandle());
+			if($migrator->upgrade()) {
+				echo 'Database schema upgraded successfully.'."\n";
+			} else {
+				echo 'Database schema is already up to date.'."\n";
+			}
+			break;
+
 		default:
 			if(array_key_exists($argv[1], $extensionMethods)) {
 				call_user_func($extensionMethods[$argv[1]], $db);
@@ -37,5 +46,7 @@ try {
 
 } catch(Exception $e) {
 	echo $argv[1].' ERROR: '.$e->getMessage()."\n";
+	echo $e->getTraceAsString();
+	echo "\n";
 	exit(1);
 }

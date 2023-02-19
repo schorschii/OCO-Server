@@ -3,11 +3,11 @@
 class CoreLogic {
 
 	/*
-		 Class CoreLogic
-		 Database Abstraction Layer Wrapper
+		Class CoreLogic
+		Database Abstraction Layer Wrapper
 
-		 Adds additional (permission) checks & logic before the database is accessed and sanitizes user input.
-		 It's public functions are used by the web frontend and the client API.
+		Adds additional (permission) checks & logic before the database is accessed and sanitizes user input.
+		It's public functions are used by the web frontend and the client API.
 
 		Function naming (intentionally different from DatabaseController to easily distinguish if we operate directly with the database or with (permission) checks):
 		 - prefix oriented on frontend (JS) command: get, create, edit, remove, add (for group memberships)

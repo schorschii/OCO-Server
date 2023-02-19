@@ -511,6 +511,7 @@ return [
 	'no_wol_satellite_server_configured' => 'Keine WOL-Satelliten-Server konfiguriert',
 	'no_extensions_loaded' => 'Keine Erweiterungen geladen',
 	'package_is_installed_on_computers' => 'Dieses Paket ist derzeit auf %1 Computer(n) installiert.',
+	'database_schema_upgraded' => 'Datenbankschema wurde geupgraded. Bitte laden Sie die Seite neu.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

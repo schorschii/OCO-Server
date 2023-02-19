@@ -5,49 +5,58 @@ $info = null;
 $infoclass = null;
 $step = 0;
 
+$migrator = new DatabaseMigrationController($db->getDbHandle());
+
 // check if schema exists first
 if(!$db->existsSchema()) {
 	$info = LANG('please_import_database_schema_first');
 	$infoclass = 'warning';
+
+// upgrade database schema
+} elseif($migrator->upgrade()) {
+	$info = LANG('database_schema_upgraded');
+	$infoclass = 'info';
+
+// redirect to main app if setup was already done
+} elseif(count($db->selectAllSystemUser()) > 0) {
+	header('Location: index.php');
+	die();
+
+// otherwise, show setup page
 } else {
-	// exit if setup was already done
-	if(count($db->selectAllSystemUser()) > 0) {
-		header('Location: index.php');
-		die();
-	} else {
-		$step = 1;
-	}
-}
+	$step = 1;
 
-// create initial admin user
-if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2'])) {
-	if(empty(trim($_POST['username']))) {
-		$info = LANG('username_cannot_be_empty');
-		$infoclass = 'error';
-	} elseif(empty(trim($_POST['password']))) {
-		$info = LANG('password_cannot_be_empty');
-		$infoclass = 'error';
-	} elseif($_POST['password'] !== $_POST['password2']) {
-		$info = LANG('passwords_do_not_match');
-		$infoclass = 'error';
-	} elseif($db->existsSchema() && count($db->selectAllSystemUser()) == 0) {
-		if(
-			$db->insertSystemUser(
-				md5(rand()), $_POST['username'], $_POST['username'],
-				password_hash($_POST['password'], PASSWORD_DEFAULT),
-				0/*ldap flag*/, null, null, null, 'initial admin user', 0/*locked*/, 1/*default role: superadmin*/
-			)
-		) {
-			// create random default keys
-			$db->insertOrUpdateSettingByKey('client-api-key', randomString(15));
-			$db->insertOrUpdateSettingByKey('agent-registration-key', randomString(15));
-
-			// setup finished - redirect to web frontend
-			header('Location: login.php');
-			die();
-		} else {
-			$info = LANG('database_error');
+	// execute setup
+	if(isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2'])) {
+		if(empty(trim($_POST['username']))) {
+			$info = LANG('username_cannot_be_empty');
 			$infoclass = 'error';
+		} elseif(empty(trim($_POST['password']))) {
+			$info = LANG('password_cannot_be_empty');
+			$infoclass = 'error';
+		} elseif($_POST['password'] !== $_POST['password2']) {
+			$info = LANG('passwords_do_not_match');
+			$infoclass = 'error';
+		} elseif($db->existsSchema() && count($db->selectAllSystemUser()) == 0) {
+			// create initial admin user
+			if(
+				$db->insertSystemUser(
+					md5(rand()), $_POST['username'], $_POST['username'],
+					password_hash($_POST['password'], PASSWORD_DEFAULT),
+					0/*ldap flag*/, null, null, null, 'initial admin user', 0/*locked*/, 1/*default role: superadmin*/
+				)
+			) {
+				// create random default keys
+				$db->insertOrUpdateSettingByKey('client-api-key', randomString(15));
+				$db->insertOrUpdateSettingByKey('agent-registration-key', randomString(15));
+
+				// setup finished - redirect to web frontend
+				header('Location: login.php');
+				die();
+			} else {
+				$info = LANG('database_error');
+				$infoclass = 'error';
+			}
 		}
 	}
 }

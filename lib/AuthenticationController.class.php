@@ -3,8 +3,8 @@
 class AuthenticationController {
 
 	/*
-		 Class AuthenticationController
-		 Handles Login Requests
+		Class AuthenticationController
+		Handles Login Requests
 	*/
 
 	private $db;

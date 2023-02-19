@@ -1,7 +1,15 @@
 # OCO: Server Installation
 
 ## Docker
-Docker is currently used for development/testing purposes only. For productive environments, please set up a dedicated server as described below.
+Docker is currently used for development/testing purposes only. For productive environments, please set up a dedicated server as described in the section below.
+```
+docker-compose build --no-cache
+docker-compose up
+
+docker ps -a
+docker exec -it <CONTAINER-ID> bash
+> /usr/local/bin/php console.php upgradeschema
+```
 
 ## Basic Setup
 0. Install PHP (7.3 or newer) with ZIP & DOM modules, MySQL/MariaDB and Apache2 on a Linux server (Debian recommended).
@@ -28,7 +36,7 @@ Docker is currently used for development/testing purposes only. For productive e
    mysql> EXIT;
    root@ocoserver:/# cat sql/*.sql | mysql oco
    ```
-4. Create the configuration file `conf.php` (create this file by copying the template `conf.example.php`).
+4. Create the configuration file `conf.php` (create this file by copying the template `conf.php.example`).
    - Enter your MySQL credentials in `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`. Use a separate database user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.
    - Make sure that the defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
 5. **Important:** set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.

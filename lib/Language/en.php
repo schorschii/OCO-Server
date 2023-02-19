@@ -516,6 +516,7 @@ return [
 	'no_wol_satellite_server_configured' => 'No WOL satellite servers configured',
 	'no_extensions_loaded' => 'No extensions loaded',
 	'package_is_installed_on_computers' => 'This package is currently installed on %1 computer(s).',
+	'database_schema_upgraded' => 'Database schema was upgraded. Please reload the page.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

@@ -3,16 +3,16 @@
 class DatabaseController {
 
 	/*
-		 Class DatabaseController
-		 Database Abstraction Layer
+		Class DatabaseController
+		Database Abstraction Layer
 
-		 Handles direct database access.
+		Handles direct database access.
 
-		 Function naming:
-		 - prefix oriented on SQL command: select, insert, update, insertOrUpdate, delete, search (special for search operations)
-		 - if it returns an array, the word "All" is inserted
-		 - entity name singular (e.g. "Computer")
-		 - "By<Attribute>" suffix if objects are filtered by attributes other than the own object id (e.g. "ByHostname")
+		Function naming:
+		- prefix oriented on SQL command: select, insert, update, insertOrUpdate, delete, search (special for search operations)
+		- if it returns an array, the word "All" is inserted
+		- entity name singular (e.g. "Computer")
+		- "By<Attribute>" suffix if objects are filtered by attributes other than the own object id (e.g. "ByHostname")
 	*/
 
 	protected $dbh;
@@ -2569,14 +2569,16 @@ class DatabaseController {
 		'do-housekeeping-by-web-requests' => false, // db cleanup method - normally done via cron job but can be done on every web request (not recommended)
 	];
 	public function selectSettingByKey($key) {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM setting WHERE `key` = :key LIMIT 1'
-		);
 		$value = null;
-		$this->stmt->execute([':key' => $key]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Setting') as $row) {
-			$value = $row->value;
-		}
+		try {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM setting WHERE `key` = :key LIMIT 1'
+			);
+			$this->stmt->execute([':key' => $key]);
+			foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Setting') as $row) {
+				$value = $row->value;
+			}
+		} catch(PDOException $ignored) {}
 		if($value === null && array_key_exists($key, self::DEFAULT_SETTINGS)) {
 			// apply defaults
 			$value = self::DEFAULT_SETTINGS[$key];

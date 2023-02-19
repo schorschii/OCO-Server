@@ -5,7 +5,7 @@ services:
     ports:
       - 8088:80
     volumes:
-      # You need to copy the conf.example.php to conf.php
+      # You need to copy the conf.php.example to conf.php
       # and change db parameters to the ones used below
       # (DB_HOST = 'oco-db')
       - ./conf.php:/var/www/oco/conf.php
