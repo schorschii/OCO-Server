@@ -2499,7 +2499,7 @@ class DatabaseController {
 
 	// Log Operations
 	public function insertLogEntry($level, $user, $object_id, $action, $data) {
-		if($level < intval($this->settings->get('log_level'))) return;
+		if($level < intval($this->settings->get('log-level'))) return;
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO log (level, host, user, object_id, action, data)
 			VALUES (:level, :host, :user, :object_id, :action, :data)'
