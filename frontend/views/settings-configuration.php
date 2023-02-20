@@ -195,7 +195,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 			<thead>
 				<tr>
 					<th></th>
-					<th class='searchable sortable'><?php echo LANG('id'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('key'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('value'); ?></th>
 					<th class=''><?php echo LANG('action'); ?></th>
 				</tr>
@@ -205,7 +205,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 				<tr>
 					<td><input type='checkbox' name='setting_id[]' value='<?php echo $s->key; ?>'></td>
 					<td><?php echo htmlspecialchars($s->key); ?></td>
-					<td><?php echo htmlspecialchars($s->value); ?></td>
+					<td><?php echo htmlspecialchars(shorter($s->value, 150)); ?></td>
 					<td><button setting='<?php echo htmlspecialchars($s->key); ?>' onclick='showDialogEditSetting(this.getAttribute("setting"))'><img src='img/edit.dyn.svg'></button></td>
 				</tr>
 				<?php } ?>
