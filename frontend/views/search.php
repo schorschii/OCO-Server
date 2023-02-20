@@ -28,7 +28,14 @@ foreach($db->searchAllPackageFamily($_GET['query']) as $pf) {
 	$counter ++;
 	if(!$cl->checkPermission($pf, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
-	$items[] = new Models\SearchResult($pf->name, LANG('package_family'), 'views/packages.php?package_family_id='.$pf->id, 'img/package.dyn.svg');
+	$items[] = new Models\SearchResult($pf->name, LANG('package_family'), 'views/packages.php?package_family_id='.$pf->id, 'img/package-family.dyn.svg');
+}
+$counter = 0;
+foreach($db->searchAllPackage($_GET['query']) as $p) {
+	$counter ++;
+	if(!$cl->checkPermission($p, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = new Models\SearchResult($p->getFullname(), LANG('package'), 'views/package-details.php?id='.$p->id, 'img/package.dyn.svg');
 }
 $counter = 0;
 foreach($db->searchAllJobContainer($_GET['query']) as $jc) {

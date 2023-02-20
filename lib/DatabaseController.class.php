@@ -1065,6 +1065,14 @@ class DatabaseController {
 		$this->stmt->execute([':name' => '%'.$name.'%']);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily');
 	}
+	public function searchAllPackage($name, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT p.*, pf.name AS "package_family_name" FROM package p INNER JOIN package_family pf ON p.package_family_id = pf.id
+			WHERE p.version LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':name' => '%'.$name.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
+	}
 	public function searchAllPackageGroup($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM package_group WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
