@@ -57,7 +57,21 @@ OCO offers basic monitoring features. You can check anything by writing your own
 ## Wake On Lan (WOL)
 OCO supports sending WOL magic packets. WOL in general only works via Ethernet (not via WiFi!) and if the server has a network card in the same subnet as the target computer because WOL packets are UDP broadcast packets. If you have multiple subnets, you can add a new network card to the server for each subnet or configure "Satellite WOL".
 
-When using the satellite WOL technology, the OCO server connects to another server via SSH which is located in the foreign network and then executes the `wakeonlan` command. Please make sure that the remote server can be accessed with the defined SSH key and that `wakeonlan` is installed. Please read the instructions in the `conf.php.example` file for example configurations.
+When using the satellite WOL technology, the OCO server connects to another server via SSH which is located in the foreign network and then executes the `wakeonlan` command. Please make sure that the remote server can be accessed with the defined SSH key and that `wakeonlan` is installed.
+
+```
+{
+    {
+        'address' => 'remoteserver01',
+        'port' => 22,
+        'username' => 'root',
+        'privkey' => '/path/to/id_rsa',
+        'pubkey' => '/path/to/id_rsa.pub',
+        'command' => null, // if »null« or not set OCO uses the default command "wakeonlan"
+    }
+	// more servers here...
+}
+```
 
 ## Remote (Screen) Access
 OCO does not contain a remote access solution as found in some commercial client management systems. OCO doesn't want to reinvent the wheel. Please use a VNC server/client for this and also have a look at the section "Computer Commands" in [WebApplication.md](WebApplication.md).

@@ -19,9 +19,9 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 	<tr>
 		<th></th>
 		<td>
-			<label><input type='checkbox' id='chkWol' onclick='if(this.checked) {chkShutdownWakedAfterCompletion.disabled=false;} else {chkShutdownWakedAfterCompletion.checked=false; chkShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty(DEFAULTS['default-use-wol'])) echo 'checked'; ?>><?php echo LANG('send_wol'); ?></label>
+			<label><input type='checkbox' id='chkWol' onclick='if(this.checked) {chkShutdownWakedAfterCompletion.disabled=false;} else {chkShutdownWakedAfterCompletion.checked=false; chkShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty($db->settings->get('default-use-wol'))) echo 'checked'; ?>><?php echo LANG('send_wol'); ?></label>
 			<br/>
-			<label title='<?php echo LANG('shutdown_waked_after_completion'); ?>'><input type='checkbox' id='chkShutdownWakedAfterCompletion' <?php if(!empty(DEFAULTS['default-shutdown-waked-after-completion'])) echo 'checked'; else echo 'disabled' ?>><?php echo LANG('shutdown_waked_computers'); ?></label>
+			<label title='<?php echo LANG('shutdown_waked_after_completion'); ?>'><input type='checkbox' id='chkShutdownWakedAfterCompletion' <?php if(!empty($db->settings->get('default-shutdown-waked-after-completion'))) echo 'checked'; else echo 'disabled' ?>><?php echo LANG('shutdown_waked_computers'); ?></label>
 		</td>
 		<th></th>
 		<td></td>

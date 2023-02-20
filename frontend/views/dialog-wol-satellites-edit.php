@@ -6,7 +6,7 @@ require_once('../session.php');
 
 <table class='fullwidth aligned'>
 	<tr>
-		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditSystemUserLdapSync' rows='8'><?php echo $db->settings->get('system-user-ldapsync'); ?></textarea></td>
+		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditWolSatellites' rows='8'><?php echo $db->settings->get('wol-satellites'); ?></textarea></td>
 	</tr>
 	<tr>
 		<td>
@@ -19,5 +19,5 @@ require_once('../session.php');
 
 <div class='controls right'>
 	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button class='primary' onclick='editLdapConfigSystemUsers(txtEditSystemUserLdapSync.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('save'); ?></button>
+	<button class='primary' onclick='editWolSatellites(txtEditWolSatellites.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('save'); ?></button>
 </div>

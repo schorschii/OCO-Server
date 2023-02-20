@@ -2,7 +2,13 @@
 
 class WakeOnLan {
 
-	public static function wol($macs, $debugOutput=true) {
+	private $db;
+
+	function __construct(DatabaseController $db) {
+		$this->db = $db;
+	}
+
+	public function wol($macs, $debugOutput=true) {
 		// create socket for sending local WOL packets
 		$s = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 		if(!$s) throw new Exception("Error creating socket! '".socket_last_error($s)."' - " . socket_strerror(socket_last_error($s)));
@@ -38,19 +44,22 @@ class WakeOnLan {
 				if($debugOutput) echo "WOL Magic Packet sent (".$e."), IP=".$addr.", MAC=".$mac."\n";
 			}
 		}
-	
-		foreach(SATELLITE_WOL_SERVER as $server) {
+
+		$satelliteWolServer = json_decode($this->db->settings->get('wol-satellites'), true);
+		if(is_array($satelliteWolServer)) foreach($satelliteWolServer as $server) {
+			if(empty($server['address']) || empty($server['port']) || empty($server['username'])) continue;
+
 			$originalConnectionTimeout = ini_get('default_socket_timeout');
 			ini_set('default_socket_timeout', 4);
-			$c = @ssh2_connect($server['ADDRESS'], $server['PORT']);
+			$c = @ssh2_connect($server['address'], $server['port']);
 			ini_set('default_socket_timeout', $originalConnectionTimeout);
 			if(!$c) {
-				error_log('SSH Connection to '.$server['ADDRESS'].' failed');
+				error_log('SSH Connection to '.$server['address'].' failed');
 				continue;
 			}
-			$a = @ssh2_auth_pubkey_file($c, $server['USER'], $server['PUBKEY'], $server['PRIVKEY']);
+			$a = @ssh2_auth_pubkey_file($c, $server['username'], $server['pubkey'], $server['privkey']);
 			if(!$a) {
-				error_log('SSH Authentication with '.$server['USER'].'@'.$server['ADDRESS'].' failed');
+				error_log('SSH Authentication with '.$server['username'].'@'.$server['address'].' failed');
 				continue;
 			}
 			$program = 'wakeonlan';
@@ -60,7 +69,7 @@ class WakeOnLan {
 			foreach(array_chunk($escapedMacs, 1500) as $escapedMacChunk) {
 				$cmd = $program.' '.implode(' ', $escapedMacChunk);
 				$stdioStream = ssh2_exec($c, $cmd);
-				if($debugOutput) echo "Satellite WOL ".$server['USER']."@".$server['ADDRESS'].": ".$cmd."\n";
+				if($debugOutput) echo "Satellite WOL ".$server['username']."@".$server['address'].": ".$cmd."\n";
 				stream_set_blocking($stdioStream, true);
 				$cmdOutput = stream_get_contents($stdioStream);
 				if($debugOutput) echo "Chunk ".$chunkCount." -> ".$cmdOutput."\n";

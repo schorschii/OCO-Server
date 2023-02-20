@@ -26,7 +26,7 @@ Compile the Windows Client extension into an `.exe` using pyinstaller. Then, mov
 Now, install TightVNC and Nmap if you want to use VNC and Nmap. The Client Extensions expecting that those programs are installed in the default directories, so please do not change the installation directory.
 
 ## Message Of The Day (MOTD)
-The message of the day is displayed on the OCO homepage and can be modified in the `conf.php` file (constant with name `MOTD`).
+The message of the day is displayed on the OCO homepage and can be modified by setting the setting `motd` on the configuration page. This message is intentionally not escaped by htmlspecialchars() so you can format the text and insert links.
 
 Suggestions for your MOTD:
 ```
@@ -38,7 +38,7 @@ WARNING: The consumption of alcohol may lead you to think people are laughing WI
 ```
 🌴 Yes, we can UTF8! 🌈
 ```
-You can also insert some useful links (the MOTD is intentionally not HTML escaped).
+You can also insert some useful links:
 ```
 WARNING: This device may contain Internet
 <br><a href="/phpmyadmin" target="_blank">phpMyAdmin</a> ‧ <a href="https://bongo.cat/" target="_blank">BongoCat</a>
@@ -48,7 +48,15 @@ This server runs on Runlevel 7™.
 ```
 
 ## Web UI Default Values
-You can customize the default values of the deployment, package creation and other forms by editing the `DEFAULTS` constant in the `config.php` file.
+You can customize the default values of the deployment, package creation and other forms by editing the `default-*` values on the configuration page.
+| Setting Key | Default Value |
+| ----------- | ------------- |
+| default-use-wol | false |
+| default-shutdown-waked-after-completion | false |
+| default-restart-timeout | 20 |
+| default-auto-create-uninstall-jobs | true |
+| default-force-install-same-version | false |
+| default-abort-after-error | false |
 
 ## Web Design, Customizations, Extensions
 You can customize the web design (e.g. to adapt your corporate design or to easily distinguish a test system from the production system) and functionality by creating OCO extensions with your desired CSS, JS and PHP scripts. Writing an extension ensures that your custom code is not overwritten with an update.

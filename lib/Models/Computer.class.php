@@ -63,7 +63,7 @@ class Computer {
 	}
 	function isOnline($db) {
 		if(!$db instanceof \DatabaseController) throw new Exception('Missing DatabaseController Reference');
-		return time() - strtotime($this->last_ping??0) < intval($db->selectSettingByKey('computer-offline-seconds'));
+		return time() - strtotime($this->last_ping??0) < intval($db->settings->get('computer-offline-seconds'));
 	}
 
 	const DEFAULT_COMPUTER_COMMANDS = [

@@ -22,7 +22,7 @@ $db = new DatabaseController();
 $ext = new ExtensionController();
 
 // housekeeping without cron
-if($db->selectSettingByKey('do-housekeeping-by-web-requests')) {
+if($db->settings->get('do-housekeeping-by-web-requests')) {
 	$houseKeeping = new HouseKeeping($db, $ext);
 	$houseKeeping->cleanup();
 }

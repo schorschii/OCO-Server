@@ -2,11 +2,12 @@
 require_once('../loader.inc.php');
 
 $license = new LicenseCheck($db);
+$loginScreenQuotes = json_decode($db->settings->get('login-screen-quotes'), true);
 
 $info = null;
 $infoclass = null;
 
-$selfServiceEnabled = boolval($db->selectSettingByKey('self-service-enabled'));
+$selfServiceEnabled = boolval($db->settings->get('self-service-enabled'));
 
 // execute login if requested
 require_once('session-options.php');
@@ -95,7 +96,7 @@ if(!empty($_SESSION['oco_self_service_user_id']) && $selfServiceEnabled) {
 			<a href='https://github.com/schorschii/oco-server' target='_blank'>
 				<img id='forkme' src='img/forkme.png'>
 			</a>
-			<div id='motd'><?php if(!empty(LOGIN_SCREEN_QUOTES)) echo LOGIN_SCREEN_QUOTES[ rand(0, sizeof(LOGIN_SCREEN_QUOTES)-1) ]; ?></div>
+			<div id='motd'><?php if(!empty($loginScreenQuotes)) echo $loginScreenQuotes[ rand(0, sizeof($loginScreenQuotes)-1) ]; ?></div>
 		</div>
 	</div>
 

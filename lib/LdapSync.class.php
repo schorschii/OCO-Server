@@ -35,7 +35,7 @@ class LdapSync {
 	public function syncSystemUsers() {
 		// get configuration
 		$availSystemUserRoleIds = array_map(function($o){return $o->id;}, $this->db->selectAllSystemUserRole());
-		$ldapServers = json_decode($this->db->selectSettingByKey('system-user-ldapsync'), true);
+		$ldapServers = json_decode($this->db->settings->get('system-user-ldapsync'), true);
 		if(empty($ldapServers) || !is_array($ldapServers)) {
 			throw new Exception('System User LDAP sync not configured!');
 		}
@@ -194,14 +194,14 @@ class LdapSync {
 	}
 
 	public function syncDomainUsers() {
-		if(!$this->db->selectSettingByKey('self-service-enabled')) {
+		if(!$this->db->settings->get('self-service-enabled')) {
 			echo LANG('self_service_is_disabled')."\n";
 			return;
 		}
 
 		// get configuration
 		$availDomainUserRoleIds = array_map(function($o){return $o->id;}, $this->db->selectAllDomainUserRole());
-		$ldapServers = json_decode($this->db->selectSettingByKey('domain-user-ldapsync'), true);
+		$ldapServers = json_decode($this->db->settings->get('domain-user-ldapsync'), true);
 		if(empty($ldapServers) || !is_array($ldapServers)) {
 			throw new Exception('Domain User LDAP sync not configured!');
 		}

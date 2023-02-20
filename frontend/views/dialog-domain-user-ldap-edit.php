@@ -6,7 +6,7 @@ require_once('../session.php');
 
 <table class='fullwidth aligned'>
 	<tr>
-		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditDomainUserLdapSync' rows='8'><?php echo $db->selectSettingByKey('domain-user-ldapsync'); ?></textarea></td>
+		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditDomainUserLdapSync' rows='8'><?php echo $db->settings->get('domain-user-ldapsync'); ?></textarea></td>
 	</tr>
 	<tr>
 		<td>

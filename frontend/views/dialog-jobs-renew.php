@@ -24,9 +24,9 @@ require_once('../session.php');
 				<input type='time' class='' id='txtRenewJobContainerStartTime' value='<?php echo date('H:i:s'); ?>'></input>
 			</div>
 			<div>
-				<label><input type='checkbox' id='chkRenewWol' onclick='if(this.checked) {chkRenewShutdownWakedAfterCompletion.disabled=false;} else {chkRenewShutdownWakedAfterCompletion.checked=false; chkRenewShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty(DEFAULTS['default-use-wol'])) echo 'checked'; ?>><?php echo LANG('send_wol'); ?></label>
+				<label><input type='checkbox' id='chkRenewWol' onclick='if(this.checked) {chkRenewShutdownWakedAfterCompletion.disabled=false;} else {chkRenewShutdownWakedAfterCompletion.checked=false; chkRenewShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty($db->settings->get('default-use-wol'))) echo 'checked'; ?>><?php echo LANG('send_wol'); ?></label>
 				<br/>
-				<label title='<?php echo LANG('shutdown_waked_after_completion'); ?>'><input type='checkbox' id='chkRenewShutdownWakedAfterCompletion' <?php if(!empty(DEFAULTS['default-shutdown-waked-after-completion'])) echo 'checked'; else echo 'disabled' ?>><?php echo LANG('shutdown_waked_computers'); ?></label>
+				<label title='<?php echo LANG('shutdown_waked_after_completion'); ?>'><input type='checkbox' id='chkRenewShutdownWakedAfterCompletion' <?php if(!empty($db->settings->get('default-shutdown-waked-after-completion'))) echo 'checked'; else echo 'disabled' ?>><?php echo LANG('shutdown_waked_computers'); ?></label>
 			</div>
 		</td>
 	</tr>

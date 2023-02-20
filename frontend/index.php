@@ -110,7 +110,7 @@ if(!empty($_GET['view'])) {
 		echo "topConfettiRain();";
 		echo "emitMessage(LANG['welcome_text'], LANG['welcome_description'], MESSAGE_TYPE_INFO);";
 	} ?>
-	<?php if(boolval($db->selectSettingByKey('check-update'))) { echo "window.setTimeout(checkUpdate, 1000);"; } ?>
+	<?php if(boolval($db->settings->get('check-update'))) { echo "window.setTimeout(checkUpdate, 1000);"; } ?>
 	</script>
 
 </div>

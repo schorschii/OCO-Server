@@ -43,9 +43,9 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 			<tr>
 				<th></th>
 				<td>
-					<label><input type='checkbox' id='chkWol' onclick='if(this.checked) {chkShutdownWakedAfterCompletion.disabled=false;} else {chkShutdownWakedAfterCompletion.checked=false; chkShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty(DEFAULTS['default-use-wol'])) echo 'checked'; ?>><?php echo LANG('send_wol'); ?></label>
+					<label><input type='checkbox' id='chkWol' onclick='if(this.checked) {chkShutdownWakedAfterCompletion.disabled=false;} else {chkShutdownWakedAfterCompletion.checked=false; chkShutdownWakedAfterCompletion.disabled=true;}' <?php if(!empty($db->settings->get('default-use-wol'))) echo 'checked'; ?>><?php echo LANG('send_wol'); ?></label>
 					<br/>
-					<label title='<?php echo LANG('shutdown_waked_after_completion'); ?>'><input type='checkbox' id='chkShutdownWakedAfterCompletion' <?php if(!empty(DEFAULTS['default-shutdown-waked-after-completion'])) echo 'checked'; else echo 'disabled' ?>><?php echo LANG('shutdown_waked_computers'); ?></label>
+					<label title='<?php echo LANG('shutdown_waked_after_completion'); ?>'><input type='checkbox' id='chkShutdownWakedAfterCompletion' <?php if(!empty($db->settings->get('default-shutdown-waked-after-completion'))) echo 'checked'; else echo 'disabled' ?>><?php echo LANG('shutdown_waked_computers'); ?></label>
 				</td>
 				<th></th>
 				<td></td>
@@ -71,7 +71,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 				<th><?php echo LANG('timeout_for_reboot'); ?></th>
 				<td>
 					<div class='inputWithLabel' title='<?php echo LANG('timeout_for_reboot_description'); ?>'>
-						<input type='number' id='txtRestartTimeout' value='<?php echo htmlspecialchars(DEFAULTS['default-restart-timeout']); ?>' min='-1'></input>
+						<input type='number' id='txtRestartTimeout' value='<?php echo htmlspecialchars($db->settings->get('default-restart-timeout')); ?>' min='-1'></input>
 						<div><?php echo LANG('minutes'); ?></div>
 					</div>
 				</td>
@@ -81,14 +81,14 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 				<td colspan='3'>
 					<div>
 						<div class='checkboxWithText'>
-							<input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty(DEFAULTS['default-auto-create-uninstall-jobs'])) echo 'checked'; ?>>
+							<input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty($db->settings->get('default-auto-create-uninstall-jobs'))) echo 'checked'; ?>>
 							<label for='chkAutoCreateUninstallJobs'>
 								<div><?php echo LANG('uninstall_old_package_versions'); ?></div>
 								<div class='hint'><?php echo LANG('auto_create_uninstall_jobs'); ?></div>
 							</label>
 						</div>
 						<div class='checkboxWithText'>
-							<input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty(DEFAULTS['default-force-install-same-version'])) echo 'checked'; ?>>
+							<input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty($db->settings->get('default-force-install-same-version'))) echo 'checked'; ?>>
 							<label for='chkForceInstallSameVersion'>
 								<div><?php echo LANG('reinstall'); ?></div>
 								<div class='hint'><?php echo LANG('force_installation_of_same_version'); ?></div>
@@ -96,7 +96,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 						</div>
 						<div class='checkboxWithText'>
 							<input type='hidden' name='sequence_mode' value='<?php echo Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED; ?>' checked='true'>
-							<input type='checkbox' id='chkAbortAfterError' name='sequence_mode' value='<?php echo Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>' <?php if(!empty(DEFAULTS['default-abort-after-error'])) echo 'checked'; ?>>
+							<input type='checkbox' id='chkAbortAfterError' name='sequence_mode' value='<?php echo Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>' <?php if(!empty($db->settings->get('default-abort-after-error'))) echo 'checked'; ?>>
 							<label for='chkAbortAfterError'>
 								<div><?php echo LANG('abort_after_failed'); ?></div>
 								<div class='hint'><?php echo LANG('abort_after_error_description'); ?></div>

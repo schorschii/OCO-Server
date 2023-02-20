@@ -53,7 +53,7 @@ require_once('../session.php');
 		<th><?php echo LANG('sequence_mode'); ?></th>
 		<td>
 			<div class='checkboxWithText'>
-				<input type='checkbox' id='chkEditJobContainerSequenceMode' name='sequence_mode' value='<?php echo Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>' <?php if(!empty(DEFAULTS['default-abort-after-error'])) echo 'checked'; ?>>
+				<input type='checkbox' id='chkEditJobContainerSequenceMode' name='sequence_mode' value='<?php echo Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED; ?>'>
 				<label for='chkEditJobContainerSequenceMode'>
 					<div><?php echo LANG('abort_after_failed'); ?></div>
 				</label>

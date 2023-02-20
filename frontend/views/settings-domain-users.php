@@ -15,7 +15,7 @@ try {
 }
 
 $ldapActive = false;
-$ldapServers = json_decode($db->selectSettingByKey('domain-user-ldapsync')??'', true);
+$ldapServers = json_decode($db->settings->get('domain-user-ldapsync')??'', true);
 if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 ?>
 

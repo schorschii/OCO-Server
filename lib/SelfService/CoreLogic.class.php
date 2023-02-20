@@ -56,7 +56,8 @@ class CoreLogic {
 			throw new \Exception(LANG('no_mac_addresses_for_wol'));
 		}
 		$this->db->insertLogEntry(\Models\Log::LEVEL_INFO, $this->du->username, null, 'oco.self_service.computer.wol', $wolMacAdresses);
-		\WakeOnLan::wol($wolMacAdresses, $debugOutput);
+		$wolController = new \WakeOnLan($this->db);
+		$wolController->wol($wolMacAdresses, $debugOutput);
 		return true;
 	}
 

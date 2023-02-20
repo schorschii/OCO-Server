@@ -172,46 +172,46 @@ try {
 
 	if(!empty($_POST['edit_general_config'])) {
 		if(isset($_POST['client_api_enabled'])) {
-			$cl->editGeneralConfig('client-api-enabled', $_POST['client_api_enabled']);
+			$cl->editSetting('client-api-enabled', $_POST['client_api_enabled']);
 		}
 		if(!empty($_POST['client_api_key'])) { // update only if not empty!
-			$cl->editGeneralConfig('client-api-key', $_POST['client_api_key']);
+			$cl->editSetting('client-api-key', $_POST['client_api_key']);
 		}
 		if(isset($_POST['agent_registration_enabled'])) {
-			$cl->editGeneralConfig('agent-self-registration-enabled', $_POST['agent_registration_enabled']);
+			$cl->editSetting('agent-self-registration-enabled', $_POST['agent_registration_enabled']);
 		}
 		if(!empty($_POST['agent_registration_key'])) { // update only if not empty!
-			$cl->editGeneralConfig('agent-registration-key', $_POST['agent_registration_key']);
+			$cl->editSetting('agent-registration-key', $_POST['agent_registration_key']);
 		}
 		if(isset($_POST['assume_computer_offline_after'])) {
-			$cl->editGeneralConfig('computer-offline-seconds', $_POST['assume_computer_offline_after']);
+			$cl->editSetting('computer-offline-seconds', $_POST['assume_computer_offline_after']);
 		}
 		if(isset($_POST['wol_shutdown_expiry'])) {
-			$cl->editGeneralConfig('wol-shutdown-expiry', $_POST['wol_shutdown_expiry']);
+			$cl->editSetting('wol-shutdown-expiry', $_POST['wol_shutdown_expiry']);
 		}
 		if(isset($_POST['agent_update_interval'])) {
-			$cl->editGeneralConfig('agent-update-interval', $_POST['agent_update_interval']);
+			$cl->editSetting('agent-update-interval', $_POST['agent_update_interval']);
 		}
 		if(isset($_POST['purge_succeeded_jobs_after'])) {
-			$cl->editGeneralConfig('purge-succeeded-jobs-after', $_POST['purge_succeeded_jobs_after']);
+			$cl->editSetting('purge-succeeded-jobs-after', $_POST['purge_succeeded_jobs_after']);
 		}
 		if(isset($_POST['purge_failed_jobs_after'])) {
-			$cl->editGeneralConfig('purge-failed-jobs-after', $_POST['purge_failed_jobs_after']);
+			$cl->editSetting('purge-failed-jobs-after', $_POST['purge_failed_jobs_after']);
 		}
 		if(isset($_POST['purge_logs_after'])) {
-			$cl->editGeneralConfig('purge-logs-after', $_POST['purge_logs_after']);
+			$cl->editSetting('purge-logs-after', $_POST['purge_logs_after']);
 		}
 		if(isset($_POST['purge_domain_user_logons_after'])) {
-			$cl->editGeneralConfig('purge-domain-user-logons-after', $_POST['purge_domain_user_logons_after']);
+			$cl->editSetting('purge-domain-user-logons-after', $_POST['purge_domain_user_logons_after']);
 		}
 		if(isset($_POST['purge_events_after'])) {
-			$cl->editGeneralConfig('purge-events-after', $_POST['purge_events_after']);
+			$cl->editSetting('purge-events-after', $_POST['purge_events_after']);
 		}
 		if(isset($_POST['computer_keep_inactive_screens'])) {
-			$cl->editGeneralConfig('computer-keep-inactive-screens', $_POST['computer_keep_inactive_screens']);
+			$cl->editSetting('computer-keep-inactive-screens', $_POST['computer_keep_inactive_screens']);
 		}
 		if(isset($_POST['self_service_enabled'])) {
-			$cl->editGeneralConfig('self-service-enabled', $_POST['self_service_enabled']);
+			$cl->editSetting('self-service-enabled', $_POST['self_service_enabled']);
 		}
 		die();
 	}
@@ -220,6 +220,20 @@ try {
 		$tmpFilePath = $_FILES['edit_license']['tmp_name'];
 		$tmpFileName = $_FILES['edit_license']['name'];
 		$cl->editLicense(file_get_contents($tmpFilePath));
+		die();
+	}
+	if(!empty($_POST['edit_wol_satellites'])) {
+		$cl->editWolSatellites($_POST['edit_wol_satellites']);
+		die();
+	}
+	if(!empty($_POST['edit_setting'])) {
+		$cl->editSetting($_POST['edit_setting'], $_POST['value']);
+		die();
+	}
+	if(!empty($_POST['remove_setting']) && is_array($_POST['remove_setting'])) {
+		foreach($_POST['remove_setting'] as $setting) {
+			$cl->removeSetting($setting);
+		}
 		die();
 	}
 

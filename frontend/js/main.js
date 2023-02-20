@@ -2364,6 +2364,78 @@ function ldapSyncDomainUsers() {
 		emitMessage(LANG['ldap_sync'], text, MESSAGE_TYPE_SUCCESS);
 	});
 }
+function showDialogEditWolSatellites() {
+	showDialogAjax(LANG['wol_satellites'], 'views/dialog-wol-satellites-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+}
+function editWolSatellites(jsonConfig) {
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('edit_wol_satellites', jsonConfig);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				hideDialog(); refreshContent();
+				emitMessage(LANG['saved'], LANG['wol_satellites'], MESSAGE_TYPE_SUCCESS);
+			} else {
+				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+			}
+		}
+	};
+	req.open('POST', 'ajax-handler/settings.php');
+	req.send(formData);
+}
+function showDialogEditSetting(key='') {
+	title = LANG['edit_setting'];
+	if(key == '') {
+		title = LANG['create_setting'];
+	}
+	showDialogAjax(title, 'views/dialog-setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+}
+function editSetting(key, value) {
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+	formData.append('edit_setting', key);
+	formData.append('value', value);
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				hideDialog(); refreshContent();
+				emitMessage(LANG['saved'], key, MESSAGE_TYPE_SUCCESS);
+			} else {
+				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+			}
+		}
+	};
+	req.open('POST', 'ajax-handler/settings.php');
+	req.send(formData);
+}
+function removeSelectedSetting(checkboxName, attributeName=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_setting[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['really_delete'])) {
+		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+			emitMessage(LANG['object_deleted'], ids.join(', '), MESSAGE_TYPE_SUCCESS);
+			refreshContent();
+		});
+	}
+}
 function checkUpdate() {
 	ajaxRequestPost('ajax-handler/update-check.php', '', null, function(text) {
 		if(text.trim() != '') {

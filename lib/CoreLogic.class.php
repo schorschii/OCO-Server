@@ -137,7 +137,8 @@ class CoreLogic {
 			throw new Exception(LANG('no_mac_addresses_for_wol'));
 		}
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, null, 'oco.computer.wol', $wolMacAdresses);
-		WakeOnLan::wol($wolMacAdresses, $debugOutput);
+		$wolController = new WakeOnLan($this->db);
+		$wolController->wol($wolMacAdresses, $debugOutput);
 		return true;
 	}
 	public function removeComputer($id, $force=false) {
@@ -837,7 +838,8 @@ class CoreLogic {
 						$wolMacAdresses[] = $cn->mac;
 					}
 				}
-				WakeOnLan::wol($wolMacAdresses, false);
+				$wolController = new WakeOnLan($this->db);
+				$wolController->wol($wolMacAdresses, false);
 			} else {
 				$wolSent = 0;
 			}
@@ -1056,7 +1058,8 @@ class CoreLogic {
 						$wolMacAdresses[] = $cn->mac;
 					}
 				}
-				WakeOnLan::wol($wolMacAdresses, false);
+				$wolController = new WakeOnLan($this->db);
+				$wolController->wol($wolMacAdresses, false);
 			} else {
 				$wolSent = 0;
 			}
@@ -1161,7 +1164,8 @@ class CoreLogic {
 						$wolMacAdresses[] = $cn->mac;
 					}
 				}
-				WakeOnLan::wol($wolMacAdresses, false);
+				$wolController = new WakeOnLan($this->db);
+				$wolController->wol($wolMacAdresses, false);
 			} else {
 				$wolSent = 0;
 			}
@@ -1807,13 +1811,23 @@ class CoreLogic {
 		return $result;
 	}
 
-	public function editGeneralConfig($key, $value) {
+	public function editSetting($key, $value) {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 
 		$insertId = $this->db->insertOrUpdateSettingByKey($key, $value);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
 			$key=>$value,
+		]);
+		return $insertId;
+	}
+	public function removeSetting($key) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+
+		$insertId = $this->db->deleteSettingByKey($key);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.delete', [
+			$key,
 		]);
 		return $insertId;
 	}
@@ -1824,6 +1838,20 @@ class CoreLogic {
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
 			'license'=>$license,
+		]);
+		return $insertId;
+	}
+	public function editWolSatellites($jsonConfig) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+
+		$decoded = json_decode($jsonConfig);
+		if(!$decoded) {
+			throw new InvalidRequestException(LANG('json_syntax_error'));
+		}
+		$insertId = $this->db->insertOrUpdateSettingByKey('wol-satellites', json_encode($decoded, JSON_PRETTY_PRINT));
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
+			'wol-satellites'=>$jsonConfig,
 		]);
 		return $insertId;
 	}

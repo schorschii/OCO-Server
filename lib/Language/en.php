@@ -517,6 +517,12 @@ return [
 	'no_extensions_loaded' => 'No extensions loaded',
 	'package_is_installed_on_computers' => 'This package is currently installed on %1 computer(s).',
 	'database_schema_upgraded' => 'Database schema was upgraded. Please reload the page.',
+	'all_settings' => 'All Settings',
+	'key' => 'Key',
+	'value' => 'Value',
+	'edit_setting' => 'Edit Setting',
+	'create_setting' => 'Create Setting',
+	'be_careful_when_manual_editing_settings' => 'Please be careful on manual config changes',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

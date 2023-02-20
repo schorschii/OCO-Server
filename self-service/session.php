@@ -3,7 +3,7 @@
 require_once('session-options.php');
 
 // check if user has a valid session and is authenticated (logged in)
-$selfServiceEnabled = boolval($db->selectSettingByKey('self-service-enabled'));
+$selfServiceEnabled = boolval($db->settings->get('self-service-enabled'));
 if(!isset($_SESSION['oco_self_service_user_id']) || !$selfServiceEnabled) {
 	redirectToLogin();
 }

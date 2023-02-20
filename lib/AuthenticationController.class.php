@@ -48,7 +48,7 @@ class AuthenticationController {
 			// do not allow anonymous binds
 			if(empty($checkPassword)) return false;
 
-			$ldapServers = json_decode($this->db->selectSettingByKey('system-user-ldapsync'), true);
+			$ldapServers = json_decode($this->db->settings->get('system-user-ldapsync'), true);
 			if(empty($ldapServers) || !is_array($ldapServers)) {
 				throw new Exception('System User LDAP sync not configured!');
 			}

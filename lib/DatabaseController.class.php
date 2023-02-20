@@ -18,6 +18,8 @@ class DatabaseController {
 	protected $dbh;
 	private $stmt;
 
+	public $settings;
+
 	function __construct() {
 		try {
 			$this->dbh = new PDO(
@@ -26,6 +28,7 @@ class DatabaseController {
 				array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8mb4')
 			);
 			$this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+			$this->settings = new SettingsController($this);
 		} catch(Exception $e) {
 			error_log($e->getMessage());
 			throw new Exception('Failed to establish database connection to ›'.DB_HOST.'‹. Gentle panic.');
@@ -345,7 +348,7 @@ class DatabaseController {
 		// remove screens which can not be found in agent output
 		list($in_placeholders, $in_params) = self::compileSqlInValues($sids);
 		$this->stmt = $this->dbh->prepare(
-			$this->selectSettingByKey('computer-keep-inactive-screens')
+			$this->settings->get('computer-keep-inactive-screens')
 			? 'UPDATE computer_screen SET active=0 WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
 			: 'DELETE FROM computer_screen WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
 		);
@@ -2496,7 +2499,7 @@ class DatabaseController {
 
 	// Log Operations
 	public function insertLogEntry($level, $user, $object_id, $action, $data) {
-		if($level < intval($this->selectSettingByKey('log_level'))) return;
+		if($level < intval($this->settings->get('log_level'))) return;
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO log (level, host, user, object_id, action, data)
 			VALUES (:level, :host, :user, :object_id, :action, :data)'
@@ -2543,47 +2546,27 @@ class DatabaseController {
 	}
 
 	// Setting Operations
-	const DEFAULT_SETTINGS = [
-		'client-api-enabled' => 0, // enable/disable the api-client.php
-		'client-api-key' => '<randomly-generated-by-setup>', // key for using the API
-
-		'agent-self-registration-enabled' => 0, // enable/disable automatic/unattended agent registration
-		'agent-registration-key' => '<randomly-generated-by-setup>', // agent registration key
-
-		'computer-keep-inactive-screens' => false, // do not delete disconnected screens from database (to keep track of serial numbers)
-
-		'self-service-enabled' => false,    // enable/disable the self service portal
-
-		'computer-offline-seconds' => 125,  // seconds after last agent communication a computer is considered as offline
-		'wol-shutdown-expiry' => 60*5,      // assume WOL did not worked after 5 minutes
-		'agent-update-interval' => 60*60*2, // update computer details every 2 hours
-
-		'purge-succeeded-jobs-after' => 60*60*4,
-		'purge-failed-jobs-after' => 60*60*24*2,
-		'purge-logs-after' => 60*60*24*14,
-		'purge-domain-user-logons-after' => 60*60*24*365,
-		'purge-events-after' => 60*60*24*7,
-
-		'log-level' => 1, // 0 -> DEBUG, 1 -> INFO, 2 -> WARNING, 3 -> ERROR, 4 -> NO LOGGING
-		'check-update' => true, // check for server updates when loading the web console
-		'do-housekeeping-by-web-requests' => false, // db cleanup method - normally done via cron job but can be done on every web request (not recommended)
-	];
 	public function selectSettingByKey($key) {
-		$value = null;
 		try {
 			$this->stmt = $this->dbh->prepare(
 				'SELECT * FROM setting WHERE `key` = :key LIMIT 1'
 			);
 			$this->stmt->execute([':key' => $key]);
 			foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Setting') as $row) {
-				$value = $row->value;
+				return $row;
 			}
 		} catch(PDOException $ignored) {}
-		if($value === null && array_key_exists($key, self::DEFAULT_SETTINGS)) {
-			// apply defaults
-			$value = self::DEFAULT_SETTINGS[$key];
-		}
-		return $value;
+		return null;
+	}
+	public function selectAllSetting() {
+		try {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM setting ORDER BY `key`'
+			);
+			$this->stmt->execute();
+			return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Setting');
+		} catch(PDOException $ignored) {}
+		return [];
 	}
 	public function insertOrUpdateSettingByKey($key, $value) {
 		$this->stmt = $this->dbh->prepare(
@@ -2597,6 +2580,12 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute([':key' => $key, ':value' => $value])) return false;
 		return $this->dbh->lastInsertId();
+	}
+	public function deleteSettingByKey($key) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM setting WHERE `key` = :key'
+		);
+		return $this->stmt->execute([':key' => $key]);
 	}
 
 }

@@ -38,19 +38,19 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 		<table class='list metadata'>
 			<tr>
 				<th><?php echo LANG('client_api_enabled'); ?>:</th>
-				<td><?php if($db->selectSettingByKey('client-api-enabled')) echo LANG('yes'); else echo LANG('no'); ?></td>
+				<td><?php if($db->settings->get('client-api-enabled')) echo LANG('yes'); else echo LANG('no'); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('client_api_key'); ?>:</th>
-				<td><?php echo $permGeneral ? htmlspecialchars($db->selectSettingByKey('client-api-key')) : '<i>'.LANG('permission_denied').'</i>'; ?></td>
+				<td><?php echo $permGeneral ? htmlspecialchars($db->settings->get('client-api-key')) : '<i>'.LANG('permission_denied').'</i>'; ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('agent_registration_enabled'); ?>:</th>
-				<td><?php if($db->selectSettingByKey('agent-self-registration-enabled')) echo LANG('yes'); else echo LANG('no'); ?></td>
+				<td><?php if($db->settings->get('agent-self-registration-enabled')) echo LANG('yes'); else echo LANG('no'); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('agent_registration_key'); ?>:</th>
-				<td><?php echo $permGeneral ? htmlspecialchars($db->selectSettingByKey('agent-registration-key')) : '<i>'.LANG('permission_denied').'</i>'; ?></td>
+				<td><?php echo $permGeneral ? htmlspecialchars($db->settings->get('agent-registration-key')) : '<i>'.LANG('permission_denied').'</i>'; ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('package_depot_path'); ?>:</th>
@@ -58,43 +58,43 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 			</tr>
 			<tr>
 				<th><?php echo LANG('assume_computer_offline_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('computer-offline-seconds'))); ?></td>
+				<td><?php echo htmlspecialchars(niceTime($db->settings->get('computer-offline-seconds'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('wol_shutdown_expiry_seconds'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('wol-shutdown-expiry'))); ?></td>
+				<td><?php echo htmlspecialchars(niceTime($db->settings->get('wol-shutdown-expiry'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('agent_update_interval'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('agent-update-interval'))); ?></td>
+				<td><?php echo htmlspecialchars(niceTime($db->settings->get('agent-update-interval'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('purge_succeeded_jobs_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-succeeded-jobs-after'))); ?></td>
+				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-succeeded-jobs-after'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('purge_failed_jobs_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-failed-jobs-after'))); ?></td>
+				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-failed-jobs-after'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('purge_logs_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-logs-after'))); ?></td>
+				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-logs-after'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('purge_domain_user_logons_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-domain-user-logons-after'))); ?></td>
+				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-domain-user-logons-after'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('purge_events_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime($db->selectSettingByKey('purge-events-after'))); ?></td>
+				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-events-after'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('keep_inactive_screens'); ?>:</th>
-				<td><?php if($db->selectSettingByKey('computer-keep-inactive-screens')) echo LANG('yes'); else echo LANG('no'); ?></td>
+				<td><?php if($db->settings->get('computer-keep-inactive-screens')) echo LANG('yes'); else echo LANG('no'); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('self_service_enabled'); ?>:</th>
-				<td><?php if($db->selectSettingByKey('self-service-enabled')) echo LANG('yes'); else echo LANG('no'); ?></td>
+				<td><?php if($db->settings->get('self-service-enabled')) echo LANG('yes'); else echo LANG('no'); ?></td>
 			</tr>
 		</table>
 	</div>
@@ -136,8 +136,13 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 			</tr>
 		</table>
 
-		<h2><?php echo LANG('wol_satellites'); ?></h2>
-		<?php if(count(SATELLITE_WOL_SERVER) == 0) { ?>
+		<div class='controls heading'>
+			<h2><?php echo LANG('wol_satellites'); ?></h2>
+			<div class='filler invisible'></div>
+			<button onclick='showDialogEditWolSatellites()' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		</div>
+		<?php $satelliteWolServer = json_decode($db->settings->get('wol-satellites'), true);
+		if(!is_array($satelliteWolServer) || count($satelliteWolServer) === 0) { ?>
 			<div class='alert info'><?php echo LANG('no_wol_satellite_server_configured'); ?></div>
 		<?php } else { ?>
 		<table class='list'>
@@ -145,10 +150,10 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 				<th><?php echo LANG('address'); ?></th>
 				<th><?php echo LANG('port'); ?></th>
 			</tr>
-			<?php foreach(SATELLITE_WOL_SERVER as $s) { ?>
+			<?php foreach($satelliteWolServer as $s) { ?>
 			<tr>
-				<td><?php echo htmlspecialchars($s['ADDRESS']); ?></td>
-				<td><?php echo htmlspecialchars($s['PORT']); ?></td>
+				<td><?php echo htmlspecialchars($s['address']??'?'); ?></td>
+				<td><?php echo htmlspecialchars($s['port']??'?'); ?></td>
 			</tr>
 			<?php } ?>
 		</table>
@@ -176,4 +181,51 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 		</table>
 		<?php } ?>
 	</div>
+</div>
+
+<div class='details-abreast'>
+	<?php if($permGeneral) { ?>
+	<div class='stickytable'>
+		<div class='controls heading'>
+			<h2><?php echo LANG('all_settings'); ?></h2>
+			<div class='filler invisible'></div>
+			<button onclick='showDialogEditSetting()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+		</div>
+		<table class='list searchable sortable actioncolumn sticky'>
+			<thead>
+				<tr>
+					<th></th>
+					<th class='searchable sortable'><?php echo LANG('id'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('value'); ?></th>
+					<th class=''><?php echo LANG('action'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php foreach($db->selectAllSetting() as $s) { ?>
+				<tr>
+					<td><input type='checkbox' name='setting_id[]' value='<?php echo $s->key; ?>'></td>
+					<td><?php echo htmlspecialchars($s->key); ?></td>
+					<td><?php echo htmlspecialchars($s->value); ?></td>
+					<td><button setting='<?php echo htmlspecialchars($s->key); ?>' onclick='showDialogEditSetting(this.getAttribute("setting"))'><img src='img/edit.dyn.svg'></button></td>
+				</tr>
+				<?php } ?>
+			</tbody>
+			<tfoot>
+			<tr>
+				<td colspan='999'>
+					<div class='spread'>
+						<div>
+							<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+							<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
+						</div>
+						<div class='controls'>
+							<button onclick='removeSelectedSetting("setting_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+						</div>
+					</div>
+				</td>
+			</tr>
+			</tfoot>
+		</table>
+	</div>
+	<?php } ?>
 </div>

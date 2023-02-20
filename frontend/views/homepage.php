@@ -61,14 +61,10 @@ $license = new LicenseCheck($db);
 			<td class='center'><img src='img/job.dyn.svg'><br><?php echo $stats['jobs'].' '.LANG('jobs'); ?></td>
 			<td class='center'><img src='img/report.dyn.svg'><br><?php echo $stats['reports'].' '.LANG('reports'); ?></td>
 		</tr>
-		<?php
-		// the message of the day is intentionally not escaped by htmlspecialchars() so you can format the text and insert links
-		if(!empty(MOTD)) {
-		?>
+
 		<tr>
-			<td class='center' colspan='5'><?php echo MOTD=='default_motd' ? LANG('default_motd') : MOTD; ?></td>
+			<td class='center' colspan='5'><?php echo LANG($db->settings->get('motd')); ?></td>
 		</tr>
-		<?php } ?>
 	</table>
 
 	<div class='footer'>

@@ -35,8 +35,8 @@ class HouseKeeping {
 	}
 
 	private function jobHouseKeeping() {
-		$purgeSucceededJobsAfter = $this->db->selectSettingByKey('purge-succeeded-jobs-after');
-		$purgeFailedJobsAfter = $this->db->selectSettingByKey('purge-failed-jobs-after');
+		$purgeSucceededJobsAfter = $this->db->settings->get('purge-succeeded-jobs-after');
+		$purgeFailedJobsAfter = $this->db->settings->get('purge-failed-jobs-after');
 
 		foreach($this->db->selectAllJobContainer() as $container) {
 			// purge old jobs
@@ -70,7 +70,8 @@ class HouseKeeping {
 	}
 
 	private function jobWol() {
-		$wolShutdownExpirySeconds = $this->db->selectSettingByKey('wol-shutdown-expiry');
+		$wolController = new WakeOnLan($this->db);
+		$wolShutdownExpirySeconds = $this->db->settings->get('wol-shutdown-expiry');
 
 		foreach($this->db->selectAllJobContainer() as $container) {
 			if($container->wol_sent == 0) {
@@ -89,7 +90,7 @@ class HouseKeeping {
 					}
 					// send WOL packet
 					if($this->debug) echo('   Sending '.count($wolMacAddresses).' WOL Magic Packets'."\n");
-					WakeOnLan::wol($wolMacAddresses, $this->debug);
+					$wolController->wol($wolMacAddresses, $this->debug);
 					// update WOL sent info in db
 					$this->db->updateJobContainer(
 						$container->id,
@@ -131,25 +132,25 @@ class HouseKeeping {
 	}
 
 	private function logonHouseKeeping() {
-		$purgeDomainUserLogonsAfter = $this->db->selectSettingByKey('purge-domain-user-logons-after');
+		$purgeDomainUserLogonsAfter = $this->db->settings->get('purge-domain-user-logons-after');
 		$result = $this->db->deleteDomainUserLogonOlderThan($purgeDomainUserLogonsAfter);
 		if($this->debug) echo('Purged '.intval($result).' domain user logons older than '.intval($purgeDomainUserLogonsAfter).' seconds'."\n");
 	}
 
 	private function serviceHouseKeeping() {
-		$purgeServiceHistoryAfter = $this->db->selectSettingByKey('purge-events-after');
+		$purgeServiceHistoryAfter = $this->db->settings->get('purge-events-after');
 		$result = $this->db->deleteComputerServiceHistoryOlderThan($purgeServiceHistoryAfter);
 		if($this->debug) echo('Purged '.intval($result).' service history entries older than '.intval($purgeServiceHistoryAfter).' seconds'."\n");
 	}
 
 	private function eventHouseKeeping() {
-		$purgeEventsAfter = $this->db->selectSettingByKey('purge-events-after');
+		$purgeEventsAfter = $this->db->settings->get('purge-events-after');
 		$result = $this->db->deleteComputerEventOlderThan($purgeEventsAfter);
 		if($this->debug) echo('Purged '.intval($result).' events older than '.intval($purgeEventsAfter).' seconds'."\n");
 	}
 
 	private function logHouseKeeping() {
-		$purgeLogsAfter = $this->db->selectSettingByKey('purge-logs-after');
+		$purgeLogsAfter = $this->db->settings->get('purge-logs-after');
 		$result = $this->db->deleteLogEntryOlderThan($purgeLogsAfter);
 		if($this->debug) echo('Purged '.intval($result).' log entries older than '.intval($purgeLogsAfter).' seconds'."\n");
 	}
