@@ -92,7 +92,7 @@ foreach($ext->getAggregatedConf('frontend-search-function') as $func) {
 
 if(count($items) == 0) {
 	die('<div class="alert warning nomargin">'.LANG('no_search_results').'</div>');
-} elseif(count($items) > 25) {
+} elseif(!$more && count($items) > 25) {
 	$items = array_chunk($items, 25)[0];
 }
 ?>
