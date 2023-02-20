@@ -30,7 +30,7 @@ For Linux, as log name, please enter `journalctl` - this is currently the only s
     "unit":"udisks2.service",  <-- systemd unit to monitor (journalctl -u ...)
     "identifier":"",  <-- entries with the specified syslog identifier (journalctl -t ...)
     "priority":"0,1,2,3",  <-- entries with the specified priority (journalctl -p ...)
-    "grep":"mounted"  <-- entries with matching pattern (journalctl -g ...)
+    "grep":"mounted"  <-- entries with matching pattern (regex)
 }
 ```
 
