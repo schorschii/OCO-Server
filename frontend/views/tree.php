@@ -8,10 +8,11 @@ require_once('../session.php');
 	<a <?php echo explorerLink('views/domain-users.php'); ?>><img src='img/users.dyn.svg'><?php echo LANG('domain_users'); ?></a>
 </div>
 
-<div class='node expandable'>
+<?php $computerGroupsHtml = getComputerGroupsHtml($cl); ?>
+<div class='node <?php if($computerGroupsHtml) echo 'expandable'; ?>'>
 	<a <?php echo explorerLink('views/computers.php'); ?>><img src='img/computer.dyn.svg'><?php echo LANG('computer'); ?></a>
 	<div id='divNodeComputers' class='subitems'>
-		<?php echo getComputerGroupsHtml($cl); ?>
+		<?php echo $computerGroupsHtml; ?>
 	</div>
 </div>
 
@@ -26,10 +27,11 @@ require_once('../session.php');
 </div>
 <?php } ?>
 
-<div class='node expandable'>
+<?php $packageGroupsHtml = getPackageGroupsHtml($cl); ?>
+<div class='node <?php if($packageGroupsHtml) echo 'expandable'; ?>'>
 	<a <?php echo explorerLink('views/package-families.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG('packages'); ?></a>
 	<div id='divNodePackages' class='subitems'>
-		<?php echo getPackageGroupsHtml($cl); ?>
+		<?php echo $packageGroupsHtml; ?>
 	</div>
 </div>
 
@@ -72,10 +74,11 @@ require_once('../session.php');
 	</div>
 </div>
 
-<div class='node expandable'>
+<?php $reportGroupsHtml = getReportGroupsHtml($cl); ?>
+<div class='node <?php if($reportGroupsHtml) echo 'expandable'; ?>'>
 	<a <?php echo explorerLink('views/reports.php'); ?>><img src='img/report.dyn.svg'><?php echo LANG('reports'); ?></a>
 	<div id='divSubnodeReports' class='subitems'>
-		<?php echo getReportGroupsHtml($cl); ?>
+		<?php echo $reportGroupsHtml; ?>
 	</div>
 </div>
 
