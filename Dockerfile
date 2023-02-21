@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y libzip-dev libldap2-dev && \
 
 # copy web app files
 COPY . ${WEBAPP_ROOT}
-RUN if [ ! -f "$WEBAPP_ROOT/conf.php" ]; then echo 'config.php missing - please create it from config.php.example!'; exit 1; fi
+RUN if [ ! -f "$WEBAPP_ROOT/conf.php" ]; then echo 'conf.php missing - please create it from conf.php.example!'; exit 1; fi
 
 # set up cron jobs
 RUN apt-get install -y cron && \
