@@ -198,14 +198,17 @@ try {
 		if(isset($_POST['purge_failed_jobs_after'])) {
 			$cl->editSetting('purge-failed-jobs-after', $_POST['purge_failed_jobs_after']);
 		}
-		if(isset($_POST['purge_logs_after'])) {
-			$cl->editSetting('purge-logs-after', $_POST['purge_logs_after']);
-		}
 		if(isset($_POST['purge_domain_user_logons_after'])) {
 			$cl->editSetting('purge-domain-user-logons-after', $_POST['purge_domain_user_logons_after']);
 		}
 		if(isset($_POST['purge_events_after'])) {
 			$cl->editSetting('purge-events-after', $_POST['purge_events_after']);
+		}
+		if(isset($_POST['log_level'])) {
+			$cl->editSetting('log-level', $_POST['log_level']);
+		}
+		if(isset($_POST['purge_logs_after'])) {
+			$cl->editSetting('purge-logs-after', $_POST['purge_logs_after']);
 		}
 		if(isset($_POST['computer_keep_inactive_screens'])) {
 			$cl->editSetting('computer-keep-inactive-screens', $_POST['computer_keep_inactive_screens']);

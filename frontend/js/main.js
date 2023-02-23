@@ -2255,7 +2255,7 @@ function confirmRemoveSelectedEventQueryRule(checkboxName) {
 function showDialogEditGeneralConfig() {
 	showDialogAjax(LANG['oco_configuration'], 'views/dialog-general-config-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnabled, agentRegistrationKey, assumeComputerOfflineAfter, wolShutdownExpiry, agentUpdateInterval, purgeSucceededJobsAfter, purgeFailedJobsAfter, purgeLogsAfter, purgeDomainUserLogonsAfter, purgeEventsAfter, keepInactiveScreens, selfServiceEnabled) {
+function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnabled, agentRegistrationKey, assumeComputerOfflineAfter, wolShutdownExpiry, agentUpdateInterval, purgeSucceededJobsAfter, purgeFailedJobsAfter, purgeDomainUserLogonsAfter, purgeEventsAfter, logLevel, purgeLogsAfter, keepInactiveScreens, selfServiceEnabled) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('edit_general_config', 1);
@@ -2268,9 +2268,10 @@ function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnab
 	formData.append('agent_update_interval', agentUpdateInterval);
 	formData.append('purge_succeeded_jobs_after', purgeSucceededJobsAfter);
 	formData.append('purge_failed_jobs_after', purgeFailedJobsAfter);
-	formData.append('purge_logs_after', purgeLogsAfter);
 	formData.append('purge_domain_user_logons_after', purgeDomainUserLogonsAfter);
 	formData.append('purge_events_after', purgeEventsAfter);
+	formData.append('log_level', logLevel);
+	formData.append('purge_logs_after', purgeLogsAfter);
 	formData.append('computer_keep_inactive_screens', keepInactiveScreens);
 	formData.append('self_service_enabled', selfServiceEnabled);
 	req.onreadystatechange = function() {

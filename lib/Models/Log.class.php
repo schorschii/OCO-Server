@@ -21,6 +21,14 @@ class Log {
 	public const LEVEL_WARNING = 2;
 	public const LEVEL_ERROR   = 3;
 
+	public const LEVELS = [
+		self::LEVEL_DEBUG 	=> '0 - Debug',
+		self::LEVEL_INFO 	=> '1 - Info',
+		self::LEVEL_WARNING => '2 - Warning',
+		self::LEVEL_ERROR 	=> '3 - Error',
+		4 					=> '4 - No Logging',
+	];
+
 	public const ACTION_AGENT_API                   = 'oco.computer.agent';
 	public const ACTION_AGENT_API_RAW               = 'oco.computer.agent.api.rawrequest';
 	public const ACTION_AGENT_API_HELLO             = 'oco.computer.agent.hello';

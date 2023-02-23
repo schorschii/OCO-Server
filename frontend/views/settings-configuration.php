@@ -77,16 +77,20 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-failed-jobs-after'))); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('purge_logs_after'); ?>:</th>
-				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-logs-after'))); ?></td>
-			</tr>
-			<tr>
 				<th><?php echo LANG('purge_domain_user_logons_after'); ?>:</th>
 				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-domain-user-logons-after'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('purge_events_after'); ?>:</th>
 				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-events-after'))); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('log_level'); ?>:</th>
+				<td><?php echo htmlspecialchars(Models\Log::LEVELS[$db->settings->get('log-level')]); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('purge_logs_after'); ?>:</th>
+				<td><?php echo htmlspecialchars(niceTime($db->settings->get('purge-logs-after'))); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('keep_inactive_screens'); ?>:</th>

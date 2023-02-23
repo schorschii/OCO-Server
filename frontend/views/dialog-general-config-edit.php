@@ -42,16 +42,26 @@ require_once('../session.php');
 		<td><input type='number' min='0' id='txtPurgeFailedJobsAfter' value='<?php echo htmlspecialchars($db->settings->get('purge-failed-jobs-after')); ?>'></input></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG('purge_logs_after'); ?></th>
-		<td><input type='number' min='0' id='txtPurgeLogsAfter' value='<?php echo htmlspecialchars($db->settings->get('purge-logs-after')); ?>'></input></td>
-	</tr>
-	<tr>
 		<th><?php echo LANG('purge_domain_user_logons_after'); ?></th>
 		<td><input type='number' min='0' id='txtPurgeDomainUserLogonsAfter' value='<?php echo htmlspecialchars($db->settings->get('purge-domain-user-logons-after')); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('purge_events_after'); ?></th>
 		<td><input type='number' min='0' id='txtPurgeEventsAfter' value='<?php echo htmlspecialchars($db->settings->get('purge-events-after')); ?>'></input></td>
+	</tr>
+	<tr>
+		<th><?php echo LANG('log_level'); ?></th>
+		<td>
+			<select id='sltLogLevel'>
+				<?php foreach(Models\Log::LEVELS as $key => $title) { ?>
+					<option value='<?php echo $key; ?>' <?php if($db->settings->get('log-level')==$key) echo 'selected'; ?>><?php echo htmlspecialchars($title); ?></option>
+				<?php } ?>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<th><?php echo LANG('purge_logs_after'); ?></th>
+		<td><input type='number' min='0' id='txtPurgeLogsAfter' value='<?php echo htmlspecialchars($db->settings->get('purge-logs-after')); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('keep_inactive_screens'); ?></th>
@@ -75,9 +85,10 @@ require_once('../session.php');
 		txtAgentUpdateInterval.value,
 		txtPurgeSucceededJobsAfter.value,
 		txtPurgeFailedJobsAfter.value,
-		txtPurgeLogsAfter.value,
 		txtPurgeDomainUserLogonsAfter.value,
 		txtPurgeEventsAfter.value,
+		sltLogLevel.value,
+		txtPurgeLogsAfter.value,
 		chkKeepInactiveScreens.checked ? 1 : 0,
 		chkSelfServiceEnabled.checked ? 1 : 0
 	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('change'); ?></button>
