@@ -11,7 +11,7 @@ oco-agent.exe /SILENT /SUPPRESSMSGBOXES
 ```
 
 ## Linux
-(Debian/Ubuntu)
+**(Debian/Ubuntu)**
 ```
 gdebi -n oco-agent.deb
 ```
