@@ -209,8 +209,8 @@ switch($srcdata['method']) {
 				$server_key = $computer->server_key;
 			}
 
-			// update last seen date and service status
-			$db->updateComputerPing($computer->id);
+			// update common computer metadata and service status
+			$db->updateComputerPing($computer->id, $data['agent_version']??'?', $data['networks']??[]);
 			if(!empty($data['services'])) foreach($data['services'] as $s) {
 				if(empty($s['name']) || !isset($s['status']) || !is_numeric($s['status'])) continue;
 				$db->insertOrUpdateComputerService($computer->id, $s['status'], $s['name'], $s['metrics'] ?? '-', $s['details'] ?? '');

@@ -233,14 +233,15 @@ class DatabaseController {
 		]);
 		$computer_id = $this->dbh->lastInsertId();
 		foreach($networks as $index => $network) {
+			if(empty($network['addr'])) continue;
 			$this->insertOrUpdateComputerNetwork(
 				$computer_id,
 				$index,
 				$network['addr'],
-				$network['netmask'],
-				$network['broadcast'],
-				$network['mac'],
-				$network['interface']
+				$network['netmask'] ?? '?',
+				$network['broadcast'] ?? '?',
+				$network['mac'] ?? '?',
+				$network['interface'] ?? '?'
 			);
 		}
 		return $computer_id;
@@ -251,11 +252,39 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname, ':notes' => $notes]);
 	}
-	public function updateComputerPing($id) {
+	public function updateComputerPing($id, $agent_version=null, $networks=null) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET last_ping = CURRENT_TIMESTAMP WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id]);
+		if(!$this->stmt->execute([':id' => $id])) return false;
+		if($agent_version !== null) {
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE computer SET agent_version = :agent_version WHERE id = :id'
+			);
+			if(!$this->stmt->execute([':id' => $id, ':agent_version' => $agent_version])) return false;
+		}
+		if($networks !== null) {
+			$nids = [];
+			foreach($networks as $index => $network) {
+				if(empty($network['addr'])) continue;
+				$nids[] = $this->insertOrUpdateComputerNetwork(
+					$id,
+					$index,
+					$network['addr'],
+					$network['netmask'] ?? '?',
+					$network['broadcast'] ?? '?',
+					$network['mac'] ?? '?',
+					$network['interface'] ?? '?'
+				);
+			}
+			// remove networks which can not be found in agent output
+			list($in_placeholders, $in_params) = self::compileSqlInValues($nids);
+			$this->stmt = $this->dbh->prepare(
+			    'DELETE FROM computer_network WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
+			);
+			if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
+		}
+		return true;
 	}
 	public function updateComputerForceUpdate($id, $force_update) {
 		$this->stmt = $this->dbh->prepare(
