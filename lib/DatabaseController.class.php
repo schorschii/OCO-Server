@@ -2325,11 +2325,12 @@ class DatabaseController {
 	}
 	private function insertOrUpdateSoftware($name, $version, $description) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE software SET id = LAST_INSERT_ID(id)
-			WHERE BINARY name = :name AND BINARY version = :version AND description = :description LIMIT 1'
+			'SELECT id FROM software WHERE BINARY name = :name AND BINARY version = :version AND description = :description LIMIT 1'
 		);
 		if(!$this->stmt->execute([':name' => $name, ':version' => $version, ':description' => $description])) return false;
-		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software') as $row) {
+			return $row->id;
+		}
 
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO software (name, version, description) VALUES (:name, :version, :description)'
@@ -2339,11 +2340,12 @@ class DatabaseController {
 	}
 	private function insertOrUpdateComputerSoftware($computer_id, $software_id) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer_software SET id = LAST_INSERT_ID(id)
-			WHERE computer_id = :computer_id AND software_id = :software_id LIMIT 1'
+			'SELECT id FROM computer_software WHERE computer_id = :computer_id AND software_id = :software_id LIMIT 1'
 		);
 		if(!$this->stmt->execute([':computer_id' => $computer_id, ':software_id' => $software_id])) return false;
-		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerSoftware') as $row) {
+			return $row->id;
+		}
 
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO computer_software (computer_id, software_id) VALUES (:computer_id, :software_id)'
