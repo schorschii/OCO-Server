@@ -542,5 +542,8 @@ return [
 			<li>.pkg-Paket für macOS: <code>installer -pkg package.pkg -target /</code> (kein Deinstallations-Support)</li>
 			<li>Eigenes Batch-/Shell-Skript: <code>myscript.bat</code> oder <code>myscript.sh</code></li>
 		</ul>
+		<p>
+			Spezifische Beispiele können in dem <a href="index.php?view=docs&page=install-uninstall-catalog">Installations-/Deinstallations-Kommando-Katalog</a> gefunden werden.
+		</p>
 	',
 ];

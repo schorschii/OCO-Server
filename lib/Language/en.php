@@ -547,5 +547,8 @@ return [
 			<li>.pkg package for macOS: <code>installer -pkg package.pkg -target /</code> (no uninstallation support)</li>
 			<li>Own Batch/Shell script: <code>myscript.bat</code> or <code>myscript.sh</code></li>
 		</ul>
+		<p>
+			Specific examples can be found in the <a href="index.php?view=docs&page=install-uninstall-catalog">Install/Uninstall Command Catalog</a>.
+		</p>
 	',
 ];
