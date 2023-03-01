@@ -133,6 +133,19 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'software' AND COLUMN_NAME = 'name' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute();
+		foreach($this->stmt->fetchAll() as $row) {
+			if($row['DATA_TYPE'] !== 'varchar') {
+				if($this->debug) echo 'Upgrading to 0.16.1...'."\n";
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `software` CHANGE `name` `name` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL, CHANGE `version` `version` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL, CHANGE `description` `description` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL;");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				$upgraded = true;
+			}
+		}
+
 		return $upgraded;
 	}
 

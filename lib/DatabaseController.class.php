@@ -2325,7 +2325,7 @@ class DatabaseController {
 	}
 	private function insertOrUpdateSoftware($name, $version, $description) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT id FROM software WHERE BINARY name = :name AND BINARY version = :version AND description = :description LIMIT 1'
+			'SELECT id FROM software WHERE name = :name AND version = :version AND description = :description LIMIT 1'
 		);
 		if(!$this->stmt->execute([':name' => $name, ':version' => $version, ':description' => $description])) return false;
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software') as $row) {

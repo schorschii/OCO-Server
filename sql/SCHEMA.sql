@@ -17,10 +17,11 @@ SET time_zone = "+00:00";
 
 CREATE TABLE IF NOT EXISTS `software` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL,
-  `version` text NOT NULL,
-  `description` text NOT NULL,
-  PRIMARY KEY (`id`)
+  `name` varchar(200) COLLATE utf8mb4_bin NOT NULL,
+  `version` varchar(200) COLLATE utf8mb4_bin NOT NULL,
+  `description` varchar(250) COLLATE utf8mb4_bin NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`,`version`,`description`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
