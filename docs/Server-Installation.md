@@ -26,7 +26,13 @@ docker exec -it <CONTAINER-ID> bash
      a2enmod rewrite
      service apache2 restart
      ```
-3. Import the database schema (including all schema upgrades, `/sql/*.sql`) into an empty database.
+3. Configure your MariaDB server lock timeout (via `/etc/mysql/conf.d/lock-timeout.cnf`) and restart the database server.
+   ```
+   [mysqld]
+   innodb_lock_wait_timeout = 120
+   ```
+
+   Import the database schema (including all schema upgrades, `/sql/*.sql`) into an empty database.
    ```
    root@ocoserver:/# mysql
    mysql> CREATE DATABASE oco DEFAULT CHARACTER SET utf8mb4;
