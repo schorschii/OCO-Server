@@ -71,6 +71,26 @@ try {
 	&& isset($_POST['uninstall_procedure_success_return_codes'])
 	&& isset($_POST['uninstall_procedure_post_action'])
 	&& isset($_POST['download_for_uninstall'])) {
+		// no archive change by default
+		$tmpFiles = null;
+		if(!empty($_POST['update_archive'])) {
+			// no payload by default
+			$tmpFiles = [];
+			if(!empty($_FILES['archive']) && is_array($_FILES['archive']['tmp_name'])) {
+				// use files from user upload
+				for($i=0; $i < count($_FILES['archive']['tmp_name']); $i++) {
+					if(isset($_FILES['archive']['name'][$i]) && file_exists($_FILES['archive']['tmp_name'][$i])) {
+						$fileName = $_FILES['archive']['name'][$i];
+						if(isset($_FILES['archive']['full_path'][$i])) {
+							// PHP 8.1 allows to view the complete path transmitted by the browser
+							$fileName = $_FILES['archive']['full_path'][$i];
+						}
+						$tmpFiles[$fileName] = $_FILES['archive']['tmp_name'][$i];
+					}
+				}
+			}
+		}
+		// edit package
 		$cl->editPackage($_POST['edit_package_id'],
 			$_POST['package_family_id'],
 			$_POST['version'],
@@ -83,7 +103,8 @@ try {
 			$_POST['uninstall_procedure'],
 			$_POST['uninstall_procedure_success_return_codes'],
 			$_POST['uninstall_procedure_post_action'],
-			$_POST['download_for_uninstall']
+			$_POST['download_for_uninstall'],
+			$tmpFiles
 		);
 		die();
 	}
@@ -160,7 +181,7 @@ try {
 			}
 		}
 		// create package
-		$insertId = $cl->createPackage($_POST['create_package'], $_POST['version'], $_POST['description'] ?? '', $currentSystemUser->username,
+		$insertId = $cl->createPackage($_POST['create_package'], $_POST['version'], $_POST['notes'] ?? '', $currentSystemUser->username,
 			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_post_action'] ?? null,
 			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'], $_POST['uninstall_procedure_post_action'] ?? null,
 			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $tmpFiles

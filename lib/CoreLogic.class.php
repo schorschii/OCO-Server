@@ -516,7 +516,7 @@ class CoreLogic {
 		$this->db->deletePackageDependencyByPackageIdAndDependentPackageId($package->id, $dependentPackage->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $package->id, 'oco.package.remove_dependency', ['dependent_package_id'=>$dependentPackage->id]);
 	}
-	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall) {
+	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall, $tmpFiles) {
 		$package = $this->db->selectPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->checkPermission($package, PermissionManager::METHOD_WRITE);
@@ -539,7 +539,50 @@ class CoreLogic {
 		if(intval($downloadForUninstall) !== 0 && intval($downloadForUninstall) !== 1) {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
+		$existenceCheck = $this->db->selectAllPackageByPackageFamilyNameAndVersion($package_family->name, $version);
+		if(!empty($existenceCheck) && $existenceCheck[0]->id != $id) {
+			throw new InvalidRequestException(LANG('package_exists_with_version'));
+		}
 
+		// decide what to do with uploaded files
+		$tmpArchivePath = null;
+		if($tmpFiles !== null) {
+			if(count($tmpFiles) == 1 && file_exists(array_values($tmpFiles)[0])) {
+				// create zip with uploaded file if uploaded file is not already a single zip file
+				$filePath = array_values($tmpFiles)[0];
+				$fileName = array_keys($tmpFiles)[0];
+				$mimeType = mime_content_type($filePath);
+				if($mimeType != 'application/zip') {
+					$newTmpFilePath = '/tmp/oco-'.uniqid().'.tmp.zip';
+					$zip = new ZipArchive();
+					if(!$zip->open($newTmpFilePath, ZipArchive::CREATE)) {
+						throw new Exception(LANG('cannot_create_zip_file'));
+					}
+					$zip->addFile($filePath, basename($fileName));
+					$zip->close();
+					$tmpArchivePath = $newTmpFilePath;
+				} else {
+					$tmpArchivePath = $filePath;
+				}
+			} elseif(count($tmpFiles) > 1) {
+				// create zip with uploaded files
+				$newTmpFilePath = '/tmp/oco-'.uniqid().'.tmp.zip';
+				$zip = new ZipArchive();
+				if(!$zip->open($newTmpFilePath, ZipArchive::CREATE)) {
+					throw new Exception(LANG('cannot_create_zip_file'));
+				}
+				$atleastOne = false;
+				foreach($tmpFiles as $fileName => $filePath) {
+					if(!file_exists($filePath)) continue;
+					$zip->addFile($filePath, $fileName);
+					$atleastOne = true;
+				}
+				$zip->close();
+				if($atleastOne) $tmpArchivePath = $newTmpFilePath;
+			}
+		}
+
+		// update in database
 		$this->db->updatePackage($package->id,
 			$package_family_id,
 			$package->author,
@@ -555,6 +598,23 @@ class CoreLogic {
 			intval($uninstallProcedurePostAction),
 			intval($downloadForUninstall),
 		);
+
+		// replace file in payload dir
+		if($tmpFiles !== null) {
+			$finalFileName = intval($package->id).'.zip';
+			$finalFilePath = PACKAGE_PATH.'/'.$finalFileName;
+			if(file_exists($finalFilePath)) {
+				unlink($finalFilePath);
+			}
+			if($tmpArchivePath != null && file_exists($tmpArchivePath)) {
+				$result = rename($tmpArchivePath, $finalFilePath);
+				if(!$result) {
+					error_log('Can not move uploaded file to: '.$finalFilePath);
+					throw new Exception(LANG('cannot_move_uploaded_file'));
+				}
+			}
+		}
+
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $package->id, 'oco.package.update', [
 			'version'=>$version,
 			'compatible_os'=>$compatibleOs,

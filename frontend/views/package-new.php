@@ -76,7 +76,7 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
-		<td colspan='3'><textarea id='txtDescription' placeholder='<?php echo LANG('optional_hint'); ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea></td>
+		<td colspan='3'><textarea id='txtNotes' placeholder='<?php echo LANG('optional_hint'); ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea></td>
 	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG('package_content'); ?></h2></td></tr>
@@ -135,7 +135,7 @@ require_once('../session.php');
 			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(
 				txtName.value,
 				txtVersion.value,
-				txtDescription.value,
+				txtNotes.value,
 				fleArchive.files,
 				txtInstallProcedure.value,
 				txtInstallProcedureSuccessReturnCodes.value,

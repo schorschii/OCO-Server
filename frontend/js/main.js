@@ -678,6 +678,7 @@ function emitMessage(title, text, type='info', timeout=8000) {
 
 // ======== PACKAGE OPERATIONS ========
 function updatePackageProcedureTemplates() {
+	if(typeof lstInstallProceduresTemplates === 'undefined') return;
 	if(fleArchive.files.length > 0) {
 		var newOptions = '';
 		var i, L = lstInstallProceduresTemplates.options.length - 1;
@@ -696,7 +697,7 @@ function updatePackageProcedureTemplates() {
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
 }
-function createPackage(name, version, description, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version) {
+function createPackage(name, version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version) {
 	if(typeof archive === 'undefined' || archive.length == 0) {
 		if(!confirm(LANG['confirm_create_empty_package'])) {
 			return;
@@ -711,7 +712,7 @@ function createPackage(name, version, description, archive, install_procedure, i
 	let formData = new FormData();
 	formData.append('create_package', name);
 	formData.append('version', version);
-	formData.append('description', description);
+	formData.append('notes', notes);
 	for(i = 0; i <= archive.length; i++) {
 		formData.append('archive[]', archive[i]);
 	}
@@ -829,27 +830,77 @@ function showDialogEditPackage(id, package_family_id, version, compatible_os, co
 		chkEditPackageDownloadForUninstall.checked = download_for_uninstall=='1';
 	});
 }
-function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
-	var params = [];
-	params.push({'key':'edit_package_id', 'value':id});
-	params.push({'key':'package_family_id', 'value':package_family_id});
-	params.push({'key':'version', 'value':version});
-	params.push({'key':'compatible_os', 'value':compatible_os});
-	params.push({'key':'compatible_os_version', 'value':compatible_os_version});
-	params.push({'key':'notes', 'value':notes});
-	params.push({'key':'install_procedure', 'value':install_procedure});
-	params.push({'key':'install_procedure_success_return_codes', 'value':install_procedure_success_return_codes});
-	params.push({'key':'install_procedure_post_action', 'value':install_procedure_post_action});
-	params.push({'key':'uninstall_procedure', 'value':uninstall_procedure});
-	params.push({'key':'uninstall_procedure_success_return_codes', 'value':uninstall_procedure_success_return_codes});
-	params.push({'key':'uninstall_procedure_post_action', 'value':uninstall_procedure_post_action});
-	params.push({'key':'download_for_uninstall', 'value':download_for_uninstall?'1':'0'});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function(text) {
-		hideDialog();
-		refreshContent();
-		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
-	});
+function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+
+	if(archive !== null) {
+		if(archive.length == 0) {
+			if(!confirm(LANG['confirm_create_empty_package'])) {
+				return;
+			}
+		}
+		for(i = 0; i <= archive.length; i++) {
+			formData.append('archive[]', archive[i]);
+		}
+		formData.append('update_archive', '1');
+	}
+
+	setInputsDisabled(frmEditPackage, true);
+	btnEditPackage.classList.add('hidden');
+	btnCloseDialog.classList.add('hidden');
+	prgPackageUpload.classList.remove('hidden');
+
+	formData.append('edit_package_id', id);
+	formData.append('package_family_id', package_family_id);
+	formData.append('version', version);
+	formData.append('compatible_os', compatible_os);
+	formData.append('compatible_os_version', compatible_os_version);
+	formData.append('notes', notes);
+	formData.append('install_procedure', install_procedure);
+	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
+	formData.append('install_procedure_post_action', install_procedure_post_action);
+	formData.append('uninstall_procedure', uninstall_procedure);
+	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
+	formData.append('uninstall_procedure_post_action', uninstall_procedure_post_action);
+	formData.append('download_for_uninstall', download_for_uninstall?'1':'0');
+
+	req.upload.onprogress = function(evt) {
+		if(evt.lengthComputable) {
+			var progress = Math.ceil((evt.loaded / evt.total) * 100);
+			if(progress == 100) {
+				prgPackageUpload.classList.add('animated');
+				prgPackageUploadText.innerText = LANG['in_progress'];
+				prgPackageUpload.style.setProperty('--progress', '100%');
+			} else {
+				prgPackageUpload.classList.remove('animated');
+				prgPackageUploadText.innerText = progress+'%';
+				prgPackageUpload.style.setProperty('--progress', progress+'%');
+			}
+		} else {
+			console.warn('form length is not computable');
+			prgPackageUpload.classList.add('animated');
+			prgPackageUploadText.innerText = LANG['in_progress'];
+			prgPackageUpload.style.setProperty('--progress', '100%');
+		}
+	};
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				hideDialog(); refreshContent();
+				emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+			} else {
+				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+				setInputsDisabled(frmEditPackage, false);
+				btnEditPackage.classList.remove('hidden');
+				btnCloseDialog.classList.remove('hidden');
+				prgPackageUpload.classList.add('hidden');
+			}
+		}
+	};
+
+	req.open('POST', 'ajax-handler/packages.php');
+	req.send(formData);
 }
 function reorderPackageInGroup(groupId, oldPos, newPos) {
 	var params = [];

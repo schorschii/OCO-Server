@@ -134,6 +134,7 @@ return [
 	'install_procedure' => 'Installations-Prozedur',
 	'uninstall_procedure' => 'Deinstallations-Prozedur',
 	'zip_archive' => 'ZIP-Archiv',
+	'replace_zip_archive' => 'ZIP-Archiv ersetzen',
 	'installed_on' => 'Installiert auf',
 	'send' => 'Senden',
 	'domain_users' => 'Domänenbenutzer',
