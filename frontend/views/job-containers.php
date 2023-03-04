@@ -199,9 +199,16 @@ if(!empty($_GET['id'])) {
 				} else {
 					echo "<td class='middle'><img src='".$job->getIcon()."'>&nbsp;".$job->getStateString()."</td>";
 				}
-				$downloadTime = (!empty($job->download_started)&&!empty($job->execution_started)) ? strtotime($job->execution_started)-strtotime($job->download_started) : 0;
-				$executionTime = (!empty($job->execution_started)&&!empty($job->execution_finished)) ? strtotime($job->execution_finished)-strtotime($job->execution_started) : 0;
-				echo "<td title='".LANG('execution_time').': '.niceTime($downloadTime+$executionTime)."'>".htmlspecialchars($job->execution_finished??'')."</td>";
+				$jobTitle = LANG('not_started');
+				if($job->execution_finished != null) {
+					$downloadTime = (!empty($job->download_started)&&!empty($job->execution_started)) ? strtotime($job->execution_started)-strtotime($job->download_started) : 0;
+					$executionTime = (!empty($job->execution_started)&&!empty($job->execution_finished)) ? strtotime($job->execution_finished)-strtotime($job->execution_started) : 0;
+					$jobTitle = LANG('execution_time').': '.niceTime($downloadTime+$executionTime);
+				} elseif($job->download_started != null || $job->execution_started != null) {
+					$jobTitle = LANG('download_started').': '.($job->download_started??'')
+						."\n".LANG('execution_started').': '.($job->execution_started??'');
+				}
+				echo "<td title='".$jobTitle."'>".htmlspecialchars($job->execution_finished??'')."</td>";
 				echo "</tr>";
 			} ?>
 			</tbody>
