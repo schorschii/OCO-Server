@@ -66,7 +66,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 		<div id='divPackageList' class='box listSearchList withContextButton'>
 			<?php foreach($db->selectAllPackage() as $p) {
 				if(!$cl->checkPermission($p, SelfService\PermissionManager::METHOD_DEPLOY, false)) continue;
-				echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$p->id.",\"name\":this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->package_family_name)."</label>";
+				echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$p->id.",\"name\":this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
 			} ?>
 		</div>
 		<button class='small listSearchButton' onclick='addSelectedPackagesToDeployTarget()'><?php echo LANG('add_selected'); ?>&nbsp;<img src='img/add2.dyn.svg'></button>

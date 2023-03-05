@@ -258,7 +258,7 @@ switch($srcdata['method']) {
 			}
 		}
 		// insert into database
-		$insertId = $cl->createPackage($data['package_family_name'] ?? '', $data['version'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+		$insertId = $cl->createPackage($data['package_family_name'] ?? '', $data['version'] ?? '', $data['description'] ?? '',
 			$data['install_procedure'] ?? '', $data['install_procedure_success_return_codes'] ?? '0', $data['install_procedure_post_action'] ?? 0,
 			$data['uninstall_procedure'] ?? '', $data['uninstall_procedure_success_return_codes'] ?? '0', $data['download_for_uninstall'] ?? 0, $data['uninstall_procedure_post_action'] ?? 0,
 			$data['compatible_os'] ?? '', $data['compatible_os_version'] ?? '', $tmpFiles
@@ -294,7 +294,7 @@ switch($srcdata['method']) {
 
 	case 'oco.job_container.deploy':
 		$insertId = $cl->deploy(
-			$data['name'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+			$data['name'] ?? '', $data['description'] ?? '',
 			$data['computer_ids'] ?? [], $data['computer_group_ids'] ?? [], $data['computer_report_ids'] ?? [],
 			$data['package_ids'] ?? [], $data['package_group_ids'] ?? [], $data['package_report_ids'] ?? [],
 			$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
@@ -310,7 +310,7 @@ switch($srcdata['method']) {
 
 	case 'oco.job_container.uninstall':
 		$insertId = $cl->uninstall(
-			$data['name'] ?? '', $data['description'] ?? '', $_SERVER['PHP_AUTH_USER'],
+			$data['name'] ?? '', $data['description'] ?? '',
 			$data['installation_ids'] ?? [],
 			$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
 			$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5,

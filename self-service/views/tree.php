@@ -25,7 +25,7 @@ require_once('../session.php');
 	$packages = $cl->getMyPackages();
 	echo "<div class='subnode'>";
 	foreach($packages as $p) {
-		echo "<a ".explorerLink('views/packages.php?id='.$p->id)."><img src='".$p->getIcon()."'>".htmlspecialchars($p->package_family_name)."</a>";
+		echo "<a ".explorerLink('views/packages.php?id='.$p->id)."><img src='".$p->getIcon()."'>".htmlspecialchars($p->getFullName())."</a>";
 	}
 	echo "</div>";
 	?>

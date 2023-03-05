@@ -7,7 +7,6 @@ class DeploymentRule {
 	public $id;
 	public $name;
 	public $notes;
-	public $author;
 	public $enabled;
 	public $computer_group_id;
 	public $package_group_id;
@@ -15,6 +14,7 @@ class DeploymentRule {
 	public $auto_uninstall;
 	public $post_action_timeout;
 	public $created;
+	public $created_by_system_user_id;
 
 	// constants (= icon names)
 	public const STATUS_SUCCEEDED = 'success';

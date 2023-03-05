@@ -65,7 +65,9 @@ Please have a look at the following API method documentation for JSON-RPC reques
 					"software_version": null,
 					"computer_network_mac": null,
 					"os_license": "1",
-					"os_locale": "0407"
+					"os_locale": "0407",
+					"created": "2021-06-22 14:56:36",
+					"created_by_system_user_id": 1
 				},
 				.........................
 			],
@@ -134,7 +136,9 @@ Please have a look at the following API method documentation for JSON-RPC reques
 				"server_key": "123abc",
 				"os_license": "0",
 				"os_locale": "0407",
-				"domain": "vm2-PC"
+				"domain": "vm2-PC",
+				"created": "2021-06-22 14:56:36",
+				"created_by_system_user_id": 1
 			},
 			"groups": [
 				{
@@ -457,7 +461,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 					"package_family_name": "CDBurnerXP",
 					"version": "4.5.8.7128",
 					"notes": "",
-					"author": "root",
 					"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.8.7128.msi",
 					"install_procedure_success_return_codes": "0",
 					"install_procedure_post_action": "0",
@@ -466,6 +469,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 					"download_for_uninstall": "1",
 					"uninstall_procedure_post_action": "0",
 					"created": "2021-04-24 18:13:12",
+					"created_by_system_user_id": 1,
 					"last_update": "2021-06-15 23:44:02",
 					"package_group_member_sequence": null
 				},
@@ -475,7 +479,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 					"package_family_name": "CDBurnerXP",
 					"version": "4.5.0.3661",
 					"notes": "",
-					"author": "root",
 					"install_procedure": "msiexec /quiet /i cdbxp_setup_x64_4.5.0.3661.msi",
 					"install_procedure_success_return_codes": "0",
 					"install_procedure_post_action": "0",
@@ -484,6 +487,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 					"download_for_uninstall": "1",
 					"uninstall_procedure_post_action": "0",
 					"created": "2021-04-24 18:15:51",
+					"created_by_system_user_id": 1,
 					"last_update": "2021-04-24 18:15:51",
 					"package_group_member_sequence": null
 				}
@@ -536,7 +540,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 				"package_family_id": "64",
 				"version": "89",
 				"notes": "",
-				"author": "hanswurst",
 				"install_procedure": "gdebi -n google-chrome-stable_current_amd64.deb",
 				"install_procedure_success_return_codes": "0",
 				"install_procedure_post_action": "0",
@@ -547,6 +550,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 				"compatible_os": "",
 				"compatible_os_version": "",
 				"created": "2021-03-03 15:52:22",
+				"created_by_system_user_id": 1,
 				"last_update": "2021-04-21 13:55:14",
 				"package_group_member_sequence": null,
 				"package_family_id": "13",
@@ -778,8 +782,9 @@ no parameters
 				"notes": "",
 				"wol_sent": "-1",
 				"created": "2021-06-22 21:27:35",
-				"last_update": "2021-06-22 21:27:36",
-				"author": "admin"
+				"created_by_system_user_id": 1,
+				"created_by_domain_user_id": 1,
+				"last_update": "2021-06-22 21:27:36"
 			}
 		]
 	}
@@ -1060,7 +1065,6 @@ no parameters
 				"id": "15",
 				"name": "Regel Nummer 1",
 				"notes": "",
-				"author": "root",
 				"enabled": "1",
 				"computer_group_id": "95",
 				"package_group_id": "20",
@@ -1068,6 +1072,7 @@ no parameters
 				"auto_uninstall": "1",
 				"post_action_timeout": "500",
 				"created": "2022-10-01 21:17:08",
+				"created_by_system_user_id": 1,
 				"sequence_mode": "0"
 			}
 		]
@@ -1102,7 +1107,6 @@ no parameters
 			{
 				"deployment_rule_id": "15",
 				"deployment_rule_name": null,
-				"deployment_rule_author": null,
 				"deployment_rule_enabled": null,
 				"deployment_rule_sequence_mode": null,
 				"deployment_rule_priority": null,

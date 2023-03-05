@@ -83,11 +83,18 @@ abstract class Job {
 			return $this->deployment_rule_sequence_mode;
 		}
 	}
-	public function getAuthor() {
+	public function getSystemUserId() {
 		if($this instanceof StaticJob) {
-			return $this->job_container_author;
+			return $this->job_container_created_by_system_user_id;
 		} elseif($this instanceof DynamicJob) {
-			return $this->deployment_rule_author;
+			return $this->deployment_rule_created_by_system_user_id;
+		}
+	}
+	public function getDomainUserId() {
+		if($this instanceof StaticJob) {
+			return $this->job_container_created_by_domain_user_id;
+		} elseif($this instanceof DynamicJob) {
+			return null;
 		}
 	}
 	public function getContainerIcon() {

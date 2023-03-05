@@ -9,7 +9,8 @@ class StaticJob extends Job {
 
 	// joined job container attributes
 	public $job_container_start_time = 0;
-	public $job_container_author;
+	public $job_container_created_by_system_user_id;
+	public $job_container_created_by_domain_user_id;
 	public $job_container_enabled;
 	public $job_container_sequence_mode;
 	public $job_container_priority;

@@ -27,6 +27,89 @@ CREATE TABLE IF NOT EXISTS `software` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `system_user_role`
+--
+
+CREATE TABLE IF NOT EXISTS `system_user_role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` text NOT NULL,
+  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `c_system_user_role_1` CHECK(JSON_VALID(permissions))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Daten für Tabelle `system_user_role`
+--
+
+REPLACE INTO `system_user_role` (`id`, `name`, `permissions`) VALUES
+(1, 'Superadmin', '{\"Special\\\\ClientApi\": true, \"Special\\\\WebFrontend\": true, \"Special\\\\GeneralConfiguration\": true, \"Special\\\\EventQueryRules\": true, \"Special\\\\DeletedObjects\": true, \"Models\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true}}, \"Models\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\SystemUser\": true, \"Models\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Software\": true, \"Models\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}}');
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `system_user`
+--
+
+CREATE TABLE IF NOT EXISTS `system_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` text NOT NULL,
+  `username` text NOT NULL,
+  `display_name` text NOT NULL,
+  `password` text DEFAULT NULL,
+  `ldap` tinyint(4) NOT NULL DEFAULT 0,
+  `email` text DEFAULT NULL,
+  `phone` text DEFAULT NULL,
+  `mobile` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `locked` tinyint(4) NOT NULL DEFAULT 0,
+  `last_login` datetime DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT current_timestamp(),
+  `system_user_role_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_system_user_role_id` (`system_user_role_id`),
+  CONSTRAINT `fk_system_user_role_id` FOREIGN KEY (`system_user_role_id`) REFERENCES `system_user_role` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `domain_user_role`
+--
+
+CREATE TABLE IF NOT EXISTS `domain_user_role` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` text NOT NULL,
+  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `c_domain_user_role_1` CHECK(JSON_VALID(permissions))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `domain_user`
+--
+
+CREATE TABLE IF NOT EXISTS `domain_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` text DEFAULT NULL,
+  `domain` text DEFAULT NULL,
+  `username` text NOT NULL,
+  `display_name` text NOT NULL,
+  `domain_user_role_id` int(11) DEFAULT NULL,
+  `password` text DEFAULT NULL,
+  `ldap` tinyint(4) NOT NULL DEFAULT 0,
+  `last_login` datetime DEFAULT NULL,
+  `created` datetime NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `fk_domain_user_1` (`domain_user_role_id`),
+  CONSTRAINT `fk_domain_user_1` FOREIGN KEY (`domain_user_role_id`) REFERENCES `domain_user_role` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `package_family`
 --
 
@@ -49,7 +132,6 @@ CREATE TABLE IF NOT EXISTS `package` (
   `package_family_id` int(11) NOT NULL,
   `version` text NOT NULL,
   `notes` text NOT NULL,
-  `author` text NOT NULL,
   `install_procedure` text NOT NULL,
   `install_procedure_success_return_codes` text NOT NULL,
   `install_procedure_post_action` tinyint(4) NOT NULL DEFAULT 0,
@@ -60,10 +142,13 @@ CREATE TABLE IF NOT EXISTS `package` (
   `compatible_os` text DEFAULT NULL,
   `compatible_os_version` text DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_by_system_user_id` int(11) DEFAULT NULL,
   `last_update` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `fk_package_family_id` (`package_family_id`),
-  CONSTRAINT `fk_package_family_id` FOREIGN KEY (`package_family_id`) REFERENCES `package_family` (`id`)
+  KEY `fk_package_2` (`created_by_system_user_id`),
+  CONSTRAINT `fk_package_family_id` FOREIGN KEY (`package_family_id`) REFERENCES `package_family` (`id`),
+  CONSTRAINT `fk_package_2` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -182,7 +267,10 @@ CREATE TABLE IF NOT EXISTS `computer` (
   `agent_key` text NOT NULL,
   `server_key` text NOT NULL,
   `created` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `created_by_system_user_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_computer_1` (`created_by_system_user_id`),
+  CONSTRAINT `fk_computer_1` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -288,13 +376,18 @@ CREATE TABLE IF NOT EXISTS `computer_package` (
   `computer_id` int(11) NOT NULL,
   `package_id` int(11) NOT NULL,
   `installed_procedure` text,
-  `installed_by` text,
+  `installed_by_system_user_id` int(11) DEFAULT NULL,
+  `installed_by_domain_user_id` int(11) DEFAULT NULL,
   `installed` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `fk_computer_package_1` (`computer_id`),
   KEY `fk_computer_package_2` (`package_id`),
+  KEY `fk_computer_package_3` (`installed_by_system_user_id`),
+  KEY `fk_computer_package_4` (`installed_by_domain_user_id`),
   CONSTRAINT `fk_computer_package_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_computer_package_2` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `fk_computer_package_2` FOREIGN KEY (`package_id`) REFERENCES `package` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_computer_package_3` FOREIGN KEY (`installed_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_computer_package_4` FOREIGN KEY (`installed_by_domain_user_id`) REFERENCES `domain_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -386,7 +479,6 @@ CREATE TABLE IF NOT EXISTS `deployment_rule` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` text NOT NULL,
   `notes` text NOT NULL,
-  `author` text NOT NULL,
   `enabled` tinyint(4) NOT NULL DEFAULT 1,
   `computer_group_id` int(11) NOT NULL,
   `package_group_id` int(11) NOT NULL,
@@ -395,11 +487,14 @@ CREATE TABLE IF NOT EXISTS `deployment_rule` (
   `auto_uninstall` tinyint(4) NOT NULL DEFAULT 1,
   `post_action_timeout` int(11) NOT NULL DEFAULT 5,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by_system_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_deployment_rule_1` (`computer_group_id`),
   KEY `fk_deployment_rule_2` (`package_group_id`),
+  KEY `fk_deployment_rule_3` (`created_by_system_user_id`),
   CONSTRAINT `fk_deployment_rule_1` FOREIGN KEY (`computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
-  CONSTRAINT `fk_deployment_rule_2` FOREIGN KEY (`package_group_id`) REFERENCES `package_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  CONSTRAINT `fk_deployment_rule_2` FOREIGN KEY (`package_group_id`) REFERENCES `package_group` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `fk_deployment_rule_3` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -439,42 +534,6 @@ CREATE TABLE IF NOT EXISTS `deployment_rule_job` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `domain_user_role`
---
-
-CREATE TABLE IF NOT EXISTS `domain_user_role` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL,
-  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `c_domain_user_role_1` CHECK(JSON_VALID(permissions))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `domain_user`
---
-
-CREATE TABLE IF NOT EXISTS `domain_user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` text DEFAULT NULL,
-  `domain` text DEFAULT NULL,
-  `username` text NOT NULL,
-  `display_name` text NOT NULL,
-  `domain_user_role_id` int(11) DEFAULT NULL,
-  `password` text DEFAULT NULL,
-  `ldap` tinyint(4) NOT NULL DEFAULT 0,
-  `last_login` datetime DEFAULT NULL,
-  `created` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `fk_domain_user_1` (`domain_user_role_id`),
-  CONSTRAINT `fk_domain_user_1` FOREIGN KEY (`domain_user_role_id`) REFERENCES `domain_user_role` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
 -- Tabellenstruktur für Tabelle `domain_user_logon`
 --
 
@@ -500,7 +559,6 @@ CREATE TABLE IF NOT EXISTS `domain_user_logon` (
 CREATE TABLE IF NOT EXISTS `job_container` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` text NOT NULL,
-  `author` text NOT NULL,
   `enabled` tinyint(4) NOT NULL DEFAULT '1',
   `start_time` datetime NOT NULL DEFAULT current_timestamp(),
   `end_time` datetime DEFAULT NULL,
@@ -512,7 +570,13 @@ CREATE TABLE IF NOT EXISTS `job_container` (
   `agent_ip_ranges` text DEFAULT NULL,
   `self_service` tinyint(4) NOT NULL DEFAULT 0,
   `created` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`)
+  `created_by_system_user_id` int(11) DEFAULT NULL,
+  `created_by_domain_user_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_job_container_1` (`created_by_system_user_id`),
+  KEY `fk_job_container_2` (`created_by_domain_user_id`),
+  CONSTRAINT `fk_job_container_1` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_job_container_2` FOREIGN KEY (`created_by_domain_user_id`) REFERENCES `domain_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -625,53 +689,6 @@ REPLACE INTO `report` (`id`, `report_group_id`, `name`, `notes`, `query`) VALUES
 (12, 1, 'report_less_than_20gib_on_drive_c', '', 'SELECT c.id AS \'computer_id\', c.hostname, ROUND((SELECT cp.free FROM computer_partition cp WHERE cp.computer_id = c.id AND cp.mountpoint LIKE \'C:\')/1024/1024/1024) AS \'Free Space (GiB)\' FROM computer c HAVING `Free Space (GiB)` < 20'),
 (13, 1, 'report_critical_services', '', 'SELECT cs.computer_id, c.hostname, cs.status, cs.timestamp, cs.updated, cs.details FROM computer_service cs INNER JOIN computer c ON c.id = cs.computer_id WHERE cs.id IN (SELECT MAX(cs2.id) FROM computer_service cs2 GROUP BY cs2.computer_id, cs2.name) AND cs.status != 0 ORDER BY c.hostname ASC'),
 (14, 1, 'report_critical_events', '', 'SELECT timestamp, computer_id, hostname, event_id, IF(level=2, "ERROR", IF(level=3, "WARNING", level)) AS "level", data AS "Error Description" FROM computer_event ce INNER JOIN computer c ON c.id = ce.computer_id ORDER BY timestamp DESC');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `system_user_role`
---
-
-CREATE TABLE IF NOT EXISTS `system_user_role` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` text NOT NULL,
-  `permissions` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  CONSTRAINT `c_system_user_role_1` CHECK(JSON_VALID(permissions))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Daten für Tabelle `system_user_role`
---
-
-REPLACE INTO `system_user_role` (`id`, `name`, `permissions`) VALUES
-(1, 'Superadmin', '{\"Special\\\\ClientApi\": true, \"Special\\\\WebFrontend\": true, \"Special\\\\GeneralConfiguration\": true, \"Special\\\\EventQueryRules\": true, \"Special\\\\DeletedObjects\": true, \"Models\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true}}, \"Models\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\SystemUser\": true, \"Models\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Software\": true, \"Models\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}}');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `system_user`
---
-
-CREATE TABLE IF NOT EXISTS `system_user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` text NOT NULL,
-  `username` text NOT NULL,
-  `display_name` text NOT NULL,
-  `password` text DEFAULT NULL,
-  `ldap` tinyint(4) NOT NULL DEFAULT 0,
-  `email` text DEFAULT NULL,
-  `phone` text DEFAULT NULL,
-  `mobile` text DEFAULT NULL,
-  `description` text DEFAULT NULL,
-  `locked` tinyint(4) NOT NULL DEFAULT 0,
-  `last_login` datetime DEFAULT NULL,
-  `created` datetime NOT NULL DEFAULT current_timestamp(),
-  `system_user_role_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `fk_system_user_role_id` (`system_user_role_id`),
-  CONSTRAINT `fk_system_user_role_id` FOREIGN KEY (`system_user_role_id`) REFERENCES `system_user_role` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 

@@ -7,7 +7,7 @@ class DynamicJob extends Job {
 	static function __constructWithValues(
 		$deployment_rule_id,
 		$deployment_rule_name,
-		$deployment_rule_author,
+		$deployment_rule_created_by_system_user_id,
 		$deployment_rule_enabled,
 		$deployment_rule_priority,
 		$computer_id,
@@ -30,7 +30,7 @@ class DynamicJob extends Job {
 		$item->id = null;
 		$item->deployment_rule_id = $deployment_rule_id;
 		$item->deployment_rule_name = $deployment_rule_name;
-		$item->deployment_rule_author = $deployment_rule_author;
+		$item->deployment_rule_created_by_system_user_id = $deployment_rule_created_by_system_user_id;
 		$item->deployment_rule_enabled = $deployment_rule_enabled;
 		$item->deployment_rule_priority = $deployment_rule_priority;
 		$item->computer_id = $computer_id;
@@ -56,7 +56,7 @@ class DynamicJob extends Job {
 
 	// joined deployment rule attributes
 	public $deployment_rule_name;
-	public $deployment_rule_author;
+	public $deployment_rule_created_by_system_user_id;
 	public $deployment_rule_enabled;
 	public $deployment_rule_sequence_mode;
 	public $deployment_rule_priority;

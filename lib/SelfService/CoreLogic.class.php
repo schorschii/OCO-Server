@@ -8,7 +8,7 @@ class CoreLogic {
 	private /*\Models\DomainUser*/ $du;
 	private /*PermissionManager*/ $pm;
 
-	function __construct($db, $domainUser=null) {
+	function __construct(\DatabaseController $db, \Models\DomainUser $domainUser=null) {
 		$this->db = $db;
 		$this->du = $domainUser;
 	}
@@ -92,7 +92,7 @@ class CoreLogic {
 		$this->checkPermission($jobContainer, PermissionManager::METHOD_READ);
 		return $jobContainer;
 	}
-	public function deploySelfService($name, $author, $computerIds, $packageIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode) {
+	public function deploySelfService($name, $computerIds, $packageIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode) {
 		// check permission to given computer and package ids
 		$this->checkPermission(new \Models\JobContainer(), PermissionManager::METHOD_CREATE);
 		foreach($computerIds as $cid) {
@@ -110,9 +110,9 @@ class CoreLogic {
 		}
 
 		// use the normal admin client CoreLogic for dependency resolving logic etc.
-		$cl2 = new \CoreLogic($this->db, null);
+		$cl2 = new \CoreLogic($this->db, null, $this->du);
 		$jcid = $cl2->deploy(
-			$name, ''/*description*/, $author,
+			$name, ''/*description*/,
 			$computerIds, []/*computerGroupIds*/, []/*$computerReportIds*/,
 			$packageIds, []/*$packageGroupIds*/, []/*$packageReportIds*/,
 			$dateStart, $dateEnd,
@@ -124,7 +124,7 @@ class CoreLogic {
 		// add log entry and return insert id
 		if($jcid) {
 			$jobs = $this->db->selectAllStaticJobByJobContainer($jcid);
-			$this->db->insertLogEntry(\Models\Log::LEVEL_INFO, $author, $jcid, 'oco.self_service.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
+			$this->db->insertLogEntry(\Models\Log::LEVEL_INFO, $this->du->username, $jcid, 'oco.self_service.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 			return $jcid;
 		}
 	}

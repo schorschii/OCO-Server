@@ -27,7 +27,7 @@ try {
 			break;
 
 		case 'upgradeschema':
-			$migrator = new DatabaseMigrationController($db->getDbHandle());
+			$migrator = new DatabaseMigrationController($db->getDbHandle(), true);
 			if($migrator->upgrade()) {
 				echo 'Database schema upgraded successfully.'."\n";
 			} else {

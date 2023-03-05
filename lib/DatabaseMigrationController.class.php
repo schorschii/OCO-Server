@@ -137,13 +137,114 @@ class DatabaseMigrationController {
 		$this->stmt->execute();
 		foreach($this->stmt->fetchAll() as $row) {
 			if($row['DATA_TYPE'] !== 'varchar') {
-				if($this->debug) echo 'Upgrading to 0.16.1...'."\n";
+				if($this->debug) echo 'Upgrading to 0.16.1... (indices)'."\n";
+
 				$this->stmt = $this->dbh->prepare(
 					"ALTER TABLE `software` CHANGE `name` `name` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL, CHANGE `version` `version` VARCHAR(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL, CHANGE `description` `description` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 				$upgraded = true;
 			}
+		}
+
+		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'computer' AND COLUMN_NAME = 'created_by_system_user_id' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute();
+		if(count($this->stmt->fetchAll()) == 0) {
+			if($this->debug) echo 'Upgrading to 0.16.1... (author column)'."\n";
+
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `package` ADD COLUMN `created_by_system_user_id` int(11) DEFAULT NULL AFTER `created`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `package` ADD KEY `fk_package_2` (`created_by_system_user_id`)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `package` ADD CONSTRAINT `fk_package_2` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"UPDATE package SET created_by_system_user_id = (SELECT id FROM system_user WHERE username = package.author LIMIT 1)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE package DROP COLUMN author");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer` ADD COLUMN `created_by_system_user_id` int(11) DEFAULT NULL AFTER `created`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer` ADD KEY `fk_computer_1` (`created_by_system_user_id`)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer` ADD CONSTRAINT `fk_computer_1` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer_package` ADD COLUMN `installed_by_system_user_id` int(11) DEFAULT NULL AFTER `installed_procedure`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer_package` ADD KEY `fk_computer_package_3` (`installed_by_system_user_id`)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer_package` ADD CONSTRAINT `fk_computer_package_3` FOREIGN KEY (`installed_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"UPDATE computer_package SET installed_by_system_user_id = (SELECT id FROM system_user WHERE username = computer_package.installed_by LIMIT 1)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE computer_package DROP COLUMN installed_by");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer_package` ADD COLUMN `installed_by_domain_user_id` int(11) DEFAULT NULL AFTER `installed_by_system_user_id`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer_package` ADD KEY `fk_computer_package_4` (`installed_by_domain_user_id`)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer_package` ADD CONSTRAINT `fk_computer_package_4` FOREIGN KEY (`installed_by_domain_user_id`) REFERENCES `domain_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `deployment_rule` ADD COLUMN `created_by_system_user_id` int(11) DEFAULT NULL AFTER `created`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `deployment_rule` ADD KEY `fk_deployment_rule_3` (`created_by_system_user_id`)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `deployment_rule` ADD CONSTRAINT `fk_deployment_rule_3` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"UPDATE deployment_rule SET created_by_system_user_id = (SELECT id FROM system_user WHERE username = deployment_rule.author LIMIT 1)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE deployment_rule DROP COLUMN author");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `job_container` ADD COLUMN `created_by_system_user_id` int(11) DEFAULT NULL AFTER `created`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `job_container` ADD KEY `fk_job_container_1` (`created_by_system_user_id`)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `job_container` ADD CONSTRAINT `fk_job_container_1` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"UPDATE job_container SET created_by_system_user_id = (SELECT id FROM system_user WHERE username = job_container.author LIMIT 1)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE job_container DROP COLUMN author");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `job_container` ADD COLUMN `created_by_domain_user_id` int(11) DEFAULT NULL AFTER `created_by_system_user_id`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `job_container` ADD KEY `fk_job_container_2` (`created_by_domain_user_id`)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `job_container` ADD CONSTRAINT `fk_job_container_2` FOREIGN KEY (`created_by_domain_user_id`) REFERENCES `domain_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
 		}
 
 		return $upgraded;

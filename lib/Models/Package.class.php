@@ -11,7 +11,6 @@ class Package {
 
 	// attributes
 	public $id;
-	public $author;
 	public $version;
 	public $compatible_os;
 	public $compatible_os_version;
@@ -24,6 +23,7 @@ class Package {
 	public $download_for_uninstall;
 	public $uninstall_procedure_post_action;
 	public $created;
+	public $created_by_system_user_id;
 	public $last_update;
 
 	// joined package group attributes

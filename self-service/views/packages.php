@@ -90,7 +90,7 @@ try {
 						</tr>
 						<tr>
 							<th><?php echo LANG('author'); ?></th>
-							<td><?php echo htmlspecialchars($package->author); ?></td>
+							<td><?php echo htmlspecialchars($package->created_by_system_user_username??''); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('created'); ?></th>

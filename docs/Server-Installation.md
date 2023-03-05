@@ -174,7 +174,7 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
          "(&(objectClass=user)(memberof=CN=OcoAdmins,OU=Benutzer,DC=sieber,DC=systems))": 1,
          "(&(objectClass=user)(memberof=CN=OcoUsers,OU=Benutzer,DC=sieber,DC=systems))": 2
        },
-       "login-binddn-query": "(&(objectClass=user)(samaccountname=%s))"
+       "login-binddn-query": "(&(objectClass=user)(samaccountname=%s))",
        "attribute-matching": {}
      }
      ... more servers here ...

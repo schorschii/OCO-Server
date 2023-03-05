@@ -6,7 +6,6 @@ class JobContainer {
 
 	public $id;
 	public $name;
-	public $author;
 	public $enabled;
 	public $start_time;
 	public $end_time;
@@ -18,6 +17,12 @@ class JobContainer {
 	public $agent_ip_ranges;
 	public $self_service;
 	public $created;
+	public $created_by_system_user_id;
+	public $created_by_domain_user_id;
+
+	// joined values
+	public $created_by_system_user_username;
+	public $created_by_domain_user_username;
 
 	// aggregated values
 	public $execution_finished;

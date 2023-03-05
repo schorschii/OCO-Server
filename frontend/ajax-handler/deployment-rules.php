@@ -17,7 +17,6 @@ try {
 			die($cl->createDeploymentRule(
 				$_POST['name'],
 				$_POST['notes'],
-				$currentSystemUser->username,
 				$_POST['enabled'],
 				$_POST['computer_group_id'],
 				$_POST['package_group_id'],

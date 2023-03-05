@@ -138,7 +138,8 @@ class PermissionManager {
 
 			// 3rd try: check if `own` rules are applicable (currently only implemented for job containers)
 			if(isset($this->permData[$ressourceType]['own'][$method])
-			&& property_exists($ressource, 'author') && $ressource->author === $this->domainUser->username)
+			&& property_exists($ressource, 'created_by_domain_user_id')
+			&& $ressource->created_by_domain_user_id === $this->domainUser->id)
 				return ((bool) $this->permData[$ressourceType]['own'][$method]);
 
 			// 4th try: check general permissions for this ressource type

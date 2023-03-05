@@ -181,7 +181,7 @@ try {
 			}
 		}
 		// create package
-		$insertId = $cl->createPackage($_POST['create_package'], $_POST['version'], $_POST['notes'] ?? '', $currentSystemUser->username,
+		$insertId = $cl->createPackage($_POST['create_package'], $_POST['version'], $_POST['notes'] ?? '',
 			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_post_action'] ?? null,
 			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'], $_POST['uninstall_procedure_post_action'] ?? null,
 			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $tmpFiles

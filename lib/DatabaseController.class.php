@@ -209,20 +209,22 @@ class DatabaseController {
 	}
 	public function selectAllComputerPackageByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", c.id AS "computer_id", c.hostname AS "computer_hostname", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_family_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
+			'SELECT cp.id AS "id", c.id AS "computer_id", c.hostname AS "computer_hostname", p.id AS "package_id", p.package_family_id AS "package_family_id", pf.name AS "package_family_name", p.version AS "package_version", cp.installed_procedure AS "installed_procedure", cp.installed_by_system_user_id AS "installed_by_system_user_id", su.username AS "installed_by_system_user_username", du.username AS "installed_by_domain_user_username", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN package p ON p.id = cp.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			INNER JOIN computer c ON c.id = cp.computer_id
+			LEFT JOIN system_user su ON su.id = cp.installed_by_system_user_id
+			LEFT JOIN domain_user du ON du.id = cp.installed_by_domain_user_id
 			WHERE cp.computer_id = :computer_id'
 		);
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
 	}
-	public function insertComputer($hostname, $agent_version, $networks, $notes, $agent_key, $server_key) {
+	public function insertComputer($hostname, $agent_version, $networks, $notes, $agent_key, $server_key, $created_by_system_user_id) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, os_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, remote_address, boot_type, secure_boot, domain, notes, agent_key, server_key)
-			VALUES (:hostname, :agent_version, NULL, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :notes, :agent_key, :server_key)'
+			'INSERT INTO computer (hostname, agent_version, last_ping, last_update, os, os_version, os_license, os_locale, kernel_version, architecture, cpu, gpu, ram, serial, manufacturer, model, bios_version, remote_address, boot_type, secure_boot, domain, notes, agent_key, server_key, created_by_system_user_id)
+			VALUES (:hostname, :agent_version, NULL, NULL, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", :notes, :agent_key, :server_key, :created_by_system_user_id)'
 		);
 		$this->stmt->execute([
 			':hostname' => $hostname,
@@ -230,6 +232,7 @@ class DatabaseController {
 			':notes' => $notes,
 			':agent_key' => $agent_key,
 			':server_key' => $server_key,
+			':created_by_system_user_id' => $created_by_system_user_id,
 		]);
 		$computer_id = $this->dbh->lastInsertId();
 		foreach($networks as $index => $network) {
@@ -883,15 +886,15 @@ class DatabaseController {
 		$this->stmt->bindParam(':icon', $icon, PDO::PARAM_LOB);
 		return $this->stmt->execute();
 	}
-	public function insertPackage($package_family_id, $version, $author, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
+	public function insertPackage($package_family_id, $version, $created_by_system_user_id, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (package_family_id, version, author, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version)
-			VALUES (:package_family_id, :version, :author, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :compatible_os, :compatible_os_version)'
+			'INSERT INTO package (package_family_id, version, created_by_system_user_id, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version)
+			VALUES (:package_family_id, :version, :created_by_system_user_id, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :compatible_os, :compatible_os_version)'
 		);
 		$this->stmt->execute([
 			':package_family_id' => $package_family_id,
 			':version' => $version,
-			':author' => $author,
+			':created_by_system_user_id' => $created_by_system_user_id,
 			':notes' => $notes,
 			':install_procedure' => $install_procedure,
 			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
@@ -905,14 +908,13 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $package_family_id, $author, $version, $compatible_os, $compatible_os_version, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
+	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, author = :author, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
 			':package_family_id' => $package_family_id,
-			':author' => $author,
 			':version' => $version,
 			':compatible_os' => $compatible_os,
 			':compatible_os_version' => $compatible_os_version,
@@ -926,17 +928,18 @@ class DatabaseController {
 			':download_for_uninstall' => $download_for_uninstall,
 		]);
 	}
-	public function insertComputerPackage($package_id, $computer_id, $author, $procedure) {
+	public function insertComputerPackage($package_id, $computer_id, $installed_by_system_user_id, $installed_by_domain_user_id, $procedure) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_package (id, package_id, computer_id, installed_by, installed_procedure, installed)
-			(SELECT cp2.id, cp2.package_id, cp2.computer_id, cp2.installed_by, cp2.installed_procedure, cp2.installed FROM computer_package cp2 WHERE cp2.package_id=:package_id AND cp2.computer_id=:computer_id)
-			UNION (SELECT null, :package_id, :computer_id, :installed_by, :installed_procedure, CURRENT_TIMESTAMP FROM DUAL) LIMIT 1
-			ON DUPLICATE KEY UPDATE computer_package.id=LAST_INSERT_ID(computer_package.id), computer_package.installed_by=:installed_by, computer_package.installed_procedure=:installed_procedure, computer_package.installed=CURRENT_TIMESTAMP'
+			'INSERT INTO computer_package (id, package_id, computer_id, installed_by_system_user_id, installed_by_domain_user_id, installed_procedure, installed)
+			(SELECT cp2.id, cp2.package_id, cp2.computer_id, cp2.installed_by_system_user_id, cp2.installed_by_domain_user_id, cp2.installed_procedure, cp2.installed FROM computer_package cp2 WHERE cp2.package_id=:package_id AND cp2.computer_id=:computer_id)
+			UNION (SELECT null, :package_id, :computer_id, :installed_by_system_user_id, :installed_by_domain_user_id, :installed_procedure, CURRENT_TIMESTAMP FROM DUAL) LIMIT 1
+			ON DUPLICATE KEY UPDATE computer_package.id=LAST_INSERT_ID(computer_package.id), computer_package.installed_by_system_user_id=:installed_by_system_user_id, computer_package.installed_by_domain_user_id=:installed_by_domain_user_id, computer_package.installed_procedure=:installed_procedure, computer_package.installed=CURRENT_TIMESTAMP'
 		);
 		$this->stmt->execute([
 			':package_id' => $package_id,
 			':computer_id' => $computer_id,
-			':installed_by' => $author,
+			':installed_by_system_user_id' => $installed_by_system_user_id,
+			':installed_by_domain_user_id' => $installed_by_domain_user_id,
 			':installed_procedure' => $procedure,
 		]);
 		$insertId = $this->dbh->lastInsertId();
@@ -951,10 +954,12 @@ class DatabaseController {
 	}
 	public function selectAllComputerPackageByPackageId($package_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed_by AS "installed_by", cp.installed AS "installed"
+			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed_by_system_user_id AS "installed_by_system_user_id", su.username AS "installed_by_system_user_username", du.username AS "installed_by_domain_user_username", cp.installed AS "installed"
 			FROM computer_package cp
 			INNER JOIN computer c ON c.id = cp.computer_id
 			INNER JOIN package p ON p.id = cp.package_id
+			LEFT JOIN system_user su ON su.id = cp.installed_by_system_user_id
+			LEFT JOIN domain_user du ON du.id = cp.installed_by_domain_user_id
 			WHERE cp.package_id = :package_id'
 		);
 		$this->stmt->execute([':package_id' => $package_id]);
@@ -962,9 +967,11 @@ class DatabaseController {
 	}
 	public function selectAllPackageByIdAndPackageGroupId($package_id, $package_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "package_family_name" FROM package_group_member pgm
+			'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username"
+			FROM package_group_member pgm
 			INNER JOIN package p ON p.id = pgm.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
 			WHERE pgm.package_id = :package_id AND pgm.package_group_id = :package_group_id'
 		);
 		$this->stmt->execute([':package_id' => $package_id, ':package_group_id' => $package_group_id]);
@@ -972,8 +979,10 @@ class DatabaseController {
 	}
 	public function selectAllPackageByPackageFamilyId($package_family_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "package_family_name" FROM package p
+			'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username"
+			FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
 			WHERE p.package_family_id = :package_family_id'
 		);
 		$this->stmt->execute([':package_family_id' => $package_family_id]);
@@ -1011,8 +1020,10 @@ class DatabaseController {
 	}
 	public function selectAllPackage($orderByCreated=false) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "package_family_name" FROM package p
-			INNER JOIN package_family pf ON pf.id = p.package_family_id'
+			'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username"
+			FROM package p
+			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			LEFT JOIN system_user su ON su.id = p.created_by_system_user_id'
 			.($orderByCreated ? ' ORDER BY p.created DESC' : ' ORDER BY pf.name ASC')
 		);
 		$this->stmt->execute();
@@ -1070,14 +1081,18 @@ class DatabaseController {
 	public function selectPackage($id, $binaryAsBase64=false) {
 		if($binaryAsBase64 === null) { // do not fetch icons if not necessary
 			$this->stmt = $this->dbh->prepare(
-				'SELECT p.*, pf.name AS "package_family_name" FROM package p
+				'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username"
+				FROM package p
 				INNER JOIN package_family pf ON pf.id = p.package_family_id
+				LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
 				WHERE p.id = :id'
 			);
 		} else {
 			$this->stmt = $this->dbh->prepare(
-				'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon" FROM package p
+				'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon", su.username AS "created_by_system_user_username"
+				FROM package p
 				INNER JOIN package_family pf ON pf.id = p.package_family_id
+				LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
 				WHERE p.id = :id'
 			);
 		}
@@ -1166,10 +1181,11 @@ class DatabaseController {
 	}
 	public function selectAllPackageByPackageGroupId($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "package_family_name", pgm.sequence AS "package_group_member_sequence"
+			'SELECT p.*, pf.name AS "package_family_name", pgm.sequence AS "package_group_member_sequence", su.username AS "created_by_system_user_username"
 			FROM package p
 			INNER JOIN package_group_member pgm ON p.id = pgm.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
+			LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
 			WHERE pgm.package_group_id = :id
 			ORDER BY pgm.sequence'
 		);
@@ -1312,14 +1328,15 @@ class DatabaseController {
 	}
 
 	// Job Operations
-	public function insertJobContainer($name, $author, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges, $self_service) {
+	public function insertJobContainer($name, $created_by_system_user_id, $created_by_domain_user_id, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges, $self_service) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container (name, author, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority, agent_ip_ranges, self_service)
-			VALUES (:name, :author, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority, :agent_ip_ranges, :self_service)'
+			'INSERT INTO job_container (name, created_by_system_user_id, created_by_domain_user_id, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority, agent_ip_ranges, self_service)
+			VALUES (:name, :created_by_system_user_id, :created_by_domain_user_id, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority, :agent_ip_ranges, :self_service)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
-			':author' => $author,
+			':created_by_system_user_id' => $created_by_system_user_id,
+			':created_by_domain_user_id' => $created_by_domain_user_id,
 			':start_time' => $start_time,
 			':end_time' => $end_time,
 			':notes' => $notes,
@@ -1354,7 +1371,11 @@ class DatabaseController {
 	}
 	public function selectJobContainer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM job_container WHERE id = :id'
+			'SELECT jc.*, su.username AS "created_by_system_user_username", du.username AS "created_by_domain_user_username"
+			FROM job_container jc
+			LEFT JOIN system_user su ON jc.created_by_system_user_id = su.id
+			LEFT JOIN domain_user du ON jc.created_by_domain_user_id = du.id
+			WHERE jc.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer') as $row) {
@@ -1370,8 +1391,11 @@ class DatabaseController {
 	}
 	public function selectAllJobContainer($self_service=null) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT jc.*, (SELECT MAX(execution_finished) FROM job_container_job j WHERE j.job_container_id = jc.id) AS "execution_finished"
-			FROM job_container jc '.($self_service===null?'':($self_service?'WHERE self_service = 1':'WHERE self_service = 0'))
+			'SELECT jc.*, su.username AS "created_by_system_user_username", du.username AS "created_by_domain_user_username", (SELECT MAX(execution_finished) FROM job_container_job j WHERE j.job_container_id = jc.id) AS "execution_finished"
+			FROM job_container jc
+			LEFT JOIN system_user su ON jc.created_by_system_user_id = su.id
+			LEFT JOIN domain_user du ON jc.created_by_domain_user_id = du.id '.
+			($self_service===null?'':($self_service?'WHERE self_service = 1':'WHERE self_service = 0'))
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\JobContainer');
@@ -1396,7 +1420,7 @@ class DatabaseController {
 	}
 	public function selectStaticJob($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.*, jc.start_time AS "job_container_start_time", jc.author AS "job_container_author" FROM job_container_job j
+			'SELECT j.*, jc.start_time AS "job_container_start_time", jc.created_by_system_user_id AS "job_container_created_by_system_user_id", jc.created_by_domain_user_id AS "job_container_created_by_domain_user_id" FROM job_container_job j
 			INNER JOIN job_container jc ON jc.id = j.job_container_id
 			WHERE j.id = :id'
 		);
@@ -1407,7 +1431,7 @@ class DatabaseController {
 	}
 	public function selectDynamicJob($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.*, dr.author AS "deployment_rule_author", dr.sequence_mode AS "deployment_rule_sequence_mode" FROM deployment_rule_job j
+			'SELECT j.*, dr.created_by_system_user_id AS "deployment_rule_created_by_system_user_id", dr.sequence_mode AS "deployment_rule_sequence_mode" FROM deployment_rule_job j
 			INNER JOIN deployment_rule dr ON dr.id = j.deployment_rule_id
 			WHERE j.id = :id'
 		);
@@ -1590,7 +1614,7 @@ class DatabaseController {
 				}
 				// add dynamic job
 				$dynamic_jobs[] = Models\DynamicJob::__constructWithValues(
-					$deployment_rule->id, $deployment_rule->name, $deployment_rule->author, $deployment_rule->enabled, $deployment_rule->priority,
+					$deployment_rule->id, $deployment_rule->name, $deployment_rule->created_by_system_user_id, $deployment_rule->enabled, $deployment_rule->priority,
 					$computer->id, $computer->hostname,
 					$package->id, $package->version, $package->package_family_name, $package->install_procedure, $package->install_procedure_success_return_codes,
 					0/*is_uninstall*/, $package->getFilePath() ? 1 : 0,
@@ -1646,7 +1670,7 @@ class DatabaseController {
 				if(in_array($cp->id, $createdUninstallJobs)) continue;
 				$createdUninstallJobs[] = $cp->id;
 				$dynamic_jobs[] = Models\DynamicJob::__constructWithValues(
-					$deployment_rule->id, $deployment_rule->name, $deployment_rule->author, $deployment_rule->enabled, $deployment_rule->priority,
+					$deployment_rule->id, $deployment_rule->name, $deployment_rule->created_by_system_user_id, $deployment_rule->enabled, $deployment_rule->priority,
 					$cp->computer_id, $cp->computer_hostname,
 					$cpp->id, $cpp->version, $cpp->package_family_name, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
 					1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
@@ -1810,14 +1834,16 @@ class DatabaseController {
 	}
 	public function selectAllDeploymentRule() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM deployment_rule'
+			'SELECT dr.*, su.username AS "created_by_system_user_username" FROM deployment_rule dr
+			LEFT JOIN system_user su ON su.id = dr.created_by_system_user_id'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule');
 	}
 	public function selectDeploymentRule($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM deployment_rule WHERE id = :id'
+			'SELECT dr.*, su.username AS "created_by_system_user_username" FROM deployment_rule dr
+			LEFT JOIN system_user su ON su.id = dr.created_by_system_user_id WHERE dr.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule') as $row) {
@@ -1838,14 +1864,14 @@ class DatabaseController {
 		$this->stmt->execute([':package_group_id' => $package_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule');
 	}
-	public function insertDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+	public function insertDeploymentRule($name, $notes, $created_by_system_user_id, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO deployment_rule (name, author, enabled, computer_group_id, package_group_id, notes, priority, auto_uninstall)
-			VALUES (:name, :author, :enabled, :computer_group_id, :package_group_id, :notes, :priority, :auto_uninstall)'
+			'INSERT INTO deployment_rule (name, created_by_system_user_id, enabled, computer_group_id, package_group_id, notes, priority, auto_uninstall)
+			VALUES (:name, :created_by_system_user_id, :enabled, :computer_group_id, :package_group_id, :notes, :priority, :auto_uninstall)'
 		);
 		if(!$this->stmt->execute([
 			':name' => $name,
-			':author' => $author,
+			':created_by_system_user_id' => $created_by_system_user_id,
 			':enabled' => $enabled,
 			':computer_group_id' => $computer_group_id,
 			':package_group_id' => $package_group_id,

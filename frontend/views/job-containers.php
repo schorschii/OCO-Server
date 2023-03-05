@@ -50,7 +50,7 @@ if(!empty($_GET['id'])) {
 			</tr>
 			<tr>
 				<th><?php echo LANG('author'); ?></th>
-				<td><?php echo htmlspecialchars($container->author); ?></td>
+				<td><?php echo htmlspecialchars($container->created_by_system_user_username??$container->created_by_domain_user_username??''); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('created'); ?></th>
@@ -292,7 +292,7 @@ if(!empty($_GET['id'])) {
 				echo  "<img src='img/".$jc->getStatus($jobs).".dyn.svg' class='".($jc->enabled?'online':'offline')."'>&nbsp;";
 				echo  "<a ".explorerLink('views/job-containers.php?id='.$jc->id).">".htmlspecialchars($jc->name)."</a>";
 				echo "</td>";
-				echo "<td>".htmlspecialchars($jc->author)."</td>";
+				echo "<td>".htmlspecialchars($jc->created_by_system_user_username??$jc->created_by_domain_user_username??'')."</td>";
 				echo "<td>".htmlspecialchars($jc->created)."</td>";
 				echo "<td>".htmlspecialchars($jc->start_time)."</td>";
 				echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";

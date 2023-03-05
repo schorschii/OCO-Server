@@ -9,7 +9,7 @@ try {
 	if(isset($_POST['create_install_job_container'])) {
 		// create container + jobs
 		die($cl->deploySelfService(
-			$_POST['create_install_job_container'], $currentDomainUser->username,
+			$_POST['create_install_job_container'],
 			$_POST['computer_id'] ?? [], $_POST['package_id'] ?? [],
 			date('Y-m-d H:i:s'), null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,

@@ -124,7 +124,7 @@ switch($srcdata['method']) {
 		// update computer-package assignment if job was successful
 		if($state === Models\Job::STATE_SUCCEEDED) {
 			if($job->is_uninstall == 0) {
-				$db->insertComputerPackage($job->package_id, $job->computer_id, $job->getAuthor(), $job->procedure);
+				$db->insertComputerPackage($job->package_id, $job->computer_id, $job->getSystemUserId(), $job->getDomainUserId(), $job->procedure);
 			} elseif($job->is_uninstall == 1) {
 				$db->deleteComputerPackageByComputerIdAndPackageId($job->computer_id, $job->package_id);
 			}

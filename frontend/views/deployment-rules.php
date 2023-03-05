@@ -51,7 +51,7 @@ if(!empty($_GET['id'])) {
 			</tr>
 			<tr>
 				<th><?php echo LANG('author'); ?></th>
-				<td><?php echo htmlspecialchars($container->author); ?></td>
+				<td><?php echo htmlspecialchars($container->created_by_system_user_username??''); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('created'); ?></th>
@@ -237,7 +237,7 @@ if(!empty($_GET['id'])) {
 				echo  "<img src='img/".$dr->getStatus($jobs).".dyn.svg' class='".($dr->enabled?'online':'offline')."'>&nbsp;";
 				echo  "<a ".explorerLink('views/deployment-rules.php?id='.$dr->id).">".htmlspecialchars($dr->name)."</a>";
 				echo "</td>";
-				echo "<td>".htmlspecialchars($dr->author)."</td>";
+				echo "<td>".htmlspecialchars($dr->created_by_system_user_username??'')."</td>";
 				echo "<td><a ".explorerLink('views/computers.php?id='.$dr->computer_group_id).'>'.htmlspecialchars($db->getComputerGroupBreadcrumbString($dr->computer_group_id))."</a></td>";
 				echo "<td><a ".explorerLink('views/packages.php?id='.$dr->package_group_id).'>'.htmlspecialchars($db->getPackageGroupBreadcrumbString($dr->package_group_id))."</a></td>";
 				echo "<td>".htmlspecialchars($dr->created)."</td>";

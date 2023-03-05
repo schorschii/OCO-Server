@@ -72,7 +72,7 @@ try {
 			</tr>
 			<tr>
 				<th><?php echo LANG('author'); ?></th>
-				<td><?php echo htmlspecialchars($container->author); ?></td>
+				<td><?php echo htmlspecialchars($container->created_by_domain_user_username??''); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('created'); ?></th>

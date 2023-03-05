@@ -16,11 +16,13 @@ class CoreLogic {
 
 	protected /*DatabaseController*/ $db;
 	protected /*Models\SystemUser*/ $su;
+	protected /*Models\DomainUser*/ $du;
 	protected /*PermissionManager*/ $pm;
 
-	function __construct($db, $systemUser=null) {
+	function __construct(DatabaseController $db, Models\SystemUser $systemUser=null, Models\DomainUser $domainUser=null) {
 		$this->db = $db;
 		$this->su = $systemUser;
+		$this->du = $domainUser;
 	}
 
 	/*** Permission Check Logic ***/
@@ -88,7 +90,7 @@ class CoreLogic {
 		if($this->db->selectComputerByHostname($finalHostname) !== null) {
 			throw new InvalidRequestException(LANG('hostname_already_exists'));
 		}
-		$insertId = $this->db->insertComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, $agentKey, ''/*Server Key*/);
+		$insertId = $this->db->insertComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, $agentKey, ''/*Server Key*/, $this->su->id);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.computer.create', ['hostname'=>$finalHostname, 'notes'=>$notes]);
 		return $insertId;
@@ -284,7 +286,7 @@ class CoreLogic {
 		$this->checkPermission($packageFamily, PermissionManager::METHOD_READ);
 		return $packageFamily;
 	}
-	public function createPackage($name, $version, $description, $author,
+	public function createPackage($name, $version, $description,
 		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction,
 		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction,
 		$compatibleOs, $compatibleOsVersion, $tmpFiles) {
@@ -355,7 +357,7 @@ class CoreLogic {
 		}
 		$insertId = $this->db->insertPackage(
 			$packageFamilyId, $version,
-			$author, $description,
+			$this->su->id, $description,
 			$installProcedure,
 			$installProcedureSuccessReturnCodes,
 			$installProcedurePostAction,
@@ -585,7 +587,6 @@ class CoreLogic {
 		// update in database
 		$this->db->updatePackage($package->id,
 			$package_family_id,
-			$package->author,
 			$version,
 			$compatibleOs,
 			$compatibleOsVersion,
@@ -674,7 +675,7 @@ class CoreLogic {
 		$this->checkPermission($deploymentRule, PermissionManager::METHOD_WRITE);
 		return $this->db->evaluateDeploymentRule($deploymentRule->id);
 	}
-	public function createDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+	public function createDeploymentRule($name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
 		$this->checkPermission(new Models\DeploymentRule(), PermissionManager::METHOD_CREATE);
 
 		if(empty(trim($name))) {
@@ -696,12 +697,11 @@ class CoreLogic {
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
 
-		$insertId = $this->db->insertDeploymentRule($name, $notes, $author, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall);
+		$insertId = $this->db->insertDeploymentRule($name, $notes, $this->su->id, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.deployment_rule.create', [
 			'name'=>$name,
 			'notes'=>$notes,
-			'author'=>$author,
 			'enabled'=>$enabled,
 			'computer_group_id'=>$computer_group_id,
 			'package_group_id'=>$package_group_id,
@@ -781,7 +781,7 @@ class CoreLogic {
 		$this->checkPermission($jobContainer, PermissionManager::METHOD_READ);
 		return $jobContainer;
 	}
-	public function deploy($name, $description, $author, $computerIds, $computerGroupIds, $computerReportIds, $packageIds, $packageGroupIds, $packageReportIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraintIpRanges=[], $selfService=0) {
+	public function deploy($name, $description, $computerIds, $computerGroupIds, $computerReportIds, $packageIds, $packageGroupIds, $packageReportIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraintIpRanges=[], $selfService=0) {
 		$this->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -907,7 +907,7 @@ class CoreLogic {
 
 		// create jobs
 		if($jcid = $this->db->insertJobContainer(
-			$name, $author,
+			$name, $this->su->id??null, $this->du->id??null,
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
 			$description,
@@ -942,10 +942,10 @@ class CoreLogic {
 
 					foreach($this->db->selectAllComputerPackageByComputerId($computer_id) as $cp) {
 						// ignore if it is an automatically added dependency package and version is the same as already installed
-						if($package['is_dependency'] && strval($pid) === $cp->package_id) continue 2;
+						if($package['is_dependency'] && intval($pid) === intval($cp->package_id)) continue 2;
 
 						// if the same version is already installed, add a informative job with status STATE_ALREADY_INSTALLED
-						if($cp->package_id === strval($pid) && empty($forceInstallSameVersion)) {
+						if(intval($cp->package_id) === intval($pid) && empty($forceInstallSameVersion)) {
 							$targetJobState = Models\Job::STATE_ALREADY_INSTALLED;
 							break;
 						}
@@ -957,7 +957,7 @@ class CoreLogic {
 								$cpp = $this->db->selectPackage($cp->package_id, null);
 								if($cpp == null) continue;
 								// ... but not, if it is another package family version and autoCreateUninstallJobs flag is set
-								if($cp->package_id !== strval($pid) && empty($autoCreateUninstallJobs)) continue;
+								if(intval($cp->package_id) !== intval($pid) && empty($autoCreateUninstallJobs)) continue;
 								// ... and not, if this uninstall job was already created
 								if(in_array($cp->id, $createdUninstallJobs)) continue;
 								$createdUninstallJobs[] = $cp->id;
@@ -994,7 +994,7 @@ class CoreLogic {
 		}
 
 		$jobs = $this->db->selectAllStaticJobByJobContainer($jcid);
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $author, $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username??'SYSTEM', $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 		return $jcid;
 	}
 	private function isOsCompatible(Models\Computer $computer, $compatibleOs) {
@@ -1073,7 +1073,7 @@ class CoreLogic {
 
 		return $packages;
 	}
-	public function uninstall($name, $description, $author, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0, $constraintIpRanges=[]) {
+	public function uninstall($name, $description, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0, $constraintIpRanges=[]) {
 		$this->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -1133,7 +1133,7 @@ class CoreLogic {
 		// create jobs
 		$jobs = [];
 		$jcid = $this->db->insertJobContainer(
-			$name, $author,
+			$name, $this->su->id??null, $this->du->id??null,
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
 			$description, $wolSent, $shutdownWakedAfterCompletion,
@@ -1161,7 +1161,7 @@ class CoreLogic {
 			$this->db->setComputerOnlineStateForWolShutdown($jcid);
 		}
 
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username??'SYSTEM', $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 	}
 	public function removeComputerAssignedPackage($id) {
 		$computerPackageAssignment = $this->db->selectComputerPackage($id);
@@ -1179,7 +1179,7 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $package->id, 'oco.package.remove_assignment', ['computer_id'=>$computer->id]);
 		return $result;
 	}
-	public function renewFailedStaticJobsInJobContainer($name, $description, $author, $renewJobContainerId, $renewJobIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
+	public function renewFailedStaticJobsInJobContainer($name, $description, $renewJobContainerId, $renewJobIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
 		$container = $this->db->selectJobContainer($renewJobContainerId);
 		if(!$container) throw new NotFoundException();
 		$this->checkPermission($container, PermissionManager::METHOD_WRITE);
@@ -1234,7 +1234,7 @@ class CoreLogic {
 		// create new jobs
 		$jobs = [];
 		if($jcid = $this->db->insertJobContainer(
-			$name, $author,
+			$name, $this->su->id??null, $this->du->id??null,
 			$dateStart, empty($dateEnd) ? null : $dateEnd,
 			$description, $wolSent, $shutdownWakedAfterCompletion,
 			$sequenceMode, $priority, $container->agent_ip_ranges,
@@ -1282,7 +1282,7 @@ class CoreLogic {
 				$this->db->setComputerOnlineStateForWolShutdown($jcid);
 			}
 
-			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $jcid, 'oco.job_container.create', ['name'>=$name, 'jobs'=>$jobs]);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username??'SYSTEM', $jcid, 'oco.job_container.create', ['name'>=$name, 'jobs'=>$jobs]);
 		}
 	}
 	public function editJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $sequence_mode, $priority, $agent_ip_ranges) {

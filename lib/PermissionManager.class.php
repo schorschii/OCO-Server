@@ -181,9 +181,11 @@ class PermissionManager {
 					return ((bool) $item[$method]);
 			}
 
-			// 3rd try: check if `own` rules are applicable (currently only implemented for job containers)
+			// 3rd try: check if `own` rules are applicable
+			// (currently implemented for computers, packages, job containers and deployment rules)
 			if(isset($this->permData[$ressourceType]['own'][$method])
-			&& property_exists($ressource, 'author') && $ressource->author === $this->systemUser->username)
+			&& property_exists($ressource, 'created_by_system_user_id')
+			&& $ressource->created_by_system_user_id === $this->systemUser->id)
 				return ((bool) $this->permData[$ressourceType]['own'][$method]);
 
 			// 4th try: check general permissions for this ressource type
