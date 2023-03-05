@@ -348,6 +348,8 @@ $commands = Models\Computer::getCommands($ext);
 											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
+											<button onclick='deploySelectedPackage("package_id[]", "package_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+											<button onclick='showDialogUninstall()'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
 										</div>
 									</div>
 								</td>

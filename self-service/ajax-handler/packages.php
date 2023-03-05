@@ -5,16 +5,11 @@ require_once('../session.php');
 
 try {
 
-	if(!empty($_POST['wol_id']) && is_array($_POST['wol_id'])) {
-		$cl->wolMyComputers($_POST['wol_id']);
-		die();
-	}
-
-	if(!empty($_POST['get_computer_names']) && is_array($_POST['get_computer_names'])) {
+	if(!empty($_POST['get_package_names']) && is_array($_POST['get_package_names'])) {
 		$finalArray = [];
-		foreach($_POST['get_computer_names'] as $id) {
-			$c = $cl->getMyComputer($id);
-			if(!empty($c)) $finalArray[] = ['id'=>$c->id, 'name'=>$c->hostname];
+		foreach($_POST['get_package_names'] as $id) {
+			$p = $cl->getMyPackage($id);
+			if(!empty($p)) $finalArray[] = ['id'=>$p->id, 'name'=>$p->getFullName()];
 		}
 		die(json_encode($finalArray));
 	}

@@ -128,6 +128,39 @@ class CoreLogic {
 			return $jcid;
 		}
 	}
+	public function uninstallSelfService($name, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode) {
+		// check permission to given computer and package ids
+		$this->checkPermission(new \Models\JobContainer(), PermissionManager::METHOD_CREATE);
+		foreach($installationIds as $id) {
+			$ap = $this->db->selectComputerPackage($id); if(empty($ap)) continue;
+			if(!$this->checkPermission($this->getMyComputer($ap->computer_id), PermissionManager::METHOD_DEPLOY, false)) continue;
+			if(!$this->checkPermission($this->getMyPackage($ap->package_id), PermissionManager::METHOD_DEPLOY, false)) continue;
+		}
+
+		// determine priority
+		$priority = 0;
+		$permissionEntry = $this->getPermissionEntry(new \Models\JobContainer(), PermissionManager::METHOD_CREATE);
+		if(isset($permissionEntry['create_priority']) && is_int($permissionEntry['create_priority'])) {
+			$priority = $permissionEntry['create_priority'];
+		}
+
+		// use the normal admin client CoreLogic for dependency resolving logic etc.
+		$cl2 = new \CoreLogic($this->db, null, $this->du);
+		$jcid = $cl2->uninstall(
+			$name, ''/*description*/,
+			$installationIds,
+			$dateStart, $dateEnd,
+			$useWol, $shutdownWakedAfterCompletion, $restartTimeout,
+			$sequenceMode, $priority, []/*constraintIpRanges*/, 1/*selfService*/
+		);
+
+		// add log entry and return insert id
+		if($jcid) {
+			$jobs = $this->db->selectAllStaticJobByJobContainer($jcid);
+			$this->db->insertLogEntry(\Models\Log::LEVEL_INFO, $this->du->username, $jcid, 'oco.self_service.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
+			return $jcid;
+		}
+	}
 	public function removeMyJobContainer($id) {
 		$jc = $this->db->selectJobContainer($id);
 		if(empty($jc)) throw new \NotFoundException();

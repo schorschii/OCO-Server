@@ -1073,7 +1073,7 @@ class CoreLogic {
 
 		return $packages;
 	}
-	public function uninstall($name, $description, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0, $constraintIpRanges=[]) {
+	public function uninstall($name, $description, $installationIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $sequenceMode=0, $priority=0, $constraintIpRanges=[], $selfService=0) {
 		$this->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -1138,7 +1138,7 @@ class CoreLogic {
 			empty($dateEnd) ? null : $dateEnd,
 			$description, $wolSent, $shutdownWakedAfterCompletion,
 			$sequenceMode, $priority, $this->compileIpRanges($constraintIpRanges),
-			0/*self-service*/
+			$selfService
 		);
 		foreach($installationIds as $id) {
 			$ap = $this->db->selectComputerPackage($id); if(empty($ap)) continue;

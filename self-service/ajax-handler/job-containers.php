@@ -18,6 +18,22 @@ try {
 		));
 	}
 
+	// ----- create uninstall jobs if requested -----
+	if(isset($_POST['create_uninstall_job_container'])
+	&& !empty($_POST['uninstall_package_assignment_id'])
+	&& is_array($_POST['uninstall_package_assignment_id'])
+	&& isset($_POST['use_wol'])
+	&& isset($_POST['shutdown_waked_after_completion'])) {
+		$cl->uninstallSelfService(
+			$_POST['create_uninstall_job_container'],
+			$_POST['uninstall_package_assignment_id'],
+			date('Y-m-d H:i:s'), null,
+			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'], $_POST['restart_timeout'] ?? 5,
+			0/*sequence mode*/
+		);
+		die();
+	}
+
 	// ----- remove jobs in container if requested -----
 	if(!empty($_POST['remove_job_id']) && is_array($_POST['remove_job_id'])) {
 		foreach($_POST['remove_job_id'] as $id) {
