@@ -53,7 +53,7 @@ REPLACE INTO `system_user_role` (`id`, `name`, `permissions`) VALUES
 
 CREATE TABLE IF NOT EXISTS `system_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` text NOT NULL,
+  `uid` varchar(200) NOT NULL,
   `username` text NOT NULL,
   `display_name` text NOT NULL,
   `password` text DEFAULT NULL,
@@ -68,6 +68,7 @@ CREATE TABLE IF NOT EXISTS `system_user` (
   `system_user_role_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_system_user_role_id` (`system_user_role_id`),
+  UNIQUE KEY `uid` (`uid`),
   CONSTRAINT `fk_system_user_role_id` FOREIGN KEY (`system_user_role_id`) REFERENCES `system_user_role` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -93,7 +94,7 @@ CREATE TABLE IF NOT EXISTS `domain_user_role` (
 
 CREATE TABLE IF NOT EXISTS `domain_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` text DEFAULT NULL,
+  `uid` varchar(200) DEFAULT NULL,
   `domain` text DEFAULT NULL,
   `username` text NOT NULL,
   `display_name` text NOT NULL,
@@ -104,6 +105,7 @@ CREATE TABLE IF NOT EXISTS `domain_user` (
   `created` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   KEY `fk_domain_user_1` (`domain_user_role_id`),
+  UNIQUE KEY `uid` (`uid`),
   CONSTRAINT `fk_domain_user_1` FOREIGN KEY (`domain_user_role_id`) REFERENCES `domain_user_role` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -239,8 +241,8 @@ CREATE TABLE IF NOT EXISTS `event_query_rule` (
 
 CREATE TABLE IF NOT EXISTS `computer` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uid` text DEFAULT NULL,
-  `hostname` text NOT NULL,
+  `uid` varchar(200) DEFAULT NULL,
+  `hostname` varchar(200) NOT NULL,
   `os` text NOT NULL,
   `os_version` text NOT NULL,
   `os_license` text NOT NULL,
@@ -270,6 +272,8 @@ CREATE TABLE IF NOT EXISTS `computer` (
   `created_by_system_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_computer_1` (`created_by_system_user_id`),
+  KEY `hostname` (`hostname`),
+  UNIQUE KEY `uid` (`uid`),
   CONSTRAINT `fk_computer_1` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -285,11 +289,12 @@ CREATE TABLE IF NOT EXISTS `computer_service` (
   `timestamp` datetime NOT NULL DEFAULT current_timestamp(),
   `updated` datetime NOT NULL DEFAULT current_timestamp(),
   `status` tinyint(4) NOT NULL,
-  `name` text NOT NULL,
+  `name` varchar(200) NOT NULL,
   `metrics` text NOT NULL,
   `details` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `computer_id` (`computer_id`),
+  KEY `name` (`name`),
   CONSTRAINT `fk_computer_service_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -302,7 +307,7 @@ CREATE TABLE IF NOT EXISTS `computer_service` (
 CREATE TABLE IF NOT EXISTS `computer_event` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `computer_id` int(11) NOT NULL,
-  `log` text NOT NULL,
+  `log` varchar(200) NOT NULL,
   `timestamp` datetime NOT NULL,
   `provider` text NOT NULL,
   `level` tinyint(4) NOT NULL,
@@ -310,6 +315,7 @@ CREATE TABLE IF NOT EXISTS `computer_event` (
   `data` longtext NOT NULL,
   PRIMARY KEY (`id`),
   KEY `computer_id` (`computer_id`),
+  KEY `log` (`log`),
   CONSTRAINT `fk_computer_event_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

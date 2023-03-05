@@ -3,6 +3,8 @@
 ## Register New Computers
 After you have installed the agent on the client computer, you have to set the server URL and agent key in the agent config file (`oco-agent.ini`). If you do not specify a server URL in the agent config file, the agent will query your DNS for the SRV record `_oco._tcp` to get the server address (DNS auto discovery). You can also set your server address manually. For that, please let `api-url` point to the full URL to `api-agent.php` on your server, e.g. `https://oco.example.com/api-agent.php`.
 
+Please note: for performance reasons, a MySQL INDEX is created over the `hostnamename` column and therefore, the max length is limited to 200 chars.
+
 There are 2 methods for registering new computers:
 
 ### 1. Agent Self-Registration
@@ -36,6 +38,8 @@ For Linux, as log name, please enter `journalctl` - this is currently the only s
 
 Please note that the operating systems are producing many log entries. A meaningful filter should always be applied to not spam the database with unnecessary events.
 
+For performance reasons, a MySQL INDEX is created over the `log` column and therefore, the max length is limited to 200 chars.
+
 ### Example Rules
 #### Windows: Get Defender Warning, Error and Critical Events
 (including "Malware Detected" events with event ID 1116)
@@ -53,6 +57,8 @@ Query: `{"unit":"udisks2.service", "priority":"0,1,2,3,4,5", "grep":"mounted"}`
 
 ## Service Monitoring
 OCO offers basic monitoring features. You can check anything by writing your own service check script and placing it into the agent's local check directory. Your script just have to produce standardised output in the CheckMK check format. For more information, please have a look at the documentation in the [agent repo](https://github.com/schorschii/oco-agent).
+
+For performance reasons, a MySQL INDEX is created over the service `name` column and therefore, the max length is limited to 200 chars.
 
 ## Wake On Lan (WOL)
 OCO supports sending WOL magic packets. WOL in general only works via Ethernet (not via WiFi!) and if the server has a network card in the same subnet as the target computer because WOL packets are UDP broadcast packets. If you have multiple subnets, you can add a new network card to the server for each subnet or configure "Satellite WOL".
