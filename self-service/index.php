@@ -53,7 +53,7 @@ if(!empty($_GET['view'])) {
 			<span class='separator noprint'></span>
 			<button id='btnHelp' class='noprint' onclick='refreshContentExplorer("views/help.php")' title='<?php echo LANG('help'); ?>'><img src='img/help.light.svg'></button>
 			<span class='separator noprint'></span>
-			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'><span><?php echo htmlspecialchars($currentDomainUser->username); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
+			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'><span><?php echo htmlspecialchars($currentDomainUser->display_name); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
 		</span>
 	</div>
 
