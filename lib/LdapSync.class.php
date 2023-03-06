@@ -42,19 +42,19 @@ class LdapSync {
 
 		// for each configured server
 		$foundLdapUsers = [];
-		foreach($ldapServers as $address => $details) {
+		foreach($ldapServers as $serverIdentifier => $details) {
 			$attributes = self::applyDefaultLdapAttrs($details['attribute-matching'] ?? []);
-			if(empty($address) || empty($details['username']) || empty($details['password']) || empty($details['query-root']) || empty($details['queries']) || !is_array($details['queries'])) {
-				if($this->debug) echo '===> '.$address.': missing configuration values, skipping!'."\n";
+			if(!is_int($serverIdentifier) || intval($serverIdentifier) < 1 || empty($details['address']) || empty($details['username']) || empty($details['password']) || empty($details['query-root']) || empty($details['queries']) || !is_array($details['queries'])) {
+				if($this->debug) echo '===> '.($details['address']??$serverIdentifier).': missing configuration values, skipping!'."\n";
 				continue;
 			}
 
 			// connect to server
-			$ldapconn = ldap_connect($address);
+			$ldapconn = ldap_connect($details['address']);
 			if(!$ldapconn) {
-				throw new Exception($address.': ldap_connect failed');
+				throw new Exception($details['address'].': ldap_connect failed');
 			}
-			if($this->debug) echo '===> '.$address.': ldap_connect OK'."\n";
+			if($this->debug) echo '===> '.$details['address'].': ldap_connect OK'."\n";
 
 			// set options and authenticate
 			ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -69,7 +69,7 @@ class LdapSync {
 			foreach($details['queries'] as $query => $roleId) {
 				// check role id
 				if(!in_array($roleId, $availSystemUserRoleIds)) {
-					if($this->debug) echo '-> configured role id '.$roleId.' does not exist, skipping !!!'."\n";
+					if($this->debug) echo '-> configured role id '.$roleId.' does not exist, skipping!'."\n";
 					break;
 				}
 
@@ -105,7 +105,7 @@ class LdapSync {
 					}
 					$uid = self::GUIDtoStr($account[$attributes['uid']][0]);
 					if(array_key_exists($uid, $foundLdapUsers)) {
-						if($this->debug) echo '-> duplicate UID '.$uid.', skipping !!!'."\n";
+						if($this->debug) echo '-> duplicate UID '.$uid.', skipping!'."\n";
 						continue;
 					}
 
@@ -156,14 +156,14 @@ class LdapSync {
 						if($this->debug) echo '--> '.$username.': found in db - update id: '.$id;
 
 						// update into db
-						if($this->db->updateSystemUser($id, $uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, $locked, $roleId))
+						if($this->db->updateSystemUser($id, $uid, $username, $displayname, null/*password*/, intval($serverIdentifier), $mail, $phone, $mobile, $description, $locked, $roleId))
 							if($this->debug) echo '  OK'."\n";
 						else throw new Exception('Error updating: '.$this->db->getLastStatement()->error);
 					} else {
 						if($this->debug) echo '--> '.$username.': not found in db - creating';
 
 						// insert into db
-						if($this->db->insertSystemUser($uid, $username, $displayname, null/*password*/, 1/*ldap-flag*/, $mail, $phone, $mobile, $description, $locked, $roleId))
+						if($this->db->insertSystemUser($uid, $username, $displayname, null/*password*/, intval($serverIdentifier), $mail, $phone, $mobile, $description, $locked, $roleId))
 							if($this->debug) echo '  OK'."\n";
 						else throw new Exception('Error inserting: '.$this->db->getLastStatement()->error);
 					}
@@ -209,19 +209,19 @@ class LdapSync {
 		// for each configured server
 		$foundDomainUsers = [];
 		$foundLdapUsers = [];
-		foreach($ldapServers as $address => $details) {
+		foreach($ldapServers as $serverIdentifier => $details) {
 			$attributes = self::applyDefaultLdapAttrs($details['attribute-matching'] ?? []);
-			if(empty($address) || empty($details['username']) || empty($details['password']) || empty($details['query-root']) || empty($details['queries']) || !is_array($details['queries'])) {
-				if($this->debug) echo "===> ".$address.": missing configuration values, skipping!\n";
+			if(!is_int($serverIdentifier) || intval($serverIdentifier) < 1 || empty($details['address']) || empty($details['username']) || empty($details['password']) || empty($details['query-root']) || empty($details['queries']) || !is_array($details['queries'])) {
+				if($this->debug) echo "===> ".($details['address']??$serverIdentifier).": missing configuration values, skipping!\n";
 				continue;
 			}
 
 			// connect to server
-			$ldapconn = ldap_connect($address);
+			$ldapconn = ldap_connect($details['address']);
 			if(!$ldapconn) {
-				throw new Exception($address.': ldap_connect failed');
+				throw new Exception($details['address'].': ldap_connect failed');
 			}
-			if($this->debug) echo '===> '.$address.': ldap_connect OK'."\n";
+			if($this->debug) echo '===> '.$details['address'].': ldap_connect OK'."\n";
 
 			// set options and authenticate
 			ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -236,7 +236,7 @@ class LdapSync {
 			foreach($details['queries'] as $query => $roleId) {
 				// check role id
 				if(!in_array($roleId, $availDomainUserRoleIds)) {
-					if($this->debug) echo '-> configured role id '.$roleId.' does not exist, skipping !!!'."\n";
+					if($this->debug) echo '-> configured role id '.$roleId.' does not exist, skipping!'."\n";
 					break 2;
 				}
 
@@ -272,7 +272,7 @@ class LdapSync {
 					}
 					$uid = self::GUIDtoStr($account[$attributes['uid']][0]);
 					if(array_key_exists($uid, $foundLdapUsers)) {
-						if($this->debug) echo '-> duplicate UID '.$uid.', skipping !!!'."\n";
+						if($this->debug) echo '-> duplicate UID '.$uid.', skipping!'."\n";
 						continue;
 					}
 
@@ -320,7 +320,7 @@ class LdapSync {
 						if($this->debug) echo '--> '.$username.': found in db with UUID '.$uid.' - update id: '.$id;
 
 						// update into db
-						if($this->db->updateDomainUser($id, $roleId, null, 1/*ldap*/))
+						if($this->db->updateDomainUser($id, $roleId, null, intval($serverIdentifier)))
 							if($this->debug) echo '  OK'."\n";
 						else throw new Exception('Error updating: '.$this->db->getLastStatement()->error);
 					}

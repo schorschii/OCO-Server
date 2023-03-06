@@ -2126,7 +2126,7 @@ class DatabaseController {
 	public function revokeAllLdapDomainUserByIds($ids) {
 		list($in_placeholders, $in_params) = self::compileSqlInValues($ids);
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE domain_user SET domain_user_role_id = NULL, password = NULL, ldap = 0 WHERE ldap = 1 AND id NOT IN ('.$in_placeholders.')'
+			'UPDATE domain_user SET domain_user_role_id = NULL, password = NULL, ldap = 0 WHERE ldap != 0 AND id NOT IN ('.$in_placeholders.')'
 		);
 		return $this->stmt->execute($in_params);
 	}

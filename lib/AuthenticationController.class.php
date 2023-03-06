@@ -53,13 +53,15 @@ class AuthenticationController {
 				throw new Exception('System User LDAP sync not configured!');
 			}
 
-			foreach($ldapServers as $address => $details) {
+			foreach($ldapServers as $serverIdentifier => $details) {
+				if(intval($userObject->ldap) !== intval($serverIdentifier)) continue;
+
 				$username = $userObject->username;
 
 				// get DN for LDAP auth check if configured
 				$binddnQuery = empty($details['login-binddn-query']) ? '(&(objectClass=user)(samaccountname=%s))' : $details['login-binddn-query'];
 				if($binddnQuery) {
-					$ldapconn1 = ldap_connect($address);
+					$ldapconn1 = ldap_connect($details['address']);
 					if(!$ldapconn1) continue;
 					ldap_set_option($ldapconn1, LDAP_OPT_PROTOCOL_VERSION, 3);
 					ldap_set_option($ldapconn1, LDAP_OPT_NETWORK_TIMEOUT, 3);
@@ -72,14 +74,17 @@ class AuthenticationController {
 				}
 
 				// try user authentication
-				$ldapconn2 = ldap_connect($address);
+				$ldapconn2 = ldap_connect($details['address']);
 				if(!$ldapconn2) continue;
 				ldap_set_option($ldapconn2, LDAP_OPT_PROTOCOL_VERSION, 3);
 				ldap_set_option($ldapconn2, LDAP_OPT_NETWORK_TIMEOUT, 3);
 				$ldapbind = @ldap_bind($ldapconn2, $username, $checkPassword);
 				if($ldapbind) return true;
+
+				return false;
 			}
 
+			error_log($userObject->username.': no LDAP logon server found for identifier '.$serverIdentifier);
 			return false;
 		} else {
 			return password_verify($checkPassword, $userObject->password);

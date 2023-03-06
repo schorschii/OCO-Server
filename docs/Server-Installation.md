@@ -166,7 +166,8 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
    The LDAP configuration is stored as a JSON array, allowing multiple LDAP servers of different types and syncing multiple groups:
    ```
    {
-     "ldap://192.168.56.101": {
+     "1": {
+       "address": "ldap://192.168.56.101",
        "username": "ldap-reader@sieber.systems",
        "password": "<PASSWORD>",
        "query-root": "DC=sieber,DC=systems",
@@ -180,7 +181,8 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
      ... more servers here ...
    }
    ```
-   - Array Key: Server IP address or DNS name, e.g. 'ldap://192.168.56.101' (single) or 'ldaps://192.168.56.101' (secure) or 'ldaps://192.168.56.101 ldaps://192.168.56.102' (multiple).
+   - Array Key: an integer greater that 0 which uniquely identifies a LDAP server pool
+   - `address` Server IP address or DNS name as LDAP URL, e.g. 'ldap://192.168.56.101' (single) or 'ldaps://192.168.56.101' (secure) or 'ldaps://192.168.56.101 ldaps://192.168.56.102' (multiple).
    - `username`: The username of the LDAP reader user.
    - `password`: The password of the LDAP reader user.
    - `query-root`: The LDAP query root, e.g. 'OU=Benutzer,DC=sieber,DC=systems'.
