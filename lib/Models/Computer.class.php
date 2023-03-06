@@ -36,6 +36,8 @@ class Computer {
 	public $created_by_system_user_id;
 
 	// joined software attributes
+	public $software_id;
+	public $software_name;
 	public $software_version;
 
 	// joined network attributes

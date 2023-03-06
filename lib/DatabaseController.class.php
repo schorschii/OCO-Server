@@ -1961,7 +1961,7 @@ class DatabaseController {
 		return $this->stmt->execute([':id' => $id]);
 	}
 	private function insertOrUpdateDomainUser($uid, $username, $display_name) {
-		if(empty(trim($uid))) $uid = null;
+		if(empty($uid) || empty(trim($uid))) $uid = null;
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE domain_user SET id = LAST_INSERT_ID(id), uid = IF(:uid IS NULL,uid,:uid), username = :username, display_name = :display_name
 			WHERE (uid IS NOT NULL AND uid = :uid) OR (username = :username AND display_name = :display_name) OR (username = :username AND display_name = "") LIMIT 1'

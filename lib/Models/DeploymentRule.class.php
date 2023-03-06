@@ -18,7 +18,7 @@ class DeploymentRule {
 	public $created_by_system_user_id;
 
 	// joined user attributes
-	public $installed_by_system_user_username;
+	public $created_by_system_user_username;
 
 	// constants (= icon names)
 	public const STATUS_SUCCEEDED = 'success';
