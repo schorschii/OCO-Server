@@ -17,6 +17,7 @@ class DomainUser {
 
 	// joined attributes
 	public $domain_user_role_name;
+	public $domain_user_role_permissions;
 
 	// aggregated values
 	public $timestamp;
