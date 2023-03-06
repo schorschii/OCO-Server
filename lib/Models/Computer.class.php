@@ -33,12 +33,16 @@ class Computer {
 	public $agent_key;
 	public $server_key;
 	public $created;
+	public $created_by_system_user_id;
 
 	// joined software attributes
 	public $software_version;
 
 	// joined network attributes
 	public $computer_network_mac;
+
+	// joined system user attributes
+	public $created_by_system_user_username;
 
 	// constants
 	const OS_TYPE_UNKNOWN = 0;

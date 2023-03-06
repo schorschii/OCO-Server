@@ -217,7 +217,7 @@ switch($srcdata['method']) {
 			}
 
 			// check if agent should update inventory data
-			if(time() - strtotime($computer->last_update) > intval($db->settings->get('agent-update-interval'))
+			if(time() - strtotime($computer->last_update??'') > intval($db->settings->get('agent-update-interval'))
 			|| !empty($computer->force_update)) {
 				$update = 1;
 			}
@@ -402,7 +402,7 @@ switch($srcdata['method']) {
 		// execute update
 		$success = false;
 		$db->updateComputerPing($computer->id);
-		if((time() - strtotime($computer->last_update) > intval($db->settings->get('agent-update-interval')) || !empty($computer->force_update))
+		if((time() - strtotime($computer->last_update??'') > intval($db->settings->get('agent-update-interval')) || !empty($computer->force_update))
 		&& !empty($data)) {
 			// convert login timestamps to local time,
 			// because other timestamps in the database are also in local time

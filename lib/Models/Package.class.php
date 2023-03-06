@@ -34,6 +34,9 @@ class Package {
 	public $package_family_name;
 	public $package_family_icon;
 
+	// joined system user attributes
+	public $created_by_system_user_username;
+
 	// constants
 	public const POST_ACTION_NONE = 0;
 	public const POST_ACTION_RESTART = 1;
