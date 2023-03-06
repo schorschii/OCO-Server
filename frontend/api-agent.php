@@ -170,7 +170,8 @@ switch($srcdata['method']) {
 					$data['networks'] ?? [],
 					LANG('self_registration').' '.date('Y-m-d H:i:s'),
 					$agent_key,
-					$server_key
+					$server_key,
+					null /*created_by_system_user_id*/
 				)) {
 					$success = true;
 					$computer = $db->selectComputer($insert_id);

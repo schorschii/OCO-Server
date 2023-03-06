@@ -19,6 +19,7 @@ class DomainUser {
 	public $domain_user_role_name;
 
 	// aggregated values
+	public $timestamp;
 	public $logon_amount;
 	public $computer_amount;
 
