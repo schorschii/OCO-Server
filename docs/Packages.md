@@ -55,7 +55,7 @@ In the 'Procedure' fields, you define which commands should be executed when ins
 
 After that, you can enter the exit/return codes which should be considered as success (multiple return codes have to be separated by a comma `,`). If you leave the return code field blank, all return codes are considered as success (this is not recommended - keep `0` if you are unsure, this is normally the return code for success). But for example, MSI packages can also return `3010` if the installation succeeded but a reboot is required (see [list of MSI return codes](https://docs.microsoft.com/de-de/windows/win32/msi/error-codes)).
 
-By checking the checkbox 'Installation Removes Previous Versions' you can define if the installation command implicitly uninstalls older versions. Many installers behave like this, e.g. the VLC installer. In this case:
+By checking the checkbox 'Installation Removes Previous Versions' you can define if the installation command implicitly uninstalls older versions. Many installers behave like this, e.g. the VLC installer, but this behavior is not always desired. If you enable this checkbox:
 1. No automatic uninstall job is created when deploying the package and another version of the same package family is already installed.
 2. If the installation succeeds, all computer-package assignments of other packages from this family will be removed from the OCO database.
 
