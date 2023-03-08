@@ -88,7 +88,14 @@ require_once('../session.php');
 	<tr><td colspan='2'><h2><?php echo LANG('installation'); ?></h2></td></tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('install_procedure'); ?></th>
-		<td colspan='3' class='inputwithbutton'><input type='text' id='txtInstallProcedure' class='monospace' list='lstInstallProcedures' value='<?php echo htmlspecialchars($_GET['install_procedure']??'',ENT_QUOTES); ?>'><button onclick='toggleTextBoxMultiLine(txtInstallProcedure)' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button></td>
+		<td colspan='3' class='inputwithbutton'>
+			<?php if(strpos($_GET['install_procedure']??'', "\n") === false) { ?>
+				<input type='text' id='txtInstallProcedure' class='monospace' list='lstInstallProcedures' value='<?php echo htmlspecialchars($_GET['install_procedure']??'',ENT_QUOTES); ?>'>
+			<?php } else { ?>
+				<textarea id='txtInstallProcedure' class='monospace' list='lstInstallProcedures'><?php echo htmlspecialchars($_GET['install_procedure']??''); ?></textarea>
+			<?php } ?>
+			<button onclick='toggleTextBoxMultiLine(txtInstallProcedure)' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button>
+		</td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('success_return_codes'); ?></th>
@@ -105,15 +112,22 @@ require_once('../session.php');
 	</tr>
 	<tr>
 		<th></th>
-		<td>
-			<label><input type='checkbox' id='chkInstallationRemovesPreviousVersions'></input>&nbsp;<?php echo LANG('installation_removes_previous_versions'); ?></label>
+		<td colspan='3'>
+			<label><input type='checkbox' id='chkInstallationRemovesPreviousVersions' <?php if($_GET['installation_removes_previous_versions']??$db->settings->get('default-installation-removes-previous-versions')) echo 'checked'; ?>></input>&nbsp;<?php echo LANG('installation_removes_previous_versions'); ?></label>
 		</td>
 	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG('uninstallation'); ?></h2></td></tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('uninstall_procedure'); ?></th>
-		<td colspan='3' class='inputwithbutton'><input type='text' id='txtUninstallProcedure' class='monospace' list='lstUninstallProcedures' placeholder='<?php echo LANG('optional_hint'); ?>' value='<?php echo htmlspecialchars($_GET['uninstall_procedure']??'',ENT_QUOTES); ?>'><button onclick='toggleTextBoxMultiLine(txtUninstallProcedure)' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button></td>
+		<td colspan='3' class='inputwithbutton'>
+			<?php if(strpos($_GET['install_procedure']??'', "\n") === false) { ?>
+				<input type='text' id='txtUninstallProcedure' class='monospace' list='lstUninstallProcedures' placeholder='<?php echo LANG('optional_hint'); ?>' value='<?php echo htmlspecialchars($_GET['uninstall_procedure']??'',ENT_QUOTES); ?>'>
+			<?php } else { ?>
+				<textarea id='txtUninstallProcedure' class='monospace' list='lstUninstallProcedures' placeholder='<?php echo LANG('optional_hint'); ?>'><?php echo htmlspecialchars($_GET['uninstall_procedure']??'',ENT_QUOTES); ?></textarea>
+			<?php } ?>
+			<button onclick='toggleTextBoxMultiLine(txtUninstallProcedure)' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button>
+		</td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('success_return_codes'); ?></th>
@@ -130,7 +144,7 @@ require_once('../session.php');
 	<tr>
 		<th></th>
 		<td colspan='3'>
-			<label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' <?php if($_GET['download_for_uninstall']??true) echo "checked='true'"; ?>>&nbsp;<?php echo LANG('download_for_uninstall'); ?></label>
+			<label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' <?php if($_GET['download_for_uninstall']??$db->settings->get('default-download-for-uninstall')) echo "checked='true'"; ?>>&nbsp;<?php echo LANG('download_for_uninstall'); ?></label>
 		</td>
 	</tr>
 	<tr>

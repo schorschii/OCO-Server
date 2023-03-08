@@ -579,7 +579,7 @@ function toggleAutoRefresh() {
 function refreshContentExplorer(url) {
 	ajaxRequest(url, 'explorer-content');
 }
-function refreshContentPackageNew(name=null, version=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null) {
+function refreshContentPackageNew(name=null, version=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, installation_removes_previous_versions=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null) {
 	ajaxRequest('views/package-new.php?' +
 		(name ? '&name='+encodeURIComponent(name) : '') +
 		(version ? '&version='+encodeURIComponent(version) : '') +
@@ -587,6 +587,7 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 		(install_procedure ? '&install_procedure='+encodeURIComponent(install_procedure) : '') +
 		(install_procedure_success_return_codes ? '&install_procedure_success_return_codes='+encodeURIComponent(install_procedure_success_return_codes) : '') +
 		(install_procedure_post_action ? '&install_procedure_post_action='+encodeURIComponent(install_procedure_post_action) : '') +
+		(installation_removes_previous_versions ? '&installation_removes_previous_versions='+encodeURIComponent(installation_removes_previous_versions) : '') +
 		(uninstall_procedure ? '&uninstall_procedure='+encodeURIComponent(uninstall_procedure) : '') +
 		(uninstall_procedure_success_return_codes ? '&uninstall_procedure_success_return_codes='+encodeURIComponent(uninstall_procedure_success_return_codes) : '') +
 		(uninstall_procedure_post_action ? '&uninstall_procedure_post_action='+encodeURIComponent(uninstall_procedure_post_action) : '') +
