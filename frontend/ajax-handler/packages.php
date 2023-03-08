@@ -67,6 +67,7 @@ try {
 	&& isset($_POST['install_procedure'])
 	&& isset($_POST['install_procedure_success_return_codes'])
 	&& isset($_POST['install_procedure_post_action'])
+	&& isset($_POST['installation_removes_previous_versions'])
 	&& isset($_POST['uninstall_procedure'])
 	&& isset($_POST['uninstall_procedure_success_return_codes'])
 	&& isset($_POST['uninstall_procedure_post_action'])
@@ -100,6 +101,7 @@ try {
 			$_POST['install_procedure'],
 			$_POST['install_procedure_success_return_codes'],
 			$_POST['install_procedure_post_action'],
+			$_POST['installation_removes_previous_versions'],
 			$_POST['uninstall_procedure'],
 			$_POST['uninstall_procedure_success_return_codes'],
 			$_POST['uninstall_procedure_post_action'],
@@ -182,8 +184,8 @@ try {
 		}
 		// create package
 		$insertId = $cl->createPackage($_POST['create_package'], $_POST['version'], $_POST['notes'] ?? '',
-			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_post_action'] ?? null,
-			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'], $_POST['uninstall_procedure_post_action'] ?? null,
+			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_post_action'] ?? null, $_POST['installation_removes_previous_versions'] ?? 0,
+			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'] ?? 0, $_POST['uninstall_procedure_post_action'] ?? null,
 			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $tmpFiles
 		);
 		die(strval(intval($insertId)));

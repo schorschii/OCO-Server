@@ -31,7 +31,7 @@ try {
 	<div class='controls'>
 		<button onclick='refreshContentDeploy({"id":<?php echo $package->id; ?>,"name":obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 		<button onclick='window.open("package-download.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
-		<button onclick='showDialogEditPackage(<?php echo $package->id; ?>, <?php echo $package->package_family_id; ?>, spnPackageVersion.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='showDialogEditPackage(<?php echo $package->id; ?>, <?php echo $package->package_family_id; ?>, spnPackageVersion.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnInstallationRemovesPreviousVersions.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button onclick='showDialogAddPackageToGroup("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
 		<button onclick='confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")", "views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>"), <?php echo count($db->selectAllComputerPackageByPackageId($package->id)); ?>)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
@@ -144,6 +144,13 @@ try {
 								}
 								echo htmlspecialchars($info);
 								?>
+							</td>
+						</tr>
+						<tr>
+							<th><?php echo LANG('installation_removes_previous_versions'); ?></th>
+							<td>
+								<span id='spnInstallationRemovesPreviousVersions' class='rawvalue'><?php echo htmlspecialchars($package->installation_removes_previous_versions); ?></span>
+								<?php $info = ''; if($package->installation_removes_previous_versions) $info = LANG('yes'); else $info = LANG('no'); echo htmlspecialchars($info); ?>
 							</td>
 						</tr>
 					</table>

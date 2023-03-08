@@ -65,6 +65,12 @@ require_once('../session.php');
 			<label><input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo Models\Package::POST_ACTION_EXIT; ?>'>&nbsp;<?php echo LANG('restart_agent'); ?></label>
 		</td>
 	</tr>
+	<tr>
+		<th></th>
+		<td>
+			<label><input type='checkbox' id='chkInstallationRemovesPreviousVersions'></input>&nbsp;<?php echo LANG('installation_removes_previous_versions'); ?></label>
+		</td>
+	</tr>
 
 	<tr>
 		<th colspan='2'><h2><?php echo LANG('uninstallation'); ?></h2></td>
@@ -110,6 +116,7 @@ require_once('../session.php');
 		txtEditPackageInstallProcedure.value,
 		txtEditPackageInstallProcedureSuccessReturnCodes.value,
 		getCheckedRadioValue("edit_package_install_procedure_post_action"),
+		chkInstallationRemovesPreviousVersions.checked,
 		txtEditPackageUninstallProcedure.value,
 		txtEditPackageUninstallProcedureSuccessReturnCodes.value,
 		getCheckedRadioValue("edit_package_uninstall_procedure_post_action"),

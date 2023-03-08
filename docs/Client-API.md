@@ -673,6 +673,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 - `install_procedure` - install procedure (install command)
 - `install_procedure_success_return_codes` - install procedure success return codes (comma separated, leave empty to disable return code check)
 - `install_procedure_post_action` - enable/disable restart, shutdown or agent restart after installation (0, 1, 2 or 3)
+- `installation_removes_previous_versions` - define if the installation procedure implicitly removes other versions of this software (0 or 1)
 - `uninstall_procedure` - uninstall procedure (uninstall command) (optional)
 - `uninstall_procedure_success_return_codes` - uninstall procedure success return codes (comma separated, leave empty to disable return code check)
 - `download_for_uninstall` - enable/disable download for uninstallation (0 or 1)

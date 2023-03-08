@@ -521,6 +521,7 @@ return [
 	'be_careful_when_manual_editing_settings' => 'Bitte seien Sie vorsichtig bei manuellen Konfigurationsänderungen',
 	'log_level' => 'Loglevel',
 	'not_started' => 'Nicht gestartet',
+	'installation_removes_previous_versions' => 'Installation entfernt vorherige Versionen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

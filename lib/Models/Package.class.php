@@ -18,6 +18,7 @@ class Package {
 	public $install_procedure;
 	public $install_procedure_success_return_codes;
 	public $install_procedure_post_action;
+	public $installation_removes_previous_versions;
 	public $uninstall_procedure;
 	public $uninstall_procedure_success_return_codes;
 	public $download_for_uninstall;

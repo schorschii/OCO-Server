@@ -124,6 +124,10 @@ switch($srcdata['method']) {
 		// update computer-package assignment if job was successful
 		if($state === Models\Job::STATE_SUCCEEDED) {
 			if($job->is_uninstall == 0) {
+				if($job->removes_previous_package_version != 0) {
+					// the installer implicitly removed previous versions - remove all computer-package assignments of older versions
+					$db->deleteComputerPackageByComputerIdAndPackageFamilyId($job->computer_id, $db->selectPackage($job->package_id)->package_family_id);
+				}
 				$db->insertComputerPackage($job->package_id, $job->computer_id, $job->getSystemUserId(), $job->getDomainUserId(), $job->procedure);
 			} elseif($job->is_uninstall == 1) {
 				$db->deleteComputerPackageByComputerIdAndPackageId($job->computer_id, $job->package_id);

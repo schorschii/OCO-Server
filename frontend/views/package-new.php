@@ -103,6 +103,12 @@ require_once('../session.php');
 			<label class='inlineblock'><input type='radio' name='install_post_action' value='<?php echo Models\Package::POST_ACTION_EXIT; ?>' <?php if(($_GET['install_procedure_post_action']??0) == 3) echo "checked='true'"; ?>>&nbsp;<?php echo LANG('restart_agent'); ?></label>
 		</td>
 	</tr>
+	<tr>
+		<th></th>
+		<td>
+			<label><input type='checkbox' id='chkInstallationRemovesPreviousVersions'></input>&nbsp;<?php echo LANG('installation_removes_previous_versions'); ?></label>
+		</td>
+	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG('uninstallation'); ?></h2></td></tr>
 	<tr class='nospace'>
@@ -140,6 +146,7 @@ require_once('../session.php');
 				txtInstallProcedure.value,
 				txtInstallProcedureSuccessReturnCodes.value,
 				getCheckedRadioValue("install_post_action"),
+				chkInstallationRemovesPreviousVersions.checked,
 				txtUninstallProcedure.value,
 				txtUninstallProcedureSuccessReturnCodes.value,
 				chkDownloadForUninstall.checked,

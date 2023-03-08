@@ -886,10 +886,10 @@ class DatabaseController {
 		$this->stmt->bindParam(':icon', $icon, PDO::PARAM_LOB);
 		return $this->stmt->execute();
 	}
-	public function insertPackage($package_family_id, $version, $created_by_system_user_id, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
+	public function insertPackage($package_family_id, $version, $created_by_system_user_id, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $installation_removes_previous_versions, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (package_family_id, version, created_by_system_user_id, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version)
-			VALUES (:package_family_id, :version, :created_by_system_user_id, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :compatible_os, :compatible_os_version)'
+			'INSERT INTO package (package_family_id, version, created_by_system_user_id, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, installation_removes_previous_versions, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version)
+			VALUES (:package_family_id, :version, :created_by_system_user_id, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :installation_removes_previous_versions, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :compatible_os, :compatible_os_version)'
 		);
 		$this->stmt->execute([
 			':package_family_id' => $package_family_id,
@@ -899,6 +899,7 @@ class DatabaseController {
 			':install_procedure' => $install_procedure,
 			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
 			':install_procedure_post_action' => $install_procedure_post_action,
+			':installation_removes_previous_versions' => $installation_removes_previous_versions,
 			':uninstall_procedure' => $uninstall_procedure,
 			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
 			':download_for_uninstall' => $download_for_uninstall,
@@ -908,9 +909,9 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
+	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $installation_removes_previous_versions, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, installation_removes_previous_versions = :installation_removes_previous_versions, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
@@ -922,6 +923,7 @@ class DatabaseController {
 			':install_procedure' => $install_procedure,
 			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
 			':install_procedure_post_action' => $install_procedure_post_action,
+			':installation_removes_previous_versions' => $installation_removes_previous_versions,
 			':uninstall_procedure' => $uninstall_procedure,
 			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
 			':uninstall_procedure_post_action' => $uninstall_procedure_post_action,
@@ -1326,6 +1328,12 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':computer_id' => $computer_id, ':package_id' => $package_id]);
 	}
+	public function deleteComputerPackageByComputerIdAndPackageFamilyId($computer_id, $package_family_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE cp FROM computer_package cp INNER JOIN package p ON cp.package_id = p.id WHERE cp.computer_id = :computer_id AND p.package_family_id = :package_family_id'
+		);
+		return $this->stmt->execute([':computer_id' => $computer_id, ':package_family_id' => $package_family_id]);
+	}
 
 	// Job Operations
 	public function insertJobContainer($name, $created_by_system_user_id, $created_by_domain_user_id, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges, $self_service) {
@@ -1349,10 +1357,10 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function insertStaticJob($job_container_id, $computer_id, $package_id, $procedure, $success_return_codes, $is_uninstall, $download, $post_action, $post_action_timeout, $sequence, $state=0) {
+	public function insertStaticJob($job_container_id, $computer_id, $package_id, $procedure, $success_return_codes, $removes_previous_package_version, $is_uninstall, $download, $post_action, $post_action_timeout, $sequence, $state=0) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container_job (job_container_id, computer_id, package_id, `procedure`, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, message)
-			VALUES (:job_container_id, :computer_id, :package_id, :procedure, :success_return_codes, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, "")'
+			'INSERT INTO job_container_job (job_container_id, computer_id, package_id, `procedure`, success_return_codes, removes_previous_package_version, is_uninstall, download, post_action, post_action_timeout, sequence, state, message)
+			VALUES (:job_container_id, :computer_id, :package_id, :procedure, :success_return_codes, :removes_previous_package_version, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, "")'
 		);
 		$this->stmt->execute([
 			':job_container_id' => $job_container_id,
@@ -1360,6 +1368,7 @@ class DatabaseController {
 			':package_id' => $package_id,
 			':procedure' => $procedure,
 			':success_return_codes' => $success_return_codes,
+			':removes_previous_package_version' => $removes_previous_package_version,
 			':is_uninstall' => $is_uninstall,
 			':download' => $download,
 			':post_action' => $post_action,
@@ -1606,7 +1615,8 @@ class DatabaseController {
 					}
 				}
 				// check if we need to uninstall older versions
-				if($deployment_rule->auto_uninstall && $state != Models\Job::STATE_ALREADY_INSTALLED && $state != Models\Job::STATE_OS_INCOMPATIBLE && $state != Models\Job::STATE_PACKAGE_CONFLICT) {
+				if($deployment_rule->auto_uninstall && empty($package->installation_removes_previous_versions)
+				&& $state != Models\Job::STATE_ALREADY_INSTALLED && $state != Models\Job::STATE_OS_INCOMPATIBLE && $state != Models\Job::STATE_PACKAGE_CONFLICT) {
 					$dynamic_jobs = array_merge(
 						$dynamic_jobs,
 						$this->compileDynamicUninstallJobs($deployment_rule, $package->package_family_id, $this->selectAllComputerPackageByComputerId($computer->id), $created_uninstall_jobs, $sequence)
@@ -1616,7 +1626,7 @@ class DatabaseController {
 				$dynamic_jobs[] = Models\DynamicJob::__constructWithValues(
 					$deployment_rule->id, $deployment_rule->name, $deployment_rule->created_by_system_user_id, $deployment_rule->enabled, $deployment_rule->priority,
 					$computer->id, $computer->hostname,
-					$package->id, $package->version, $package->package_family_name, $package->install_procedure, $package->install_procedure_success_return_codes,
+					$package->id, $package->version, $package->package_family_name, $package->install_procedure, $package->install_procedure_success_return_codes, $package->installation_removes_previous_versions,
 					0/*is_uninstall*/, $package->getFilePath() ? 1 : 0,
 					$package->install_procedure_post_action, $deployment_rule->post_action_timeout,
 					$sequence,
@@ -1631,10 +1641,18 @@ class DatabaseController {
 			// - do not update state "success" if new state is "already installed" or "failed" and new state is "waiting for agent"
 			// - keep execution results (return_code and message)
 			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO deployment_rule_job (id, deployment_rule_id, computer_id, package_id, `procedure`, success_return_codes, is_uninstall, download, post_action, post_action_timeout, sequence, state, return_code, message)
-				(SELECT drj2.id, drj2.deployment_rule_id, drj2.computer_id, drj2.package_id, drj2.`procedure`, drj2.success_return_codes, drj2.is_uninstall, drj2.download, drj2.post_action, drj2.post_action_timeout, drj2.sequence, drj2.state, drj2.return_code, drj2.message FROM deployment_rule_job drj2 WHERE drj2.deployment_rule_id=:deployment_rule_id AND drj2.computer_id=:computer_id AND drj2.package_id=:package_id AND drj2.is_uninstall=:is_uninstall)
-				UNION (SELECT null, :deployment_rule_id, :computer_id, :package_id, :procedure, :success_return_codes, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, :return_code, :message FROM DUAL) LIMIT 1
-				ON DUPLICATE KEY UPDATE deployment_rule_job.id=LAST_INSERT_ID(deployment_rule_job.id), deployment_rule_job.`procedure`=IF(deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' OR deployment_rule_job.state='.Models\Job::STATE_FAILED.',deployment_rule_job.`procedure`,:procedure), deployment_rule_job.success_return_codes=IF(deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' OR deployment_rule_job.state='.Models\Job::STATE_FAILED.',deployment_rule_job.success_return_codes,:success_return_codes), deployment_rule_job.download=IF(deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' OR deployment_rule_job.state='.Models\Job::STATE_FAILED.',deployment_rule_job.download,:download), deployment_rule_job.post_action=:post_action, deployment_rule_job.post_action_timeout=:post_action_timeout, deployment_rule_job.sequence=:sequence, deployment_rule_job.state=IF((deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' AND :state='.Models\Job::STATE_ALREADY_INSTALLED.') OR (deployment_rule_job.state='.Models\Job::STATE_FAILED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (deployment_rule_job.state='.Models\Job::STATE_DOWNLOAD_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (deployment_rule_job.state='.Models\Job::STATE_EXECUTION_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.'), deployment_rule_job.state, :state)'
+				'INSERT INTO deployment_rule_job (id, deployment_rule_id, computer_id, package_id, `procedure`, success_return_codes, removes_previous_package_version, is_uninstall, download, post_action, post_action_timeout, sequence, state, return_code, message)
+				(SELECT drj2.id, drj2.deployment_rule_id, drj2.computer_id, drj2.package_id, drj2.`procedure`, drj2.success_return_codes, drj2.removes_previous_package_version, drj2.is_uninstall, drj2.download, drj2.post_action, drj2.post_action_timeout, drj2.sequence, drj2.state, drj2.return_code, drj2.message FROM deployment_rule_job drj2 WHERE drj2.deployment_rule_id=:deployment_rule_id AND drj2.computer_id=:computer_id AND drj2.package_id=:package_id AND drj2.is_uninstall=:is_uninstall)
+				UNION (SELECT null, :deployment_rule_id, :computer_id, :package_id, :procedure, :success_return_codes, :removes_previous_package_version, :is_uninstall, :download, :post_action, :post_action_timeout, :sequence, :state, :return_code, :message FROM DUAL) LIMIT 1
+				ON DUPLICATE KEY UPDATE deployment_rule_job.id=LAST_INSERT_ID(deployment_rule_job.id),
+					deployment_rule_job.`procedure`=IF(deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' OR deployment_rule_job.state='.Models\Job::STATE_FAILED.',deployment_rule_job.`procedure`,:procedure),
+					deployment_rule_job.success_return_codes=IF(deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' OR deployment_rule_job.state='.Models\Job::STATE_FAILED.',deployment_rule_job.success_return_codes,:success_return_codes),
+					deployment_rule_job.removes_previous_package_version=IF(deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' OR deployment_rule_job.state='.Models\Job::STATE_FAILED.',deployment_rule_job.removes_previous_package_version,:removes_previous_package_version),
+					deployment_rule_job.download=IF(deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' OR deployment_rule_job.state='.Models\Job::STATE_FAILED.',deployment_rule_job.download,:download),
+					deployment_rule_job.post_action=:post_action,
+					deployment_rule_job.post_action_timeout=:post_action_timeout,
+					deployment_rule_job.sequence=:sequence,
+					deployment_rule_job.state=IF((deployment_rule_job.state='.Models\Job::STATE_SUCCEEDED.' AND :state='.Models\Job::STATE_ALREADY_INSTALLED.') OR (deployment_rule_job.state='.Models\Job::STATE_FAILED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (deployment_rule_job.state='.Models\Job::STATE_DOWNLOAD_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.') OR (deployment_rule_job.state='.Models\Job::STATE_EXECUTION_STARTED.' AND :state='.Models\Job::STATE_WAITING_FOR_AGENT.'), deployment_rule_job.state, :state)'
 			);
 			$this->stmt->execute([
 				':deployment_rule_id' => $job->deployment_rule_id,
@@ -1642,6 +1660,7 @@ class DatabaseController {
 				':package_id' => $job->package_id,
 				':procedure' => $job->procedure,
 				':success_return_codes' => $job->success_return_codes,
+				':removes_previous_package_version' => $job->removes_previous_package_version,
 				':is_uninstall' => $job->is_uninstall,
 				':download' => $job->download,
 				':post_action' => $job->post_action,
@@ -1672,7 +1691,7 @@ class DatabaseController {
 				$dynamic_jobs[] = Models\DynamicJob::__constructWithValues(
 					$deployment_rule->id, $deployment_rule->name, $deployment_rule->created_by_system_user_id, $deployment_rule->enabled, $deployment_rule->priority,
 					$cp->computer_id, $cp->computer_hostname,
-					$cpp->id, $cpp->version, $cpp->package_family_name, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
+					$cpp->id, $cpp->version, $cpp->package_family_name, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes, $cpp->installation_removes_previous_versions,
 					1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
 					$cpp->uninstall_procedure_post_action, $deployment_rule->post_action_timeout,
 					$sequence

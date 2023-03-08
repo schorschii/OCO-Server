@@ -526,6 +526,7 @@ return [
 	'be_careful_when_manual_editing_settings' => 'Please be careful on manual config changes',
 	'log_level' => 'Log Level',
 	'not_started' => 'not started',
+	'installation_removes_previous_versions' => 'Installation removes previous versions',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
