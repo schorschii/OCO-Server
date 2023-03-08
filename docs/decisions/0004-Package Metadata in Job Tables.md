@@ -2,7 +2,7 @@
 Architecture Decision Record  
 Lang: en  
 Encoding: utf-8  
-Date: 2023-03-08
+Date: 2023-03-08  
 Author: Georg Sieber
 
 ## Decision
