@@ -174,7 +174,7 @@ class LdapSync {
 
 		if($this->debug) echo '===> Check for deleted users...'."\n";
 		foreach($this->db->selectAllSystemUser() as $dbUser) {
-			if($dbUser->ldap != 1) continue;
+			if($dbUser->ldap < 1) continue;
 			$found = false;
 			foreach($foundLdapUsers as $uid => $username) {
 				if($dbUser->uid == $uid) {
@@ -185,10 +185,17 @@ class LdapSync {
 				}
 			}
 			if(!$found) {
-				if($this->db->deleteSystemUser($dbUser->id)) {
-					if($this->debug) echo '--> '.$dbUser->username.': deleting  OK'."\n";
+				if(!empty($details['lock-deleted-users'])) {
+					if($this->db->updateSystemUser($dbUser->id, $dbUser->uid, $dbUser->username, $dbUser->display_name, null/*password*/, $dbUser->ldap, $dbUser->email, $dbUser->phone, $dbUser->mobile, $dbUser->description, 1/*locked*/, $dbUser->system_user_role_id)) {
+						if($this->debug) echo '--> '.$dbUser->username.': locking  OK'."\n";
+					}
+					else throw new Exception('Error locking '.$dbUser->username.': '.$this->db->getLastStatement()->error);
+				} else {
+					if($this->db->deleteSystemUser($dbUser->id)) {
+						if($this->debug) echo '--> '.$dbUser->username.': deleting  OK'."\n";
+					}
+					else throw new Exception('Error deleting '.$dbUser->username.': '.$this->db->getLastStatement()->error);
 				}
-				else throw new Exception('Error deleting '.$dbUser->username.': '.$this->db->getLastStatement()->error);
 			}
 		}
 	}

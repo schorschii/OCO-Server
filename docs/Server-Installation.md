@@ -176,7 +176,8 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
          "(&(objectClass=user)(memberof=CN=OcoUsers,OU=Benutzer,DC=sieber,DC=systems))": 2
        },
        "login-binddn-query": "(&(objectClass=user)(samaccountname=%s))",
-       "attribute-matching": {}
+       "attribute-matching": {},
+       "lock-deleted-users": false
      }
      ... more servers here ...
    }
@@ -204,6 +205,7 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
        "description": "description"
      }
      ```
+   - `lock-deleted-users`: Set to true if you want to lock deleted LDAP users instead of deleting them directly.
 2. Start the first sync manually by executing `cd /srv/www/oco && php console.php ldapsync`.  
    Now you can log in with the synced accounts on the web frontend.
 3. Set up a cron job executing `php console.php ldapsync` every 30 minutes as webserver user (`www-data`).
