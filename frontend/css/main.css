@@ -1472,6 +1472,9 @@ div.stickytable > table.list tfoot {
 }
 
 @media (max-width: 1050px) {
+	#header button > span {
+		display: none;
+	}
 	div.details-abreast {
 		flex-wrap: wrap;
 	}
