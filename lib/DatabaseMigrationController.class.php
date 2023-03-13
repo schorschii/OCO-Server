@@ -319,13 +319,13 @@ class DatabaseMigrationController {
 			if($this->debug) echo 'Upgrading to 0.16.3... (rename installation_removes_previous_versions)'."\n";
 
 			$this->stmt = $this->dbh->prepare(
-				"ALTER TABLE `package` CHANGE `installation_removes_previous_versions` `upgrade_behavior` tinyint(4) NOT NULL DEFAULT 0");
+				"ALTER TABLE `package` CHANGE `installation_removes_previous_versions` `upgrade_behavior` tinyint(4) NOT NULL DEFAULT 2");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 			$this->stmt = $this->dbh->prepare(
-				"ALTER TABLE `job_container_job` CHANGE `removes_previous_package_version` `upgrade_behavior` tinyint(4) NOT NULL DEFAULT 0");
+				"ALTER TABLE `job_container_job` CHANGE `removes_previous_package_version` `upgrade_behavior` tinyint(4) NOT NULL DEFAULT 2");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 			$this->stmt = $this->dbh->prepare(
-				"ALTER TABLE `deployment_rule_job` CHANGE `removes_previous_package_version` `upgrade_behavior` tinyint(4) NOT NULL DEFAULT 0");
+				"ALTER TABLE `deployment_rule_job` CHANGE `removes_previous_package_version` `upgrade_behavior` tinyint(4) NOT NULL DEFAULT 2");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			$upgraded = true;
