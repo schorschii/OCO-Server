@@ -61,12 +61,11 @@ Choose the correct upgrade behavior for your installation procedure.
 1. 'Create explicit uninstall jobs'  
    If you deploy this package to a computer which already has another version of this package family installed, OCO will automatically create separate uninstall jobs for the previously installed package version.
 2. 'Installation automatically removes other versions'  
-   If you choose this option, OCO assumes that you installation procedure automatically detects and removes/upgrades previous versions of this software.
+   If you choose this option, OCO assumes that your installation procedure automatically detects and removes/upgrades previous versions of this software. Many installers behave like this, e.g. the VLC installer, but this behavior is not always desired.
    - No automatic uninstall job is created when deploying the package and another version of the same package family is already installed.
    - If the installation succeeds, all computer-package assignments of other packages from this family will be removed from the OCO database.
-   Many installers behave like this, e.g. the VLC installer, but this behavior is not always desired.
 3. 'Keep other versions'  
-   No explicit uninstall jobs will be created and computer-package assignments will not be cleared when the installation finishes.
+   No explicit uninstall jobs will be created and computer-package assignments will not be cleared when the installation finishes. For use with software where multiple versions can be installed at once.
 
 ### Action After Procedure
 Below the procedure you can specify if the computer should be restartet or shut down after the procedure was executed. If your new package is an OCO agent update package, you can select 'restart agent' to instantly exit the old version and start the new agent.
