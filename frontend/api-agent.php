@@ -517,16 +517,18 @@ else {
 }
 
 
-function errorExit($httpCode, $hostname, $computer, $action, $message) {
+function errorExit($httpStatus, $hostname, $computer, $action, $message) {
 	global $db;
 
 	// log into webserver log for fail2ban
-	error_log('api-agent: authentication failure');
+	if(startsWith($httpStatus, '401')) {
+		error_log('api-agent: authentication failure');
+	}
 
 	// log into database
 	$db->insertLogEntry(Models\Log::LEVEL_WARNING, $hostname, $computer ? $computer->id : null, $action, json_encode(['error'=>$message]));
 
 	// exit with error code
-	header('HTTP/1.1 '.$httpCode);
+	header('HTTP/1.1 '.$httpStatus);
 	die();
 }
