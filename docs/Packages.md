@@ -55,9 +55,18 @@ In the 'Procedure' fields, you define which commands should be executed when ins
 
 After that, you can enter the exit/return codes which should be considered as success (multiple return codes have to be separated by a comma `,`). If you leave the return code field blank, all return codes are considered as success (this is not recommended - keep `0` if you are unsure, this is normally the return code for success). But for example, MSI packages can also return `3010` if the installation succeeded but a reboot is required (see [list of MSI return codes](https://docs.microsoft.com/de-de/windows/win32/msi/error-codes)).
 
-By checking the checkbox 'Installation Removes Previous Versions' you can define if the installation command implicitly uninstalls older versions. Many installers behave like this, e.g. the VLC installer, but this behavior is not always desired. If you enable this checkbox:
-1. No automatic uninstall job is created when deploying the package and another version of the same package family is already installed.
-2. If the installation succeeds, all computer-package assignments of other packages from this family will be removed from the OCO database.
+### Upgrade Behavior
+Choose the correct upgrade behavior for your installation procedure.
+
+1. 'Create explicit uninstall jobs'  
+   If you deploy this package to a computer which already has another version of this package family installed, OCO will automatically create separate uninstall jobs for the previously installed package version.
+2. 'Installation automatically removes other versions'  
+   If you choose this option, OCO assumes that you installation procedure automatically detects and removes/upgrades previous versions of this software.
+   - No automatic uninstall job is created when deploying the package and another version of the same package family is already installed.
+   - If the installation succeeds, all computer-package assignments of other packages from this family will be removed from the OCO database.
+   Many installers behave like this, e.g. the VLC installer, but this behavior is not always desired.
+3. 'Keep other versions'  
+   No explicit uninstall jobs will be created and computer-package assignments will not be cleared when the installation finishes.
 
 ### Action After Procedure
 Below the procedure you can specify if the computer should be restartet or shut down after the procedure was executed. If your new package is an OCO agent update package, you can select 'restart agent' to instantly exit the old version and start the new agent.
