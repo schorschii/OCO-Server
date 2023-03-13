@@ -287,7 +287,7 @@ class CoreLogic {
 		return $packageFamily;
 	}
 	public function createPackage($name, $version, $description,
-		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $installationRemovesPreviousVersions,
+		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior,
 		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction,
 		$compatibleOs, $compatibleOsVersion, $tmpFiles) {
 
@@ -361,7 +361,7 @@ class CoreLogic {
 			$installProcedure,
 			$installProcedureSuccessReturnCodes,
 			$installProcedurePostAction,
-			$installationRemovesPreviousVersions,
+			$upgradeBehavior,
 			$uninstallProcedure,
 			$uninstallProcedureSuccessReturnCodes,
 			$downloadForUninstall,
@@ -519,7 +519,7 @@ class CoreLogic {
 		$this->db->deletePackageDependencyByPackageIdAndDependentPackageId($package->id, $dependentPackage->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $package->id, 'oco.package.remove_dependency', ['dependent_package_id'=>$dependentPackage->id]);
 	}
-	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $installationRemovesPreviousVersions, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall, $tmpFiles) {
+	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall, $tmpFiles) {
 		$package = $this->db->selectPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->checkPermission($package, PermissionManager::METHOD_WRITE);
@@ -535,7 +535,8 @@ class CoreLogic {
 		|| !in_array($installProcedurePostAction, [Models\Package::POST_ACTION_NONE, Models\Package::POST_ACTION_RESTART, Models\Package::POST_ACTION_SHUTDOWN, Models\Package::POST_ACTION_EXIT])) {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
-		if(intval($installationRemovesPreviousVersions) !== 0 && intval($installationRemovesPreviousVersions) !== 1) {
+		if(!is_numeric($upgradeBehavior)
+		|| !in_array($upgradeBehavior, [Models\Package::UPGRADE_BEHAVIOR_NONE, Models\Package::UPGRADE_BEHAVIOR_IMPLICIT_REMOVES_PREV_VERSION, Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS])) {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
 		if(!is_numeric($uninstallProcedurePostAction)
@@ -598,7 +599,7 @@ class CoreLogic {
 			$installProcedure,
 			$installProcedureSuccessReturnCodes,
 			intval($installProcedurePostAction),
-			intval($installationRemovesPreviousVersions),
+			intval($upgradeBehavior),
 			$uninstallProcedure,
 			$uninstallProcedureSuccessReturnCodes,
 			intval($uninstallProcedurePostAction),
@@ -936,7 +937,7 @@ class CoreLogic {
 						// create failed job
 						if($this->db->insertStaticJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
-							0/*removes_previous_package_version*/, 0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
+							0/*upgrade_behavior*/, 0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 							$package['install_procedure_post_action'], $restartTimeout,
 							$sequence, Models\Job::STATE_OS_INCOMPATIBLE
 						)) {
@@ -966,11 +967,11 @@ class CoreLogic {
 								// ... and not, if this uninstall job was already created
 								if(in_array($cp->id, $createdUninstallJobs)) continue;
 								// ... and not, if installation implicitly removes previous versions
-								if(!empty($package['installation_removes_previous_versions'])) continue;
+								if($package['upgrade_behavior'] != Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS) continue;
 								$createdUninstallJobs[] = $cp->id;
 								$this->db->insertStaticJob($jcid, $computer_id,
 									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
-									0/*removes_previous_package_version*/, 1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
+									0/*upgrade_behavior*/, 1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
 									$cpp->uninstall_procedure_post_action, $restartTimeout,
 									$sequence, Models\Job::STATE_WAITING_FOR_AGENT
 								);
@@ -982,7 +983,7 @@ class CoreLogic {
 					// create installation job
 					if($this->db->insertStaticJob($jcid, $computer_id,
 						$pid, $package['procedure'], $package['success_return_codes'],
-						$package['installation_removes_previous_versions'], 0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
+						$package['upgrade_behavior'], 0/*is_uninstall*/, $package['download'] ? 1 : 0/*download*/,
 						$package['install_procedure_post_action'], $restartTimeout,
 						$sequence, $targetJobState
 					)) {
@@ -1072,7 +1073,7 @@ class CoreLogic {
 			'procedure' => $p->install_procedure,
 			'success_return_codes' => $p->install_procedure_success_return_codes,
 			'install_procedure_post_action' => $p->install_procedure_post_action,
-			'installation_removes_previous_versions' => $p->installation_removes_previous_versions,
+			'upgrade_behavior' => $p->upgrade_behavior,
 			'compatible_os' => $p->compatible_os,
 			'compatible_os_version' => $p->compatible_os_version,
 			'download' => $p->getFilePath() ? true : false,
@@ -1158,7 +1159,7 @@ class CoreLogic {
 
 			$jid = $this->db->insertStaticJob($jcid, $ap->computer_id,
 				$ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes,
-				0/*removes_previous_package_version*/, 1/*is_uninstall*/, ($p->download_for_uninstall&&$p->getFilePath()) ? 1 : 0,
+				0/*upgrade_behavior*/, 1/*is_uninstall*/, ($p->download_for_uninstall&&$p->getFilePath()) ? 1 : 0,
 				$p->uninstall_procedure_post_action, $restartTimeout,
 				0/*sequence*/
 			);
@@ -1260,7 +1261,7 @@ class CoreLogic {
 					$newJob->package_id = $job->package_id;
 					$newJob->procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
 					$newJob->success_return_codes = empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes;
-					$newJob->removes_previous_package_version = $package->installation_removes_previous_versions;
+					$newJob->upgrade_behavior = $package->upgrade_behavior;
 					$newJob->is_uninstall = $job->is_uninstall;
 					$newJob->download = $package->getFilePath() ? 1 : 0;
 					$newJob->post_action = empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action;
@@ -1270,7 +1271,7 @@ class CoreLogic {
 					if($this->db->insertStaticJob($newJob->job_container_id,
 						$newJob->computer_id, $newJob->package_id,
 						$newJob->procedure, $newJob->success_return_codes,
-						$newJob->removes_previous_package_version, $newJob->is_uninstall, $newJob->download,
+						$newJob->upgrade_behavior, $newJob->is_uninstall, $newJob->download,
 						$newJob->post_action, $newJob->post_action_timeout,
 						$newJob->sequence
 					)) {

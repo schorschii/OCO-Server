@@ -31,7 +31,7 @@ try {
 	<div class='controls'>
 		<button onclick='refreshContentDeploy({"id":<?php echo $package->id; ?>,"name":obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 		<button onclick='window.open("package-download.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
-		<button onclick='showDialogEditPackage(<?php echo $package->id; ?>, <?php echo $package->package_family_id; ?>, spnPackageVersion.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnInstallationRemovesPreviousVersions.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='showDialogEditPackage(<?php echo $package->id; ?>, <?php echo $package->package_family_id; ?>, spnPackageVersion.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button onclick='showDialogAddPackageToGroup("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
 		<button onclick='confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")", "views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>"), <?php echo count($db->selectAllComputerPackageByPackageId($package->id)); ?>)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
@@ -147,10 +147,18 @@ try {
 							</td>
 						</tr>
 						<tr>
-							<th><?php echo LANG('installation_removes_previous_versions'); ?></th>
+							<th><?php echo LANG('upgrade_behavior'); ?></th>
 							<td>
-								<span id='spnInstallationRemovesPreviousVersions' class='rawvalue'><?php echo htmlspecialchars($package->installation_removes_previous_versions); ?></span>
-								<?php $info = ''; if($package->installation_removes_previous_versions) $info = LANG('yes'); else $info = LANG('no'); echo htmlspecialchars($info); ?>
+								<span id='spnUpgradeBehavior' class='rawvalue'><?php echo htmlspecialchars($package->upgrade_behavior); ?></span>
+								<?php $info = '';
+								switch($package->upgrade_behavior) {
+									case Models\Package::UPGRADE_BEHAVIOR_NONE: $info = LANG('keep_other_versions'); break;
+									case Models\Package::UPGRADE_BEHAVIOR_IMPLICIT_REMOVES_PREV_VERSION: $info = LANG('installation_automatically_removes_other_versions'); break;
+									case Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS: $info = LANG('create_explicit_uninstall_jobs'); break;
+									default: $info = LANG('no_action'); break;
+								}
+								echo htmlspecialchars($info);
+								?>
 							</td>
 						</tr>
 					</table>
@@ -195,7 +203,7 @@ try {
 					<div class='controls heading'>
 						<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
 						<div class='filler invisible'></div>
-						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnInstallationRemovesPreviousVersions.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
+						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
 						<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.dyn.svg'>&nbsp;<?php echo LANG('details'); ?></button>
 					</div>
 					<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>

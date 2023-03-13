@@ -17,7 +17,7 @@ class DynamicJob extends Job {
 		$package_family_name,
 		$procedure,
 		$success_return_codes,
-		$removes_previous_package_version,
+		$upgrade_behavior,
 		$is_uninstall,
 		$download,
 		$post_action,
@@ -41,7 +41,7 @@ class DynamicJob extends Job {
 		$item->package_family_name = $package_family_name;
 		$item->procedure = $procedure;
 		$item->success_return_codes = $success_return_codes;
-		$item->removes_previous_package_version = $removes_previous_package_version;
+		$item->upgrade_behavior = $upgrade_behavior;
 		$item->is_uninstall = $is_uninstall;
 		$item->download = $download;
 		$item->post_action = $post_action;

@@ -579,7 +579,7 @@ function toggleAutoRefresh() {
 function refreshContentExplorer(url) {
 	ajaxRequest(url, 'explorer-content');
 }
-function refreshContentPackageNew(name=null, version=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, installation_removes_previous_versions=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null) {
+function refreshContentPackageNew(name=null, version=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, upgrade_behavior=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null) {
 	ajaxRequest('views/package-new.php?' +
 		(name ? '&name='+encodeURIComponent(name) : '') +
 		(version ? '&version='+encodeURIComponent(version) : '') +
@@ -587,7 +587,7 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 		(install_procedure ? '&install_procedure='+encodeURIComponent(install_procedure) : '') +
 		(install_procedure_success_return_codes ? '&install_procedure_success_return_codes='+encodeURIComponent(install_procedure_success_return_codes) : '') +
 		(install_procedure_post_action ? '&install_procedure_post_action='+encodeURIComponent(install_procedure_post_action) : '') +
-		(installation_removes_previous_versions ? '&installation_removes_previous_versions='+encodeURIComponent(installation_removes_previous_versions) : '') +
+		(upgrade_behavior ? '&upgrade_behavior='+encodeURIComponent(upgrade_behavior) : '') +
 		(uninstall_procedure ? '&uninstall_procedure='+encodeURIComponent(uninstall_procedure) : '') +
 		(uninstall_procedure_success_return_codes ? '&uninstall_procedure_success_return_codes='+encodeURIComponent(uninstall_procedure_success_return_codes) : '') +
 		(uninstall_procedure_post_action ? '&uninstall_procedure_post_action='+encodeURIComponent(uninstall_procedure_post_action) : '') +
@@ -698,7 +698,7 @@ function updatePackageProcedureTemplates() {
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
 }
-function createPackage(name, version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, installation_removes_previous_versions, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version) {
+function createPackage(name, version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version) {
 	if(typeof archive === 'undefined' || archive.length == 0) {
 		if(!confirm(LANG['confirm_create_empty_package'])) {
 			return;
@@ -720,7 +720,7 @@ function createPackage(name, version, notes, archive, install_procedure, install
 	formData.append('install_procedure', install_procedure);
 	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
 	formData.append('install_procedure_post_action', install_procedure_post_action);
-	formData.append('installation_removes_previous_versions', installation_removes_previous_versions ? '1' : '0');
+	formData.append('upgrade_behavior', upgrade_behavior);
 	formData.append('uninstall_procedure', uninstall_procedure);
 	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
 	formData.append('download_for_uninstall', download_for_uninstall ? '1' : '0');
@@ -811,7 +811,7 @@ function editPackageFamily(id, name, notes) {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, installation_removes_previous_versions, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+function showDialogEditPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	showDialogAjax(LANG['edit_package'], 'views/dialog-package-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditPackageId.value = id;
 		sltEditPackagePackageFamily.value = package_family_id;
@@ -824,7 +824,7 @@ function showDialogEditPackage(id, package_family_id, version, compatible_os, co
 		txtEditPackageInstallProcedure.value = install_procedure;
 		txtEditPackageInstallProcedureSuccessReturnCodes.value = install_procedure_success_return_codes;
 		setCheckedRadioValue('edit_package_install_procedure_post_action', install_procedure_post_action);
-		chkInstallationRemovesPreviousVersions.checked = installation_removes_previous_versions=='1';
+		setCheckedRadioValue('upgrade_behavior', upgrade_behavior);
 
 		if(uninstall_procedure.includes("\n")) toggleTextBoxMultiLine(txtEditPackageUninstallProcedure);
 		txtEditPackageUninstallProcedure.value = uninstall_procedure;
@@ -833,7 +833,7 @@ function showDialogEditPackage(id, package_family_id, version, compatible_os, co
 		chkEditPackageDownloadForUninstall.checked = download_for_uninstall=='1';
 	});
 }
-function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, installation_removes_previous_versions, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 
@@ -863,7 +863,7 @@ function editPackage(id, package_family_id, version, compatible_os, compatible_o
 	formData.append('install_procedure', install_procedure);
 	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
 	formData.append('install_procedure_post_action', install_procedure_post_action);
-	formData.append('installation_removes_previous_versions', installation_removes_previous_versions?'1':'0');
+	formData.append('upgrade_behavior', upgrade_behavior);
 	formData.append('uninstall_procedure', uninstall_procedure);
 	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
 	formData.append('uninstall_procedure_post_action', uninstall_procedure_post_action);

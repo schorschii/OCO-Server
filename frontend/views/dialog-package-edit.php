@@ -66,9 +66,11 @@ require_once('../session.php');
 		</td>
 	</tr>
 	<tr>
-		<th></th>
+		<th><?php echo LANG('upgrade_behavior'); ?></th>
 		<td>
-			<label><input type='checkbox' id='chkInstallationRemovesPreviousVersions'></input>&nbsp;<?php echo LANG('installation_removes_previous_versions'); ?></label>
+			<label class='inlineblock'><input type='radio' name='upgrade_behavior' value='<?php echo Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS; ?>'>&nbsp;<?php echo LANG('create_explicit_uninstall_jobs'); ?></label><br>
+			<label class='inlineblock'><input type='radio' name='upgrade_behavior' value='<?php echo Models\Package::UPGRADE_BEHAVIOR_IMPLICIT_REMOVES_PREV_VERSION; ?>'>&nbsp;<?php echo LANG('installation_automatically_removes_other_versions'); ?></label><br>
+			<label class='inlineblock'><input type='radio' name='upgrade_behavior' value='<?php echo Models\Package::UPGRADE_BEHAVIOR_NONE; ?>'>&nbsp;<?php echo LANG('keep_other_versions'); ?></label>
 		</td>
 	</tr>
 
@@ -95,7 +97,7 @@ require_once('../session.php');
 		</td>
 	</tr>
 	<tr>
-		<th></th>
+		<th><?php echo LANG('options'); ?></th>
 		<td>
 			<label><input type='checkbox' id='chkEditPackageDownloadForUninstall'></input>&nbsp;<?php echo LANG('download_for_uninstall'); ?></label>
 		</td>
@@ -116,7 +118,7 @@ require_once('../session.php');
 		txtEditPackageInstallProcedure.value,
 		txtEditPackageInstallProcedureSuccessReturnCodes.value,
 		getCheckedRadioValue("edit_package_install_procedure_post_action"),
-		chkInstallationRemovesPreviousVersions.checked,
+		getCheckedRadioValue("upgrade_behavior"),
 		txtEditPackageUninstallProcedure.value,
 		txtEditPackageUninstallProcedureSuccessReturnCodes.value,
 		getCheckedRadioValue("edit_package_uninstall_procedure_post_action"),

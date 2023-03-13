@@ -10,7 +10,7 @@ abstract class Job {
 	public $package_id;
 	public $procedure;
 	public $success_return_codes;
-	public $removes_previous_package_version;
+	public $upgrade_behavior;
 	public $is_uninstall;
 	public $download;
 	public $post_action;

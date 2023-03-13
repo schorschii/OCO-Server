@@ -295,10 +295,10 @@ class DatabaseMigrationController {
 			}
 		}
 
-		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'package' AND COLUMN_NAME = 'installation_removes_previous_versions' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'package' AND COLUMN_NAME = 'installation_removes_previous_versions' AND TABLE_SCHEMA = '".DB_NAME."' UNION SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'package' AND COLUMN_NAME = 'upgrade_behavior' AND TABLE_SCHEMA = '".DB_NAME."'");
 		$this->stmt->execute();
 		if(count($this->stmt->fetchAll()) == 0) {
-			if($this->debug) echo 'Upgrading to 0.16.2...'."\n";
+			if($this->debug) echo 'Upgrading to 0.16.2... (add installation_removes_previous_versions)'."\n";
 
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `package` ADD COLUMN `installation_removes_previous_versions` tinyint(4) NOT NULL DEFAULT 0 AFTER `install_procedure_post_action`");
@@ -308,6 +308,24 @@ class DatabaseMigrationController {
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `deployment_rule_job` ADD COLUMN `removes_previous_package_version` tinyint(4) NOT NULL DEFAULT 0 AFTER `success_return_codes`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'package' AND COLUMN_NAME = 'installation_removes_previous_versions' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute();
+		if(count($this->stmt->fetchAll()) == 1) {
+			if($this->debug) echo 'Upgrading to 0.16.3... (rename installation_removes_previous_versions)'."\n";
+
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `package` CHANGE `installation_removes_previous_versions` `upgrade_behavior` tinyint(4) NOT NULL DEFAULT 0");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `job_container_job` CHANGE `removes_previous_package_version` `upgrade_behavior` tinyint(4) NOT NULL DEFAULT 0");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `deployment_rule_job` CHANGE `removes_previous_package_version` `upgrade_behavior` tinyint(4) NOT NULL DEFAULT 0");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			$upgraded = true;

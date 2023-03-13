@@ -111,9 +111,11 @@ require_once('../session.php');
 		</td>
 	</tr>
 	<tr>
-		<th></th>
+		<th><?php echo LANG('upgrade_behavior'); ?></th>
 		<td colspan='3'>
-			<label><input type='checkbox' id='chkInstallationRemovesPreviousVersions' <?php if($_GET['installation_removes_previous_versions']??$db->settings->get('default-installation-removes-previous-versions')) echo 'checked'; ?>></input>&nbsp;<?php echo LANG('installation_removes_previous_versions'); ?></label>
+			<label class='inlineblock'><input type='radio' name='upgrade_behavior' value='<?php echo Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS; ?>' <?php if(($_GET['upgrade_behavior']??$db->settings->get('default-upgrade-behavior')) == 2) echo "checked='true'"; ?>>&nbsp;<?php echo LANG('create_explicit_uninstall_jobs'); ?></label><br>
+			<label class='inlineblock'><input type='radio' name='upgrade_behavior' value='<?php echo Models\Package::UPGRADE_BEHAVIOR_IMPLICIT_REMOVES_PREV_VERSION; ?>' <?php if(($_GET['upgrade_behavior']??$db->settings->get('default-upgrade-behavior')) == 1) echo "checked='true'"; ?>>&nbsp;<?php echo LANG('installation_automatically_removes_other_versions'); ?></label><br>
+			<label class='inlineblock'><input type='radio' name='upgrade_behavior' value='<?php echo Models\Package::UPGRADE_BEHAVIOR_NONE; ?>' <?php if(($_GET['upgrade_behavior']??$db->settings->get('default-upgrade-behavior')) == 0) echo "checked='true'"; ?>>&nbsp;<?php echo LANG('keep_other_versions'); ?></label>
 		</td>
 	</tr>
 
@@ -142,7 +144,7 @@ require_once('../session.php');
 		</td>
 	</tr>
 	<tr>
-		<th></th>
+		<th><?php echo LANG('options'); ?></th>
 		<td colspan='3'>
 			<label class='inlineblock'><input type='checkbox' id='chkDownloadForUninstall' <?php if($_GET['download_for_uninstall']??$db->settings->get('default-download-for-uninstall')) echo "checked='true'"; ?>>&nbsp;<?php echo LANG('download_for_uninstall'); ?></label>
 		</td>
@@ -160,7 +162,7 @@ require_once('../session.php');
 				txtInstallProcedure.value,
 				txtInstallProcedureSuccessReturnCodes.value,
 				getCheckedRadioValue("install_post_action"),
-				chkInstallationRemovesPreviousVersions.checked,
+				getCheckedRadioValue("upgrade_behavior"),
 				txtUninstallProcedure.value,
 				txtUninstallProcedureSuccessReturnCodes.value,
 				chkDownloadForUninstall.checked,

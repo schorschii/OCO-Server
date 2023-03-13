@@ -18,7 +18,7 @@ class Package {
 	public $install_procedure;
 	public $install_procedure_success_return_codes;
 	public $install_procedure_post_action;
-	public $installation_removes_previous_versions;
+	public $upgrade_behavior;
 	public $uninstall_procedure;
 	public $uninstall_procedure_success_return_codes;
 	public $download_for_uninstall;
@@ -43,6 +43,10 @@ class Package {
 	public const POST_ACTION_RESTART = 1;
 	public const POST_ACTION_SHUTDOWN = 2;
 	public const POST_ACTION_EXIT = 3;
+
+	public const UPGRADE_BEHAVIOR_NONE = 0;
+	public const UPGRADE_BEHAVIOR_IMPLICIT_REMOVES_PREV_VERSION = 1;
+	public const UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS = 2;
 
 	// functions
 	function getFullName() {

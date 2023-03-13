@@ -37,7 +37,7 @@ class SettingsController {
 		'default-abort-after-error' => 0,
 
 		// package creation defaults
-		'default-installation-removes-previous-versions' => 1,
+		'default-upgrade-behavior' => 2,
 		'default-download-for-uninstall' => 0,
 
 		'motd' => 'default_motd', // message of the day (homepage)

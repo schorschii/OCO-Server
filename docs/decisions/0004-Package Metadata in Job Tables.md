@@ -15,4 +15,4 @@ Accepted
 This ensures consistency between all jobs of a container since the package metadata can be changed at any time.
 
 ## Consequences
-To apply new `procedure`, `post_action`, `success_return_codes` or `removes_previous_package_version` to active deployments, the jobs must be re-created.
+To apply new `procedure`, `post_action`, `success_return_codes` or `upgrade_behavior` to active deployments, the jobs must be re-created.
