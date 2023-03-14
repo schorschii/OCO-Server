@@ -1342,6 +1342,9 @@ div.stickytable > table.list tfoot {
 .hint {
 	opacity: 0.6;
 }
+.checkboxWithText .hint {
+	max-width: 650px;
+}
 
 .listSearch {
 	position: relative;
