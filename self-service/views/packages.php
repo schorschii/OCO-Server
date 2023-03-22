@@ -160,7 +160,7 @@ try {
 							foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
 								if($p->id === $package->id) continue; // do not show this package
 								echo '<tr>';
-								echo '<td><a '.explorerLink('views/package-details.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
+								echo '<td><a '.explorerLink('views/packages.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
 								echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
 								echo '<td>'.$p->created.'</td>';
 								echo '</tr>';
