@@ -159,6 +159,7 @@ try {
 							<?php
 							foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
 								if($p->id === $package->id) continue; // do not show this package
+								if(!$cl->checkPermission($p, SelfService\PermissionManager::METHOD_READ, false)) continue;
 								echo '<tr>';
 								echo '<td><a '.explorerLink('views/packages.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
 								echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
