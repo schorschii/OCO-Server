@@ -273,7 +273,7 @@ try {
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'"></td>';
 								echo '<td><a '.explorerLink('views/computers.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
-								echo '<td>'.htmlspecialchars($p->installed_by).'</td>';
+								echo '<td>'.htmlspecialchars($p->installed_by_system_user_username??$p->installed_by_domain_user_username??'').'</td>';
 								echo '<td>'.htmlspecialchars($p->installed).'</td>';
 								echo '</tr>';
 							}
