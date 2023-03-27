@@ -1,5 +1,5 @@
 <?php
-require_once('../loader.inc.php');
+require_once(__DIR__.'/../loader.inc.php');
 
 
 ///// handle package download requests
