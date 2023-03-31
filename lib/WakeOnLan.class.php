@@ -63,7 +63,7 @@ class WakeOnLan {
 				continue;
 			}
 			$program = 'wakeonlan';
-			if(!empty($server['COMMAND'])) $program = $server['COMMAND'];
+			if(!empty($server['command'])) $program = $server['command'];
 			$chunkCount = 1;
 			// ssh2_exec has a bug which throws "ssh2_exec(): Unable to request command execution on remote host" if the command is longer than 32KB, so we send our MACs in chunks of 1500 MACs which is ~30KB...
 			foreach(array_chunk($escapedMacs, 1500) as $escapedMacChunk) {
