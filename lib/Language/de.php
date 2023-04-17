@@ -5,7 +5,7 @@ return [
 	'app_subtitle' => 'Client inventory and software delivery made simple',
 	'app_copyright' => '© <a href="https://sieber.systems" target="_blank">Georg Sieber</a> 2020-2023 | <a href="https://github.com/schorschii/oco-server" target="_blank">OCO-Projekt auf Github</a>',
 	'self_service_name' => 'OCO Self Service Portal',
-	'self_service_welcome_text' => 'Das Self-Service-Portal ermöglicht es Ihnen selbstständig neue Software, freigegeben von Ihrem von Ihrem Systemadministrator, auf Ihren Computer zu installieren. Bitte wählen Sie einen Computer oder Paket aus der Seitenleiste aus, um zu beginnen.',
+	'self_service_welcome_text' => 'Das Self-Service-Portal ermöglicht es Ihnen selbstständig neue Software, freigegeben von Ihrem Systemadministrator, auf Ihren Computer zu installieren. Bitte wählen Sie einen Computer oder Paket aus der Seitenleiste aus, um zu beginnen.',
 	'choose_admin_username' => 'Admin-Benutzername wählen...',
 	'choose_admin_password' => 'Admin-Kennwort wählen...',
 	'confirm_admin_password' => 'Admin-Kennwort bestätigen...',
