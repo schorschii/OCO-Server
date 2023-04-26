@@ -209,7 +209,7 @@ return [
 	'file_systems' => 'Système de fichiers',
 	'file_system' => 'Système de fichier',
 	'device' => 'Appareil',
-	'mountpoint' => 'MPoint de montage',
+	'mountpoint' => 'Point de montage',
 	'free' => 'Gratuit',
 	'address' => 'Adresse',
 	'used' => 'Utilisé',
