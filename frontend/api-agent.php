@@ -172,7 +172,7 @@ switch($srcdata['method']) {
 					$params['hostname'],
 					$data['agent_version'] ?? '?',
 					$data['networks'] ?? [],
-					LANG('self_registration').' '.date('Y-m-d H:i:s'),
+					'self_registration',
 					$agent_key,
 					$server_key,
 					null /*created_by_system_user_id*/

@@ -108,7 +108,7 @@ try {
 			echo "<td>".htmlspecialchars($c->manufacturer.' '.$c->model)."</td>";
 			echo "<td>".htmlspecialchars($c->serial)."</td>";
 			echo "<td>".htmlspecialchars($c->agent_version)."</td>";
-			echo "<td>".htmlspecialchars(shorter($c->notes))."</td>";
+			echo "<td>".htmlspecialchars(shorter(LANG($c->notes)))."</td>";
 			echo "<td>".htmlspecialchars($c->last_ping??'')."</td>";
 			echo "</tr>";
 		}

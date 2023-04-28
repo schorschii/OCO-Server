@@ -177,7 +177,7 @@ $isOnline = $computer->isOnline($db);
 						<tr>
 							<th><?php echo LANG('notes'); ?></th>
 							<td>
-								<span id='spnComputerNotes'><?php echo nl2br(htmlspecialchars($computer->notes)); ?></span>
+								<span id='spnComputerNotes'><?php echo nl2br(htmlspecialchars(LANG($computer->notes))); ?></span>
 							</td>
 						</tr>
 					</table>
