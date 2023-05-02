@@ -145,12 +145,12 @@ return [
 	'domain_users' => 'Utilisateurs du domaine',
 	'package_created' => 'Paquet créé',
 	'computer_created' => 'Ordinateur créé',
-	'jobs_created' => 'Tâche(s) créée',
+	'jobs_created' => 'Tâche(s) créée(s)',
 	'group_created' => 'Groupe créé',
 	'report_created' => 'Rapport créé',
 	'no_elements_selected' => 'Aucun objet sélectionné',
 	'confirm_delete' => 'Suppression?',
-	'confirm_delete_package' => 'Voulez-vous vraiment supprimer ce(s) paquet(s)?'."\n\n".'Tous les affectations à des ordinateurs seront perdues et vous ne pourrez plus désinstaller ce paquet via OCO server. Si la touche shift est appuyée, toutes les tâches en attente  ainsi que les dépendances de paquets affectés seront également supprimées.',
+	'confirm_delete_package' => 'Voulez-vous vraiment supprimer ce(s) paquet(s)?'."\n\n".'Tous les affectations à des ordinateurs seront perdues et vous ne pourrez plus désinstaller ce paquet via le serveur OCO. Si la touche shift est appuyée, toutes les tâches en attente  ainsi que les dépendances de paquets affectés seront également supprimées.',
 	'confirm_delete_computer' => 'Êtes-vous certains de vouloir supprimer ce ou ces ordinateurs?'."\n\n".'Tous les affectations à des ordinateurs seront perdues. Si la touche shift est appuyée, toutes les tâches en attente seront également supprimées.',
 	'enter_name' => 'Veuillez saisir un nom',
 	'new_hostname_warning' => 'Attention: Si vous modifiez le nom d\'hôte, vous devez également modifier le nom sur l\'ordinateur, sinon l\'agent ne dialoguera plus avec le serveur!',
@@ -226,7 +226,7 @@ return [
 	'renew' => 'Relancer',
 	'jobs_renewed' => 'Tâches relancées',
 	'no_failed_jobs' => 'Aucune tâche en échec (dans votre sélection) n\'a été trouvée',
-	'default_motd' => 'La documentation ainsi que le bug tracker sont disponibles ici <a href="https://github.com/schorschii/OCO-Server" target="_blank">Github</a> - Vos avis et demandes sont les bienvenues !<br>Si vous avez des questions vous pouvez aussi <a href="https://georg-sieber.de/?page=impressum" target="_blank">obtenir un support professionnel</a>.<br><br>Veuillez aussi consulter la nouvelle doc concernant <a href="https://github.com/schorschii/oco-server/blob/master/docs/Client-API.md" target="_blank">JSON-RPC-API</a>.',
+	'default_motd' => 'La documentation ainsi que le bug tracker sont disponibles sur <a href="https://github.com/schorschii/OCO-Server" target="_blank">Github</a> - Vos avis et idées sont les bienvenues !<br>Si vous avez des questions vous pouvez aussi <a href="https://georg-sieber.de/?page=impressum" target="_blank">obtenir un support professionnel</a>.<br><br>Veuillez aussi consulter la nouvelle doc concernant <a href="https://github.com/schorschii/oco-server/blob/master/docs/Client-API.md" target="_blank">JSON-RPC-API</a>.',
 	'report_secureboot_disabled' => 'SecureBoot Désactivé',
 	'report_packages_without_installations' => 'Paquets sans installations',
 	'report_recognized_software_chrome' => 'Recognized Software Chrome',
@@ -257,7 +257,7 @@ return [
 	'restart_after' => 'Redémarrer après',
 	'shutdown_after' => 'Éteindre après',
 	'timeout_for_reboot' => 'Timeout du redémarrage',
-	'timeout_for_reboot_description' => 'Cela permet à l\'utilisateur de sauvegarder sont travail avant que l\'ordinateur ne redémarre ou ne s\'arrête (s\'aplique uniquement sur les paquets nécessitant un arrêt/redémarrage et si au moins un utilisateur est connecté).',
+	'timeout_for_reboot_description' => 'Cela permet à l\'utilisateur de sauvegarder sont travail avant que l\'ordinateur ne redémarre ou ne s\'arrête (s\'applique uniquement sur les paquets nécessitant un arrêt/redémarrage et si au moins un utilisateur est connecté).',
 	'seconds' => 'Secondes',
 	'minutes' => 'Minutes',
 	'report_predefined' => 'Prédéfini',
@@ -322,13 +322,13 @@ return [
 	'incompatible' => 'Incompatible',
 	'package_conflict' => 'Conflit de paquet',
 	'optional_hint' => '(optionnel)',
-	'payload_corrupt' => 'Payload corrupt',
+	'payload_corrupt' => 'Corruption de la charge',
 	'cannot_move_uploaded_file' => 'Impossible de déplacer le fichier chargé',
 	'cannot_create_zip_file' => 'Impossible de déplacer le fichier ZIP',
 	'invalid_api_key' => 'Clé API non valide',
 	'file_too_big' => 'Fichier trop gros!',
 	'change_icon' => 'Modifier l\'icône',
-	'remove_icon' => 'Retirer l\'îcone',
+	'remove_icon' => 'Retirer l\'icône',
 	'are_you_sure' => 'Êtes-vous certains?',
 	'restart_agent' => 'Redémarrer l\'agent',
 	'interface' => 'Interface',
@@ -358,11 +358,11 @@ return [
 	'new_version' => 'Nouvelle version',
 	'newest' => 'Le plus récent',
 	'oldest' => 'Le plus ancien',
-	'delete_package_family' => 'Delete Package Family',
+	'delete_package_family' => 'Supprimer la famille de paquet',
 	'reinstall' => 'Réinstaller',
 	'force_installation_of_same_version' => 'Créer une tâche d\'installation même si une version identique est déjà installée',
 	'already_installed' => 'Déjà installé',
-	'delete_failed_dependent_packages' => 'The package could not be deleted because there are still dependent packages which are referenced to this package.',
+	'delete_failed_dependent_packages' => 'Le paquet ne peut pas être supprimé car il reste des paquets dépendants référencés dans ce paquet.',
 	'archive_contents' => 'Contenus archivés',
 	'shutdown_waked_computers' => 'Arrêter les ordinateurs',
 	'shutdown_waked_after_completion' => 'Arrêter les ordinateurs à la fin de l\'installation',
@@ -394,7 +394,7 @@ return [
 	'edit_deployment_rule' => 'Éditer la règle de déploiement',
 	'help' => 'Aide',
 	'uninstall_packages' => 'Désinstaller les paquets',
-	'uninstall_job_container_will_be_created' => 'Un container de tâche de déinstallation sera créé.',
+	'uninstall_job_container_will_be_created' => 'Un container de tâche de désinstallation sera créé.',
 	'ldap_accounts_cannot_be_modified' => 'LDAP ne peut être édité qu\'en utilisant votre directory service',
 	'update_available' => 'Mise à jour disponible!',
 	'prerelease_note' => '(Préversion)',
@@ -414,8 +414,8 @@ return [
 	'uninstallation' => 'Désinstallation',
 	'package_content' => 'Package Content',
 	'toggle_multi_line' => 'Basculer le champ de texte en multi-ligne',
-	'toggle_directory_upload' => 'Basculer entre le directory et le fichier chargé',
-	'initiator' => 'Initiator',
+	'toggle_directory_upload' => 'Basculer entre le chemin et le fichier chargé',
+	'initiator' => 'Initiateur',
 	'report_groups' => 'Groupes de rapports',
 	'expand_or_collapse_tree' => '(Double) clic pour étendre ou réduire l\'arborescence',
 	'create_package' => 'Créer le paquet',
@@ -427,7 +427,7 @@ return [
 	'default_view' => 'Vue par défaut',
 	'advanced_view' => 'Vue avancée',
 	'abort_after_error_description' => 'Si vous désactivez cette option, les erreurs seront ignorées et les tâches futures resteront actives',
-	'installation_behaviour' => 'Comportement de l\'nstallation',
+	'installation_behaviour' => 'Comportement de l\'installation',
 	'element_already_exists' => 'L\'élément existe déjà',
 	'add_selected' => 'Ajouter la sélection',
 	'remove_selected' => 'Retirer la sélection',
@@ -492,7 +492,7 @@ return [
 	'create_domain_user' => 'Créer un utilisateur du domaine',
 	'edit_domain_user' => 'Modifier l\'utilisateur du domaine',
 	'no_role' => 'Aucun Rôle',
-	'domain_user_self_service_management_hint' => 'Les utilisateurs du domaine sont uniquement créés en automatique par les agents. As soon as a role is assigned to them (manually or via LDAP sync), they can log in on the self service portal.',
+	'domain_user_self_service_management_hint' => 'Les utilisateurs du domaine sont uniquement créés en automatique par les agents. Dès qu\'un rôle leur est attribué (manuellement ou via une synchro LDAP), ils peuvent se connecter au portail du self-service.',
 	'no_computers_found' => 'Aucun ordinateur de trouvé',
 	'no_packages_found' => 'Aucun paquet de trouvé',
 	'no_jobs_found' => 'Aucune tâche de trouvée',
@@ -533,7 +533,7 @@ return [
 	'create_explicit_uninstall_jobs' => 'Créer une tâche distinct de désinstallation',
 	'package_creation_notes' => '
 		<p>
-			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.
+			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat ou .sh) que vous créez vous-même.
 		</p>
 		<p>
 			Si vous chargez un type de fichier différent d\'un ZIP, un ZIP sera automatiquement créé avec le fichier chargé. Si vous ne sélectionnez aucun fichier, une archive vide sera créée. Cela peut être utile si vous voulez exécuter une commande sans  charge (ex. installer quelque chose avec <code>apt</code> sous Linux).
@@ -542,17 +542,17 @@ return [
 			Exemple de procédure:
 		</p>
 		<ul>
-			<li>EXE setup pour Windows: <code>installer.exe /S</code></li>
-			<li>EXE désinstallation pour Windows: <code>C:\Program Files\MonAppli\unins000.exe /S</code>
-			<br>The (un)installation command depends on the specific software, please consider repacking EXE setups as MSI package.</li>
-			<li>MSI setup pour Windows: <code>msiexec /quiet /i package.msi</code></li>
-			<li>MSI désinstallation pour Windows: <code>msiexec /quiet /x package.msi</code> ou <code>msiexec /quiet /x {PRODUCT-GUID}</code></li>
-			<li>DEB paquet pour Linux: <code>gdebi -n package.deb</code></li>
-			<li>DEB paquet désinstallation pour Linux: <code>apt remove -y packagename</code></li>
-			<li>.app directory for macOS from DMG file: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>
-			<li>.app directory pour macOS uninstallation: <code>rm -R /Applications/program.app</code></li>
-			<li>.pkg package pour macOS: <code>installer -pkg package.pkg -target /</code> (no uninstallation support)</li>
-			<li>Propre script batch/shell: <code>myscript.bat</code> ou <code>myscript.sh</code></li>
+			<li>setup .EXE pour Windows: <code>installer.exe /S</code></li>
+			<li>désinstallation .EXE pour Windows: <code>C:\Program Files\MonAppli\unins000.exe /S</code>
+			<br>La commande (un)installation dépend du logiciel, veuillez envisager de reconditionner les configurations EXE en tant que paquet MSI.</li>
+			<li>setup MSI pour Windows: <code>msiexec /quiet /i package.msi</code></li>
+			<li>désinstallation MSI pour Windows: <code>msiexec /quiet /x package.msi</code> ou <code>msiexec /quiet /x {PRODUCT-GUID}</code></li>
+			<li>paquet .deb pour Linux: <code>gdebi -n package.deb</code></li>
+			<li>paquet .deb désinstallation pour Linux: <code>apt remove -y packagename</code></li>
+			<li>chemin .app pour les fichiers macOS DMG: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>
+			<li>chemin .app pour les désinstallation macOS: <code>rm -R /Applications/program.app</code></li>
+			<li>paquet .pkg pour macOS: <code>installer -pkg package.pkg -target /</code> (pas de support de désinstallation)</li>
+			<li>script batch/shell personnalisé: <code>myscript.bat</code> ou <code>myscript.sh</code></li>
 		</ul>
 		<p>
 			D\'autres exemples peuvent être trouvés dans le <a href="index.php?view=docs&page=install-uninstall-catalog">Install/désinstall catalogue de commandes</a>.
