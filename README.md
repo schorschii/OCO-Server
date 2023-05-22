@@ -5,7 +5,7 @@ The Open Computer Orchestration (OCO) project enables IT administrators to centr
 
 It focuses on easy usability (UI/UX), simplicity (assessable code with minimal external dependencies) and performance (you can manage many computers with minimal server resources).
 
-You can rollout new software or updates (patch management) for any software you like. Just create a OCO package and distribute it to your clients. You can track the progress and view the results (exit code and command output) of every software job. Custom reports allow you to get even more out of your data.
+These features allow you to roll out any new software or updates (patch management) - just create an OCO package and distribute it to your clients. You can track progress and view the results (exit code and command output) of every software job. Custom reports let you to get even more out of your data.
 
 - [OCO Server](https://github.com/schorschii/oco-server)
 - [OCO Server Extensions](https://github.com/schorschii/oco-server-extensions)
