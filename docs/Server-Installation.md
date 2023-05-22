@@ -89,6 +89,8 @@ docker exec -it <CONTAINER-ID> bash
    ```
 10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
 
+If you like this project, please do not forget to star the GitHub repo.
+
 ## Certificate Setup
 There are two common ways to get a certificate for your OCO server. Based on your needs, you have to decide which one you want to go.
 

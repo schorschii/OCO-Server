@@ -1,9 +1,11 @@
 # Open Computer Orchestration
 **Self Hosted / On Premise Desktop and Server Inventory, Management & Software Deployment**
 
-The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines using a comfortable web interface. Additionally, it provides software deployment features, a user-computer logon overview, lists software packages installed on all computers ("recognised software") and features a fine-grained permission/role system.
+The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines using a comfortable web interface. It provides software deployment features, a user-computer logon overview, lists software packages installed on each computer ("recognised software") and features a fine-grained permission/role system.
 
-It focuses on easy usability (good GUI/UX), simplicity (assessable code with minimal external dependencies) and performance (you can manage many computers with minimal server resources).
+It focuses on easy usability (UI/UX), simplicity (assessable code with minimal external dependencies) and performance (you can manage many computers with minimal server resources).
+
+You can rollout new software or updates (patch management) for any software you like. Just create a OCO package and distribute it to your clients. You can track the progress and view the results (exit code and command output) of every software job. Custom reports allow you to get even more out of your data.
 
 - [OCO Server](https://github.com/schorschii/oco-server)
 - [OCO Server Extensions](https://github.com/schorschii/oco-server-extensions)
@@ -52,6 +54,8 @@ For translators: the language files are in `lib/Language/<langcode>.php`. There 
 Quick Links:
 - [Overview](docs/README.md)
 - [Installation Guide](docs/Server-Installation.md)
+
+If you like this project, please do not forget to star the GitHub repo.
 
 ## License
 The Open Computer Orchestration Project is open source, which means you have the freedom to view the source code, report issues and submit improvements on GitHub, which are very welcome. However, a license is required if you want to manage more than 20 computers with this system. Please buy the appropriate licenses [here](https://georg-sieber.de/?page=oco).
