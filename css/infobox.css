@@ -1,0 +1,64 @@
+/* Allgemein */
+.infobox {
+	text-align: justify;
+	padding: 25px;
+	margin-bottom: 20px;
+}
+.infobox h1, .infobox h2, .infobox h3 {
+	text-align: left;
+}
+.infobox.small {
+	padding: 10px;
+	margin-bottom: 10px;
+}
+.infobox > *:first-child {
+	margin-top: 0px;
+	padding-top: 0px;
+}
+.infobox > *:last-child {
+	margin-bottom: 0px;
+	padding-bottom: 0px;
+}
+
+/* Error-Box */
+.infobox.error {
+	background-color: 	rgb(204,0,0);
+	color: 				white;
+	font-weight: 		bold;
+	border: 			1px solid rgb(150,0,0);
+}
+
+/* Warning-Box */
+.infobox.warn {
+	background-color: 	rgba(245,215,110,0.8);
+	border: 			1px solid gray;
+	color: 				rgb(20,20,20);
+}
+
+/* OK-Box */
+.infobox.ok {
+	background-color: 	rgb(76,175,80);
+	color: 				white;
+	font-weight: 		bold;
+	border: 			1px solid rgb(48,139,52);
+}
+
+/* Info-Box */
+.infobox.info {
+	background-color: 	white;
+	color: 				rgb(77,114,222);
+	border: 			1px solid rgb(47,84,192);
+}
+
+/* Ad-Box */
+.infobox.ad {
+	background-color: 	#EEF6FF;
+	border: 			1px solid #2A85BA;
+}
+
+@media (prefers-color-scheme: dark) {
+	.infobox.ad {
+		background-color: 	rgba(238, 246, 255, 0.1);
+		border: 			1px solid #2A85BA;
+	}
+}
