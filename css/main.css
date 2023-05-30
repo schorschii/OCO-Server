@@ -84,7 +84,6 @@ h5 {
 .gallery > a {
 	display: inline-flex;
 	padding: 6px !important;
-	border-radius: 4px !important;
 	transition: background-color 0.2s ease !important;
 	background-image: none !important;
 	background-color: rgb(250,250,250);
@@ -247,6 +246,15 @@ img {
 }
 
 
+#footer {
+	font-size: 90%;
+	padding: 15px;
+	text-align: center;
+	background-color: rgb(250,250,250);
+	border-top: 1px solid rgb(200,200,200) !important;
+}
+
+
 table td, table th {
 	padding: 4px 6px;
 }
@@ -403,7 +411,7 @@ a:not(.nostyle):hover, button:hover, input[type=submit]:hover {
 		color: #2A85BA;
 		border-bottom: 1px solid #2A85BA;
 	}
-	.gallery > a {
+	#footer, .gallery > a {
 		background-color: #161B22;
 		border-color: #30363D !important;
 	}
