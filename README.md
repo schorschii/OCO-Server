@@ -1,3 +1,5 @@
+<img align="right" style="width:180px" src="frontend/img/logo.dyn.svg">
+
 # Open Computer Orchestration
 **Self Hosted / On Premise Desktop and Server Inventory, Management & Software Deployment**
 

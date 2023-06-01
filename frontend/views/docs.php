@@ -49,8 +49,9 @@ if(file_exists(DOCS_PATH.'/'.$fileName) && is_file(DOCS_PATH.'/'.$fileName)) { /
 		$attr = $node->getAttribute('src');
 		if(!empty($attr)) {
 			$prefix = ''; if(startsWith($fileName, '../')) $prefix = '../';
-			$base64 = base64_encode(file_get_contents(DOCS_PATH.'/'.$prefix.$node->getAttribute('src')));
-			$node->setAttribute('src', 'data:image/png;base64,'.$base64);
+			$filePath = DOCS_PATH.'/'.$prefix.$node->getAttribute('src');
+			$base64 = base64_encode(file_get_contents($filePath));
+			$node->setAttribute('src', 'data:'.mime_content_type($filePath).';base64,'.$base64);
 		}
 	}
 	echo $dom->saveHTML();
