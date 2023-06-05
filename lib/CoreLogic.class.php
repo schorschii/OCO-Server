@@ -1199,7 +1199,14 @@ class CoreLogic {
 			foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 				if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
 				if($job->isFailed()) {
-					$this->db->renewStaticJob($job->id);
+					// use the current package procedure, return codes, post action
+					$package = $this->db->selectPackage($job->package_id);
+					$this->db->renewStaticJob($job->id,
+						empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure,
+						empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes,
+						$package->upgrade_behavior,
+						empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action
+					);
 				}
 			}
 
