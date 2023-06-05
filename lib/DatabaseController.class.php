@@ -2369,6 +2369,9 @@ class DatabaseController {
 		}
 	}
 	private function insertOrUpdateSoftware($name, $version, $description) {
+		// description is limited by MySQL index -> cut everything after 350 chars
+		$description = substr($description, 0, 350);
+
 		$this->stmt = $this->dbh->prepare(
 			'SELECT id FROM software WHERE name = :name AND version = :version AND description = :description LIMIT 1'
 		);

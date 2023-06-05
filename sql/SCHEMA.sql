@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `software` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(200) COLLATE utf8mb4_bin NOT NULL,
   `version` varchar(200) COLLATE utf8mb4_bin NOT NULL,
-  `description` varchar(250) COLLATE utf8mb4_bin NOT NULL,
+  `description` varchar(350) COLLATE utf8mb4_bin NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`,`version`,`description`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
