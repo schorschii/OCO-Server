@@ -1881,13 +1881,14 @@ function showDialogRenewFailedStaticJobs(id, defaultName, jobIds) {
 		txtRenewJobContainerJobId.value = jobIds;
 	});
 }
-function renewFailedStaticJobs(id, jobId, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
+function renewFailedStaticJobs(id, jobId, createNewJobContainer, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
 	var params = [];
-	params.push({'key':'create_renew_job_container', 'value':name});
-	params.push({'key':'job_container_id', 'value':id});
+	params.push({'key':'renew_job_container', 'value':id});
 	jobId.toString().split(',').forEach(function(entry) {
 		if(entry.trim() != '') params.push({'key':'job_id[]', 'value':entry});
 	});
+	params.push({'key':'create_new_job_container', 'value':createNewJobContainer ? 1 : 0});
+	params.push({'key':'job_container_name', 'value':name});
 	params.push({'key':'notes', 'value':notes});
 	params.push({'key':'start_time', 'value':startTime});
 	params.push({'key':'end_time', 'value':endTime});

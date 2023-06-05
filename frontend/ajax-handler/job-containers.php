@@ -115,8 +115,9 @@ try {
 	}
 
 	// ----- renew failed jobs in container if requested -----
-	if(!empty($_POST['create_renew_job_container'])
-	&& isset($_POST['job_container_id'])
+	if(isset($_POST['renew_job_container'])
+	&& isset($_POST['create_new_job_container'])
+	&& isset($_POST['job_container_name'])
 	&& isset($_POST['notes'])
 	&& isset($_POST['start_time'])
 	&& isset($_POST['end_time'])
@@ -124,8 +125,9 @@ try {
 	&& isset($_POST['shutdown_waked_after_completion'])
 	&& isset($_POST['priority'])) {
 		die($cl->renewFailedStaticJobsInJobContainer(
-			$_POST['create_renew_job_container'], $_POST['notes'],
-			$_POST['job_container_id'], $_POST['job_id'] ?? [], $_POST['start_time'], $_POST['end_time'],
+			$_POST['renew_job_container'], $_POST['job_id'] ?? [], $_POST['create_new_job_container'],
+			$_POST['job_container_name'], $_POST['notes'],
+			$_POST['start_time'], $_POST['end_time'],
 			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'],
 			0/*sequence mode*/, $_POST['priority']
 		));

@@ -1188,112 +1188,129 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $package->id, 'oco.package.remove_assignment', ['computer_id'=>$computer->id]);
 		return $result;
 	}
-	public function renewFailedStaticJobsInJobContainer($name, $description, $renewJobContainerId, $renewJobIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
+	public function renewFailedStaticJobsInJobContainer($renewJobContainerId, $renewJobIds, $createNewJobContainer, $name, $description, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $sequenceMode=0, $priority=0) {
 		$container = $this->db->selectJobContainer($renewJobContainerId);
 		if(!$container) throw new NotFoundException();
 		$this->checkPermission($container, PermissionManager::METHOD_WRITE);
-		$this->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE);
 
-		// check user input
-		if(empty(trim($name))) {
-			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
-		}
-		if(empty($dateStart) || strtotime($dateStart) === false) {
-			throw new InvalidRequestException(LANG('please_fill_required_fields'));
-		}
-		if(!empty($dateEnd) // check end date if not empty
-		&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
-		) {
-			throw new InvalidRequestException(LANG('end_time_before_start_time'));
-		}
-		if($sequenceMode != Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED
-		&& $sequenceMode != Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
-			throw new InvalidRequestException(LANG('invalid_input'));
-		}
-		if($priority < -100 || $priority > 100) {
-			throw new InvalidRequestException(LANG('invalid_input'));
-		}
+		$this->db->getDbHandle()->beginTransaction();
+		if(empty($createNewJobContainer)) {
 
-		// wol handling
-		$computer_ids = [];
-		foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
-			if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
-			if($job->isFailed()) {
-				$computer_ids[] = $job->computer_id;
-			}
-		}
-		$wolSent = -1;
-		if($useWol) {
-			if(strtotime($dateStart) <= time()) {
-				// instant WOL if start time is already in the past
-				$wolSent = 1;
-				$wolMacAdresses = [];
-				foreach($computer_ids as $cid) {
-					foreach($this->db->selectAllComputerNetworkByComputerId($cid) as $cn) {
-						$wolMacAdresses[] = $cn->mac;
-					}
-				}
-				$wolController = new WakeOnLan($this->db);
-				$wolController->wol($wolMacAdresses, false);
-			} else {
-				$wolSent = 0;
-			}
-		}
-
-		// create new jobs
-		$jobs = [];
-		if($jcid = $this->db->insertJobContainer(
-			$name, $this->su->id??null, $this->du->id??null,
-			$dateStart, empty($dateEnd) ? null : $dateEnd,
-			$description, $wolSent, $shutdownWakedAfterCompletion,
-			$sequenceMode, $priority, $container->agent_ip_ranges,
-			0/*self-service*/
-		)) {
 			foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 				if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
 				if($job->isFailed()) {
-
-					// use the current package procedure, return codes, post action
-					$package = $this->db->selectPackage($job->package_id);
-					$newJob = new Models\StaticJob();
-					$newJob->job_container_id = $jcid;
-					$newJob->computer_id = $job->computer_id;
-					$newJob->package_id = $job->package_id;
-					$newJob->procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
-					$newJob->success_return_codes = empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes;
-					$newJob->upgrade_behavior = $package->upgrade_behavior;
-					$newJob->is_uninstall = $job->is_uninstall;
-					$newJob->download = $package->getFilePath() ? 1 : 0;
-					$newJob->post_action = empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action;
-					$newJob->post_action_timeout = $job->post_action_timeout;
-					$newJob->sequence = $job->sequence;
-
-					if($this->db->insertStaticJob($newJob->job_container_id,
-						$newJob->computer_id, $newJob->package_id,
-						$newJob->procedure, $newJob->success_return_codes,
-						$newJob->upgrade_behavior, $newJob->is_uninstall, $newJob->download,
-						$newJob->post_action, $newJob->post_action_timeout,
-						$newJob->sequence
-					)) {
-						$jobs[] = $newJob;
-						$this->db->deleteStaticJob($job->id);
-					}
+					$this->db->renewStaticJob($job->id);
 				}
 			}
 
-			// check if there are any computer & packages
-			if(count($jobs) == 0) {
-				$this->db->deleteJobContainer($jcid);
-				throw new InvalidRequestException(LANG('no_jobs_created'));
+		} else {
+
+			$this->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE);
+
+			// check user input
+			if(empty(trim($name))) {
+				throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+			}
+			if(empty($dateStart) || strtotime($dateStart) === false) {
+				throw new InvalidRequestException(LANG('please_fill_required_fields'));
+			}
+			if(!empty($dateEnd) // check end date if not empty
+			&& (strtotime($dateEnd) === false || strtotime($dateStart) >= strtotime($dateEnd))
+			) {
+				throw new InvalidRequestException(LANG('end_time_before_start_time'));
+			}
+			if($sequenceMode != Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED
+			&& $sequenceMode != Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED) {
+				throw new InvalidRequestException(LANG('invalid_input'));
+			}
+			if($priority < -100 || $priority > 100) {
+				throw new InvalidRequestException(LANG('invalid_input'));
 			}
 
-			// if instant WOL: check if computers are currently online (to know if we should shut them down after all jobs are done)
-			if(strtotime($dateStart) <= time() && $useWol && $shutdownWakedAfterCompletion) {
-				$this->db->setComputerOnlineStateForWolShutdown($jcid);
+			// wol handling
+			$computer_ids = [];
+			foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
+				if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
+				if($job->isFailed()) {
+					$computer_ids[] = $job->computer_id;
+				}
+			}
+			$wolSent = -1;
+			if($useWol) {
+				if(strtotime($dateStart) <= time()) {
+					// instant WOL if start time is already in the past
+					$wolSent = 1;
+					$wolMacAdresses = [];
+					foreach($computer_ids as $cid) {
+						foreach($this->db->selectAllComputerNetworkByComputerId($cid) as $cn) {
+							$wolMacAdresses[] = $cn->mac;
+						}
+					}
+					$wolController = new WakeOnLan($this->db);
+					$wolController->wol($wolMacAdresses, false);
+				} else {
+					$wolSent = 0;
+				}
 			}
 
-			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username??'SYSTEM', $jcid, 'oco.job_container.create', ['name'>=$name, 'jobs'=>$jobs]);
+			// create new jobs
+			$jobs = [];
+			if($jcid = $this->db->insertJobContainer(
+				$name, $this->su->id??null, $this->du->id??null,
+				$dateStart, empty($dateEnd) ? null : $dateEnd,
+				$description, $wolSent, $shutdownWakedAfterCompletion,
+				$sequenceMode, $priority, $container->agent_ip_ranges,
+				0/*self-service*/
+			)) {
+				foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
+					if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
+					if($job->isFailed()) {
+
+						// use the current package procedure, return codes, post action
+						$package = $this->db->selectPackage($job->package_id);
+						$newJob = new Models\StaticJob();
+						$newJob->job_container_id = $jcid;
+						$newJob->computer_id = $job->computer_id;
+						$newJob->package_id = $job->package_id;
+						$newJob->procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
+						$newJob->success_return_codes = empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes;
+						$newJob->upgrade_behavior = $package->upgrade_behavior;
+						$newJob->is_uninstall = $job->is_uninstall;
+						$newJob->download = $package->getFilePath() ? 1 : 0;
+						$newJob->post_action = empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action;
+						$newJob->post_action_timeout = $job->post_action_timeout;
+						$newJob->sequence = $job->sequence;
+
+						if($this->db->insertStaticJob($newJob->job_container_id,
+							$newJob->computer_id, $newJob->package_id,
+							$newJob->procedure, $newJob->success_return_codes,
+							$newJob->upgrade_behavior, $newJob->is_uninstall, $newJob->download,
+							$newJob->post_action, $newJob->post_action_timeout,
+							$newJob->sequence
+						)) {
+							$jobs[] = $newJob;
+							$this->db->deleteStaticJob($job->id);
+						}
+					}
+				}
+
+				// check if there are any computer & packages
+				if(count($jobs) == 0) {
+					$this->db->deleteJobContainer($jcid);
+					throw new InvalidRequestException(LANG('no_jobs_created'));
+				}
+
+				// if instant WOL: check if computers are currently online (to know if we should shut them down after all jobs are done)
+				if(strtotime($dateStart) <= time() && $useWol && $shutdownWakedAfterCompletion) {
+					$this->db->setComputerOnlineStateForWolShutdown($jcid);
+				}
+
+				$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username??'SYSTEM', $jcid, 'oco.job_container.create', ['name'>=$name, 'jobs'=>$jobs]);
+			}
+
 		}
+		$this->db->getDbHandle()->commit();
+
 	}
 	public function editJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $sequence_mode, $priority, $agent_ip_ranges) {
 		$jc = $this->db->selectJobContainer($id);

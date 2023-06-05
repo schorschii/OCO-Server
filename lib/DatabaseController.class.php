@@ -1747,6 +1747,12 @@ class DatabaseController {
 			':post_action' => $post_action,
 		])) return false;
 	}
+	public function renewStaticJob($id) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE job_container_job SET state = 0, return_code = NULL, message = "", download_started = NULL, execution_started = NULL, execution_finished = NULL WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
+	}
 	public function updateJobExecutionState($job) {
 		if($job instanceof Models\StaticJob) {
 			if($job->state === Models\Job::STATE_DOWNLOAD_STARTED) {

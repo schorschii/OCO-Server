@@ -219,7 +219,7 @@ return [
 	'progress' => 'Progrès',
 	'expired' => 'Expiré',
 	'in_progress' => 'En cours...',
-	'renew_failed_jobs' => 'Relancer les tâches en échec',
+	'renew_failed_jobs' => 'Renouveler les tâches ayant échoué (sélectionnées)',
 	'renew_failed' => 'Relancer les échecs',
 	'renew_jobs_description' => 'Un nouveau container de tâche avec toutes les tâches en échec (sélectionnées) sera créé et ses tâches échues seront supprimées du container d\'origine.',
 	'renew_failed_deployment_rule_jobs_now' => 'Voulez-vous relancer les tâches sélectionnées (ou bien toutes les tâches si rien n\'est sélectionné) dans cette règle de déploiement?',
@@ -531,6 +531,8 @@ return [
 	'upgrade_behavior' => 'Comportement de mise à jour',
 	'keep_other_versions' => 'Conserver les autres versions',
 	'create_explicit_uninstall_jobs' => 'Créer une tâche de désinstallation explicite',
+	'create_new_job_container' => 'Créer un nouveau conteneur de tâches',
+	'mode' => 'Mode',
 	'package_creation_notes' => '
 		<p>
 			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.

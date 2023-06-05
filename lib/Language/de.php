@@ -214,7 +214,7 @@ return [
 	'progress' => 'Fortschritt',
 	'expired' => 'Abgelaufen',
 	'in_progress' => 'Wird verarbeitet...',
-	'renew_failed_jobs' => 'Fehlgeschlagene Jobs erneuern',
+	'renew_failed_jobs' => '(Ausgewählte) fehlgeschlagene Jobs erneuern',
 	'renew_failed' => 'Fehlgeschlagene erneuern',
 	'renew_jobs_description' => 'Es wird ein neuer Jobcontainer mit allen (ausgewählten) fehlgeschlagenen Jobs erstellt. Anschließend werden die fehlgeschlagen Jobs vom ursprünglichen Container gelöscht.',
 	'renew_failed_deployment_rule_jobs_now' => 'Möchten Sie die ausgewählten Jobs (bzw. alle fehlgeschlagenen Jobs im Falle keiner Auswahl) jetzt in dieser Bereitstellungsregel erneuern?',
@@ -526,6 +526,8 @@ return [
 	'upgrade_behavior' => 'Upgrade-Verhalten',
 	'keep_other_versions' => 'Andere Versionen beibehalten',
 	'create_explicit_uninstall_jobs' => 'Explizite Deinstallationssjobs erstellen',
+	'create_new_job_container' => 'Neuen Jobcontainer erstellen',
+	'mode' => 'Modus',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

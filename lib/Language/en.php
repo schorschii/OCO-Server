@@ -219,7 +219,7 @@ return [
 	'progress' => 'Progress',
 	'expired' => 'Expired',
 	'in_progress' => 'In Progress...',
-	'renew_failed_jobs' => 'Renew Failed Jobs',
+	'renew_failed_jobs' => 'Renew (Selected) Failed Jobs',
 	'renew_failed' => 'Renew Failed',
 	'renew_jobs_description' => 'A new job container with all (selected) failed jobs will be created and the failed jobs will be deleted from the original job container.',
 	'renew_failed_deployment_rule_jobs_now' => 'Do you want to renew the selected jobs (or all failed jobs if nothing is selected) in this deployment rule now?',
@@ -531,6 +531,8 @@ return [
 	'upgrade_behavior' => 'Upgrade Behavior',
 	'keep_other_versions' => 'Keep other versions',
 	'create_explicit_uninstall_jobs' => 'Create explicit uninstall jobs',
+	'create_new_job_container' => 'Create new job container',
+	'mode' => 'Mode',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
