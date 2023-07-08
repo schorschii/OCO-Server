@@ -706,7 +706,8 @@ class DatabaseController {
 	public function insertOrUpdateComputerService($computer_id, $status, $name, $metrics, $details) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer_service SET id = LAST_INSERT_ID(id), updated = CURRENT_TIMESTAMP
-			WHERE computer_id = :computer_id AND status = :status AND name = :name AND metrics = :metrics AND details = :details LIMIT 1'
+			WHERE computer_id = :computer_id AND status = :status AND name = :name AND metrics = :metrics AND details = :details
+			AND id IN (SELECT MAX(cs2.id) FROM computer_service cs2 WHERE cs2.computer_id = :computer_id GROUP BY cs2.name)'
 		);
 		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
