@@ -5,7 +5,7 @@ return [
 	'app_subtitle' => 'Client inventory and software delivery made simple',
 	'app_copyright' => '© <a href="https://sieber.systems" target="_blank">Georg Sieber</a> 2020-2023 | <a href="https://github.com/schorschii/oco-server" target="_blank">OCO-Projekt auf Github</a>',
 	'self_service_name' => 'OCO Self Service Portal',
-	'self_service_welcome_text' => 'Das Self-Service-Portal ermöglicht es Ihnen selbstständig neue Software, freigegeben von Ihrem Systemadministrator, auf Ihren Computer zu installieren. Bitte wählen Sie einen Computer oder Paket aus der Seitenleiste aus, um zu beginnen.',
+	'self_service_welcome_text' => 'Das Self-Service-Portal ermöglicht es Ihnen, selbstständig neue Software, freigegeben von Ihrem Systemadministrator, auf Ihren Computer zu installieren. Bitte wählen Sie einen Computer oder Paket aus der Seitenleiste aus, um zu beginnen.',
 	'choose_admin_username' => 'Admin-Benutzername wählen...',
 	'choose_admin_password' => 'Admin-Kennwort wählen...',
 	'confirm_admin_password' => 'Admin-Kennwort bestätigen...',
@@ -148,7 +148,7 @@ return [
 	'confirm_delete_package' => 'Sind Sie sicher, dass Sie das Paket bzw. die Pakete löschen möchten?'."\n\n".'Alle Computerzuordungen gehen verloren und Sie können das Paket nicht mehr über den OCO-Server deinstallieren. Bei gedrückter Umschalt-Taste werden auch alle ausstehenden Jobs und zugewiesene Abhängigkeiten zu anderen Paketen automatisch gelöscht.',
 	'confirm_delete_computer' => 'Sind Sie sicher, dass Sie den Computer bzw. die Computer löschen möchten?'."\n\n".'Alle Paketzuordungen gehen verloren. Bei gedrückter Umschalt-Taste werden auch alle ausstehenden Jobs automatisch gelöscht.',
 	'enter_name' => 'Bitte geben Sie einen Namen ein',
-	'new_hostname_warning' => 'Achtung: Wenn Sie den Hostnamen ändern müssen Sie den Namen auch auf dem Computer ändern, andernfalls kann der Agent keine Verbindung mehr mit dem Server herstellen!',
+	'new_hostname_warning' => 'Achtung: Wenn Sie den Hostnamen ändern, müssen Sie den Namen auch auf dem Computer ändern, andernfalls kann der Agent keine Verbindung mehr mit dem Server herstellen!',
 	'hostname_info' => 'Der Hostname muss exakt mit dem Hostnamen des zu verwaltenden Computers übereinstimmen.',
 	'confirm_remove_package_assignment' => 'Möchten Sie die Computer-Paket-Zuordnung wirklich aufheben? Normalerweise sollte das Paket deinstalliert werden.',
 	'confirm_delete_group' => 'Möchten Sie die Gruppe(n) wirklich löschen? Die Objekte in der Gruppe werden nicht gelöscht.',
@@ -216,7 +216,7 @@ return [
 	'in_progress' => 'Wird verarbeitet...',
 	'renew_failed_jobs' => '(Ausgewählte) fehlgeschlagene Jobs erneuern',
 	'renew_failed' => 'Fehlgeschlagene erneuern',
-	'renew_jobs_description' => 'Es wird ein neuer Jobcontainer mit allen (ausgewählten) fehlgeschlagenen Jobs erstellt. Anschließend werden die fehlgeschlagen Jobs vom ursprünglichen Container gelöscht.',
+	'renew_jobs_description' => 'Es wird ein neuer Jobcontainer mit allen (ausgewählten) fehlgeschlagenen Jobs erstellt. Anschließend werden die fehlgeschlagen Jobs aus dem ursprünglichen Container gelöscht.',
 	'renew_failed_deployment_rule_jobs_now' => 'Möchten Sie die ausgewählten Jobs (bzw. alle fehlgeschlagenen Jobs im Falle keiner Auswahl) jetzt in dieser Bereitstellungsregel erneuern?',
 	'renew' => 'Erneuern',
 	'jobs_renewed' => 'Jobs wurden erneuert',
@@ -318,7 +318,7 @@ return [
 	'package_conflict' => 'Paketkonflikt',
 	'optional_hint' => '(optional)',
 	'payload_corrupt' => 'Payload fehlerhaft',
-	'cannot_move_uploaded_file' => 'Kann hochgeladenene Datei nicht verschieben',
+	'cannot_move_uploaded_file' => 'Kann hochgeladene Datei nicht verschieben',
 	'cannot_create_zip_file' => 'Kann ZIP-Datei nicht anlegen',
 	'invalid_api_key' => 'Ungültiger API-Key',
 	'file_too_big' => 'Datei zu groß!',
@@ -374,9 +374,9 @@ return [
 	'days' => 'Tag(e)',
 	'hours' => 'Stunde(n)',
 	'minutes' => 'Minute(n)',
-	'object_deleted' => 'Objekt(e) wurden gelöscht',
+	'object_deleted' => 'Objekt(e) wurde(n) gelöscht',
 	'group_deleted' => 'Gruppe wurde gelöscht',
-	'object_removed_from_group' => 'Objekt(e) wurden aus Gruppe entfernt',
+	'object_removed_from_group' => 'Objekt(e) wurde(n) aus Gruppe entfernt',
 	'create_computer' => 'Computer erstellen',
 	'create_system_user' => 'Systembenutzer erstellen',
 	'create_report' => 'Report erstellen',
@@ -390,12 +390,12 @@ return [
 	'help' => 'Hilfe',
 	'uninstall_packages' => 'Pakete deinstallieren',
 	'uninstall_job_container_will_be_created' => 'Es wird ein Deinstallations-Jobcontainer erstellt.',
-	'ldap_accounts_cannot_be_modified' => 'LDAP-Accounts können nur über Ihrem Verzeichnisdienst bearbeitet werden',
+	'ldap_accounts_cannot_be_modified' => 'LDAP-Accounts können nur über Ihren Verzeichnisdienst bearbeitet werden',
 	'update_available' => 'Update verfügbar!',
 	'prerelease_note' => '(Vorabversion)',
 	'permission_denied' => 'Zugriff verweigert. Sie besitzen nicht die notwendigen Rechte.',
-	'web_interface_login_not_allowed' => 'Es ist diesem Benutzer nicht gestattet sich am Web Interface anzumelden',
-	'api_login_not_allowed' => 'Es ist diesem Benutzer nicht gestattet sich an der API anzumelden',
+	'web_interface_login_not_allowed' => 'Es ist diesem Benutzer nicht gestattet, sich am Web Interface anzumelden',
+	'api_login_not_allowed' => 'Es ist diesem Benutzer nicht gestattet, sich an der API anzumelden',
 	'role' => 'Rolle',
 	'agent_ip_range' => 'Agenten-IP-Bereich',
 	'invalid_ip_address' => 'Ungültige IP-Adresse',
@@ -421,7 +421,7 @@ return [
 	'ldap_sync' => 'LDAP-Synchronisierung',
 	'default_view' => 'Standardansicht',
 	'advanced_view' => 'Erweiterte Ansicht',
-	'abort_after_error_description' => 'Wenn Sie diese Option deaktivieren werden Fehler ignoriert und nachfolgende Jobs trotzdem ausgeführt',
+	'abort_after_error_description' => 'Wenn Sie diese Option deaktivieren, werden Fehler ignoriert und nachfolgende Jobs trotzdem ausgeführt',
 	'installation_behaviour' => 'Installationsverhalten',
 	'element_already_exists' => 'Element existiert bereits',
 	'add_selected' => 'Markierte hinzufügen',
@@ -470,7 +470,7 @@ return [
 	'php_version' => 'PHP-Version',
 	'roles' => 'Rollen',
 	'permission_json' => 'Berechtigungen (JSON-Format)',
-	'permission_json_docs' => 'Achtung: Syntaxfehler führen dazu, dass die Benutzer gar keine Berechtigungen mehr haben. Bitte lesen Sie die Dokumentation um zu erfahren, wie die JSON-Policies geschrieben werden.',
+	'permission_json_docs' => 'Achtung: Syntaxfehler führen dazu, dass die Benutzer gar keine Berechtigungen mehr haben. Bitte lesen Sie die Dokumentation, um zu erfahren, wie die JSON-Policies geschrieben werden.',
 	'system_users' => 'Systembenutzer',
 	'create_system_user_role' => 'Systembenutzerrolle erstellen',
 	'edit_system_user_role' => 'Systembenutzerrolle bearbeiten',
@@ -487,7 +487,7 @@ return [
 	'create_domain_user' => 'Domänenbenutzer erstellen',
 	'edit_domain_user' => 'Domänenbenutzer bearbeiten',
 	'no_role' => 'Keine Rolle',
-	'domain_user_self_service_management_hint' => 'Domänenbenutzer werden grundsätzlich nur automatisch von Agenten angelegt. Sobald diesen manuell oder via LDAP-Sync eine Rolle zugewiesen wird können sie sich am Self-Service-Portal anmelden.',
+	'domain_user_self_service_management_hint' => 'Domänenbenutzer werden grundsätzlich nur automatisch von Agenten angelegt. Sobald diesen manuell oder via LDAP-Sync eine Rolle zugewiesen wird, können sie sich am Self-Service-Portal anmelden.',
 	'no_computers_found' => 'Keine Computer gefunden',
 	'no_packages_found' => 'Keine Pakete gefunden',
 	'no_jobs_found' => 'Keine Jobs gefunden',
@@ -506,7 +506,7 @@ return [
 	'updated' => 'Aktualisiert',
 	'status_reported' => 'Status gemeldet',
 	'configuration_json' => 'Konfiguration (JSON-Format)',
-	'configuration_json_docs' => 'Bitte lesen Sie die Dokumentation um zu erfahren, wie die Konfiguration auszusehen hat.',
+	'configuration_json_docs' => 'Bitte lesen Sie die Dokumentation, um zu erfahren, wie die Konfiguration auszusehen hat.',
 	'buy_license' => 'Lizenz kaufen',
 	'package_depot_path' => 'Paket-Depot-Pfad',
 	'no_wol_satellite_server_configured' => 'Keine WOL-Satelliten-Server konfiguriert',
@@ -533,7 +533,7 @@ return [
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
 		</p>
 		<p>
-			Wenn Sie einen anderen Dateityp als ein ZIP-Archiv hochladen wird automatisch ein ZIP-Archiv mit der hochgeladenen Datei erstellt. Wenn Sie keine Datei auswählen wird ein leeres Archiv erstellt. Das kann nützlich sein, wenn Sie nur einen Befehl ohne bestimmte Dateien ausführen möchten (z.B. um etwas via <code>apt</code> unter Linux zu installieren).
+			Wenn Sie einen anderen Dateityp als ein ZIP-Archiv hochladen, wird automatisch ein ZIP-Archiv mit der hochgeladenen Datei erstellt. Wenn Sie keine Datei auswählen, wird ein leeres Archiv erstellt. Das kann nützlich sein, wenn Sie nur einen Befehl ohne bestimmte Dateien ausführen möchten (z.B. um etwas via <code>apt</code> unter Linux zu installieren).
 		</p>
 		<p>
 			Beispiel-Prozeduren:
@@ -541,7 +541,7 @@ return [
 		<ul>
 			<li>EXE-Setup unter Windows: <code>installer.exe /S</code>
 			<li>EXE-Deinstallation unter Windows: <code>C:\Program Files\MyProgram\unins000.exe /S</code>
-			<br>Das (De-)Installations-Kommando ist von Software zu Software unterschiedlich, bitte ziehen Sie in Betracht EXE-Setups als MSI-Paket neu zu packen.</li>
+			<br>Das (De-)Installations-Kommando ist von Software zu Software unterschiedlich; bitte ziehen Sie in Betracht, EXE-Setups als MSI-Paket neu zu packen.</li>
 			<li>MSI-Installation unter Windows: <code>msiexec /quiet /i package.msi</code></li>
 			<li>MSI-Deinstallation unter Windows: <code>msiexec /quiet /x package.msi</code> oder <code>msiexec /quiet /x {PRODUCT-GUID}</code></li>
 			<li>DEB-Paket unter Linux: <code>gdebi -n package.deb</code></li>
