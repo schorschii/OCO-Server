@@ -246,6 +246,7 @@ function escapeHTML(unsafe) {
 
 // ======== AJAX OPERATIONS ========
 var currentExplorerContentUrl = null;
+var lastExplorerTreeContent = '';
 function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoader=true, errorCallback=null) {
 	let timer = null;
 	if(objID == 'explorer-content') {
@@ -263,7 +264,14 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 		if(this.status == 200) {
 			var object = obj(objID);
 			if(object != null) {
-				object.innerHTML = this.responseText;
+				if(objID == 'explorer-tree') {
+					if(lastExplorerTreeContent != this.responseText) {
+						object.innerHTML = this.responseText;
+						lastExplorerTreeContent = this.responseText;
+					}
+				} else {
+					object.innerHTML = this.responseText;
+				}
 				if(objID == 'explorer-content') {
 					// add to history
 					if(addToHistory) rewriteUrlContentParameter();
