@@ -78,10 +78,10 @@ docker exec -it <CONTAINER-ID> bash
      ```
      </details>
    - Please refer to the section "Certificate Setup" how to obtain appropriate certificates.
-6. Adjust your PHP config (`/etc/php/x.x/apache2/php.ini`) to allow uploading packages of larger size  
-  (pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size` and `max_execution_time`).
-7. Adjust you Apache config to allow uploading packages of larger size  
-  (pick a value that fit your needs for the settings `LimitRequestBody`, `SSLRenegBufferSize`).
+6. Adjust your PHP config (`/etc/php/x.x/apache2/php.ini`) to allow uploading packages of larger size.
+   Pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size`, `max_execution_time`, `max_input_time`, `memory_limit`. Also, please set your timezone using `date.timezone`.
+7. Adjust you Apache config to allow uploading packages of larger size.
+   Pick a value that fit your needs for the settings `LimitRequestBody`, `SSLRenegBufferSize`.
 8. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
 9. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
    ```
