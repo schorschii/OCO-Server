@@ -596,6 +596,7 @@ function refreshContentExplorer(url) {
 	ajaxRequest(url, 'explorer-content');
 }
 function refreshContentPackageNew(name=null, version=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, upgrade_behavior=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null) {
+	toggleAutoRefresh(false);
 	ajaxRequest('views/package-new.php?' +
 		(name ? '&name='+encodeURIComponent(name) : '') +
 		(version ? '&version='+encodeURIComponent(version) : '') +
@@ -614,6 +615,7 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 	);
 }
 function refreshContentDeploy(packages=[], packageGroups=[], computers=[], computerGroups=[]) {
+	toggleAutoRefresh(false);
 	ajaxRequest('views/job-container-new.php', 'explorer-content', function(){
 		addToDeployTarget(computerGroups, divTargetComputerList, 'target_computer_groups');
 		addToDeployTarget(computers, divTargetComputerList, 'target_computers');
