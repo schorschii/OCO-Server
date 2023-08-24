@@ -253,7 +253,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 		currentExplorerContentUrl = url;
 		showLoader(true);
 		// show fullscreen loading animation only if query takes longer than 200ms (otherwise annoying)
-		if(showFullscreenLoader) timer = setTimeout(function(){ showLoader2(true) }, 200);
+		if(showFullscreenLoader) timer = setTimeout(showLoader2, 200, true);
 	}
 	var xhttp = new XMLHttpRequest();
 	xhttp.userCancelled = false;
@@ -265,6 +265,8 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 			var object = obj(objID);
 			if(object != null) {
 				if(objID == 'explorer-tree') {
+					// only update content if new content differs to avoid page jumps
+					// this info must be stored in a sparate variable since we manipulate classes to restore tree view expanded/collapsed states
 					if(lastExplorerTreeContent != this.responseText) {
 						object.innerHTML = this.responseText;
 						lastExplorerTreeContent = this.responseText;
@@ -367,6 +369,7 @@ function initLinks(root) {
 		// open explorer-content links via AJAX, do not reload the complete page
 		links[i].addEventListener('click', function(e) {
 			e.preventDefault();
+			toggleAutoRefresh(false);
 			var urlParams = new URLSearchParams(this.getAttribute('href').split('?')[1]);
 			var ajaxUrlParams = [];
 			for(const entry of urlParams.entries()) {
@@ -549,7 +552,7 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 		}
 		// schedule next refresh after loading finished
 		if(handleAutoRefresh && refreshSidebarTimer != null) {
-			refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
+			refreshSidebarTimer = setTimeout(refreshSidebar, REFRESH_SIDEBAR_TIMEOUT, null, true);
 		}
 		// restore previous expand states
 		for(var key in refreshSidebarState) {
@@ -572,10 +575,15 @@ function refreshContent(callback=null, handleAutoRefresh=false) {
 	}, false, !handleAutoRefresh);
 }
 function scheduleNextContentRefresh() {
-	refreshContentTimer = setTimeout(function(){ refreshContent(null, true) }, REFRESH_CONTENT_TIMEOUT);
+	if(refreshContentTimer) {
+		clearTimeout(refreshContentTimer);
+	}
+	refreshContentTimer = setTimeout(refreshContent, REFRESH_CONTENT_TIMEOUT, null, true);
 }
-function toggleAutoRefresh() {
-	if(refreshContentTimer == null) {
+function toggleAutoRefresh(force=null) {
+	let newState = (refreshContentTimer == null);
+	if(force != null) newState = force;
+	if(newState) {
 		scheduleNextContentRefresh();
 		btnRefresh.classList.add('active');
 	} else {
