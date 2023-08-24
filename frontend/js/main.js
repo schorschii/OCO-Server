@@ -270,22 +270,22 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 					if(lastExplorerTreeContent != this.responseText) {
 						object.innerHTML = this.responseText;
 						lastExplorerTreeContent = this.responseText;
+						initLinks(object);
 					}
 				} else {
 					object.innerHTML = this.responseText;
+					if(objID == 'explorer-content') {
+						// add to history
+						if(addToHistory) rewriteUrlContentParameter();
+						// set page title
+						let titleObject = obj('page-title');
+						if(titleObject != null) document.title = titleObject.innerText;
+						else document.title = LANG['app_name'];
+						// init newly loaded tables
+						initTables(object);
+					}
+					initLinks(object);
 				}
-				if(objID == 'explorer-content') {
-					// add to history
-					if(addToHistory) rewriteUrlContentParameter();
-					// set page title
-					let titleObject = obj('page-title');
-					if(titleObject != null) document.title = titleObject.innerText;
-					else document.title = LANG['app_name'];
-					// init newly loaded tables
-					initTables(object)
-				}
-				// init explorer links
-				initLinks(object)
 			}
 			if(callback != undefined && typeof callback == 'function') {
 				callback(this.responseText);
