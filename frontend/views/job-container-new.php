@@ -121,7 +121,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 				<input type='text' id='txtDeploySearchComputers' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divComputerList, this.value)'>
 			</div>
 			<div id='divComputerList' class='box listSearchList withContextButton'>
-				<a class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1)'><?php echo LANG('all_computer'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1);return false'><?php echo LANG('all_computer'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG('computer_groups'); ?>
 					<div class='filler'></div>
@@ -134,7 +134,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 				<?php echoTargetComputerReportOptions(); ?>
 			</div>
 			<div id='divComputerListHome' class='box listSearchList hidden'>
-				<a class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1)'><?php echo LANG('all_computer'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1);return false'><?php echo LANG('all_computer'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG('computer_groups'); ?>
 					<div class='filler'></div>
@@ -169,7 +169,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 				<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divPackageList, this.value)'>
 			</div>
 			<div id='divPackageList' class='box listSearchList withContextButton'>
-				<a class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1)'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1);return false'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG('package_groups'); ?>
 					<div class='filler'></div>
@@ -182,7 +182,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 				<?php echoTargetPackageReportOptions(); ?>
 			</div>
 			<div id='divPackageListHome' class='box listSearchList hidden'>
-				<a class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1)'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1);return false'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG('package_groups'); ?>
 					<div class='filler'></div>
@@ -245,7 +245,7 @@ function echoTargetComputerGroupOptions($parent=null) {
 		if(!$cl->checkPermission($cg, PermissionManager::METHOD_READ, false)
 		&& !$cl->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-		echo "<a class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.")'><input type='checkbox' name='computer_groups' value='".$cg->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
+		echo "<a href='#' class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.");return false'><input type='checkbox' name='computer_groups' value='".$cg->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
 		echo htmlspecialchars($cg->name);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";
@@ -262,7 +262,7 @@ function echoTargetComputerReportOptions($parent=null) {
 		if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 
 		$displayName = LANG($r->name);
-		echo "<a class='blockListItem' onclick='refreshDeployComputerList(null, ".$r->id.")'><input type='checkbox' name='computer_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
+		echo "<a href='#' class='blockListItem' onclick='refreshDeployComputerList(null, ".$r->id.");return false'><input type='checkbox' name='computer_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
 		echo htmlspecialchars($displayName);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";
@@ -276,7 +276,7 @@ function echoTargetPackageGroupOptions($parent=null) {
 		if(!$cl->checkPermission($pg, PermissionManager::METHOD_READ, false)
 		&& !$cl->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'><input type='checkbox' name='package_groups' value='".$pg->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
+		echo "<a href='#' class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.");return false'><input type='checkbox' name='package_groups' value='".$pg->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
 		echo htmlspecialchars($pg->name);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";
@@ -293,7 +293,7 @@ function echoTargetPackageReportOptions($parent=null) {
 		if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 
 		$displayName = LANG($r->name);
-		echo "<a class='blockListItem' onclick='refreshDeployPackageList(null, ".$r->id.")'><input type='checkbox' name='package_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
+		echo "<a href='#' class='blockListItem' onclick='refreshDeployPackageList(null, ".$r->id.");return false'><input type='checkbox' name='package_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
 		echo htmlspecialchars($displayName);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";

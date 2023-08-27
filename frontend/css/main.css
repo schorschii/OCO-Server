@@ -281,7 +281,7 @@ h3 {
 #header #search-results a:focus,
 #header #search-results a:hover,
 #header #search-results a:active,
-.blockListItem:focus,
+.blockListItem:focus, .blockListItem:focus-within,
 .blockListItem:hover,
 .blockListItem:active {
 	background-color: #eeeeee;
@@ -1568,7 +1568,7 @@ div.stickytable > table.list tfoot {
 	#header #search-results a:focus,
 	#header #search-results a:hover,
 	#header #search-results a:active,
-	.blockListItem:focus,
+	.blockListItem:focus, .blockListItem:focus-within,
 	.blockListItem:hover,
 	.blockListItem:active {
 		background-color: #30363d;

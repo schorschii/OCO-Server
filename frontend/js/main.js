@@ -1176,16 +1176,19 @@ function refreshDeployComputerList(groupId=null, reportId=null) {
 	if(groupId != null) {
 		params.push({'key':'get_computer_group_members', 'value':groupId});
 		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divComputerList', function(){
+			divComputerList.firstChild.focus();
 			refreshDeployComputerCount();
 		});
 	}
 	else if(reportId != null) {
 		params.push({'key':'get_computer_report_results', 'value':reportId});
 		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divComputerList', function(){
+			divComputerList.firstChild.focus();
 			refreshDeployComputerCount();
 		});
 	} else {
 		divComputerList.innerHTML = divComputerListHome.innerHTML;
+		divComputerList.focus();
 		refreshDeployComputerCount();
 	}
 }
@@ -1203,16 +1206,19 @@ function refreshDeployPackageList(groupId=null, reportId=null) {
 	if(groupId != null) {
 		params.push({'key':'get_package_group_members', 'value':groupId});
 		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divPackageList', function(){
+			divPackageList.firstChild.focus();
 			refreshDeployPackageCount();
 		});
 	}
 	else if(reportId != null) {
 		params.push({'key':'get_package_report_results', 'value':reportId});
 		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divPackageList', function(){
+			divPackageList.firstChild.focus();
 			refreshDeployPackageCount();
 		});
 	} else {
 		divPackageList.innerHTML = divPackageListHome.innerHTML;
+		divPackageList.focus();
 		refreshDeployPackageCount();
 	}
 }

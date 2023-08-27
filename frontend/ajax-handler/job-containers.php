@@ -12,7 +12,7 @@ try {
 		if(empty($group)) $computers = $db->selectAllComputer();
 		else $computers = $db->selectAllComputerByComputerGroupId($group->id);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
+		echo "<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList();return false'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($computers as $c) {
 			if(!$cl->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
@@ -23,7 +23,7 @@ try {
 	if(isset($_GET['get_computer_report_results'])) {
 		$reportResult = $cl->executeReport($_GET['get_computer_report_results']);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
+		echo "<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList();return false'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($reportResult as $row) {
 			if(empty($row['computer_id'])) continue;
 			$c = $db->selectComputer($row['computer_id']);
@@ -39,7 +39,7 @@ try {
 		if(empty($group)) $packages = $db->selectAllPackage(true);
 		else $packages = $db->selectAllPackageByPackageGroupId($group->id);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
+		echo "<a href='#' class='blockListItem noSearch big' onclick='refreshDeployPackageList();return false'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($packages as $p) {
 			if(!$cl->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
@@ -50,7 +50,7 @@ try {
 	if(isset($_GET['get_package_report_results'])) {
 		$reportResult = $cl->executeReport($_GET['get_package_report_results']);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
+		echo "<a href='#' class='blockListItem noSearch big' onclick='refreshDeployPackageList();return false'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($reportResult as $row) {
 			if(empty($row['package_id'])) continue;
 			$p = $db->selectPackage($row['package_id']);
