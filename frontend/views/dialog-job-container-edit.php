@@ -41,6 +41,12 @@ require_once('../session.php');
 		</td>
 	</tr>
 	<tr>
+		<th><?php echo LANG('time_frame'); ?></th>
+		<td>
+			<input type='text' class='fullwidth' id='txtEditJobContainerTimeFrames' placeholder='<?php echo LANG('example').':'; ?> 6:00-8:00, SUN 0:00-23:59'></input>
+		</td>
+	</tr>
+	<tr>
 		<th><?php echo LANG('priority'); ?></th>
 		<td>
 			<div class='inputWithLabel' title='<?php echo LANG('priority_description'); ?>'>
@@ -73,6 +79,7 @@ require_once('../session.php');
 		chkEditJobContainerSequenceMode.checked,
 		sldEditJobContainerPriority.value,
 		txtEditJobContainerAgentIpRanges.value,
+		txtEditJobContainerTimeFrames.value,
 		txtEditJobContainerNotes.value,
 	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('change'); ?></button>
 </div>

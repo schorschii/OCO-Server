@@ -15,6 +15,7 @@ class JobContainer {
 	public $sequence_mode;
 	public $priority;
 	public $agent_ip_ranges;
+	public $time_frames;
 	public $self_service;
 	public $created;
 	public $created_by_system_user_id;

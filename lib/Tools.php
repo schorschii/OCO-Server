@@ -124,6 +124,33 @@ function isIpInRange($ip, $range) {
 	return ($ipNetBits === $netBits);
 }
 
+// time range operations
+function isTimeInRange($strRange, $time=null) {
+	if(!$time) $time = time();
+
+	$strRange = strtoupper($strRange);
+	if(startsWith($strRange, 'MON')
+	|| startsWith($strRange, 'TUE')
+	|| startsWith($strRange, 'WED')
+	|| startsWith($strRange, 'THU')
+	|| startsWith($strRange, 'FRI')
+	|| startsWith($strRange, 'SAT')
+	|| startsWith($strRange, 'SUN')) {
+		if(substr($strRange, 0, 3) != strtoupper(date('D', $time))) {
+			return false;
+		}
+		$strRange = trim(substr($strRange, 3));
+	}
+
+	$parts = explode('-', $strRange);
+	if(count($parts) != 2) throw new Exception(LANG('invalid_time_input'));
+	$currentDateTime = DateTime::createFromFormat('H:i', date('H:i', $time));
+	$startDateTime = DateTime::createFromFormat('H:i', $parts[0]);
+	$endDateTime = DateTime::createFromFormat('H:i', $parts[1]);
+	if(!$startDateTime || !$endDateTime) throw new Exception(LANG('invalid_time_input'));
+	return ($currentDateTime > $startDateTime && $currentDateTime < $endDateTime);
+}
+
 function echoComputerGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
 	foreach($cl->getComputerGroups($parentId) as $g) {
 		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";

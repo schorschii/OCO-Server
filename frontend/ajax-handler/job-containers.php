@@ -65,23 +65,26 @@ try {
 	if(isset($_POST['create_install_job_container'])) {
 		// compile constraints
 		$agentIpRanges = [];
-		if(!empty($_POST['constraint_ip_range'])) {
-			if(is_string($_POST['constraint_ip_range'])) {
-				$agentIpRanges[] = $_POST['constraint_ip_range'];
+		if(!empty($_POST['agent_ip_ranges']) && is_string($_POST['agent_ip_ranges'])) {
+			foreach(explode(',', $_POST['agent_ip_ranges']) as $range) {
+				$agentIpRanges[] = $range;
 			}
-			elseif(is_array($_POST['constraint_ip_range'])) {
-				$agentIpRanges = $_POST['constraint_ip_range'];
+		}
+		$timeFrames = [];
+		if(!empty($_POST['time_frames']) && is_string($_POST['time_frames'])) {
+			foreach(explode(',', $_POST['time_frames']) as $range) {
+				$timeFrames[] = $range;
 			}
 		}
 		// create container + jobs
 		die($cl->deploy(
-			$_POST['create_install_job_container'], $_POST['description'],
+			$_POST['create_install_job_container'], $_POST['description'] ?? '',
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['computer_report_id'] ?? [],
 			$_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [], $_POST['package_report_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
 			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['force_install_same_version'] ?? 0,
-			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, $agentIpRanges
+			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, $agentIpRanges, $timeFrames
 		));
 	}
 
@@ -150,7 +153,22 @@ try {
 	&& isset($_POST['sequence_mode'])
 	&& isset($_POST['priority'])
 	&& isset($_POST['agent_ip_ranges'])
+	&& isset($_POST['time_frames'])
 	&& isset($_POST['notes'])) {
+		// compile constraints
+		$agentIpRanges = [];
+		if(!empty($_POST['agent_ip_ranges']) && is_string($_POST['agent_ip_ranges'])) {
+			foreach(explode(',', $_POST['agent_ip_ranges']) as $range) {
+				$agentIpRanges[] = $range;
+			}
+		}
+		$timeFrames = [];
+		if(!empty($_POST['time_frames']) && is_string($_POST['time_frames'])) {
+			foreach(explode(',', $_POST['time_frames']) as $range) {
+				$timeFrames[] = $range;
+			}
+		}
+		// update
 		$cl->editJobContainer($_POST['edit_job_container_id'],
 			$_POST['name'],
 			$_POST['enabled'],
@@ -159,7 +177,8 @@ try {
 			$_POST['notes'],
 			$_POST['sequence_mode'],
 			$_POST['priority'],
-			$_POST['agent_ip_ranges']
+			$agentIpRanges,
+			$timeFrames
 		);
 		die();
 	}

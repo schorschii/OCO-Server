@@ -52,12 +52,18 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 			</tr>
 			<tr class='tabadditionals <?php if($tab!='advanced') echo 'hidden'; ?>' tab='advanced'>
 				<th><?php echo LANG('description'); ?></th>
-				<td>
+				<td colspan='3'>
 					<textarea id='txtDescription'></textarea>
 				</td>
+			</tr>
+			<tr class='tabadditionals <?php if($tab!='advanced') echo 'hidden'; ?>' tab='advanced'>
 				<th><?php echo LANG('agent_ip_range'); ?></th>
 				<td>
 					<input type='text' id='txtConstraintIpRange' placeholder='<?php echo LANG('example').':'; ?> 192.168.2.0/24, CAFF:EECA:FFEE:0000::/64'></input>
+				</td>
+				<th><?php echo LANG('time_frame'); ?></th>
+				<td>
+					<input type='text' id='txtConstraintTimeRange' placeholder='<?php echo LANG('example').':'; ?> 6:00-8:00, SUN 0:00-23:59'></input>
 				</td>
 			</tr>
 			<tr class='tabadditionals <?php if($tab!='advanced') echo 'hidden'; ?>' tab='advanced'>
@@ -234,7 +240,8 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 			txtRestartTimeout.value,
 			getCheckedRadioValue("sequence_mode"),
 			sldPriority.value,
-			txtConstraintIpRange.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+			txtConstraintIpRange.value,
+			txtConstraintTimeRange.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 </div>
 
 <?php

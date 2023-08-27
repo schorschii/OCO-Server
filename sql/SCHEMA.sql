@@ -576,6 +576,7 @@ CREATE TABLE IF NOT EXISTS `job_container` (
   `sequence_mode` tinyint(4) NOT NULL DEFAULT 0,
   `priority` tinyint(4) NOT NULL DEFAULT 0,
   `agent_ip_ranges` text DEFAULT NULL,
+  `time_frames` text DEFAULT NULL,
   `self_service` tinyint(4) NOT NULL DEFAULT 0,
   `created` datetime NOT NULL DEFAULT current_timestamp(),
   `created_by_system_user_id` int(11) DEFAULT NULL,

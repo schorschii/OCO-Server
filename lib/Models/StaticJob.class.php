@@ -15,6 +15,7 @@ class StaticJob extends Job {
 	public $job_container_sequence_mode;
 	public $job_container_priority;
 	public $job_container_agent_ip_ranges;
+	public $job_container_time_frames;
 	public $job_container_self_service;
 
 }

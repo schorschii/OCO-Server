@@ -229,25 +229,47 @@ switch($srcdata['method']) {
 
 			// get pending jobs
 			foreach($db->selectAllPendingAndActiveJobForAgentByComputerId($computer->id) as $pj) {
-				// constraint check
+				// IP constraint check
 				if(!empty($pj->job_container_agent_ip_ranges)) {
-					$continue = true;
-					foreach(explode(',', $pj->job_container_agent_ip_ranges) as $range) {
+					$ignore = true;
+					foreach(explode(',', $pj->job_container_agent_ip_ranges) as $rangex) {
+						$range = trim($rangex);
 						if(startsWith($range, '!')) {
 							if(isIpInRange($_SERVER['REMOTE_ADDR'], ltrim($range, '!'))) {
-								// agent IP is in that range but should not be - ignore this job
+								// agent IP is in illegal range - ignore this job
 								continue 2;
 							}
 						} else {
 							if(isIpInRange($_SERVER['REMOTE_ADDR'], $range)) {
 								// agent IP is in desired range - abort check and send job to agent
-								$continue = false;
+								$ignore = false;
 								break;
 							}
 						}
 					}
 					// continue if agent is not in one of the desired IP ranges
-					if($continue) continue;
+					if($ignore) continue;
+				}
+				// time frame constraint check
+				if(!empty($pj->job_container_time_frames)) {
+					$ignore = true;
+					foreach(explode(',', $pj->job_container_time_frames) as $rangex) {
+						$range = trim($rangex);
+						if(startsWith($range, '!')) {
+							if(isTimeInRange(ltrim($range, '!'))) {
+								// current time is in illegal range - ignore this job
+								continue 2;
+							}
+						} else {
+							if(isTimeInRange($range)) {
+								// current time is in desired range - abort check and send job to agent
+								$ignore = false;
+								break;
+							}
+						}
+					}
+					// continue if agent is not in one of the desired IP ranges
+					if($ignore) continue;
 				}
 				// set post action
 				$restart = null; $shutdown = null; $exit = null;

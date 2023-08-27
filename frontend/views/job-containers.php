@@ -34,7 +34,7 @@ if(!empty($_GET['id'])) {
 	<div class='details-header'>
 		<h1><img src='img/<?php echo $icon; ?>.dyn.svg' class='<?php echo($container->enabled ? 'online' : 'offline'); ?>'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 		<div class='controls'>
-			<button onclick='showDialogEditJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText, spnJobContainerEnabled.innerText, spnJobContainerStartTime.innerText, spnJobContainerEndTime.innerText, spnJobContainerSequenceMode.innerText, spnJobContainerPriority.innerText, spnJobContainerAgentIpRanges.innerText, spnJobContainerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<button onclick='showDialogEditJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText, spnJobContainerEnabled.innerText, spnJobContainerStartTime.innerText, spnJobContainerEndTime.innerText, spnJobContainerSequenceMode.innerText, spnJobContainerPriority.innerText, spnJobContainerAgentIpRanges.innerText, spnJobContainerTimeFrames.innerText, spnJobContainerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 			<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 			<span class='filler'></span>
 		</div>
@@ -98,6 +98,12 @@ if(!empty($_GET['id'])) {
 				<th><?php echo LANG('agent_ip_range'); ?></th>
 				<td>
 					<span id='spnJobContainerAgentIpRanges'><?php echo htmlspecialchars($container->agent_ip_ranges??''); ?></span>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('time_frame'); ?></th>
+				<td>
+					<span id='spnJobContainerTimeFrames'><?php echo htmlspecialchars($container->time_frames??''); ?></span>
 				</td>
 			</tr>
 			<tr>

@@ -1338,10 +1338,10 @@ class DatabaseController {
 	}
 
 	// Job Operations
-	public function insertJobContainer($name, $created_by_system_user_id, $created_by_domain_user_id, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges, $self_service) {
+	public function insertJobContainer($name, $created_by_system_user_id, $created_by_domain_user_id, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges, $time_frames, $self_service) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO job_container (name, created_by_system_user_id, created_by_domain_user_id, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority, agent_ip_ranges, self_service)
-			VALUES (:name, :created_by_system_user_id, :created_by_domain_user_id, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority, :agent_ip_ranges, :self_service)'
+			'INSERT INTO job_container (name, created_by_system_user_id, created_by_domain_user_id, start_time, end_time, notes, wol_sent, shutdown_waked_after_completion, sequence_mode, priority, agent_ip_ranges, time_frames, self_service)
+			VALUES (:name, :created_by_system_user_id, :created_by_domain_user_id, :start_time, :end_time, :notes, :wol_sent, :shutdown_waked_after_completion, :sequence_mode, :priority, :agent_ip_ranges, :time_frames, :self_service)'
 		);
 		$this->stmt->execute([
 			':name' => $name,
@@ -1355,6 +1355,7 @@ class DatabaseController {
 			':sequence_mode' => $sequence_mode,
 			':priority' => $priority,
 			':agent_ip_ranges' => $agent_ip_ranges,
+			':time_frames' => $time_frames,
 			':self_service' => $self_service,
 		]);
 		return $this->dbh->lastInsertId();
@@ -1493,7 +1494,7 @@ class DatabaseController {
 	public function selectAllPendingAndActiveJobForAgentByComputerId($computer_id) {
 		// static jobs
 		$this->stmt = $this->dbh->prepare(
-			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.sequence_mode AS "job_container_sequence_mode", jc.agent_ip_ranges AS "job_container_agent_ip_ranges", jc.self_service AS "job_container_self_service",
+			'SELECT j.id AS "id", j.job_container_id AS "job_container_id", jc.enabled AS "job_container_enabled", jc.priority AS "job_container_priority", jc.sequence_mode AS "job_container_sequence_mode", jc.agent_ip_ranges AS "job_container_agent_ip_ranges", jc.time_frames AS "job_container_time_frames", jc.self_service AS "job_container_self_service",
 			j.package_id AS "package_id", j.procedure AS "procedure", j.download AS "download", j.post_action AS "post_action", j.post_action_timeout AS "post_action_timeout", j.sequence AS "sequence"
 			FROM job_container_job j
 			INNER JOIN job_container jc ON j.job_container_id = jc.id
@@ -1828,10 +1829,10 @@ class DatabaseController {
 			])) return false;
 		}
 	}
-	public function updateJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges) {
+	public function updateJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $wol_sent, $shutdown_waked_after_completion, $sequence_mode, $priority, $agent_ip_ranges, $time_frames) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container
-			SET name = :name, enabled = :enabled, start_time = :start_time, end_time = :end_time, notes = :notes, wol_sent = :wol_sent, shutdown_waked_after_completion = :shutdown_waked_after_completion, sequence_mode = :sequence_mode, priority = :priority, agent_ip_ranges = :agent_ip_ranges
+			SET name = :name, enabled = :enabled, start_time = :start_time, end_time = :end_time, notes = :notes, wol_sent = :wol_sent, shutdown_waked_after_completion = :shutdown_waked_after_completion, sequence_mode = :sequence_mode, priority = :priority, agent_ip_ranges = :agent_ip_ranges, time_frames = :time_frames
 			WHERE id = :id'
 		);
 		return $this->stmt->execute([
@@ -1846,6 +1847,7 @@ class DatabaseController {
 			':sequence_mode' => $sequence_mode,
 			':priority' => $priority,
 			':agent_ip_ranges' => $agent_ip_ranges,
+			':time_frames' => $time_frames,
 		]);
 	}
 	public function moveStaticJobToJobContainer($job_id, $job_container_id) {

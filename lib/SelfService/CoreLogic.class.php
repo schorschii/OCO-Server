@@ -118,7 +118,8 @@ class CoreLogic {
 			$dateStart, $dateEnd,
 			$useWol, $shutdownWakedAfterCompletion, $restartTimeout,
 			$autoCreateUninstallJobs, $forceInstallSameVersion,
-			$sequenceMode, $priority, []/*constraintIpRanges*/, 1/*selfService*/
+			$sequenceMode, $priority, []/*constraintIpRanges*/, []/*constraintTimeFrames*/,
+			1/*selfService*/
 		);
 
 		// add log entry and return insert id

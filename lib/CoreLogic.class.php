@@ -787,7 +787,7 @@ class CoreLogic {
 		$this->checkPermission($jobContainer, PermissionManager::METHOD_READ);
 		return $jobContainer;
 	}
-	public function deploy($name, $description, $computerIds, $computerGroupIds, $computerReportIds, $packageIds, $packageGroupIds, $packageReportIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraintIpRanges=[], $selfService=0) {
+	public function deploy($name, $description, $computerIds, $computerGroupIds, $computerReportIds, $packageIds, $packageGroupIds, $packageReportIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraintIpRanges=[], $constraintTimeFrames=[], $selfService=0) {
 		$this->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -918,7 +918,8 @@ class CoreLogic {
 			empty($dateEnd) ? null : $dateEnd,
 			$description,
 			$wolSent, $shutdownWakedAfterCompletion,
-			$sequenceMode, $priority, $this->compileIpRanges($constraintIpRanges),
+			$sequenceMode, $priority,
+			$this->compileIpRanges($constraintIpRanges), $this->compileTimeFrames($constraintTimeFrames),
 			$selfService
 		)) {
 			foreach($computer_ids as $computer_id) {
@@ -1036,19 +1037,36 @@ class CoreLogic {
 				if(!is_string($range)) continue;
 				$trimmedRange = trim($range);
 				if(empty($trimmedRange)) continue;
-
 				// for IP syntax check only (throws error if invalid)
 				if(startsWith($trimmedRange, '!')) {
 					isIpInRange('0.0.0.0', ltrim($trimmedRange, '!'));
 				} else {
 					isIpInRange('0.0.0.0', $trimmedRange);
 				}
-
 				// add to IP range constraint array
 				$validatedIpRanges[] = trim($range);
 			}
 		}
-		return empty($validatedIpRanges) ? null : implode(',', $validatedIpRanges);
+		return empty($validatedIpRanges) ? null : implode(', ', $validatedIpRanges);
+	}
+	private function compileTimeFrames(Array $constraintTimeFrames) {
+		$validatedTimeFrames = [];
+		if(!empty($constraintTimeFrames) && is_array($constraintTimeFrames)) {
+			foreach($constraintTimeFrames as $range) {
+				if(!is_string($range)) continue;
+				$trimmedRange = trim($range);
+				if(empty($trimmedRange)) continue;
+				// for IP syntax check only (throws error if invalid)
+				if(startsWith($trimmedRange, '!')) {
+					isTimeInRange(ltrim($trimmedRange, '!'));
+				} else {
+					isTimeInRange($trimmedRange);
+				}
+				// add to IP range constraint array
+				$validatedTimeFrames[] = trim($range);
+			}
+		}
+		return empty($validatedTimeFrames) ? null : implode(', ', $validatedTimeFrames);
 	}
 	private function compileDeployPackageArray($packageId, $isDependency=false, $existingPackages=[]) {
 		$packages = [];
@@ -1319,7 +1337,7 @@ class CoreLogic {
 		$this->db->getDbHandle()->commit();
 
 	}
-	public function editJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $sequence_mode, $priority, $agent_ip_ranges) {
+	public function editJobContainer($id, $name, $enabled, $start_time, $end_time, $notes, $sequence_mode, $priority, $agent_ip_ranges, $time_frames) {
 		$jc = $this->db->selectJobContainer($id);
 		if(empty($jc)) throw new NotFoundException();
 		$this->checkPermission($jc, PermissionManager::METHOD_WRITE);
@@ -1361,7 +1379,8 @@ class CoreLogic {
 			$jc->shutdown_waked_after_completion,
 			$sequence_mode,
 			$priority,
-			$agent_ip_ranges
+			$this->compileIpRanges($agent_ip_ranges),
+			$this->compileTimeFrames($time_frames)
 		);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $jc->id, 'oco.job_container.update', [
 			'name'=>$name,
@@ -1371,7 +1390,8 @@ class CoreLogic {
 			'notes'=>$notes,
 			'sequence_mode'=>$sequence_mode,
 			'priority'=>$priority,
-			'agent_ip_ranges'=>$agent_ip_ranges,
+			'agent_ip_ranges'=>$this->compileIpRanges($agent_ip_ranges),
+			'time_frames'=>$this->compileTimeFrames($time_frames),
 		]);
 	}
 	public function moveStaticJobToJobContainer($jobId, $containerId) {

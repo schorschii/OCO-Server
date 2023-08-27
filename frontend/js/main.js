@@ -1735,7 +1735,7 @@ function confirmRemoveJob(ids) {
 		});
 	}
 }
-function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, notes) {
+function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
 	showDialogAjax(LANG['edit_job_container'], 'views/dialog-job-container-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditJobContainerId.value = id;
 		txtEditJobContainerName.value = name;
@@ -1758,10 +1758,11 @@ function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode
 		sldEditJobContainerPriority.value = priority;
 		lblEditJobContainerPriorityPreview.innerText = priority;
 		txtEditJobContainerAgentIpRanges.value = agent_ip_ranges;
+		txtEditJobContainerTimeFrames.value = time_frames;
 		txtEditJobContainerNotes.value = notes;
 	});
 }
-function editJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, notes) {
+function editJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
 	var params = [];
 	params.push({'key':'edit_job_container_id', 'value':id});
 	params.push({'key':'name', 'value':name});
@@ -1771,6 +1772,7 @@ function editJobContainer(id, name, enabled, start, end, sequence_mode, priority
 	params.push({'key':'sequence_mode', 'value':sequence_mode?'1':'0'});
 	params.push({'key':'priority', 'value':priority});
 	params.push({'key':'agent_ip_ranges', 'value':agent_ip_ranges});
+	params.push({'key':'time_frames', 'value':time_frames});
 	params.push({'key':'notes', 'value':notes});
 	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 		hideDialog();
@@ -1778,7 +1780,7 @@ function editJobContainer(id, name, enabled, start, end, sequence_mode, priority
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function deploy(title, start, end, description, computers, computerGroups, computerReports, packages, packageGroups, packageReports, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, constraintIpRange) {
+function deploy(title, start, end, description, computers, computerGroups, computerReports, packages, packageGroups, packageReports, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, agentIpRanges, timeFrames) {
 	setInputsDisabled(tabControlDeploy, true);
 	btnDeploy.classList.add('hidden');
 	prgDeploy.classList.remove('hidden');
@@ -1796,10 +1798,8 @@ function deploy(title, start, end, description, computers, computerGroups, compu
 	formData.append('restart_timeout', restartTimeout);
 	formData.append('sequence_mode', sequenceMode);
 	formData.append('priority', priority);
-	var ipRanges = constraintIpRange.split(',');
-	for(var i = 0; i < ipRanges.length; i++) {
-		formData.append('constraint_ip_range[]', ipRanges[i]);
-	}
+	formData.append('agent_ip_ranges', agentIpRanges);
+	formData.append('time_frames', timeFrames);
 	packages.forEach(function(entry) {
 		formData.append('package_id[]', entry);
 	});
