@@ -255,7 +255,7 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname, ':notes' => $notes]);
 	}
-	public function updateComputerPing($id, $agent_version=null, $networks=null) {
+	public function updateComputerPing($id, $agent_version=null, $networks=null, $uptime=null) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET last_ping = CURRENT_TIMESTAMP WHERE id = :id'
 		);
@@ -286,6 +286,12 @@ class DatabaseController {
 			    'DELETE FROM computer_network WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
 			);
 			if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
+		}
+		if($uptime !== null) {
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE computer SET uptime = :uptime WHERE id = :id'
+			);
+			if(!$this->stmt->execute([':id' => $id, ':uptime' => $uptime])) return false;
 		}
 		return true;
 	}

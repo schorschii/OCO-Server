@@ -212,7 +212,7 @@ switch($srcdata['method']) {
 			}
 
 			// update common computer metadata and service status
-			$db->updateComputerPing($computer->id, $data['agent_version']??'?', $data['networks']??[]);
+			$db->updateComputerPing($computer->id, $data['agent_version']??'?', $data['networks']??[], $data['uptime']??null);
 			if(!empty($data['services'])) foreach($data['services'] as $s) {
 				if(empty($s['name']) || !isset($s['status']) || !is_numeric($s['status'])) continue;
 				$db->insertOrUpdateComputerService($computer->id, $s['status'], $s['name'], $s['metrics'] ?? '-', $s['details'] ?? '');
