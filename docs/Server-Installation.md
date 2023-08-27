@@ -12,7 +12,7 @@ docker exec -it <CONTAINER-ID> bash
 ```
 
 ## Basic Setup
-0. Install PHP (7.3 or newer) with ZIP & DOM modules, MySQL/MariaDB and Apache2 on a Linux server (Debian recommended).
+0. Install PHP (7.3 or newer) with ZIP & DOM modules, MariaDB and Apache2 on a Linux server (Debian recommended).
    ```
    apt install php php-zip php-dom php-mysql php-curl php-ldap mariadb-server apache2 libapache2-mod-php
    php --version
@@ -43,7 +43,7 @@ docker exec -it <CONTAINER-ID> bash
    root@ocoserver:/# cat sql/*.sql | mysql oco
    ```
 4. Create the configuration file `conf.php` (create this file by copying the template `conf.php.example`).
-   - Enter your MySQL credentials in `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`. Use a separate database user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.
+   - Enter your MariaDB credentials in `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`. Use a separate database user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.
    - Make sure that the defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
 5. **Important:** set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
    - It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any (malicious) software packages to your client!!!

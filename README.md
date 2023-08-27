@@ -14,7 +14,7 @@ These features allow you to roll out any new software or updates (patch manageme
 - [OCO Agent](https://github.com/schorschii/oco-agent)
 
 ## About OCO Server
-The OCO server provides the Agent API (used to communicate with the OCO agent), the [Client API](docs/Client-API.md) (can be used by admins to automate workflows, e.g. for Continuous Integration/Delivery/Deployment) and the admin web frontend for the OCO project. On the web frontend you can view computer details and configure software deployment jobs. It can be installed on any Linux distribution. Data is stored in a MySQL database.
+The OCO server provides the Agent API (used to communicate with the OCO agent), the [Client API](docs/Client-API.md) (can be used by admins to automate workflows, e.g. for Continuous Integration/Delivery/Deployment) and the admin web frontend for the OCO project. On the web frontend you can view computer details and configure software deployment jobs. It can be installed on any Linux distribution. Data is stored in a MariaDB database.
 
 ![Schematic](.github/oco-schematic.png)
 
@@ -27,7 +27,7 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
 ### Server
 - Software
   - any Linux Distribution
-  - MySQL/MariaDB Database Server
+  - MariaDB Database Server
   - Apache2 Web Server
   - PHP 7.3 or newer
 - Hardware Recommendations for ~600 Managed Computers

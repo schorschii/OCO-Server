@@ -704,6 +704,7 @@ class DatabaseController {
 		return ($this->stmt->rowCount() == 1);
 	}
 	public function insertOrUpdateComputerService($computer_id, $status, $name, $metrics, $details) {
+		// note: this function specifically needs MariaDB - using computer_service in FROM clause causes "You can't specify target table 'computer_service' for update in FROM clause" error when using legacy MySQL server
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer_service SET id = LAST_INSERT_ID(id), updated = CURRENT_TIMESTAMP
 			WHERE computer_id = :computer_id AND status = :status AND name = :name AND metrics = :metrics AND details = :details
