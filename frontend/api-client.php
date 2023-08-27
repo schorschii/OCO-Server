@@ -299,8 +299,8 @@ switch($srcdata['method']) {
 			$data['package_ids'] ?? [], $data['package_group_ids'] ?? [], $data['package_report_ids'] ?? [],
 			$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
 			$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5,
-			$data['auto_create_uninstall_jobs'] ?? 1, $data['force_install_same_version'] ?? 0,
-			$data['sequence_mode'] ?? 0, $data['priority'] ?? 0, $data['constraint_ip_ranges'] ?? []
+			$data['force_install_same_version'] ?? 0, $data['sequence_mode'] ?? 0, $data['priority'] ?? 0,
+			$data['agent_ip_ranges'] ?? [], $data['time_frames'] ?? []
 		);
 		$resdata['error'] = null;
 		$resdata['result'] = [
@@ -314,7 +314,8 @@ switch($srcdata['method']) {
 			$data['installation_ids'] ?? [],
 			$data['date_start'] ?? date('Y-m-d H:i:s'), $data['date_end'] ?? null,
 			$data['use_wol'] ?? 1, $data['shutdown_waked_after_completion'] ?? 0, $data['restart_timeout'] ?? 5,
-			$data['sequence_mode'] ?? 0, $data['priority'] ?? 0, $data['constraint_ip_ranges'] ?? []
+			$data['sequence_mode'] ?? 0, $data['priority'] ?? 0,
+			$data['agent_ip_ranges'] ?? []
 		);
 		$resdata['error'] = null;
 		$resdata['result'] = [

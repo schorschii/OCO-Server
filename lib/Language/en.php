@@ -243,8 +243,6 @@ return [
 	'report_critical_events' => 'Critical Events',
 	'success_return_codes' => 'Success Return Codes',
 	'success_return_codes_comma_separated' => 'Separate multiple codes with a comma',
-	'uninstall_old_package_versions' => 'Explicitly uninstall old package versions',
-	'auto_create_uninstall_jobs' => 'Automatically create preceding uninstall jobs if another version is already installed and "Create explicit uninstall jobs" is set in the package metadata',
 	'download_for_uninstall' => 'Download for Uninstallation',
 	'yes' => 'Yes',
 	'no' => 'No',

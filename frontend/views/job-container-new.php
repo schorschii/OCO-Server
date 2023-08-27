@@ -87,13 +87,6 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 				<td colspan='3'>
 					<div>
 						<div class='checkboxWithText'>
-							<input type='checkbox' id='chkAutoCreateUninstallJobs' <?php if(!empty($db->settings->get('default-auto-create-uninstall-jobs'))) echo 'checked'; ?>>
-							<label for='chkAutoCreateUninstallJobs'>
-								<div><?php echo LANG('uninstall_old_package_versions'); ?></div>
-								<div class='hint'><?php echo LANG('auto_create_uninstall_jobs'); ?></div>
-							</label>
-						</div>
-						<div class='checkboxWithText'>
 							<input type='checkbox' id='chkForceInstallSameVersion' <?php if(!empty($db->settings->get('default-force-install-same-version'))) echo 'checked'; ?>>
 							<label for='chkForceInstallSameVersion'>
 								<div><?php echo LANG('reinstall'); ?></div>
@@ -235,7 +228,6 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 			getAllCheckBoxValues("target_package_reports", null, false, divTargetPackageList),
 			chkWol.checked,
 			chkShutdownWakedAfterCompletion.checked,
-			chkAutoCreateUninstallJobs.checked,
 			chkForceInstallSameVersion.checked,
 			txtRestartTimeout.value,
 			getCheckedRadioValue("sequence_mode"),

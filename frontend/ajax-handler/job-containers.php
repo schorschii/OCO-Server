@@ -83,8 +83,8 @@ try {
 			$_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [], $_POST['package_report_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
-			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['force_install_same_version'] ?? 0,
-			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, $agentIpRanges, $timeFrames
+			$_POST['force_install_same_version'] ?? 0, $_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0,
+			$agentIpRanges, $timeFrames
 		));
 	}
 

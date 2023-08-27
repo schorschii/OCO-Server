@@ -681,7 +681,7 @@ class CoreLogic {
 		$this->checkPermission($deploymentRule, PermissionManager::METHOD_WRITE);
 		return $this->db->evaluateDeploymentRule($deploymentRule->id);
 	}
-	public function createDeploymentRule($name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+	public function createDeploymentRule($name, $notes, $enabled, $computer_group_id, $package_group_id, $priority) {
 		$this->checkPermission(new Models\DeploymentRule(), PermissionManager::METHOD_CREATE);
 
 		if(empty(trim($name))) {
@@ -693,9 +693,6 @@ class CoreLogic {
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
-		if(!in_array($auto_uninstall, ['0', '1'])) {
-			throw new InvalidRequestException(LANG('invalid_input'));
-		}
 		$computerGroup = $this->db->selectComputerGroup($computer_group_id);
 		if(empty($computerGroup)) throw new NotFoundException();
 		$this->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
@@ -703,7 +700,7 @@ class CoreLogic {
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
 
-		$insertId = $this->db->insertDeploymentRule($name, $notes, $this->su->id, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall);
+		$insertId = $this->db->insertDeploymentRule($name, $notes, $this->su->id, $enabled, $computer_group_id, $package_group_id, $priority);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.deployment_rule.create', [
 			'name'=>$name,
@@ -712,11 +709,10 @@ class CoreLogic {
 			'computer_group_id'=>$computer_group_id,
 			'package_group_id'=>$package_group_id,
 			'priority'=>$priority,
-			'auto_uninstall'=>$auto_uninstall,
 		]);
 		return $insertId;
 	}
-	public function editDeploymentRule($id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+	public function editDeploymentRule($id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority) {
 		$dr = $this->db->selectDeploymentRule($id);
 		if(empty($dr)) throw new NotFoundException();
 		$this->checkPermission($dr, PermissionManager::METHOD_WRITE);
@@ -730,9 +726,6 @@ class CoreLogic {
 		if(!is_numeric($priority) || intval($priority) < -100 || intval($priority) > 100) {
 			throw new InvalidRequestException(LANG('invalid_input'));
 		}
-		if(!in_array($auto_uninstall, ['0', '1'])) {
-			throw new InvalidRequestException(LANG('invalid_input'));
-		}
 		$computerGroup = $this->db->selectComputerGroup($computer_group_id);
 		if(empty($computerGroup)) throw new NotFoundException();
 		$this->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
@@ -740,7 +733,7 @@ class CoreLogic {
 		if(empty($packageGroup)) throw new NotFoundException();
 		$this->checkPermission($packageGroup, PermissionManager::METHOD_WRITE);
 
-		$this->db->updateDeploymentRule($dr->id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall);
+		$this->db->updateDeploymentRule($dr->id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $dr->id, 'oco.deployment_rule.update', [
 			'name'=>$name,
 			'notes'=>$notes,
@@ -748,7 +741,6 @@ class CoreLogic {
 			'computer_group_id'=>$computer_group_id,
 			'package_group_id'=>$package_group_id,
 			'priority'=>$priority,
-			'auto_uninstall'=>$auto_uninstall,
 		]);
 	}
 	public function renewDeploymentRuleJob($renewDeploymentRuleId, $renewJobIds) {
@@ -787,7 +779,7 @@ class CoreLogic {
 		$this->checkPermission($jobContainer, PermissionManager::METHOD_READ);
 		return $jobContainer;
 	}
-	public function deploy($name, $description, $computerIds, $computerGroupIds, $computerReportIds, $packageIds, $packageGroupIds, $packageReportIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode, $priority, $constraintIpRanges=[], $constraintTimeFrames=[], $selfService=0) {
+	public function deploy($name, $description, $computerIds, $computerGroupIds, $computerReportIds, $packageIds, $packageGroupIds, $packageReportIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $forceInstallSameVersion, $sequenceMode, $priority, $constraintIpRanges=[], $constraintTimeFrames=[], $selfService=0) {
 		$this->checkPermission(new Models\JobContainer(), PermissionManager::METHOD_CREATE);
 
 		// check user input
@@ -957,27 +949,22 @@ class CoreLogic {
 							break;
 						}
 
-						// if requested, automagically create uninstall jobs
-						if(!empty($autoCreateUninstallJobs)) {
-							// uninstall it, if it is from the same package family ...
-							if($cp->package_family_id === $package['package_family_id']) {
-								$cpp = $this->db->selectPackage($cp->package_id, null);
-								if($cpp == null) continue;
-								// ... but not, if it is another package family version and autoCreateUninstallJobs flag is set
-								if(intval($cp->package_id) !== intval($pid) && empty($autoCreateUninstallJobs)) continue;
-								// ... and not, if this uninstall job was already created
-								if(in_array($cp->id, $createdUninstallJobs)) continue;
-								// ... and not, if installation implicitly removes previous versions
-								if($package['upgrade_behavior'] != Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS) continue;
-								$createdUninstallJobs[] = $cp->id;
-								$this->db->insertStaticJob($jcid, $computer_id,
-									$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
-									0/*upgrade_behavior*/, 1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
-									$cpp->uninstall_procedure_post_action, $restartTimeout,
-									$sequence, Models\Job::STATE_WAITING_FOR_AGENT
-								);
-								$sequence ++;
-							}
+						// uninstall it, if it is from the same package family ...
+						if($cp->package_family_id === $package['package_family_id']) {
+							$cpp = $this->db->selectPackage($cp->package_id, null);
+							if($cpp == null) continue;
+							// ... but not, if this uninstall job was already created
+							if(in_array($cp->id, $createdUninstallJobs)) continue;
+							// ... and not, if installation implicitly removes previous versions
+							if($package['upgrade_behavior'] != Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS) continue;
+							$createdUninstallJobs[] = $cp->id;
+							$this->db->insertStaticJob($jcid, $computer_id,
+								$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
+								0/*upgrade_behavior*/, 1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
+								$cpp->uninstall_procedure_post_action, $restartTimeout,
+								$sequence, Models\Job::STATE_WAITING_FOR_AGENT
+							);
+							$sequence ++;
 						}
 					}
 
@@ -1164,7 +1151,8 @@ class CoreLogic {
 			empty($dateStart) ? date('Y-m-d H:i:s') : $dateStart,
 			empty($dateEnd) ? null : $dateEnd,
 			$description, $wolSent, $shutdownWakedAfterCompletion,
-			$sequenceMode, $priority, $this->compileIpRanges($constraintIpRanges),
+			$sequenceMode, $priority,
+			$this->compileIpRanges($constraintIpRanges), '',
 			$selfService
 		);
 		foreach($installationIds as $id) {
@@ -1284,7 +1272,8 @@ class CoreLogic {
 				$name, $this->su->id??null, $this->du->id??null,
 				$dateStart, empty($dateEnd) ? null : $dateEnd,
 				$description, $wolSent, $shutdownWakedAfterCompletion,
-				$sequenceMode, $priority, $container->agent_ip_ranges,
+				$sequenceMode, $priority,
+				$container->agent_ip_ranges, $container->time_frames,
 				0/*self-service*/
 			)) {
 				foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {

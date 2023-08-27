@@ -857,11 +857,11 @@ no parameters
 - `use_wol` - (optional - default 1) enable or disable WOL
 - `shutdown_waked_after_completion` - (optional - default 0) decide if computers which were waked via WOL should be shutted down after jobs finished
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
-- `auto_create_uninstall_jobs` - (optional - default 1) enable or disable automatic uninstall job creation if another version of this package family is already installed
 - `force_install_same_version` - (optional - default 0) force installation even if the same package was already installed
 - `sequence_mode` - (optional - default 0) sequence mode: 0 - ignore failed jobs, 1 - abort after failed job
 - `priority` - (optional - default 0) job container with higher priority will be executed first
-- `constraint_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
+- `agent_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
+- `time_frames` - (optional - default empty - string array) list of time frames as condition for the agent for executing the jobs
 ### Example
 ```
 {
@@ -882,11 +882,11 @@ no parameters
 			"use_wol": 1,
 			"shutdown_waked_after_completion": 0,
 			"restart_timeout": 5,
-			"auto_create_uninstall_jobs": 1,
 			"force_install_same_version": 0,
 			"sequence_mode": 0,
 			"priority": 0,
-			"constraint_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"]
+			"agent_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"],
+			"time_frames": ["8:00-12:00"]
 		}
 	}
 }
@@ -916,7 +916,7 @@ no parameters
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
 - `sequence_mode` - (optional - default 0) sequence mode: 0 - ignore failed jobs, 1 - abort after failed job
 - `priority` - (optional - default 0) job container with higher priority will be executed first
-- `constraint_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
+- `agent_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
 ### Example
 ```
 {
@@ -936,7 +936,7 @@ no parameters
 			"restart_timeout": 5,
 			"sequence_mode": 0,
 			"priority": 0,
-			"constraint_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"]
+			"agent_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"]
 		}
 	}
 }
@@ -1070,7 +1070,6 @@ no parameters
 				"computer_group_id": "95",
 				"package_group_id": "20",
 				"priority": "0",
-				"auto_uninstall": "1",
 				"post_action_timeout": "500",
 				"created": "2022-10-01 21:17:08",
 				"created_by_system_user_id": 1,

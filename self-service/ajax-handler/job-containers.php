@@ -13,8 +13,7 @@ try {
 			$_POST['computer_id'] ?? [], $_POST['package_id'] ?? [],
 			date('Y-m-d H:i:s'), null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
-			1 /*uninstall other versions*/, 0 /*uninstall same version*/,
-			0 /*sequence_mode*/
+			0 /*uninstall same version*/, 0 /*sequence_mode*/
 		));
 	}
 

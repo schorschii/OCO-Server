@@ -12,7 +12,6 @@ class DeploymentRule {
 	public $package_group_id;
 	public $sequence_mode;
 	public $priority;
-	public $auto_uninstall;
 	public $post_action_timeout;
 	public $created;
 	public $created_by_system_user_id;

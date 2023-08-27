@@ -48,6 +48,17 @@ class DatabaseMigrationController {
 
 				$upgraded = true;
 		}
+		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'deployment_rule' AND COLUMN_NAME = 'auto_uninstall' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute();
+		if($this->stmt->rowCount() > 0) {
+				if($this->debug) echo 'Upgrading to 1.0.2... (drop auto_uninstall column)'."\n";
+
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `deployment_rule` DROP COLUMN `auto_uninstall`");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				$upgraded = true;
+		}
 
 		return $upgraded;
 	}

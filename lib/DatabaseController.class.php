@@ -1624,7 +1624,7 @@ class DatabaseController {
 					}
 				}
 				// check if we need to uninstall older versions
-				if($deployment_rule->auto_uninstall && $package->upgrade_behavior == Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS
+				if($package->upgrade_behavior == Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS
 				&& $state != Models\Job::STATE_ALREADY_INSTALLED && $state != Models\Job::STATE_OS_INCOMPATIBLE && $state != Models\Job::STATE_PACKAGE_CONFLICT) {
 					$dynamic_jobs = array_merge(
 						$dynamic_jobs,
@@ -1908,10 +1908,10 @@ class DatabaseController {
 		$this->stmt->execute([':package_group_id' => $package_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DeploymentRule');
 	}
-	public function insertDeploymentRule($name, $notes, $created_by_system_user_id, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+	public function insertDeploymentRule($name, $notes, $created_by_system_user_id, $enabled, $computer_group_id, $package_group_id, $priority) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO deployment_rule (name, created_by_system_user_id, enabled, computer_group_id, package_group_id, notes, priority, auto_uninstall)
-			VALUES (:name, :created_by_system_user_id, :enabled, :computer_group_id, :package_group_id, :notes, :priority, :auto_uninstall)'
+			'INSERT INTO deployment_rule (name, created_by_system_user_id, enabled, computer_group_id, package_group_id, notes, priority)
+			VALUES (:name, :created_by_system_user_id, :enabled, :computer_group_id, :package_group_id, :notes, :priority)'
 		);
 		if(!$this->stmt->execute([
 			':name' => $name,
@@ -1921,16 +1921,15 @@ class DatabaseController {
 			':package_group_id' => $package_group_id,
 			':notes' => $notes,
 			':priority' => $priority,
-			':auto_uninstall' => $auto_uninstall,
 		])) return false;
 		$insertId = $this->dbh->lastInsertId();
 		$this->evaluateDeploymentRule($insertId);
 		return $insertId;
 	}
-	public function updateDeploymentRule($id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority, $auto_uninstall) {
+	public function updateDeploymentRule($id, $name, $notes, $enabled, $computer_group_id, $package_group_id, $priority) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE deployment_rule
-			SET name = :name, enabled = :enabled, computer_group_id = :computer_group_id, package_group_id = :package_group_id, notes = :notes, priority = :priority, auto_uninstall = :auto_uninstall
+			SET name = :name, enabled = :enabled, computer_group_id = :computer_group_id, package_group_id = :package_group_id, notes = :notes, priority = :priority
 			WHERE id = :id'
 		);
 		if(!$this->stmt->execute([
@@ -1941,7 +1940,6 @@ class DatabaseController {
 			':package_group_id' => $package_group_id,
 			':notes' => $notes,
 			':priority' => $priority,
-			':auto_uninstall' => $auto_uninstall,
 		])) return false;
 		return $this->evaluateDeploymentRule($id);
 	}

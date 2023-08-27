@@ -34,7 +34,7 @@ if(!empty($_GET['id'])) {
 	<div class='details-header'>
 		<h1><img src='img/<?php echo $icon; ?>.dyn.svg' class='<?php echo($container->enabled ? 'online' : 'offline'); ?>'><span id='page-title'><span id='spnDeploymentRuleName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 		<div class='controls'>
-			<button onclick='showDialogEditDeploymentRule(<?php echo $container->id; ?>, spnDeploymentRuleName.innerText, spnDeploymentRuleNotes.innerText, spnDeploymentRuleEnabled.innerText, spnDeploymentRuleComputerGroupId.innerText, spnDeploymentRulePackageGroupId.innerText, spnDeploymentRulePriority.innerText, spnDeploymentRuleAutoUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<button onclick='showDialogEditDeploymentRule(<?php echo $container->id; ?>, spnDeploymentRuleName.innerText, spnDeploymentRuleNotes.innerText, spnDeploymentRuleEnabled.innerText, spnDeploymentRuleComputerGroupId.innerText, spnDeploymentRulePackageGroupId.innerText, spnDeploymentRulePriority.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 			<button onclick='reevaluateDeploymentRule(<?php echo $container->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('reevaluate'); ?></button>
 			<button onclick='confirmRemoveDeploymentRule([<?php echo $container->id; ?>], spnDeploymentRuleName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 			<span class='filler'></span>
@@ -82,13 +82,6 @@ if(!empty($_GET['id'])) {
 				<th><?php echo LANG('priority'); ?></th>
 				<td>
 					<span id='spnDeploymentRulePriority'><?php echo htmlspecialchars($container->priority); ?></span>
-				</td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('uninstall_old_package_versions'); ?></th>
-				<td>
-					<?php if($container->auto_uninstall=='1') echo LANG('yes'); else echo LANG('no'); ?>
-					<span id='spnDeploymentRuleAutoUninstall' class='rawvalue'><?php echo htmlspecialchars($container->auto_uninstall); ?></span>
 				</td>
 			</tr>
 			<tr>

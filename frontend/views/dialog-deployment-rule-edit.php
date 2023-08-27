@@ -43,10 +43,6 @@ require_once('../session.php');
 			</div>
 		</td>
 	</tr>
-	<tr>
-		<th><?php echo LANG('uninstall'); ?></th>
-		<td><label><input type='checkbox' id='chkEditDeploymentRuleAutoUninstall'></input>&nbsp;<?php echo LANG('uninstall_old_package_versions'); ?></label></td>
-	</tr>
 </table>
 
 <div class='controls right'>
@@ -59,6 +55,5 @@ require_once('../session.php');
 		sltEditDeploymentRuleComputerGroupId.value,
 		sltEditDeploymentRulePackageGroupId.value,
 		sldEditDeploymentRulePriority.value,
-		chkEditDeploymentRuleAutoUninstall.checked,
 	)'><img src='img/send.white.svg'>&nbsp;<span id='spnBtnUpdateDeploymentRule'><?php echo LANG('change'); ?></span></button>
 </div>

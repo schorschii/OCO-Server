@@ -92,7 +92,7 @@ class CoreLogic {
 		$this->checkPermission($jobContainer, PermissionManager::METHOD_READ);
 		return $jobContainer;
 	}
-	public function deploySelfService($name, $computerIds, $packageIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $autoCreateUninstallJobs, $forceInstallSameVersion, $sequenceMode) {
+	public function deploySelfService($name, $computerIds, $packageIds, $dateStart, $dateEnd, $useWol, $shutdownWakedAfterCompletion, $restartTimeout, $forceInstallSameVersion, $sequenceMode) {
 		// check permission to given computer and package ids
 		$this->checkPermission(new \Models\JobContainer(), PermissionManager::METHOD_CREATE);
 		foreach($computerIds as $cid) {
@@ -117,8 +117,8 @@ class CoreLogic {
 			$packageIds, []/*$packageGroupIds*/, []/*$packageReportIds*/,
 			$dateStart, $dateEnd,
 			$useWol, $shutdownWakedAfterCompletion, $restartTimeout,
-			$autoCreateUninstallJobs, $forceInstallSameVersion,
-			$sequenceMode, $priority, []/*constraintIpRanges*/, []/*constraintTimeFrames*/,
+			$forceInstallSameVersion, $sequenceMode, $priority,
+			[]/*constraintIpRanges*/, []/*constraintTimeFrames*/,
 			1/*selfService*/
 		);
 
@@ -152,7 +152,8 @@ class CoreLogic {
 			$installationIds,
 			$dateStart, $dateEnd,
 			$useWol, $shutdownWakedAfterCompletion, $restartTimeout,
-			$sequenceMode, $priority, []/*constraintIpRanges*/, 1/*selfService*/
+			$sequenceMode, $priority, []/*constraintIpRanges*/,
+			1/*selfService*/
 		);
 
 		// add log entry and return insert id

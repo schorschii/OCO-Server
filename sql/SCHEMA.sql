@@ -491,7 +491,6 @@ CREATE TABLE IF NOT EXISTS `deployment_rule` (
   `package_group_id` int(11) NOT NULL,
   `sequence_mode` tinyint(4) NOT NULL DEFAULT 0,
   `priority` tinyint(4) NOT NULL DEFAULT 0,
-  `auto_uninstall` tinyint(4) NOT NULL DEFAULT 1,
   `post_action_timeout` int(11) NOT NULL DEFAULT 5,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `created_by_system_user_id` int(11) DEFAULT NULL,

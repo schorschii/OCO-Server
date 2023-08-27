@@ -1572,7 +1572,7 @@ function showDialogAddComputerToGroup(id) {
 }
 
 // ======== JOB OPERATIONS ========
-function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, computerGroupId=-1, packageGroupId=-1, priority=0, autoUninstall=1) {
+function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, computerGroupId=-1, packageGroupId=-1, priority=0) {
 	title = LANG['edit_deployment_rule'];
 	buttonText = LANG['change'];
 	if(id == -1) {
@@ -1588,11 +1588,10 @@ function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, compu
 		sltEditDeploymentRulePackageGroupId.value = packageGroupId;
 		sldEditDeploymentRulePriority.value = priority;
 		lblEditDeploymentRulePriorityPreview.innerText = priority;
-		chkEditDeploymentRuleAutoUninstall.checked = autoUninstall=='1';
 		spnBtnUpdateDeploymentRule.innerText = buttonText;
 	});
 }
-function editDeploymentRule(id, name, notes, enabled, computerGroupId, packageGroupId, priority, autoUninstall) {
+function editDeploymentRule(id, name, notes, enabled, computerGroupId, packageGroupId, priority) {
 	var params = [];
 	params.push({'key':'edit_deployment_rule_id', 'value':id});
 	params.push({'key':'name', 'value':name});
@@ -1601,7 +1600,6 @@ function editDeploymentRule(id, name, notes, enabled, computerGroupId, packageGr
 	params.push({'key':'computer_group_id', 'value':computerGroupId});
 	params.push({'key':'package_group_id', 'value':packageGroupId});
 	params.push({'key':'priority', 'value':priority});
-	params.push({'key':'auto_uninstall', 'value':autoUninstall?'1':'0'});
 	ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeArray(params), null, function(response) {
 		hideDialog();
 		if(id == '-1') {
@@ -1780,7 +1778,7 @@ function editJobContainer(id, name, enabled, start, end, sequence_mode, priority
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function deploy(title, start, end, description, computers, computerGroups, computerReports, packages, packageGroups, packageReports, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, agentIpRanges, timeFrames) {
+function deploy(title, start, end, description, computers, computerGroups, computerReports, packages, packageGroups, packageReports, useWol, shutdownWakedAfterCompletion, forceInstallSameVersion, restartTimeout, sequenceMode, priority, agentIpRanges, timeFrames) {
 	setInputsDisabled(tabControlDeploy, true);
 	btnDeploy.classList.add('hidden');
 	prgDeploy.classList.remove('hidden');
@@ -1793,7 +1791,6 @@ function deploy(title, start, end, description, computers, computerGroups, compu
 	formData.append('description', description);
 	formData.append('use_wol', useWol ? 1 : 0);
 	formData.append('shutdown_waked_after_completion', shutdownWakedAfterCompletion ? 1 : 0);
-	formData.append('auto_create_uninstall_jobs', autoCreateUninstallJobs ? 1 : 0);
 	formData.append('force_install_same_version', forceInstallSameVersion ? 1 : 0);
 	formData.append('restart_timeout', restartTimeout);
 	formData.append('sequence_mode', sequenceMode);

@@ -243,8 +243,6 @@ return [
 	'report_critical_events' => 'Évènements critiques',
 	'success_return_codes' => 'Success Return Codes',
 	'success_return_codes_comma_separated' => 'Séparer les codes avec une virgule',
-	'uninstall_old_package_versions' => 'Désinstaller explicitement les anciennes versions de package',
-	'auto_create_uninstall_jobs' => 'Créer automatiquement les tâches de désinstallation précédentes si une autre version est déjà installée et "Créer des tâches de désinstallation explicites" est défini dans les métadonnées du package',
 	'download_for_uninstall' => 'Télécharger pour la désinstallation',
 	'yes' => 'Oui',
 	'no' => 'Non',

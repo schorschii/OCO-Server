@@ -238,8 +238,6 @@ return [
 	'report_critical_events' => 'Kritische Ereignisse',
 	'success_return_codes' => 'Erfolgreiche Return-Codes',
 	'success_return_codes_comma_separated' => 'Mehrere Return-Codes mit Komma trennen',
-	'uninstall_old_package_versions' => 'Alte Paketversionen explizit deinstallieren',
-	'auto_create_uninstall_jobs' => 'Automatisch vorangestellte Deinstallationsjobs erstellen, wenn bereits eine andere Version installiert ist und "Explizite Deinstallationssjobs erstellen" im Paket aktiviert ist',
 	'download_for_uninstall' => 'Zum Deinstallieren herunterladen',
 	'yes' => 'Ja',
 	'no' => 'Nein',
