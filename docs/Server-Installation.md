@@ -111,6 +111,7 @@ SRVNAME="myserver.local"
 openssl req -new -nodes -out "$SRVNAME.csr" -newkey rsa:4096 -keyout "$SRVNAME.key"
 
 # create an openssl config file in order to integrate "subject alt names" (IP and/or DNS name) into server certificate
+# (using IP addresses in certificates is not recommended)
 cat > "$SRVNAME.v3.ext" << EOF
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
@@ -130,11 +131,11 @@ openssl x509 -req -in "$SRVNAME.csr" -CA "$CANAME.crt" -CAkey "$CANAME.key" -CAc
 
 # keep "$CANAME.key" and it's passphrase to renew your server certificate and to issue new certificates later
 
-# import "$CANAME.crt" in the client's system trust store now to verify the server certificate on your clients:
-# Debian, Ubuntu: sudo cp "$CANAME.crt" /usr/local/share/ca-certificates && sudo update-ca-certificates
-# Fedora, CentOS: sudo cp "$CANAME.crt" /etc/pki/ca-trust/source/anchors && sudo update-ca-trust
-# Windows GUI: Open the .crt file and install it for all users to "Trusted Root Certificate Authorities"
-# Windows cmd: certutil.exe -addstore root "$CANAME.crt"
+# now you need to import "$CANAME.crt" in your client's system trust store so that it can verify the server certificate:
+# - Debian, Ubuntu: sudo cp "$CANAME.crt" /usr/local/share/ca-certificates && sudo update-ca-certificates
+# - Fedora, CentOS: sudo cp "$CANAME.crt" /etc/pki/ca-trust/source/anchors && sudo update-ca-trust
+# - Windows GUI: Open the .crt file and install it for all users to "Trusted Root Certificate Authorities"
+# - Windows cmd: certutil.exe -addstore root "$CANAME.crt"
 ```
 
 ### Let’s Encrypt Certificate
