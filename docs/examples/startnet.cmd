@@ -24,6 +24,7 @@ wpeinit
 
 REM wait for NICs to come up
 wpeutil waitfornetwork
+ping 127.0.0.1 -n 6 > nul
 
 REM print ipconfig for debugging
 ipconfig
