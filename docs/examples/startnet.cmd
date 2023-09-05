@@ -61,17 +61,17 @@ echo Mount I: -^> %IMAGE_SHARE%
 net use I: %IMAGE_SHARE% /user:dummy dummy
 
 REM start setup with specific unattended config if available
-if exist I:\%PRESEED_DIR%\%mac%.xml (
-	echo Starting setup with config file: I:\\%PRESEED_DIR%\\%mac%.xml ...
-	I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%mac%.xml
+if exist I:\%PRESEED_DIR%\%serial%.xml (
+	echo Starting setup with config file: I:\\%PRESEED_DIR%\\%serial%.xml ...
+	I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%serial%.xml
 ) else (
 	if exist I:\%PRESEED_DIR%\%uuid%.xml (
 		echo Starting setup with config file: I:\\%PRESEED_DIR%\\%uuid%.xml ...
 		I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%uuid%.xml
 	) else (
-		if exist I:\%PRESEED_DIR%\%serial%.xml (
-			echo Starting setup with config file: I:\\%PRESEED_DIR%\\%serial%.xml ...
-			I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%serial%.xml
+		if exist I:\%PRESEED_DIR%\%mac%.xml (
+			echo Starting setup with config file: I:\\%PRESEED_DIR%\\%mac%.xml ...
+			I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%mac%.xml
 		) else (
 			echo Could not find an unattended installation answer file. We recommend a Linux installation instead.
 			I:\%SETUP_EXE%
