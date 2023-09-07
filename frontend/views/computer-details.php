@@ -67,6 +67,10 @@ $isOnline = $computer->isOnline($db);
 							<td><?php echo htmlspecialchars($computer->id); ?></td>
 						</tr>
 						<tr>
+							<th><?php echo LANG('uid'); ?></th>
+							<td><?php echo htmlspecialchars($computer->uid); ?></td>
+						</tr>
+						<tr>
 							<th><?php echo LANG('os'); ?></th>
 							<td><?php echo htmlspecialchars($computer->os); ?></td>
 						</tr>
