@@ -1,17 +1,18 @@
 <?php
 require_once('../loader.inc.php');
 
-$license = new LicenseCheck($db);
-$loginScreenQuotes = json_decode($db->settings->get('login-screen-quotes'), true);
-
-$info = null;
-$infoclass = null;
-
 // redirect to setup if setup is not done
 if(!$db->existsSchema() || count($db->selectAllSystemUser()) == 0) {
 	header('Location: setup.php');
 	die();
 }
+
+// init page objects/variables
+$license = new LicenseCheck($db);
+$loginScreenQuotes = json_decode($db->settings->get('login-screen-quotes'), true);
+
+$info = null;
+$infoclass = null;
 
 // execute login if requested
 require_once('session-options.php');
