@@ -103,7 +103,8 @@ class HouseKeeping {
 						$container->shutdown_waked_after_completion,
 						$container->sequence_mode,
 						$container->priority,
-						$container->agent_ip_ranges
+						$container->agent_ip_ranges,
+						$container->time_frames
 					);
 				}
 			}
