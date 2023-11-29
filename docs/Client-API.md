@@ -35,7 +35,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -108,7 +107,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -266,7 +264,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -296,7 +293,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -326,7 +322,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -356,7 +351,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -385,7 +379,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -413,7 +406,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -449,7 +441,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -531,7 +522,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -627,7 +617,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -657,7 +646,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -714,7 +702,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -746,7 +733,6 @@ This will also delete the package payload (ZIP file) from the server.
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -771,7 +757,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -812,7 +797,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -894,7 +878,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -944,7 +927,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -975,7 +957,6 @@ Manually removes an Package-Computer assignment. Normally, this assigment ist au
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {}
@@ -1004,7 +985,6 @@ This will delete all jobs in the container and the container itself. Pending job
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -1033,7 +1013,6 @@ This removes a single job from a job container.
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -1058,7 +1037,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -1100,7 +1078,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -1155,20 +1132,19 @@ no parameters
 ```
 ```
 {
-    "id": 1,
-    "error": null,
-    "result": {
-        "success": true,
-        "data": [
-            {
-                "id": "5",
-                "report_group_id": "35",
-                "name": "Expired Job Containers",
-                "notes": "",
-                "query": "SELECT id AS job_container_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()"
-            }
-        ]
-    }
+	"id": 1,
+	"result": {
+		"success": true,
+		"data": [
+			{
+				"id": "5",
+				"report_group_id": "35",
+				"name": "Expired Job Containers",
+				"notes": "",
+				"query": "SELECT id AS job_container_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()"
+			}
+		]
+	}
 }
 ```
 
@@ -1193,7 +1169,6 @@ Please note that the `data` output of the JSON response depends on the columns o
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -1205,6 +1180,22 @@ Please note that the `data` output of the JSON response depends on the columns o
 				"agent_version": "0.7.0"
 			}
 		]
+	}
+}
+```
+
+# Error Format
+You should check the API responses for `error` objects and handle them appropriately.
+
+Example JSON-RPC error response:
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"error": {
+		"code": -32002,
+		"message": "Permission denied. You do not have the necessary rights.",
+		"data": null
 	}
 }
 ```
