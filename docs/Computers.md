@@ -81,3 +81,6 @@ When using the satellite WOL technology, the OCO server connects to another serv
 
 ## Remote (Screen) Access
 OCO does not contain a remote access solution as found in some commercial client management systems. OCO doesn't want to reinvent the wheel. Please use a VNC server/client for this and also have a look at the section "Computer Commands" in [WebApplication.md](WebApplication.md).
+
+## Troubleshooting
+If you encounter issues with the agent, please follow the steps described in [debugging](https://github.com/schorschii/oco-agent#troubleshootingdebugging).
