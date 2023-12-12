@@ -512,7 +512,7 @@ return [
 	'no_wol_satellite_server_configured' => 'Keine WOL-Satelliten-Server konfiguriert',
 	'no_extensions_loaded' => 'Keine Erweiterungen geladen',
 	'package_is_installed_on_computers' => 'Dieses Paket ist derzeit auf %1 Computer(n) installiert.',
-	'database_schema_upgraded' => 'Datenbankschema wurde geupgraded. Bitte laden Sie die Seite neu.',
+	'database_schema_upgraded' => 'Datenbankschema wurde geupgraded.',
 	'all_settings' => 'Alle Einstellungen',
 	'key' => 'Schlüssel',
 	'value' => 'Wert',
