@@ -49,8 +49,12 @@ $license = new LicenseCheck($db);
 			<td class='center' colspan='2' title='<?php echo htmlspecialchars(niceSize($used).' / '.niceSize($total)); ?>'>
 				<div><?php echo LANG('disk_space'); ?></div>
 				<?php
-				$percent = round($used/$total*100);
-				echo progressBar($percent, null, null, '', 'width:280px');
+				if($total !== false && $free !== false) {
+					$percent = round($used/$total*100);
+					echo progressBar($percent, null, null, '', 'width:280px');
+				} else {
+					echo '???';
+				}
 				?>
 			</td>
 		</tr>
