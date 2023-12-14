@@ -79,10 +79,9 @@ function randomString($length = 30) {
 }
 
 function shorter($text, $charsLimit=40, $dots=true) {
-	if(strlen($text) > $charsLimit) {
-		$new_text = substr($text, 0, $charsLimit);
-		$new_text = trim($new_text);
-		return $new_text . ($dots ? "..." : "");
+	if(mb_strlen($text) > $charsLimit) {
+		$new_text = trim(mb_substr($text, 0, $charsLimit));
+		return $new_text . ($dots ? '…' : '');
 	} else {
 		return $text;
 	}
