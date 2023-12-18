@@ -245,10 +245,11 @@ function echoTargetComputerGroupOptions($parent=null) {
 		if(!$cl->checkPermission($cg, PermissionManager::METHOD_READ, false)
 		&& !$cl->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-		echo "<a href='#' class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.");return false'><input type='checkbox' name='computer_groups' value='".$cg->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
+		echo "<label class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.");return false'>";
+		echo "<input type='checkbox' name='computer_groups' value='".$cg->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' onkeypress='if(event.key==\"Enter\"){this.parentNode.click()}' />";
 		echo htmlspecialchars($cg->name);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
-		echo "</a>";
+		echo "</label>";
 		echo "<div class='subgroup'>";
 		echoTargetComputerGroupOptions($cg->id);
 		echo "</div>";
@@ -262,10 +263,11 @@ function echoTargetComputerReportOptions($parent=null) {
 		if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 
 		$displayName = LANG($r->name);
-		echo "<a href='#' class='blockListItem' onclick='refreshDeployComputerList(null, ".$r->id.");return false'><input type='checkbox' name='computer_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' />";
+		echo "<label class='blockListItem' onclick='refreshDeployComputerList(null, ".$r->id.");return false'>";
+		echo "<input type='checkbox' name='computer_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' onkeypress='if(event.key==\"Enter\"){this.parentNode.click()}' />";
 		echo htmlspecialchars($displayName);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
-		echo "</a>";
+		echo "</label>";
 	}
 }
 function echoTargetPackageGroupOptions($parent=null) {
@@ -276,10 +278,11 @@ function echoTargetPackageGroupOptions($parent=null) {
 		if(!$cl->checkPermission($pg, PermissionManager::METHOD_READ, false)
 		&& !$cl->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-		echo "<a href='#' class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.");return false'><input type='checkbox' name='package_groups' value='".$pg->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
+		echo "<label class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.");return false'>";
+		echo "<input type='checkbox' name='package_groups' value='".$pg->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' onkeypress='if(event.key==\"Enter\"){this.parentNode.click()}' />";
 		echo htmlspecialchars($pg->name);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
-		echo "</a>";
+		echo "</label>";
 		echo "<div class='subgroup'>";
 		echoTargetPackageGroupOptions($pg->id);
 		echo "</div>";
@@ -293,9 +296,10 @@ function echoTargetPackageReportOptions($parent=null) {
 		if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 
 		$displayName = LANG($r->name);
-		echo "<a href='#' class='blockListItem' onclick='refreshDeployPackageList(null, ".$r->id.");return false'><input type='checkbox' name='package_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' />";
+		echo "<label class='blockListItem' onclick='refreshDeployPackageList(null, ".$r->id.");return false'>";
+		echo "<input type='checkbox' name='package_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' onkeypress='if(event.key==\"Enter\"){this.parentNode.click()}' />";
 		echo htmlspecialchars($displayName);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
-		echo "</a>";
+		echo "</label>";
 	}
 }
