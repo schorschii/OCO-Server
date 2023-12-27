@@ -517,7 +517,7 @@ return [
 	'no_wol_satellite_server_configured' => 'Aucun serveur relais WOL n\'est configuré',
 	'no_extensions_loaded' => 'Aucune extension lancée',
 	'package_is_installed_on_computers' => 'Ce paquet est actuellement installé sur %1 ordinateur(s).',
-	'database_schema_upgraded' => 'Le schéma de la base de données à été mis à niveau.',
+	'database_schema_upgraded' => 'Le schéma de la base de données à été mis à niveau. Veuillez actualiser la page.',
 	'all_settings' => 'ATous les réglages',
 	'key' => 'Clé',
 	'value' => 'Valueur',

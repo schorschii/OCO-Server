@@ -517,7 +517,7 @@ return [
 	'no_wol_satellite_server_configured' => 'No WOL satellite servers configured',
 	'no_extensions_loaded' => 'No extensions loaded',
 	'package_is_installed_on_computers' => 'This package is currently installed on %1 computer(s).',
-	'database_schema_upgraded' => 'Database schema was upgraded.',
+	'database_schema_upgraded' => 'Database schema was upgraded. Please reload the page.',
 	'all_settings' => 'All Settings',
 	'key' => 'Key',
 	'value' => 'Value',
