@@ -81,6 +81,8 @@ It depends on the platform and program which command can be used for (un)install
 #### Windows
 Several installer systems have become established under Windows. Please check which parameters are available by executing `installer.exe /?` or consult the software manufacturer for more information. Please also consider repacking EXE setups as MSI package, which can be uninstalled by the standardized command `msiexec /x` (see below).
 
+In general, you should always use system-wide installations, that's what OCO is made for. You as the administrator want to ensure and enforce that every managed computer has the newest version installed with all security and bug fixes. In contrast, some software vendors offers installations in user context. These cannot be easily managed and updated in that way. Also, user-wide installations take up unnecessary space for each user separately on the computer. While the most software comes as system-wide installation (which needs admin rights), some software offers separate user-installation packages or parameters to switch the installation mode to system-wide (e.g. `ALLUSERS=1` (MSI) or `/ALLUSERS` (InnoSetup)).
+
 ##### Windows Installer
 - silent MSI installation: `msiexec /quiet /i package.msi`
 - silent MSI repair: `msiexec /quiet /f package.msi` or `msiexec /quiet /f {PRODUCT-GUID}`
