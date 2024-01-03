@@ -7,7 +7,7 @@ require_once('../session.php');
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('license_file'); ?></th>
-		<td><input type='file' class='fullwidth' id='fleLicenseFile' accept='.license' autofocus='true'></input></td>
+		<td><input type='file' class='fullwidth' id='fleLicenseFile' accept='.ocolicense' autofocus='true'></input></td>
 	</tr>
 </table>
 
