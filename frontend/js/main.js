@@ -373,7 +373,7 @@ function initLinks(root) {
 			var urlParams = new URLSearchParams(this.getAttribute('href').split('?')[1]);
 			var ajaxUrlParams = [];
 			for(const entry of urlParams.entries()) {
-				ajaxUrlParams.push(encodeURIComponent(entry[0])+'='+entry[1]);
+				ajaxUrlParams.push(encodeURIComponent(entry[0])+'='+encodeURIComponent(entry[1]));
 			}
 			refreshContentExplorer('views/'+encodeURIComponent(urlParams.get('view'))+'.php?'+ajaxUrlParams.join('&'));
 		});
