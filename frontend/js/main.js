@@ -159,8 +159,8 @@ const DIALOG_BUTTONS_CLOSE  = 2;
 const DIALOG_SIZE_LARGE     = 0;
 const DIALOG_SIZE_SMALL     = 1;
 const DIALOG_SIZE_AUTO      = 2;
-function showDialog(title='', text='', controls=false, size=false, monospace=false) {
-	showDialogHTML(title, escapeHTML(text), controls, size, monospace);
+function showDialog(title='', text='', controls=false, size=false, monospace=false, loading=false) {
+	showDialogHTML(title, escapeHTML(text), controls, size, monospace, loading);
 }
 function showDialogAjax(title='', url='', controls=false, size=false, callback=null) {
 	// show dark background while waiting for response
@@ -181,7 +181,7 @@ function showDialogAjax(title='', url='', controls=false, size=false, callback=n
 		finalAction();
 	}, false, false, finalAction);
 }
-function showDialogHTML(title='', text='', controls=false, size=false, monospace=false) {
+function showDialogHTML(title='', text='', controls=false, size=false, monospace=false, loading=false) {
 	obj('dialog-title').innerText = title;
 	obj('dialog-text').innerHTML = text;
 	if(controls == DIALOG_BUTTONS_RELOAD) {
@@ -207,6 +207,12 @@ function showDialogHTML(title='', text='', controls=false, size=false, monospace
 		obj('dialog-text').classList.add('monospace');
 	} else {
 		obj('dialog-text').classList.remove('monospace');
+	}
+	// append loader
+	if(loading) {
+		var img = document.createElement('img');
+		img.src = 'img/loader-dots.svg';
+		obj('dialog-text').appendChild(img);
 	}
 	// make dialog visible
 	obj('dialog-container').classList.add('active');

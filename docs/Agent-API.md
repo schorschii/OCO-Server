@@ -212,6 +212,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 ## `oco.agent.update_job_state` - Update Job Deployment Status
 ### Parameters
 - `job-id`: ID of the job to update (static job: `<job_id>`, dynamic job: `dynamic-<job_id>`)
+- `download-progress` (optional): download progress in percent
 - `state`: state of the job, e.g. downloading, executing, finished (integer) - see const definitions in 'Job' class
 - `return-code`: procedure command return code
 - `message`: procedure command output (stdout & stderr)
@@ -228,6 +229,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 		"data": {
 			"job-id": 123,
 			"state": 3,
+			"download-progress": 50,
 			"return-code": 0,
 			"message": ""
 		}

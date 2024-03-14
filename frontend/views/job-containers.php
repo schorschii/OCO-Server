@@ -200,7 +200,7 @@ if(!empty($_GET['id'])) {
 				if(!empty($job->message)) {
 					echo "<td class='middle'>";
 					echo "<img src='".$job->getIcon()."'>&nbsp;";
-					echo "<a href='#' onclick='event.preventDefault();showDialog(\"".$job->getStateString()."\",this.getAttribute(\"message\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' message='".htmlspecialchars(str_replace(chr(0x00),'',trim($job->message)),ENT_QUOTES)."'>".$job->getStateString()."</a>";
+					echo "<a href='#' onclick='event.preventDefault();showDialog(this.innerText,this.getAttribute(\"message\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true,".($job->isRunning()?'true':'false').")' message='".htmlspecialchars(str_replace(chr(0x00),'',trim($job->message)),ENT_QUOTES)."'>".$job->getStateString()."</a>";
 					echo "</td>";
 				} else {
 					echo "<td class='middle'><img src='".$job->getIcon()."'>&nbsp;".$job->getStateString()."</td>";

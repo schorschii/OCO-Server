@@ -752,7 +752,7 @@ class CoreLogic {
 			if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
 			if($job->isFailed()) $jobIds[] = $job->id;
 		}
-		if(!$this->db->updateDynamicJob($jobIds, Models\Job::STATE_WAITING_FOR_AGENT, null/*return_code*/, ''/*messgae*/))
+		if(!$this->db->updateDynamicJob($jobIds, Models\Job::STATE_WAITING_FOR_AGENT, null/*download_progress*/, null/*return_code*/, ''/*messgae*/))
 			throw new InvalidRequestException(LANG('no_failed_jobs'));
 	}
 	public function removeDeploymentRule($id) {

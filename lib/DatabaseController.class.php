@@ -1759,7 +1759,7 @@ class DatabaseController {
 	public function renewStaticJob($id, $procedure, $success_return_codes, $upgrade_behavior, $post_action) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container_job
-			SET state = 0, return_code = NULL, message = "", download_started = NULL, execution_started = NULL, execution_finished = NULL,
+			SET state = 0, download_progress = NULL, return_code = NULL, message = "", download_started = NULL, execution_started = NULL, execution_finished = NULL,
 			`procedure` = :procedure, success_return_codes = :success_return_codes, upgrade_behavior = :upgrade_behavior, post_action = :post_action
 			WHERE id = :id'
 		);
@@ -1781,12 +1781,13 @@ class DatabaseController {
 				$timestamp_update = 'execution_finished = CURRENT_TIMESTAMP';
 			}
 			$this->stmt = $this->dbh->prepare(
-				'UPDATE job_container_job SET state = :state, return_code = :return_code, message = :message, '.$timestamp_update.'
+				'UPDATE job_container_job SET state = :state, download_progress = :download_progress, return_code = :return_code, message = :message, '.$timestamp_update.'
 				WHERE id = :id'
 			);
 			if(!$this->stmt->execute([
 				':id' => $job->id,
 				':state' => $job->state,
+				':download_progress' => $job->download_progress,
 				':return_code' => $job->return_code,
 				':message' => $job->message,
 			])) return false;
@@ -1825,11 +1826,12 @@ class DatabaseController {
 				$timestamp_update = 'execution_finished = CURRENT_TIMESTAMP';
 			}
 			$this->stmt = $this->dbh->prepare(
-				'UPDATE deployment_rule_job SET state = :state, return_code = :return_code, message = :message, '.$timestamp_update.' WHERE id = :id'
+				'UPDATE deployment_rule_job SET state = :state, download_progress = :download_progress, return_code = :return_code, message = :message, '.$timestamp_update.' WHERE id = :id'
 			);
 			if(!$this->stmt->execute([
 				':id' => $job->id,
 				':state' => $job->state,
+				':download_progress' => $job->download_progress,
 				':return_code' => $job->return_code,
 				':message' => $job->message,
 			])) return false;
@@ -1943,12 +1945,12 @@ class DatabaseController {
 		])) return false;
 		return $this->evaluateDeploymentRule($id);
 	}
-	public function updateDynamicJob($ids, $state, $return_code, $message) {
+	public function updateDynamicJob($ids, $state, $download_progress, $return_code, $message) {
 		list($in_placeholders, $in_params) = self::compileSqlInValues($ids);
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE deployment_rule_job SET state = :state, return_code = :return_code, message = :message WHERE id IN ('.$in_placeholders.')'
+			'UPDATE deployment_rule_job SET state = :state, download_progress = :download_progress, return_code = :return_code, message = :message WHERE id IN ('.$in_placeholders.')'
 		);
-		$this->stmt->execute(array_merge($in_params, [':state'=>$state, ':return_code'=>$return_code, ':message'=>$message]));
+		$this->stmt->execute(array_merge($in_params, [':state'=>$state, ':download_progress'=>$download_progress, ':return_code'=>$return_code, ':message'=>$message]));
 		return $this->stmt->rowCount() == 1;
 	}
 	public function deleteDeploymentRule($id) {

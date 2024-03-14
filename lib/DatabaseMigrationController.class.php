@@ -60,6 +60,22 @@ class DatabaseMigrationController {
 				$upgraded = true;
 		}
 
+		// upgrade from 1.0.3 to 1.1.0
+		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'job_container_job' AND COLUMN_NAME = 'download_progress' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute();
+		if($this->stmt->rowCount() == 0) {
+				if($this->debug) echo 'Upgrading to 1.1.0... (add download_progress column)'."\n";
+
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `job_container_job` ADD COLUMN `download_progress` float DEFAULT NULL AFTER state");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `deployment_rule_job` ADD COLUMN `download_progress` float DEFAULT NULL AFTER state");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

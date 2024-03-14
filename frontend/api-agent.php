@@ -56,7 +56,7 @@ switch($srcdata['method']) {
 			|| !isset($params['agent-key'])
 			|| !isset($data['job-id'])
 			|| !isset($data['state'])
-			|| !isset($data['return-code'])
+			|| !array_key_exists('return-code', $data) // null is allowed here
 			|| !isset($data['message'])) {
 			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE, 'invalid JSON data');
 		}
@@ -112,8 +112,11 @@ switch($srcdata['method']) {
 
 		// update job execution state in database
 		$job->state = $state;
-		$job->return_code = intval($data['return-code']);
+		$job->return_code = ($data['return-code']===null) ? null : intval($data['return-code']);
 		$job->message = $data['message'];
+		if(isset($data['download-progress']) && is_numeric($data['download-progress'])) {
+			$job->download_progress = $data['download-progress']; // new in >= 1.1.0
+		}
 		$db->updateComputerPing($computer->id);
 		$db->updateJobExecutionState($job);
 		$db->insertLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE,

@@ -17,6 +17,7 @@ abstract class Job {
 	public $post_action_timeout;
 	public $sequence;
 	public $state;
+	public $download_progress;
 	public $return_code;
 	public $message;
 	public $wol_shutdown_set;
@@ -43,6 +44,10 @@ abstract class Job {
 	public const STATE_SUCCEEDED = 3;
 
 	// functions
+	public function isRunning() {
+		return ($this->state == self::STATE_DOWNLOAD_STARTED
+			|| $this->state == self::STATE_EXECUTION_STARTED);
+	}
 	public function isFailed() {
 		return ($this->state == self::STATE_FAILED
 			|| $this->state == self::STATE_EXPIRED
@@ -129,6 +134,10 @@ abstract class Job {
 		if($this->return_code !== null) {
 			$returnCodeString = ' ('.htmlspecialchars($this->return_code).')';
 		}
+		$downloadProgressString = '';
+		if($this->download_progress !== null) {
+			$downloadProgressString = ' ('.round($this->download_progress).'%)';
+		}
 		if($this->state == self::STATE_WAITING_FOR_AGENT) {
 			if($this instanceof StaticJob) {
 				$startTimeParsed = strtotime($this->job_container_start_time);
@@ -147,7 +156,7 @@ abstract class Job {
 		elseif($this->state == self::STATE_ALREADY_INSTALLED)
 			return LANG('already_installed');
 		elseif($this->state == self::STATE_DOWNLOAD_STARTED)
-			return LANG('download_started');
+			return LANG('download_started').$downloadProgressString;
 		elseif($this->state == self::STATE_EXECUTION_STARTED)
 			return LANG('execution_started');
 		elseif($this->state == self::STATE_SUCCEEDED)
