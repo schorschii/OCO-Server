@@ -9,9 +9,8 @@ It focuses on easy usability (UI/UX), simplicity (assessable code with minimal e
 
 These features allow you to roll out any new software or updates (patch management) - just create an OCO package and distribute it to your clients. You can track progress and view the results (exit code and command output) of every software job. Custom reports let you to get even more out of your data.
 
-- [OCO Server](https://github.com/schorschii/oco-server)
-- [OCO Server Extensions](https://github.com/schorschii/oco-server-extensions)
-- [OCO Agent](https://github.com/schorschii/oco-agent)
+| [OCO Server](https://github.com/schorschii/oco-server) | [OCO Server Extensions](https://github.com/schorschii/oco-server-extensions) | [OCO Agent](https://github.com/schorschii/oco-agent) |
+| --- | --- | --- |
 
 ## About OCO Server
 The OCO server provides the Agent API (used to communicate with the OCO agent), the [Client API](docs/Client-API.md) (can be used by admins to automate workflows, e.g. for Continuous Integration/Delivery/Deployment) and the admin web frontend for the OCO project. On the web frontend you can view computer details and configure software deployment jobs. It can be installed on any Linux distribution. Data is stored in a MariaDB database.
