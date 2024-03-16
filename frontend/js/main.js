@@ -152,6 +152,10 @@ window.onkeydown = function(event) {
 		refreshContent();
 		refreshSidebar();
 	}
+	// ESC - hide dialog
+	if((event.which || event.keyCode) == 27) {
+		hideDialog();
+	}
 };
 
 // ======== DIALOG ========
