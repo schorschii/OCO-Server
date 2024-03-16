@@ -156,8 +156,7 @@ window.onkeydown = function(event) {
 
 // ======== DIALOG ========
 const DIALOG_BUTTONS_NONE   = 0;
-const DIALOG_BUTTONS_RELOAD = 1;
-const DIALOG_BUTTONS_CLOSE  = 2;
+const DIALOG_BUTTONS_CLOSE  = 1;
 const DIALOG_SIZE_LARGE     = 0;
 const DIALOG_SIZE_SMALL     = 1;
 const DIALOG_SIZE_AUTO      = 2;
@@ -186,34 +185,29 @@ function showDialogAjax(title='', url='', controls=false, size=false, callback=n
 function showDialogHTML(title='', text='', controls=false, size=false, monospace=false, loading=false) {
 	obj('dialog-title').innerText = title;
 	obj('dialog-text').innerHTML = text;
-	if(controls == DIALOG_BUTTONS_RELOAD) {
-		obj('dialog-controls').style.display = 'flex';
-		obj('btnDialogHome').style.visibility = 'visible';
-		obj('btnDialogReload').style.visibility = 'visible';
+	// buttons
+	obj('btnDialogClose').style.visibility = 'collapse';
+	if(controls == DIALOG_BUTTONS_CLOSE) {
 		obj('btnDialogClose').style.visibility = 'visible';
-	} else if(controls == DIALOG_BUTTONS_CLOSE) {
-		obj('dialog-controls').style.display = 'flex';
-		obj('btnDialogHome').style.visibility = 'collapse';
-		obj('btnDialogReload').style.visibility = 'collapse';
-		obj('btnDialogClose').style.visibility = 'inline-block';
-	} else {
-		obj('dialog-controls').style.display = 'none';
 	}
+	// size
 	obj('dialog-box').className = '';
 	if(size == DIALOG_SIZE_LARGE) {
 		obj('dialog-box').classList.add('large');
 	} else if(size == DIALOG_SIZE_SMALL) {
 		obj('dialog-box').classList.add('small');
 	}
+	// font
 	if(monospace) {
 		obj('dialog-text').classList.add('monospace');
 	} else {
 		obj('dialog-text').classList.remove('monospace');
 	}
-	// append loader
+	// loading animation
 	if(loading) {
 		var img = document.createElement('img');
 		img.src = 'img/loader-dots.svg';
+		img.style = 'display:block';
 		obj('dialog-text').appendChild(img);
 	}
 	// make dialog visible

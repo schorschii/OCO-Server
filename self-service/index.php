@@ -72,11 +72,7 @@ if(!empty($_GET['view'])) {
 		<div id='dialog-box'>
 			<h2 id='dialog-title'></h2>
 			<div id='dialog-text'></div>
-			<div id='dialog-controls' class='spread'>
-				<button id='btnDialogHome' onclick='hideDialog();refreshContentExplorer("views/homepage.php");'><img src='img/home.dyn.svg'>&nbsp;<?php echo LANG('home_page'); ?></button>
-				<button id='btnDialogReload' onclick='hideDialog();refreshContent();'><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('retry'); ?></button>
-				<button id='btnDialogClose' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-			</div>
+			<button id='btnDialogClose' title='<?php echo LANG('close'); ?>' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'></button>
 		</div>
 	</div>
 

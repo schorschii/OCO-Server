@@ -417,6 +417,7 @@ h3 {
 	display: inline-block;
 }
 #dialog-container #dialog-box {
+	position: relative;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
@@ -451,8 +452,10 @@ h3 {
 	border-left: 2px solid rgb(200,200,200);
 	padding: 10px;
 }
-#dialog-container #dialog-box #dialog-controls {
-	margin-top: 15px;
+#dialog-container #dialog-box #btnDialogClose {
+	position: absolute;
+	top: -16px; right: -16px;
+	border-radius: 999px;
 }
 .first {
 	margin-top: 0px;
