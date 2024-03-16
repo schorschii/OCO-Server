@@ -39,7 +39,7 @@ require_once('../session.php');
 	<tr><td colspan='2'><h2><?php echo LANG('package_content'); ?></h2></td></tr>
 	<tr>
 		<th><label><input type='checkbox' id='chkReplaceArchive' onclick='fleArchive.disabled=!this.checked'>&nbsp;<?php echo LANG('replace_zip_archive'); ?></label></th>
-		<td colspan='3' class='fileinputwithbutton'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()' disabled='true'><button onclick='toggleInputDirectory(fleArchive)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/folder.dyn.svg'></button></td>
+		<td colspan='3' class='fileinputwithbutton'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()' disabled='true'><button onclick='toggleInputDirectory(fleArchive,this)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/files.dyn.svg'></button></td>
 	</tr>
 
 	<tr>

@@ -82,7 +82,7 @@ require_once('../session.php');
 	<tr><td colspan='2'><h2><?php echo LANG('package_content'); ?></h2></td></tr>
 	<tr>
 		<th><?php echo LANG('zip_archive'); ?></th>
-		<td colspan='3' class='fileinputwithbutton'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()'><button onclick='toggleInputDirectory(fleArchive)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/folder.dyn.svg'></button></td>
+		<td colspan='3' class='fileinputwithbutton'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()'><button onclick='toggleInputDirectory(fleArchive,this)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/files.dyn.svg'></button></td>
 	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG('installation'); ?></h2></td></tr>

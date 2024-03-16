@@ -49,13 +49,15 @@ function toggleTextBoxMultiLine(element) {
 	newElement.placeholder = element.placeholder;
 	element.replaceWith(newElement);
 }
-function toggleInputDirectory(element) {
+function toggleInputDirectory(element, sender=null) {
 	if(element.getAttribute('webkitdirectory') != 'true') {
 		element.setAttribute('webkitdirectory', true);
 		element.setAttribute('directory', true);
+		if(sender) sender.querySelectorAll('img')[0].src = 'img/folder.dyn.svg';
 	} else {
 		element.removeAttribute('webkitdirectory');
 		element.removeAttribute('directory');
+		if(sender) sender.querySelectorAll('img')[0].src = 'img/files.dyn.svg';
 	}
 }
 
