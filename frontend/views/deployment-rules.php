@@ -119,41 +119,47 @@ if(!empty($_GET['id'])) {
 				</tr>
 			</thead>
 			<tbody>
-			<?php
-			foreach($jobs as $job) {
-				echo "<tr>";
-				echo "<td><input type='checkbox' name='job_id[]' value='".$job->id."'></td>";
-				echo "<td><a ".explorerLink('views/computer-details.php?id='.$job->computer_id).">".htmlspecialchars($job->computer_hostname)."</a></td>";
-				echo "<td><a ".explorerLink('views/package-details.php?id='.$job->package_id).">".htmlspecialchars($job->package_family_name)." (".htmlspecialchars($job->package_version).")</a></td>";
-				echo "<td class='middle monospace' title='".htmlspecialchars($job->procedure, ENT_QUOTES)."'>";
-				if($job->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
-				else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
-				echo htmlspecialchars(shorter($job->procedure));
-				if($job->post_action == Models\Package::POST_ACTION_RESTART) echo ' ('.LANG('restart_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
-				if($job->post_action == Models\Package::POST_ACTION_SHUTDOWN) echo ' ('.LANG('shutdown_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
-				if($job->post_action == Models\Package::POST_ACTION_EXIT) echo ' ('.LANG('restart_agent').')';
-				echo "</td>";
-				echo "<td>".htmlspecialchars($job->sequence)."</td>";
-				if(!empty($job->message)) {
-					echo "<td class='middle'>";
-					echo "<img src='".$job->getIcon()."'>&nbsp;";
-					echo "<a href='#' onclick='event.preventDefault();showDialog(this.innerText,this.getAttribute(\"message\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true,".($job->isRunning()?'true':'false').")' message='".htmlspecialchars(str_replace(chr(0x00),'',trim($job->message)),ENT_QUOTES)."'>".$job->getStateString()."</a>";
-					echo "</td>";
-				} else {
-					echo "<td class='middle'><img src='".$job->getIcon()."'>&nbsp;".$job->getStateString()."</td>";
-				}
-				$jobTitle = LANG('not_started');
-				if($job->execution_finished != null) {
-					$downloadTime = (!empty($job->download_started)&&!empty($job->execution_started)) ? strtotime($job->execution_started)-strtotime($job->download_started) : 0;
-					$executionTime = (!empty($job->execution_started)&&!empty($job->execution_finished)) ? strtotime($job->execution_finished)-strtotime($job->execution_started) : 0;
-					$jobTitle = LANG('execution_time').': '.niceTime($downloadTime+$executionTime);
-				} elseif($job->download_started != null || $job->execution_started != null) {
-					$jobTitle = LANG('download_started').': '.($job->download_started??'')
-						."\n".LANG('execution_started').': '.($job->execution_started??'');
-				}
-				echo "<td title='".$jobTitle."'>".htmlspecialchars($job->execution_finished)."</td>";
-				echo "</tr>";
-			} ?>
+			<?php foreach($jobs as $job) { ?>
+				<tr>
+					<td><input type='checkbox' name='job_id[]' value='<?php echo $job->id; ?>'></td>
+					<td><a <?php echo explorerLink('views/computer-details.php?id='.$job->computer_id); ?>><?php echo htmlspecialchars($job->computer_hostname); ?></a></td>
+					<td><a <?php echo explorerLink('views/package-details.php?id='.$job->package_id); ?>><?php echo htmlspecialchars($job->package_family_name).' ('.htmlspecialchars($job->package_version).')'; ?></a></td>
+					<td class='middle monospace' title='<?php echo htmlspecialchars($job->procedure, ENT_QUOTES); ?>'>
+						<?php if($job->is_uninstall == 0) { ?>
+							<img src='img/install.dyn.svg' title='<?php echo LANG('install'); ?>'>
+						<?php } else { ?>
+							<img src='img/delete.dyn.svg' title='<?php echo LANG('uninstall'); ?>'>
+						<?php } ?>
+						<?php echo htmlspecialchars(shorter($job->procedure)); ?>
+						<?php if($job->post_action == Models\Package::POST_ACTION_RESTART) echo ' ('.LANG('restart_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
+						elseif($job->post_action == Models\Package::POST_ACTION_SHUTDOWN) echo ' ('.LANG('shutdown_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
+						elseif($job->post_action == Models\Package::POST_ACTION_EXIT) echo ' ('.LANG('restart_agent').')'; ?>
+					</td>
+					<td><?php echo htmlspecialchars($job->sequence); ?></td>
+					<td class='middle'>
+						<img src='<?php echo $job->getIcon(); ?>'>
+						<?php if(empty($job->message)) { ?>
+							<?php echo htmlspecialchars($job->getStateString()); ?>
+						<?php } else { ?>
+							<a href='#' onclick='event.preventDefault();showDialog(this.getAttribute("summary"), this.getAttribute("message"), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE, true, <?php echo ($job->isRunning()?'true':'false'); ?>)'
+								summary='<?php echo htmlspecialchars($job->computer_hostname.' - '.$job->package_family_name.' ('.$job->package_version.'): '.$job->getStateString(), ENT_QUOTES); ?>'
+								message='<?php echo htmlspecialchars(str_replace(chr(0x00),'',trim($job->message)), ENT_QUOTES); ?>'>
+								<?php echo htmlspecialchars($job->getStateString()); ?>
+							</a>
+						<?php } ?>
+					</td>
+					<?php $jobTitle = LANG('not_started');
+					if($job->execution_finished != null) {
+						$downloadTime = (!empty($job->download_started)&&!empty($job->execution_started)) ? strtotime($job->execution_started)-strtotime($job->download_started) : 0;
+						$executionTime = (!empty($job->execution_started)&&!empty($job->execution_finished)) ? strtotime($job->execution_finished)-strtotime($job->execution_started) : 0;
+						$jobTitle = LANG('execution_time').': '.niceTime($downloadTime+$executionTime);
+					} elseif($job->download_started != null || $job->execution_started != null) {
+						$jobTitle = LANG('download_started').': '.($job->download_started??'')
+							."\n".LANG('execution_started').': '.($job->execution_started??'');
+					} ?>
+					<td title='<?php echo htmlspecialchars($jobTitle, ENT_QUOTES); ?>'><?php echo htmlspecialchars($job->execution_finished); ?></td>
+				</tr>
+			<?php } ?>
 			</tbody>
 			<tfoot>
 				<tr>
