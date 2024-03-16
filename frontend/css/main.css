@@ -447,7 +447,6 @@ h3 {
 	margin-top: 15px;
 }
 #dialog-container #dialog-box #dialog-text.monospace {
-	font-family: 'SourceCodePro';
 	white-space: pre-wrap;
 	border-left: 2px solid rgb(200,200,200);
 	padding: 10px;
@@ -1129,7 +1128,7 @@ a.subbuttons > button {
 	font-size: 90%;
 }
 .monospace {
-	font-family: 'SourceCodePro';
+	font-family: 'SourceCodePro', monospace;
 }
 .rawvalue {
 	display: none;
