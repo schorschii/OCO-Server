@@ -98,7 +98,7 @@ class Package {
 		if($res) {
 			$i = 0;
 			while(!empty($zip->statIndex($i)['name'])) {
-				$contents[$zip->statIndex($i)['name']] = $zip->statIndex($i)['size'];
+				$contents[] = $zip->statIndex($i);
 				$i ++;
 			}
 		}

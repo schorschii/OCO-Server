@@ -335,19 +335,27 @@ try {
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('size'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('original_size'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('compressed_size'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
 						<?php
 						$totalSize = 0;
 						$counter = 0;
-						foreach($contents as $filename => $size) {
+						foreach($contents as $file) {
 							$counter ++;
 							$totalSize += $size;
 							echo "<tr>";
-							echo "<td>".htmlspecialchars($filename)."</td>";
-							echo "<td sort_key='".$size."'>".niceSize($size)."</td>";
+							echo "<td>".htmlspecialchars($file['name'])."</td>";
+							if(empty($file['crc']) && empty($file['size'])) {
+								// it's a directory
+								echo "<td></td>";
+								echo "<td></td>";
+							} else {
+								echo "<td sort_key='".$file['size']."'>".niceSize($file['size'])."</td>";
+								echo "<td sort_key='".$file['comp_size']."'>".niceSize($file['comp_size'])."</td>";
+							}
 							echo "</tr>";
 						} ?>
 						</tbody>

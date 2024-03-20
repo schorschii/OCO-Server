@@ -199,6 +199,8 @@ return [
 	'macos' => 'macOS',
 	'package_exists_with_version' => 'Es existiert bereits ein Paket mit diesem Namen und dieser Version.',
 	'size' => 'Größe',
+	'original_size' => 'Originale Größe',
+	'compressed_size' => 'Gepackte Größe',
 	'type' => 'Typ',
 	'driver' => 'Treiber',
 	'printers' => 'Drucker',

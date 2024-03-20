@@ -204,6 +204,8 @@ return [
 	'macos' => 'macOS',
 	'package_exists_with_version' => 'Un paquet portant le même nom existe déjà dans cette version.',
 	'size' => 'Taille',
+	'original_size' => 'Taille originale',
+	'compressed_size' => 'Taille emballée',
 	'type' => 'Type',
 	'driver' => 'Pilote',
 	'printers' => 'Imprimantes',
