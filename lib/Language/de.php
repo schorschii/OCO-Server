@@ -119,6 +119,7 @@ return [
 	'created' => 'Erstellt',
 	'waiting_for_agent' => 'Wartet auf Agent',
 	'download_started' => 'Download gestartet',
+	'unpacking_started' => 'Entpacken gestartet',
 	'execution_started' => 'Ausführung gestartet',
 	'failed' => 'Fehlgeschlagen',
 	'succeeded' => 'Erfolgreich',

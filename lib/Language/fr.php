@@ -124,6 +124,7 @@ return [
 	'created' => 'Créé',
 	'waiting_for_agent' => 'Attente de l\'agent',
 	'download_started' => 'Téléchargement démarré',
+	'extraction_started' => 'Déballage démarré',
 	'execution_started' => 'Exécution démarrée',
 	'failed' => 'Échec',
 	'succeeded' => 'Réussi',

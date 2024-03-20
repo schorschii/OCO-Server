@@ -124,6 +124,7 @@ return [
 	'created' => 'Created',
 	'waiting_for_agent' => 'Waiting for Agent',
 	'download_started' => 'Download Started',
+	'extraction_started' => 'Unpacking started',
 	'execution_started' => 'Execution Started',
 	'failed' => 'Failed',
 	'succeeded' => 'Succeeded',

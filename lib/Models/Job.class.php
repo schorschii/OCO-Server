@@ -155,6 +155,8 @@ abstract class Job {
 			return LANG('package_conflict');
 		elseif($this->state == self::STATE_ALREADY_INSTALLED)
 			return LANG('already_installed');
+		elseif($this->state == self::STATE_DOWNLOAD_STARTED && $this->download_progress > 100)
+			return LANG('unpacking_started');
 		elseif($this->state == self::STATE_DOWNLOAD_STARTED)
 			return LANG('download_started').$downloadProgressString;
 		elseif($this->state == self::STATE_EXECUTION_STARTED)
