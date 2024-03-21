@@ -119,6 +119,7 @@ abstract class Job {
 			}
 			return 'img/wait.dyn.svg';
 		}
+		if($this->state == self::STATE_DOWNLOAD_STARTED && $this->download_progress > 100) return 'img/unpacking.dyn.svg';
 		if($this->state == self::STATE_DOWNLOAD_STARTED) return 'img/downloading.dyn.svg';
 		if($this->state == self::STATE_EXECUTION_STARTED) return 'img/pending.dyn.svg';
 		if($this->state == self::STATE_FAILED) return 'img/error.dyn.svg';
