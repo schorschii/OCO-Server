@@ -13,6 +13,7 @@
 
 <script src='js/strings.js.php?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 <script src='js/main.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
+<script src='js/search.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 <script src='js/table.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 <script src='js/notification.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 <script src='js/confetti.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>

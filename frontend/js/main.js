@@ -630,42 +630,6 @@ function refreshContentDeploy(packages=[], packageGroups=[], computers=[], compu
 	});
 }
 
-// ======== SEARCH OPERATIONS ========
-var previousSearchOperation = null;
-function doSearch(query) {
-	if(previousSearchOperation !== null && previousSearchOperation.status === 0) {
-		previousSearchOperation.userCancelled = true;
-		previousSearchOperation.abort();
-	}
-	previousSearchOperation = ajaxRequest('views/search.php?query='+encodeURIComponent(query), 'search-results');
-	openSearchResults();
-}
-function closeSearchResults() {
-	obj('search-results').classList.remove('visible');
-	obj('search-glass').classList.remove('focus');
-	obj('explorer').classList.remove('diffuse');
-}
-function openSearchResults() {
-	obj('search-results').classList.add('visible');
-	obj('search-glass').classList.add('focus');
-	obj('explorer').classList.add('diffuse');
-}
-function handleSearchResultNavigation(event) {
-	if(event.code == 'ArrowDown') focusNextSearchResult();
-	else if(event.code == 'ArrowUp') focusNextSearchResult(-1);
-}
-function focusNextSearchResult(step=1) {
-	var links = document.querySelectorAll('#search-results a');
-	for(let i=0; i<links.length; i++) {
-		if(links[i] === document.activeElement) {
-			var next = links[i + step] || links[0];
-			next.focus();
-			return;
-		}
-	}
-	links[0].focus();
-}
-
 // ======== MESSAGE BOX OPERATIONS ========
 const MESSAGE_TYPE_INFO    = 'info';
 const MESSAGE_TYPE_SUCCESS = 'success';
