@@ -26,13 +26,7 @@ docker exec -it <CONTAINER-ID> bash
      a2enmod rewrite
      service apache2 restart
      ```
-3. Configure your MariaDB server lock timeout (via `/etc/mysql/conf.d/lock-timeout.cnf`) and restart the database server.
-   ```
-   [mysqld]
-   innodb_lock_wait_timeout = 120
-   ```
-
-   Import the database schema (including all schema upgrades, `/sql/*.sql`) into an empty database.
+3. Import the database schema (including all schema upgrades, `/sql/*.sql`) into an empty database.
    ```
    root@ocoserver:/# mysql
    mysql> CREATE DATABASE oco DEFAULT CHARACTER SET utf8mb4;
@@ -147,8 +141,26 @@ Let's Encrypt Certificates are trusted by default in nearly all operating system
    Certificate files (private key + certificate, chain) will be saved in '/etc/letsencrypt/live/'.
 3. Certificate will be renewed automatically (use `certbot --apache renew` for manual renewal).
 
+## Server Tuning
+On big setups with more than 100 active clients/agents, you may encounter errors in your Apache log like:
+```
+PHP Fatal error:  Uncaught PDOException: SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction [...]
+```
+
+In this case, you should configure your MariaDB server lock timeout and increase your InnoDB Buffer Pool Size (~75% of your system's RAM). The InnoDB IO capacity should be increased when fast SSD storage is used.
+
+Example configuration via `/etc/mysql/conf.d/oco.cnf`:
+```
+[mysqld]
+innodb_lock_wait_timeout = 120
+innodb_buffer_pool_size = 4G
+innodb_buffer_pool_instances = 4
+innodb_io_capacity = 400
+```
+Don't forget to restart the database server.
+
 ## Server Hardening
-While it is technically possible, **never** let the agent commuicate in plaintext HTTP with the server! Attackers can do a man-in-the-middle attack to send any malicious software package to your agent. **Always** configure your (Apache) web server to use HTTPS with a valid certificate. Redirect **all** HTTP requests to HTTPS using appropriate rewrite rules as described in the installation guide.
+While it is technically possible, **never let the agent commuicate in plaintext HTTP with the server**! Attackers can do a man-in-the-middle attack to send any malicious software package to your agent. Configure your (Apache) web server to use HTTPS with a valid certificate. **Redirect all HTTP requests to HTTPS** using appropriate rewrite rules as described in the installation guide.
 
 It is recommended to not make the OCO server available on the internet to prevent brute force attacks. If possible, make the server only available in your internal company network and use a VPN connection for mobile devices.
 
