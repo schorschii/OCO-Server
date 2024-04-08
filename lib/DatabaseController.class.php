@@ -1039,7 +1039,7 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function selectAllPackageFamily($binaryAsBase64=false, $orderByCreated=true) {
+	public function selectAllPackageFamily($binaryAsBase64=false, $orderByCreated=false) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT pf.*, (SELECT COUNT(id) FROM package p WHERE p.package_family_id = pf.id) AS "package_count",
 				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created DESC LIMIT 1) AS "newest_package_created",

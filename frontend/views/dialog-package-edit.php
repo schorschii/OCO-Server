@@ -13,7 +13,7 @@ require_once('../session.php');
 		<th><?php echo LANG('package_family_name'); ?></th>
 		<td>
 			<select id='sltEditPackagePackageFamily'>
-				<?php foreach($cl->getPackageFamilies(null, false, false) as $family) { ?>
+				<?php foreach($cl->getPackageFamilies() as $family) { ?>
 					<option value='<?php echo $family->id; ?>'><?php echo htmlspecialchars($family->name); ?></option>
 				<?php } ?>
 			</select>

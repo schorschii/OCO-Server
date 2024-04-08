@@ -7,7 +7,7 @@ $subGroups = [];
 $permissionCreatePackage = false;
 $permissionCreateGroup   = false;
 try {
-	$families = $cl->getPackageFamilies();
+	$families = $cl->getPackageFamilies(null, false, true);
 	$subGroups = $cl->getPackageGroups(null);
 	$permissionCreatePackage = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
 	$permissionCreateGroup   = $cl->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE, false);

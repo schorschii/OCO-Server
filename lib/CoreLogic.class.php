@@ -256,7 +256,7 @@ class CoreLogic {
 		}
 		return $packageGroupsFiltered;
 	}
-	public function getPackageFamilies(Object $filterRessource=null, $binaryAsBase64=false, $orderByCreated=true) {
+	public function getPackageFamilies(Object $filterRessource=null, $binaryAsBase64=false, $orderByCreated=false) {
 		if($filterRessource === null) {
 			$packageFamiliesFiltered = [];
 			foreach($this->db->selectAllPackageFamily($binaryAsBase64, $orderByCreated) as $packageFamily) {
