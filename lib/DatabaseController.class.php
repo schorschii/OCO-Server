@@ -1039,12 +1039,13 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Package');
 	}
-	public function selectAllPackageFamily($binaryAsBase64=false) {
+	public function selectAllPackageFamily($binaryAsBase64=false, $orderByCreated=true) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT pf.*, (SELECT COUNT(id) FROM package p WHERE p.package_family_id = pf.id) AS "package_count",
 				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created DESC LIMIT 1) AS "newest_package_created",
 				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created ASC LIMIT 1) AS "oldest_package_created"
-			FROM package_family pf ORDER BY newest_package_created DESC'
+			FROM package_family pf'
+			.($orderByCreated ? ' ORDER BY newest_package_created DESC' : ' ORDER BY pf.name ASC')
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily', [$binaryAsBase64]);

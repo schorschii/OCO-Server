@@ -256,10 +256,10 @@ class CoreLogic {
 		}
 		return $packageGroupsFiltered;
 	}
-	public function getPackageFamilies(Object $filterRessource=null, $binaryAsBase64=false) {
+	public function getPackageFamilies(Object $filterRessource=null, $binaryAsBase64=false, $orderByCreated=true) {
 		if($filterRessource === null) {
 			$packageFamiliesFiltered = [];
-			foreach($this->db->selectAllPackageFamily($binaryAsBase64) as $packageFamily) {
+			foreach($this->db->selectAllPackageFamily($binaryAsBase64, $orderByCreated) as $packageFamily) {
 				if($this->checkPermission($packageFamily, PermissionManager::METHOD_READ, false))
 					$packageFamiliesFiltered[] = $packageFamily;
 			}
