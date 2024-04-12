@@ -345,7 +345,7 @@ try {
 						$counter = 0;
 						foreach($contents as $file) {
 							$counter ++;
-							$totalSize += $size;
+							$totalSize += $file['size'];
 							echo "<tr>";
 							echo "<td>".htmlspecialchars($file['name'])."</td>";
 							if(empty($file['crc']) && empty($file['size'])) {
