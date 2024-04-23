@@ -142,10 +142,7 @@ Let's Encrypt Certificates are trusted by default in nearly all operating system
 3. Certificate will be renewed automatically (use `certbot --apache renew` for manual renewal).
 
 ## Server Tuning
-On big setups with more than 100 active clients/agents, you may encounter errors in your Apache log like:
-```
-PHP Fatal error:  Uncaught PDOException: SQLSTATE[40001]: Serialization failure: 1213 Deadlock found when trying to get lock; try restarting transaction [...]
-```
+On big setups with more than 200 active clients/agents, you may encounter errors like "Lock wait timeout exceeded; try restarting transaction" in your Apache log.
 
 In this case, you should configure your MariaDB server lock timeout and increase your InnoDB Buffer Pool Size (~75% of your system's RAM). The InnoDB IO capacity should be increased when fast SSD storage is used.
 
