@@ -710,31 +710,55 @@ class DatabaseController {
 		return ($this->stmt->rowCount() == 1);
 	}
 	public function insertOrUpdateComputerService($computer_id, $status, $name, $metrics, $details) {
-		// note: this function specifically needs MariaDB - using computer_service in FROM clause causes "You can't specify target table 'computer_service' for update in FROM clause" error when using legacy MySQL server
+		$this->dbh->beginTransaction();
+		// important: use SELECT FOR UPDATE in a TRANSACTION to prevent "Lost updates"
+		// https://stackoverflow.com/questions/27865992/why-use-select-for-update-mysql
+		// also, we have the "greatest-n-per-group" problem here
+		// https://stackoverflow.com/questions/7745609/sql-select-only-rows-with-max-value-on-a-column
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer_service SET updated = CURRENT_TIMESTAMP
-			WHERE computer_id = :computer_id AND status = :status AND name = :name AND metrics = :metrics AND details = :details
-			AND id IN (SELECT MAX(cs2.id) FROM computer_service cs2 WHERE cs2.computer_id = :computer_id GROUP BY cs2.name)'
+			'SELECT cs1.id FROM computer_service cs1
+			JOIN (
+				SELECT MAX(id) AS `id` FROM computer_service
+				WHERE computer_id = :computer_id GROUP BY name
+			) cs2 ON cs1.id = cs2.id
+			WHERE name = :name AND status = :status AND metrics = :metrics AND details = :details
+			FOR UPDATE'
 		);
 		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
-			':status' => $status,
 			':name' => $name,
+			':status' => $status,
 			':metrics' => $metrics,
 			':details' => $details,
 		])) return false;
-		if($this->stmt->rowCount()) return $this->stmt->rowCount();
-
-		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_service (computer_id, status, name, metrics, details) VALUES (:computer_id, :status, :name, :metrics, :details)'
-		);
-		return $this->stmt->execute([
-			':computer_id' => $computer_id,
-			':status' => $status,
-			':name' => $name,
-			':metrics' => $metrics,
-			':details' => $details,
-		]);
+		$newestServiceRecord = null;
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerService') as $row) {
+			$newestServiceRecord = $row->id;
+		}
+		// update timestamp of existing record
+		if($newestServiceRecord) {
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE computer_service SET updated = CURRENT_TIMESTAMP WHERE id = :id'
+			);
+			if(!$this->stmt->execute([':id' => $newestServiceRecord])) return false;
+			if(!$this->stmt->rowCount()) {
+				throw new Exception('Lost update: no row affected when updating previously found computer_service');
+			}
+		// insert new service record
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO computer_service (computer_id, status, name, metrics, details)
+				VALUES (:computer_id, :status, :name, :metrics, :details)'
+			);
+			if(!$this->stmt->execute([
+				':computer_id' => $computer_id,
+				':status' => $status,
+				':name' => $name,
+				':metrics' => $metrics,
+				':details' => $details,
+			])) return false;
+		}
+		$this->dbh->commit();
 	}
 	public function selectAllCurrentComputerServiceByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
