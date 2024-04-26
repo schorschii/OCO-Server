@@ -2325,7 +2325,7 @@ function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnab
 		if(this.readyState == 4) {
 			if(this.status == 200) {
 				hideDialog(); refreshContent();
-				emitMessage(LANG['saved'], LANG['license'], MESSAGE_TYPE_SUCCESS);
+				emitMessage(LANG['saved'], LANG['oco_configuration'], MESSAGE_TYPE_SUCCESS);
 			} else {
 				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 			}
