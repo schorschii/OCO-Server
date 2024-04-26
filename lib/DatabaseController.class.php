@@ -777,10 +777,13 @@ class DatabaseController {
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerService');
 	}
 	public function deleteComputerServiceHistoryOlderThan($seconds) {
+		// this deletes old entries but always keeps the last one of a computer service
+		// important note #1: "FROM (SELECT * FROM computer_service)" workaround is necessary for MySQL (all versions) and MariaDB <10.3.2 not allowing to use the same table directly in DELETE subselects - "FROM computer_service" would only work in MariaDB >10.3.2
+		// important note #2: "FOR UPDATE" is necessary in the subselect to lock the entire table, otherwise we will get "Serialization failure: 1213 Deadlock found" when an agent updates its service data while deletion is running
 		if(intval($seconds) < 1) return;
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM computer_service WHERE updated < NOW() - INTERVAL '.intval($seconds).' SECOND
-			AND id NOT IN (SELECT MAX(cs2.id) FROM (SELECT * FROM computer_service) cs2 GROUP BY cs2.computer_id, cs2.name)'
+			AND id NOT IN (SELECT MAX(cs2.id) FROM (SELECT * FROM computer_service FOR UPDATE) cs2 GROUP BY cs2.computer_id, cs2.name)'
 		);
 		if(!$this->stmt->execute()) return false;
 		return $this->stmt->rowCount();
