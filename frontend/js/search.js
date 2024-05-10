@@ -10,11 +10,11 @@ document.addEventListener('DOMContentLoaded', function(e){
 			closeSearchResults();
 		} else if(event.keyCode == 40) {
 			focusNextSearchResult();
-		} else {
+		} else if(event.keyCode == 13) {
 			doSearch(this.value);
 		}
 	});
-	obj('txtGlobalSearch').addEventListener('paste', function(event){
+	obj('txtGlobalSearch').addEventListener('input', function(event){
 		doSearch(this.value);
 	});
 });
