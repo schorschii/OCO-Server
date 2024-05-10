@@ -61,6 +61,13 @@ echo.
 echo Mount I: -^> %IMAGE_SHARE%
 net use I: %IMAGE_SHARE% /user:dummy dummy
 
+REM bypass silly Win 11 restrictions
+reg add HKLM\SYSTEM\Setup\LabConfig /v BypassTPMCheck /t REG_DWORD /d 1 /f
+reg add HKLM\SYSTEM\Setup\LabConfig /v BypassSecureBootCheck /t REG_DWORD /d 1 /f
+reg add HKLM\SYSTEM\Setup\LabConfig /v BypassRAMCheck /t REG_DWORD /d 1 /f
+reg add HKLM\SYSTEM\Setup\LabConfig /v BypassCPUCheck /t REG_DWORD /d 1 /f
+reg add HKLM\SYSTEM\Setup\LabConfig /v BypassStorageCheck /t REG_DWORD /d 1 /f
+
 REM start setup with specific unattended config if available
 if exist I:\%PRESEED_DIR%\%serial%.xml (
 	echo Starting setup with config file: I:\\%PRESEED_DIR%\\%serial%.xml ...
