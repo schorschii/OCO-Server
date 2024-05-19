@@ -29,7 +29,7 @@ h1 {
 	font-size: 30px;
 	line-height: 42px;
 	margin: 0px 0px 23px 0px;
-	padding: 45px 0px 0px 0px;
+	padding: 42px 0px 0px 0px;
 }
 h2 {
 	font-size: 26px;
@@ -78,32 +78,36 @@ h5 {
 	margin-top: 0px !important;
 }
 
-.gallery {
-	text-align: center;
-}
-.gallery > a {
+a.gallery {
 	display: inline-flex;
 	padding: 6px !important;
 	transition: background-color 0.2s ease !important;
 	background-image: none !important;
 	background-color: rgb(250,250,250);
-	border: 1px solid rgb(200,200,200) !important;
 }
-.gallery > a:hover {
-	background-color: rgb(5,89,114);
-}
-.gallery img, .gallery video {
-	width: 250px;
-	max-width: 100%;
+a.gallery img, a.gallery video {
+	width: 100%;
+	display: inline-block;
 	line-height: 0;
+	border-radius: 2px;
+	filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.3));
+	transition: transform 0.2s ease;
 }
-.gallery.small img {
-	width: 250px;
-	max-width: 100%;
+a.gallery:hover img, a.gallery:hover video {
+	transform: scale(1.35);
 }
-.gallery > img, .gallery > video {
-	box-shadow: 0px 0px 8px rgba(0,0,0,0.4);
-	border: 1px solid white;
+
+div.testimonial {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8%;
+	margin: 2em 0;
+}
+div.testimonial a {
+	flex-grow: 1;
+	flex-shrink: 0;
+	width: 40%;
 }
 
 img {
@@ -145,10 +149,7 @@ img {
 	margin: 0px;
 	vertical-align: middle;
 }
-#menutitle > img#headerlogo {
-	display: block;
-	margin: 0px 5% 15px 15px;
-	float: right;
+#menu > img#logo {
 	height: 110px;
 }
 @keyframes intro-menu {
@@ -192,6 +193,11 @@ img {
 	text-align: center;
 	font-weight: bold;
 	font-size: 120%;
+	margin-bottom: 3em;
+}
+#downloads a {
+	display: inline-block;
+	padding: 0px 8px;
 }
 
 
@@ -220,12 +226,11 @@ img {
 	overflow: hidden;
 }
 #maincontent #body {
-	overflow: hidden;
 	padding: 35px;
 	color: #333;
 	box-sizing: border-box;
 	width: 100%;
-	max-width: 1000px;
+	max-width: 1200px;
 	margin: auto;
 	animation: intro-content 1.5s ease;
 }
@@ -237,21 +242,50 @@ img {
 	margin-bottom: 0px;
 	padding-bottom: 0px;
 }
-#maincontent #body .gallery img {
-	border-radius: 2px;
-}
 #maincontent #body ul {
 	padding-left: 20px;
 	list-style-type: square;
 }
+#maincontent #body > div {
+	clear: both;
+}
 
 
-#footer {
-	font-size: 90%;
-	padding: 15px;
-	text-align: center;
-	background-color: rgb(250,250,250);
-	border-top: 1px solid rgb(200,200,200) !important;
+#footer, #footer a {
+	display: block;
+	color: #9ea3a8;
+	background: none !important;
+	padding: 0px;
+}
+#footertop {
+	height: 9px;
+	background-image: url('../img/bar.png');
+}
+#footermiddle {
+	padding: 40px 20px;
+	background-color: #314351;
+	display: flex;
+	justify-content: space-between;
+	gap: 25px;
+}
+#footermiddle > * {
+	flex: 1 1 0px;
+}
+#footermiddle > * > img {
+	width: 40%;
+	max-width: 150px;
+}
+#footerbottom {
+	padding: 40px 20px;
+	background-color: #333333;
+}
+#footer .headline {
+	color: white;
+	text-transform: uppercase;
+}
+#footer .headline, #footer a {
+	padding: 10px 0px;
+	border-bottom: 1px solid rgba(158,163,168,0.4);
 }
 
 
@@ -330,7 +364,7 @@ a:not(.nostyle):hover, button:hover, input[type=submit]:hover {
 }
 
 
-@media (max-width: 850px) {
+@media (max-width: 800px) {
 	#menu {
 		text-align: center;
 	}
@@ -381,8 +415,19 @@ a:not(.nostyle):hover, button:hover, input[type=submit]:hover {
 	.textlogo-container {
 		text-align: center;
 	}
-}
-@media (max-width: 750px) {
+	div.testimonial {
+		flex-direction: column;
+		gap: 25px;
+	}
+	div.testimonial a {
+		width: 75%;
+	}
+	a.gallery:hover img, a.gallery:hover video {
+		transform: scale(1.1);
+	}
+	#footermiddle {
+		flex-direction: column;
+	}
 	img, .floatright, .floatleft {
 		float: none;
 	}
@@ -411,7 +456,7 @@ a:not(.nostyle):hover, button:hover, input[type=submit]:hover {
 		color: #2A85BA;
 		border-bottom: 1px solid #2A85BA;
 	}
-	#footer, .gallery > a {
+	#footer, a.gallery > a {
 		background-color: #161B22;
 		border-color: #30363D !important;
 	}
