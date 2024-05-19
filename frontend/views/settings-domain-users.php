@@ -45,6 +45,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 						<tr>
 							<th><input type='checkbox' class='toggleAllChecked'></th>
 							<th class='searchable sortable'><?php echo LANG('id'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('uid'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('login_name'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('role'); ?></th>
@@ -59,6 +60,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 						echo "<tr class='".($u->domain_user_role_id==null?'inactive':'')."'>";
 						echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."'></td>";
 						echo "<td>".htmlspecialchars($u->id)."</td>";
+						echo "<td>".htmlspecialchars($u->uid??'-')."</td>";
 						echo "<td sort_key='".htmlspecialchars($u->username,ENT_QUOTES)."'>";
 						if(!empty($u->ldap)) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
 						if(!empty($u->password)) echo "<img src='img/password.dyn.svg' title='".LANG('password_set')."'>&nbsp;";

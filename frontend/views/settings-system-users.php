@@ -45,6 +45,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 						<tr>
 							<th><input type='checkbox' class='toggleAllChecked'></th>
 							<th class='searchable sortable'><?php echo LANG('id'); ?></th>
+							<th class='searchable sortable'><?php echo LANG('uid'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('login_name'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
 							<th class='searchable sortable'><?php echo LANG('role'); ?></th>
@@ -59,6 +60,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 						echo "<tr>";
 						echo "<td><input type='checkbox' name='system_user_id[]' value='".$u->id."'></td>";
 						echo "<td>".htmlspecialchars($u->id)."</td>";
+						echo "<td>".htmlspecialchars($u->uid??'-')."</td>";
 						echo "<td sort_key='".htmlspecialchars($u->username,ENT_QUOTES)."'>";
 						if($u->ldap) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
 						if($u->locked) echo "<img src='img/lock.dyn.svg' title='".LANG('locked')."'>&nbsp;";
@@ -66,7 +68,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 						echo "</td>";
 						echo "<td>".htmlspecialchars($u->display_name)."</td>";
 						echo "<td>".htmlspecialchars($u->system_user_role_name)."</td>";
-						echo "<td>".htmlspecialchars($u->last_login)."</td>";
+						echo "<td>".htmlspecialchars($u->last_login??'')."</td>";
 						echo "<td>".htmlspecialchars($u->created)."</td>";
 						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUser(".$u->id.")'><img src='img/edit.dyn.svg'></button></td>";
 						echo "</tr>";
