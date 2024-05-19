@@ -108,7 +108,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 		<table class='list'>
 			<tr>
 				<th><?php echo LANG('webserver_version'); ?>:</th>
-				<td><?php echo htmlspecialchars(apache_get_version()); ?></td>
+				<td><?php echo htmlspecialchars($_SERVER['SERVER_SOFTWARE']??'?'); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('database_server_version'); ?>:</th>
