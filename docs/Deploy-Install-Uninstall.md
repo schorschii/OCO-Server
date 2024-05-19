@@ -41,6 +41,10 @@ You can specify multiple time ranges (comma separated) in the appropriate text f
 - allow job execution on friday between 18:00 and 23:00
 - allow job execution on saturday, but not between 11:00 and 13:00
 
+## Job Runtime Measurement
+- "Total runtime" shows the time range between the start time of the container and the end time of the last job. If there are unfinished jobs in the container, a "~" is prepended.
+- "Effective runtime" shows the time range between the start time of the first job and the last job end time. This time span can be shorter than the "total runtime" if the client comes online at a later point in time than the container start time.
+
 # Install Packages via Deployment Rule (Dynamic Jobs)
 Deployment rules can tell the OCO system how to automatically roll out packages to computers. In other words, these jobs are dynamically created based on computer and package group memberships.
 
