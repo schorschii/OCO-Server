@@ -124,20 +124,27 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG('total_runtime'); ?></th>
 				<td><?php
-				if(strtotime($container->start_time) > time()) {
+				$realStartTime = strtotime($container->start_time);
+				if(strtotime($container->start_time) < strtotime($container->created)) {
+					$realStartTime = strtotime($container->created);
+				}
+				if($realStartTime > time()) {
 					echo htmlspecialchars('-');
 				} else {
 					if($icon == Models\JobContainer::STATUS_SUCCEEDED || $icon == Models\JobContainer::STATUS_FAILED) {
 						$maxTimeJob = $db->selectMaxExecutionStaticJobByJobContainerId($container->id);
-						$maxTime = time(); if(!empty($maxTimeJob)) $maxTime = strtotime($maxTimeJob->execution_finished);
-						$timeDiff = $maxTime-strtotime($container->start_time);
+						$maxTime = time();
+						if(!empty($maxTimeJob) && !empty($maxTimeJob->execution_finished)) {
+							$maxTime = strtotime($maxTimeJob->execution_finished);
+						}
+						$timeDiff = $maxTime - $realStartTime;
 						if($timeDiff < 0) {
 							echo htmlspecialchars('-');
 						} else {
 							echo htmlspecialchars(niceTime($timeDiff));
 						}
 					} else {
-						$timeDiff = time()-strtotime($container->start_time);
+						$timeDiff = time() - $realStartTime;
 						echo htmlspecialchars('~ '.niceTime($timeDiff));
 					}
 				}
