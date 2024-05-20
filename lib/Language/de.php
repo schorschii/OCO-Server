@@ -3,7 +3,7 @@ return [
 	'app_name' => 'OCO IT Client Manager',
 	'project_name' => 'Open Computer Orchestration',
 	'app_subtitle' => 'Client inventory and software delivery made simple',
-	'app_copyright' => '© <a href="https://sieber.systems" target="_blank">Georg Sieber</a> 2020-2024 | <a href="https://github.com/schorschii/oco-server" target="_blank">OCO-Projekt auf Github</a>',
+	'app_copyright' => '© <a href="https://sieber.systems" target="_blank">Georg Sieber</a> 2020-2024 | <a href="https://oco.sieber.systems" target="_blank">Website</a> | <a href="https://github.com/schorschii/oco-server" target="_blank">Github</a>',
 	'self_service_name' => 'OCO Self Service Portal',
 	'self_service_welcome_text' => 'Das Self-Service-Portal ermöglicht es Ihnen, selbstständig neue Software, freigegeben von Ihrem Systemadministrator, auf Ihren Computer zu installieren. Bitte wählen Sie einen Computer oder Paket aus der Seitenleiste aus, um zu beginnen.',
 	'choose_admin_username' => 'Admin-Benutzername wählen...',
