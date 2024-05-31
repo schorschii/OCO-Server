@@ -329,8 +329,9 @@ $isOnline = $computer->isOnline($db);
 							<?php
 							foreach($db->selectAllComputerPartitionByComputerId($computer->id) as $p) {
 								$percent = 0;
-								if(!empty($p->free) && !empty($p->size))
-								$percent = round(100 - ($p->free / $p->size * 100));
+								if(!empty($p->size)) {
+									$percent = round(100 - ($p->free / $p->size * 100));
+								}
 								echo '<tr>';
 								echo '<td>'.htmlspecialchars($p->device).'</a></td>';
 								echo '<td>'.htmlspecialchars($p->mountpoint).'</td>';
