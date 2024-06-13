@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(e){
+	if(!obj('txtGlobalSearch')) return;
 	obj('search-container').addEventListener('focusout', function(event){
 		if(!this.contains(event.relatedTarget)) {
 			closeSearchResults();
