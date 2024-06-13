@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 if(empty($_GET['query'])) {
 	die('<div class="alert info nomargin">'.LANG('please_enter_a_search_term').'</div>');

@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 $tab = 'simple';
 if(!empty($_GET['tab'])) $tab = $_GET['tab'];

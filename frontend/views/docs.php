@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 const DOCS_PATH      = __DIR__.'/../../docs';
 const DECISIONS_DIR  = 'decisions';
