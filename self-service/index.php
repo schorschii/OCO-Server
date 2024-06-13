@@ -2,7 +2,7 @@
 /* KEEP IT SIMPLE */
 
 require_once('../loader.inc.php');
-require_once('session.php');
+require_once('session.inc.php');
 
 $initialExplorerContent = 'views/homepage.php';
 $initialExplorerContentParameter = '';

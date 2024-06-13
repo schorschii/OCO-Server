@@ -1,6 +1,6 @@
 <?php
 require_once('../loader.inc.php');
-require_once('session.php');
+require_once('session.inc.php');
 
 // do not block other frontend requests
 session_write_close();

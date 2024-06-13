@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 ?>
 
 <p style='max-width:450px'><?php echo LANG('uninstall_job_container_will_be_created'); ?></p>
