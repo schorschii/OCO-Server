@@ -297,7 +297,8 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 				callback(this.responseText);
 			}
 		} else if(this.status == 401) {
-			window.location.href = 'login.php';
+			let currentUrl = new URL(window.location.href);
+			window.location.href = 'login.php?redirect='+encodeURIComponent(currentUrl.pathname+currentUrl.search);
 		} else {
 			if(!this.userCancelled) {
 				if(this.status == 0) {

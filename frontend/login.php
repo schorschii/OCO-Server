@@ -15,7 +15,7 @@ $info = null;
 $infoclass = null;
 
 // execute login if requested
-require_once('session-options.php');
+require_once('session-options.inc.php');
 if(isset($_POST['username']) && isset($_POST['password'])) {
 	try {
 		$authenticator = new AuthenticationController($db);
@@ -34,8 +34,12 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		$_SESSION['oco_user_id'] = $user->id;
 
 		$redirect = 'index.php';
-		if(!empty($_SESSION['oco_login_redirect'])) $redirect = $_SESSION['oco_login_redirect'];
-		header('Location: '.$redirect); die('Welcome to the enchanting world of OCO!');
+		if(!empty($_GET['redirect'])
+		&& startsWith($_GET['redirect'], '/')) { // only allow relative URLs beginning with '/', do not redirect to other websites!
+			$redirect = $_GET['redirect'];
+		}
+		header('Location: '.$redirect);
+		die('Welcome to the enchanting world of OCO!');
 	} catch(AuthenticationException $e) {
 		$db->insertLogEntry(Models\Log::LEVEL_WARNING, $_POST['username'], null, Models\Log::ACTION_CLIENT_WEB, ['authenticated'=>false]);
 
@@ -84,7 +88,7 @@ if(!empty($_SESSION['oco_user_id'])) {
 			<?php if(isIE()) { ?>
 				<img src='img/ietroll.png'>
 			<?php } else { ?>
-				<form method='POST' action='login.php' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
+				<form method='POST' onsubmit='btnLogin.disabled=true; txtUsername.readOnly=true; txtPassword.readOnly=true;'>
 					<h1><?php echo LANG('login'); ?></h1>
 					<?php if(!$license->isValid()) { ?>
 						<div class='alert bold error'><?php echo LANG('your_license_is_invalid'); ?></div>
