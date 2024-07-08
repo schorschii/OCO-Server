@@ -46,7 +46,7 @@ if(!empty($_GET['view'])) {
 			<span class='separator space'></span>
 		</span>
 		<span id='search-container'>
-			<input type='text' id='txtGlobalSearch' autocomplete='off' placeholder='<?php echo LANG('search_computer_packages_job_container'); ?>'></input>
+			<input type='search' id='txtGlobalSearch' autocomplete='off' placeholder='<?php echo LANG('search_computer_packages_job_container'); ?>'></input>
 			<div id='search-glass'></div>
 			<div id='search-results'>
 				<div class='search-result'>

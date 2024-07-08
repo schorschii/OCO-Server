@@ -50,6 +50,7 @@ function initTables(root=document) {
 				var thSearch = document.createElement('th');
 				if(ths[n].classList.contains('searchable')) {
 					let txtSearch = document.createElement('input');
+					txtSearch.setAttribute('type', 'search');
 					txtSearch.setAttribute('placeholder', LANG['search_placeholder']);
 					txtSearch.classList.add('tableSearch');
 					txtSearch.addEventListener('input', function(){ tableSearch(table) });
