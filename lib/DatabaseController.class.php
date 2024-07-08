@@ -2370,13 +2370,10 @@ class DatabaseController {
 	public function selectAllSoftwareByComputerOsWindows() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
-			FROM software s INNER JOIN computer_software cs ON cs.id = (
-				SELECT cs3.id FROM computer_software AS cs3
-				INNER JOIN computer c ON cs3.computer_id = c.id
-				WHERE cs3.software_id = s.id
-				AND c.os LIKE "%Windows%"
-				LIMIT 1
-			)
+			FROM software s
+			INNER JOIN computer_software cs ON cs.software_id = s.id
+			INNER JOIN computer c ON cs.computer_id = c.id
+			WHERE c.os LIKE "%Windows%"
 			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
@@ -2385,13 +2382,10 @@ class DatabaseController {
 	public function selectAllSoftwareByComputerOsMacOs() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
-			FROM software s INNER JOIN computer_software cs ON cs.id = (
-				SELECT cs3.id FROM computer_software AS cs3
-				INNER JOIN computer c ON cs3.computer_id = c.id
-				WHERE cs3.software_id = s.id
-				AND c.os LIKE "%macOS%"
-				LIMIT 1
-			)
+			FROM software s
+			INNER JOIN computer_software cs ON cs.software_id = s.id
+			INNER JOIN computer c ON cs.computer_id = c.id
+			WHERE c.os LIKE "%macOS%"
 			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
@@ -2400,13 +2394,10 @@ class DatabaseController {
 	public function selectAllSoftwareByComputerOsOther() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
-			FROM software s INNER JOIN computer_software cs ON cs.id = (
-				SELECT cs3.id FROM computer_software AS cs3
-				INNER JOIN computer c ON cs3.computer_id = c.id
-				WHERE cs3.software_id = s.id
-				AND c.os NOT LIKE "%Windows%" AND c.os NOT LIKE "%macOS%"
-				LIMIT 1
-			)
+			FROM software s
+			INNER JOIN computer_software cs ON cs.software_id = s.id
+			INNER JOIN computer c ON cs.computer_id = c.id
+			WHERE c.os NOT LIKE "%Windows%" AND c.os NOT LIKE "%macOS%"
 			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();
