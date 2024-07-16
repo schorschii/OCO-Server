@@ -157,11 +157,11 @@ abstract class Job {
 		elseif($this->state == self::STATE_ALREADY_INSTALLED)
 			return LANG('already_installed');
 		elseif($this->state == self::STATE_DOWNLOAD_STARTED && $this->download_progress > 100)
-			return LANG('unpacking_started');
+			return LANG('unpacking');
 		elseif($this->state == self::STATE_DOWNLOAD_STARTED)
-			return LANG('download_started').$downloadProgressString;
+			return LANG('downloading').$downloadProgressString;
 		elseif($this->state == self::STATE_EXECUTION_STARTED)
-			return LANG('execution_started');
+			return LANG('executing');
 		elseif($this->state == self::STATE_SUCCEEDED)
 			return LANG('succeeded').$returnCodeString;
 		else return $this->state;
