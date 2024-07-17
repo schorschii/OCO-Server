@@ -548,7 +548,8 @@ return [
 			<li>EXE-Deinstallation unter Windows: <code>C:\Program Files\MyProgram\unins000.exe /S</code>
 			<br>Das (De-)Installations-Kommando ist von Software zu Software unterschiedlich; bitte ziehen Sie in Betracht, EXE-Setups als MSI-Paket neu zu packen.</li>
 			<li>MSI-Installation unter Windows: <code>msiexec /quiet /i package.msi</code></li>
-			<li>MSI-Deinstallation unter Windows: <code>msiexec /quiet /x package.msi</code> oder <code>msiexec /quiet /x {PRODUCT-GUID}</code></li>
+			<li>MSI-Deinstallation unter Windows: <code>msiexec /quiet /x package.msi</code> oder <code>msiexec /quiet /x $$ProductCode$$</code>
+				<br/>Wenn Sie Wine installiert haben, wird der Platzhalter „ProductCode“ automatisch durch die MSI-GUID ersetzt.</li>
 			<li>DEB-Paket unter Linux: <code>gdebi -n package.deb</code></li>
 			<li>DEB-Paket unter Linux deinstallieren: <code>apt remove -y packagename</code></li>
 			<li>.app-Verzeichnis für macOS aus DMG-Datei: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>

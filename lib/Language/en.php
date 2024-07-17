@@ -553,7 +553,8 @@ return [
 			<li>EXE uninstallation for Windows: <code>C:\Program Files\MyProgram\unins000.exe /S</code>
 			<br>The (un)installation command depends on the specific software, please consider repacking EXE setups as MSI package.</li>
 			<li>MSI setup for Windows: <code>msiexec /quiet /i package.msi</code></li>
-			<li>MSI uninstallation for Windows: <code>msiexec /quiet /x package.msi</code> or <code>msiexec /quiet /x {PRODUCT-GUID}</code></li>
+			<li>MSI uninstallation for Windows: <code>msiexec /quiet /x package.msi</code> or <code>msiexec /quiet /x $$ProductCode$$</code>
+				<br/>The "ProductCode" placeholder will be automatically replaced with the MSI GUID if you have Wine installed.</li>
 			<li>DEB package for Linux: <code>gdebi -n package.deb</code></li>
 			<li>DEB package for Linux uninstallation: <code>apt remove -y packagename</code></li>
 			<li>.app directory for macOS from DMG file: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>

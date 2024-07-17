@@ -24,6 +24,7 @@ require_once('../session.inc.php');
 </datalist>
 <datalist id='lstUninstallProceduresTemplates'>
 	<option>[FILENAME]</option>
+	<option>msiexec /quiet /x $$ProductCode$$</option>
 	<option>msiexec /quiet /x</option>
 	<option>apt remove -y</option>
 	<option>msiexec /quiet /x [FILENAME]</option>
@@ -36,6 +37,7 @@ require_once('../session.inc.php');
 	<option>installer -target / -pkg</option>
 </datalist>
 <datalist id='lstUninstallProcedures'>
+	<option>msiexec /quiet /x $$ProductCode$$</option>
 	<option>msiexec /quiet /x</option>
 	<option>apt remove -y</option>
 </datalist>

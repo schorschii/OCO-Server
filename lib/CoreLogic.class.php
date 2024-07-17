@@ -340,6 +340,11 @@ class CoreLogic {
 			if($atleastOne) $tmpArchivePath = $newTmpFilePath;
 		}
 
+		// resolve MSI placeholder if set
+		if(!empty($tmpFiles)) {
+			$uninstallProcedure = MsiInfo::resolvePlaceholders($tmpFiles, $uninstallProcedure);
+		}
+
 		// insert into database
 		$packageFamilyId = null;
 		$existingPackageFamily = $this->db->selectPackageFamilyByName($name);
@@ -587,6 +592,9 @@ class CoreLogic {
 				$zip->close();
 				if($atleastOne) $tmpArchivePath = $newTmpFilePath;
 			}
+
+			// resolve MSI placeholder if set
+			$uninstallProcedure = MsiInfo::resolvePlaceholders($tmpFiles, $uninstallProcedure);
 		}
 
 		// update in database
