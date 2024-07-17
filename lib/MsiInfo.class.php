@@ -10,7 +10,7 @@ class MsiInfo {
 		if(!file_exists(self::WINEPREFIX)) {
 			mkdir(self::WINEPREFIX);
 		}
-		$result = exec('WINEPREFIX='.self::WINEPREFIX.' msidb -d '.escapeshellarg($msiFile).' -e -f '.escapeshellarg(self::WINEPREFIX).' Property 2>/dev/null', $output, $returnCode);
+		$result = exec('WINEPREFIX='.self::WINEPREFIX.' wine msidb.exe -d '.escapeshellarg($msiFile).' -e -f '.escapeshellarg(self::WINEPREFIX).' Property 2>/dev/null', $output, $returnCode);
 		if($result === false || $returnCode === 127) {
 			throw new RuntimeException('Unable to execute msidb - is wine installed?');
 		}
