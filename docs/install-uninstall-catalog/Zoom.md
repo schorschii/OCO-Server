@@ -10,7 +10,7 @@ msiexec /quiet /i ZoomInstallerFull.msi
 
 **Uninstallation:**
 ```
-msiexec /quiet /x {GUID}
+msiexec /quiet /x $$ProductCode$$
 ```
 
 ## Linux

@@ -87,7 +87,10 @@ In general, you should always use system-wide installations, that's what OCO is 
 - silent MSI installation: `msiexec /quiet /i package.msi`
 - silent MSI repair: `msiexec /quiet /f package.msi` or `msiexec /quiet /f {PRODUCT-GUID}`
 - silent MSI uninstallation: `msiexec /quiet /x package.msi` or `msiexec /quiet /x {PRODUCT-GUID}`
-  - It is easier to uninstall `.msi` packages using the original installation file - but this means that the package must be downloaded again for uninstallation. That's why, for bigger packages, you should use the MSI product GUID in the uninstallation command. OCO can automatically find the GUID if you enter the placeholder `$$ProductCode$$` into the uninstallation procedure. This requires that Wine with its `msidb` command is installed on your server. Alternatively, you can find the GUID by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup).
+  - It is easier to uninstall `.msi` packages using the original installation file - but this means that the package must be downloaded again for uninstallation.
+  - That's why, for bigger packages, you should use the MSI product GUID instead of the MSI file name in the uninstallation command.
+  - OCO can automatically find the GUID if you enter the placeholder `$$ProductCode$$` into the uninstallation procedure, e.g. `msiexec /quiet /x $$ProductCode$$`. This requires that Wine with its `msidb.exe` command is installed on your server.
+  - Alternatively, you can find the GUID by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup) (e.g. by looking into the Registry below `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`).
 - additional parameters
   - `/norestart`: prevent automatic restart - if your product needs a restart, you should set this option and use the OCO restart feature ("post action") instead
   - `MY_PROP="myValue"`: custom software-specific properties - please contact the MSI package software vendor for a list of supported options

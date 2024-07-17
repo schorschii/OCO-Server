@@ -10,6 +10,5 @@ View all possible installation options [here](https://www.tightvnc.com/doc/win/T
 
 ## Uninstallation
 ```
-msiexec /quiet /x tightvnc-x.x.x-gpl-setup-64bit.msi
+msiexec /quiet /x $$ProductCode$$
 ```
-(Download for uninstall)
