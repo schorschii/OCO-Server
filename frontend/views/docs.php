@@ -39,8 +39,11 @@ if(file_exists(DOCS_PATH.'/'.$fileName) && is_file(DOCS_PATH.'/'.$fileName)) { /
 	foreach($nodes as $node) {
 		$attr = $node->getAttribute('href');
 		if(!empty($attr)) {
-			if(startsWith($attr, 'https://github.com/')) continue;
-			$node->setAttribute('href', 'index.php?view=docs&page='.urlencode($attr));
+			if(startsWith($attr, 'https://')) {
+				$node->setAttribute('target', '_blank');
+			} else {
+				$node->setAttribute('href', 'index.php?view=docs&page='.urlencode($attr));
+			}
 		}
 	}
 	// image adjustments
