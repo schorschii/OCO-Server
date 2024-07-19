@@ -11,6 +11,9 @@ require_once('../session.inc.php');
 		<option><?php echo htmlspecialchars($p->name); ?></option>
 	<?php } ?>
 </datalist>
+<datalist id='lstVersions'>
+	<option>$$ProductVersion$$</option>
+</datalist>
 <datalist id='lstInstallProceduresTemplates'>
 	<option>[FILENAME]</option>
 	<option>msiexec /quiet /i</option>
@@ -68,7 +71,7 @@ require_once('../session.inc.php');
 		<th><?php echo LANG('package_family_name'); ?></th>
 		<td><input type='text' id='txtName' list='lstPackageNames' value='<?php echo htmlspecialchars($_GET['name']??'',ENT_QUOTES); ?>'></td>
 		<th><?php echo LANG('version'); ?></th>
-		<td><input type='text' id='txtVersion' value='<?php echo htmlspecialchars($_GET['version']??'',ENT_QUOTES); ?>'></td>
+		<td><input type='text' id='txtVersion' list='lstVersions' value='<?php echo htmlspecialchars($_GET['version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os'); ?></th>

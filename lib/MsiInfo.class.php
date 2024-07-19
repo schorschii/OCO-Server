@@ -6,7 +6,7 @@ class MsiInfo {
 
 	private $properties = [];
 
-	function __construct($msiFile) {
+	function __construct(string $msiFile) {
 		if(!file_exists(self::WINEPREFIX)) {
 			mkdir(self::WINEPREFIX);
 		}
@@ -31,16 +31,22 @@ class MsiInfo {
 		}
 	}
 
-	public function getProperty($prop) {
+	public function getProperty(string $prop) {
 		return $this->properties[$prop] ?? null;
 	}
 
-	const RESOLVABLE_MSI_PROPERTIES = ['ProductCode'];
-	static function resolvePlaceholders($files, $string) {
+	const RESOLVABLE_MSI_PROPERTIES = [
+		'ProductCode', 'UpgradeCode',
+		'ProductName', 'ProductVersion', 'Manufacturer'
+	];
+	static function resolvePlaceholders(array $files, array $strings) {
 		$found = false;
 		foreach(self::RESOLVABLE_MSI_PROPERTIES as $prop) {
-			if(strpos($string, '$$'.$prop.'$$') !== false) {
-				$found = true;
+			foreach($strings as $key => $origValue) {
+				if(strpos($origValue, '$$'.$prop.'$$') !== false) {
+					$found = true;
+					break 2;
+				}
 			}
 		}
 		// inspect MSI files only if at least one MSI placeholder was found
@@ -49,17 +55,19 @@ class MsiInfo {
 				$mimeType = mime_content_type($filePath);
 				if($mimeType === 'application/x-msi') {
 					$msi = new MsiInfo($filePath);
-					foreach(self::RESOLVABLE_MSI_PROPERTIES as $prop) {
-						$propValue = $msi->getProperty($prop);
-						if($propValue) {
-							$string = str_replace('$$'.$prop.'$$', $propValue, $string);
+					foreach($strings as $key => $origValue) {
+						foreach(self::RESOLVABLE_MSI_PROPERTIES as $prop) {
+							$propValue = $msi->getProperty($prop);
+							if($propValue) {
+								$strings[$key] = str_replace('$$'.$prop.'$$', $propValue, $strings[$key]);
+							}
 						}
 					}
 					break;
 				}
 			}
 		}
-		return $string;
+		return $strings;
 	}
 
 }

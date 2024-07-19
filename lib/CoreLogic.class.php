@@ -342,7 +342,19 @@ class CoreLogic {
 
 		// resolve MSI placeholder if set
 		if(!empty($tmpFiles)) {
-			$uninstallProcedure = MsiInfo::resolvePlaceholders($tmpFiles, $uninstallProcedure);
+			$replaced = MsiInfo::resolvePlaceholders($tmpFiles, [
+				'installProcedure' => $installProcedure,
+				'uninstallProcedure' => $uninstallProcedure,
+				'version' => $version,
+				'description' => $description,
+			]);
+			$installProcedure = $replaced['installProcedure'];
+			$uninstallProcedure = $replaced['uninstallProcedure'];
+			$version = $replaced['version'];
+			$description = $replaced['description'];
+			if(empty($name) || empty($installProcedure) || empty($version)) {
+				throw new InvalidRequestException(LANG('please_fill_required_fields'));
+			}
 		}
 
 		// insert into database
@@ -594,7 +606,16 @@ class CoreLogic {
 			}
 
 			// resolve MSI placeholder if set
-			$uninstallProcedure = MsiInfo::resolvePlaceholders($tmpFiles, $uninstallProcedure);
+			$replaced = MsiInfo::resolvePlaceholders($tmpFiles, [
+				'installProcedure' => $installProcedure,
+				'uninstallProcedure' => $uninstallProcedure,
+				'version' => $version,
+				'description' => $notes,
+			]);
+			$installProcedure = $replaced['installProcedure'];
+			$uninstallProcedure = $replaced['uninstallProcedure'];
+			$version = $replaced['version'];
+			$notes = $replaced['description'];
 		}
 
 		// update in database

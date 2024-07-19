@@ -91,6 +91,7 @@ In general, you should always use system-wide installations, that's what OCO is 
   - That's why, for bigger packages, you should use the MSI product GUID instead of the MSI file name in the uninstallation command.
   - OCO can automatically find the GUID if you enter the placeholder `$$ProductCode$$` into the uninstallation procedure, e.g. `msiexec /quiet /x $$ProductCode$$`. This requires that Wine with its `msidb.exe` command is installed on your server.
   - Alternatively, you can find the GUID by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup) (e.g. by looking into the Registry below `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`).
+  - Other supported MSI placeholders are `$$UpgradeCode$$`, `$$ProductName$$`, `$$ProductVersion$$`, `$$Manufacturer$$` and can be used in installation procedure, version and description fields too.
 - additional parameters
   - `/norestart`: prevent automatic restart - if your product needs a restart, you should set this option and use the OCO restart feature ("post action") instead
   - `MY_PROP="myValue"`: custom software-specific properties - please contact the MSI package software vendor for a list of supported options
