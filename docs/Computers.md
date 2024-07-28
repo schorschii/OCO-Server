@@ -19,7 +19,11 @@ You can create computer groups e.g. to group all computers of specific locations
 These are static, manually filled groups. In contrast to that, you can create a report if you want a "dynamic group" whose contents is automatically filled/updated based on various criteria (e.g. "all computers of a certain model").
 
 ## Updating Computer Inventory Values
-The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in "Agent Update Interval" on the config page. The recommended default value is 2 hours. Do not make this time interval too short as the query of the inventory values can produce some CPU load.
+The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in "Agent Update Interval" on the config page. The recommended default value is 2 hours. Do not make this time interval too short as the query of the inventory values (logins, installed software etc.) can produce some CPU load.
+
+To manually force an update once, hover over the "Last Refresh" date of the computer with your mouse and click the "Force Update" button. The agent will then update its values even if the update time is not reached yet.
+
+![Force update button on mouse hover](img/force-agent-update.png)
 
 ## Event Log Query
 You can monitor the Windows event log and journalctl on Linux by creating Event Query Rules on the OCO server. These rules are communicated with the agent and if an event matches the rule, the agent will send the event data to the server. This feature can be used as a simple central syslog functionality for your managed clients.
