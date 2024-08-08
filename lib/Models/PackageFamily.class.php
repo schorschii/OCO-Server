@@ -18,6 +18,7 @@ class PackageFamily {
 	// attributes
 	public $id;
 	public $name;
+	public $license_count;
 	public $notes;
 	public $icon;
 

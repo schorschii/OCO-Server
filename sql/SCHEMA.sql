@@ -120,6 +120,7 @@ CREATE TABLE IF NOT EXISTS `package_family` (
   `name` text NOT NULL,
   `notes` text NOT NULL,
   `icon` mediumblob DEFAULT NULL,
+  `license_count` int(11) DEFAULT NULL
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -144,6 +145,7 @@ CREATE TABLE IF NOT EXISTS `package` (
   `uninstall_procedure_post_action` tinyint(4) NOT NULL DEFAULT 0,
   `compatible_os` text DEFAULT NULL,
   `compatible_os_version` text DEFAULT NULL,
+  `license_count` int(11) DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `created_by_system_user_id` int(11) DEFAULT NULL,
   `last_update` timestamp NOT NULL DEFAULT current_timestamp(),

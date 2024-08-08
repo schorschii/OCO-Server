@@ -286,7 +286,7 @@ class CoreLogic {
 		$this->checkPermission($packageFamily, PermissionManager::METHOD_READ);
 		return $packageFamily;
 	}
-	public function createPackage($name, $version, $description,
+	public function createPackage($name, $version, $licenseCount, $description,
 		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior,
 		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction,
 		$compatibleOs, $compatibleOsVersion, $tmpFiles) {
@@ -302,6 +302,9 @@ class CoreLogic {
 		}
 		if(!empty($this->db->selectAllPackageByPackageFamilyNameAndVersion($name, $version))) {
 			throw new InvalidRequestException(LANG('package_exists_with_version'));
+		}
+		if($licenseCount < 0) {
+			$licenseCount = null;
 		}
 
 		// decide what to do with uploaded files
@@ -373,7 +376,7 @@ class CoreLogic {
 			throw new Exception(LANG('database_error'));
 		}
 		$insertId = $this->db->insertPackage(
-			$packageFamilyId, $version,
+			$packageFamilyId, $version, $licenseCount,
 			$this->su->id, $description,
 			$installProcedure,
 			$installProcedureSuccessReturnCodes,
@@ -495,7 +498,7 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $packageGroup->id, 'oco.package_group.delete', []);
 		return $result;
 	}
-	public function editPackageFamily($id, $name, $notes) {
+	public function editPackageFamily($id, $name, $licenseCount, $notes) {
 		$packageFamily = $this->db->selectPackageFamily($id);
 		if(empty($packageFamily)) throw new NotFoundException();
 		$this->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
@@ -503,7 +506,10 @@ class CoreLogic {
 		if(empty(trim($name))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$this->db->updatePackageFamily($packageFamily->id, $name, $notes, $packageFamily->icon);
+		if($licenseCount < 0) {
+			$licenseCount = null;
+		}
+		$this->db->updatePackageFamily($packageFamily->id, $name, $licenseCount, $notes, $packageFamily->icon);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $packageFamily->id, 'oco.package_family.update', ['name'=>$name, 'notes'=>$notes]);
 	}
 	public function editPackageFamilyIcon($id, $icon) {
@@ -511,7 +517,7 @@ class CoreLogic {
 		if(empty($packageFamily)) throw new NotFoundException();
 		$this->checkPermission($packageFamily, PermissionManager::METHOD_WRITE);
 
-		$this->db->updatePackageFamily($packageFamily->id, $packageFamily->name, $packageFamily->notes, $icon);
+		$this->db->updatePackageFamily($packageFamily->id, $packageFamily->name, $packageFamily->license_count, $packageFamily->notes, $icon);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $packageFamily->id, 'oco.package_family.update', ['icon'=>base64_encode($icon)]);
 	}
 	public function addPackageDependency($packageId, $dependentPackageId) {
@@ -536,7 +542,7 @@ class CoreLogic {
 		$this->db->deletePackageDependencyByPackageIdAndDependentPackageId($package->id, $dependentPackage->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $package->id, 'oco.package.remove_dependency', ['dependent_package_id'=>$dependentPackage->id]);
 	}
-	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall, $tmpFiles) {
+	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $licenseCount, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall, $tmpFiles) {
 		$package = $this->db->selectPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->checkPermission($package, PermissionManager::METHOD_WRITE);
@@ -547,6 +553,9 @@ class CoreLogic {
 
 		if(empty(trim($version))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+		if($licenseCount < 0) {
+			$licenseCount = null;
 		}
 		if(!is_numeric($installProcedurePostAction)
 		|| !in_array($installProcedurePostAction, [Models\Package::POST_ACTION_NONE, Models\Package::POST_ACTION_RESTART, Models\Package::POST_ACTION_SHUTDOWN, Models\Package::POST_ACTION_EXIT])) {
@@ -624,6 +633,7 @@ class CoreLogic {
 			$version,
 			$compatibleOs,
 			$compatibleOsVersion,
+			$licenseCount,
 			$notes,
 			$installProcedure,
 			$installProcedureSuccessReturnCodes,

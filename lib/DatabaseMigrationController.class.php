@@ -76,6 +76,22 @@ class DatabaseMigrationController {
 				$upgraded = true;
 		}
 
+		// upgrade from 1.1.0 to 1.1.1
+		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'package_family' AND COLUMN_NAME = 'license_count' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute();
+		if($this->stmt->rowCount() == 0) {
+				if($this->debug) echo 'Upgrading to 1.1.1... (add license_count column)'."\n";
+
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `package_family` ADD COLUMN `license_count` int(11) DEFAULT NULL AFTER icon");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `package` ADD COLUMN `license_count` int(11) DEFAULT NULL AFTER compatible_os_version");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

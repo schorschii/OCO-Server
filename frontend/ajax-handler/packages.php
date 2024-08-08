@@ -16,8 +16,9 @@ try {
 
 	if(!empty($_POST['edit_package_family_id'])
 	&& isset($_POST['name'])
+	&& isset($_POST['license_count'])
 	&& isset($_POST['notes'])) {
-		$cl->editPackageFamily($_POST['edit_package_family_id'], $_POST['name'], $_POST['notes']);
+		$cl->editPackageFamily($_POST['edit_package_family_id'], $_POST['name'], $_POST['license_count'], $_POST['notes']);
 		die();
 	}
 
@@ -63,6 +64,7 @@ try {
 	&& isset($_POST['version'])
 	&& isset($_POST['compatible_os'])
 	&& isset($_POST['compatible_os_version'])
+	&& isset($_POST['license_count'])
 	&& isset($_POST['notes'])
 	&& isset($_POST['install_procedure'])
 	&& isset($_POST['install_procedure_success_return_codes'])
@@ -97,6 +99,7 @@ try {
 			$_POST['version'],
 			$_POST['compatible_os'],
 			$_POST['compatible_os_version'],
+			$_POST['license_count'],
 			$_POST['notes'],
 			$_POST['install_procedure'],
 			$_POST['install_procedure_success_return_codes'],
@@ -183,7 +186,7 @@ try {
 			}
 		}
 		// create package
-		$insertId = $cl->createPackage($_POST['create_package'], $_POST['version'], $_POST['notes'] ?? '',
+		$insertId = $cl->createPackage($_POST['create_package'], $_POST['version'], $_POST['license_count'] ?? null, $_POST['notes'] ?? '',
 			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_post_action'] ?? null, $_POST['upgrade_behavior'] ?? 0,
 			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'] ?? 0, $_POST['uninstall_procedure_post_action'] ?? null,
 			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $tmpFiles

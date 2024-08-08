@@ -12,6 +12,8 @@ try {
 	$packageFamily = $db->selectPackageFamily($package->package_family_id);
 	if($packageFamily === null) throw new NotFoundException();
 
+	$installedOnComputers = $db->selectAllComputerPackageByPackageId($package->id);
+
 	$permissionCreate   = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
 	$permissionDeploy   = $cl->checkPermission($package, PermissionManager::METHOD_DEPLOY, false);
 	$permissionDownload = $cl->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false);
@@ -31,7 +33,7 @@ try {
 	<div class='controls'>
 		<button onclick='refreshContentDeploy({"id":<?php echo $package->id; ?>,"name":obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 		<button onclick='window.open("package-download.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
-		<button onclick='showDialogEditPackage(<?php echo $package->id; ?>, <?php echo $package->package_family_id; ?>, spnPackageVersion.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='showDialogEditPackage(<?php echo $package->id; ?>, <?php echo $package->package_family_id; ?>, spnPackageVersion.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, <?php echo $package->license_count===null?-1:$package->license_count; ?>, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button onclick='showDialogAddPackageToGroup("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
 		<button onclick='confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")", "views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>"), <?php echo count($db->selectAllComputerPackageByPackageId($package->id)); ?>)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
@@ -73,6 +75,15 @@ try {
 								<span id='spnPackageCompatibleOsVersion'><?php echo htmlspecialchars($package->compatible_os_version); ?></span>
 							</td>
 						</tr>
+						<?php if($package->license_count !== null && $package->license_count >= 0) {
+							$licenseUsed = count($installedOnComputers);
+							$licensePercent = $package->license_count==0 ? 100 : $licenseUsed * 100 / $package->license_count;
+						?>
+						<tr>
+							<th><?php echo LANG('licenses'); ?></th>
+							<td><?php echo progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$package->license_count.')'); ?></td>
+						</tr>
+						<?php } ?>
 						<tr>
 							<th><?php echo LANG('zip_archive'); ?></th>
 							<td>
@@ -203,7 +214,7 @@ try {
 					<div class='controls heading'>
 						<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
 						<div class='filler invisible'></div>
-						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
+						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, <?php echo $package->license_count===null?-1:$package->license_count; ?>, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
 						<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.dyn.svg'>&nbsp;<?php echo LANG('details'); ?></button>
 					</div>
 					<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
@@ -396,7 +407,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							foreach($db->selectAllComputerPackageByPackageId($package->id) as $p) {
+							foreach($installedOnComputers as $p) {
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'"></td>';
 								echo '<td><a '.explorerLink('views/computer-details.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';

@@ -538,6 +538,7 @@ return [
 	'create_explicit_uninstall_jobs' => 'Créer une tâche de désinstallation explicite',
 	'create_new_job_container' => 'Créer un nouveau conteneur de tâches',
 	'mode' => 'Mode',
+	'licenses' => 'Licences',
 	'package_creation_notes' => '
 		<p>
 			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.
