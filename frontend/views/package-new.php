@@ -79,6 +79,10 @@ require_once('../session.inc.php');
 		<th><?php echo LANG('compatible_os_version'); ?></th>
 		<td><input type='text' id='txtCompatibleOsVersion' list='lstOsVersion' placeholder='<?php echo LANG('optional_hint'); ?>' value='<?php echo htmlspecialchars($_GET['compatible_os_version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
+	<tr class='nospace'>
+		<th><?php echo LANG('licenses'); ?></th>
+		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtLicenseCount' min='0' value='<?php echo htmlspecialchars($_GET['license_count']??'',ENT_QUOTES); ?>'></input></td>
+	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
 		<td colspan='3'><textarea id='txtNotes' placeholder='<?php echo LANG('optional_hint'); ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea></td>
@@ -162,6 +166,7 @@ require_once('../session.inc.php');
 			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(
 				txtName.value,
 				txtVersion.value,
+				txtLicenseCount.value=="" ? -1 : txtLicenseCount.value,
 				txtNotes.value,
 				fleArchive.files,
 				txtInstallProcedure.value,

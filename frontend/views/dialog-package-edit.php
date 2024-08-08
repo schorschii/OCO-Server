@@ -32,6 +32,10 @@ require_once('../session.inc.php');
 		<td><input autocomplete='new-password' id='txtEditPackageCompatibleOsVersion'></input></td>
 	</tr>
 	<tr>
+		<th><?php echo LANG('licenses'); ?></th>
+		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPackageLicenseCount' min='0'></input></td>
+	</tr>
+	<tr>
 		<th><?php echo LANG('description'); ?></th>
 		<td><textarea autocomplete='new-password' id='txtEditPackageNotes'></textarea></td>
 	</tr>
@@ -113,6 +117,7 @@ require_once('../session.inc.php');
 		txtEditPackageVersion.value,
 		txtEditPackageCompatibleOs.value,
 		txtEditPackageCompatibleOsVersion.value,
+		txtEditPackageLicenseCount.value=="" ? -1 : txtEditPackageLicenseCount.value,
 		txtEditPackageNotes.value,
 		chkReplaceArchive.checked ? fleArchive.files : null,
 		txtEditPackageInstallProcedure.value,

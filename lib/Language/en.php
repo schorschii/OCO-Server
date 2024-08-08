@@ -538,6 +538,7 @@ return [
 	'create_explicit_uninstall_jobs' => 'Create explicit uninstall jobs',
 	'create_new_job_container' => 'Create new job container',
 	'mode' => 'Mode',
+	'licenses' => 'Licenses',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

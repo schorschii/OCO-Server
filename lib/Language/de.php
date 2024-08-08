@@ -533,6 +533,7 @@ return [
 	'create_explicit_uninstall_jobs' => 'Explizite Deinstallationssjobs erstellen',
 	'create_new_job_container' => 'Neuen Jobcontainer erstellen',
 	'mode' => 'Modus',
+	'licenses' => 'Lizenzen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

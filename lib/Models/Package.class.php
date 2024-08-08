@@ -23,6 +23,7 @@ class Package {
 	public $uninstall_procedure_success_return_codes;
 	public $download_for_uninstall;
 	public $uninstall_procedure_post_action;
+	public $license_count;
 	public $created;
 	public $created_by_system_user_id;
 	public $last_update;

@@ -59,7 +59,7 @@ try {
 	<h1><img src='<?php echo $family->getIcon(); ?>'><span id='page-title'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($family->name); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
-		<button onclick='showDialogEditPackageFamily(<?php echo $family->id; ?>, spnPackageFamilyName.innerText, spnPackageFamilyNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='showDialogEditPackageFamily(<?php echo $family->id; ?>, spnPackageFamilyName.innerText, <?php echo $family->license_count===null?-1:$family->license_count; ?>, spnPackageFamilyNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button class='<?php echo (!empty($family->icon)?'nomarginright':''); ?>' onclick='fleIcon.click()' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-add.dyn.svg'>&nbsp;<?php echo LANG('change_icon'); ?></button>
 		<?php if(!empty($family->icon)) { ?>
 			<button onclick='removePackageFamilyIcon(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-remove.dyn.svg'>&nbsp;<?php echo LANG('remove_icon'); ?></button>
@@ -74,6 +74,17 @@ try {
 		<p class='quote'><?php echo nl2br(htmlspecialchars($family->notes)); ?></p>
 	<?php } ?>
 	</span>
+	<?php if($family->license_count !== null && $family->license_count >= 0) {
+		$licenseUsed = count($db->selectAllComputerPackageByPackageFamilyId($family->id));
+		$licensePercent = $family->license_count==0 ? 100 : $licenseUsed * 100 / $family->license_count;
+	?>
+		<table class='list fullwidth marginbottom'>
+			<tr>
+				<th><?php echo LANG('licenses'); ?></th>
+				<td><?php echo progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$family->license_count.')'); ?></td>
+			</tr>
+		</table>
+	<?php } ?>
 <?php } else {
 	$subGroups = $cl->getPackageGroups(null);
 	$permissionCreatePackage = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);

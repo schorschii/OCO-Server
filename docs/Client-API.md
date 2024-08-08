@@ -659,6 +659,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ### Parameters
 - `package_family_name` - package family name (will be created if not exists)
 - `version` - package version
+- `license_count` - number of available licenses
 - `description` - package description (optional)
 - `install_procedure` - install procedure (install command)
 - `install_procedure_success_return_codes` - install procedure success return codes (comma separated, leave empty to disable return code check)
@@ -684,6 +685,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 		"data": {
 			"package_family_name": "My Test App",
 			"version": "1.1",
+			"license_count": 32,
 			"description": "For internal tests only",
 			"install_procedure": "msiexec /quiet /i test.msi",
 			"install_procedure_success_return_codes": "0,1,2",

@@ -52,12 +52,14 @@ function wrapInSpanIfNotEmpty($text) {
 	return '<span>'.htmlspecialchars($text).'</span>';
 }
 
-function progressBar($percent, $cid=null, $tid=null, $class=''/*hidden big stretch animated*/, $style='') {
+function progressBar($percent, $cid=null, $tid=null, $class=''/*hidden big stretch animated*/, $style='', $text=null) {
 	$percent = intval($percent);
 	return
 		'<span class="progressbar-container '.$class.'" style="--progress:'.$percent.'%; '.$style.'" '.($cid==null ? '' : 'id="'.htmlspecialchars($cid).'"').'>'
 			.'<span class="progressbar"><span class="progress"></span></span>'
-			.'<span class="progresstext" '.($tid==null ? '' : 'id="'.htmlspecialchars($tid).'"').'>'.(strpos($class,'animated')!==false ? LANG('in_progress') : $percent.'%').'</span>'
+			.'<span class="progresstext" '.($tid==null ? '' : 'id="'.htmlspecialchars($tid).'"').'>'.(
+				$text ? htmlspecialchars($text) : (strpos($class,'animated')!==false ? LANG('in_progress') : $percent.'%')
+			).'</span>'
 		.'</span>';
 }
 

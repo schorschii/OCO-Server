@@ -911,24 +911,26 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackageFamily($id, $name, $notes, $icon) {
+	public function updatePackageFamily($id, $name, $license_count, $notes, $icon) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package_family SET name = :name, notes = :notes, icon = :icon WHERE id = :id'
+			'UPDATE package_family SET name = :name, notes = :notes, license_count = :license_count, icon = :icon WHERE id = :id'
 		);
 		$this->stmt->bindParam(':id', $id, PDO::PARAM_INT);
 		$this->stmt->bindParam(':name', $name, PDO::PARAM_STR);
+		$this->stmt->bindParam(':license_count', $license_count, PDO::PARAM_INT);
 		$this->stmt->bindParam(':notes', $notes, PDO::PARAM_STR);
 		$this->stmt->bindParam(':icon', $icon, PDO::PARAM_LOB);
 		return $this->stmt->execute();
 	}
-	public function insertPackage($package_family_id, $version, $created_by_system_user_id, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
+	public function insertPackage($package_family_id, $version, $license_count, $created_by_system_user_id, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (package_family_id, version, created_by_system_user_id, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version)
-			VALUES (:package_family_id, :version, :created_by_system_user_id, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :upgrade_behavior, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :compatible_os, :compatible_os_version)'
+			'INSERT INTO package (package_family_id, version, license_count, created_by_system_user_id, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version)
+			VALUES (:package_family_id, :version, :license_count, :created_by_system_user_id, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :upgrade_behavior, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :compatible_os, :compatible_os_version)'
 		);
 		$this->stmt->execute([
 			':package_family_id' => $package_family_id,
 			':version' => $version,
+			':license_count' => $license_count,
 			':created_by_system_user_id' => $created_by_system_user_id,
 			':notes' => $notes,
 			':install_procedure' => $install_procedure,
@@ -944,9 +946,9 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
+	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $license_count, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, upgrade_behavior = :upgrade_behavior, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, license_count = :license_count, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, upgrade_behavior = :upgrade_behavior, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
@@ -954,6 +956,7 @@ class DatabaseController {
 			':version' => $version,
 			':compatible_os' => $compatible_os,
 			':compatible_os_version' => $compatible_os_version,
+			':license_count' => $license_count,
 			':notes' => $notes,
 			':install_procedure' => $install_procedure,
 			':install_procedure_success_return_codes' => $install_procedure_success_return_codes,
@@ -1000,6 +1003,19 @@ class DatabaseController {
 			WHERE cp.package_id = :package_id'
 		);
 		$this->stmt->execute([':package_id' => $package_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
+	}
+	public function selectAllComputerPackageByPackageFamilyId($package_family_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed_by_system_user_id AS "installed_by_system_user_id", su.username AS "installed_by_system_user_username", du.username AS "installed_by_domain_user_username", cp.installed AS "installed"
+			FROM computer_package cp
+			INNER JOIN computer c ON c.id = cp.computer_id
+			INNER JOIN package p ON p.id = cp.package_id
+			LEFT JOIN system_user su ON su.id = cp.installed_by_system_user_id
+			LEFT JOIN domain_user du ON du.id = cp.installed_by_domain_user_id
+			WHERE p.package_family_id = :package_family_id'
+		);
+		$this->stmt->execute([':package_family_id' => $package_family_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
 	}
 	public function selectAllPackageByIdAndPackageGroupId($package_id, $package_group_id) {
