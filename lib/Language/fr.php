@@ -518,6 +518,7 @@ return [
 	'configuration_json' => 'Configuration (format JSON)',
 	'configuration_json_docs' => 'Veuillez lire la doc sur comment écrite une configuration JSON.',
 	'buy_license' => 'Acheter une Licence',
+	'your_license_expires_in_days' => 'Ihre Lizenz läuft in %1 Tag(en) aus.',
 	'package_depot_path' => 'Chemin de dépôt de paquet',
 	'no_wol_satellite_server_configured' => 'Aucun serveur relais WOL n\'est configuré',
 	'no_extensions_loaded' => 'Aucune extension lancée',
