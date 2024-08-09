@@ -518,6 +518,7 @@ return [
 	'configuration_json' => 'Configuration (JSON format)',
 	'configuration_json_docs' => 'Please read the docs how to write the JSON configuration.',
 	'buy_license' => 'Buy License',
+	'your_license_expires_in_days' => 'Your license expires in %1 day(s).',
 	'package_depot_path' => 'Package Depot Path',
 	'no_wol_satellite_server_configured' => 'No WOL satellite servers configured',
 	'no_extensions_loaded' => 'No extensions loaded',

@@ -513,6 +513,7 @@ return [
 	'configuration_json' => 'Konfiguration (JSON-Format)',
 	'configuration_json_docs' => 'Bitte lesen Sie die Dokumentation, um zu erfahren, wie die Konfiguration auszusehen hat.',
 	'buy_license' => 'Lizenz kaufen',
+	'your_license_expires_in_days' => 'Ihre Lizenz läuft in %1 Tag(en) aus.',
 	'package_depot_path' => 'Paket-Depot-Pfad',
 	'no_wol_satellite_server_configured' => 'Keine WOL-Satelliten-Server konfiguriert',
 	'no_extensions_loaded' => 'Keine Erweiterungen geladen',

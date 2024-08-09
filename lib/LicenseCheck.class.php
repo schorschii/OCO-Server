@@ -4,8 +4,9 @@ class LicenseCheck {
 
 	/* LEGAL WARNING
 	   It is not allowed to modify this file in order to bypass license checks.
-	   I decided to not use obfuscation techniques because they suck, so yeah, it's technically easy to bypass the check.
+	   I decided to not use obfuscation techniques because they suck, so yeah, it's technically possible to bypass the check.
 	   Please be so kind and support further development by purchasing licenses from https://georg-sieber.de
+	   It depends on you how long this software will be maintained...
 	*/
 
 	const FREE_OBJECTS          = 20;
@@ -31,6 +32,9 @@ class LicenseCheck {
 
 	public function isValid() : bool {
 		return $this->licenseValid;
+	}
+	public function getRemainingTime() : int {
+		return $this->licenseExpireTime - time();
 	}
 	public function getCompany() : string {
 		return $this->licenseCompany;
