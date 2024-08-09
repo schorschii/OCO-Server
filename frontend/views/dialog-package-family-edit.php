@@ -12,7 +12,7 @@ require_once('../session.inc.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG('licenses'); ?></th>
-		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPackageFamilyLicenseCount' min='0'></input></td>
+		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPackageFamilyLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('notes'); ?></th>
