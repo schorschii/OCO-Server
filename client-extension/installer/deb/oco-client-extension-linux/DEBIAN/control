@@ -1,0 +1,8 @@
+Package: oco-client-extension-linux
+Version: 1.1.1
+Section: base
+Priority: optional
+Architecture: all
+Depends: python3, remmina, remmina-plugin-rdp, remmina-plugin-vnc, nmap
+Maintainer: Georg Sieber <it@georg-sieber.de>
+Description: The OCO client extensions enables you to seamlessly open VNC, RDP and SSH sessions through the OCO web frontend.
