@@ -25,15 +25,15 @@ require_once('../session.inc.php');
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os'); ?></th>
-		<td><input type='text' autocomplete='new-password' id='txtEditPackageCompatibleOs'></input></td>
+		<td><input type='text' autocomplete='new-password' id='txtEditPackageCompatibleOs' placeholder='<?php echo LANG('optional_hint'); ?>'></input></td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os_version'); ?></th>
-		<td><input autocomplete='new-password' id='txtEditPackageCompatibleOsVersion'></input></td>
+		<td><input autocomplete='new-password' id='txtEditPackageCompatibleOsVersion' placeholder='<?php echo LANG('optional_hint'); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('licenses'); ?></th>
-		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPackageLicenseCount' min='0'></input></td>
+		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPackageLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
@@ -84,7 +84,7 @@ require_once('../session.inc.php');
 	<tr class='nospace'>
 		<th><?php echo LANG('procedure'); ?></th>
 		<td class='inputwithbutton'>
-			<input class='fullwidth monospace' autocomplete='new-password' id='txtEditPackageUninstallProcedure'></input>
+			<input class='fullwidth monospace' autocomplete='new-password' id='txtEditPackageUninstallProcedure' placeholder='<?php echo LANG('optional_hint'); ?>'></input>
 			<button onclick='toggleTextBoxMultiLine(txtEditPackageUninstallProcedure)' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button>
 		</td>
 	</tr>

@@ -81,7 +81,7 @@ require_once('../session.inc.php');
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('licenses'); ?></th>
-		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtLicenseCount' min='0' value='<?php echo htmlspecialchars($_GET['license_count']??'',ENT_QUOTES); ?>'></input></td>
+		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0' value='<?php echo htmlspecialchars($_GET['license_count']??'',ENT_QUOTES); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
