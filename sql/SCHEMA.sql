@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `package_family` (
   `name` text NOT NULL,
   `notes` text NOT NULL,
   `icon` mediumblob DEFAULT NULL,
-  `license_count` int(11) DEFAULT NULL
+  `license_count` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
