@@ -134,7 +134,7 @@ try {
 			if($group !== null) echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onkeyup='handlePackageReorderByKeyboard(event, ".$group->id.", ".$p->package_group_member_sequence.")'></td>";
 			else echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."'></td>";
 
-			if($family==null) echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
+			if($family==null) echo "<td><a ".explorerLink('views/packages.php?package_family_id='.$p->package_family_id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
 			echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->version)."</a></td>";
 			echo "<td>".htmlspecialchars($p->created_by_system_user_username??'')."</td>";
 			echo "<td sort_key='".htmlspecialchars($size ? $size : 0)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG('not_found'))."</td>";
