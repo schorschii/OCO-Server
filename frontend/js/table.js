@@ -240,7 +240,7 @@ var TableSortUltra = function(table) {
 		}
 
 		// enable drag and drop only if package list is sorted by sequence ascending
-		packageDragAndDropEnabled = (table.id == 'tblPackageData' && col == 7 && sortsymbols[col].classList.contains('sortedasc'));
+		packageDragAndDropEnabled = (table.id == 'tblPackageData' && col == 8 && sortsymbols[col].classList.contains('sortedasc'));
 		togglePackageDragAndDrop(table, packageDragAndDropEnabled);
 	}
 

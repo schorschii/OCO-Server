@@ -75,7 +75,7 @@ try {
 	<?php } ?>
 	</span>
 	<?php if($family->license_count !== null && $family->license_count >= 0) {
-		$licenseUsed = count($db->selectAllComputerPackageByPackageFamilyId($family->id));
+		$licenseUsed = $family->install_count;
 		$licensePercent = $family->license_count==0 ? 100 : $licenseUsed * 100 / $family->license_count;
 	?>
 		<table class='list fullwidth marginbottom'>
@@ -118,6 +118,7 @@ try {
 				<th class='searchable sortable'><?php echo LANG('size'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('description'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('licenses'); ?></th>
 				<?php if($group !== null) { ?>
 					<th class='searchable sortable'><?php echo LANG('order'); ?></th>
 					<th><?php echo LANG('move'); ?></th>
@@ -139,6 +140,13 @@ try {
 			echo "<td sort_key='".htmlspecialchars($size ? $size : 0)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG('not_found'))."</td>";
 			echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 			echo "<td>".htmlspecialchars($p->created)."</td>";
+			if($p->license_count !== null && $p->license_count >= 0) {
+				$licenseUsed = $p->install_count;
+				$licensePercent = $p->license_count==0 ? 100 : $licenseUsed * 100 / $p->license_count;
+				echo "<td>".progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$p->license_count.')')."</td>";
+			} else {
+				echo "<td>-</td>";
+			}
 
 			if($group !== null) {
 				echo "<td>".htmlspecialchars($p->package_group_member_sequence ?? '-')."</td>";

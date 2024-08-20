@@ -12,8 +12,6 @@ try {
 	$packageFamily = $db->selectPackageFamily($package->package_family_id);
 	if($packageFamily === null) throw new NotFoundException();
 
-	$installedOnComputers = $db->selectAllComputerPackageByPackageId($package->id);
-
 	$permissionCreate   = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission($packageFamily, PermissionManager::METHOD_CREATE, false);
 	$permissionDeploy   = $cl->checkPermission($package, PermissionManager::METHOD_DEPLOY, false);
 	$permissionDownload = $cl->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false);
@@ -76,7 +74,7 @@ try {
 							</td>
 						</tr>
 						<?php if($package->license_count !== null && $package->license_count >= 0) {
-							$licenseUsed = count($installedOnComputers);
+							$licenseUsed = $package->install_count;
 							$licensePercent = $package->license_count==0 ? 100 : $licenseUsed * 100 / $package->license_count;
 						?>
 						<tr>
@@ -217,7 +215,20 @@ try {
 						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, <?php echo $package->license_count===null?-1:$package->license_count; ?>, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
 						<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.dyn.svg'>&nbsp;<?php echo LANG('details'); ?></button>
 					</div>
-					<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
+					<?php if(!empty($packageFamily->notes)) { ?>
+						<p class='quote'><?php echo nl2br(htmlspecialchars($packageFamily->notes)); ?></p>
+					<?php } ?>
+					<?php if($packageFamily->license_count !== null && $packageFamily->license_count >= 0) {
+						$licenseUsed = $packageFamily->install_count;
+						$licensePercent = $packageFamily->license_count==0 ? 100 : $licenseUsed * 100 / $packageFamily->license_count;
+					?>
+					<table class='list fullwidth marginbottom'>
+						<tr>
+							<th><?php echo LANG('licenses'); ?></th>
+							<td><?php echo progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$packageFamily->license_count.')'); ?></td>
+						</tr>
+					</table>
+					<?php } ?>
 					<table id='tblOtherPackagesData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
@@ -407,7 +418,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							foreach($installedOnComputers as $p) {
+							foreach($db->selectAllComputerPackageByPackageId($package->id) as $p) {
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'"></td>';
 								echo '<td><a '.explorerLink('views/computer-details.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';

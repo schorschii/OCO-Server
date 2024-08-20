@@ -1005,22 +1005,10 @@ class DatabaseController {
 		$this->stmt->execute([':package_id' => $package_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
 	}
-	public function selectAllComputerPackageByPackageFamilyId($package_family_id) {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT cp.id AS "id", p.id AS "package_id", p.package_family_id AS "package_family_id", c.id AS "computer_id", c.hostname AS "computer_hostname", cp.installed_procedure AS "installed_procedure", cp.installed_by_system_user_id AS "installed_by_system_user_id", su.username AS "installed_by_system_user_username", du.username AS "installed_by_domain_user_username", cp.installed AS "installed"
-			FROM computer_package cp
-			INNER JOIN computer c ON c.id = cp.computer_id
-			INNER JOIN package p ON p.id = cp.package_id
-			LEFT JOIN system_user su ON su.id = cp.installed_by_system_user_id
-			LEFT JOIN domain_user du ON du.id = cp.installed_by_domain_user_id
-			WHERE p.package_family_id = :package_family_id'
-		);
-		$this->stmt->execute([':package_family_id' => $package_family_id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPackage');
-	}
 	public function selectAllPackageByIdAndPackageGroupId($package_id, $package_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username"
+			'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username",
+			(SELECT COUNT(cp2.id) FROM computer_package cp2 WHERE cp2.package_id = p.id) AS "install_count"
 			FROM package_group_member pgm
 			INNER JOIN package p ON p.id = pgm.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
@@ -1032,7 +1020,8 @@ class DatabaseController {
 	}
 	public function selectAllPackageByPackageFamilyId($package_family_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username"
+			'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username",
+			(SELECT COUNT(cp2.id) FROM computer_package cp2 WHERE cp2.package_id = p.id) AS "install_count"
 			FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
@@ -1073,7 +1062,8 @@ class DatabaseController {
 	}
 	public function selectAllPackage($orderByCreated=false) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username"
+			'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username",
+			(SELECT COUNT(cp2.id) FROM computer_package cp2 WHERE cp2.package_id = p.id) AS "install_count"
 			FROM package p
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
 			LEFT JOIN system_user su ON su.id = p.created_by_system_user_id'
@@ -1086,7 +1076,8 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT pf.*, (SELECT COUNT(id) FROM package p WHERE p.package_family_id = pf.id) AS "package_count",
 				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created DESC LIMIT 1) AS "newest_package_created",
-				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created ASC LIMIT 1) AS "oldest_package_created"
+				(SELECT created FROM package p WHERE p.package_family_id = pf.id ORDER BY created ASC LIMIT 1) AS "oldest_package_created",
+				(SELECT COUNT(cp2.id) FROM computer_package cp2 INNER JOIN package p2 ON p2.id = cp2.package_id WHERE p2.package_family_id = pf.id) AS "install_count"
 			FROM package_family pf'
 			.($orderByCreated ? ' ORDER BY newest_package_created DESC' : ' ORDER BY pf.name ASC')
 		);
@@ -1094,14 +1085,22 @@ class DatabaseController {
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily', [$binaryAsBase64]);
 	}
 	public function selectPackageFamily($id) {
-		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE id = :id');
+		$this->stmt = $this->dbh->prepare(
+			'SELECT pf.*,
+			(SELECT COUNT(cp2.id) FROM computer_package cp2 INNER JOIN package p2 ON p2.id = cp2.package_id WHERE p2.package_family_id = pf.id) AS "install_count"
+			FROM package_family pf WHERE pf.id = :id'
+		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily') as $row) {
 			return $row;
 		}
 	}
 	public function selectPackageFamilyByName($name) {
-		$this->stmt = $this->dbh->prepare('SELECT * FROM package_family WHERE name = :name');
+		$this->stmt = $this->dbh->prepare(
+			'SELECT pf.*,
+			(SELECT COUNT(cp2.id) FROM computer_package cp2 INNER JOIN package p2 ON p2.id = cp2.package_id WHERE p2.package_family_id = pf.id) AS "install_count"
+			FROM package_family pf WHERE pf.name = :name'
+		);
 		$this->stmt->execute([':name' => $name]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageFamily') as $row) {
 			return $row;
@@ -1135,7 +1134,8 @@ class DatabaseController {
 	public function selectPackage($id, $binaryAsBase64=false) {
 		if($binaryAsBase64 === null) { // do not fetch icons if not necessary
 			$this->stmt = $this->dbh->prepare(
-				'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username"
+				'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username",
+				(SELECT COUNT(cp2.id) FROM computer_package cp2 WHERE cp2.package_id = p.id) AS "install_count"
 				FROM package p
 				INNER JOIN package_family pf ON pf.id = p.package_family_id
 				LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
@@ -1143,7 +1143,8 @@ class DatabaseController {
 			);
 		} else {
 			$this->stmt = $this->dbh->prepare(
-				'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon", su.username AS "created_by_system_user_username"
+				'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon", su.username AS "created_by_system_user_username",
+				(SELECT COUNT(cp2.id) FROM computer_package cp2 WHERE cp2.package_id = p.id) AS "install_count"
 				FROM package p
 				INNER JOIN package_family pf ON pf.id = p.package_family_id
 				LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
@@ -1235,7 +1236,8 @@ class DatabaseController {
 	}
 	public function selectAllPackageByPackageGroupId($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT p.*, pf.name AS "package_family_name", pgm.sequence AS "package_group_member_sequence", su.username AS "created_by_system_user_username"
+			'SELECT p.*, pf.name AS "package_family_name", pgm.sequence AS "package_group_member_sequence", su.username AS "created_by_system_user_username",
+			(SELECT COUNT(cp2.id) FROM computer_package cp2 WHERE cp2.package_id = p.id) AS "install_count"
 			FROM package p
 			INNER JOIN package_group_member pgm ON p.id = pgm.package_id
 			INNER JOIN package_family pf ON pf.id = p.package_family_id
