@@ -73,15 +73,18 @@ try {
 								<span id='spnPackageCompatibleOsVersion'><?php echo htmlspecialchars($package->compatible_os_version); ?></span>
 							</td>
 						</tr>
-						<?php if($package->license_count !== null && $package->license_count >= 0) {
-							$licenseUsed = $package->install_count;
-							$licensePercent = $package->license_count==0 ? 100 : $licenseUsed * 100 / $package->license_count;
-						?>
 						<tr>
 							<th><?php echo LANG('licenses'); ?></th>
-							<td><?php echo progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$package->license_count.')'); ?></td>
+							<td>
+							<?php if($package->license_count !== null && $package->license_count >= 0) {
+								$licenseUsed = $package->install_count;
+								$licensePercent = $package->license_count==0 ? 100 : $licenseUsed * 100 / $package->license_count;
+								echo progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$package->license_count.')');
+							} else {
+								echo '-';
+							} ?>
+							</td>
 						</tr>
-						<?php } ?>
 						<tr>
 							<th><?php echo LANG('zip_archive'); ?></th>
 							<td>
