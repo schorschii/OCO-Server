@@ -39,6 +39,9 @@ class Package {
 	// joined system user attributes
 	public $created_by_system_user_username;
 
+	// aggregated values
+	public $install_count;
+
 	// constants
 	public const POST_ACTION_NONE = 0;
 	public const POST_ACTION_RESTART = 1;

@@ -24,6 +24,7 @@ class PackageFamily {
 
 	// aggregated values
 	public $package_count;
+	public $install_count;
 	public $newest_package_created;
 	public $oldest_package_created;
 
