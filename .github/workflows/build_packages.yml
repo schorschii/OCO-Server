@@ -16,7 +16,7 @@ jobs:
 
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
-      version: ${{ steps.get_version.outputs.version }}
+      #version: ${{ steps.get_version.outputs.version }}
 
     steps:
       - name: Checkout code
@@ -52,7 +52,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: client-extension/installer/deb/oco-client-extension-linux.deb
-          asset_name: oco-client-extension-linux-${{ steps.get_version.outputs.version }}.deb
+          asset_name: oco-client-extension-linux.deb
           asset_content_type: application/vnd.debian.binary-package
 
   create_exe:
@@ -91,5 +91,5 @@ jobs:
         with:
           upload_url: ${{ needs.create_release_deb.outputs.upload_url }}
           asset_path: client-extension/installer/windows/oco-client-extension-windows.exe
-          asset_name: oco-client-extension-windows-${{ needs.create_release_deb.outputs.version }}.exe
+          asset_name: oco-client-extension-windows.exe
           asset_content_type: application/vnd.microsoft.portable-executable
