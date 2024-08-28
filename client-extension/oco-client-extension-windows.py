@@ -3,6 +3,7 @@
 from urllib.parse import unquote
 import sys
 import os
+import subprocess
 import ctypes
 
 def main():
@@ -14,7 +15,7 @@ def main():
 
 		if(arg.startswith('ping://')):
 			try:
-				os.system('start cmd.exe @cmd /c "ping /t '+shellQuote(getProtocolPayload(arg))+' & pause"')
+				subprocess.run('cmd.exe /c ping /t '+shellQuote(getProtocolPayload(arg))+' & pause')
 				sys.exit(0)
 			except Exception as e:
 				msgBox(None, 'Unable to start CMD with ping command. Strange.\n\n'+str(e), APP_TITLE, 48)
@@ -23,7 +24,7 @@ def main():
 		if(arg.startswith('nmap://')):
 			try:
 				os.chdir('C:\\Program Files (x86)\\Nmap')
-				os.system('start cmd.exe @cmd /c ".\\nmap.exe -Pn '+shellQuote(getProtocolPayload(arg))+' & pause"')
+				subprocess.run('cmd.exe /c nmap.exe -Pn '+shellQuote(getProtocolPayload(arg))+' & pause')
 				sys.exit(0)
 			except Exception as e:
 				msgBox(None, 'Unable to start Nmap. Please check if it is installed correctly.\n\n'+str(e), APP_TITLE, 48)
@@ -32,7 +33,7 @@ def main():
 		if(arg.startswith('vnc://')):
 			try:
 				os.chdir('C:\\Program Files\\TightVNC')
-				os.system('.\\tvnviewer.exe '+shellQuote(getProtocolPayload(arg)))
+				subprocess.run('tvnviewer.exe '+shellQuote(getProtocolPayload(arg)))
 				sys.exit(0)
 			except Exception as e:
 				msgBox(None, 'Unable to start TightVNC Viewer. Please check if it is installed correctly.\n\n'+str(e), APP_TITLE, 48)
@@ -40,7 +41,7 @@ def main():
 
 		if(arg.startswith('rdp://')):
 			try:
-				os.system('mstsc.exe /v:'+shellQuote(getProtocolPayload(arg)))
+				subprocess.run('mstsc.exe /v:'+shellQuote(getProtocolPayload(arg)))
 				sys.exit(0)
 			except Exception as e:
 				msgBox(None, 'Unable to start Windows RDP Viewer. Please check if mstsc.exe exists in PATH.\n\n'+str(e), APP_TITLE, 48)
@@ -48,7 +49,7 @@ def main():
 
 		if(arg.startswith('ssh://')):
 			try:
-				returnCode = os.system('start cmd.exe @cmd /c "ssh '+shellQuote(getProtocolPayload(arg))+' & pause"')
+				subprocess.run('cmd.exe /c ssh '+shellQuote(getProtocolPayload(arg))+' & pause')
 				sys.exit(0)
 			except Exception as e:
 				msgBox(None, 'Unable to start SSH session. Please check if ssh.exe is in PATH.\n\n'+str(e), APP_TITLE, 48)
