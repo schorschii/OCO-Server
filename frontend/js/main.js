@@ -487,8 +487,8 @@ var refreshSidebarState = JSON.parse(localStorage.getItem(STORAGE_KEY_SIDEBAR_ST
 function refreshSidebar(callback=null, handleAutoRefresh=false) {
 	// save node expand states
 	if(refreshSidebarState == null) refreshSidebarState = {};
-	var elements = obj('explorer-tree').querySelectorAll('.subitems');
-	for(var i = 0; i < elements.length; i++) {
+	let elements = obj('explorer-tree').querySelectorAll('.node, .subnode');
+	for(let i = 0; i < elements.length; i++) {
 		if(elements[i].id) {
 			refreshSidebarState[elements[i].id] = elements[i].classList.contains('expanded');
 		}
@@ -499,72 +499,41 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 		// execute custom callback
 		if(callback != undefined && typeof callback == 'function') callback(text);
 		// register events for expand/collapse
-		var updateExpandIcon = function(node) {
-			var isExpandable = false;
-			var isExpanded = false;
-			subnodes = node.querySelectorAll(':scope > .subitems');
-			for(var n = 0; n < subnodes.length; n++) {
-				isExpanded = subnodes[n].classList.contains('expanded');
-			}
-			imgs = node.querySelectorAll(':scope > a > img');
-			for(var n = 0; n < imgs.length; n++) {
+		let setupExpandIcon = function(node) {
+			let isExpandable = false;
+			let imgs = node.querySelectorAll(':scope > a > img');
+			for(let n = 0; n < imgs.length; n++) {
 				if(node.classList.contains('expandable')) {
 					isExpandable = true;
 					imgs[n].title = LANG['expand_or_collapse_tree'];
-					if(isExpanded) imgs[n].src = 'img/collapse.dyn.svg';
-					else imgs[n].src = 'img/expand.dyn.svg';
 				}
 			}
 			return isExpandable;
 		}
-		var showExpandIcon = function(e) {
-			updateExpandIcon(e.target.parentElement);
-		}
-		var hideExpandIcon = function(e) {
-			var children = e.target.querySelectorAll(':scope > img');
-			for(var n = 0; n < children.length; n++) {
-				children[n].src = children[n].getAttribute('originalSrc');
-			}
-		}
-		var expandOrCollapse = function(e) {
-			var node = e.target;
+		let expandOrCollapse = function(e) {
+			let node = e.target;
 			if(e.target.tagName == 'A') node = e.target.parentElement;
 			if(e.target.tagName == 'IMG') node = e.target.parentElement.parentElement;
-			var isExpanded = null;
-			var children = node.querySelectorAll(':scope > .subitems');
-			for(var n = 0; n < children.length; n++) {
-				isExpanded = children[n].classList.contains('expanded');;
-			}
-			for(var n = 0; n < children.length; n++) {
-				if(isExpanded) children[n].classList.remove('expanded');
-				else children[n].classList.add('expanded');
-			}
-			if(updateExpandIcon(node)) {
+			node.classList.toggle('expanded');
+			if(setupExpandIcon(node)) {
 				e.preventDefault();
 				e.stopPropagation();
 			}
 		}
-		var elements = obj('explorer-tree').querySelectorAll('.node > a, .subnode > a');
-		for(var i = 0; i < elements.length; i++) {
-			elements[i].onmouseenter = showExpandIcon;
-			elements[i].onfocus = showExpandIcon;
-			elements[i].onmouseleave = hideExpandIcon;
-			elements[i].onblur = hideExpandIcon;
+		let elements = obj('explorer-tree').querySelectorAll('.node > a, .subnode > a');
+		for(let i = 0; i < elements.length; i++) {
 			elements[i].ondblclick = expandOrCollapse;
-			children = elements[i].querySelectorAll(':scope > img');
-			for(var n = 0; n < children.length; n++) {
-				children[n].onclick = expandOrCollapse;
-				children[n].setAttribute('originalSrc', children[n].src);
-			}
+			let children = elements[i].querySelectorAll(':scope > img');
+			if(children.length) children[0].onclick = expandOrCollapse;
 		}
 		// schedule next refresh after loading finished
 		if(handleAutoRefresh && refreshSidebarTimer != null) {
 			refreshSidebarTimer = setTimeout(refreshSidebar, REFRESH_SIDEBAR_TIMEOUT, null, true);
 		}
 		// restore previous expand states
-		for(var key in refreshSidebarState) {
+		for(let key in refreshSidebarState) {
 			if(refreshSidebarState[key]) {
-				var node = obj(key);
+				let node = obj(key);
 				if(node) node.classList.add('expanded');
 			}
 		}

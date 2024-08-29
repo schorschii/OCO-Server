@@ -311,6 +311,22 @@ h3 {
 #explorer-tree .node > .subitems {
 	margin-left: 17px;
 }
+#explorer-tree .node.expandable > a:hover > img,
+#explorer-tree .node.expandable > a:focus > img,
+#explorer-tree .subnode.expandable > a:hover > img,
+#explorer-tree .subnode.expandable > a:focus > img {
+	object-position: 16px 16px;
+	background-image: url('../img/expand.dyn.svg');
+	background-size: 16px 16px;
+}
+#explorer-tree .node.expandable.expanded > a:hover > img,
+#explorer-tree .node.expandable.expanded > a:focus > img,
+#explorer-tree .subnode.expandable.expanded > a:hover > img,
+#explorer-tree .subnode.expandable.expanded > a:focus > img {
+	object-position: 16px 16px;
+	background-image: url('../img/collapse.dyn.svg');
+	background-size: 16px 16px;
+}
 #explorer-tree .subitems {
 	max-height: 0px;
 	overflow: hidden;
@@ -318,7 +334,7 @@ h3 {
 	padding-left: 8px;
 	border-left: 1px dashed rgb(150,150,150,0.4);
 }
-#explorer-tree .subitems.expanded {
+#explorer-tree .expanded > .subitems {
 	max-height: none;
 	overflow: visible;
 }
