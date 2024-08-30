@@ -523,6 +523,9 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 		let elements = obj('explorer-tree').querySelectorAll('.node > a, .subnode > a');
 		for(let i = 0; i < elements.length; i++) {
 			elements[i].ondblclick = expandOrCollapse;
+			elements[i].onkeypress = function(e){
+				if(e.code == 'Space') expandOrCollapse(e);
+			};
 			let children = elements[i].querySelectorAll(':scope > img');
 			if(children.length) children[0].onclick = expandOrCollapse;
 		}

@@ -328,6 +328,7 @@ h3 {
 	background-size: 16px 16px;
 }
 #explorer-tree .subitems {
+	display: none;
 	max-height: 0px;
 	overflow: hidden;
 	margin-left: 12px;
@@ -335,6 +336,7 @@ h3 {
 	border-left: 1px dashed rgb(150,150,150,0.4);
 }
 #explorer-tree .expanded > .subitems {
+	display: block;
 	max-height: none;
 	overflow: visible;
 }
