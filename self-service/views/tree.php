@@ -4,9 +4,9 @@ require_once('../../loader.inc.php');
 require_once('../session.inc.php');
 ?>
 
-<div class='node expandable'>
+<div id='divNodeComputersSelfService' class='node expandable'>
 	<a <?php echo explorerLink('views/computers.php'); ?>><img src='img/computer.dyn.svg'><?php echo LANG('my_computers'); ?></a>
-	<div id='divSubnodeComputers' class='subitems'>
+	<div class='subitems'>
 	<?php
 	$computers = $cl->getMyComputers();
 	echo "<div class='subnode'>";
@@ -18,9 +18,9 @@ require_once('../session.inc.php');
 	</div>
 </div>
 
-<div class='node expandable'>
+<div id='divNodePackagesSelfService' class='node expandable'>
 	<a <?php echo explorerLink('views/packages.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG('available_packages'); ?></a>
-	<div id='divSubnodePackages' class='subitems'>
+	<div class='subitems'>
 	<?php
 	$packages = $cl->getMyPackages();
 	echo "<div class='subnode'>";
@@ -32,9 +32,9 @@ require_once('../session.inc.php');
 	</div>
 </div>
 
-<div class='node expandable'>
+<div id='divNodeJobsSelfService' class='node expandable'>
 	<a <?php echo explorerLink('views/job-containers.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG('my_jobs'); ?></a>
-	<div id='divSubnodeJobs' class='subitems'>
+	<div class='subitems'>
 	<?php
 	$jobContainers = $cl->getMyJobContainers();
 	echo "<div class='subnode'>";
