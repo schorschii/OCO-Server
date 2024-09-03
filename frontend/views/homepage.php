@@ -29,7 +29,7 @@ $license = new LicenseCheck($db);
 
 	<?php if(!$license->isValid()) { ?>
 		<div class='alert bold error'><?php echo LANG('your_license_is_invalid'); ?></div>
-	<?php } elseif($license->getRemainingTime() < 60*60*24*14) {
+	<?php } elseif(!$license->isFree() && $license->getRemainingTime() < 60*60*24*14) {
 		$remainingDays = round($license->getRemainingTime() / (60*60*24));
 	?>
 		<div class='alert bold warning'><?php echo str_replace('%1', $remainingDays, LANG('your_license_expires_in_days')); ?></div>

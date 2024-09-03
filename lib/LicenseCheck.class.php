@@ -14,6 +14,7 @@ class LicenseCheck {
 
 	private $currentObjectCount = 0;
 
+	private $licenseIsFree      = false;
 	private $licenseValid       = false;
 	private $licenseCompany     = '';
 	private $licenseObjects     = 0;
@@ -33,6 +34,9 @@ class LicenseCheck {
 	public function isValid() : bool {
 		return $this->licenseValid;
 	}
+	public function isFree() : bool {
+		return $this->licenseIsFree;
+	}
 	public function getRemainingTime() : int {
 		return $this->licenseExpireTime - time();
 	}
@@ -48,6 +52,7 @@ class LicenseCheck {
 			$this->licenseCompany = LANG('unregistered');
 			$this->licenseText = str_replace('%1', self::FREE_OBJECTS, LANG('free_license_for'));
 			$this->licenseObjects = self::FREE_OBJECTS;
+			$this->licenseIsFree = true;
 			return true;
 		}
 	}
