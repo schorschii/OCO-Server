@@ -317,7 +317,11 @@ class LdapSync {
 
 					// check if user already exists
 					$id = null;
-					$checkResult = $this->db->selectDomainUserByUid($uid);
+					if(($details['username-as-identifier'] ?? false)) {
+						$checkResult = $this->db->selectDomainUserByUsername($username);
+					} else {
+						$checkResult = $this->db->selectDomainUserByUid($uid);
+					}
 					if(!$checkResult) {
 						if($this->debug) echo '-> '.$username.': skip because UUID '.$uid.' not found in domain_user table'."\n";
 						continue;
