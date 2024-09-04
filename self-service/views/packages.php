@@ -7,20 +7,35 @@ require_once(__DIR__.'/../session.inc.php');
 $tab = 'general';
 if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 
-$package = null;
 try {
-	if(!empty($_GET['id'])) {
-		$package = $cl->getMyPackage($_GET['id']);
+	$package = $cl->getMyPackage($_GET['id'] ?? -1);
 
-		$permissionDeploy   = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DEPLOY, false);
-		$permissionDownload = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DOWNLOAD, false);
+	$permissionDeploy   = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DEPLOY, false);
+	$permissionDownload = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DOWNLOAD, false);
+
+	// ----- download if requested -----
+	if(!empty($_GET['download'])) {
+		// do not block other frontend requests
+		session_write_close();
+		// get package file
+		if(!$package->getFilePath()) {
+			header('HTTP/1.1 404 Not Found'); die();
+		}
+		// check if domain user is allowed to download
+		$cl->checkPermission($package, SelfService\PermissionManager::METHOD_DOWNLOAD);
+		$package->download();
+		die();
 	}
+
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
 	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 } catch(InvalidRequestException $e) {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
+} catch(Exception $e) {
+	header('HTTP/1.1 500 Internal Server Error');
+	die();
 }
 ?>
 
@@ -50,7 +65,7 @@ try {
 	<h1><img src='<?php echo $package->getIcon(); ?>'><span id='page-title'><?php echo htmlspecialchars($package->getFullName()); ?></span><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->package_family_name); ?></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentDeploy({"id":<?php echo $package->id; ?>,"name":obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
-		<button onclick='window.open("package-download.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
+		<button onclick='window.open("views/packages.php?download=1&id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
 		<span class='filler'></span>
 	</div>
 </div>
