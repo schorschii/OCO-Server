@@ -7,26 +7,27 @@ require_once(__DIR__.'/../session.inc.php');
 $tab = 'general';
 if(!empty($_GET['tab'])) $tab = $_GET['tab'];
 
+$package = null;
 try {
-	$package = $cl->getMyPackage($_GET['id'] ?? -1);
+	if(!empty($_GET['id'])) {
+		$package = $cl->getMyPackage($_GET['id']);
+		$permissionDeploy   = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DEPLOY, false);
+		$permissionDownload = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DOWNLOAD, false);
 
-	$permissionDeploy   = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DEPLOY, false);
-	$permissionDownload = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DOWNLOAD, false);
-
-	// ----- download if requested -----
-	if(!empty($_GET['download'])) {
-		// do not block other frontend requests
-		session_write_close();
-		// get package file
-		if(!$package->getFilePath()) {
-			header('HTTP/1.1 404 Not Found'); die();
+		// ----- download if requested -----
+		if(!empty($_GET['download'])) {
+			// do not block other frontend requests
+			session_write_close();
+			// get package file
+			if(!$package->getFilePath()) {
+				header('HTTP/1.1 404 Not Found'); die();
+			}
+			// check if domain user is allowed to download
+			$cl->checkPermission($package, SelfService\PermissionManager::METHOD_DOWNLOAD);
+			$package->download();
+			die();
 		}
-		// check if domain user is allowed to download
-		$cl->checkPermission($package, SelfService\PermissionManager::METHOD_DOWNLOAD);
-		$package->download();
-		die();
 	}
-
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
