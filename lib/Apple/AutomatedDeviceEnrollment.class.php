@@ -39,7 +39,9 @@ class AutomatedDeviceEnrollment {
 	}
 
 	function getActivationProfile() {
-		$profile = json_decode($this->db->settings->get('apple-mdm-activation-profile'), true);
+		$profile = $this->db->settings->get('apple-mdm-activation-profile');
+		if(!$profile) throw new \RuntimeException('No profile JSON found');
+		$profile = json_decode($profile, true);
 		if(!$profile) throw new \RuntimeException('Unable to parse profile JSON');
 		return $profile;
 	}
