@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CommandUUID</key>
+	<string>50</string>
+	<key>InstalledApplicationList</key>
+	<array>
+		<dict>
+			<key>AdHocCodeSigned</key>
+			<false/>
+			<key>AppStoreVendable</key>
+			<true/>
+			<key>BetaApp</key>
+			<false/>
+			<key>BundleSize</key>
+			<integer>2535424</integer>
+			<key>DeviceBasedVPP</key>
+			<false/>
+			<key>DynamicSize</key>
+			<integer>57344</integer>
+			<key>ExternalVersionIdentifier</key>
+			<integer>865874806</integer>
+			<key>HasUpdateAvailable</key>
+			<false/>
+			<key>Identifier</key>
+			<string>systems.sieber.customerdb</string>
+			<key>Installing</key>
+			<false/>
+			<key>IsAppClip</key>
+			<false/>
+			<key>IsValidated</key>
+			<true/>
+			<key>Name</key>
+			<string>Kundendatenbank</string>
+			<key>ShortVersion</key>
+			<string>3.7.0</string>
+			<key>Version</key>
+			<string>42</string>
+		</dict>
+	</array>
+	<key>Status</key>
+	<string>Acknowledged</string>
+	<key>UDID</key>
+	<string>0000000000000000000000000000000000000000</string>
+</dict>
+</plist>

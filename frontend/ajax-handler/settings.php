@@ -6,6 +6,7 @@ require_once('../session.inc.php');
 try {
 
 	if(!empty($_POST['ldap_sync_system_users'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 		try {
 			$ldapSync = new LdapSync($db, true);
 			$ldapSync->syncSystemUsers();
@@ -17,9 +18,22 @@ try {
 	}
 
 	if(!empty($_POST['ldap_sync_domain_users'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 		try {
 			$ldapSync = new LdapSync($db, true);
 			$ldapSync->syncDomainUsers();
+		} catch(Exception $e) {
+			header('HTTP/1.1 500 Internal Server Error');
+			die($e->getMessage());
+		}
+		die();
+	}
+
+	if(!empty($_POST['sync_apple_devices'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+		try {
+			$ade = new Apple\AutomatedDeviceEnrollment($db);
+			$ade->syncDevices();
 		} catch(Exception $e) {
 			header('HTTP/1.1 500 Internal Server Error');
 			die($e->getMessage());
@@ -218,20 +232,29 @@ try {
 		}
 		die();
 	}
-	if(!empty($_FILES['edit_license'])) {
-		// use file from user upload
-		$tmpFilePath = $_FILES['edit_license']['tmp_name'];
-		$tmpFileName = $_FILES['edit_license']['name'];
-		$cl->editLicense(file_get_contents($tmpFilePath));
-		die();
-	}
 	if(!empty($_POST['edit_wol_satellites'])) {
 		$cl->editWolSatellites($_POST['edit_wol_satellites']);
 		die();
 	}
 	if(!empty($_POST['edit_setting'])) {
-		$cl->editSetting($_POST['edit_setting'], $_POST['value']);
-		die();
+		$key = $_POST['edit_setting'];
+		if(isset($_POST['value'])) {
+			$cl->editSetting($key, $_POST['value']);
+			die();
+		} elseif(isset($_FILES['value'])) {
+			$value = file_get_contents($_FILES['value']['tmp_name']);
+			if($key == 'apple-mdm-token') {
+				$ade = new Apple\AutomatedDeviceEnrollment($db);
+				$ade->storeMdmServerToken($value);
+				die();
+			}
+			if($key == 'apple-mdm-vendor-cert'
+			|| $key == 'apple-mdm-apn-cert') {
+				$value = Apple\AutomatedDeviceEnrollment::der2pem($value);
+			}
+			$cl->editSetting($key, $value);
+			die();
+		}
 	}
 	if(!empty($_POST['remove_setting']) && is_array($_POST['remove_setting'])) {
 		foreach($_POST['remove_setting'] as $setting) {

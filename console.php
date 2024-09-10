@@ -18,6 +18,26 @@ try {
 			$houseKeeping->cleanup();
 			break;
 
+		case 'mdmcron':
+			$mdcc = new MobileDeviceCommandController($db, true);
+			$mdcc->mdmCron();
+			break;
+
+		case 'applesync':
+			$ade = new Apple\AutomatedDeviceEnrollment($db);
+			$ade->syncDevices();
+			break;
+
+		case 'applepush':
+			if(empty($argv[2])) throw new Exception('Please give the device serial number as second parameter!');
+			$ade = new Apple\AutomatedDeviceEnrollment($db);
+			$md = $db->selectMobileDeviceBySerialNumber($argv[2]);
+			if(!$md) throw new InvalidRequestException('Serial number not found');
+			$apnCert = $ade->getMdmApnCert();
+			$apn = new Apple\PushNotificationService($db, $apnCert['certinfo']['subject']['UID'], $apnCert['cert'], $apnCert['privkey']);
+			var_dump( $apn->send($md->push_token, $md->push_magic) );
+			break;
+
 		case 'ldapsync':
 			$ldapSync = new LdapSync($db, true);
 			echo '<===== Syncing System Users =====>'."\n";

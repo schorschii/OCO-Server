@@ -1494,6 +1494,15 @@ div.stickytable > table.list tfoot {
 	margin-bottom: 0px;
 }
 
+.beta {
+	font-size: 70%;
+	padding: 1px 6px;
+	margin: 1px 4px;
+	border-radius: 999px;
+	background-color: #314351;
+	color: white;
+}
+
 @media (max-width: 1050px) {
 	#header button > span {
 		display: none;

@@ -14,7 +14,7 @@ docker exec -it <CONTAINER-ID> bash
 ## Basic Setup
 0. Install PHP (7.3 or newer) with ZIP & DOM modules, MariaDB and Apache2 on a Linux server (Debian recommended).
    ```
-   apt install php php-zip php-dom php-mbstring php-mysql php-curl php-ldap mariadb-server apache2 libapache2-mod-php
+   apt install php php-zip php-dom php-mbstring php-mysql php-curl php-ldap php-oauth mariadb-server apache2 libapache2-mod-php
    php --version
    ```
    Optional: if you want to use automatic MSI product code extraction when creating packages, you need to install Wine.

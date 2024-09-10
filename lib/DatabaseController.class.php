@@ -98,6 +98,21 @@ class DatabaseController {
 		$groupStrings = array_reverse($groupStrings);
 		return implode(' » ', $groupStrings);
 	}
+	public function getMobileDeviceGroupBreadcrumbString($id) {
+		$currentGroupId = $id;
+		$groupStrings = [];
+		while(true) {
+			$currentGroup = $this->selectMobileDeviceGroup($currentGroupId);
+			$groupStrings[] = $currentGroup->name;
+			if($currentGroup->parent_mobile_device_group_id === null) {
+				break;
+			} else {
+				$currentGroupId = $currentGroup->parent_mobile_device_group_id;
+			}
+		}
+		$groupStrings = array_reverse($groupStrings);
+		return implode(' » ', $groupStrings);
+	}
 	public function getPackageGroupBreadcrumbString($id) {
 		$currentGroupId = $id;
 		$groupStrings = [];
@@ -127,6 +142,235 @@ class DatabaseController {
 		}
 		$groupStrings = array_reverse($groupStrings);
 		return implode(' » ', $groupStrings);
+	}
+
+	// Mobile Device Operations
+	public function selectAllMobileDevice() {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device');
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice');
+	}
+	public function selectMobileDevice($id) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device WHERE id = :id');
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice') as $row) {
+			return $row;
+		}
+	}
+	public function selectAllMobileDeviceByMobileDeviceGroupId($mobile_device_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT md.* FROM mobile_device_group_member mdgm
+			INNER JOIN mobile_device md ON md.id = mdgm.mobile_device_id
+			WHERE mdgm.mobile_device_group_id = :mobile_device_group_id'
+		);
+		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice');
+	}
+	public function selectAllMobileDeviceByIdAndMobileDeviceGroupId($mobile_device_id, $mobile_device_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT md.* FROM mobile_device_group_member mdgm
+			INNER JOIN mobile_device md ON md.id = mdgm.mobile_device_id
+			WHERE mdgm.mobile_device_id = :mobile_device_id AND mdgm.mobile_device_group_id = :mobile_device_group_id'
+		);
+		$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':mobile_device_group_id' => $mobile_device_group_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice');
+	}
+	public function selectMobileDeviceBySerialNumber($serial) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device WHERE serial = :serial');
+		$this->stmt->execute([':serial' => $serial]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice') as $row) {
+			return $row;
+		}
+	}
+	public function selectMobileDeviceByUdid($udid) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device WHERE udid = :udid');
+		$this->stmt->execute([':udid' => $udid]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice') as $row) {
+			return $row;
+		}
+	}
+	public function insertMobileDevice($udid, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO mobile_device (udid, device_name, serial, vendor_description, model, os, device_family, color, profile_uuid, push_token, push_magic, push_sent, unlock_token, info, notes, force_update)
+			VALUES (:udid, :device_name, :serial, :vendor_description, :model, :os, :device_family, :color, :profile_uuid, :push_token, :push_magic, :push_sent, :unlock_token, :info, :notes, :force_update)'
+		);
+		return $this->stmt->execute([
+			':udid' => $udid,
+			':device_name' => $device_name,
+			':serial' => $serial,
+			':vendor_description' => $vendor_description,
+			':model' => $model,
+			':os' => $os,
+			':device_family' => $device_family,
+			':color' => $color,
+			':profile_uuid' => $profile_uuid,
+			':push_token' => $push_token,
+			':push_magic' => $push_magic,
+			':push_sent' => $push_sent,
+			':unlock_token' => $unlock_token,
+			':info' => $info,
+			':notes' => $notes,
+			':force_update' => $force_update,
+		]);
+	}
+	public function updateMobileDevice($id, $udid, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE mobile_device SET udid=:udid, device_name=:device_name, serial=:serial, vendor_description=:vendor_description, model=:model, os=:os, device_family=:device_family, color=:color, profile_uuid=:profile_uuid, push_token=:push_token, push_magic=:push_magic, push_sent=:push_sent, unlock_token=:unlock_token, info=:info, notes=:notes, last_update=CURRENT_TIMESTAMP, force_update=:force_update
+			WHERE id=:id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':udid' => $udid,
+			':device_name' => $device_name,
+			':serial' => $serial,
+			':vendor_description' => $vendor_description,
+			':model' => $model,
+			':os' => $os,
+			':device_family' => $device_family,
+			':color' => $color,
+			':profile_uuid' => $profile_uuid,
+			':push_token' => $push_token,
+			':push_magic' => $push_magic,
+			':push_sent' => $push_sent,
+			':unlock_token' => $unlock_token,
+			':info' => $info,
+			':notes' => $notes,
+			':force_update' => $force_update,
+		]);
+	}
+	public function deleteMobileDevice($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM mobile_device WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
+	}
+
+	public function selectAllMobileDeviceGroup() {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group');
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
+	}
+	public function selectAllMobileDeviceGroupByParentMobileDeviceGroupId($parent_id) {
+		if($parent_id === null) {
+			$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group WHERE parent_mobile_device_group_id IS NULL');
+			$this->stmt->execute();
+		} else {
+			$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group WHERE parent_mobile_device_group_id = :parent_id');
+			$this->stmt->execute([':parent_id' => $parent_id]);
+		}
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
+	}
+	public function selectAllMobileDeviceGroupByMobileDeviceId($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT mdg.* FROM mobile_device_group_member mdgm
+			INNER JOIN mobile_device_group mdg ON mdg.id = mdgm.mobile_device_group_id
+			WHERE mdgm.mobile_device_id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
+	}
+	public function selectMobileDeviceGroup($id) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group WHERE id = :id');
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup') as $row) {
+			return $row;
+		}
+	}
+	public function insertMobileDeviceGroup($name, $parent_id=null) {
+		if(empty($parent_id) || intval($parent_id) < 0) {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO mobile_device_group (name) VALUES (:name)'
+			);
+			$this->stmt->execute([':name' => $name]);
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO mobile_device_group (name, parent_mobile_device_group_id) VALUES (:name, :parent_mobile_device_group_id)'
+			);
+			$this->stmt->execute([':name' => $name, ':parent_mobile_device_group_id' => $parent_id]);
+		}
+		return $this->dbh->lastInsertId();
+	}
+	public function updateMobileDeviceGroup($id, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE mobile_device_group SET name = :name WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id, ':name' => $name]);
+		return $this->dbh->lastInsertId();
+	}
+	public function deleteMobileDeviceGroup($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM mobile_device_group WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return ($this->stmt->rowCount() == 1);
+	}
+	public function insertMobileDeviceGroupMember($mobile_device_id, $mobile_device_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO mobile_device_group_member (mobile_device_id, mobile_device_group_id) VALUES (:mobile_device_id, :mobile_device_group_id)'
+		);
+		if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':mobile_device_group_id' => $mobile_device_group_id])) return false;
+		$insertId = $this->dbh->lastInsertId();
+		return $insertId;
+	}
+	public function deleteMobileDeviceGroupMember($mobile_device_id, $mobile_device_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM mobile_device_group_member WHERE mobile_device_id = :mobile_device_id AND mobile_device_group_id = :mobile_device_group_id'
+		);
+		if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':mobile_device_group_id' => $mobile_device_group_id])) return false;
+		if($this->stmt->rowCount() != 1) return false;
+		return true;
+	}
+
+	public function selectMobileDeviceCommand($id) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_command WHERE id = :id');
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand') as $row) {
+			return $row;
+		}
+	}
+	public function selectAllMobileDeviceCommand() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM mobile_device_command'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand');
+	}
+	public function selectAllMobileDeviceCommandByMobileDevice($mobile_device_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM mobile_device_command WHERE mobile_device_id = :mobile_device_id'
+		);
+		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand');
+	}
+	public function insertMobileDeviceCommand($mobile_device_id, $name, $parameter) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO mobile_device_command (mobile_device_id, name, parameter)
+			VALUES (:mobile_device_id, :name, :parameter)'
+		);
+		return $this->stmt->execute([
+			':mobile_device_id' => $mobile_device_id,
+			':name' => $name,
+			':parameter' => $parameter,
+		]);
+	}
+	public function updateMobileDeviceCommand($id, $mobile_device_id, $name, $parameter, $state, $message, $finished) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE mobile_device_command SET mobile_device_id=:mobile_device_id, name=:name, parameter=:parameter, state=:state, message=:message, finished=:finished WHERE id=:id'
+		);
+		return $this->stmt->execute([
+			':id' => $id,
+			':mobile_device_id' => $mobile_device_id,
+			':name' => $name,
+			':parameter' => $parameter,
+			':state' => $state,
+			':message' => $message,
+			':finished' => $finished,
+		]);
+	}
+	public function deleteMobileDeviceCommand($id) {
+		$this->stmt = $this->dbh->prepare('DELETE FROM mobile_device_command WHERE id=:id');
+		return $this->stmt->execute([':id' => $id]);
 	}
 
 	// Computer Operations
