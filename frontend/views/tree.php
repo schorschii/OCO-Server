@@ -16,6 +16,14 @@ require_once('../session.inc.php');
 	</div>
 </div>
 
+<?php $mobileDeviceGroupsHtml = getMobileDeviceGroupsHtml($cl); ?>
+<div id='divNodeMobileDevices' class='node <?php if($mobileDeviceGroupsHtml) echo 'expandable'; ?>'>
+	<a <?php echo explorerLink('views/mobile-devices.php'); ?>><img src='img/mobile-device.dyn.svg'><?php echo LANG('mobile_devices'); ?><span class='beta'>PREVIEW</span></a>
+	<div class='subitems'>
+		<?php echo $mobileDeviceGroupsHtml; ?>
+	</div>
+</div>
+
 <?php if($cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
 <div id='divSubnodeSoftware' class='node expandable'>
 	<a <?php echo explorerLink('views/software.php'); ?>><img src='img/software.dyn.svg'><?php echo LANG('recognised_software'); ?></a>
@@ -98,6 +106,21 @@ function getComputerGroupsHtml(CoreLogic $cl, $parentId=null) {
 		$subHtml = getComputerGroupsHtml($cl, $group->id);
 		$html .= "<div id='divNodeComputerGroup".$group->id."' class='subnode ".(empty($subHtml) ? '' : 'expandable')."'>";
 		$html .= "<a ".explorerLink('views/computers.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+		$html .= "<div class='subitems'>";
+		$html .= $subHtml;
+		$html .= "</div>";
+		$html .= "</div>";
+	}
+	return $html;
+}
+function getMobileDeviceGroupsHtml(CoreLogic $cl, $parentId=null) {
+	$html = '';
+	$subgroups = $cl->getMobileDeviceGroups($parentId);
+	if(count($subgroups) == 0) return false;
+	foreach($subgroups as $group) {
+		$subHtml = getMobileDeviceGroupsHtml($cl, $group->id);
+		$html .= "<div id='divNodeComputerGroup".$group->id."' class='subnode ".(empty($subHtml) ? '' : 'expandable')."'>";
+		$html .= "<a ".explorerLink('views/mobile-devices.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
 		$html .= "<div class='subitems'>";
 		$html .= $subHtml;
 		$html .= "</div>";

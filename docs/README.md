@@ -35,6 +35,7 @@ Please refer to the [README.md in the OCO Agent repo](https://github.com/schorsc
 - [Extensions](Extensions.md)
 - [Self Service Portal](Self-Service.md)
 - [Silent Install/Uninstall Commands Catalog](install-uninstall-catalog)
+- [Mobile Device Management](Mobile-Device-Management.md)
 
 ## Developer Documentation
 - [Client API](Client-API.md)

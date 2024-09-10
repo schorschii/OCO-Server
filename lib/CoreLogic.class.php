@@ -42,6 +42,168 @@ class CoreLogic {
 		return $this->pm->getPermissionEntry($ressource, $method);
 	}
 
+	/*** Mobile Device Operations ***/
+	public function getMobileDevices(Object $filterRessource=null) {
+		if($filterRessource === null) {
+			$mdFiltered = [];
+			foreach($this->db->selectAllMobileDevice() as $md) {
+				if($this->checkPermission($md, PermissionManager::METHOD_READ, false))
+					$mdFiltered[] = $md;
+			}
+			return $mdFiltered;
+		} elseif($filterRessource instanceof Models\MobileDeviceGroup) {
+			$group = $this->db->selectMobileDeviceGroup($filterRessource->id);
+			if(empty($group)) throw new NotFoundException();
+			$this->checkPermission($group, PermissionManager::METHOD_READ);
+			return $this->db->selectAllMobileDeviceByMobileDeviceGroupId($group->id);
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function getMobileDeviceGroups($parentId=null) {
+		$mdGroupsFiltered = [];
+		foreach($this->db->selectAllMobileDeviceGroupByParentMobileDeviceGroupId($parentId) as $mdGroup) {
+			if($this->checkPermission($mdGroup, PermissionManager::METHOD_READ, false))
+				$mdGroupsFiltered[] = $mdGroup;
+		}
+		return $mdGroupsFiltered;
+	}
+	public function getMobileDevice($id) {
+		$md = $this->db->selectMobileDevice($id);
+		if(empty($md)) throw new NotFoundException();
+		$this->checkPermission($md, PermissionManager::METHOD_READ);
+		return $md;
+	}
+	public function getMobileDeviceGroup($id) {
+		$mdGroup = $this->db->selectMobileDeviceGroup($id);
+		if(empty($mdGroup)) throw new NotFoundException();
+		$this->checkPermission($mdGroup, PermissionManager::METHOD_READ);
+		return $mdGroup;
+	}
+	public function createMobileDevice($serial, $notes='') {
+		$this->checkPermission(new Models\MobileDevice(), PermissionManager::METHOD_CREATE);
+
+		$finalSerial = trim($serial);
+		if(empty($finalSerial)) {
+			throw new InvalidRequestException(LANG('serial_cannot_be_empty'));
+		}
+		if($this->db->selectMobileDeviceBySerialNumber($finalSerial) !== null) {
+			throw new InvalidRequestException(LANG('serial_already_exists'));
+		}
+		$insertId = $this->db->insertMobileDevice(
+			null/*udid*/, ''/*device_name*/, $finalSerial, ''/*vendor_description*/,
+			''/*model*/, ''/*os*/, ''/*device_family*/, ''/*color*/,
+			null/*profile_uuid*/, null/*push_token*/, null/*push_magic*/, null/*push_sent*/,
+			null/*unlock_token*/, null/*info*/, $notes, 0/*force_update*/
+		);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.mobile_device.create', ['hostname'=>$finalSerial, 'notes'=>$notes]);
+		return $insertId;
+	}
+	public function removeMobileDevice($id, $force=false) {
+		$md = $this->db->selectMobileDevice($id);
+		if(empty($md)) throw new NotFoundException();
+		$this->checkPermission($md, PermissionManager::METHOD_DELETE);
+
+		$result = $this->db->deleteMobileDevice($md->id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.delete', json_encode($md));
+		return $result;
+	}
+	public function createMobileDeviceGroup($name, $parentGroupId=null) {
+		if($parentGroupId == null) {
+			$this->checkPermission(new Models\MobileDeviceGroup(), PermissionManager::METHOD_CREATE);
+		} else {
+			$mdGroup = $this->db->selectMobileDeviceGroup($parentGroupId);
+			if(empty($mdGroup)) throw new NotFoundException();
+			$this->checkPermission($mdGroup, PermissionManager::METHOD_CREATE);
+		}
+
+		if(empty(trim($name))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+		$insertId = $this->db->insertMobileDeviceGroup($name, $parentGroupId);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.mobile_device_group.create', ['name'=>$name, 'parent_mobile_device_group_id'=>$parentGroupId]);
+		return $insertId;
+	}
+	public function renameMobileDeviceGroup($id, $newName) {
+		$mdGroup = $this->db->selectMobileDeviceGroup($id);
+		if(empty($mdGroup)) throw new NotFoundException();
+		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
+
+		if(empty(trim($newName))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+		$this->db->updateMobileDeviceGroup($mdGroup->id, $newName);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdGroup->id, 'oco.mobile_device_group.update', ['name'=>$newName]);
+	}
+	public function addMobileDeviceToGroup($mdId, $groupId) {
+		$md = $this->db->selectMobileDevice($mdId);
+		if(empty($md)) throw new NotFoundException();
+		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
+		if(empty($mdGroup)) throw new NotFoundException();
+		$this->checkPermission($md, PermissionManager::METHOD_WRITE);
+		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
+
+		if(count($this->db->selectAllMobileDeviceByIdAndMobileDeviceGroupId($md->id, $mdGroup->id)) == 0) {
+			$this->db->insertMobileDeviceGroupMember($md->id, $mdGroup->id);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdGroup->id, 'oco.mobile_device_group.add_member', ['mobile_device_id'=>$md->id]);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.add_to_group', ['mobile_device_group_id'=>$mdGroup->id]);
+		}
+	}
+	public function removeMobileDeviceFromGroup($mdId, $groupId) {
+		$md = $this->db->selectMobileDevice($mdId);
+		if(empty($md)) throw new NotFoundException();
+		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
+		if(empty($mdGroup)) throw new NotFoundException();
+		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
+
+		$this->db->deleteMobileDeviceGroupMember($md->id, $mdGroup->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdGroup->id, 'oco.mobile_device_group.remove_member', ['mobile_device_id'=>$md->id]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.remove_from_group', ['mobile_device_group_id'=>$mdGroup->id]);
+	}
+	public function removeMobileDeviceGroup($id, $force=false) {
+		$mdGroup = $this->db->selectMobileDeviceGroup($id);
+		if(empty($mdGroup)) throw new NotFoundException();
+		$this->checkPermission($mdGroup, PermissionManager::METHOD_DELETE);
+
+		if(!$force) {
+			$subgroups = $this->db->selectAllMobileDeviceGroupByParentMobileDeviceGroupId($id);
+			if(count($subgroups) > 0) throw new InvalidRequestException(LANG('delete_failed_subgroups'));
+		}
+		$result = $this->db->deleteMobileDeviceGroup($id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdGroup->id, 'oco.mobile_device_group.delete', []);
+		return $result;
+	}
+
+	public function createMobileDeviceCommand($mobileDeviceId, $name, $parameter) {
+		$this->checkPermission(new Models\MobileDeviceCommand(), PermissionManager::METHOD_CREATE);
+		$md = $this->db->selectMobileDevice($mobileDeviceId);
+		if(empty($md)) throw new NotFoundException();
+		$this->checkPermission($md, PermissionManager::METHOD_DEPLOY);
+
+		if(empty($mobileDeviceId) || empty($name)) {
+			throw new InvalidRequestException(LANG('please_fill_required_fields'));
+		}
+
+		$result = $this->db->insertMobileDeviceCommand($mobileDeviceId, $name, $parameter);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $result, 'oco.mobile_device_command.create', []);
+		return $result;
+	}
+	public function removeMobileDeviceCommand($id) {
+		$mdc = $this->db->selectMobileDeviceCommand($id);
+		if(empty($mdc)) throw new NotFoundException();
+		$this->checkPermission($mdc, PermissionManager::METHOD_DELETE);
+
+		$result = $this->db->deleteMobileDeviceCommand($id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdc->id, 'oco.mobile_device_command.delete', []);
+		return $result;
+	}
+
 	/*** Computer Operations ***/
 	public function getComputers(Object $filterRessource=null) {
 		if($filterRessource === null) {

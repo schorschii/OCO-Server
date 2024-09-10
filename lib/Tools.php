@@ -158,6 +158,12 @@ function echoComputerGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $pre
 		echoComputerGroupOptions($cl, $g->id, $indent+1, $preselect);
 	}
 }
+function echoMobileDeviceGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
+	foreach($cl->getMobileDeviceGroups($parentId) as $g) {
+		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
+		echoMobileDeviceGroupOptions($cl, $g->id, $indent+1, $preselect);
+	}
+}
 function echoPackageGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
 	foreach($cl->getPackageGroups($parentId) as $g) {
 		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";

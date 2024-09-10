@@ -1338,6 +1338,138 @@ function searchItems(container, search) {
 	}
 }
 
+// ======== MOBILE DEVICE OPERATIONS ========
+function showDialogCreateMobileDeviceIos() {
+	showDialogAjax(LANG['create_computer'], 'views/dialog-mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+}
+function createMobileDeviceIos(serial, notes) {
+	var params = [];
+	params.push({'key':'create_mobile_device', 'value':serial});
+	params.push({'key':'notes', 'value':notes});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
+		hideDialog();
+		refreshContent();
+		window.open('views/settings-mdm.php?download=mdm-enrollment-profile&serial='+encodeURIComponent(serial), '_blank')
+		emitMessage(LANG['mobile_device_created'], serial, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function removeSelectedMobileDevice(checkboxName, attributeName=null, event=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	confirmRemoveMobileDevice(ids, event);
+}
+function confirmRemoveMobileDevice(ids, event=null, infoText='', redirect=null) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_id[]', 'value':entry});
+	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete_computer'])) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+			if(redirect != null) currentExplorerContentUrl = redirect;
+			refreshContentExplorer(currentExplorerContentUrl);
+			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function createMobileDeviceGroup(parent_id=null) {
+	var newName = prompt(LANG['enter_name']);
+	if(newName != null) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'create_group':newName, 'parent_id':parent_id}), null, function(text){
+			refreshSidebar(); refreshContentExplorer('views/mobile-devices.php?id='+parseInt(text));
+			emitMessage(LANG['group_created'], newName, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function renameMobileDeviceGroup(id, oldName) {
+	var newValue = prompt(LANG['enter_name'], oldName);
+	if(newValue != null) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'rename_group_id':id, 'new_name':newValue}), null, function() {
+			refreshContent(); refreshSidebar();
+			emitMessage(LANG['group_renamed'], newValue, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function confirmRemoveMobileDeviceGroup(ids, event=null, infoText='') {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_group_id[]', 'value':entry});
+	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete_group'])) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+			refreshContentExplorer('views/mobile-devices.php'); refreshSidebar();
+			emitMessage(LANG['group_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function addMobileDeviceToGroup(mobileDeviceId, groupId) {
+	if(groupId === false) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_id[]', 'value':entry});
+	});
+	mobileDeviceId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_mobile_device_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		hideDialog();
+		refreshContent();
+		emitMessage(LANG['mobile_device_added'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogAddMobileDeviceToGroup(id) {
+	if(!id) return;
+	showDialogAjax(LANG['mobile_device_groups'], 'views/dialog-mobile-device-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtEditMobileDeviceId.value = id;
+	});
+}
+function removeSelectedMobileDeviceFromGroup(checkboxName, groupId) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	removeMobileDeviceFromGroup(ids, groupId);
+}
+function removeMobileDeviceFromGroup(ids, groupId) {
+	var params = [];
+	params.push({'key':'remove_from_group_id', 'value':groupId});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_from_group_mobile_device_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+
 // ======== COMPUTER OPERATIONS ========
 function showDialogCreateComputer() {
 	showDialogAjax(LANG['create_computer'], 'views/dialog-computer-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
@@ -1535,6 +1667,82 @@ function showDialogAddComputerToGroup(id) {
 }
 
 // ======== JOB OPERATIONS ========
+function showDialogEditMobileDeviceCommand(id=-1) {
+	title = LANG['mobile_device_command'];
+	buttonText = LANG['change'];
+	if(id == -1) {
+		title = LANG['mobile_device_command'];
+		buttonText = LANG['create'];
+	}
+	showDialogAjax(title, 'views/dialog-mobile-device-command-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		spnBtnUpdateDeploymentRule.innerText = buttonText;
+	});
+}
+function editMobileDeviceCommand(id, name, mobile_device_id, command, payload, notes) {
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+
+	if(payload !== null) {
+		for(i = 0; i <= payload.length; i++) {
+			formData.append('payload[]', payload[i]);
+		}
+		formData.append('update_payload', '1');
+	}
+	formData.append('edit_mobile_device_command_id', id);
+	formData.append('name', name);
+	formData.append('mobile_device_id', mobile_device_id);
+	formData.append('command', command);
+	formData.append('notes', notes);
+
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				hideDialog(); refreshContent();
+				emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+			} else {
+				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+			}
+		}
+	};
+
+	req.open('POST', 'ajax-handler/mobile-devices.php');
+	req.send(formData);
+}
+function removeSelectedMobileDeviceCommand(checkboxName, attributeName=null, event=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	confirmRemoveMobileDeviceCommand(ids, event);
+}
+function confirmRemoveMobileDeviceCommand(ids, event=null, infoText='', redirect=null) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_mobile_device_command_id[]', 'value':entry});
+	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete_computer'])) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+			if(redirect != null) currentExplorerContentUrl = redirect;
+			refreshContentExplorer(currentExplorerContentUrl);
+			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+
 function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, computerGroupId=-1, packageGroupId=-1, priority=0) {
 	title = LANG['edit_deployment_rule'];
 	buttonText = LANG['change'];
@@ -2237,7 +2445,7 @@ function confirmRemoveSelectedSystemUserRole(checkboxName) {
 	}
 }
 
-// ======== SYSTEM OPERATIONS ========
+// ======== SETTINGS OPERATIONS ========
 function showDialogEditEventQueryRule(id=-1, log='', query='') {
 	title = LANG['change'];
 	buttonText = LANG['change'];
@@ -2313,26 +2521,6 @@ function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnab
 			if(this.status == 200) {
 				hideDialog(); refreshContent();
 				emitMessage(LANG['saved'], LANG['oco_configuration'], MESSAGE_TYPE_SUCCESS);
-			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
-			}
-		}
-	};
-	req.open('POST', 'ajax-handler/settings.php');
-	req.send(formData);
-}
-function showDialogEditLicense() {
-	showDialogAjax(LANG['license'], 'views/dialog-license-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
-}
-function editLicense(license) {
-	let req = new XMLHttpRequest();
-	let formData = new FormData();
-	formData.append('edit_license', license);
-	req.onreadystatechange = function() {
-		if(this.readyState == 4) {
-			if(this.status == 200) {
-				hideDialog(); refreshContent();
-				emitMessage(LANG['saved'], LANG['license'], MESSAGE_TYPE_SUCCESS);
 			} else {
 				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 			}
@@ -2419,12 +2607,29 @@ function editWolSatellites(jsonConfig) {
 	req.open('POST', 'ajax-handler/settings.php');
 	req.send(formData);
 }
-function showDialogEditSetting(key='') {
-	title = LANG['edit_setting'];
-	if(key == '') {
-		title = LANG['create_setting'];
+function showDialogEditSetting(key='', file=false, warning=true, keyHidden=false, title=null) {
+	if(title == null) {
+		title = LANG['edit_setting'];
+		if(key == '') {
+			title = LANG['create_setting'];
+		}
 	}
-	showDialogAjax(title, 'views/dialog-setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog-setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		if(file) {
+			fleEditSettingValue.classList.remove('hidden');
+			txtEditSettingValue.classList.add('hidden');
+			if(typeof file === 'string' || file instanceof String) {
+				console.log(file);
+				fleEditSettingValue.accept = file;
+			}
+		}
+		if(!warning) {
+			trSettingsManualChangesWarning.classList.add('hidden');
+		}
+		if(keyHidden) {
+			txtEditSettingKey.classList.add('hidden');
+		}
+	});
 }
 function editSetting(key, value) {
 	let req = new XMLHttpRequest();
@@ -2471,6 +2676,32 @@ function removeSelectedSetting(checkboxName, attributeName=null) {
 		});
 	}
 }
+function readFileInputBlob(file) {
+	var start = 0;
+	var stop = file.size - 1;
+	var reader = new FileReader();
+	var blob;
+	if(file.slice) {
+		blob = file.slice(start, stop + 1);
+	} else if(file.webkitSlice) {
+		blob = file.webkitSlice(start, stop + 1);
+	} else if(file.mozSlice) {
+		blob = file.mozSlice(start, stop + 1);
+	}
+	reader.readAsBinaryString(blob);
+	return blob;
+}
+
+function syncAppleDevices() {
+	var params = [];
+	params.push({'key':'sync_apple_devices', 'value':1});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+		emitMessage(LANG['sync_with_apple_business_manager'], text, MESSAGE_TYPE_SUCCESS);
+		refreshContent();
+	});
+}
+
 function checkUpdate() {
 	ajaxRequestPost('ajax-handler/update-check.php', '', null, function(text) {
 		if(text.trim() != '') {

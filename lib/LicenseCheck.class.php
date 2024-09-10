@@ -20,13 +20,15 @@ class LicenseCheck {
 	private $licenseExpireTime  = 0;
 	private $licenseText        = '';
 
+	private $licenseJson        = '';
+
 	function __construct($db) {
 		$this->currentObjectCount = count($db->selectAllComputer());
 		$this->licenseCompany = LANG('unregistered');
 
-		$licenseJson = $db->settings->get('license');
+		$this->licenseJson = $db->settings->get('license');
 		$this->licenseValid =
-			( $licenseJson===null ? false : $this->checkLicense(json_decode($licenseJson, true)) )
+			( $this->licenseJson===null ? false : $this->checkLicense(json_decode($this->licenseJson, true)) )
 			|| $this->checkFreeLicense();
 	}
 
@@ -41,6 +43,10 @@ class LicenseCheck {
 	}
 	public function getLicenseText() : string {
 		return $this->licenseText;
+	}
+
+	public function getLicenseJson() : string {
+		return $this->licenseJson;
 	}
 
 	private function checkFreeLicense() {
