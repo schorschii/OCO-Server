@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "OCO Client Extension"
-#define MyAppVersion "1.1.1"
+#define MyAppVersion "1.1.2"
 #define MyAppPublisher "Sieber Systems"
 #define MyAppURL "https://github.com/schorschii/OCO-Server"
 #define MyAppExeName "oco-client-extension-windows.exe"
