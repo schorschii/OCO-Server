@@ -50,7 +50,11 @@ Requires you to install the OCO MDM enrollment profile manually, e.g. by downloa
         "profile_name": "OCO MDM",
         "url": "https://oco.example.com/api-mdm.php/profile",
         "support_email_address": "test@example.com",
-        "skip_setup_items": ["Accessibility","ActionButton","Appearance","AppleID","AppStore","Biometric","DeviceToDeviceMigration","Diagnostics","DisplayTone","iMessageAndFaceTime","Location","Passcode","Privacy","Restore","Siri","SoftwareUpdate","Welcome","Zoom"]
+        "is_supervised": true,
+        "is_mdm_removable": false,
+        "language": "de",
+        "region": "DE",
+        "skip_setup_items": ["Accessibility","ActionButton","Appearance","AppleID","AppStore","Biometric","DeviceToDeviceMigration","Diagnostics","DisplayTone","iMessageAndFaceTime","Location","Passcode","Privacy","Restore","ScreenTime","Siri","SoftwareUpdate","Welcome","Zoom"]
      }
      ```
 
