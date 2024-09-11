@@ -329,18 +329,31 @@ class AutomatedDeviceEnrollment {
 					null/*unlock_token*/, null/*info*/, ''/*notes*/, 0/*force_update*/
 				);
 			}
-			if(empty($device['profile_uuid'])) {
+			if(empty($md) || empty($md->profile_uuid)) {
 				$devicesWithoutProfile[] = $device['serial_number'];
 			}
 		}
-		// assign the activation profile to devices if empty
-		// todo: update if changed
-		if(!empty($devicesWithoutProfile)) {
+
+		// assign our activation profile to devices if empty
+		$activationProfile = $this->getActivationProfile();
+		if(!empty($devicesWithoutProfile) && !empty($activationProfile)) {
 			echo 'Assigning activation profile to '.count($devicesWithoutProfile).' device(s)...'."\n";
-			$createResult = $this->createProfile(json_encode($this->getActivationProfile()));
-			$profileUuid = json_decode($createResult,true)['profile_uuid'];
+			$createResult = $this->createProfile(json_encode($activationProfile));
+			if(!$createResult) throw new \RuntimeException('Error creating activation profile');
+			$profileUuid = json_decode($createResult, true)['profile_uuid'];
 			$this->assignProfile($profileUuid, $devicesWithoutProfile);
-			// todo: update profile_uuid in database
+			// update profile_uuid in database
+			foreach($devicesWithoutProfile as $mdSerial) {
+				$md = $this->db->selectMobileDeviceBySerialNumber($mdSerial);
+				if($md) {
+					$this->db->updateMobileDevice($md->id,
+						$md->udid, $md->device_name, $md->serial, $md->vendor_description,
+						$md->model, $md->os, $md->device_family, $md->color,
+						$profileUuid, $md->push_token, $md->push_magic, $md->push_sent,
+						$md->unlock_token, $md->info, $md->notes, $md->force_update
+					);
+				}
+			}
 		}
 	}
 

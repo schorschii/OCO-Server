@@ -245,6 +245,10 @@ class DatabaseController {
 		$this->stmt->execute([':id' => $id]);
 		return ($this->stmt->rowCount() == 1);
 	}
+	public function deleteAllMobileDeviceActivationProfile() {
+		$this->stmt = $this->dbh->prepare('UPDATE mobile_device SET profile_uuid = NULL WHERE 1 = 1');
+		return $this->stmt->execute();
+	}
 
 	public function selectAllMobileDeviceGroup() {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group');

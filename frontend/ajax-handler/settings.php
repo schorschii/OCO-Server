@@ -239,9 +239,15 @@ try {
 	if(!empty($_POST['edit_setting'])) {
 		$key = $_POST['edit_setting'];
 		if(isset($_POST['value'])) {
+			// special handlings
+			if($key == 'apple-mdm-activation-profile') {
+				// reset activation profile, so that it gets newly assigned on next Apple sync
+				$db->deleteAllMobileDeviceActivationProfile();
+			}
 			$cl->editSetting($key, $_POST['value']);
 			die();
 		} elseif(isset($_FILES['value'])) {
+			// special handlings
 			$value = file_get_contents($_FILES['value']['tmp_name']);
 			if($key == 'apple-mdm-token') {
 				$ade = new Apple\AutomatedDeviceEnrollment($db);
