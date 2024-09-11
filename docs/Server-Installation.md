@@ -170,10 +170,12 @@ It is also possible to use a self-signed certificate if necessary. Then, you hav
 ### fail2ban
 You can set up fail2ban to prevent brute force attacks. Example configuration can be found in the `examples/fail2ban` directory.
 
-### Only Provide Agent API On Virtual Host
-Ou may only want to provide the agent API and not the full web interface with client API on a virtual host. In this case, please use `api-agent` as web server root directory for the virtual host (instead of `frontend`).
+### Only Provide Agent API On (Virtual) Host (On The Internet)
+Ou may only want to provide the agent/MDM API (available on the internet) and not the full web interface with client API on a separate server or virtual host. In this case, please use `api-agent` as web server root directory for the virtual host (instead of `frontend`).
 
-The web interface and client API can then be made available on a separate, internal-only web server or virtual host, which has additional security options set in the web server config (e.g. IP address restrictions or an additional HTTP basic auth).
+When using this to expose the API on a dedicated server on the internet, you may use a separate database login too in the `conf.php` of this installation, which only has `SELECT, UPDATE, DELETE` rights on the necessary database tables.
+
+The web interface and client API can then be made available on a separate, internal-only web server or virtual host, which has additional security options set in the web server config (e.g. IP address restrictions or an additional HTTP basic/negotiate auth).
 
 ## Set Up LDAP Sync & Authentication
 If you want to use LDAP to authenticate admin users on the web frontend, please follow this steps.
