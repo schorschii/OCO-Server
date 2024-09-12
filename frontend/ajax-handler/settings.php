@@ -254,8 +254,8 @@ try {
 				$ade->storeMdmServerToken($value);
 				die();
 			}
-			if($key == 'apple-mdm-vendor-cert'
-			|| $key == 'apple-mdm-apn-cert') {
+			// ('apple-mdm-apn-cert' file is already pem encoded)
+			if($key == 'apple-mdm-vendor-cert') {
 				$value = Apple\AutomatedDeviceEnrollment::der2pem($value);
 			}
 			$cl->editSetting($key, $value);
