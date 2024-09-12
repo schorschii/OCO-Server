@@ -45,6 +45,23 @@ class AutomatedDeviceEnrollment {
 		if(!$profile) throw new \RuntimeException('Unable to parse profile JSON');
 		return $profile;
 	}
+	function storeActivationProfile(string $jsonValue) {
+		// check if Apple API accepts the profile
+		$json = json_decode($jsonValue);
+		if(!$json)
+			throw new \RuntimeException('Invalid JSON');
+
+		$createResult = $this->createProfile($jsonValue);
+		if(!$createResult)
+			throw new \RuntimeException('Error creating activation profile');
+		if(!json_decode($createResult)) 
+			throw new \RuntimeException('Invalid response from Apple API creating activation profile: '.$createResult);
+
+		$this->db->insertOrUpdateSettingByKey('apple-mdm-activation-profile', $jsonValue);
+
+		// reset activation profile, so that it gets newly assigned on next Apple sync
+		$this->db->deleteAllMobileDeviceActivationProfile();
+	}
 
 	function getMdmServerToken() {
 		$token = $this->db->settings->get('apple-mdm-token');

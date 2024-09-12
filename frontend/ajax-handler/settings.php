@@ -241,8 +241,10 @@ try {
 		if(isset($_POST['value'])) {
 			// special handlings
 			if($key == 'apple-mdm-activation-profile') {
-				// reset activation profile, so that it gets newly assigned on next Apple sync
-				$db->deleteAllMobileDeviceActivationProfile();
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$ade = new Apple\AutomatedDeviceEnrollment($db);
+				$ade->storeActivationProfile($_POST['value']);
+				die();
 			}
 			$cl->editSetting($key, $_POST['value']);
 			die();
@@ -250,12 +252,12 @@ try {
 			// special handlings
 			$value = file_get_contents($_FILES['value']['tmp_name']);
 			if($key == 'apple-mdm-token') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 				$ade = new Apple\AutomatedDeviceEnrollment($db);
 				$ade->storeMdmServerToken($value);
 				die();
 			}
-			// ('apple-mdm-apn-cert' file is already pem encoded)
-			if($key == 'apple-mdm-vendor-cert') {
+			if($key == 'apple-mdm-vendor-cert') { // ('apple-mdm-apn-cert' file is already pem encoded)
 				$value = Apple\AutomatedDeviceEnrollment::der2pem($value);
 			}
 			$cl->editSetting($key, $value);
