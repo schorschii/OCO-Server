@@ -574,6 +574,8 @@ return [
 	'mobile_device' => 'Mobile Device',
 	'command' => 'Command',
 	'payload' => 'Payload',
+	'enrolled' => 'Enrolled',
+	'not_enrolled' => 'Not enrolled',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

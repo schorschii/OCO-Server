@@ -19,12 +19,10 @@ try {
 } catch(InvalidRequestException $e) {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
-
-$isOnline = $md->isOnline($db);
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $md->getIcon(); ?>' class='<?php echo($isOnline ? 'online' : 'offline'); ?>' title='<?php echo($isOnline ? LANG('online') : LANG('offline')); ?>'><span id='page-title'><span id='spnMobileDeviceSerial'><?php echo htmlspecialchars($md->serial); ?></span></span></h1>
+	<h1><img src='<?php echo $md->getIcon(); ?>' class='<?php echo($md->udid ? 'online' : 'offline'); ?>' title='<?php echo($md->udid ? LANG('enrolled') : LANG('not_enrolled')); ?>'><span id='page-title'><span id='spnMobileDeviceSerial'><?php echo htmlspecialchars($md->serial); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentDeploy([],[],{"id":<?php echo $md->id; ?>,"name":spnMobileDeviceSerial.innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 		<button onclick='showDialogAddMobileDeviceToGroup(<?php echo $md->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>

@@ -88,11 +88,10 @@ try {
 				if(!(empty($n->address) || $n->address == '-' || $n->address == '?')) $ip_addresses[] = $n->address;
 				if(!(empty($n->mac) || $n->mac == '-' || $n->mac == '?')) $mac_addresses[] = $n->mac;
 			}
-			$online = $md->isOnline($db);
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='mobile_device_id[]' value='".$md->id."'></td>";
 			echo "<td>";
-			echo  "<img src='".$md->getIcon()."' class='".($online ? 'online' : 'offline')."' title='".($online ? LANG('online') : LANG('offline'))."'>&nbsp;";
+			echo  "<img src='".$md->getIcon()."' class='".($md->udid ? 'online' : 'offline')."' title='".($md->udid ? LANG('enrolled') : LANG('not_enrolled'))."'>&nbsp;";
 			echo  "<a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->serial)."</a>";
 			echo "</td>";
 			echo "<td>".htmlspecialchars($md->device_name)."</td>";

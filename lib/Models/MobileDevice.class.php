@@ -42,9 +42,5 @@ class MobileDevice {
 		elseif($type == self::OS_TYPE_IOS) return 'img/mobile-device-ios.dyn.svg';
 		else return '';
 	}
-	function isOnline($db) {
-		if(!$db instanceof \DatabaseController) throw new Exception('Missing DatabaseController Reference');
-		return time() - strtotime($this->last_update??0) < intval($db->settings->get('computer-offline-seconds'));
-	}
 
 }
