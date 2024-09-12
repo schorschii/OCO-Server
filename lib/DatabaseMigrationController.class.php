@@ -97,7 +97,6 @@ class DatabaseMigrationController {
 		$this->stmt->execute();
 		if($this->stmt->rowCount() == 0) {
 				if($this->debug) echo 'Upgrading to 1.1.2... (add mobile_device table)'."\n";
-
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `mobile_device` (
   `id` int(11) NOT NULL,
@@ -125,6 +124,7 @@ class DatabaseMigrationController {
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
+				if($this->debug) echo 'Upgrading to 1.1.2... (add mobile_device_command table)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `mobile_device_command` (
   `id` int(11) NOT NULL,
@@ -141,6 +141,7 @@ class DatabaseMigrationController {
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
+				if($this->debug) echo 'Upgrading to 1.1.2... (add mobile_device_group table)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `mobile_device_group` (
   `id` int(11) NOT NULL,
@@ -152,6 +153,7 @@ class DatabaseMigrationController {
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
+				if($this->debug) echo 'Upgrading to 1.1.2... (add mobile_device_group_member table)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `mobile_device_group_member` (
   `id` int(11) NOT NULL,
@@ -171,6 +173,29 @@ class DatabaseMigrationController {
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 				$upgraded = true;
+		}
+
+		// upgrade from 1.1.2 to 1.1.3
+		$this->stmt = $this->dbh->prepare("SELECT EXTRA FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'mobile_device' AND COLUMN_NAME = 'id' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute();
+		foreach($this->stmt->fetchAll() as $row) {
+			if($row['EXTRA'] !== 'auto_increment') {
+				if($this->debug) echo 'Upgrading to 1.1.3... (add missing mobile_device* AUTO_INCREMENT)'."\n";
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `mobile_device` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `mobile_device_command` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `mobile_device_group` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `mobile_device_group_member` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT;");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+				$upgraded = true;
+			}
+
 		}
 
 		return $upgraded;

@@ -723,7 +723,7 @@ CREATE TABLE IF NOT EXISTS `setting` (
 --
 
 CREATE TABLE `mobile_device` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `udid` varchar(40) DEFAULT NULL,
   `device_name` text NOT NULL,
   `serial` varchar(100) NOT NULL,
@@ -754,7 +754,7 @@ CREATE TABLE `mobile_device` (
 --
 
 CREATE TABLE `mobile_device_command` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `mobile_device_id` int(11) NOT NULL,
   `name` text NOT NULL,
   `parameter` text NOT NULL,
@@ -774,7 +774,7 @@ CREATE TABLE `mobile_device_command` (
 --
 
 CREATE TABLE `mobile_device_group` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_mobile_device_group_id` int(11) DEFAULT NULL,
   `name` text NOT NULL,
   PRIMARY KEY (`id`),
@@ -789,7 +789,7 @@ CREATE TABLE `mobile_device_group` (
 --
 
 CREATE TABLE `mobile_device_group_member` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `mobile_device_id` int(11) NOT NULL,
   `mobile_device_group_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
