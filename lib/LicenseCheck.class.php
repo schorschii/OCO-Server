@@ -24,7 +24,7 @@ class LicenseCheck {
 	private $licenseJson        = '';
 
 	function __construct($db) {
-		$this->currentObjectCount = count($db->selectAllComputer());
+		$this->currentObjectCount = count($db->selectAllComputer()) + count($db->selectAllMobileDevice());
 		$this->licenseCompany = LANG('unregistered');
 
 		$this->licenseJson = $db->settings->get('license');
