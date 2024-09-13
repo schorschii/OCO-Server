@@ -173,9 +173,31 @@ You can set up fail2ban to prevent brute force attacks. Example configuration ca
 ### Only Provide Agent API On (Virtual) Host (On The Internet)
 Ou may only want to provide the agent/MDM API (available on the internet) and not the full web interface with client API on a separate server or virtual host. In this case, please use `api-agent` as web server root directory for the virtual host (instead of `frontend`).
 
-When using this to expose the API on a dedicated server on the internet, you may use a separate database login too in the `conf.php` of this installation, which only has `SELECT, UPDATE, DELETE` rights on the necessary database tables.
+When using this to expose the API on a dedicated server on the internet, you may use a separate database login too in the `conf.php` of this installation, which only has `SELECT, UPDATE, INSERT, DELETE` rights on the necessary database tables.
+<details>
+     <summary>Such a permission set may look like this.</summary>
 
-The web interface and client API can then be made available on a separate, internal-only web server or virtual host, which has additional security options set in the web server config (e.g. IP address restrictions or an additional HTTP basic/negotiate auth).
+     ```
+     +-------------------------------------------------------------------------------------------------------------+
+     | Grants for oco-ext@oco-ext.example.com                                                                      |
+     +-------------------------------------------------------------------------------------------------------------+
+     | GRANT USAGE ON *.* TO `oco-ext`@`oco-ext.example.com` IDENTIFIED BY PASSWORD '*ABCDEFGHIJKLMNOPQRSTUVWXYZ'  |
+     | GRANT SELECT, INSERT, UPDATE, DELETE ON `oco`.`mobile_device_app` TO `oco-ext`@`oco-ext.example.com`        |
+     | GRANT SELECT, UPDATE, DELETE ON `oco`.`mobile_device_group_profile` TO `oco-ext`@`oco-ext.example.com`      |
+     | GRANT SELECT ON `oco`.`mobile_device_group` TO `oco-ext`@`oco-ext.example.com`                              |
+     | GRANT SELECT, INSERT, UPDATE, DELETE ON `oco`.`app` TO `oco-ext`@`oco-ext.example.com`                      |
+     | GRANT SELECT, INSERT, UPDATE, DELETE ON `oco`.`mobile_device` TO `oco-ext`@`oco-ext.example.com`            |
+     | GRANT SELECT, UPDATE, DELETE ON `oco`.`profile` TO `oco-ext`@`oco-ext.example.com`                          |
+     | GRANT SELECT, UPDATE, DELETE ON `oco`.`mobile_device_command` TO `oco-ext`@`oco-ext.example.com`            |
+     | GRANT SELECT, INSERT, UPDATE, DELETE ON `oco`.`mobile_device_profile` TO `oco-ext`@`oco-ext.example.com`    |
+     | GRANT SELECT ON `oco`.`mobile_device_group_member` TO `oco-ext`@`oco-ext.example.com`                       |
+     | GRANT SELECT ON `oco`.`setting` TO `oco-ext`@`oco-ext.example.com`                                          |
+     | GRANT INSERT ON `oco`.`log` TO `oco-ext`@`oco-ext.example.com`                                              |
+     +-------------------------------------------------------------------------------------------------------------+
+     ```
+</details>
+
+The normal web interface and client API can then be made available on a separate, internal-only web server or virtual host, which has additional security options set in the web server config (e.g. IP address restrictions or an additional HTTP basic/negotiate auth).
 
 ## Set Up LDAP Sync & Authentication
 If you want to use LDAP to authenticate admin users on the web frontend, please follow this steps.
