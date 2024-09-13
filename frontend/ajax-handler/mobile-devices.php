@@ -67,10 +67,10 @@ try {
 				#'PIN' => '', // six-character PIN for Find My
 			]);
 		} elseif($_POST['command'] == 'ClearPasscode') {
-			$md = $cl->getMobileDevice($_POST['mobile_device_id']);
+			$md = $cl->getMobileDevice($_POST['send_command_to_mobile_device_id']);
 			$parameter = json_encode([
 				'RequestType' => 'ClearPasscode',
-				'UnlockToken' => $md->unlock_token,
+				'UnlockToken' => base64_encode($md->unlock_token),
 				'_data' => ['UnlockToken'],
 			]);
 		} elseif($_POST['command'] == 'EnableLostMode') {
