@@ -24,6 +24,7 @@ class HouseKeeping {
 		$this->serviceHouseKeeping();
 		$this->eventHouseKeeping();
 		$this->logHouseKeeping();
+		$this->mobileDeviceCommandHouseKeeping();
 
 		// extension housekeeping
 		foreach($this->ext->getAggregatedConf('housekeeping-function') as $func) {
@@ -32,6 +33,27 @@ class HouseKeeping {
 		}
 
 		if($this->debug) echo('Done.'."\n");
+	}
+
+	private function mobileDeviceCommandHouseKeeping() {
+		$purgeSucceededJobsAfter = $this->db->settings->get('purge-succeeded-jobs-after');
+		$purgeFailedJobsAfter = $this->db->settings->get('purge-failed-jobs-after');
+
+		foreach($this->db->selectAllMobileDeviceCommand() as $command) {
+			// purge old commands
+			if($command->state == Models\MobileDeviceCommand::STATE_SUCCESS) {
+				if(time() - strtotime($command->finished) > $purgeSucceededJobsAfter) {
+					if($this->debug) echo('Remove succeeded command #'.$command->id.' ('.$command->name.')'."\n");
+					$this->db->deleteMobileDeviceCommand($command->id);
+				}
+			}
+			elseif($command->state == Models\MobileDeviceCommand::STATE_FAILED) {
+				if(time() - strtotime($command->finished) > $purgeFailedJobsAfter) {
+					if($this->debug) echo('Remove failed command #'.$command->id.' ('.$command->name.')'."\n");
+					$this->db->deleteMobileDeviceCommand($command->id);
+				}
+			}
+		}
 	}
 
 	private function jobHouseKeeping() {
