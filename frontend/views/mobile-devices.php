@@ -69,8 +69,8 @@ try {
 		<thead>
 			<tr>
 				<th><input type='checkbox' class='toggleAllChecked'></th>
-				<th class='searchable sortable'><?php echo LANG('serial_no'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('device_name'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('serial_no'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('os'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('model'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('mac_addresses'); ?></th>
@@ -92,9 +92,9 @@ try {
 			echo "<td><input type='checkbox' name='mobile_device_id[]' value='".$md->id."'></td>";
 			echo "<td>";
 			echo  "<img src='".$md->getIcon()."' class='".($md->udid ? 'online' : 'offline')."' title='".($md->udid ? LANG('enrolled') : LANG('not_enrolled'))."'>&nbsp;";
-			echo  "<a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->serial)."</a>";
+			echo  "<a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->device_name??$md->serial)."</a>";
 			echo "</td>";
-			echo "<td>".htmlspecialchars($md->device_name)."</td>";
+			echo "<td>".htmlspecialchars($md->serial)."</td>";
 			echo "<td>".htmlspecialchars($md->os)."</td>";
 			echo "<td>".htmlspecialchars($md->model)."</td>";
 			echo "<td>".htmlspecialchars(implode(', ',$mac_addresses))."</td>";

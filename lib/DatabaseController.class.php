@@ -145,6 +145,20 @@ class DatabaseController {
 	}
 
 	// Mobile Device Operations
+	public function searchAllMobileDevice($search, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM mobile_device WHERE device_name LIKE :search OR serial LIKE :search ORDER BY device_name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':search' => '%'.$search.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice');
+	}
+	public function searchAllMobileDeviceGroup($name, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM mobile_device_group WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':name' => '%'.$name.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
+	}
 	public function selectAllMobileDevice() {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device');
 		$this->stmt->execute();

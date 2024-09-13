@@ -24,6 +24,13 @@ foreach($db->searchAllComputer($_GET['query']) as $c) {
 	$items[] = new Models\SearchResult($c->hostname, LANG('computer'), 'views/computer-details.php?id='.$c->id, 'img/computer.dyn.svg');
 }
 $counter = 0;
+foreach($db->searchAllMobileDevice($_GET['query']) as $md) {
+	$counter ++;
+	if(!$cl->checkPermission($md, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = new Models\SearchResult($md->device_name.' ('.$md->serial.')', LANG('mobile_device'), 'views/mobile-device-details.php?id='.$md->id, 'img/mobile-device.dyn.svg');
+}
+$counter = 0;
 foreach($db->searchAllPackageFamily($_GET['query']) as $pf) {
 	$counter ++;
 	if(!$cl->checkPermission($pf, PermissionManager::METHOD_READ, false)) continue;
@@ -64,6 +71,13 @@ foreach($db->searchAllComputerGroup($_GET['query']) as $r) {
 	if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = new Models\SearchResult($r->name, LANG('computer_group'), 'views/computers.php?id='.$r->id, 'img/folder.dyn.svg');
+}
+$counter = 0;
+foreach($db->searchAllMobileDeviceGroup($_GET['query']) as $r) {
+	$counter ++;
+	if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = new Models\SearchResult($r->name, LANG('mobile_device_group'), 'views/mobile-devices.php?id='.$r->id, 'img/folder.dyn.svg');
 }
 $counter = 0;
 foreach($db->searchAllPackageGroup($_GET['query']) as $r) {
