@@ -207,14 +207,12 @@ if($path === '/profile') {
 	$md = $db->selectMobileDeviceByUdid($request['UDID']);
 	if(!$md) throw new NotFoundException();
 
-	error_log($body);
-
 	// store info about previous command result
 	if(isset($request['Status']) && isset($request['CommandUUID'])) {
 		$status = null;
 		if($request['Status'] == 'Acknowledged')
 			$status = Models\MobileDeviceCommand::STATE_SUCCESS;
-		if(!empty($request['ErrorChain']))
+		else
 			$status = Models\MobileDeviceCommand::STATE_FAILED;
 		if($status !== null) {
 			$mdc = $db->selectMobileDeviceCommand($request['CommandUUID']);
@@ -288,7 +286,6 @@ if($path === '/profile') {
 				'Command' => $parameter,
 				'CommandUUID' => new \CFPropertyList\CFString($mdc->id),
 			] ) );
-			error_log('send command::'.$plist->toXML(true));
 			echo $plist->toXML(true);
 			if(is_numeric($mdc->id)) $db->updateMobileDeviceCommand($mdc->id, $mdc->mobile_device_id, $mdc->name, $mdc->parameter, Models\MobileDeviceCommand::STATE_SENT, '', date('Y-m-d H:i:s'));
 
