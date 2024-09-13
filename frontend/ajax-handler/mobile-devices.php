@@ -52,36 +52,13 @@ try {
 		die();
 	}
 
-	if(isset($_POST['name'])
-	&& isset($_POST['mobile_device_id'])
-	&& isset($_POST['command'])
-	&& isset($_POST['notes'])
-	&& isset($_POST['payload'])) {
-		// no payload change by default
-		$payload = null;
-		if(!empty($_POST['update_payload'])) {
-			// no payload by default
-			$payload = [];
-			if(!empty($_FILES['payload']) && is_array($_FILES['payload']['tmp_name'])) {
-				// use files from user upload
-				for($i=0; $i < count($_FILES['payload']['tmp_name']); $i++) {
-					if(isset($_FILES['payload']['name'][$i]) && file_exists($_FILES['payload']['tmp_name'][$i])) {
-						$payload = file_get_contents($_FILES['payload']['tmp_name'][$i]);
-					}
-				}
-			}
-		}
-		if($_POST['command'] == 'InstallProfile') {
-			$parameter = json_encode([
-				'RequestType' => 'InstallProfile',
-				'Payload' => base64_encode($payload),
-				'_data' => ['Payload'],
-			]);
-		} elseif($_POST['command'] == 'DeviceLock') {
+	if(!empty($_POST['send_command_to_mobile_device_id'])
+	&& !empty($_POST['command'])) {
+		if($_POST['command'] == 'DeviceLock') {
 			$parameter = json_encode([
 				'RequestType' => 'DeviceLock',
-				'Message' => '',
-				'PhoneNumber' => '',
+				#'Message' => '',
+				#'PhoneNumber' => '',
 				#'PIN' => '', // six-character PIN for Find My
 			]);
 		} elseif($_POST['command'] == 'EraseDevice') {
@@ -97,26 +74,67 @@ try {
 				'_data' => ['UnlockToken'],
 			]);
 		} elseif($_POST['command'] == 'EnableLostMode') {
+			if(empty($_POST['message']))
+				throw new InvalidRequestException('A message is required for EnableLostMode command');
 			$parameter = json_encode([
 				'RequestType' => 'EnableLostMode',
+				'Message' => $_POST['message'],
 				#'Footnote' => '',
-				#'Message' => '',
 				#'PhoneNumber' => '',
 			]);
 		} elseif($_POST['command'] == 'DisableLostMode') {
 			$parameter = json_encode([
 				'RequestType' => 'DisableLostMode',
 			]);
+		} else {
+			throw new InvalidRequestException('Unknown command');
 		}
-		$cl->createMobileDeviceCommand($_POST['mobile_device_id'], $_POST['name'], $parameter, $_POST['notes']);
-		$mdcc = new MobileDeviceCommandController($db);
-		$mdcc->mdmCron();
+		$cl->createMobileDeviceCommand($_POST['send_command_to_mobile_device_id'], $_POST['command'], $parameter);
 		die();
 	}
 
 	if(!empty($_POST['remove_mobile_device_command_id']) && is_array($_POST['remove_mobile_device_command_id'])) {
 		foreach($_POST['remove_mobile_device_command_id'] as $id) {
+			// TODO
 			$cl->removeMobileDeviceCommand($id);
+		}
+		die();
+	}
+
+	if(isset($_POST['edit_profile_id'])) {
+		// no payload change by default
+		$payload = null;
+		if(!empty($_POST['update_payload'])) {
+			// no payload by default
+			$payload = [];
+			if(!empty($_FILES['payload']) && is_array($_FILES['payload']['tmp_name'])) {
+				// use files from user upload
+				for($i=0; $i < count($_FILES['payload']['tmp_name']); $i++) {
+					if(isset($_FILES['payload']['name'][$i]) && file_exists($_FILES['payload']['tmp_name'][$i])) {
+						$payload = file_get_contents($_FILES['payload']['tmp_name'][$i]);
+					}
+				}
+			}
+		}
+		if($_POST['edit_profile_id'] == '-1') {
+			die(
+				$cl->createProfile($_POST['name']??null, $payload, $_POST['notes']??'')
+			);
+		}
+	}
+
+	if(isset($_POST['add_to_group_id']) && is_array($_POST['add_to_group_id']) && isset($_POST['add_to_group_profile_id']) && is_array($_POST['add_to_group_profile_id'])) {
+		foreach($_POST['add_to_group_profile_id'] as $pid) {
+			foreach($_POST['add_to_group_id'] as $gid) {
+				$cl->assignProfileToMobileDeviceGroup($pid, $gid);
+			}
+		}
+		die();
+	}
+
+	if(!empty($_POST['remove_profile_id']) && is_array($_POST['remove_profile_id'])) {
+		foreach($_POST['remove_profile_id'] as $id) {
+			$cl->removeProfile($id, !empty($_POST['force']));
 		}
 		die();
 	}

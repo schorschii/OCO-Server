@@ -160,7 +160,7 @@ if($path === '/profile') {
 			);
 			break;
 
-		case 'CheckOut':
+		case 'CheckOut': // TODO
 			/*<?xml version="1.0" encoding="UTF-8"?>
 			<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 			<plist version="1.0">
@@ -238,7 +238,30 @@ if($path === '/profile') {
 					$md->unlock_token, json_encode($request['QueryResponses']), $md->notes, $md->force_update
 				);
 			} elseif($rt === 'InstalledApplicationList') {
-				// todo
+				$apps = [];
+				foreach($request['InstalledApplicationList']??[] as $app) {
+					if(empty($app['Identifier']) || empty($app['Name']) || empty($app['Version']) || empty($app['ShortVersion'])) continue;
+					$apps[] = [
+						'identifier' => $app['Identifier'],
+						'name' => $app['Name'],
+						'display_version' => $app['ShortVersion'],
+						'version' => $app['Version'],
+					];
+				}
+				$db->updateMobileDeviceApps($md->id, $apps);
+			} elseif($rt === 'ProfileList') {
+				$profiles = [];
+				foreach($request['ProfileList']??[] as $profile) {
+					if(empty($profile['PayloadUUID']) || empty($profile['PayloadIdentifier'])) continue;
+					$profiles[] = [
+						'uuid' => $profile['PayloadUUID'],
+						'identifier' => $profile['PayloadIdentifier'],
+						'display_name' => $profile['PayloadDisplayName'] ?? '',
+						'version' => $profile['PayloadVersion'] ?? '0',
+						'content' => json_encode($profile),
+					];
+				}
+				$db->updateMobileDeviceProfiles($md->id, $profiles);
 			}
 		}
 	}

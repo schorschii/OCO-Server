@@ -564,13 +564,20 @@ return [
 	'push_token' => 'Push-Token',
 	'color' => 'Farbe',
 	'vendor_description' => 'Herstellerbeschreibung',
-	'mobile_device_commands' => 'Mobilgeräte-Kommandos',
-	'new_command' => 'Neues Kommando',
 	'mobile_device' => 'Mobilgerät',
 	'command' => 'Kommando',
+	'send_command' => 'Kommando senden',
 	'payload' => 'Payload',
 	'enrolled' => 'Eingecheckt',
 	'not_enrolled' => 'Ausgecheckt',
+	'message' => 'Nachricht',
+	'profiles_and_commands' => 'Profile und Kommandos',
+	'installed_apps' => 'Installierte Apps',
+	'profiles' => 'Profile',
+	'new_profile' => 'Neues Profil',
+	'profile_file' => 'Profildatei',
+	'assign' => 'Zuweisen',
+	'profil_assigned' => 'Profil zugewiesen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

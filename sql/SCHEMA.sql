@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `system_user_role` (
 --
 
 REPLACE INTO `system_user_role` (`id`, `name`, `permissions`) VALUES
-(1, 'Superadmin', '{\"Special\\\\ClientApi\": true, \"Special\\\\WebFrontend\": true, \"Special\\\\GeneralConfiguration\": true, \"Special\\\\EventQueryRules\": true, \"Special\\\\DeletedObjects\": true, \"Models\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true}}, \"Models\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\SystemUser\": true, \"Models\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Software\": true, \"Models\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\MobileDeviceCommand\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}}');
+(1, 'Superadmin', '{\"Special\\\\ClientApi\": true, \"Special\\\\WebFrontend\": true, \"Special\\\\GeneralConfiguration\": true, \"Special\\\\EventQueryRules\": true, \"Special\\\\DeletedObjects\": true, \"Models\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true}}, \"Models\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\SystemUser\": true, \"Models\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Software\": true, \"Models\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}}');
 
 -- --------------------------------------------------------
 
@@ -797,6 +797,96 @@ CREATE TABLE `mobile_device_group_member` (
   KEY `fk_mobile_device_group_member_2` (`mobile_device_id`),
   CONSTRAINT `fk_mobile_device_group_member_1` FOREIGN KEY (`mobile_device_group_id`) REFERENCES `mobile_device_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_mobile_device_group_member_2` FOREIGN KEY (`mobile_device_id`) REFERENCES `mobile_device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `app`
+--
+
+CREATE TABLE `app` (
+  `id` int(11) NOT NULL,
+  `identifier` varchar(350) NOT NULL,
+  `name` varchar(350) NOT NULL,
+  `display_version` text NOT NULL,
+  `version` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `identifier` (`identifier`),
+  KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `mobile_device_app`
+--
+
+CREATE TABLE `mobile_device_app` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `mobile_device_id` int(11) NOT NULL,
+  `app_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_mobile_device_app_1` (`mobile_device_id`),
+  KEY `fk_mobile_device_app_2` (`app_id`),
+  CONSTRAINT `fk_mobile_device_app_1` FOREIGN KEY (`mobile_device_id`) REFERENCES `mobile_device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_mobile_device_app_2` FOREIGN KEY (`app_id`) REFERENCES `app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `profile`
+--
+
+CREATE TABLE `profile` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` text NOT NULL,
+  `payload` text NOT NULL,
+  `notes` text NOT NULL,
+  `created` timestamp NOT NULL DEFAULT current_timestamp(),
+  `created_by_system_user_id` int(11) DEFAULT NULL,
+  `last_update` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_profile_1` (`created_by_system_user_id`),
+  CONSTRAINT `fk_profile_1` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `mobile_device_group_profile`
+--
+
+CREATE TABLE `mobile_device_group_profile` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `mobile_device_group_id` int(11) NOT NULL,
+  `profile_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_mobile_device_group_profile_1` (`mobile_device_group_id`),
+  KEY `fk_mobile_device_group_profile_2` (`profile_id`),
+  CONSTRAINT `fk_mobile_device_group_profile_1` FOREIGN KEY (`mobile_device_group_id`) REFERENCES `mobile_device_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_mobile_device_group_profile_2` FOREIGN KEY (`profile_id`) REFERENCES `profile` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `mobile_device_profile`
+--
+
+CREATE TABLE `mobile_device_profile` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `mobile_device_id` int(11) NOT NULL,
+  `uuid` varchar(350) NOT NULL,
+  `identifier` text NOT NULL,
+  `display_name` text NOT NULL,
+  `version` text NOT NULL,
+  `content` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_mobile_device_profile` (`mobile_device_id`),
+  KEY `uuid` (`uuid`),
+  CONSTRAINT `fk_mobile_device_profile` FOREIGN KEY (`mobile_device_id`) REFERENCES `mobile_device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 COMMIT;

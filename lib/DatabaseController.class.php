@@ -189,6 +189,15 @@ class DatabaseController {
 			return $row;
 		}
 	}
+	public function selectAllMobileDeviceProfileUuidByMobileDeviceId($mobile_device_id) {
+		$uuids = [];
+		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_profile WHERE mobile_device_id = :mobile_device_id');
+		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceProfile') as $row) {
+			$uuids[$row->uuid] = $row;
+		}
+		return $uuids;
+	}
 	public function insertMobileDevice($udid, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO mobile_device (udid, device_name, serial, vendor_description, model, os, device_family, color, profile_uuid, push_token, push_magic, push_sent, unlock_token, info, notes, force_update)
@@ -238,6 +247,91 @@ class DatabaseController {
 			':force_update' => $force_update,
 		]);
 	}
+	public function updateMobileDeviceApps($id, $apps) {
+		// update apps
+		$aids = [];
+		foreach($apps as $a) {
+			if(empty($a['identifier']) || empty($a['name'])) continue;
+			$sid = intval($this->insertOrUpdateApp($a['identifier'], $a['name'], $a['display_version'], $a['version']));
+			$aids[] = $sid;
+			if(!$this->insertOrUpdateMobileDeviceApp($id, $sid)) return false;
+		}
+		// remove apps which can not be found
+		list($in_placeholders, $in_params) = self::compileSqlInValues($aids);
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM mobile_device_app WHERE mobile_device_id = :mobile_device_id AND app_id NOT IN ('.$in_placeholders.')'
+		);
+		if(!$this->stmt->execute(array_merge([':mobile_device_id' => $id], $in_params))) return false;
+	}
+	private function insertOrUpdateApp($identifier, $name, $display_version, $version) {
+		// columns are limited by MySQL index -> cut everything after 350 chars
+		$identifier = substr($identifier, 0, 350);
+		$name = substr($name, 0, 350);
+		$display_version = substr($display_version, 0, 350);
+		$version = substr($version, 0, 350);
+
+		$this->stmt = $this->dbh->prepare(
+			'SELECT id FROM app WHERE identifier = :identifier AND name = :name AND display_version = :display_version AND version = :version LIMIT 1'
+		);
+		if(!$this->stmt->execute([':identifier' => $identifier, ':name' => $name, ':display_version' => $display_version, ':version' => $version])) return false;
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\App') as $row) {
+			return $row->id;
+		}
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO app (identifier, name, display_version, version) VALUES (:identifier, :name, :display_version, :version)'
+		);
+		if(!$this->stmt->execute([':identifier' => $identifier, ':name' => $name, ':display_version' => $display_version, ':version' => $version])) return false;
+		return $this->dbh->lastInsertId();
+	}
+	private function insertOrUpdateMobileDeviceApp($mobile_device_id, $app_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT id FROM mobile_device_app WHERE mobile_device_id = :mobile_device_id AND app_id = :app_id LIMIT 1'
+		);
+		if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, 'app_id' => $app_id])) return false;
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceApp') as $row) {
+			return $row->id;
+		}
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO mobile_device_app (mobile_device_id, app_id) VALUES (:mobile_device_id, :app_id)'
+		);
+		if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':app_id' => $app_id])) return false;
+		return $this->dbh->lastInsertId();
+	}
+	public function updateMobileDeviceProfiles($mobile_device_id, $profiles) {
+		$uuids = [];
+		foreach($profiles as $profile) {
+			$uuids[] = $profile['uuid'];
+			$this->stmt = $this->dbh->prepare(
+				'SELECT id FROM mobile_device_profile WHERE mobile_device_id = :mobile_device_id AND uuid = :uuid LIMIT 1'
+			);
+			if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, 'uuid' => $profile['uuid']])) return false;
+			foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceProfile') as $row) {
+				continue 2;
+			}
+
+			$this->stmt = $this->dbh->prepare(
+				'INSERT INTO mobile_device_profile (mobile_device_id, uuid, identifier, display_name, version, content) VALUES (:mobile_device_id, :uuid, :identifier, :display_name, :version, :content)'
+			);
+			if(!$this->stmt->execute([
+				':mobile_device_id' => $mobile_device_id,
+				':uuid' => $profile['uuid'],
+				':identifier' => $profile['identifier'],
+				':display_name' => $profile['display_name'],
+				':version' => $profile['version'],
+				':content' => $profile['content'],
+			])) return false;
+			return $this->dbh->lastInsertId();
+		}
+
+		// remove profiles from database which can not be found
+		list($in_placeholders, $in_params) = self::compileSqlInValues($uuids);
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM mobile_device_profile WHERE mobile_device_id = :mobile_device_id AND uuid NOT IN ('.$in_placeholders.')'
+		);
+		if(!$this->stmt->execute(array_merge([':mobile_device_id' => $mobile_device_id], $in_params))) return false;
+	}
 	public function deleteMobileDevice($id) {
 		$this->stmt = $this->dbh->prepare(
 			'DELETE FROM mobile_device WHERE id = :id'
@@ -248,6 +342,57 @@ class DatabaseController {
 	public function deleteAllMobileDeviceActivationProfile() {
 		$this->stmt = $this->dbh->prepare('UPDATE mobile_device SET profile_uuid = NULL WHERE 1 = 1');
 		return $this->stmt->execute();
+	}
+
+	public function selectAllProfile() {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM profile');
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile');
+	}
+	public function selectProfile($id) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM profile WHERE id = :id');
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile') as $row) {
+			return $row;
+		}
+	}
+	public function selectAllProfileByMobileDeviceId($mobile_device_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM profile p
+			INNER JOIN mobile_device_group_profile mdgp ON mdgp.profile_id = p.id
+			INNER JOIN mobile_device_group_member mdgm ON mdgm.mobile_device_group_id = mdgp.mobile_device_group_id
+			WHERE mdgm.mobile_device_id = :mobile_device_id'
+		);
+		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile');
+	}
+	public function insertProfile($name, $payload, $notes, $system_user_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO profile (name, payload, notes, created_by_system_user_id) VALUES (:name, :payload, :notes, :created_by_system_user_id)'
+		);
+		$this->stmt->execute([':name' => $name, ':payload' => $payload, ':notes' => $notes, ':created_by_system_user_id' => $system_user_id]);
+		return $this->dbh->lastInsertId();
+	}
+	public function insertMobileDeviceGroupProfile($mobile_device_group_id, $profile_id) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group_profile WHERE mobile_device_group_id = :mobile_device_group_id AND profile_id = :profile_id');
+		$this->stmt->execute(['mobile_device_group_id'=>$mobile_device_group_id, 'profile_id'=>$profile_id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS) as $row) {
+			return $row->id;
+		}
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO mobile_device_group_profile (mobile_device_group_id, profile_id) VALUES (:mobile_device_group_id, :profile_id)'
+		);
+		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id, ':profile_id' => $profile_id]);
+		return $this->dbh->lastInsertId();
+	}
+	public function deleteProfile($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM profile WHERE id = :id'
+		);
+		if(!$this->stmt->execute([':id' => $id])) return false;
+		if($this->stmt->rowCount() != 1) return false;
+		return true;
 	}
 
 	public function selectAllMobileDeviceGroup() {
@@ -348,6 +493,15 @@ class DatabaseController {
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand');
 	}
 	public function insertMobileDeviceCommand($mobile_device_id, $name, $parameter) {
+		// do not create command twice if the same command already exists pending!
+		$this->stmt = $this->dbh->prepare(
+			'SELECT id FROM mobile_device_command WHERE mobile_device_id = :mobile_device_id AND name = :name AND parameter = :parameter AND state = '.Models\MobileDeviceCommand::STATE_QUEUED.' LIMIT 1'
+		);
+		if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':name' => $name, ':parameter' => $parameter])) return false;
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand') as $row) {
+			return null;
+		}
+
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO mobile_device_command (mobile_device_id, name, parameter)
 			VALUES (:mobile_device_id, :name, :parameter)'

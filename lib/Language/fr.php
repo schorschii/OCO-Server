@@ -569,13 +569,20 @@ return [
 	'push_token' => 'Publier le jeton',
 	'color' => 'Couleur',
 	'vendor_description' => 'Description du fournisseur',
-	'mobile_device_commands' => 'Commandes des appareils',
-	'new_command' => 'Nouvelle Commande',
 	'mobile_device' => 'Appareil mobile',
 	'command' => 'Commande',
+	'send_command' => 'Send Command',
 	'payload' => 'Payload',
 	'enrolled' => 'Inscrit',
 	'not_enrolled' => 'Non inscrit',
+	'message' => 'Message',
+	'profiles_and_commands' => 'Profiles and Commands',
+	'installed_apps' => 'Installed Apps',
+	'profiles' => 'Profiles',
+	'new_profile' => 'New Profile',
+	'profile_file' => 'Profile File',
+	'assign' => 'Assign',
+	'profil_assigned' => 'Profile assigned',
 	'package_creation_notes' => '
 		<p>
 			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.

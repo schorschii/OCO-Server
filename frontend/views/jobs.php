@@ -10,6 +10,5 @@ require_once('../session.inc.php');
 	<a <?php echo explorerLink('views/job-containers.php?selfservice=1'); ?>>&rarr;&nbsp;<?php echo LANG('self_service_job_containers'); ?></a>
 	<a <?php echo explorerLink('views/job-containers.php'); ?>>&rarr;&nbsp;<?php echo LANG('system_users_job_containers'); ?></a>
 	<a <?php echo explorerLink('views/deployment-rules.php'); ?>>&rarr;&nbsp;<?php echo LANG('deployment_rules'); ?></a>
-	<a <?php echo explorerLink('views/mobile-device-commands.php'); ?>>&rarr;&nbsp;<?php echo LANG('mobile_device_commands'); ?></a>
 </div>
 

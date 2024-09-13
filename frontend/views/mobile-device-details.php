@@ -24,7 +24,7 @@ try {
 <div class='details-header'>
 	<h1><img src='<?php echo $md->getIcon(); ?>' class='<?php echo($md->udid ? 'online' : 'offline'); ?>' title='<?php echo($md->udid ? LANG('enrolled') : LANG('not_enrolled')); ?>'><span id='page-title'><span id='spnMobileDeviceSerial'><?php echo htmlspecialchars($md->serial); ?></span></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentDeploy([],[],{"id":<?php echo $md->id; ?>,"name":spnMobileDeviceSerial.innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+	<button onclick='showDialogMobileDeviceCommand(<?php echo $md->id; ?>)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/command.dyn.svg'>&nbsp;<?php echo LANG('send_command'); ?></button>
 		<button onclick='showDialogAddMobileDeviceToGroup(<?php echo $md->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
 		<button onclick='confirmRemoveMobileDevice([<?php echo $md->id; ?>], event, spnMobileDeviceSerial.innerText, "views/mobile-devices.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
@@ -34,8 +34,8 @@ try {
 <div id='tabControlMobileDevice' class='tabcontainer'>
 	<div class='tabbuttons'>
 		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('general_and_hardware'); ?></a>
-		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('packages_and_jobs'); ?></a>
-		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('recognised_software'); ?></a>
+		<a href='#' name='profiles' class='<?php if($tab=='profiles') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('profiles_and_commands'); ?></a>
+		<a href='#' name='apps' class='<?php if($tab=='apps') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('installed_apps'); ?></a>
 		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"),true)'><?php echo LANG('history'); ?></a>
 	</div>
 	<div class='tabcontents'>
@@ -58,12 +58,8 @@ try {
 							<td><?php echo htmlspecialchars($md->serial); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG('device_family'); ?></th>
-							<td><?php echo htmlspecialchars($md->device_family); ?></td>
-						</tr>
-						<tr>
 							<th><?php echo LANG('model'); ?></th>
-							<td><?php echo htmlspecialchars($md->model); ?></td>
+							<td><?php echo htmlspecialchars($md->model ?? $md->device_family); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('os'); ?></th>
@@ -147,13 +143,13 @@ try {
 			</div>
 		</div>
 
-		<div name='packages' class='<?php if($tab=='packages') echo 'active'; ?>'>
+		<div name='profiles' class='<?php if($tab=='profiles') echo 'active'; ?>'>
 			<div class='details-abreast'>
 
 			</div>
 		</div>
 
-		<div name='software' class='<?php if($tab=='software') echo 'active'; ?>'>
+		<div name='apps' class='<?php if($tab=='apps') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div class='stickytable'>
 

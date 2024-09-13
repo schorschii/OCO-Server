@@ -1380,7 +1380,7 @@ function confirmRemoveMobileDevice(ids, event=null, infoText='', redirect=null) 
 		params.push({'key':'force', 'value':'1'});
 	}
 	var paramString = urlencodeArray(params);
-	if(confirm(LANG['confirm_delete_computer'])) {
+	if(confirm(LANG['confirm_delete_mobile_device'])) {
 		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);
@@ -1422,6 +1422,12 @@ function confirmRemoveMobileDeviceGroup(ids, event=null, infoText='') {
 		});
 	}
 }
+function showDialogAddMobileDeviceToGroup(id) {
+	if(!id) return;
+	showDialogAjax(LANG['mobile_device_groups'], 'views/dialog-mobile-device-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtEditMobileDeviceId.value = id;
+	});
+}
 function addMobileDeviceToGroup(mobileDeviceId, groupId) {
 	if(groupId === false) return;
 	var params = [];
@@ -1438,10 +1444,26 @@ function addMobileDeviceToGroup(mobileDeviceId, groupId) {
 		emitMessage(LANG['mobile_device_added'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogAddMobileDeviceToGroup(id) {
+function showDialogAssignProfileToGroup(id) {
 	if(!id) return;
-	showDialogAjax(LANG['mobile_device_groups'], 'views/dialog-mobile-device-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtEditMobileDeviceId.value = id;
+	showDialogAjax(LANG['assign'], 'views/dialog-profile-assign.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtProfileId.value = id;
+	});
+}
+function assignProfileToGroup(profileId, groupId) {
+	if(groupId === false) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_id[]', 'value':entry});
+	});
+	profileId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_profile_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		hideDialog();
+		refreshContent();
+		emitMessage(LANG['profile_assigned'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
 function removeSelectedMobileDeviceFromGroup(checkboxName, groupId) {
@@ -1667,18 +1689,46 @@ function showDialogAddComputerToGroup(id) {
 }
 
 // ======== JOB OPERATIONS ========
-function showDialogEditMobileDeviceCommand(id=-1) {
-	title = LANG['mobile_device_command'];
-	buttonText = LANG['change'];
-	if(id == -1) {
-		title = LANG['mobile_device_command'];
-		buttonText = LANG['create'];
-	}
-	showDialogAjax(title, 'views/dialog-mobile-device-command-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		spnBtnUpdateDeploymentRule.innerText = buttonText;
+function showDialogMobileDeviceCommand(mobile_device_id) {
+	showDialogAjax(LANG['send_command'], 'views/dialog-mobile-device-command.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtMobileDeviceId.value = mobile_device_id;
 	});
 }
-function editMobileDeviceCommand(id, name, mobile_device_id, command, payload, notes) {
+function showMobileDeviceCommandParameter(option) {
+	let param = option.getAttribute('parameter');
+	if(param) {
+		txtMobileDeviceCommandParameter.name = param;
+		thCommandParameterName.innerText = LANG[param];
+		trCommandParameter.style.display = 'table-row';
+	} else {
+		trCommandParameter.style.display = 'none';
+	}
+}
+function sendMobileDeviceCommand(mobile_device_id, name, parameter) {
+	var params = [];
+	params.push({'key':'send_command_to_mobile_device_id', 'value':mobile_device_id});
+	params.push({'key':'command', 'value':name});
+	for(const [key, value] of Object.entries(parameter)) {
+		params.push({'key':key, 'value':value});
+	}
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		hideDialog(); refreshContent();
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogEditProfile(id=-1, name='', notes='') {
+	title = LANG['edit_profile'];
+	buttonText = LANG['change'];
+	if(id == -1) {
+		title = LANG['new_profile'];
+		buttonText = LANG['create'];
+	}
+	showDialogAjax(title, 'views/dialog-profile-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		spnBtnUpdateProfile.innerText = buttonText;
+	});
+}
+function editProfile(id, name, payload, notes) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 
@@ -1688,10 +1738,8 @@ function editMobileDeviceCommand(id, name, mobile_device_id, command, payload, n
 		}
 		formData.append('update_payload', '1');
 	}
-	formData.append('edit_mobile_device_command_id', id);
+	formData.append('edit_profile_id', id);
 	formData.append('name', name);
-	formData.append('mobile_device_id', mobile_device_id);
-	formData.append('command', command);
 	formData.append('notes', notes);
 
 	req.onreadystatechange = function() {
@@ -1708,7 +1756,7 @@ function editMobileDeviceCommand(id, name, mobile_device_id, command, payload, n
 	req.open('POST', 'ajax-handler/mobile-devices.php');
 	req.send(formData);
 }
-function removeSelectedMobileDeviceCommand(checkboxName, attributeName=null, event=null) {
+function removeSelectedProfile(checkboxName, attributeName=null, event=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -1723,18 +1771,18 @@ function removeSelectedMobileDeviceCommand(checkboxName, attributeName=null, eve
 		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
 		return;
 	}
-	confirmRemoveMobileDeviceCommand(ids, event);
+	confirmRemoveProfile(ids, event);
 }
-function confirmRemoveMobileDeviceCommand(ids, event=null, infoText='', redirect=null) {
+function confirmRemoveProfile(ids, event=null, infoText='', redirect=null) {
 	var params = [];
 	ids.forEach(function(entry) {
-		params.push({'key':'remove_mobile_device_command_id[]', 'value':entry});
+		params.push({'key':'remove_profile_id[]', 'value':entry});
 	});
 	if(event != null && event.shiftKey) {
 		params.push({'key':'force', 'value':'1'});
 	}
 	var paramString = urlencodeArray(params);
-	if(confirm(LANG['confirm_delete_computer'])) {
+	if(confirm(LANG['confirm_delete_profile'])) {
 		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);

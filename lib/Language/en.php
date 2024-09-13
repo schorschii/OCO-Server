@@ -569,13 +569,20 @@ return [
 	'push_token' => 'Push Token',
 	'color' => 'Color',
 	'vendor_description' => 'Vendor Description',
-	'mobile_device_commands' => 'Mobile Device Commands',
-	'new_command' => 'New Command',
 	'mobile_device' => 'Mobile Device',
 	'command' => 'Command',
+	'send_command' => 'Send Command',
 	'payload' => 'Payload',
 	'enrolled' => 'Enrolled',
 	'not_enrolled' => 'Not enrolled',
+	'message' => 'Message',
+	'profiles_and_commands' => 'Profiles and Commands',
+	'installed_apps' => 'Installed Apps',
+	'profiles' => 'Profiles',
+	'new_profile' => 'New Profile',
+	'profile_file' => 'Profile File',
+	'assign' => 'Assign',
+	'profil_assigned' => 'Profile assigned',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

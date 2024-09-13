@@ -27,4 +27,8 @@ class MdmCommand {
 		'RequestType' => 'InstalledApplicationList',
 	];
 
+	const PROFILE_INFO = [
+		'RequestType' => 'ProfileList',
+	];
+
 }
