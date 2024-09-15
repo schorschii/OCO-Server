@@ -560,7 +560,7 @@ return [
 	'new_ios_device_info' => 'This feature allows you to manually add an iOS device to the MDM. An enrollment profile is downloaded, which must be manually installed on the device.',
 	'valid_oco_license_vendor_mdm_cert_service_can_be_used' => 'No MDM vendor cert set but you have a valid OCO license and can therefore make use of the MDM APN CSR signing service from the OCO developer.',
 	'no_mdm_vendor_cert_and_no_oco_license' => 'You don\'t have a valid OCO license. You need to get an Apple MDM vendor cert in order to generate a MDM APN CSR.',
-	'no_activation_profile_defined' => 'You don\'t have an activation profile defined. Enrollment via Apple Business Manager is not available; can only be done via Apple Configurator by connecting the device via USB.',
+	'no_activation_profile_defined' => 'You don\'t have an activation profile defined. Automatic enrollment of a device in MDM via Apple Business Manager is not available. You must manually install the enrollment profile on the device.',
 	'defined' => 'Defined',
 	'not_defined' => 'Not defined',
 	'valid_until_placeholder' => 'Valid until %1',
