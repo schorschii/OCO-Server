@@ -90,7 +90,7 @@ try {
 							<td class='subbuttons'>
 								<?php echo htmlspecialchars($md->last_update.($md->force_update ? ' ('.LANG('force_update').')' : '')); ?>
 								<?php if($permissionWrite) { ?>
-									<button onclick='event.stopPropagation();setComputerForceUpdate(<?php echo $md->id; ?>, 1);return false'><img class='small' src='img/force-update.dyn.svg' title='<?php echo LANG('force_update'); ?>'></button>
+									<button onclick='event.stopPropagation();setMobileDeviceForceUpdate(<?php echo $md->id; ?>, 1);return false'><img class='small' src='img/force-update.dyn.svg' title='<?php echo LANG('force_update'); ?>'></button>
 								<?php } ?>
 							</td>
 						</tr>
@@ -118,7 +118,7 @@ try {
 					</table>
 				</div>
 				<div>
-					<h2><?php echo LANG('about'); ?></h2>
+					<h2><?php echo LANG('information'); ?></h2>
 					<?php
 					function echoInfoRow($value) {
 						if($value === true) echo '<img src="img/success.dyn.svg">';
@@ -137,22 +137,136 @@ try {
 						}
 						else echo htmlspecialchars($value);
 					}
-					if(!empty($md->info)) echoInfoRow(json_decode($md->info,true));
-					?>
+					if(empty($md->info)) { ?>
+						<div class='alert info'><?php echo LANG('device_does_not_delivered_info_yet'); ?></div>
+					<?php } else echoInfoRow(json_decode($md->info,true)); ?>
 				</div>
 			</div>
 		</div>
 
 		<div name='profiles' class='<?php if($tab=='profiles') echo 'active'; ?>'>
 			<div class='details-abreast'>
-
+				<div>
+					<h2><?php echo LANG('installed_profiles'); ?></h2>
+					<div class='stickytable'>
+						<table id='tblMobileDeviceProfileData' class='list searchable sortable savesort margintop fullwidth'>
+							<thead>
+								<tr>
+									<th class='searchable sortable'><?php echo LANG('uid'); ?></th>
+									<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
+									<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
+									<th class='searchable sortable'><?php echo LANG('version'); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php foreach($db->selectAllMobileDeviceProfileUuidByMobileDeviceId($md->id) as $ip) { ?>
+									<tr>
+										<td><?php echo htmlspecialchars($ip->uuid); ?></td>
+										<td><?php echo htmlspecialchars($ip->identifier); ?></td>
+										<td><?php echo htmlspecialchars($ip->display_name); ?></td>
+										<td><?php echo htmlspecialchars($ip->version); ?></td>
+									</tr>
+								<?php } ?>
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan='999'>
+										<div class='spread'>
+											<div>
+												<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
+											</div>
+											<div class='controls'>
+												<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+				<div>
+					<h2><?php echo LANG('commands'); ?></h2>
+					<div class='stickytable'>
+						<table id='tblMobileDeviceProfileData' class='list searchable sortable savesort margintop fullwidth'>
+							<thead>
+								<tr>
+									<th class='searchable sortable'><?php echo LANG('state'); ?></th>
+									<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+									<th class='searchable sortable'><?php echo LANG('finished'); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php foreach($db->selectAllMobileDeviceCommandByMobileDevice($md->id, false) as $c) { ?>
+									<tr>
+										<td>
+											<a href='#' onclick='event.preventDefault();showDialog(this.getAttribute("summary"), this.getAttribute("message"), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE, true)' summary='<?php echo htmlspecialchars($c->name, ENT_QUOTES); ?>'
+											message='<?php echo htmlspecialchars(json_decode($c->message) ? json_encode(json_decode($c->message),JSON_PRETTY_PRINT) : $c->message, ENT_QUOTES); ?>'>
+												<img src='img/<?php echo $c->getStatus() ?>.dyn.svg'>
+											</a>
+										</td>
+										<td><?php echo htmlspecialchars($c->name); ?></td>
+										<td><?php echo htmlspecialchars($c->finished); ?></td>
+									</tr>
+								<?php } ?>
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan='999'>
+										<div class='spread'>
+											<div>
+												<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
+											</div>
+											<div class='controls'>
+												<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
 
 		<div name='apps' class='<?php if($tab=='apps') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-
+				<table id='tblMobileDeviceAppData' class='list searchable sortable savesort margintop'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('version'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('version_code'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach($db->selectAllMobileDeviceAppByMobileDevice($md->id) as $a) { ?>
+								<tr>
+									<td><?php echo htmlspecialchars($a->identifier); ?></td>
+									<td><?php echo htmlspecialchars($a->name); ?></td>
+									<td><?php echo htmlspecialchars($a->display_version); ?></td>
+									<td><?php echo htmlspecialchars($a->version); ?></td>
+								</tr>
+							<?php } ?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<div class='spread'>
+										<div>
+											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
+										</div>
+										<div class='controls'>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
 			</div>
 		</div>
@@ -161,7 +275,7 @@ try {
 			<?php if($tab == 'history') { ?>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<table id='tblComputerHistoryData' class='list searchable sortable savesort margintop'>
+					<table id='tblMobileDeviceHistoryData' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
@@ -173,7 +287,7 @@ try {
 						</thead>
 						<tbody>
 							<?php
-							/*foreach($db->selectAllLogEntryByObjectIdAndActions($computer->id, 'oco.computer', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+							foreach($db->selectAllLogEntryByObjectIdAndActions($md->id, 'oco.mobile_device', empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($l->timestamp)."</td>";
 								echo "<td>".htmlspecialchars($l->host)."</td>";
@@ -181,7 +295,7 @@ try {
 								echo "<td>".htmlspecialchars($l->action)."</td>";
 								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
 								echo "</tr>";
-							}*/
+							}
 							?>
 						</tbody>
 						<tfoot>

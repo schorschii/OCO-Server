@@ -10,10 +10,6 @@ require_once('../session.inc.php');
 		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtCreateMobileDeviceSerial' autofocus='true'></input></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG('notes'); ?></th>
-		<td><textarea class='fullwidth' autocomplete='new-password' id='txtCreateMobileDeviceNotes' rows='5'></textarea></td>
-	</tr>
-	<tr>
 		<th></th>
 		<td>
 			<div class='alert info' style='margin-top:0px;width:350px;min-width:100%'>
@@ -25,8 +21,5 @@ require_once('../session.inc.php');
 
 <div class='controls right'>
 	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button id='btnCreateComputer' class='primary' onclick='createMobileDeviceIos(
-		txtCreateMobileDeviceSerial.value,
-		txtCreateMobileDeviceNotes.value
-		)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create'); ?></button>
+	<button id='btnCreateMobileDevice' class='primary' onclick='if(txtCreateMobileDeviceSerial.value=="") return; window.open("views/settings-mdm.php?download=mdm-enrollment-profile&serial="+encodeURIComponent(txtCreateMobileDeviceSerial.value), "_blank")'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create'); ?></button>
 </div>

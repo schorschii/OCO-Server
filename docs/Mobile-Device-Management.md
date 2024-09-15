@@ -57,20 +57,21 @@ Requires you to install the OCO MDM enrollment profile manually, e.g. by downloa
         "skip_setup_items": ["Accessibility","ActionButton","Appearance","AppleID","AppStore","Biometric","DeviceToDeviceMigration","Diagnostics","DisplayTone","iMessageAndFaceTime","Location","Passcode","Privacy","Restore","ScreenTime","Siri","SoftwareUpdate","Welcome","Zoom"]
      }
      ```
+     You may also need to add `anchor_certs` if you are using a self-signed server certificate.
 
-5. Create a crontab entry for executing `php console.php applesync` and `php console.php mdmcron` every 10 minutes.
+5. Create a crontab entry for executing `php console.php applesync` every 10 minutes and `php console.php mdmcron` every minute.
 
 Now, you can assign devices in ABM/ASM to your OCO server. Note that you can set OCO as default MDM server for every new device bought.
 
 ### Join Devices Into MDM
-After OCO synced with ABM/ASM, the iOS devices are automatically visible in OCO. Now, when first put the iDevice into operation and when factory reset the device, it will automatically contact your OCO server as MDM solution.
+After OCO synced with ABM/ASM, the iOS devices are automatically visible in OCO. Now, when first put the iDevice into operation and when factory reset the device, it will automatically contact your OCO server as MDM solution. The device is now "supervised".
 
-Without factory reset, you can click on "New iOS Device" in OCO and download an enrollment profile, which needs to be sent and installed on the target device. Note that not all MDM features are available when using this method.
+Without factory reset, you can click on "New iOS Device" in OCO and download an enrollment profile, which needs to be sent and installed on the target device. Note that not all MDM commands/features are available when using this method (the device is "not supervised").
 
 ### Management
-After the device checked in into OCO MDM (via ADE or manual enrollment profile installation), you can use the OCO MDM deployment assistant to roll out configuration profiles or send device commands (e.g. locking a device).
+First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles" section in the OCO sidebar. Such profiles can be created using Apple Configurator. Note that Apple Configurator does not support all possible config options, e.g. configuring an Exchange profile must be done [manually](https://developer.apple.com/documentation/devicemanagement/profile-specific_payload_keys#3189326). After that, assign your profiles to mobile device groups.
 
-Configuration profiles (`.mobileconfig` files) can be created using Apple Configurator.
+After the device checked in into OCO MDM (via ADE or manual enrollment profile installation), you can add the device to mobile device groups. This will install the assigned configuration profiles. With the button "Send Command", you can e.g. lock or erase a device.
 
 ### Further Information
 - [Setting Up Push Notifications for Your MDM Customers](https://developer.apple.com/documentation/devicemanagement/implementing_device_management/setting_up_push_notifications_for_your_mdm_customers)

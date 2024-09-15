@@ -1342,16 +1342,10 @@ function searchItems(container, search) {
 function showDialogCreateMobileDeviceIos() {
 	showDialogAjax(LANG['create_computer'], 'views/dialog-mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function createMobileDeviceIos(serial, notes) {
-	var params = [];
-	params.push({'key':'create_mobile_device', 'value':serial});
-	params.push({'key':'notes', 'value':notes});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
-		hideDialog();
+function setMobileDeviceForceUpdate(id, value) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'edit_mobile_device_id':id, 'force_update':value}), null, function() {
 		refreshContent();
-		window.open('views/settings-mdm.php?download=mdm-enrollment-profile&serial='+encodeURIComponent(serial), '_blank')
-		emitMessage(LANG['mobile_device_created'], serial, MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
 function removeSelectedMobileDevice(checkboxName, attributeName=null, event=null) {
@@ -1464,6 +1458,20 @@ function assignProfileToGroup(profileId, groupId) {
 		hideDialog();
 		refreshContent();
 		emitMessage(LANG['profile_assigned'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function removeProfileFromGroup(ids, groupId) {
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'remove_from_group_id[]', 'value':entry});
+	});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_from_group_profile_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
 function removeSelectedMobileDeviceFromGroup(checkboxName, groupId) {

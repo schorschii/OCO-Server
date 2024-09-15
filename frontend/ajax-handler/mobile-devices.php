@@ -6,9 +6,24 @@ require_once('../session.inc.php');
 try {
 
 	if(isset($_POST['create_mobile_device'])) {
+		// TODO Android?
 		die(
 			$cl->createMobileDevice($_POST['create_mobile_device'], $_POST['notes']??'')
 		);
+	}
+
+	if(!empty($_POST['edit_mobile_device_id'])
+	&& isset($_POST['notes'])) {
+		$md = $cl->getMobileDevice($_POST['edit_mobile_device_id']);
+		$cl->editMobileDevice($md->id, $_POST['notes'], $md->force_update);
+		die();
+	}
+
+	if(!empty($_POST['edit_mobile_device_id'])
+	&& isset($_POST['force_update'])) {
+		$md = $cl->getMobileDevice($_POST['edit_mobile_device_id']);
+		$cl->editMobileDevice($md->id, $md->notes, $_POST['force_update']);
+		die();
 	}
 
 	if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
@@ -90,6 +105,10 @@ try {
 			throw new InvalidRequestException('Unknown command');
 		}
 		$cl->createMobileDeviceCommand($_POST['send_command_to_mobile_device_id'], $_POST['command'], $parameter);
+
+		// instantly send push notification
+		$mdcc = new MobileDeviceCommandController($db);
+		$mdcc->mdmCron();
 		die();
 	}
 
@@ -127,6 +146,15 @@ try {
 		foreach($_POST['add_to_group_profile_id'] as $pid) {
 			foreach($_POST['add_to_group_id'] as $gid) {
 				$cl->assignProfileToMobileDeviceGroup($pid, $gid);
+			}
+		}
+		die();
+	}
+
+	if(isset($_POST['remove_from_group_id']) && is_array($_POST['remove_from_group_id']) && isset($_POST['remove_from_group_profile_id']) && is_array($_POST['remove_from_group_profile_id'])) {
+		foreach($_POST['remove_from_group_profile_id'] as $pid) {
+			foreach($_POST['remove_from_group_id'] as $gid) {
+				$cl->removeProfileFromMobileDeviceGroup($pid, $gid);
 			}
 		}
 		die();

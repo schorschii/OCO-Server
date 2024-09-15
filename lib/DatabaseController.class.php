@@ -261,6 +261,15 @@ class DatabaseController {
 			':force_update' => $force_update,
 		]);
 	}
+	public function selectAllMobileDeviceAppByMobileDevice($mobile_device_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT a.* FROM app a
+			INNER JOIN mobile_device_app mda ON mda.app_id = a.id
+			WHERE mobile_device_id = :mobile_device_id'
+		);
+		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\App');
+	}
 	public function updateMobileDeviceApps($id, $apps) {
 		// update apps
 		$aids = [];
@@ -380,6 +389,15 @@ class DatabaseController {
 		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile');
 	}
+	public function selectAllProfileByMobileDeviceGroupId($mobile_device_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM profile p
+			INNER JOIN mobile_device_group_profile mdgp ON mdgp.profile_id = p.id
+			WHERE mdgp.mobile_device_group_id = :mobile_device_group_id'
+		);
+		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile');
+	}
 	public function insertProfile($name, $payload, $notes, $system_user_id) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO profile (name, payload, notes, created_by_system_user_id) VALUES (:name, :payload, :notes, :created_by_system_user_id)'
@@ -399,6 +417,14 @@ class DatabaseController {
 		);
 		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id, ':profile_id' => $profile_id]);
 		return $this->dbh->lastInsertId();
+	}
+	public function deleteMobileDeviceGroupProfile($mobile_device_group_id, $profile_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM mobile_device_group_profile WHERE mobile_device_group_id = :mobile_device_group_id AND profile_id = :profile_id'
+		);
+		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id, ':profile_id' => $profile_id]);
+		if($this->stmt->rowCount() != 1) return false;
+		return true;
 	}
 	public function deleteProfile($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -499,9 +525,10 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand');
 	}
-	public function selectAllMobileDeviceCommandByMobileDevice($mobile_device_id) {
+	public function selectAllMobileDeviceCommandByMobileDevice($mobile_device_id, $order_asc=true) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM mobile_device_command WHERE mobile_device_id = :mobile_device_id'
+			'SELECT * FROM mobile_device_command WHERE mobile_device_id = :mobile_device_id '
+			.($order_asc ? 'ORDER BY created ASC' : 'ORDER BY created DESC')
 		);
 		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand');

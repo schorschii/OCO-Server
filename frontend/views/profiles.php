@@ -15,7 +15,7 @@ try {
 }
 ?>
 
-<h1><img src='img/mobile-device.dyn.svg'><span id='page-title'><?php echo LANG('all_mobile_devices'); ?></span></h1>
+<h1><img src='img/profile.dyn.svg'><span id='page-title'><?php echo LANG('profiles'); ?></span></h1>
 <div class='controls'>
 	<button onclick='showDialogEditProfile()' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_profile'); ?></button>
 	<span class='filler'></span>

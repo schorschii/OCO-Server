@@ -198,6 +198,7 @@ if($path === '/profile') {
 	</plist>*/
 	$body = file_get_contents('php://input');
 	checkSignature($body, $_SERVER['HTTP_MDM_SIGNATURE']??null);
+	$td = new \CFPropertyList\CFTypeDetector();
 	$requestPlist = new CFPropertyList\CFPropertyList();
 	$requestPlist->parse($body);
 	$request = $requestPlist->toArray();
@@ -214,59 +215,60 @@ if($path === '/profile') {
 			$status = Models\MobileDeviceCommand::STATE_SUCCESS;
 		else
 			$status = Models\MobileDeviceCommand::STATE_FAILED;
-		if($status !== null) {
-			$mdc = $db->selectMobileDeviceCommand($request['CommandUUID']);
-			if(!$mdc) die(); #throw new Exception('Unknown command UUID');
-			$db->updateMobileDeviceCommand($request['CommandUUID'], $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $status, json_encode($request), date('Y-m-d H:i:s'));
-			$rt = json_decode($mdc->parameter, true)['RequestType'] ?? '';
 
+		$mdc = $db->selectMobileDeviceCommand($request['CommandUUID']);
+		if(!$mdc) throw new Exception('Unknown command UUID');
+		$db->updateMobileDeviceCommand($request['CommandUUID'], $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $status, $body, date('Y-m-d H:i:s'));
+		$rt = json_decode($mdc->parameter, true)['RequestType'] ?? '';
+
+		// reset push_sent timestamp
+		$db->updateMobileDevice(
+			$md->id, $md->udid, $md->device_name, $md->serial,
+			$md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
+			$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
+			$md->unlock_token, $md->info, $md->notes, $md->force_update
+		);
+
+		// store device info
+		if($rt === 'DeviceInformation') {
 			$db->updateMobileDevice(
-				$md->id, $md->udid, $md->device_name, $md->serial,
+				$md->id, $md->udid, $request['QueryResponses']['DeviceName']??'?', $request['QueryResponses']['SerialNumber']??$md->serial,
 				$md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
 				$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
-				$md->unlock_token, $md->info, $md->notes, $md->force_update
+				$md->unlock_token, json_encode($request['QueryResponses']), $md->notes, $md->force_update
 			);
-
-			// store device info
-			if($rt === 'DeviceInformation') {
-				$db->updateMobileDevice(
-					$md->id, $md->udid, $request['QueryResponses']['DeviceName']??'?', $request['QueryResponses']['SerialNumber']??$md->serial,
-					$md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
-					$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
-					$md->unlock_token, json_encode($request['QueryResponses']), $md->notes, $md->force_update
-				);
-			} elseif($rt === 'InstalledApplicationList') {
-				$apps = [];
-				foreach($request['InstalledApplicationList']??[] as $app) {
-					if(empty($app['Identifier']) || empty($app['Name']) || empty($app['Version']) || empty($app['ShortVersion'])) continue;
-					$apps[] = [
-						'identifier' => $app['Identifier'],
-						'name' => $app['Name'],
-						'display_version' => $app['ShortVersion'],
-						'version' => $app['Version'],
-					];
-				}
-				$db->updateMobileDeviceApps($md->id, $apps);
-			} elseif($rt === 'ProfileList') {
-				$profiles = [];
-				foreach($request['ProfileList']??[] as $profile) {
-					if(empty($profile['PayloadUUID']) || empty($profile['PayloadIdentifier'])) continue;
-					$profiles[] = [
-						'uuid' => $profile['PayloadUUID'],
-						'identifier' => $profile['PayloadIdentifier'],
-						'display_name' => $profile['PayloadDisplayName'] ?? '',
-						'version' => $profile['PayloadVersion'] ?? '0',
-						'content' => json_encode($profile),
-					];
-				}
-				$db->updateMobileDeviceProfiles($md->id, $profiles);
+		} elseif($rt === 'InstalledApplicationList') {
+			$apps = [];
+			foreach($request['InstalledApplicationList']??[] as $app) {
+				if(empty($app['Identifier']) || empty($app['Name']) || empty($app['Version']) || empty($app['ShortVersion'])) continue;
+				$apps[] = [
+					'identifier' => $app['Identifier'],
+					'name' => $app['Name'],
+					'display_version' => $app['ShortVersion'],
+					'version' => $app['Version'],
+				];
 			}
+			$db->updateMobileDeviceApps($md->id, $apps);
+		} elseif($rt === 'ProfileList') {
+			$profiles = [];
+			foreach($request['ProfileList']??[] as $profile) {
+				if(empty($profile['PayloadUUID']) || empty($profile['PayloadIdentifier'])) continue;
+				$plist = new \CFPropertyList\CFPropertyList();
+				$plist->add( $td->toCFType( $profile ) );
+				$profiles[] = [
+					'uuid' => $profile['PayloadUUID'],
+					'identifier' => $profile['PayloadIdentifier'],
+					'display_name' => $profile['PayloadDisplayName'] ?? '',
+					'version' => $profile['PayloadVersion'] ?? '0',
+					'content' => $plist->toXML(true),
+				];
+			}
+			$db->updateMobileDeviceProfiles($md->id, $profiles);
 		}
 	}
 
 	// send next queued command
 	// https://developer.apple.com/documentation/devicemanagement/commands_and_queries
-	$td = new \CFPropertyList\CFTypeDetector();
 	foreach($db->selectAllMobileDeviceCommandByMobileDevice($md->id) as $mdc) {
 		if($mdc->state == Models\MobileDeviceCommand::STATE_QUEUED) {
 			// encode data parameter
@@ -287,7 +289,10 @@ if($path === '/profile') {
 				'CommandUUID' => new \CFPropertyList\CFString($mdc->id),
 			] ) );
 			echo $plist->toXML(true);
-			if(is_numeric($mdc->id)) $db->updateMobileDeviceCommand($mdc->id, $mdc->mobile_device_id, $mdc->name, $mdc->parameter, Models\MobileDeviceCommand::STATE_SENT, '', date('Y-m-d H:i:s'));
+			$db->updateMobileDeviceCommand(
+				$mdc->id, $mdc->mobile_device_id, $mdc->name, $mdc->parameter,
+				Models\MobileDeviceCommand::STATE_SENT, '', date('Y-m-d H:i:s')
+			);
 
 			break; // only 1 command per request!
 		}

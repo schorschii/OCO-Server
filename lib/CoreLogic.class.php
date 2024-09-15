@@ -97,8 +97,28 @@ class CoreLogic {
 			null/*unlock_token*/, null/*info*/, $notes, 0/*force_update*/
 		);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.mobile_device.create', ['hostname'=>$finalSerial, 'notes'=>$notes]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.mobile_device.create', [
+			'hostname'=>$finalSerial,
+			'notes'=>$notes
+		]);
 		return $insertId;
+	}
+	public function editMobileDevice($id, $notes, $forceUpdate) {
+		$md = $this->db->selectMobileDevice($id);
+		if(empty($md)) throw new NotFoundException();
+		$this->checkPermission($md, PermissionManager::METHOD_WRITE);
+
+		$result = $this->db->updateMobileDevice($md->id,
+			$md->udid, $md->device_name, $md->serial, $md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
+			$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token, $md->info,
+			$notes, $forceUpdate
+		);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.update', [
+			'notes'=>$notes,
+			'force_update'=>$forceUpdate,
+		]);
+		return $result;
 	}
 	public function removeMobileDevice($id, $force=false) {
 		$md = $this->db->selectMobileDevice($id);
@@ -150,10 +170,6 @@ class CoreLogic {
 			$this->db->insertMobileDeviceGroupMember($md->id, $mdGroup->id);
 			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdGroup->id, 'oco.mobile_device_group.add_member', ['mobile_device_id'=>$md->id]);
 			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.add_to_group', ['mobile_device_group_id'=>$mdGroup->id]);
-
-			// instantly send push notification
-			$mdcc = new MobileDeviceCommandController($this->db);
-			$mdcc->mdmCron();
 		}
 	}
 	public function removeMobileDeviceFromGroup($mdId, $groupId) {
@@ -166,10 +182,6 @@ class CoreLogic {
 		$this->db->deleteMobileDeviceGroupMember($md->id, $mdGroup->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdGroup->id, 'oco.mobile_device_group.remove_member', ['mobile_device_id'=>$md->id]);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.remove_from_group', ['mobile_device_group_id'=>$mdGroup->id]);
-
-		// instantly send push notification
-		$mdcc = new MobileDeviceCommandController($this->db);
-		$mdcc->mdmCron();
 	}
 	public function removeMobileDeviceGroup($id, $force=false) {
 		$mdGroup = $this->db->selectMobileDeviceGroup($id);
@@ -183,11 +195,6 @@ class CoreLogic {
 		$result = $this->db->deleteMobileDeviceGroup($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdGroup->id, 'oco.mobile_device_group.delete', []);
-
-		// instantly send push notification
-		$mdcc = new MobileDeviceCommandController($this->db);
-		$mdcc->mdmCron();
-
 		return $result;
 	}
 
@@ -218,19 +225,26 @@ class CoreLogic {
 		return $result;
 	}
 	public function assignProfileToMobileDeviceGroup($pId, $groupId) {
-		$pprofile = $this->db->selectProfile($pId);
-		if(empty($pprofile)) throw new NotFoundException();
+		$profile = $this->db->selectProfile($pId);
+		if(empty($profile)) throw new NotFoundException();
 		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
 		if(empty($mdGroup)) throw new NotFoundException();
-		$this->checkPermission($pprofile, PermissionManager::METHOD_READ);
+		$this->checkPermission($profile, PermissionManager::METHOD_DEPLOY);
 		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
 
-		$this->db->insertMobileDeviceGroupProfile($mdGroup->id, $pprofile->id);
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $pprofile->id, 'oco.profile.assign', ['mobile_device_group_id'=>$mdGroup->id]);
+		$this->db->insertMobileDeviceGroupProfile($mdGroup->id, $profile->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $profile->id, 'oco.profile.assign', ['mobile_device_group_id'=>$mdGroup->id]);
+	}
+	public function removeProfileFromMobileDeviceGroup($pId, $groupId) {
+		$profile = $this->db->selectProfile($pId);
+		if(empty($profile)) throw new NotFoundException();
+		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
+		if(empty($mdGroup)) throw new NotFoundException();
+		$this->checkPermission($profile, PermissionManager::METHOD_DEPLOY);
+		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
 
-		// instantly send push notification
-		$mdcc = new MobileDeviceCommandController($this->db);
-		$mdcc->mdmCron();
+		$this->db->deleteMobileDeviceGroupProfile($mdGroup->id, $profile->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $profile->id, 'oco.profile.unassign', ['mobile_device_group_id'=>$mdGroup->id]);
 	}
 	public function removeProfile($id, $force=false) {
 		$profile = $this->db->selectProfile($id);
@@ -240,11 +254,6 @@ class CoreLogic {
 		$result = $this->db->deleteProfile($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $profile->id, 'oco.profile.delete', []);
-
-		// instantly send push notification
-		$mdcc = new MobileDeviceCommandController($this->db);
-		$mdcc->mdmCron();
-
 		return $result;
 	}
 
@@ -260,11 +269,6 @@ class CoreLogic {
 		$result = $this->db->insertMobileDeviceCommand($mobileDeviceId, $name, $parameter);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $result, 'oco.mobile_device_command.create', []);
-
-		// instantly send push notification
-		$mdcc = new MobileDeviceCommandController($this->db);
-		$mdcc->mdmCron();
-
 		return $result;
 	}
 	public function removeMobileDeviceCommand($id) {

@@ -61,6 +61,11 @@ try {
 		<a class='box' <?php echo explorerLink('views/mobile-devices.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>
 </div>
+<div class='controls subfolders'>
+	<?php foreach($db->selectAllProfileByMobileDeviceGroupId($group->id) as $p) { ?>
+		<a class='box deletable' href='#' title='<?php echo LANG('remove_assignment'); ?>' onclick='removeProfileFromGroup([<?php echo $p->profile_id; ?>],<?php echo $group->id; ?>);return false;'><img src='img/profile.dyn.svg'>&nbsp;<?php echo htmlspecialchars($p->name); ?></a>
+	<?php } ?>
+</div>
 <?php } ?>
 
 <div class='details-abreast'>
@@ -92,7 +97,7 @@ try {
 			echo "<td><input type='checkbox' name='mobile_device_id[]' value='".$md->id."'></td>";
 			echo "<td>";
 			echo  "<img src='".$md->getIcon()."' class='".($md->udid ? 'online' : 'offline')."' title='".($md->udid ? LANG('enrolled') : LANG('not_enrolled'))."'>&nbsp;";
-			echo  "<a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->device_name??$md->serial)."</a>";
+			echo  "<a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->device_name?$md->device_name:$md->serial)."</a>";
 			echo "</td>";
 			echo "<td>".htmlspecialchars($md->serial)."</td>";
 			echo "<td>".htmlspecialchars($md->os)."</td>";

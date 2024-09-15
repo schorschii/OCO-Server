@@ -31,9 +31,13 @@ class MobileDeviceCommandController {
 				unset($installedProfileUuids[$uuid]);
 			}
 			foreach($installedProfileUuids as $uuid => $profile) {
-				$profileValues = json_decode($profile->content, true);
+				$requestPlist = new CFPropertyList\CFPropertyList();
+				$requestPlist->parse($profile->content);
+				$profileValues = $requestPlist->toArray();
+
 				if(!$profileValues) continue;
-				foreach($profileValues['PayloadContent']??[] as $payload) {
+				if(!$profileValues['IsManaged']) continue; // do not try to uninstall profiles which are not managed by us
+				foreach($profileValues['PayloadContent']??[] as $payload) { // do not uninstall MDM profiles
 					if($payload['PayloadType'] == 'com.apple.mdm') continue 2;
 				}
 				$result = $this->db->insertMobileDeviceCommand($md->id, 'RemoveProfile', json_encode([
@@ -95,7 +99,7 @@ class MobileDeviceCommandController {
 					$md->id, $md->udid, $md->device_name, $md->serial, $md->vendor_description,
 					$md->model, $os??$md->os, $md->device_family, $md->color,
 					$md->profile_uuid, $md->push_token, $md->push_magic, date('Y-m-d H:i:s'), $md->unlock_token,
-					$md->info, $md->notes, $md->force_update
+					$md->info, $md->notes, 0/*force_update*/
 				);
 			}
 		}
