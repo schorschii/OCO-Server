@@ -570,6 +570,7 @@ return [
 	'color' => 'Couleur',
 	'vendor_description' => 'Description du fournisseur',
 	'mobile_device' => 'Appareil mobile',
+	'command' => 'Commande',
 	'commands' => 'Commandes',
 	'send_command' => 'Send Command',
 	'payload' => 'Payload',

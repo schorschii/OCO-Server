@@ -17,9 +17,10 @@ require_once('../session.inc.php');
 </div>
 
 <?php $mobileDeviceGroupsHtml = getMobileDeviceGroupsHtml($cl); ?>
-<div id='divNodeMobileDevices' class='node <?php if($mobileDeviceGroupsHtml) echo 'expandable'; ?>'>
+<div id='divNodeMobileDevices' class='node expandable'>
 	<a <?php echo explorerLink('views/mobile-devices.php'); ?>><img src='img/mobile-device.dyn.svg'><?php echo LANG('mobile_devices'); ?><span class='beta'>BETA</span></a>
 	<div class='subitems'>
+		<a <?php echo explorerLink('views/profiles.php'); ?>><img src='img/profile.dyn.svg'><?php echo LANG('profiles'); ?></a>
 		<?php echo $mobileDeviceGroupsHtml; ?>
 	</div>
 </div>
@@ -41,10 +42,6 @@ require_once('../session.inc.php');
 	<div class='subitems'>
 		<?php echo $packageGroupsHtml; ?>
 	</div>
-</div>
-
-<div id='divNodeProfiles' class='node'>
-	<a <?php echo explorerLink('views/profiles.php'); ?>><img src='img/profile.dyn.svg'><?php echo LANG('profiles'); ?></a>
 </div>
 
 <div id='divNodeJobs' class='node expandable'>

@@ -22,7 +22,7 @@ try {
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $md->getIcon(); ?>' class='<?php echo($md->udid ? 'online' : 'offline'); ?>' title='<?php echo($md->udid ? LANG('enrolled') : LANG('not_enrolled')); ?>'><span id='page-title'><span id='spnMobileDeviceSerial'><?php echo htmlspecialchars($md->device_name??$md->serial); ?></span></span></h1>
+	<h1><img src='<?php echo $md->getIcon(); ?>' class='<?php echo($md->udid ? 'online' : 'offline'); ?>' title='<?php echo($md->udid ? LANG('enrolled') : LANG('not_enrolled')); ?>'><span id='page-title'><span id='spnMobileDeviceSerial'><?php echo htmlspecialchars($md->device_name?$md->device_name:$md->serial); ?></span></span></h1>
 	<div class='controls'>
 	<button onclick='showDialogMobileDeviceCommand(<?php echo $md->id; ?>)' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/command.dyn.svg'>&nbsp;<?php echo LANG('send_command'); ?></button>
 		<button onclick='showDialogAddMobileDeviceToGroup(<?php echo $md->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>

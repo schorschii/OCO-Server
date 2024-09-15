@@ -1340,7 +1340,7 @@ function searchItems(container, search) {
 
 // ======== MOBILE DEVICE OPERATIONS ========
 function showDialogCreateMobileDeviceIos() {
-	showDialogAjax(LANG['create_computer'], 'views/dialog-mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['new_ios_device'], 'views/dialog-mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function setMobileDeviceForceUpdate(id, value) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'edit_mobile_device_id':id, 'force_update':value}), null, function() {

@@ -565,6 +565,7 @@ return [
 	'color' => 'Farbe',
 	'vendor_description' => 'Herstellerbeschreibung',
 	'mobile_device' => 'Mobilgerät',
+	'command' => 'Kommando',
 	'commands' => 'Kommandos',
 	'send_command' => 'Kommando senden',
 	'payload' => 'Payload',
