@@ -216,6 +216,8 @@ class CoreLogic {
 		if(empty($name) || empty($payload)) {
 			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
+		$requestPlist = new CFPropertyList\CFPropertyList();
+		$requestPlist->parse($payload);
 
 		$result = $this->db->insertProfile($name, $payload, $notes, $this->su->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
