@@ -333,7 +333,8 @@ class AutomatedDeviceEnrollment {
 			if($md) {
 				$this->db->updateMobileDevice($md->id,
 					$md->udid, $md->device_name, $md->serial, $device['description']??'',
-					$device['model']??'', $device['os']??'', $device['device_family']??'', $device['color']??'',
+					$md->model?$md->model:$device['model']??'', $md->os?$md->os:$device['os']??'',
+					$device['device_family']??'', $device['color']??'',
 					$device['profile_uuid']??null, $md->push_token, $md->push_magic, $md->push_sent,
 					$md->unlock_token, $md->info, $md->notes, $md->force_update
 				);
