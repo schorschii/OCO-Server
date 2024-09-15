@@ -102,7 +102,7 @@ if($path === '/profile') {
 			if(empty($request['UDID']) || empty($request['SerialNumber'])) {
 				throw new InvalidRequestException('At least one required parameter is missing');
 			}
-			$os = $request['OSVersion']??null;
+			$os = $request['OSVersion'] ? 'iOS '.$request['OSVersion'] : null;
 			$md = $db->selectMobileDeviceBySerialNumber($request['SerialNumber']);
 			if(!$md) {
 				// if this is a manual enrollment (not synced via ABM/ASM), we need to create the mobile device record here
