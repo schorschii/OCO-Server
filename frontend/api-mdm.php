@@ -113,6 +113,7 @@ if($path === '/profile') {
 					null/*info*/, ''/*notes*/, 0/*force_update*/
 				);
 			} else {
+				// device already registered - store the UDID
 				$db->updateMobileDevice(
 					$md->id, $request['UDID'], $md->device_name, $md->serial, $md->vendor_description,
 					$md->model, $os??$md->os, $md->device_family, $md->color,
@@ -231,9 +232,11 @@ if($path === '/profile') {
 
 		// store device info
 		if($rt === 'DeviceInformation') {
+			$os = $request['QueryResponses']['OSVersion'] ? 'iOS '.$request['QueryResponses']['OSVersion'] : null;
+			$product = $request['QueryResponses']['ProductName'] ? $request['QueryResponses']['ProductName'] : null;
 			$db->updateMobileDevice(
 				$md->id, $md->udid, $request['QueryResponses']['DeviceName']??'?', $request['QueryResponses']['SerialNumber']??$md->serial,
-				$md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
+				$md->vendor_description, $product??$md->model, $os??$md->os, $md->device_family, $md->color,
 				$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
 				$md->unlock_token, json_encode($request['QueryResponses']), $md->notes, $md->force_update
 			);
