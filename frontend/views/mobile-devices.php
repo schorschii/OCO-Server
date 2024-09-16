@@ -45,6 +45,7 @@ try {
 		<button onclick='createMobileDeviceGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_subgroup'); ?></button>
 		<button onclick='renameMobileDeviceGroup(<?php echo $group->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('rename_group'); ?></button>
 		<button onclick='confirmRemoveMobileDeviceGroup([<?php echo $group->id; ?>], event, spnMobileDeviceGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_group'); ?></button>
+		<span class='filler'></span>
 	</div>
 <?php } ?>
 

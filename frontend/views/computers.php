@@ -46,6 +46,7 @@ try {
 		<button onclick='refreshContentDeploy([],[],[],{"id":<?php echo $group->id; ?>,"name":spnComputerGroupName.innerText})' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy_for_all'); ?></button>
 		<button onclick='renameComputerGroup(<?php echo $group->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('rename_group'); ?></button>
 		<button onclick='confirmRemoveComputerGroup([<?php echo $group->id; ?>], event, spnComputerGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_group'); ?></button>
+		<span class='filler'></span>
 	</div>
 <?php } ?>
 
