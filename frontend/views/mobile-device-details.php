@@ -127,10 +127,22 @@ try {
 						elseif(is_array($value)) {
 							echo '<table class="list metadata"><tbody>';
 							foreach($value as $subkey => $subvalue) {
+								if($subkey == 'UDID' || $subkey == 'SerialNumber' || $subkey == 'DeviceName'
+								|| $subkey == 'ProductName' || $subkey == 'OSVersion' || $subkey == 'AvailableDeviceCapacity')
+									continue;
 								echo '<tr>'
 									.'<th>'.htmlspecialchars(LANG($subkey)).'</th>'
 									.'<td>';
-								echoInfoRow($subvalue);
+								if($subkey == 'BatteryLevel') {
+									echo progressBar($subvalue*100, null, null, 'stretch');
+								} elseif($subkey == 'DeviceCapacity' && isset($value['AvailableDeviceCapacity'])) {
+									$total = $value['DeviceCapacity'];
+									$free = $value['AvailableDeviceCapacity'];
+									$used = $total - $free;
+									echo progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
+								} else {
+									echoInfoRow($subvalue);
+								}
 								echo '</td>'
 									.'</tr>';
 							}
