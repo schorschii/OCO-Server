@@ -587,6 +587,7 @@ return [
 	'remove_assignment' => 'Zuweisung entfernen',
 	'identifier' => 'Identifier',
 	'version_code' => 'Versionscode',
+	'edit_mobile_device' => 'Mobilgerät bearbeiten',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

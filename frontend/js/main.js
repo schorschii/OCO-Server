@@ -1342,6 +1342,18 @@ function searchItems(container, search) {
 function showDialogCreateMobileDeviceIos() {
 	showDialogAjax(LANG['new_ios_device'], 'views/dialog-mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
+function showDialogEditMobileDevice(id, notes) {
+	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog-mobile-device-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditMobileDeviceId.value = id;
+		txtEditMobileDeviceNotes.value = notes;
+	});
+}
+function editMobileDevice(id, notes) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'edit_mobile_device_id':id, 'notes':notes}), null, function() {
+		refreshContent(); hideDialog();
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
 function setMobileDeviceForceUpdate(id, value) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'edit_mobile_device_id':id, 'force_update':value}), null, function() {
 		refreshContent();
