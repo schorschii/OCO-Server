@@ -90,10 +90,10 @@ try {
 		foreach($mobileDevices as $md) {
 			$ip_addresses = [];
 			$mac_addresses = [];
-			$cnetwork = [];
-			foreach($cnetwork as $n) {
-				if(!(empty($n->address) || $n->address == '-' || $n->address == '?')) $ip_addresses[] = $n->address;
-				if(!(empty($n->mac) || $n->mac == '-' || $n->mac == '?')) $mac_addresses[] = $n->mac;
+			$info = json_decode($md->info, true);
+			if($info) {
+				if(isset($info['WiFiMAC'])) $mac_addresses[] = $info['WiFiMAC'];
+				if(isset($info['BluetoothMAC'])) $mac_addresses[] = $info['BluetoothMAC'];
 			}
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='mobile_device_id[]' value='".$md->id."'></td>";
