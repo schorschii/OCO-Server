@@ -61,11 +61,13 @@ try {
 		<a class='box' <?php echo explorerLink('views/mobile-devices.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>
 </div>
-<div class='controls subfolders'>
-	<?php foreach($db->selectAllProfileByMobileDeviceGroupId($group->id) as $p) { ?>
-		<a class='box deletable' href='#' title='<?php echo LANG('remove_assignment'); ?>' onclick='removeProfileFromGroup([<?php echo $p->profile_id; ?>],<?php echo $group->id; ?>);return false;'><img src='img/profile.dyn.svg'>&nbsp;<?php echo htmlspecialchars($p->name); ?></a>
-	<?php } ?>
-</div>
+<?php } ?>
+<?php if($group != null) { ?>
+	<div class='controls subfolders'>
+		<?php foreach($db->selectAllProfileByMobileDeviceGroupId($group->id) as $p) { ?>
+			<a class='box deletable' href='#' title='<?php echo LANG('remove_assignment'); ?>' onclick='removeProfileFromGroup([<?php echo $p->profile_id; ?>],<?php echo $group->id; ?>);return false;'><img src='img/profile.dyn.svg'>&nbsp;<?php echo htmlspecialchars($p->name); ?></a>
+		<?php } ?>
+	</div>
 <?php } ?>
 
 <div class='details-abreast'>
