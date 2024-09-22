@@ -213,10 +213,15 @@ try {
 								<?php foreach($db->selectAllMobileDeviceCommandByMobileDevice($md->id, false) as $c) { ?>
 									<tr>
 										<td>
-											<a href='#' onclick='event.preventDefault();showDialog(this.getAttribute("summary"), this.getAttribute("message"), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE, true)' summary='<?php echo htmlspecialchars($c->name, ENT_QUOTES); ?>'
-											message='<?php echo htmlspecialchars(json_decode($c->message) ? json_encode(json_decode($c->message),JSON_PRETTY_PRINT) : $c->message, ENT_QUOTES); ?>'>
-												<img src='img/<?php echo $c->getStatus() ?>.dyn.svg'>
-											</a>
+											<img src='img/<?php echo $c->getStatus() ?>.dyn.svg'>
+											<?php if(empty($c->message)) { ?>
+												<?php echo htmlspecialchars($c->getStateString()); ?>
+											<?php } else { ?>
+												<a href='#' onclick='event.preventDefault();showDialog(this.getAttribute("summary"), this.getAttribute("message"), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE, true)' summary='<?php echo htmlspecialchars($c->name, ENT_QUOTES); ?>'
+												message='<?php echo htmlspecialchars(json_decode($c->message) ? json_encode(json_decode($c->message),JSON_PRETTY_PRINT) : $c->message, ENT_QUOTES); ?>'>
+													<?php echo htmlspecialchars($c->getStateString()); ?>
+												</a>
+											<?php } ?>
 										</td>
 										<td><?php echo htmlspecialchars($c->name); ?></td>
 										<td><?php echo htmlspecialchars($c->finished); ?></td>
@@ -256,7 +261,7 @@ try {
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach($db->selectAllMobileDeviceAppByMobileDevice($md->id) as $a) { ?>
+							<?php foreach($db->selectAllMobileDeviceAppIdentifierByMobileDeviceId($md->id) as $a) { ?>
 								<tr>
 									<td><?php echo htmlspecialchars($a->identifier); ?></td>
 									<td><?php echo htmlspecialchars($a->name); ?></td>

@@ -195,7 +195,7 @@ class DatabaseMigrationController {
 		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'app' AND COLUMN_NAME = 'id' AND TABLE_SCHEMA = '".DB_NAME."'");
 		$this->stmt->execute();
 		if($this->stmt->rowCount() == 0) {
-				if($this->debug) echo 'Upgrading to 1.1.2... (add app table)'."\n";
+				if($this->debug) echo 'Upgrading to 1.1.3... (add app table)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `app` (
 					  `id` int(11) NOT NULL,
@@ -209,7 +209,7 @@ class DatabaseMigrationController {
 					) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-				if($this->debug) echo 'Upgrading to 1.1.2... (add mobile_device_app table)'."\n";
+				if($this->debug) echo 'Upgrading to 1.1.3... (add mobile_device_app table)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `mobile_device_app` (
 					  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -223,7 +223,7 @@ class DatabaseMigrationController {
 					) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-				if($this->debug) echo 'Upgrading to 1.1.2... (add profile table)'."\n";
+				if($this->debug) echo 'Upgrading to 1.1.3... (add profile table)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `profile` (
 					  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -239,7 +239,7 @@ class DatabaseMigrationController {
 					) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-				if($this->debug) echo 'Upgrading to 1.1.2... (add mobile_device_group_profile table)'."\n";
+				if($this->debug) echo 'Upgrading to 1.1.3... (add mobile_device_group_profile table)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `mobile_device_group_profile` (
 					  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -253,7 +253,7 @@ class DatabaseMigrationController {
 					) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-				if($this->debug) echo 'Upgrading to 1.1.2... (add mobile_device_profile table)'."\n";
+				if($this->debug) echo 'Upgrading to 1.1.3... (add mobile_device_profile table)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `mobile_device_profile` (
 					  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -270,9 +270,39 @@ class DatabaseMigrationController {
 					) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-				if($this->debug) echo 'Upgrading to 1.1.2... (update permissions of superadmin role)'."\n";
+				if($this->debug) echo 'Upgrading to 1.1.3... (add managed_app table)'."\n";
 				$this->stmt = $this->dbh->prepare(
-					"UPDATE system_user_role SET permissions='{\"Special\\\\\\\\ClientApi\": true, \"Special\\\\\\\\WebFrontend\": true, \"Special\\\\\\\\GeneralConfiguration\": true, \"Special\\\\\\\\EventQueryRules\": true, \"Special\\\\\\\\DeletedObjects\": true, \"Models\\\\\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true}}, \"Models\\\\\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\\\\\SystemUser\": true, \"Models\\\\\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Software\": true, \"Models\\\\\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}}' WHERE id = 1"
+					"CREATE TABLE `managed_app` (
+						`id` int(11) NOT NULL AUTO_INCREMENT,
+						`identifier` text NOT NULL,
+						`store_id` text NOT NULL,
+						`name` text NOT NULL,
+						`vpp_amount` int(11) DEFAULT NULL,
+						PRIMARY KEY (`id`)
+					  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				if($this->debug) echo 'Upgrading to 1.1.3... (add mobile_device_group_managed_app table)'."\n";
+				$this->stmt = $this->dbh->prepare(
+					"CREATE TABLE `mobile_device_group_managed_app` (
+						`id` int(11) NOT NULL AUTO_INCREMENT,
+						`mobile_device_group_id` int(11) NOT NULL,
+						`managed_app_id` int(11) NOT NULL,
+						`removable` tinyint(4) NOT NULL DEFAULT 1,
+						`disable_cloud_backup` tinyint(4) NOT NULL DEFAULT 1,
+						`remove_on_mdm_remove` tinyint(4) NOT NULL DEFAULT 1,
+						`config` text DEFAULT NULL,
+						PRIMARY KEY (`id`),
+						KEY `fk_mobile_device_group_managed_app_1` (`mobile_device_group_id`),
+						KEY `fk_mobile_device_group_managed_app_2` (`managed_app_id`),
+						CONSTRAINT `fk_mobile_device_group_managed_app_1` FOREIGN KEY (`mobile_device_group_id`) REFERENCES `mobile_device_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+						CONSTRAINT `fk_mobile_device_group_managed_app_2` FOREIGN KEY (`managed_app_id`) REFERENCES `managed_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+					  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				if($this->debug) echo 'Upgrading to 1.1.3... (update permissions of superadmin role)'."\n";
+				$this->stmt = $this->dbh->prepare(
+					"UPDATE system_user_role SET permissions='{\"Special\\\\\\\\ClientApi\": true, \"Special\\\\\\\\WebFrontend\": true, \"Special\\\\\\\\GeneralConfiguration\": true, \"Special\\\\\\\\EventQueryRules\": true, \"Special\\\\\\\\DeletedObjects\": true, \"Models\\\\\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true}}, \"Models\\\\\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\\\\\SystemUser\": true, \"Models\\\\\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Software\": true, \"Models\\\\\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}}' WHERE id = 1"
 				);
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 

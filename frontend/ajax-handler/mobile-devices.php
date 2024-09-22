@@ -69,7 +69,27 @@ try {
 
 	if(!empty($_POST['send_command_to_mobile_device_id'])
 	&& !empty($_POST['command'])) {
-		if($_POST['command'] == 'DeviceLock') {
+		if($_POST['command'] == 'ScheduleOSUpdateScan') {
+			$parameter = json_encode([
+				'RequestType' => 'ScheduleOSUpdateScan',
+				'Force' => true,
+			]);
+		} elseif($_POST['command'] == 'AvailableOSUpdates') {
+			$parameter = json_encode([
+				'RequestType' => 'AvailableOSUpdates',
+			]);
+		} elseif($_POST['command'] == 'ScheduleOSUpdate') {
+			$parameter = json_encode([
+				'RequestType' => 'ScheduleOSUpdate',
+				'Updates' => [ // TODO
+					[ 'InstallAction' => 'InstallASAP' ]
+				]
+			]);
+		} elseif($_POST['command'] == 'OSUpdateStatus') {
+			$parameter = json_encode([
+				'RequestType' => 'OSUpdateStatus',
+			]);
+		} elseif($_POST['command'] == 'DeviceLock') {
 			$parameter = json_encode([
 				'RequestType' => 'DeviceLock',
 				#'Message' => '',
@@ -97,6 +117,10 @@ try {
 				#'Footnote' => '',
 				#'PhoneNumber' => '',
 			]);
+		} elseif($_POST['command'] == 'PlayLostModeSound') {
+				$parameter = json_encode([
+					'RequestType' => 'PlayLostModeSound',
+				]);
 		} elseif($_POST['command'] == 'DisableLostMode') {
 			$parameter = json_encode([
 				'RequestType' => 'DisableLostMode',
@@ -155,6 +179,29 @@ try {
 		foreach($_POST['remove_from_group_profile_id'] as $pid) {
 			foreach($_POST['remove_from_group_id'] as $gid) {
 				$cl->removeProfileFromMobileDeviceGroup($pid, $gid);
+			}
+		}
+		die();
+	}
+
+	if(isset($_POST['add_to_group_id']) && is_array($_POST['add_to_group_id']) && isset($_POST['add_to_group_managed_app_id']) && is_array($_POST['add_to_group_managed_app_id'])) {
+		foreach($_POST['add_to_group_managed_app_id'] as $pid) {
+			foreach($_POST['add_to_group_id'] as $gid) {
+				$cl->assignManagedAppToMobileDeviceGroup($pid, $gid,
+					($_POST['removable']??1) ? 1 : 0,
+					($_POST['disable_cloud_backup']??0) ? 1 : 0,
+					($_POST['remove_on_mdm_remove']??1) ? 1 : 0,
+					null
+				);
+			}
+		}
+		die();
+	}
+
+	if(isset($_POST['remove_from_group_id']) && is_array($_POST['remove_from_group_id']) && isset($_POST['remove_from_group_managed_app_id']) && is_array($_POST['remove_from_group_managed_app_id'])) {
+		foreach($_POST['remove_from_group_managed_app_id'] as $pid) {
+			foreach($_POST['remove_from_group_id'] as $gid) {
+				$cl->removeManagedAppFromMobileDeviceGroup($pid, $gid);
 			}
 		}
 		die();

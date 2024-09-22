@@ -1473,12 +1473,53 @@ function assignProfileToGroup(profileId, groupId) {
 	});
 }
 function removeProfileFromGroup(ids, groupId) {
+	if(!confirm(LANG['are_you_sure'])) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'remove_from_group_id[]', 'value':entry});
 	});
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_profile_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogAssignManagedAppToGroup(id) {
+	if(!id) return;
+	showDialogAjax(LANG['assign'], 'views/dialog-managed-app-assign.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtManagedAppId.value = id;
+	});
+}
+function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove) {
+	if(groupId === false) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_id[]', 'value':entry});
+	});
+	managedAppId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_managed_app_id[]', 'value':entry});
+	});
+	params.push({'key':'removable', 'value':removable});
+	params.push({'key':'disable_cloud_backup', 'value':disableCloudBackup});
+	params.push({'key':'remove_on_mdm_remove', 'value':removeOnMdmRemove});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		hideDialog();
+		refreshContent();
+		emitMessage(LANG['apps_assigned'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function removeManagedAppFromGroup(ids, groupId) {
+	if(!confirm(LANG['are_you_sure'])) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'remove_from_group_id[]', 'value':entry});
+	});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_from_group_managed_app_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
@@ -2763,6 +2804,15 @@ function readFileInputBlob(file) {
 function syncAppleDevices() {
 	var params = [];
 	params.push({'key':'sync_apple_devices', 'value':1});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+		emitMessage(LANG['sync_with_apple_business_manager'], text, MESSAGE_TYPE_SUCCESS);
+		refreshContent();
+	});
+}
+function syncAppleAssets() {
+	var params = [];
+	params.push({'key':'sync_apple_assets', 'value':1});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
 		emitMessage(LANG['sync_with_apple_business_manager'], text, MESSAGE_TYPE_SUCCESS);

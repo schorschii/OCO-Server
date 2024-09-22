@@ -2,8 +2,13 @@
 
 class MobileDeviceCommandController {
 
+	private $db;
+	private $vpp;
+	private $debug;
+
 	function __construct(DatabaseController $db, bool $debug=false) {
 		$this->db = $db;
+		$this->vpp = new Apple\VolumePurchaseProgram($db);
 		$this->debug = $debug;
 	}
 
@@ -11,7 +16,7 @@ class MobileDeviceCommandController {
 		$mds = $this->db->selectAllMobileDevice();
 
 		// check if every assigned profile is installed, otherwise create job
-		$profileChangeMdIds = [];
+		$changedMdIds = [];
 		foreach($mds as $md) {
 			$installedProfileUuids = $this->db->selectAllMobileDeviceProfileUuidByMobileDeviceId($md->id);
 			foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
@@ -24,7 +29,7 @@ class MobileDeviceCommandController {
 						'_data' => ['Payload']
 					]));
 					if($result) {
-						$profileChangeMdIds[] = $md->id;
+						$changedMdIds[] = $md->id;
 						echo('Created command for installing profile '.$uuid.' on device '.$md->id."\n");
 					}
 				}
@@ -45,8 +50,41 @@ class MobileDeviceCommandController {
 					'Identifier' => $profile->identifier
 				]));
 				if($result) {
-					$profileChangeMdIds[] = $md->id;
+					$changedMdIds[] = $md->id;
 					echo('Created command for deleting profile '.$uuid.' on device '.$md->id."\n");
+				}
+			}
+		}
+
+		// check if every assigned app is installed, otherwise create job
+		foreach($mds as $md) {
+			$installedApps = $this->db->selectAllMobileDeviceAppIdentifierByMobileDeviceId($md->id);
+			foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
+				if(!array_key_exists($app->identifier, $installedApps)) {
+					// assign VPP license
+					// TODO: unassign license
+					if($app->vpp_amount) {
+						$this->vpp->associateAssets(
+							[ [ 'adamId' => $app->store_id ] ],
+							[], [ $md->serial ]
+						);
+					}
+					// create install command
+					$flagRemoveOnMdmRemove = $app->remove_on_mdm_remove ? 1 : 0;
+					$flagPreventBackup = $app->disable_cloud_backup ? 4 : 0;
+					$result = $this->db->insertMobileDeviceCommand($md->id, 'InstallApplication', json_encode([
+						'RequestType' => 'InstallApplication',
+						'iTunesStoreID' => $app->store_id,
+						'ManagementFlags' => $flagRemoveOnMdmRemove + $flagPreventBackup,
+						'Options' => [ 'PurchaseMethod' => ($app->vpp_amount ? 1 : 0) ],
+						'InstallAsManaged' => true,
+						'Attributes' => [ 'Removable' => boolval($app->removable) ],
+						'Configuration' => []
+					]));
+					if($result) {
+						$changedMdIds[] = $md->id;
+						echo('Created command for installing app '.$app->identifier.' on device '.$md->id."\n");
+					}
 				}
 			}
 		}
@@ -56,7 +94,7 @@ class MobileDeviceCommandController {
 			if(time() - strtotime($md->last_update??'') > intval($this->db->settings->get('agent-update-interval'))
 			|| $md->info === null
 			|| !empty($md->force_update)
-			|| in_array($md->id, $profileChangeMdIds)) {
+			|| in_array($md->id, $changedMdIds)) {
 				$hasUpdateJob = false;
 				foreach($this->db->selectAllMobileDeviceCommandByMobileDevice($md->id) as $mdc) {
 					if($mdc->name == Apple\MdmCommand::DEVICE_INFO['RequestType']

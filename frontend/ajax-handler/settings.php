@@ -41,6 +41,18 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['sync_apple_assets'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+		try {
+			$ade = new Apple\VolumePurchaseProgram($db);
+			$ade->syncAssets();
+		} catch(Exception $e) {
+			header('HTTP/1.1 500 Internal Server Error');
+			die($e->getMessage());
+		}
+		die();
+	}
+
 	if(!empty($_POST['edit_system_user_id'])
 	&& isset($_POST['username'])
 	&& isset($_POST['display_name'])
@@ -246,6 +258,20 @@ try {
 				$ade->storeActivationProfile($_POST['value']);
 				die();
 			}
+			if($key == 'apple-appstore-teamid') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$vpp = new Apple\VolumePurchaseProgram($db);
+				$as = new Apple\AppStore($db, $vpp);
+				$as->storeTeamId($_POST['value']);
+				die();
+			}
+			if($key == 'apple-appstore-keyid') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$vpp = new Apple\VolumePurchaseProgram($db);
+				$as = new Apple\AppStore($db, $vpp);
+				$as->storeKeyId($_POST['value']);
+				die();
+			}
 			$cl->editSetting($key, $_POST['value']);
 			die();
 		} elseif(isset($_FILES['value'])) {
@@ -255,6 +281,19 @@ try {
 				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 				$ade = new Apple\AutomatedDeviceEnrollment($db);
 				$ade->storeMdmServerToken($value);
+				die();
+			}
+			if($key == 'apple-vpp-token') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$vpp = new Apple\VolumePurchaseProgram($db);
+				$vpp->storeToken($value);
+				die();
+			}
+			if($key == 'apple-appstore-key') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$vpp = new Apple\VolumePurchaseProgram($db);
+				$as = new Apple\AppStore($db, $vpp);
+				$as->storeKey($value);
 				die();
 			}
 			if($key == 'apple-mdm-vendor-cert') { // ('apple-mdm-apn-cert' file is already pem encoded)

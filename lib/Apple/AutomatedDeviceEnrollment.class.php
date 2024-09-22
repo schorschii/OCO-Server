@@ -206,7 +206,7 @@ class AutomatedDeviceEnrollment {
 		return $certPem;
 	}
 
-	/*private*/ function getMdmDeviceCa() {
+	private function getMdmDeviceCa() {
 		$certPem = $this->db->settings->get('apple-mdm-deviceca-cert');
 		$privKeyPem = $this->db->settings->get('apple-mdm-deviceca-key');
 		if($certPem && $privKeyPem) {
@@ -279,7 +279,7 @@ class AutomatedDeviceEnrollment {
 			'X-ADM-Auth-Session: '.$this->sessionToken,
 			'X-Server-Protocol-Version: 3',
 			'Content-Type: application/json;charset=UTF8',
-			'User-Agent: OCO',
+			'User-Agent: Open Computer Orchestration (OCO)',
 		];
 	}
 	function aquireSessionToken() {
@@ -305,7 +305,7 @@ class AutomatedDeviceEnrollment {
 
 		$this->sessionToken = $responseJson['auth_session_token'];
 	}
-	private function curlRequest(string $method, string $url, string $payload=null) {
+	private function curlRequest(string $method, string $url, string $payload=null, int $expectedStatusCode=null) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		//curl_setopt($ch, CURLOPT_POST, true);
@@ -315,13 +315,16 @@ class AutomatedDeviceEnrollment {
 		if($payload) curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($ch);
+		$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		if($expectedStatusCode && $statusCode !== $expectedStatusCode)
+			throw new \Exception('Unexpected status code '.$statusCode);
 		curl_close($ch);
 		return $response;
 	}
 
 	// https://developer.apple.com/documentation/devicemanagement/get_a_list_of_devices
 	function syncDevices() {
-		$response = $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/server/devices');
+		$response = $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/server/devices', null, 200);
 		$result = json_decode($response, true);
 		if(!$result || !isset($result['devices']) || !is_array($result['devices']))
 			throw new \RuntimeException('Invalid response from server');
@@ -377,27 +380,27 @@ class AutomatedDeviceEnrollment {
 
 	// https://developer.apple.com/documentation/devicemanagement/get_device_details
 	function getDeviceInfo(array $devices) {
-		return $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/devices', json_encode(['devices' => $devices]));
+		return $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/devices', json_encode(['devices' => $devices]), 200);
 	}
 
 	// https://developer.apple.com/documentation/devicemanagement/define_a_profile
 	function createProfile(string $profile_json) {
-		return $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/profile', $profile_json);
+		return $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/profile', $profile_json, 200);
 	}
 
 	// https://developer.apple.com/documentation/devicemanagement/get_a_profile
 	function getProfile(string $uuid) {
-		return $this->curlRequest('GET', self::APPLE_MDMENROLLMENT_API.'/profile'.'?'.http_build_query(['profile_uuid'=>$uuid]));
+		return $this->curlRequest('GET', self::APPLE_MDMENROLLMENT_API.'/profile'.'?'.http_build_query(['profile_uuid'=>$uuid]), 200);
 	}
 
 	// https://developer.apple.com/documentation/devicemanagement/assign_a_profile
 	function assignProfile(string $uuid, array $devices) {
-		return $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/profile/devices', json_encode(['profile_uuid'=>$uuid, 'devices'=>$devices]));
+		return $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/profile/devices', json_encode(['profile_uuid'=>$uuid, 'devices'=>$devices]), 200);
 	}
 
 	// https://developer.apple.com/documentation/devicemanagement/remove_a_profile-c2c
 	function deleteProfile(string $uuid, array $devices) {
-		return $this->curlRequest('DELETE', self::APPLE_MDMENROLLMENT_API.'/profile/devices', json_encode(['profile_uuid'=>$uuid, 'devices'=>$devices]));
+		return $this->curlRequest('DELETE', self::APPLE_MDMENROLLMENT_API.'/profile/devices', json_encode(['profile_uuid'=>$uuid, 'devices'=>$devices]), 200);
 	}
 
 	function generateEnrollmentProfile(string $serial) {

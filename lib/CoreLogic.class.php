@@ -198,6 +198,41 @@ class CoreLogic {
 		return $result;
 	}
 
+	public function getManagedApps(Object $filterRessource=null) {
+		if($filterRessource === null) {
+			$pFiltered = [];
+			foreach($this->db->selectAllManagedApp() as $p) {
+				if($this->checkPermission($p, PermissionManager::METHOD_READ, false))
+					$pFiltered[] = $p;
+			}
+			return $pFiltered;
+		} else {
+			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+		}
+	}
+	public function assignManagedAppToMobileDeviceGroup($pId, $groupId, $removable, $disableCloudBackup, $removeOnMdmRemove, $config) {
+		$ma = $this->db->selectManagedApp($pId);
+		if(empty($ma)) throw new NotFoundException();
+		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
+		if(empty($mdGroup)) throw new NotFoundException();
+		$this->checkPermission($ma, PermissionManager::METHOD_DEPLOY);
+		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
+
+		$this->db->insertMobileDeviceGroupManagedApp($mdGroup->id, $ma->id, $removable, $disableCloudBackup, $removeOnMdmRemove, $config);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.assign', ['mobile_device_group_id'=>$mdGroup->id]);
+	}
+	public function removeManagedAppFromMobileDeviceGroup($pId, $groupId) {
+		$ma = $this->db->selectManagedApp($pId);
+		if(empty($ma)) throw new NotFoundException();
+		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
+		if(empty($mdGroup)) throw new NotFoundException();
+		$this->checkPermission($ma, PermissionManager::METHOD_DEPLOY);
+		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
+
+		$this->db->deleteMobileDeviceGroupManagedApp($mdGroup->id, $ma->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.unassign', ['mobile_device_group_id'=>$mdGroup->id]);
+	}
+
 	public function getProfiles(Object $filterRessource=null) {
 		if($filterRessource === null) {
 			$pFiltered = [];
@@ -216,8 +251,18 @@ class CoreLogic {
 		if(empty($name) || empty($payload)) {
 			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
-		$requestPlist = new CFPropertyList\CFPropertyList();
-		$requestPlist->parse($payload);
+		$plist = new CFPropertyList\CFPropertyList();
+		$plist->parse($payload);
+		$newUuid = $plist->toArray()['PayloadUUID'] ?? null;
+		if(empty($newUuid)) {
+			throw new InvalidRequestException(LANG('please_fill_required_fields'));
+		}
+
+		foreach($this->db->selectAllProfile() as $p) {
+			if($p->getUuid() == $newUuid) {
+				throw new InvalidRequestException(str_replace('%1', $p->name, LANG('uuid_aready_used_by_profile')));
+			}
+		}
 
 		$result = $this->db->insertProfile($name, $payload, $notes, $this->su->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));

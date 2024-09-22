@@ -24,8 +24,19 @@ try {
 			break;
 
 		case 'applesync':
+			echo 'Syncing devices...'."\n";
 			$ade = new Apple\AutomatedDeviceEnrollment($db);
 			$ade->syncDevices();
+
+			$vpp = new Apple\VolumePurchaseProgram($db);
+			$vppToken = null;
+			try {
+				$vppToken = $vpp->getToken();
+			} catch(RuntimeException $ignored) {}
+			if($vppToken) {
+				echo 'Syncing assets...'."\n";
+				$vpp->syncAssets();
+			}
 			break;
 
 		case 'applepush':

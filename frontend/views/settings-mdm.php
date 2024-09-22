@@ -5,6 +5,8 @@ require_once('../session.inc.php');
 
 try {
 	$ade = new Apple\AutomatedDeviceEnrollment($db);
+	$vpp = new Apple\VolumePurchaseProgram($db);
+	$as = new Apple\AppStore($db, $vpp);
 	$license = new LicenseCheck($db);
 	$permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 
@@ -35,6 +37,8 @@ try {
 	$mdmServerTokenExpiry = null;
 	$mdmActivationProfile = null;
 	$mdmApiUrl = null;
+	$vppTokenExpiry = null;
+	$appStoreKey = false;
 	try {
 		$ownMdmVendorCertInfo = openssl_x509_parse( $ade->getOwnMdmVendorCert()['cert'] );
 		$ownMdmVendorCertExpiry = date('Y-m-d H:i:s', intval($ownMdmVendorCertInfo['validTo_time_t']));
@@ -52,6 +56,13 @@ try {
 	} catch(RuntimeException $e) {}
 	try {
 		$mdmApiUrl = $ade->getMdmApiUrl();
+	} catch(RuntimeException $e) {}
+	try {
+		$vppToken = $vpp->getToken();
+		$vppTokenExpiry = date('Y-m-d H:i:s', strtotime($vppToken['expDate']));
+	} catch(RuntimeException $e) {}
+	try {
+		$appStoreKey = $as->getKey() && $as->getKeyId() && $as->getTeamId();
 	} catch(RuntimeException $e) {}
 } catch(PermissionException $e) {
 	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
@@ -129,6 +140,30 @@ try {
 						<div class='alert warning'><?php echo LANG('no_activation_profile_defined'); ?></div>
 					<?php } ?>
 					<button onclick='showDialogEditSetting("apple-mdm-activation-profile",false,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('vpp_token'); ?>:</th>
+				<td>
+					<?php if($vppTokenExpiry) { ?>
+						<div class='alert success'><?php echo str_replace('%1', $vppTokenExpiry, LANG('valid_until_placeholder')); ?></div>
+					<?php } else { ?>
+						<div class='alert warning'><?php echo LANG('no_vpp_token_provided'); ?></div>
+					<?php } ?>
+					<button onclick='showDialogEditSetting("apple-vpp-token",true,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('app_store_api_key'); ?>:</th>
+				<td>
+					<?php if($appStoreKey) { ?>
+						<div class='alert success'><?php echo LANG('defined'); ?></div>
+					<?php } else { ?>
+						<div class='alert warning'><?php echo LANG('no_app_store_api_key_provided'); ?></div>
+					<?php } ?>
+					<button onclick='showDialogEditSetting("apple-appstore-key",true,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('upload_key'); ?></button>
+					<button onclick='showDialogEditSetting("apple-appstore-keyid",false,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('key_id'); ?></button>
+					<button onclick='showDialogEditSetting("apple-appstore-teamid",false,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('team_id'); ?></button>
 				</td>
 			</tr>
 		</table>

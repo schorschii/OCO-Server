@@ -51,6 +51,7 @@ Requires you to install the OCO MDM enrollment profile manually, e.g. by downloa
         "url": "https://oco.example.com/api-mdm.php/profile",
         "support_email_address": "test@example.com",
         "is_supervised": true,
+        "is_mandatory": true,
         "is_mdm_removable": false,
         "language": "de",
         "region": "DE",
@@ -59,7 +60,7 @@ Requires you to install the OCO MDM enrollment profile manually, e.g. by downloa
      ```
      You may also need to add `anchor_certs` if you are using a self-signed server certificate.
 
-5. Create a crontab entry for executing `php console.php applesync` every 10 minutes and `php console.php mdmcron` every minute.
+5. Create a crontab entry for executing `php console.php applesync` every 30 minutes and `php console.php mdmcron` every minute.
 
 Now, you can assign devices in ABM/ASM to your OCO server. Note that you can set OCO as default MDM server for every new device bought.
 
@@ -68,10 +69,33 @@ After OCO synced with ABM/ASM, the iOS devices are automatically visible in OCO.
 
 Without factory reset, you can click on "New iOS Device" in OCO and download an enrollment profile, which needs to be sent and installed on the target device. Note that not all MDM commands/features are available when using this method (the device is "not supervised").
 
-### Management
-First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles" section in the OCO sidebar. Such profiles can be created using Apple Configurator. Note that Apple Configurator does not support all possible config options, e.g. configuring an Exchange profile must be done [manually](https://developer.apple.com/documentation/devicemanagement/profile-specific_payload_keys#3189326). After that, assign your profiles to mobile device groups.
+### General/Configuration Management
+First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles" section in the OCO sidebar. Such profiles can be created using Apple Configurator, but Apple Configurator only knows a subset of all possible config options. For example configuring an Exchange profile must be done manually. After that, assign your profiles to mobile device groups.
 
-After the device checked in into OCO MDM (via ADE or manual enrollment profile installation), you can add the device to mobile device groups. This will install the assigned configuration profiles. With the button "Send Command", you can e.g. lock or erase a device.
+Common configuration profiles:
+- [Email Account](https://developer.apple.com/documentation/devicemanagement/mail)
+- [Exchange Active Sync](https://developer.apple.com/documentation/devicemanagement/exchangeactivesync)
+- [Enforce Strong Passcode](https://developer.apple.com/documentation/devicemanagement/passcode)
+- [Enforce Update Settings](https://developer.apple.com/documentation/devicemanagement/softwareupdate)
+- [Display Single App (Kiosk Mode)](https://developer.apple.com/documentation/devicemanagement/applock)
+
+After the device checked in into OCO MDM (via ADE or manual enrollment profile installation), you can add the device to mobile device groups. This will install the assigned configuration profiles. With the button "Send Command" on the device detail page, you can e.g. lock or erase a device.
+
+### Purchasing & Installing Apps
+ABM/ASM offers features for volume purchases of apps and books from the App Store. Before you can deploy apps through OCO, you first need to purchase them in ABM/ASM (even if they are free).
+
+#### Import Content Token (cToken)
+1. To allow OCO to manage your bought assets from the Volume Purchasing Program (VPP), content managers can download a location-based cToken from the "Apps and Books" section under the "Settings" tab in ABM/ASM. Upload this .vpptoken file in OCO Settings -> "Mobile Device Management" -> "VPP Token".
+2. To retrieve app metadata, you need a key to authorize agaist the App Store API.
+   - [Create a service identifier and private key](https://developer.apple.com/help/account/manage-service-configurations/apps-and-books-for-organizations) using a Apple developer account allows you to obtain a key ID to use in your developer token.
+   - Upload the .p8 file with the private key in in OCO settings -> "Mobile Device Management" -> "App Store API key". Set the corresponding 10 character key ID and your 10 character Apple developer team ID there too.
+
+#### Buy Things
+Next, you need to buy something in ABM/ASM (even if the desired apps are free). Then, OCO can deploy this assets.
+
+1. In ABM/ASM, go to ["Locations"](https://business.apple.com/#/main/locations) and select your target location.
+2. Then, switch to ["Apps and Books"](https://business.apple.com/#/main/appsandbooks) and search the app you want to buy. Enter a quantity and buy the desired app(s).
+3. After the next syncup, your purchases should be visible in OCO "Mobile Devices" -> "Managed Apps". Here, you can now assign apps to a device group in order to start the deployment.
 
 ### Further Information
 - [Setting Up Push Notifications for Your MDM Customers](https://developer.apple.com/documentation/devicemanagement/implementing_device_management/setting_up_push_notifications_for_your_mdm_customers)

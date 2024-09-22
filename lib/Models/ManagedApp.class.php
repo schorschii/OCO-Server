@@ -2,12 +2,12 @@
 
 namespace Models;
 
-class App {
+class ManagedApp {
 
 	public $id;
 	public $identifier;
+	public $store_id;
 	public $name;
-	public $display_version;
-	public $version;
+	public $vpp_amount;
 
 }

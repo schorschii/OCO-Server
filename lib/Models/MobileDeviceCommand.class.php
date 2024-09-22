@@ -26,5 +26,15 @@ class MobileDeviceCommand {
 		elseif($this->state == self::STATE_FAILED) return self::ICON_FAILED;
 		else return self::ICON_IN_PROGRESS;
 	}
+	public function getStateString() {
+		if($this->state == self::STATE_QUEUED)
+			return LANG('waiting');
+		elseif($this->state == self::STATE_SENT)
+			return LANG('sent');
+		elseif($this->state == self::STATE_SUCCESS)
+			return LANG('succeeded');
+		elseif($this->state == self::STATE_FAILED)
+			return LANG('failed');
+	}
 
 }
