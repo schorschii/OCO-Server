@@ -161,7 +161,7 @@ if($path === '/profile') {
 			);
 			break;
 
-		case 'CheckOut': // TODO
+		case 'CheckOut':
 			/*<?xml version="1.0" encoding="UTF-8"?>
 			<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 			<plist version="1.0">
@@ -174,6 +174,17 @@ if($path === '/profile') {
 				<string>0000000000000000000000000000000000000000</string>
 				</dict>
 			</plist>*/
+			if(empty($request['UDID'])) {
+				throw new InvalidRequestException('At least one required parameter is missing');
+			}
+			$md = $db->selectMobileDeviceByUdid($request['UDID']);
+			if(!$md) throw new NotFoundException();
+			$db->updateMobileDevice(
+				$md->id, null/*udid*/, $md->device_name, $md->serial, $md->vendor_description,
+				$md->model, $md->os, $md->device_family, $md->color,
+				$md->profile_uuid, null/*push_token*/, null/*push_magic*/, $md->push_sent,
+				null/*unlock_token*/, $md->info, $md->notes, $md->force_update
+			);
 			break;
 
 		default:
