@@ -9,7 +9,7 @@ require_once('../session.inc.php');
 	<tr>
 		<th><?php echo LANG('groups'); ?></th>
 		<td>
-			<select id='sltNewMobileDeviceGroup' class='fullwidth' size='10' multiple='true' autofocus='true'>
+			<select id='sltNewMobileDeviceGroup' class='fullwidth' size='5' multiple='true' autofocus='true'>
 				<?php echoMobileDeviceGroupOptions($cl); ?>
 			</select>
 		</td>
@@ -24,6 +24,12 @@ require_once('../session.inc.php');
 			<label><input type='checkbox' id='chkRemoveOnMdmRemove' checked='true'></input><?php echo LANG('remove_when_leaving_mdm'); ?></label>
 		</td>
 	</tr>
+	<tr>
+		<th><?php echo LANG('app_config_json'); ?></th>
+		<td>
+			<textarea id='txtManagedAppConfig' class='fullwidth'></textarea>
+		</td>
+	</tr>
 </table>
 
 <div class='controls right'>
@@ -33,6 +39,7 @@ require_once('../session.inc.php');
 		getSelectedSelectBoxValues("sltNewMobileDeviceGroup",true),
 		chkRemovable.checked ? 1 : 0,
 		chkDisableCloudBackup.checked ? 1 : 0,
-		chkRemoveOnMdmRemove.checked ? 1 : 0
+		chkRemoveOnMdmRemove.checked ? 1 : 0,
+		txtManagedAppConfig.value
 	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 </div>

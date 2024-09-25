@@ -191,7 +191,7 @@ try {
 					($_POST['removable']??1) ? 1 : 0,
 					($_POST['disable_cloud_backup']??0) ? 1 : 0,
 					($_POST['remove_on_mdm_remove']??1) ? 1 : 0,
-					null
+					($_POST['config']??null),
 				);
 			}
 		}

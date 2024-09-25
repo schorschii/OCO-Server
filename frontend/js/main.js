@@ -1493,7 +1493,7 @@ function showDialogAssignManagedAppToGroup(id) {
 		txtManagedAppId.value = id;
 	});
 }
-function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove) {
+function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, config) {
 	if(groupId === false) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
@@ -1505,6 +1505,7 @@ function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudB
 	params.push({'key':'removable', 'value':removable});
 	params.push({'key':'disable_cloud_backup', 'value':disableCloudBackup});
 	params.push({'key':'remove_on_mdm_remove', 'value':removeOnMdmRemove});
+	params.push({'key':'config', 'value':config});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
 		hideDialog();

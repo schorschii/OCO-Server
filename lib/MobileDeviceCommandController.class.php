@@ -78,7 +78,7 @@ class MobileDeviceCommandController {
 						'Options' => [ 'PurchaseMethod' => ($app->vpp_amount ? 1 : 0) ],
 						'InstallAsManaged' => true,
 						'Attributes' => [ 'Removable' => boolval($app->removable) ],
-						'Configuration' => []
+						'Configuration' => ($app->config && json_decode($app->config, true)) ? json_decode($app->config, true) : []
 					]));
 					if($result) {
 						$changedMdIds[] = $md->id;

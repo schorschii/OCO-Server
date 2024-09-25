@@ -219,6 +219,14 @@ class CoreLogic {
 		$this->checkPermission($ma, PermissionManager::METHOD_DEPLOY);
 		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
 
+		if(empty($config)) {
+			$config = null;
+		} else {
+			$decoded = json_decode($config, true);
+			if(!$decoded || !is_array($decoded))
+				throw new InvalidArgumentException('Invalid JSON config');
+		}
+
 		$this->db->insertMobileDeviceGroupManagedApp($mdGroup->id, $ma->id, $removable, $disableCloudBackup, $removeOnMdmRemove, $config);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.assign', ['mobile_device_group_id'=>$mdGroup->id]);
 	}
