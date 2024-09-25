@@ -156,7 +156,7 @@ if($path === '/profile') {
 			$db->updateMobileDevice(
 				$md->id, $md->udid, $md->device_name, $md->serial, $md->vendor_description,
 				$md->model, $md->os, $md->device_family, $md->color,
-				$md->profile_uuid, base64_encode($request['Token']), $request['PushMagic'], $md->push_sent,
+				$md->profile_uuid, $request['Token'], $request['PushMagic'], $md->push_sent,
 				$request['UnlockToken'], $md->info, $md->notes, $md->force_update
 			);
 			break;
@@ -182,7 +182,7 @@ if($path === '/profile') {
 			$db->updateMobileDevice(
 				$md->id, null/*udid*/, $md->device_name, $md->serial, $md->vendor_description,
 				$md->model, $md->os, $md->device_family, $md->color,
-				$md->profile_uuid, null/*push_token*/, null/*push_magic*/, $md->push_sent,
+				$md->profile_uuid, null/*push_token*/, null/*push_magic*/, null/*push_sent*/,
 				null/*unlock_token*/, $md->info, $md->notes, $md->force_update
 			);
 			break;

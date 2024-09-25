@@ -38,8 +38,7 @@ class PushNotificationService {
 	}
 
 	function send(string $push_token, string $push_magic, $priority=10) {
-		$push_token_hex = bin2hex(base64_decode($push_token));
-		curl_setopt($this->ch, CURLOPT_URL, self::LIVE_SERVER.'/3/device/'.urlencode($push_token_hex));
+		curl_setopt($this->ch, CURLOPT_URL, self::LIVE_SERVER.'/3/device/'.urlencode(bin2hex($push_token)));
 		curl_setopt($this->ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
 		curl_setopt($this->ch, CURLOPT_SSLCERT, self::CLIENT_CERT_PATH);
 		#curl_setopt($this->ch, CURLOPT_VERBOSE, true);

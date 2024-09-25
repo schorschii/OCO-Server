@@ -733,7 +733,7 @@ CREATE TABLE `mobile_device` (
   `device_family` text NOT NULL,
   `color` text NOT NULL,
   `profile_uuid` text DEFAULT NULL,
-  `push_token` text DEFAULT NULL,
+  `push_token` blob DEFAULT NULL,
   `push_magic` text DEFAULT NULL,
   `push_sent` timestamp NULL DEFAULT NULL,
   `unlock_token` blob DEFAULT NULL,

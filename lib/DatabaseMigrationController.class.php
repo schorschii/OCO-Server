@@ -309,6 +309,26 @@ class DatabaseMigrationController {
 				$upgraded = true;
 		}
 
+		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'mobile_device' AND COLUMN_NAME = 'push_token' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute();
+		foreach($this->stmt->fetchAll() as $row) {
+			if($row['DATA_TYPE'] == 'text') {
+				if($this->debug) echo 'Upgrading to 1.1.3... (convert push_token to blob)'."\n";
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `mobile_device` CHANGE `push_token` `push_token` BLOB NULL DEFAULT NULL;");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				$this->stmt = $this->dbh->prepare("SELECT id, push_token FROM mobile_device");
+				$this->stmt->execute();
+				foreach($this->stmt->fetchAll() as $row2) {
+					$stmt = $this->dbh->prepare("UPDATE mobile_device SET push_token=:push_token WHERE id=:id");
+					$stmt->execute([':id'=>$row2['id'], ':push_token'=>base64_decode($row2['push_token'])]);
+				}
+
+				$upgraded = true;
+			}
+		}
+
 		return $upgraded;
 	}
 
