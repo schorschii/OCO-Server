@@ -122,9 +122,45 @@ class VolumePurchaseProgram {
 		]), 200);
 	}
 
+	// https://developer.apple.com/documentation/devicemanagement/revoke_assets
+	function revokeAssets(array $clientUserIds, array $serialNumbers) {
+		return $this->curlRequest('POST', self::APPLE_VPP_API.'/mdm/v2/assets/revoke', json_encode([
+			'clientUserIds' => $clientUserIds,
+			'serialNumbers' => $serialNumbers,
+		]), 200);
+	}
+
 	// https://developer.apple.com/documentation/devicemanagement/get_users-o3n
 	function getUsers() {
 		return $this->curlRequest('GET', self::APPLE_VPP_API.'/mdm/v2/users', null, 200);
+	}
+
+	function reassignLicenses() {
+		$mds = $this->db->selectAllMobileDevice();
+
+		// revoke all licenses
+		$allSerials = [];
+		foreach($mds as $md) {
+			if(!empty($md)) $allSerials[] = $md->serial;
+		}
+		if($allSerials) {
+			echo 'Revoking licenses from '.count($allSerials).' devices...'."\n";
+			$this->revokeAssets([], $allSerials);
+		}
+		sleep(10);
+
+		// assign new
+		foreach($mds as $md) {
+			foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
+				echo 'Assigning license for '.$app->store_id.' to '.$md->serial."\n";
+				if($app->vpp_amount) {
+					$this->associateAssets(
+						[ [ 'adamId' => $app->store_id ] ],
+						[], [ $md->serial ]
+					);
+				}
+			}
+		}
 	}
 
 }

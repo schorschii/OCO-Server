@@ -62,7 +62,6 @@ class MobileDeviceCommandController {
 			foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
 				if(!array_key_exists($app->identifier, $installedApps)) {
 					// assign VPP license
-					// TODO: unassign license
 					if($app->vpp_amount) {
 						$this->vpp->associateAssets(
 							[ [ 'adamId' => $app->store_id ] ],

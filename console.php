@@ -39,6 +39,12 @@ try {
 			}
 			break;
 
+		case 'applelicenses':
+			echo 'Syncing licenses...'."\n";
+			$ade = new Apple\VolumePurchaseProgram($db);
+			$ade->reassignLicenses();
+			break;
+
 		case 'applepush':
 			if(empty($argv[2])) throw new Exception('Please give the device serial number as second parameter!');
 			$ade = new Apple\AutomatedDeviceEnrollment($db);
