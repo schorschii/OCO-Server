@@ -81,8 +81,8 @@ try {
 		} elseif($_POST['command'] == 'ScheduleOSUpdate') {
 			$parameter = json_encode([
 				'RequestType' => 'ScheduleOSUpdate',
-				'Updates' => [ // TODO
-					[ 'InstallAction' => 'InstallASAP' ]
+				'Updates' => [
+					[ 'InstallAction' => 'Default' ]
 				]
 			]);
 		} elseif($_POST['command'] == 'OSUpdateStatus') {
