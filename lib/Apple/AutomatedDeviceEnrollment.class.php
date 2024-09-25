@@ -300,7 +300,8 @@ class AutomatedDeviceEnrollment {
 
 		$responseJson = json_decode($response, true);
 		if(!$responseJson || empty($responseJson['auth_session_token'])) {
-			throw new \RuntimeException('Invalid response from ABM/ASM');
+			// a common error is "T_C_NOT_SIGNED" which means you need to accept an updated apple service agreement
+			throw new \RuntimeException('Invalid response from ABM/ASM: '.$response);
 		}
 
 		$this->sessionToken = $responseJson['auth_session_token'];
