@@ -340,7 +340,8 @@ class AutomatedDeviceEnrollment {
 					$md->model?$md->model:($device['model']??''), $md->os?$md->os:($device['os']??''),
 					$device['device_family']??'', $device['color']??'',
 					$device['profile_uuid']??null, $md->push_token, $md->push_magic, $md->push_sent,
-					$md->unlock_token, $md->info, $md->notes, $md->force_update
+					$md->unlock_token, $md->info, $md->notes, $md->force_update,
+					false/*update_last_update*/
 				);
 			} else {
 				echo 'Creating device '.$device['serial_number'].'...'."\n";

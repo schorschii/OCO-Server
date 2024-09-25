@@ -246,10 +246,11 @@ class DatabaseController {
 			':force_update' => $force_update,
 		]);
 	}
-	public function updateMobileDevice($id, $udid, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update) {
+	public function updateMobileDevice($id, $udid, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update, $update_last_update=true) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE mobile_device SET udid=:udid, device_name=:device_name, serial=:serial, vendor_description=:vendor_description, model=:model, os=:os, device_family=:device_family, color=:color, profile_uuid=:profile_uuid, push_token=:push_token, push_magic=:push_magic, push_sent=:push_sent, unlock_token=:unlock_token, info=:info, notes=:notes, last_update=CURRENT_TIMESTAMP, force_update=:force_update
-			WHERE id=:id'
+			'UPDATE mobile_device SET udid=:udid, device_name=:device_name, serial=:serial, vendor_description=:vendor_description, model=:model, os=:os, device_family=:device_family, color=:color, profile_uuid=:profile_uuid, push_token=:push_token, push_magic=:push_magic, push_sent=:push_sent, unlock_token=:unlock_token, info=:info, notes=:notes, force_update=:force_update'
+			.($update_last_update ? ', last_update=CURRENT_TIMESTAMP' : '')
+			.' WHERE id=:id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,

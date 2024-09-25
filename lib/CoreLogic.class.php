@@ -111,7 +111,8 @@ class CoreLogic {
 		$result = $this->db->updateMobileDevice($md->id,
 			$md->udid, $md->device_name, $md->serial, $md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
 			$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token, $md->info,
-			$notes, $forceUpdate
+			$notes, $forceUpdate,
+			false/*update_last_update*/
 		);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.update', [
