@@ -329,6 +329,19 @@ class DatabaseMigrationController {
 			}
 		}
 
+		$this->stmt = $this->dbh->prepare("SELECT EXTRA FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'app' AND COLUMN_NAME = 'id' AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute();
+		foreach($this->stmt->fetchAll() as $row) {
+			if($row['EXTRA'] != 'auto_increment') {
+				if($this->debug) echo 'Upgrading to 1.1.3... (add auto_increment to app.id)'."\n";
+				$this->stmt = $this->dbh->prepare(
+					"ALTER TABLE `app` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT; ");
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				$upgraded = true;
+			}
+		}
+
 		return $upgraded;
 	}
 

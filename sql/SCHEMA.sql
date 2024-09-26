@@ -806,7 +806,7 @@ CREATE TABLE `mobile_device_group_member` (
 --
 
 CREATE TABLE `app` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `identifier` varchar(350) NOT NULL,
   `name` varchar(350) NOT NULL,
   `display_version` text NOT NULL,
