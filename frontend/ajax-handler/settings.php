@@ -297,7 +297,7 @@ try {
 				die();
 			}
 			if($key == 'apple-mdm-vendor-cert') { // ('apple-mdm-apn-cert' file is already pem encoded)
-				$value = Apple\AutomatedDeviceEnrollment::der2pem($value);
+				$value = Apple\Util\PemDerConverter::der2pem($value);
 			}
 			$cl->editSetting($key, $value);
 			die();

@@ -51,7 +51,6 @@ class PushNotificationService {
 		curl_setopt($this->ch, CURLOPT_POSTFIELDS, json_encode(['mdm' => $push_magic]));
 		curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($this->ch);
-		#var_dump($response);
 		$statusCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 		if($statusCode !== 200) {
 			throw new \RuntimeException('Got unexpected APNS status code '.$statusCode);

@@ -52,7 +52,7 @@ try {
 			if(!$md) throw new InvalidRequestException('Serial number not found');
 			$apnCert = $ade->getMdmApnCert();
 			$apn = new Apple\PushNotificationService($db, $apnCert['certinfo']['subject']['UID'], $apnCert['cert'], $apnCert['privkey']);
-			var_dump( $apn->send($md->push_token, $md->push_magic) );
+			$apn->send($md->push_token, $md->push_magic);
 			break;
 
 		case 'ldapsync':

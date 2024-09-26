@@ -120,7 +120,7 @@ class AutomatedDeviceEnrollment {
 		);
 		$csr = openssl_csr_new($dn, $privkey, array('digest_alg' => 'sha256'));
 		openssl_csr_export($csr, $csrPem);
-		$csrDer = self::pem2der($csrPem);
+		$csrDer = Util\PemDerConverter::pem2der($csrPem);
 		$csrDerB64 = base64_encode($csrDer);
 
 		// sign the customer CSR with MDM vendor cert
@@ -485,17 +485,6 @@ class AutomatedDeviceEnrollment {
 			]
 		] ) );
 		return $plist->toXML(true);
-	}
-
-	static function pem2der($pem_data) {
-		$pem_data = trim(preg_replace('/-----(.*)-----/', '', $pem_data));
-		$der = base64_decode($pem_data);
-		return $der;
-	}
-	static function der2pem($der_data, $type='CERTIFICATE') {
-		$pem = chunk_split(base64_encode($der_data), 64, "\n");
-		$pem = "-----BEGIN ".$type."-----\n".$pem."-----END ".$type."-----\n";
-		return $pem;
 	}
 
 	const APPLE_CERT_CHAIN = '-----BEGIN CERTIFICATE-----'."\n"
