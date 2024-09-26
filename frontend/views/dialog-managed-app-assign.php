@@ -27,7 +27,7 @@ require_once('../session.inc.php');
 	<tr>
 		<th><?php echo LANG('app_config_json'); ?></th>
 		<td>
-			<textarea id='txtManagedAppConfig' class='fullwidth'></textarea>
+			<textarea id='txtManagedAppConfig' class='fullwidth' placeholder='<?php echo LANG('optional_hint'); ?>'></textarea>
 		</td>
 	</tr>
 </table>
