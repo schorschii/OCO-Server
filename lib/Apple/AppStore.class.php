@@ -76,7 +76,7 @@ class AppStore {
 		$response = curl_exec($ch);
 		$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if($expectedStatusCode && $statusCode !== $expectedStatusCode)
-			throw new \Exception('Unexpected status code '.$statusCode);
+			throw new \Exception('Unexpected App Store API status code '.$statusCode.': '.$response);
 		curl_close($ch);
 		return $response;
 	}
