@@ -777,7 +777,7 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname, ':notes' => $notes]);
 	}
-	public function updateComputerPing($id, $agent_version=null, $networks=null, $uptime=null) {
+	public function updateComputerPing($id, $agent_version=null, $networks=null, $uptime=null, $remote_address=null) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET last_ping = CURRENT_TIMESTAMP WHERE id = :id'
 		);
@@ -814,6 +814,12 @@ class DatabaseController {
 				'UPDATE computer SET uptime = :uptime WHERE id = :id'
 			);
 			if(!$this->stmt->execute([':id' => $id, ':uptime' => $uptime])) return false;
+		}
+		if($remote_address !== null) {
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE computer SET remote_address = :remote_address WHERE id = :id'
+			);
+			if(!$this->stmt->execute([':id' => $id, ':remote_address' => $remote_address])) return false;
 		}
 		return true;
 	}
