@@ -2330,11 +2330,11 @@ class DatabaseController {
 			':post_action' => $post_action,
 		])) return false;
 	}
-	public function renewStaticJob($id, $procedure, $success_return_codes, $upgrade_behavior, $post_action) {
+	public function renewStaticJob($id, $procedure, $success_return_codes, $upgrade_behavior, $download, $post_action) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container_job
 			SET state = 0, download_progress = NULL, return_code = NULL, message = "", download_started = NULL, execution_started = NULL, execution_finished = NULL,
-			`procedure` = :procedure, success_return_codes = :success_return_codes, upgrade_behavior = :upgrade_behavior, post_action = :post_action
+			`procedure` = :procedure, success_return_codes = :success_return_codes, upgrade_behavior = :upgrade_behavior, download = :download, post_action = :post_action
 			WHERE id = :id'
 		);
 		return $this->stmt->execute([
@@ -2342,6 +2342,7 @@ class DatabaseController {
 			':procedure' => $procedure,
 			':success_return_codes' => $success_return_codes,
 			':upgrade_behavior' => $upgrade_behavior,
+			':download' => $download,
 			':post_action' => $post_action,
 		]);
 	}

@@ -1546,6 +1546,7 @@ class CoreLogic {
 						empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure,
 						empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes,
 						$package->upgrade_behavior,
+						$package->getFilePath() ? 1 : 0,
 						empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action
 					);
 				}
