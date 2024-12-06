@@ -32,6 +32,23 @@ function handleJsonRequest($request) {
 		}
 
 		switch($request['method']) {
+			case 'oco.info':
+				$license = new LicenseCheck($db);
+				$response['result'] = [
+					'success' => true, 'data' => [
+						'version' => OcoServer::APP_VERSION,
+						'wol_satellites' => json_decode($db->settings->get('wol-satellites')??'', true),
+						'extensions' => $ext->getLoadedExtensions(),
+						'license_computers' => $license->getObjects(),
+						'license_company' => $license->getCompany(),
+						'license_expiration' => $license->getExpireTime(),
+						'webserver' => $_SERVER['SERVER_SOFTWARE']??'?',
+						'database' => $db->getServerVersion(),
+						'php' => phpversion(),
+					]
+				];
+				break;
+
 			case 'oco.computer.list':
 				if(empty($data['computer_group_id'])) {
 					$response['result'] = [

@@ -15,6 +15,40 @@ Within the `params` object, please send the correct `api_key` value and all requ
 Please have a look at the following API method documentation for JSON-RPC request/response examples.
 
 # Methods
+## `oco.info` - Get General Information
+### Parameters
+none
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.info",
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"result": {
+		"success": true,
+		"data": {
+			"version": "1.1.0",
+			"wol_satellites": null,
+			"license_computers": 100,
+			"license_company": "Your Company Name",
+			"license_expiration": 1756504800,
+			"webserver": "Apache",
+			"database": "10.11.6-MariaDB-0+deb12u1",
+			"php": "8.2.24"
+		}
+	}
+}
+```
+
 ## `oco.computer.list` - List All Computers
 ### Parameters
 - `computer_group_id` (optional) - computer group ID (if omitted, all computers and rootlevel computer groups will be returned)
