@@ -64,11 +64,15 @@ class CoreLogic {
 	/*** Package Operations ***/
 	public function getMyPackages() {
 		$packagesFiltered = [];
-		foreach($this->db->selectAllPackage() as $package) {
-			if($this->checkPermission($package, PermissionManager::METHOD_READ, false))
-				$packagesFiltered[] = $this->db->selectPackage($package->id);
-		}
-		return $packagesFiltered;
+                $myComputers = $this->getMyComputers();
+                foreach($this->db->selectAllPackage() as $package) {
+                        foreach($myComputers as $computer){
+                                if( $this->db->selectPackage($package->id)->compatible_os == $computer->os && $this->checkPermission($package, PermissionManager::METHOD_READ, false))
+                                        $packagesFiltered[] = $this->db->selectPackage($package->id);
+                        }
+                }
+                return $packagesFiltered;
+
 	}
 	public function getMyPackage($id) {
 		$package = $this->db->selectPackage($id);
