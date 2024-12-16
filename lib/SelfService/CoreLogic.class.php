@@ -114,6 +114,7 @@ class CoreLogic {
 		}
 
 		// use the normal admin client CoreLogic for dependency resolving logic etc.
+		$forceInstallSameVersion = 1;
 		$cl2 = new \CoreLogic($this->db, null, $this->du);
 		$jcid = $cl2->deploy(
 			$name, ''/*description*/,
