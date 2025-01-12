@@ -633,7 +633,6 @@ CREATE TABLE IF NOT EXISTS `job_container_job` (
 --
 
 CREATE TABLE IF NOT EXISTS `log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `timestamp` datetime NOT NULL DEFAULT current_timestamp(),
   `level` tinyint(4) NOT NULL,
   `host` text NOT NULL,
@@ -641,7 +640,7 @@ CREATE TABLE IF NOT EXISTS `log` (
   `object_id` int(11) DEFAULT NULL,
   `action` text NOT NULL,
   `data` longtext NOT NULL,
-  PRIMARY KEY (`id`)
+  KEY `object_id` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -710,10 +709,9 @@ REPLACE INTO `report` (`id`, `report_group_id`, `name`, `notes`, `query`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `setting` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `key` text NOT NULL,
+  `key` VARCHAR(50) NOT NULL,
   `value` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

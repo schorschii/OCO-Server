@@ -371,6 +371,41 @@ class DatabaseMigrationController {
 					"UPDATE system_user_role SET permissions='{\"Special\\\\\\\\ClientApi\": true, \"Special\\\\\\\\WebFrontend\": true, \"Special\\\\\\\\GeneralConfiguration\": true, \"Special\\\\\\\\EventQueryRules\": true, \"Special\\\\\\\\PasswordRotationRules\": true, \"Special\\\\\\\\DeletedObjects\": true, \"Models\\\\\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\\\\\SystemUser\": true, \"Models\\\\\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Software\": true, \"Models\\\\\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}}}' WHERE id = 1"
 				);
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				$upgraded = true;
+		}
+
+		if($this->getTableColumnInfo('setting', 'id')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (remove id from setting table)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `setting` DROP `id`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.4... (change key to varchar in setting table)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `setting` CHANGE `key` `key` VARCHAR(50) NOT NULL");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.4... (make key primary key in setting table)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `setting` ADD PRIMARY KEY(`key`)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if($this->getTableColumnInfo('log', 'id')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (remove id from log table)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `log` DROP `id`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.4... (object_id index in setting table)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `log` ADD INDEX(`object_id`)");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
 		}
 
 		return $upgraded;
