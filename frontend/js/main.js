@@ -2604,6 +2604,62 @@ function confirmRemoveSelectedEventQueryRule(checkboxName) {
 	}
 }
 
+function showDialogEditPasswordRotationRule(id=-1, computer_group_id='', username='administrator', alphabet='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_+*.#=!', length=15, validSeconds=2592000, history=5) {
+	title = LANG['change'];
+	buttonText = LANG['change'];
+	if(id == -1) {
+		title = LANG['create'];
+		buttonText = LANG['create'];
+	}
+	showDialogAjax(title, 'views/dialog-password-rotation-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditPasswordRotationRuleId.value = id;
+		sltEditPasswordRotationRuleComputerGroupId.value = computer_group_id;
+		txtEditPasswordRotationRuleUsername.value = username;
+		txtEditPasswordRotationRuleAlphabet.value = alphabet;
+		txtEditPasswordRotationRuleLength.value = length;
+		txtEditPasswordRotationRuleValidSeconds.value = validSeconds;
+		txtEditPasswordRotationRuleHistory.value = history;
+		spnBtnUpdatePasswordRotationRule.innerText = buttonText;
+	});
+}
+function editPasswordRotationRule(id, computer_group_id, username, alphabet, length, valid_seconds, history) {
+	var params = [];
+	params.push({'key':'edit_password_rotation_rule_id', 'value':id});
+	params.push({'key':'computer_group_id', 'value':computer_group_id});
+	params.push({'key':'username', 'value':username});
+	params.push({'key':'alphabet', 'value':alphabet});
+	params.push({'key':'length', 'value':length});
+	params.push({'key':'valid_seconds', 'value':valid_seconds});
+	params.push({'key':'history', 'value':history});
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+		hideDialog(); refreshContent();
+		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function confirmRemoveSelectedPasswordRotationRule(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_password_rotation_rule_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete'])) {
+		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+
 function showDialogEditGeneralConfig() {
 	showDialogAjax(LANG['oco_configuration'], 'views/dialog-general-config-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }

@@ -20,6 +20,7 @@ $showDeletedObjects = $cl->checkPermission(null, PermissionManager::SPECIAL_PERM
 	<a <?php echo explorerLink('views/settings-system-users.php'); ?>>&rarr;&nbsp;<?php echo LANG('system_user_management'); ?></a>
 	<a <?php echo explorerLink('views/settings-domain-users.php'); ?>>&rarr;&nbsp;<?php echo LANG('self_service_management'); ?></a>
 	<a <?php echo explorerLink('views/settings-event-query-rules.php'); ?>>&rarr;&nbsp;<?php echo LANG('event_query_rules'); ?></a>
+	<a <?php echo explorerLink('views/settings-password-rotation-rules.php'); ?>>&rarr;&nbsp;<?php echo LANG('password_rotation_rules'); ?></a>
 	<a <?php echo explorerLink('views/settings-mdm.php'); ?>>&rarr;&nbsp;<?php echo LANG('mobile_device_management'); ?></a>
 	<a <?php echo explorerLink('views/settings-deleted-objects.php'); ?>>&rarr;&nbsp;<?php echo LANG('deleted_objects_history'); ?></a>
 </div>

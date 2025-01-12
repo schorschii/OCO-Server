@@ -17,6 +17,15 @@ class DatabaseMigrationController {
 		$this->debug = $debug;
 	}
 
+	private function getTableColumnInfo($table, $column) {
+		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE, EXTRA FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :tbl AND COLUMN_NAME = :col AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt->execute([':tbl'=>$table, ':col'=>$column]);
+		if($this->stmt->rowCount() == 0) return false;
+		foreach($this->stmt->fetchAll() as $row) {
+			return $row;
+		}
+	}
+
 	public function upgrade() {
 		$upgraded = false;
 		// Note: PDO::beginTransaction() is useless for schema changes in MySQL and corresponding commit() will throw an error since PHP 8, that's why no transactions are used here.
@@ -192,9 +201,7 @@ class DatabaseMigrationController {
 			}
 		}
 
-		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'app' AND COLUMN_NAME = 'id' AND TABLE_SCHEMA = '".DB_NAME."'");
-		$this->stmt->execute();
-		if($this->stmt->rowCount() == 0) {
+		if(!$this->getTableColumnInfo('app', 'id')) {
 				if($this->debug) echo 'Upgrading to 1.1.3... (add app table)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"CREATE TABLE `app` (
@@ -300,46 +307,70 @@ class DatabaseMigrationController {
 					  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-				if($this->debug) echo 'Upgrading to 1.1.3... (update permissions of superadmin role)'."\n";
+				$upgraded = true;
+		}
+
+		if($this->getTableColumnInfo('mobile_device', 'push_token')['DATA_TYPE'] == 'text') {
+			if($this->debug) echo 'Upgrading to 1.1.3... (convert push_token to blob)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device` CHANGE `push_token` `push_token` BLOB NULL DEFAULT NULL;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$this->stmt = $this->dbh->prepare("SELECT id, push_token FROM mobile_device");
+			$this->stmt->execute();
+			foreach($this->stmt->fetchAll() as $row2) {
+				$stmt = $this->dbh->prepare("UPDATE mobile_device SET push_token=:push_token WHERE id=:id");
+				$stmt->execute([':id'=>$row2['id'], ':push_token'=>base64_decode($row2['push_token'])]);
+			}
+
+			$upgraded = true;
+		}
+
+		if($this->getTableColumnInfo('app', 'id')['EXTRA'] != 'auto_increment') {
+			if($this->debug) echo 'Upgrading to 1.1.3... (add auto_increment to app.id)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `app` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT; ");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(!$this->getTableColumnInfo('password_rotation_rule', 'id')) {
+			if($this->debug) echo 'Upgrading to 1.1.3... (add password_rotation_rule table)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `password_rotation_rule` (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `computer_group_id` int(11) DEFAULT NULL,
+				  `username` text NOT NULL,
+				  `alphabet` text NOT NULL,
+				  `length` int(11) NOT NULL,
+				  `valid_seconds` int(11) NOT NULL,
+				  `history` int(11) NOT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `fk_password_rotation_rule_1` (`computer_group_id`),
+				  CONSTRAINT `fk_password_rotation_rule_1` FOREIGN KEY (`computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.3... (add computer_password table)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `computer_password` (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `computer_id` int(11) NOT NULL,
+				  `username` text NOT NULL,
+				  `password` text NOT NULL,
+				  `created` timestamp NOT NULL DEFAULT current_timestamp(),
+				  PRIMARY KEY (`id`),
+				  KEY `fk_computer_password_1` (`computer_id`),
+				  CONSTRAINT `fk_computer_password_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.3... (update permissions of superadmin role)'."\n";
 				$this->stmt = $this->dbh->prepare(
-					"UPDATE system_user_role SET permissions='{\"Special\\\\\\\\ClientApi\": true, \"Special\\\\\\\\WebFrontend\": true, \"Special\\\\\\\\GeneralConfiguration\": true, \"Special\\\\\\\\EventQueryRules\": true, \"Special\\\\\\\\DeletedObjects\": true, \"Models\\\\\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\\\\\SystemUser\": true, \"Models\\\\\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Software\": true, \"Models\\\\\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}}}' WHERE id = 1"
+					"UPDATE system_user_role SET permissions='{\"Special\\\\\\\\ClientApi\": true, \"Special\\\\\\\\WebFrontend\": true, \"Special\\\\\\\\GeneralConfiguration\": true, \"Special\\\\\\\\EventQueryRules\": true, \"Special\\\\\\\\PasswordRotationRules\": true, \"Special\\\\\\\\DeletedObjects\": true, \"Models\\\\\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\\\\\SystemUser\": true, \"Models\\\\\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Software\": true, \"Models\\\\\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}}}' WHERE id = 1"
 				);
 				if(!$this->stmt->execute()) throw new Exception('SQL error');
-
-				$upgraded = true;
-		}
-
-		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'mobile_device' AND COLUMN_NAME = 'push_token' AND TABLE_SCHEMA = '".DB_NAME."'");
-		$this->stmt->execute();
-		foreach($this->stmt->fetchAll() as $row) {
-			if($row['DATA_TYPE'] == 'text') {
-				if($this->debug) echo 'Upgrading to 1.1.3... (convert push_token to blob)'."\n";
-				$this->stmt = $this->dbh->prepare(
-					"ALTER TABLE `mobile_device` CHANGE `push_token` `push_token` BLOB NULL DEFAULT NULL;");
-				if(!$this->stmt->execute()) throw new Exception('SQL error');
-
-				$this->stmt = $this->dbh->prepare("SELECT id, push_token FROM mobile_device");
-				$this->stmt->execute();
-				foreach($this->stmt->fetchAll() as $row2) {
-					$stmt = $this->dbh->prepare("UPDATE mobile_device SET push_token=:push_token WHERE id=:id");
-					$stmt->execute([':id'=>$row2['id'], ':push_token'=>base64_decode($row2['push_token'])]);
-				}
-
-				$upgraded = true;
-			}
-		}
-
-		$this->stmt = $this->dbh->prepare("SELECT EXTRA FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'app' AND COLUMN_NAME = 'id' AND TABLE_SCHEMA = '".DB_NAME."'");
-		$this->stmt->execute();
-		foreach($this->stmt->fetchAll() as $row) {
-			if($row['EXTRA'] != 'auto_increment') {
-				if($this->debug) echo 'Upgrading to 1.1.3... (add auto_increment to app.id)'."\n";
-				$this->stmt = $this->dbh->prepare(
-					"ALTER TABLE `app` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT; ");
-				if(!$this->stmt->execute()) throw new Exception('SQL error');
-
-				$upgraded = true;
-			}
 		}
 
 		return $upgraded;

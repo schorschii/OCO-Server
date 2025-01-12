@@ -216,6 +216,32 @@ $isOnline = $computer->isOnline($db);
 							?>
 						</tbody>
 					</table>
+
+					<h2><?php echo LANG('passwords'); ?></h2>
+					<table id='tblPasswordsData' class='list sortable savesort'>
+						<thead>
+							<tr>
+								<th><?php echo LANG('login_name'); ?></th>
+								<th><?php echo LANG('password'); ?></th>
+								<th><?php echo LANG('created'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach($db->selectAllComputerPasswordByComputerId($computer->id) as $password) { ?>
+								<tr>
+								<td class='subbuttons'>
+									<?php echo htmlspecialchars($password->username); ?>
+									<button onclick='navigator.clipboard.writeText(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->username,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+								</td>
+								<td class='subbuttons mask monospace'>
+									<?php echo htmlspecialchars($password->password); ?>
+									<button onclick='navigator.clipboard.writeText(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->password,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+								</td>
+								<td><?php echo htmlspecialchars($password->created); ?></td>
+								</tr>
+							<?php } ?>
+						</tbody>
+					</table>
 				</div>
 			</div>
 

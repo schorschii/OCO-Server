@@ -44,6 +44,11 @@ Please note that the operating systems are producing many log entries. A meaning
 
 For performance reasons, a MySQL INDEX is created over the `log` column and therefore, the max length is limited to 200 chars.
 
+## Password Rotation Rules
+With the password rotation feature, you can periodically change passwords of local (admin) accounts. This feature is an alternative to the Local Administrator Password Solution (LAPS) from Microsoft.
+
+To use it, you just need to create appropriate password rotation rule in the OCO settings, and the agent will generate a new random password for your local accounts after the given password expiration time is reached.
+
 ### Example Rules
 #### Windows: Get Defender Warning, Error and Critical Events
 (including "Malware Detected" events with event ID 1116)

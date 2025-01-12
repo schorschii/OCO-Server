@@ -1385,6 +1385,12 @@ div.stickytable > table.list tfoot {
 .checkboxWithText .hint {
 	max-width: 650px;
 }
+.mask {
+	-webkit-text-security: disc;
+}
+.mask:hover, .mask:focus {
+	-webkit-text-security: none;
+}
 
 .listSearch {
 	position: relative;

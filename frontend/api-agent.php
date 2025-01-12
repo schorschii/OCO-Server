@@ -322,16 +322,32 @@ switch($srcdata['method']) {
 			$loginsSince = localTimeToUtc($tmpLogon->timestamp);
 		} catch(Exception $e) {}
 
+		// get password update rules
+		$passwords = [];
+		foreach($db->selectAllPasswordRotationRuleByComputerId($computer->id) as $rule) {
+			$lastUpdateTime = 0;
+			foreach($db->selectAllComputerPasswordByComputerId($computer->id) as $password) {
+				if($password->username === $rule->username) {
+					$lastUpdateTime = strtotime($password->created);
+					break;
+				}
+			}
+			if(time() - $lastUpdateTime > $rule->valid_seconds) {
+				$passwords[] = ['username'=>$rule->username, 'alphabet'=>$rule->alphabet, 'length'=>$rule->length];
+			}
+		}
+
 		$resdata['error'] = null;
 		$resdata['result'] = [
 			'success' => $success,
-			'params' => [
-				'server-key' => $server_key, // tell the agent our server key, so it can validate the server
-				'agent-key' => $agent_key,   // tell the agent that it should save a new agent key for further requests
-				'update' => $update,         // tell the agent that it should update the inventory data
-				'logins-since' => $loginsSince, // tell the agent to only send logins since the last login date
-				'software-jobs' => $jobs,    // tell the agent all pending software jobs
-				'events' => $events,         // tell the agent to send specific events from local log files
+			'params' => [ // tell the agent...
+				'server-key' => $server_key,     // ...our server key, so it can validate the server
+				'agent-key' => $agent_key,       // ...that it should save a new agent key for further requests
+				'update' => $update,             // ...that it should update the inventory data
+				'logins-since' => $loginsSince,  // ...to only send logins since the last login date
+				'software-jobs' => $jobs,        // ...all pending software jobs
+				'events' => $events,             // ...to send specific events from local log files
+				'update-passwords' => $passwords // ...to update local admin passwords
 			]
 		];
 
@@ -390,6 +406,60 @@ switch($srcdata['method']) {
 				json_encode($event['data'])
 			);
 			if(!$success) throw new Exception('Error while inserting event into database');
+		}
+
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => $success,
+			'params' => [
+				'server-key' => $computer->server_key,
+			]
+		];
+
+		break;
+
+	case 'oco.agent.passwords':
+		// check parameter
+		if(!isset($params['hostname']) || !isset($params['agent-key']) || empty($params['data'])) {
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE,
+				'invalid JSON data'
+			);
+		}
+
+		$data = $params['data'];
+		if(!isset($data['passwords']) || !is_array($data['passwords'])) {
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE,
+				'invalid JSON data'
+			);
+		}
+
+		// check authorization
+		$computer = $db->selectComputerByHostname($params['hostname']);
+		if($computer === null) {
+			errorExit('404 Computer Not Found', $params['hostname'], null, Models\Log::ACTION_AGENT_API_UPDATE,
+				'computer not found'
+			);
+		}
+		if($params['agent-key'] !== $computer->agent_key) {
+			errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE,
+				'computer found but agent key mismatch: '.$params['agent-key']
+			);
+		}
+
+		$success = false;
+		foreach($data['passwords'] as $password) {
+			foreach($db->selectAllPasswordRotationRuleByComputerId($computer->id) as $rule) {
+				if($rule->username === $password['username']) {
+					$success = $db->insertComputerPassword(
+						$computer->id,
+						$password['username'],
+						$password['password'],
+						$rule->history
+					);
+					if(!$success) throw new Exception('Error while inserting password into database');
+					break;
+				}
+			}
 		}
 
 		$resdata['error'] = null;

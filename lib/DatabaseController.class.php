@@ -1429,6 +1429,73 @@ class DatabaseController {
 		}
 		return true;
 	}
+	public function insertComputerPassword($computer_id, $username, $password, $history) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_password WHERE id NOT IN (
+				SELECT id FROM (
+					SELECT id FROM computer_password WHERE computer_id = :computer_id AND username = :username ORDER BY created DESC LIMIT '.intval($history).'
+				) temp
+			) AND computer_id = :computer_id AND username = :username'
+		);
+		$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':username' => $username,
+		]);
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_password (computer_id, username, password) VALUES (:computer_id, :username, :password)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':username' => $username,
+			':password' => $password,
+		])) return false;
+		return $this->dbh->lastInsertId();
+	}
+	public function selectAllPasswordRotationRule() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT prr.*, cg.name AS "computer_group_name" FROM password_rotation_rule prr
+			LEFT JOIN computer_group cg ON cg.id = prr.computer_group_id'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PasswordRotationRule');
+	}
+	public function selectAllPasswordRotationRuleByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT prr.* FROM password_rotation_rule prr
+			LEFT JOIN computer_group_member cgm ON prr.computer_group_id = cgm.computer_group_id
+			WHERE cgm.computer_id = :computer_id OR prr.computer_group_id IS NULL'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PasswordRotationRule');
+	}
+	public function selectAllComputerPasswordByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cp.*, (SELECT COUNT(*) FROM computer_password cp3 WHERE cp3.computer_id = cp.computer_id AND cp3.username = cp.username) AS "history_count"
+			FROM computer_password cp INNER JOIN computer c ON c.id = cp.computer_id WHERE cp.id IN (SELECT MAX(cp2.id) FROM computer_password cp2 GROUP BY cp2.computer_id, cp2.username) AND cp.computer_id = :computer_id'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPassword');
+	}
+	public function insertUpdatePasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history) {
+		$this->stmt = $this->dbh->prepare(
+			'REPLACE INTO password_rotation_rule (id, computer_group_id, username, alphabet, length, valid_seconds, history)
+			VALUES (:id, :computer_group_id, :username, :alphabet, :length, :valid_seconds, :history)');
+		$this->stmt->execute([
+			':id' => $id,
+			':computer_group_id' => $computer_group_id,
+			':username' => $username,
+			':alphabet' => $alphabet,
+			':length' => $length,
+			':valid_seconds' => $valid_seconds,
+			':history' => $history,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function deletePasswordRotationRule($id) {
+		$this->stmt = $this->dbh->prepare('DELETE FROM password_rotation_rule WHERE id = :id');
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->rowCount();
+	}
 
 	// Package Operations
 	public function insertPackageFamily($name, $notes) {
