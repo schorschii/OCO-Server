@@ -34,7 +34,7 @@ return [
 	'log_in' => 'Connexion',
 	'login_failed' => 'Échec de connexion',
 	'user_locked' => 'Utilisateur verrouillé',
-	'username' => 'Nom d\'utilisateur',
+	'username' => 'Utilisateur',
 	'password' => 'Mot de passe',
 	'passwords' => 'Mots de passe',
 	'password_rotation_rules' => 'Règles de rotation de mot de passe',
