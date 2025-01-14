@@ -62,7 +62,7 @@ return [
 	'last_seen' => 'Dernière synchro',
 	'last_updated' => 'Dernière mise à jour',
 	'elements' => 'Objet(s)',
-	'selected' => 'sélectionné',
+	'selected' => 'Sélectionné',
 	'deploy' => 'Déployer',
 	'selected_elements' => 'Objets sélectionnés',
 	'delete' => 'Supprimer',
