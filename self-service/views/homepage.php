@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once(__DIR__.'/../../loader.inc.php');
-require_once(__DIR__.'/../session.php');
+require_once(__DIR__.'/../session.inc.php');
 ?>
 
 <div id='homepage'>

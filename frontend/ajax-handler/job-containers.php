@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 try {
 
@@ -12,7 +12,7 @@ try {
 		if(empty($group)) $computers = $db->selectAllComputer();
 		else $computers = $db->selectAllComputerByComputerGroupId($group->id);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
+		echo "<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList();return false'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($computers as $c) {
 			if(!$cl->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 
@@ -23,7 +23,7 @@ try {
 	if(isset($_GET['get_computer_report_results'])) {
 		$reportResult = $cl->executeReport($_GET['get_computer_report_results']);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployComputerList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
+		echo "<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList();return false'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($reportResult as $row) {
 			if(empty($row['computer_id'])) continue;
 			$c = $db->selectComputer($row['computer_id']);
@@ -39,7 +39,7 @@ try {
 		if(empty($group)) $packages = $db->selectAllPackage(true);
 		else $packages = $db->selectAllPackageByPackageGroupId($group->id);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
+		echo "<a href='#' class='blockListItem noSearch big' onclick='refreshDeployPackageList();return false'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($packages as $p) {
 			if(!$cl->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
@@ -50,7 +50,7 @@ try {
 	if(isset($_GET['get_package_report_results'])) {
 		$reportResult = $cl->executeReport($_GET['get_package_report_results']);
 
-		echo "<a class='blockListItem noSearch big' onclick='refreshDeployPackageList()'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
+		echo "<a href='#' class='blockListItem noSearch big' onclick='refreshDeployPackageList();return false'><img src='img/arrow-back.dyn.svg'>".LANG('back')."</a>";
 		foreach($reportResult as $row) {
 			if(empty($row['package_id'])) continue;
 			$p = $db->selectPackage($row['package_id']);
@@ -65,23 +65,26 @@ try {
 	if(isset($_POST['create_install_job_container'])) {
 		// compile constraints
 		$agentIpRanges = [];
-		if(!empty($_POST['constraint_ip_range'])) {
-			if(is_string($_POST['constraint_ip_range'])) {
-				$agentIpRanges[] = $_POST['constraint_ip_range'];
+		if(!empty($_POST['agent_ip_ranges']) && is_string($_POST['agent_ip_ranges'])) {
+			foreach(explode(',', $_POST['agent_ip_ranges']) as $range) {
+				$agentIpRanges[] = $range;
 			}
-			elseif(is_array($_POST['constraint_ip_range'])) {
-				$agentIpRanges = $_POST['constraint_ip_range'];
+		}
+		$timeFrames = [];
+		if(!empty($_POST['time_frames']) && is_string($_POST['time_frames'])) {
+			foreach(explode(',', $_POST['time_frames']) as $range) {
+				$timeFrames[] = $range;
 			}
 		}
 		// create container + jobs
 		die($cl->deploy(
-			$_POST['create_install_job_container'], $_POST['description'],
+			$_POST['create_install_job_container'], $_POST['description'] ?? '',
 			$_POST['computer_id'] ?? [], $_POST['computer_group_id'] ?? [], $_POST['computer_report_id'] ?? [],
 			$_POST['package_id'] ?? [], $_POST['package_group_id'] ?? [], $_POST['package_report_id'] ?? [],
 			$_POST['date_start'], $_POST['date_end'] ?? null,
 			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
-			$_POST['auto_create_uninstall_jobs'] ?? 1, $_POST['force_install_same_version'] ?? 0,
-			$_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0, $agentIpRanges
+			$_POST['force_install_same_version'] ?? 0, $_POST['sequence_mode'] ?? 0, $_POST['priority'] ?? 0,
+			$agentIpRanges, $timeFrames
 		));
 	}
 
@@ -115,8 +118,9 @@ try {
 	}
 
 	// ----- renew failed jobs in container if requested -----
-	if(!empty($_POST['create_renew_job_container'])
-	&& isset($_POST['job_container_id'])
+	if(isset($_POST['renew_job_container'])
+	&& isset($_POST['create_new_job_container'])
+	&& isset($_POST['job_container_name'])
 	&& isset($_POST['notes'])
 	&& isset($_POST['start_time'])
 	&& isset($_POST['end_time'])
@@ -124,8 +128,9 @@ try {
 	&& isset($_POST['shutdown_waked_after_completion'])
 	&& isset($_POST['priority'])) {
 		die($cl->renewFailedStaticJobsInJobContainer(
-			$_POST['create_renew_job_container'], $_POST['notes'],
-			$_POST['job_container_id'], $_POST['job_id'] ?? [], $_POST['start_time'], $_POST['end_time'],
+			$_POST['renew_job_container'], $_POST['job_id'] ?? [], $_POST['create_new_job_container'],
+			$_POST['job_container_name'], $_POST['notes'],
+			$_POST['start_time'], $_POST['end_time'],
 			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'],
 			0/*sequence mode*/, $_POST['priority']
 		));
@@ -148,7 +153,22 @@ try {
 	&& isset($_POST['sequence_mode'])
 	&& isset($_POST['priority'])
 	&& isset($_POST['agent_ip_ranges'])
+	&& isset($_POST['time_frames'])
 	&& isset($_POST['notes'])) {
+		// compile constraints
+		$agentIpRanges = [];
+		if(!empty($_POST['agent_ip_ranges']) && is_string($_POST['agent_ip_ranges'])) {
+			foreach(explode(',', $_POST['agent_ip_ranges']) as $range) {
+				$agentIpRanges[] = $range;
+			}
+		}
+		$timeFrames = [];
+		if(!empty($_POST['time_frames']) && is_string($_POST['time_frames'])) {
+			foreach(explode(',', $_POST['time_frames']) as $range) {
+				$timeFrames[] = $range;
+			}
+		}
+		// update
 		$cl->editJobContainer($_POST['edit_job_container_id'],
 			$_POST['name'],
 			$_POST['enabled'],
@@ -157,7 +177,8 @@ try {
 			$_POST['notes'],
 			$_POST['sequence_mode'],
 			$_POST['priority'],
-			$_POST['agent_ip_ranges']
+			$agentIpRanges,
+			$timeFrames
 		);
 		die();
 	}
@@ -185,7 +206,7 @@ try {
 	die(LANG('permission_denied'));
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
-	die($e->getMessage());
+	die(htmlspecialchars($e->getMessage()));
 }
 
 header('HTTP/1.1 400 Invalid Request');

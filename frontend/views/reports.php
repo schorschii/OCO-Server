@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 $group = null;
 $reports = [];
@@ -46,6 +46,7 @@ try {
 		<button onclick='createReportGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_subgroup'); ?></button>
 		<button onclick='renameReportGroup(<?php echo $group->id; ?>, spnReportGroupName.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('rename_group'); ?></button>
 		<button onclick='confirmRemoveReportGroup([<?php echo $group->id; ?>], event, spnReportGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_group'); ?></button>
+		<span class='filler'></span>
 	</div>
 <?php } ?>
 

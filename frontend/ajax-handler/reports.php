@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 try {
 
@@ -59,7 +59,7 @@ try {
 	die(LANG('permission_denied'));
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
-	die($e->getMessage());
+	die(htmlspecialchars($e->getMessage()));
 }
 
 header('HTTP/1.1 400 Invalid Request');

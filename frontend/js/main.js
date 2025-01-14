@@ -49,13 +49,15 @@ function toggleTextBoxMultiLine(element) {
 	newElement.placeholder = element.placeholder;
 	element.replaceWith(newElement);
 }
-function toggleInputDirectory(element) {
+function toggleInputDirectory(element, sender=null) {
 	if(element.getAttribute('webkitdirectory') != 'true') {
 		element.setAttribute('webkitdirectory', true);
 		element.setAttribute('directory', true);
+		if(sender) sender.querySelectorAll('img')[0].src = 'img/folder.dyn.svg';
 	} else {
 		element.removeAttribute('webkitdirectory');
 		element.removeAttribute('directory');
+		if(sender) sender.querySelectorAll('img')[0].src = 'img/files.dyn.svg';
 	}
 }
 
@@ -150,17 +152,20 @@ window.onkeydown = function(event) {
 		refreshContent();
 		refreshSidebar();
 	}
+	// ESC - hide dialog
+	if((event.which || event.keyCode) == 27) {
+		hideDialog();
+	}
 };
 
 // ======== DIALOG ========
 const DIALOG_BUTTONS_NONE   = 0;
-const DIALOG_BUTTONS_RELOAD = 1;
-const DIALOG_BUTTONS_CLOSE  = 2;
+const DIALOG_BUTTONS_CLOSE  = 1;
 const DIALOG_SIZE_LARGE     = 0;
 const DIALOG_SIZE_SMALL     = 1;
 const DIALOG_SIZE_AUTO      = 2;
-function showDialog(title='', text='', controls=false, size=false, monospace=false) {
-	showDialogHTML(title, escapeHTML(text), controls, size, monospace);
+function showDialog(title='', text='', controls=false, size=false, monospace=false, loading=false) {
+	showDialogHTML(title, escapeHTML(text), controls, size, monospace, loading);
 }
 function showDialogAjax(title='', url='', controls=false, size=false, callback=null) {
 	// show dark background while waiting for response
@@ -181,32 +186,33 @@ function showDialogAjax(title='', url='', controls=false, size=false, callback=n
 		finalAction();
 	}, false, false, finalAction);
 }
-function showDialogHTML(title='', text='', controls=false, size=false, monospace=false) {
+function showDialogHTML(title='', text='', controls=false, size=false, monospace=false, loading=false) {
 	obj('dialog-title').innerText = title;
 	obj('dialog-text').innerHTML = text;
-	if(controls == DIALOG_BUTTONS_RELOAD) {
-		obj('dialog-controls').style.display = 'flex';
-		obj('btnDialogHome').style.visibility = 'visible';
-		obj('btnDialogReload').style.visibility = 'visible';
+	// buttons
+	obj('btnDialogClose').style.visibility = 'collapse';
+	if(controls == DIALOG_BUTTONS_CLOSE) {
 		obj('btnDialogClose').style.visibility = 'visible';
-	} else if(controls == DIALOG_BUTTONS_CLOSE) {
-		obj('dialog-controls').style.display = 'flex';
-		obj('btnDialogHome').style.visibility = 'collapse';
-		obj('btnDialogReload').style.visibility = 'collapse';
-		obj('btnDialogClose').style.visibility = 'inline-block';
-	} else {
-		obj('dialog-controls').style.display = 'none';
 	}
+	// size
 	obj('dialog-box').className = '';
 	if(size == DIALOG_SIZE_LARGE) {
 		obj('dialog-box').classList.add('large');
 	} else if(size == DIALOG_SIZE_SMALL) {
 		obj('dialog-box').classList.add('small');
 	}
+	// font
 	if(monospace) {
 		obj('dialog-text').classList.add('monospace');
 	} else {
 		obj('dialog-text').classList.remove('monospace');
+	}
+	// loading animation
+	if(loading) {
+		var img = document.createElement('img');
+		img.src = 'img/loader-dots.svg';
+		img.style = 'display:block';
+		obj('dialog-text').appendChild(img);
 	}
 	// make dialog visible
 	obj('dialog-container').classList.add('active');
@@ -246,13 +252,14 @@ function escapeHTML(unsafe) {
 
 // ======== AJAX OPERATIONS ========
 var currentExplorerContentUrl = null;
+var lastExplorerTreeContent = '';
 function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoader=true, errorCallback=null) {
 	let timer = null;
 	if(objID == 'explorer-content') {
 		currentExplorerContentUrl = url;
 		showLoader(true);
 		// show fullscreen loading animation only if query takes longer than 200ms (otherwise annoying)
-		if(showFullscreenLoader) timer = setTimeout(function(){ showLoader2(true) }, 200);
+		if(showFullscreenLoader) timer = setTimeout(showLoader2, 200, true);
 	}
 	var xhttp = new XMLHttpRequest();
 	xhttp.userCancelled = false;
@@ -263,25 +270,35 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 		if(this.status == 200) {
 			var object = obj(objID);
 			if(object != null) {
-				object.innerHTML = this.responseText;
-				if(objID == 'explorer-content') {
-					// add to history
-					if(addToHistory) rewriteUrlContentParameter();
-					// set page title
-					let titleObject = obj('page-title');
-					if(titleObject != null) document.title = titleObject.innerText;
-					else document.title = LANG['app_name'];
-					// init newly loaded tables
-					initTables(object)
+				if(objID == 'explorer-tree') {
+					// only update content if new content differs to avoid page jumps
+					// this info must be stored in a sparate variable since we manipulate classes to restore tree view expanded/collapsed states
+					if(lastExplorerTreeContent != this.responseText) {
+						object.innerHTML = this.responseText;
+						lastExplorerTreeContent = this.responseText;
+						initLinks(object);
+					}
+				} else {
+					object.innerHTML = this.responseText;
+					if(objID == 'explorer-content') {
+						// add to history
+						if(addToHistory) rewriteUrlContentParameter();
+						// set page title
+						let titleObject = obj('page-title');
+						if(titleObject != null) document.title = titleObject.innerText;
+						else document.title = LANG['app_name'];
+						// init newly loaded tables
+						initTables(object);
+					}
+					initLinks(object);
 				}
-				// init explorer links
-				initLinks(object)
 			}
 			if(callback != undefined && typeof callback == 'function') {
 				callback(this.responseText);
 			}
 		} else if(this.status == 401) {
-			window.location.href = 'login.php';
+			let currentUrl = new URL(window.location.href);
+			window.location.href = 'login.php?redirect='+encodeURIComponent(currentUrl.pathname+currentUrl.search);
 		} else {
 			if(!this.userCancelled) {
 				if(this.status == 0) {
@@ -359,10 +376,11 @@ function initLinks(root) {
 		// open explorer-content links via AJAX, do not reload the complete page
 		links[i].addEventListener('click', function(e) {
 			e.preventDefault();
+			toggleAutoRefresh(false);
 			var urlParams = new URLSearchParams(this.getAttribute('href').split('?')[1]);
 			var ajaxUrlParams = [];
 			for(const entry of urlParams.entries()) {
-				ajaxUrlParams.push(encodeURIComponent(entry[0])+'='+entry[1]);
+				ajaxUrlParams.push(encodeURIComponent(entry[0])+'='+encodeURIComponent(entry[1]));
 			}
 			refreshContentExplorer('views/'+encodeURIComponent(urlParams.get('view'))+'.php?'+ajaxUrlParams.join('&'));
 		});
@@ -469,8 +487,8 @@ var refreshSidebarState = JSON.parse(localStorage.getItem(STORAGE_KEY_SIDEBAR_ST
 function refreshSidebar(callback=null, handleAutoRefresh=false) {
 	// save node expand states
 	if(refreshSidebarState == null) refreshSidebarState = {};
-	var elements = obj('explorer-tree').querySelectorAll('.subitems');
-	for(var i = 0; i < elements.length; i++) {
+	let elements = obj('explorer-tree').querySelectorAll('.node, .subnode');
+	for(let i = 0; i < elements.length; i++) {
 		if(elements[i].id) {
 			refreshSidebarState[elements[i].id] = elements[i].classList.contains('expanded');
 		}
@@ -481,72 +499,44 @@ function refreshSidebar(callback=null, handleAutoRefresh=false) {
 		// execute custom callback
 		if(callback != undefined && typeof callback == 'function') callback(text);
 		// register events for expand/collapse
-		var updateExpandIcon = function(node) {
-			var isExpandable = false;
-			var isExpanded = false;
-			subnodes = node.querySelectorAll(':scope > .subitems');
-			for(var n = 0; n < subnodes.length; n++) {
-				isExpanded = subnodes[n].classList.contains('expanded');
-			}
-			imgs = node.querySelectorAll(':scope > a > img');
-			for(var n = 0; n < imgs.length; n++) {
+		let setupExpandIcon = function(node) {
+			let isExpandable = false;
+			let imgs = node.querySelectorAll(':scope > a > img');
+			for(let n = 0; n < imgs.length; n++) {
 				if(node.classList.contains('expandable')) {
 					isExpandable = true;
 					imgs[n].title = LANG['expand_or_collapse_tree'];
-					if(isExpanded) imgs[n].src = 'img/collapse.dyn.svg';
-					else imgs[n].src = 'img/expand.dyn.svg';
 				}
 			}
 			return isExpandable;
 		}
-		var showExpandIcon = function(e) {
-			updateExpandIcon(e.target.parentElement);
-		}
-		var hideExpandIcon = function(e) {
-			var children = e.target.querySelectorAll(':scope > img');
-			for(var n = 0; n < children.length; n++) {
-				children[n].src = children[n].getAttribute('originalSrc');
-			}
-		}
-		var expandOrCollapse = function(e) {
-			var node = e.target;
+		let expandOrCollapse = function(e) {
+			let node = e.target;
 			if(e.target.tagName == 'A') node = e.target.parentElement;
 			if(e.target.tagName == 'IMG') node = e.target.parentElement.parentElement;
-			var isExpanded = null;
-			var children = node.querySelectorAll(':scope > .subitems');
-			for(var n = 0; n < children.length; n++) {
-				isExpanded = children[n].classList.contains('expanded');;
-			}
-			for(var n = 0; n < children.length; n++) {
-				if(isExpanded) children[n].classList.remove('expanded');
-				else children[n].classList.add('expanded');
-			}
-			if(updateExpandIcon(node)) {
+			node.classList.toggle('expanded');
+			if(setupExpandIcon(node)) {
 				e.preventDefault();
 				e.stopPropagation();
 			}
 		}
-		var elements = obj('explorer-tree').querySelectorAll('.node > a, .subnode > a');
-		for(var i = 0; i < elements.length; i++) {
-			elements[i].onmouseenter = showExpandIcon;
-			elements[i].onfocus = showExpandIcon;
-			elements[i].onmouseleave = hideExpandIcon;
-			elements[i].onblur = hideExpandIcon;
+		let elements = obj('explorer-tree').querySelectorAll('.node > a, .subnode > a');
+		for(let i = 0; i < elements.length; i++) {
 			elements[i].ondblclick = expandOrCollapse;
-			children = elements[i].querySelectorAll(':scope > img');
-			for(var n = 0; n < children.length; n++) {
-				children[n].onclick = expandOrCollapse;
-				children[n].setAttribute('originalSrc', children[n].src);
-			}
+			elements[i].onkeypress = function(e){
+				if(e.code == 'Space') expandOrCollapse(e);
+			};
+			let children = elements[i].querySelectorAll(':scope > img');
+			if(children.length) children[0].onclick = expandOrCollapse;
 		}
 		// schedule next refresh after loading finished
 		if(handleAutoRefresh && refreshSidebarTimer != null) {
-			refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
+			refreshSidebarTimer = setTimeout(refreshSidebar, REFRESH_SIDEBAR_TIMEOUT, null, true);
 		}
 		// restore previous expand states
-		for(var key in refreshSidebarState) {
+		for(let key in refreshSidebarState) {
 			if(refreshSidebarState[key]) {
-				var node = obj(key);
+				let node = obj(key);
 				if(node) node.classList.add('expanded');
 			}
 		}
@@ -564,10 +554,15 @@ function refreshContent(callback=null, handleAutoRefresh=false) {
 	}, false, !handleAutoRefresh);
 }
 function scheduleNextContentRefresh() {
-	refreshContentTimer = setTimeout(function(){ refreshContent(null, true) }, REFRESH_CONTENT_TIMEOUT);
+	if(refreshContentTimer) {
+		clearTimeout(refreshContentTimer);
+	}
+	refreshContentTimer = setTimeout(refreshContent, REFRESH_CONTENT_TIMEOUT, null, true);
 }
-function toggleAutoRefresh() {
-	if(refreshContentTimer == null) {
+function toggleAutoRefresh(force=null) {
+	let newState = (refreshContentTimer == null);
+	if(force != null) newState = force;
+	if(newState) {
 		scheduleNextContentRefresh();
 		btnRefresh.classList.add('active');
 	} else {
@@ -579,10 +574,12 @@ function toggleAutoRefresh() {
 function refreshContentExplorer(url) {
 	ajaxRequest(url, 'explorer-content');
 }
-function refreshContentPackageNew(name=null, version=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, upgrade_behavior=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null) {
+function refreshContentPackageNew(name=null, version=null, license_count=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, upgrade_behavior=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null) {
+	toggleAutoRefresh(false);
 	ajaxRequest('views/package-new.php?' +
 		(name ? '&name='+encodeURIComponent(name) : '') +
 		(version ? '&version='+encodeURIComponent(version) : '') +
+		(license_count&&license_count>=0 ? '&license_count='+encodeURIComponent(license_count) : '') +
 		(description ? '&description='+encodeURIComponent(description) : '') +
 		(install_procedure ? '&install_procedure='+encodeURIComponent(install_procedure) : '') +
 		(install_procedure_success_return_codes ? '&install_procedure_success_return_codes='+encodeURIComponent(install_procedure_success_return_codes) : '') +
@@ -598,48 +595,13 @@ function refreshContentPackageNew(name=null, version=null, description=null, ins
 	);
 }
 function refreshContentDeploy(packages=[], packageGroups=[], computers=[], computerGroups=[]) {
+	toggleAutoRefresh(false);
 	ajaxRequest('views/job-container-new.php', 'explorer-content', function(){
 		addToDeployTarget(computerGroups, divTargetComputerList, 'target_computer_groups');
 		addToDeployTarget(computers, divTargetComputerList, 'target_computers');
 		addToDeployTarget(packageGroups, divTargetPackageList, 'target_package_groups');
 		addToDeployTarget(packages, divTargetPackageList, 'target_packages');
 	});
-}
-
-// ======== SEARCH OPERATIONS ========
-var previousSearchOperation = null;
-function doSearch(query) {
-	if(previousSearchOperation !== null && previousSearchOperation.status === 0) {
-		previousSearchOperation.userCancelled = true;
-		previousSearchOperation.abort();
-	}
-	previousSearchOperation = ajaxRequest('views/search.php?query='+encodeURIComponent(query), 'search-results');
-	openSearchResults();
-}
-function closeSearchResults() {
-	obj('search-results').classList.remove('visible');
-	obj('search-glass').classList.remove('focus');
-	obj('explorer').classList.remove('diffuse');
-}
-function openSearchResults() {
-	obj('search-results').classList.add('visible');
-	obj('search-glass').classList.add('focus');
-	obj('explorer').classList.add('diffuse');
-}
-function handleSearchResultNavigation(event) {
-	if(event.code == 'ArrowDown') focusNextSearchResult();
-	else if(event.code == 'ArrowUp') focusNextSearchResult(-1);
-}
-function focusNextSearchResult(step=1) {
-	var links = document.querySelectorAll('#search-results a');
-	for(let i=0; i<links.length; i++) {
-		if(links[i] === document.activeElement) {
-			var next = links[i + step] || links[0];
-			next.focus();
-			return;
-		}
-	}
-	links[0].focus();
 }
 
 // ======== MESSAGE BOX OPERATIONS ========
@@ -698,7 +660,7 @@ function updatePackageProcedureTemplates() {
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
 }
-function createPackage(name, version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version) {
+function createPackage(name, version, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version) {
 	if(typeof archive === 'undefined' || archive.length == 0) {
 		if(!confirm(LANG['confirm_create_empty_package'])) {
 			return;
@@ -713,6 +675,7 @@ function createPackage(name, version, notes, archive, install_procedure, install
 	let formData = new FormData();
 	formData.append('create_package', name);
 	formData.append('version', version);
+	formData.append('license_count', license_count);
 	formData.append('notes', notes);
 	for(i = 0; i <= archive.length; i++) {
 		formData.append('archive[]', archive[i]);
@@ -798,26 +761,37 @@ function removePackageFamilyIcon(id) {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditPackageFamily(id, name, notes) {
+function showDialogEditPackageFamily(id, name, license_count, notes) {
 	showDialogAjax(LANG['edit_package_family'], 'views/dialog-package-family-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditPackageFamilyId.value = id;
 		txtEditPackageFamilyName.value = name;
+		if(license_count >= 0) {
+			txtEditPackageFamilyLicenseCount.value = license_count;
+		}
 		txtEditPackageFamilyNotes.value = notes;
 	});
 }
-function editPackageFamily(id, name, notes) {
-	ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({'edit_package_family_id':id, 'name':name, 'notes':notes}), null, function() {
+function editPackageFamily(id, name, license_count, notes) {
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({
+		'edit_package_family_id':id,
+		'name':name,
+		'license_count':license_count,
+		'notes':notes
+	}), null, function() {
 		hideDialog(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+function showDialogEditPackage(id, package_family_id, version, compatible_os, compatible_os_version, license_count, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	showDialogAjax(LANG['edit_package'], 'views/dialog-package-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditPackageId.value = id;
 		sltEditPackagePackageFamily.value = package_family_id;
 		txtEditPackageVersion.value = version;
 		txtEditPackageCompatibleOs.value = compatible_os;
 		txtEditPackageCompatibleOsVersion.value = compatible_os_version;
+		if(license_count >= 0) {
+			txtEditPackageLicenseCount.value = license_count;
+		}
 		txtEditPackageNotes.value = notes;
 
 		if(install_procedure.includes("\n")) toggleTextBoxMultiLine(txtEditPackageInstallProcedure);
@@ -833,7 +807,7 @@ function showDialogEditPackage(id, package_family_id, version, compatible_os, co
 		chkEditPackageDownloadForUninstall.checked = download_for_uninstall=='1';
 	});
 }
-function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 
@@ -859,6 +833,7 @@ function editPackage(id, package_family_id, version, compatible_os, compatible_o
 	formData.append('version', version);
 	formData.append('compatible_os', compatible_os);
 	formData.append('compatible_os_version', compatible_os_version);
+	formData.append('license_count', license_count);
 	formData.append('notes', notes);
 	formData.append('install_procedure', install_procedure);
 	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
@@ -1158,16 +1133,19 @@ function refreshDeployComputerList(groupId=null, reportId=null) {
 	if(groupId != null) {
 		params.push({'key':'get_computer_group_members', 'value':groupId});
 		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divComputerList', function(){
+			txtDeploySearchComputers.focus();
 			refreshDeployComputerCount();
 		});
 	}
 	else if(reportId != null) {
 		params.push({'key':'get_computer_report_results', 'value':reportId});
 		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divComputerList', function(){
+			txtDeploySearchComputers.focus();
 			refreshDeployComputerCount();
 		});
 	} else {
 		divComputerList.innerHTML = divComputerListHome.innerHTML;
+		txtDeploySearchComputers.focus();
 		refreshDeployComputerCount();
 	}
 }
@@ -1185,16 +1163,19 @@ function refreshDeployPackageList(groupId=null, reportId=null) {
 	if(groupId != null) {
 		params.push({'key':'get_package_group_members', 'value':groupId});
 		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divPackageList', function(){
+			txtDeploySearchPackages.focus();
 			refreshDeployPackageCount();
 		});
 	}
 	else if(reportId != null) {
 		params.push({'key':'get_package_report_results', 'value':reportId});
 		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divPackageList', function(){
+			txtDeploySearchPackages.focus();
 			refreshDeployPackageCount();
 		});
 	} else {
 		divPackageList.innerHTML = divPackageListHome.innerHTML;
+		txtDeploySearchPackages.focus();
 		refreshDeployPackageCount();
 	}
 }
@@ -1355,6 +1336,222 @@ function searchItems(container, search) {
 		else
 			items[i].style.display = 'none';
 	}
+}
+
+// ======== MOBILE DEVICE OPERATIONS ========
+function showDialogCreateMobileDeviceIos() {
+	showDialogAjax(LANG['new_ios_device'], 'views/dialog-mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+}
+function showDialogEditMobileDevice(id, notes) {
+	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog-mobile-device-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditMobileDeviceId.value = id;
+		txtEditMobileDeviceNotes.value = notes;
+	});
+}
+function editMobileDevice(id, notes) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'edit_mobile_device_id':id, 'notes':notes}), null, function() {
+		refreshContent(); hideDialog();
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function setMobileDeviceForceUpdate(id, value) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'edit_mobile_device_id':id, 'force_update':value}), null, function() {
+		refreshContent();
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function removeSelectedMobileDevice(checkboxName, attributeName=null, event=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	confirmRemoveMobileDevice(ids, event);
+}
+function confirmRemoveMobileDevice(ids, event=null, infoText='', redirect=null) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_id[]', 'value':entry});
+	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete_mobile_device'])) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+			if(redirect != null) currentExplorerContentUrl = redirect;
+			refreshContentExplorer(currentExplorerContentUrl);
+			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function createMobileDeviceGroup(parent_id=null) {
+	var newName = prompt(LANG['enter_name']);
+	if(newName != null) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'create_group':newName, 'parent_id':parent_id}), null, function(text){
+			refreshSidebar(); refreshContentExplorer('views/mobile-devices.php?id='+parseInt(text));
+			emitMessage(LANG['group_created'], newName, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function renameMobileDeviceGroup(id, oldName) {
+	var newValue = prompt(LANG['enter_name'], oldName);
+	if(newValue != null) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'rename_group_id':id, 'new_name':newValue}), null, function() {
+			refreshContent(); refreshSidebar();
+			emitMessage(LANG['group_renamed'], newValue, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function confirmRemoveMobileDeviceGroup(ids, event=null, infoText='') {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_group_id[]', 'value':entry});
+	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete_group'])) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+			refreshContentExplorer('views/mobile-devices.php'); refreshSidebar();
+			emitMessage(LANG['group_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function showDialogAddMobileDeviceToGroup(id) {
+	if(!id) return;
+	showDialogAjax(LANG['mobile_device_groups'], 'views/dialog-mobile-device-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtEditMobileDeviceId.value = id;
+	});
+}
+function addMobileDeviceToGroup(mobileDeviceId, groupId) {
+	if(groupId === false) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_id[]', 'value':entry});
+	});
+	mobileDeviceId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_mobile_device_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		hideDialog();
+		refreshContent();
+		emitMessage(LANG['mobile_device_added'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogAssignProfileToGroup(id) {
+	if(!id) return;
+	showDialogAjax(LANG['assign'], 'views/dialog-profile-assign.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtProfileId.value = id;
+	});
+}
+function assignProfileToGroup(profileId, groupId) {
+	if(groupId === false) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_id[]', 'value':entry});
+	});
+	profileId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_profile_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		hideDialog();
+		refreshContent();
+		emitMessage(LANG['profile_assigned'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function removeProfileFromGroup(ids, groupId) {
+	if(!confirm(LANG['are_you_sure'])) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'remove_from_group_id[]', 'value':entry});
+	});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_from_group_profile_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogAssignManagedAppToGroup(id) {
+	if(!id) return;
+	showDialogAjax(LANG['assign'], 'views/dialog-managed-app-assign.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		txtManagedAppId.value = id;
+	});
+}
+function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, config) {
+	if(groupId === false) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_id[]', 'value':entry});
+	});
+	managedAppId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_managed_app_id[]', 'value':entry});
+	});
+	params.push({'key':'removable', 'value':removable});
+	params.push({'key':'disable_cloud_backup', 'value':disableCloudBackup});
+	params.push({'key':'remove_on_mdm_remove', 'value':removeOnMdmRemove});
+	params.push({'key':'config', 'value':config});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		hideDialog();
+		refreshContent();
+		emitMessage(LANG['apps_assigned'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function removeManagedAppFromGroup(ids, groupId) {
+	if(!confirm(LANG['are_you_sure'])) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'remove_from_group_id[]', 'value':entry});
+	});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_from_group_managed_app_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function removeSelectedMobileDeviceFromGroup(checkboxName, groupId) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	removeMobileDeviceFromGroup(ids, groupId);
+}
+function removeMobileDeviceFromGroup(ids, groupId) {
+	var params = [];
+	params.push({'key':'remove_from_group_id', 'value':groupId});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_from_group_mobile_device_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		refreshContent();
+		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 
 // ======== COMPUTER OPERATIONS ========
@@ -1554,7 +1751,109 @@ function showDialogAddComputerToGroup(id) {
 }
 
 // ======== JOB OPERATIONS ========
-function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, computerGroupId=-1, packageGroupId=-1, priority=0, autoUninstall=1) {
+function showDialogMobileDeviceCommand(mobile_device_id) {
+	showDialogAjax(LANG['send_command'], 'views/dialog-mobile-device-command.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtMobileDeviceId.value = mobile_device_id;
+	});
+}
+function showMobileDeviceCommandParameter(option) {
+	let param = option.getAttribute('parameter');
+	if(param) {
+		txtMobileDeviceCommandParameter.name = param;
+		thCommandParameterName.innerText = LANG[param];
+		trCommandParameter.style.display = 'table-row';
+	} else {
+		trCommandParameter.style.display = 'none';
+	}
+}
+function sendMobileDeviceCommand(mobile_device_id, name, parameter) {
+	var params = [];
+	params.push({'key':'send_command_to_mobile_device_id', 'value':mobile_device_id});
+	params.push({'key':'command', 'value':name});
+	for(const [key, value] of Object.entries(parameter)) {
+		params.push({'key':key, 'value':value});
+	}
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		hideDialog(); refreshContent();
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogEditProfile(id=-1, name='', notes='') {
+	title = LANG['edit_profile'];
+	buttonText = LANG['change'];
+	if(id == -1) {
+		title = LANG['new_profile'];
+		buttonText = LANG['create'];
+	}
+	showDialogAjax(title, 'views/dialog-profile-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		spnBtnUpdateProfile.innerText = buttonText;
+	});
+}
+function editProfile(id, name, payload, notes) {
+	let req = new XMLHttpRequest();
+	let formData = new FormData();
+
+	if(payload !== null) {
+		for(i = 0; i <= payload.length; i++) {
+			formData.append('payload[]', payload[i]);
+		}
+		formData.append('update_payload', '1');
+	}
+	formData.append('edit_profile_id', id);
+	formData.append('name', name);
+	formData.append('notes', notes);
+
+	req.onreadystatechange = function() {
+		if(this.readyState == 4) {
+			if(this.status == 200) {
+				hideDialog(); refreshContent();
+				emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+			} else {
+				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+			}
+		}
+	};
+
+	req.open('POST', 'ajax-handler/mobile-devices.php');
+	req.send(formData);
+}
+function removeSelectedProfile(checkboxName, attributeName=null, event=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	confirmRemoveProfile(ids, event);
+}
+function confirmRemoveProfile(ids, event=null, infoText='', redirect=null) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_profile_id[]', 'value':entry});
+	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete_profile'])) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+			if(redirect != null) currentExplorerContentUrl = redirect;
+			refreshContentExplorer(currentExplorerContentUrl);
+			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+
+function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, computerGroupId=-1, packageGroupId=-1, priority=0) {
 	title = LANG['edit_deployment_rule'];
 	buttonText = LANG['change'];
 	if(id == -1) {
@@ -1570,11 +1869,10 @@ function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, compu
 		sltEditDeploymentRulePackageGroupId.value = packageGroupId;
 		sldEditDeploymentRulePriority.value = priority;
 		lblEditDeploymentRulePriorityPreview.innerText = priority;
-		chkEditDeploymentRuleAutoUninstall.checked = autoUninstall=='1';
 		spnBtnUpdateDeploymentRule.innerText = buttonText;
 	});
 }
-function editDeploymentRule(id, name, notes, enabled, computerGroupId, packageGroupId, priority, autoUninstall) {
+function editDeploymentRule(id, name, notes, enabled, computerGroupId, packageGroupId, priority) {
 	var params = [];
 	params.push({'key':'edit_deployment_rule_id', 'value':id});
 	params.push({'key':'name', 'value':name});
@@ -1583,7 +1881,6 @@ function editDeploymentRule(id, name, notes, enabled, computerGroupId, packageGr
 	params.push({'key':'computer_group_id', 'value':computerGroupId});
 	params.push({'key':'package_group_id', 'value':packageGroupId});
 	params.push({'key':'priority', 'value':priority});
-	params.push({'key':'auto_uninstall', 'value':autoUninstall?'1':'0'});
 	ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeArray(params), null, function(response) {
 		hideDialog();
 		if(id == '-1') {
@@ -1717,7 +2014,7 @@ function confirmRemoveJob(ids) {
 		});
 	}
 }
-function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, notes) {
+function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
 	showDialogAjax(LANG['edit_job_container'], 'views/dialog-job-container-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditJobContainerId.value = id;
 		txtEditJobContainerName.value = name;
@@ -1740,10 +2037,11 @@ function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode
 		sldEditJobContainerPriority.value = priority;
 		lblEditJobContainerPriorityPreview.innerText = priority;
 		txtEditJobContainerAgentIpRanges.value = agent_ip_ranges;
+		txtEditJobContainerTimeFrames.value = time_frames;
 		txtEditJobContainerNotes.value = notes;
 	});
 }
-function editJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, notes) {
+function editJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
 	var params = [];
 	params.push({'key':'edit_job_container_id', 'value':id});
 	params.push({'key':'name', 'value':name});
@@ -1753,6 +2051,7 @@ function editJobContainer(id, name, enabled, start, end, sequence_mode, priority
 	params.push({'key':'sequence_mode', 'value':sequence_mode?'1':'0'});
 	params.push({'key':'priority', 'value':priority});
 	params.push({'key':'agent_ip_ranges', 'value':agent_ip_ranges});
+	params.push({'key':'time_frames', 'value':time_frames});
 	params.push({'key':'notes', 'value':notes});
 	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 		hideDialog();
@@ -1760,7 +2059,7 @@ function editJobContainer(id, name, enabled, start, end, sequence_mode, priority
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function deploy(title, start, end, description, computers, computerGroups, computerReports, packages, packageGroups, packageReports, useWol, shutdownWakedAfterCompletion, autoCreateUninstallJobs, forceInstallSameVersion, restartTimeout, sequenceMode, priority, constraintIpRange) {
+function deploy(title, start, end, description, computers, computerGroups, computerReports, packages, packageGroups, packageReports, useWol, shutdownWakedAfterCompletion, forceInstallSameVersion, restartTimeout, sequenceMode, priority, agentIpRanges, timeFrames) {
 	setInputsDisabled(tabControlDeploy, true);
 	btnDeploy.classList.add('hidden');
 	prgDeploy.classList.remove('hidden');
@@ -1773,15 +2072,12 @@ function deploy(title, start, end, description, computers, computerGroups, compu
 	formData.append('description', description);
 	formData.append('use_wol', useWol ? 1 : 0);
 	formData.append('shutdown_waked_after_completion', shutdownWakedAfterCompletion ? 1 : 0);
-	formData.append('auto_create_uninstall_jobs', autoCreateUninstallJobs ? 1 : 0);
 	formData.append('force_install_same_version', forceInstallSameVersion ? 1 : 0);
 	formData.append('restart_timeout', restartTimeout);
 	formData.append('sequence_mode', sequenceMode);
 	formData.append('priority', priority);
-	var ipRanges = constraintIpRange.split(',');
-	for(var i = 0; i < ipRanges.length; i++) {
-		formData.append('constraint_ip_range[]', ipRanges[i]);
-	}
+	formData.append('agent_ip_ranges', agentIpRanges);
+	formData.append('time_frames', timeFrames);
 	packages.forEach(function(entry) {
 		formData.append('package_id[]', entry);
 	});
@@ -1881,13 +2177,14 @@ function showDialogRenewFailedStaticJobs(id, defaultName, jobIds) {
 		txtRenewJobContainerJobId.value = jobIds;
 	});
 }
-function renewFailedStaticJobs(id, jobId, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
+function renewFailedStaticJobs(id, jobId, createNewJobContainer, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
 	var params = [];
-	params.push({'key':'create_renew_job_container', 'value':name});
-	params.push({'key':'job_container_id', 'value':id});
+	params.push({'key':'renew_job_container', 'value':id});
 	jobId.toString().split(',').forEach(function(entry) {
 		if(entry.trim() != '') params.push({'key':'job_id[]', 'value':entry});
 	});
+	params.push({'key':'create_new_job_container', 'value':createNewJobContainer ? 1 : 0});
+	params.push({'key':'job_container_name', 'value':name});
 	params.push({'key':'notes', 'value':notes});
 	params.push({'key':'start_time', 'value':startTime});
 	params.push({'key':'end_time', 'value':endTime});
@@ -2258,7 +2555,7 @@ function confirmRemoveSelectedSystemUserRole(checkboxName) {
 	}
 }
 
-// ======== SYSTEM OPERATIONS ========
+// ======== SETTINGS OPERATIONS ========
 function showDialogEditEventQueryRule(id=-1, log='', query='') {
 	title = LANG['change'];
 	buttonText = LANG['change'];
@@ -2307,6 +2604,62 @@ function confirmRemoveSelectedEventQueryRule(checkboxName) {
 	}
 }
 
+function showDialogEditPasswordRotationRule(id=-1, computer_group_id='', username='administrator', alphabet='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_+*.#=!', length=15, validSeconds=2592000, history=5) {
+	title = LANG['change'];
+	buttonText = LANG['change'];
+	if(id == -1) {
+		title = LANG['create'];
+		buttonText = LANG['create'];
+	}
+	showDialogAjax(title, 'views/dialog-password-rotation-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditPasswordRotationRuleId.value = id;
+		sltEditPasswordRotationRuleComputerGroupId.value = computer_group_id;
+		txtEditPasswordRotationRuleUsername.value = username;
+		txtEditPasswordRotationRuleAlphabet.value = alphabet;
+		txtEditPasswordRotationRuleLength.value = length;
+		txtEditPasswordRotationRuleValidSeconds.value = validSeconds;
+		txtEditPasswordRotationRuleHistory.value = history;
+		spnBtnUpdatePasswordRotationRule.innerText = buttonText;
+	});
+}
+function editPasswordRotationRule(id, computer_group_id, username, alphabet, length, valid_seconds, history) {
+	var params = [];
+	params.push({'key':'edit_password_rotation_rule_id', 'value':id});
+	params.push({'key':'computer_group_id', 'value':computer_group_id});
+	params.push({'key':'username', 'value':username});
+	params.push({'key':'alphabet', 'value':alphabet});
+	params.push({'key':'length', 'value':length});
+	params.push({'key':'valid_seconds', 'value':valid_seconds});
+	params.push({'key':'history', 'value':history});
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+		hideDialog(); refreshContent();
+		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function confirmRemoveSelectedPasswordRotationRule(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_password_rotation_rule_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete'])) {
+		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+
 function showDialogEditGeneralConfig() {
 	showDialogAjax(LANG['oco_configuration'], 'views/dialog-general-config-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
@@ -2333,27 +2686,7 @@ function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnab
 		if(this.readyState == 4) {
 			if(this.status == 200) {
 				hideDialog(); refreshContent();
-				emitMessage(LANG['saved'], LANG['license'], MESSAGE_TYPE_SUCCESS);
-			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
-			}
-		}
-	};
-	req.open('POST', 'ajax-handler/settings.php');
-	req.send(formData);
-}
-function showDialogEditLicense() {
-	showDialogAjax(LANG['license'], 'views/dialog-license-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
-}
-function editLicense(license) {
-	let req = new XMLHttpRequest();
-	let formData = new FormData();
-	formData.append('edit_license', license);
-	req.onreadystatechange = function() {
-		if(this.readyState == 4) {
-			if(this.status == 200) {
-				hideDialog(); refreshContent();
-				emitMessage(LANG['saved'], LANG['license'], MESSAGE_TYPE_SUCCESS);
+				emitMessage(LANG['saved'], LANG['oco_configuration'], MESSAGE_TYPE_SUCCESS);
 			} else {
 				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 			}
@@ -2440,12 +2773,29 @@ function editWolSatellites(jsonConfig) {
 	req.open('POST', 'ajax-handler/settings.php');
 	req.send(formData);
 }
-function showDialogEditSetting(key='') {
-	title = LANG['edit_setting'];
-	if(key == '') {
-		title = LANG['create_setting'];
+function showDialogEditSetting(key='', file=false, warning=true, keyHidden=false, title=null) {
+	if(title == null) {
+		title = LANG['edit_setting'];
+		if(key == '') {
+			title = LANG['create_setting'];
+		}
 	}
-	showDialogAjax(title, 'views/dialog-setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog-setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+		if(file) {
+			fleEditSettingValue.classList.remove('hidden');
+			txtEditSettingValue.classList.add('hidden');
+			if(typeof file === 'string' || file instanceof String) {
+				console.log(file);
+				fleEditSettingValue.accept = file;
+			}
+		}
+		if(!warning) {
+			trSettingsManualChangesWarning.classList.add('hidden');
+		}
+		if(keyHidden) {
+			txtEditSettingKey.classList.add('hidden');
+		}
+	});
 }
 function editSetting(key, value) {
 	let req = new XMLHttpRequest();
@@ -2492,6 +2842,41 @@ function removeSelectedSetting(checkboxName, attributeName=null) {
 		});
 	}
 }
+function readFileInputBlob(file) {
+	var start = 0;
+	var stop = file.size - 1;
+	var reader = new FileReader();
+	var blob;
+	if(file.slice) {
+		blob = file.slice(start, stop + 1);
+	} else if(file.webkitSlice) {
+		blob = file.webkitSlice(start, stop + 1);
+	} else if(file.mozSlice) {
+		blob = file.mozSlice(start, stop + 1);
+	}
+	reader.readAsBinaryString(blob);
+	return blob;
+}
+
+function syncAppleDevices() {
+	var params = [];
+	params.push({'key':'sync_apple_devices', 'value':1});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+		emitMessage(LANG['sync_with_apple_business_manager'], text, MESSAGE_TYPE_SUCCESS);
+		refreshContent();
+	});
+}
+function syncAppleAssets() {
+	var params = [];
+	params.push({'key':'sync_apple_assets', 'value':1});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+		emitMessage(LANG['sync_with_apple_business_manager'], text, MESSAGE_TYPE_SUCCESS);
+		refreshContent();
+	});
+}
+
 function checkUpdate() {
 	ajaxRequestPost('ajax-handler/update-check.php', '', null, function(text) {
 		if(text.trim() != '') {

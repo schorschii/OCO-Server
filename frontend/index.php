@@ -2,7 +2,7 @@
 /* KEEP IT SIMPLE */
 
 require_once('../loader.inc.php');
-require_once('session.php');
+require_once('session.inc.php');
 
 $initialExplorerContent = 'views/homepage.php';
 $initialExplorerContentParameter = '';
@@ -45,8 +45,8 @@ if(!empty($_GET['view'])) {
 			<a href='index.php' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' class='title'><?php echo LANG('app_name'); ?></a>
 			<span class='separator space'></span>
 		</span>
-		<span id='search-container' onfocusout='if(!this.contains(event.relatedTarget)) {closeSearchResults()}'>
-			<input type='text' id='txtGlobalSearch' autocomplete='off' placeholder='<?php echo LANG('search_computer_packages_job_container'); ?>' onfocus='openSearchResults()' onkeyup='if(event.keyCode==27) {closeSearchResults()} else if(event.keyCode==40) {focusNextSearchResult()} else {doSearch(this.value)}' onpaste='doSearch(this.value)'></input>
+		<span id='search-container'>
+			<input type='search' id='txtGlobalSearch' autocomplete='off' placeholder='<?php echo LANG('search_computer_packages_job_container'); ?>'></input>
 			<div id='search-glass'></div>
 			<div id='search-results'>
 				<div class='search-result'>
@@ -84,11 +84,7 @@ if(!empty($_GET['view'])) {
 		<div id='dialog-box'>
 			<h2 id='dialog-title'></h2>
 			<div id='dialog-text'></div>
-			<div id='dialog-controls' class='spread'>
-				<button id='btnDialogHome' onclick='hideDialog();refreshContentExplorer("views/homepage.php");'><img src='img/home.dyn.svg'>&nbsp;<?php echo LANG('home_page'); ?></button>
-				<button id='btnDialogReload' onclick='hideDialog();refreshContent();'><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('retry'); ?></button>
-				<button id='btnDialogClose' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-			</div>
+			<button id='btnDialogClose' title='<?php echo LANG('close'); ?>' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'></button>
 		</div>
 	</div>
 

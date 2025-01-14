@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 // ----- prepare view -----
 $tab = 'general';
@@ -17,12 +17,30 @@ try {
 	$permissionDownload = $cl->checkPermission($package, PermissionManager::METHOD_DOWNLOAD, false);
 	$permissionWrite    = $cl->checkPermission($package, PermissionManager::METHOD_WRITE, false);
 	$permissionDelete   = $cl->checkPermission($package, PermissionManager::METHOD_DELETE, false);
+
+	// ----- download if requested -----
+	if(!empty($_GET['download'])) {
+		// do not block other frontend requests
+		session_write_close();
+		// get package file
+		if(!$package->getFilePath()) {
+			header('HTTP/1.1 404 Not Found'); die();
+		}
+		// check if system user is allowed to download
+		$cl->checkPermission($package, PermissionManager::METHOD_DOWNLOAD);
+		$package->download();
+		die();
+	}
+
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
 	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 } catch(InvalidRequestException $e) {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
+} catch(Exception $e) {
+	header('HTTP/1.1 500 Internal Server Error');
+	die();
 }
 ?>
 
@@ -30,8 +48,8 @@ try {
 	<h1><img src='<?php echo $package->getIcon(); ?>'><span id='page-title'><?php echo htmlspecialchars($package->getFullName()); ?></span><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->package_family_name); ?></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentDeploy({"id":<?php echo $package->id; ?>,"name":obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
-		<button onclick='window.open("package-download.php?id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
-		<button onclick='showDialogEditPackage(<?php echo $package->id; ?>, <?php echo $package->package_family_id; ?>, spnPackageVersion.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='window.open("views/package-details.php?download=1&id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
+		<button onclick='showDialogEditPackage(<?php echo $package->id; ?>, <?php echo $package->package_family_id; ?>, spnPackageVersion.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, <?php echo $package->license_count===null?-1:$package->license_count; ?>, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button onclick='showDialogAddPackageToGroup("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
 		<button onclick='confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")", "views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>"), <?php echo count($db->selectAllComputerPackageByPackageId($package->id)); ?>)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
@@ -71,6 +89,18 @@ try {
 							<th><?php echo LANG('compatible_os_version'); ?></th>
 							<td>
 								<span id='spnPackageCompatibleOsVersion'><?php echo htmlspecialchars($package->compatible_os_version); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th><?php echo LANG('licenses'); ?></th>
+							<td>
+							<?php if($package->license_count !== null && $package->license_count >= 0) {
+								$licenseUsed = $package->install_count;
+								$licensePercent = $package->license_count==0 ? 100 : $licenseUsed * 100 / $package->license_count;
+								echo progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$package->license_count.')');
+							} else {
+								echo '-';
+							} ?>
 							</td>
 						</tr>
 						<tr>
@@ -203,10 +233,23 @@ try {
 					<div class='controls heading'>
 						<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
 						<div class='filler invisible'></div>
-						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
+						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, <?php echo $package->license_count===null?-1:$package->license_count; ?>, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
 						<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.dyn.svg'>&nbsp;<?php echo LANG('details'); ?></button>
 					</div>
-					<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
+					<?php if(!empty($packageFamily->notes)) { ?>
+						<p class='quote'><?php echo nl2br(htmlspecialchars($packageFamily->notes)); ?></p>
+					<?php } ?>
+					<?php if($packageFamily->license_count !== null && $packageFamily->license_count >= 0) {
+						$licenseUsed = $packageFamily->install_count;
+						$licensePercent = $packageFamily->license_count==0 ? 100 : $licenseUsed * 100 / $packageFamily->license_count;
+					?>
+					<table class='list fullwidth marginbottom'>
+						<tr>
+							<th><?php echo LANG('licenses'); ?></th>
+							<td><?php echo progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$packageFamily->license_count.')'); ?></td>
+						</tr>
+					</table>
+					<?php } ?>
 					<table id='tblOtherPackagesData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
@@ -335,19 +378,27 @@ try {
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('size'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('original_size'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('compressed_size'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
 						<?php
 						$totalSize = 0;
 						$counter = 0;
-						foreach($contents as $filename => $size) {
+						foreach($contents as $file) {
 							$counter ++;
-							$totalSize += $size;
+							$totalSize += $file['size'];
 							echo "<tr>";
-							echo "<td>".htmlspecialchars($filename)."</td>";
-							echo "<td sort_key='".$size."'>".niceSize($size)."</td>";
+							echo "<td>".htmlspecialchars($file['name'])."</td>";
+							if(empty($file['crc']) && empty($file['size'])) {
+								// it's a directory
+								echo "<td></td>";
+								echo "<td></td>";
+							} else {
+								echo "<td sort_key='".$file['size']."'>".niceSize($file['size'])."</td>";
+								echo "<td sort_key='".$file['comp_size']."'>".niceSize($file['comp_size'])."</td>";
+							}
 							echo "</tr>";
 						} ?>
 						</tbody>

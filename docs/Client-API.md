@@ -15,6 +15,40 @@ Within the `params` object, please send the correct `api_key` value and all requ
 Please have a look at the following API method documentation for JSON-RPC request/response examples.
 
 # Methods
+## `oco.info` - Get General Information
+### Parameters
+none
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.info",
+	"params": {
+		"api_key": "🌈💜👆🚧🛸💩",
+		"data": {}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"result": {
+		"success": true,
+		"data": {
+			"version": "1.1.0",
+			"wol_satellites": null,
+			"license_computers": 100,
+			"license_company": "Your Company Name",
+			"license_expiration": 1756504800,
+			"webserver": "Apache",
+			"database": "10.11.6-MariaDB-0+deb12u1",
+			"php": "8.2.24"
+		}
+	}
+}
+```
+
 ## `oco.computer.list` - List All Computers
 ### Parameters
 - `computer_group_id` (optional) - computer group ID (if omitted, all computers and rootlevel computer groups will be returned)
@@ -35,7 +69,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -108,7 +141,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -229,6 +261,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 					"shutdown": "-1",
 					"sequence": null,
 					"state": "0",
+					"download_progress": null,
 					"return_code": null,
 					"message": null,
 					"last_update": null,
@@ -266,7 +299,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -296,7 +328,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -326,7 +357,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -356,7 +386,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -385,7 +414,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -413,7 +441,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -449,7 +476,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -531,7 +557,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -588,6 +613,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 					"shutdown": "-1",
 					"sequence": null,
 					"state": "0",
+					"download_progress": null,
 					"return_code": null,
 					"message": null,
 					"wol_shutdown_set": null,
@@ -627,7 +653,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -657,7 +682,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -669,6 +693,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ### Parameters
 - `package_family_name` - package family name (will be created if not exists)
 - `version` - package version
+- `license_count` - number of available licenses
 - `description` - package description (optional)
 - `install_procedure` - install procedure (install command)
 - `install_procedure_success_return_codes` - install procedure success return codes (comma separated, leave empty to disable return code check)
@@ -694,6 +719,7 @@ Please have a look at the following API method documentation for JSON-RPC reques
 		"data": {
 			"package_family_name": "My Test App",
 			"version": "1.1",
+			"license_count": 32,
 			"description": "For internal tests only",
 			"install_procedure": "msiexec /quiet /i test.msi",
 			"install_procedure_success_return_codes": "0,1,2",
@@ -714,7 +740,6 @@ Please have a look at the following API method documentation for JSON-RPC reques
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -746,7 +771,6 @@ This will also delete the package payload (ZIP file) from the server.
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -771,7 +795,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -812,7 +835,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -829,6 +851,7 @@ no parameters
 				"shutdown": "-1",
 				"sequence": "1",
 				"state": "0",
+				"download_progress": null,
 				"return_code": null,
 				"message": "",
 				"last_update": "2021-06-22 21:27:36",
@@ -857,11 +880,11 @@ no parameters
 - `use_wol` - (optional - default 1) enable or disable WOL
 - `shutdown_waked_after_completion` - (optional - default 0) decide if computers which were waked via WOL should be shutted down after jobs finished
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
-- `auto_create_uninstall_jobs` - (optional - default 1) enable or disable automatic uninstall job creation if another version of this package family is already installed
 - `force_install_same_version` - (optional - default 0) force installation even if the same package was already installed
 - `sequence_mode` - (optional - default 0) sequence mode: 0 - ignore failed jobs, 1 - abort after failed job
 - `priority` - (optional - default 0) job container with higher priority will be executed first
-- `constraint_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
+- `agent_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
+- `time_frames` - (optional - default empty - string array) list of time frames as condition for the agent for executing the jobs
 ### Example
 ```
 {
@@ -882,11 +905,11 @@ no parameters
 			"use_wol": 1,
 			"shutdown_waked_after_completion": 0,
 			"restart_timeout": 5,
-			"auto_create_uninstall_jobs": 1,
 			"force_install_same_version": 0,
 			"sequence_mode": 0,
 			"priority": 0,
-			"constraint_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"]
+			"agent_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"],
+			"time_frames": ["8:00-12:00"]
 		}
 	}
 }
@@ -894,7 +917,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -916,7 +938,7 @@ no parameters
 - `restart_timeout` - restart/shutdown timeout in minutes, only for packages which require an restart/shutdown
 - `sequence_mode` - (optional - default 0) sequence mode: 0 - ignore failed jobs, 1 - abort after failed job
 - `priority` - (optional - default 0) job container with higher priority will be executed first
-- `constraint_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
+- `agent_ip_ranges` - (optional - default empty - string array) list of IP ranges as condition for the agent for executing the jobs
 ### Example
 ```
 {
@@ -936,7 +958,7 @@ no parameters
 			"restart_timeout": 5,
 			"sequence_mode": 0,
 			"priority": 0,
-			"constraint_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"]
+			"agent_ip_ranges": ["127.0.0.1\/24", "192.168.2.0\/24"]
 		}
 	}
 }
@@ -944,7 +966,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {
@@ -975,7 +996,6 @@ Manually removes an Package-Computer assignment. Normally, this assigment ist au
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": {}
@@ -1004,7 +1024,6 @@ This will delete all jobs in the container and the container itself. Pending job
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -1033,7 +1052,6 @@ This removes a single job from a job container.
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": []
@@ -1058,7 +1076,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -1070,7 +1087,6 @@ no parameters
 				"computer_group_id": "95",
 				"package_group_id": "20",
 				"priority": "0",
-				"auto_uninstall": "1",
 				"post_action_timeout": "500",
 				"created": "2022-10-01 21:17:08",
 				"created_by_system_user_id": 1,
@@ -1101,7 +1117,6 @@ no parameters
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -1122,6 +1137,7 @@ no parameters
 				"post_action_timeout": "500",
 				"sequence": "1",
 				"state": "0",
+				"download_progress": null,
 				"return_code": null,
 				"message": "",
 				"wol_shutdown_set": null,
@@ -1156,20 +1172,19 @@ no parameters
 ```
 ```
 {
-    "id": 1,
-    "error": null,
-    "result": {
-        "success": true,
-        "data": [
-            {
-                "id": "5",
-                "report_group_id": "35",
-                "name": "Expired Job Containers",
-                "notes": "",
-                "query": "SELECT id AS job_container_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()"
-            }
-        ]
-    }
+	"id": 1,
+	"result": {
+		"success": true,
+		"data": [
+			{
+				"id": "5",
+				"report_group_id": "35",
+				"name": "Expired Job Containers",
+				"notes": "",
+				"query": "SELECT id AS job_container_id, name, end_time FROM job_container WHERE end_time IS NOT NULL AND end_time < CURRENT_TIME()"
+			}
+		]
+	}
 }
 ```
 
@@ -1194,7 +1209,6 @@ Please note that the `data` output of the JSON response depends on the columns o
 ```
 {
 	"id": 1,
-	"error": null,
 	"result": {
 		"success": true,
 		"data": [
@@ -1206,6 +1220,22 @@ Please note that the `data` output of the JSON response depends on the columns o
 				"agent_version": "0.7.0"
 			}
 		]
+	}
+}
+```
+
+# Error Format
+You should check the API responses for `error` objects and handle them appropriately.
+
+Example JSON-RPC error response:
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"error": {
+		"code": -32002,
+		"message": "Permission denied. You do not have the necessary rights.",
+		"data": null
 	}
 }
 ```

@@ -1,0 +1,95 @@
+name: Release with packages
+
+on:
+  workflow_dispatch: # allow manual execution
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  create_release_deb: # used to identify the output in other jobs
+    name: Create Release with Debian package
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #version: ${{ steps.get_version.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update && sudo apt install -y php
+
+      - id: get_version
+        name: Get version name for Github release title
+        run: echo version=$(php -r "require_once('lib/OcoServer.class.php'); echo OcoServer::APP_VERSION;") >> $GITHUB_OUTPUT
+
+      - name: Execute deb build
+        run: cd client-extension/installer/deb/ && ./build.sh
+
+      - id: create_release
+        name: Create Github release
+        uses: actions/create-release@v1
+        env:
+          # this token is provided automatically by Actions with permissions declared above
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          draft: true # create a release draft - only the master of disaster is allowed to publish it
+          prerelease: false
+          release_name: Version ${{ steps.get_version.outputs.version }}
+          tag_name: ${{ github.ref }}
+
+      - name: Upload deb client artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: client-extension/installer/deb/oco-client-extension-linux.deb
+          asset_name: oco-client-extension-linux.deb
+          asset_content_type: application/vnd.debian.binary-package
+
+  create_exe:
+    name: Create Windows package
+    runs-on: windows-2022
+    needs: create_release_deb
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+
+      - name: Create venv, install Python packages, compile binaries
+        run: |
+          cd client-extension
+          python -m venv venv
+          venv/Scripts/pip.exe install pyinstaller==5.13.2
+          venv/Scripts/pyinstaller.exe --noconsole --icon installer\windows\logo-service.ico oco-client-extension-windows.py
+          cd ..
+
+      - name: Execute package build
+        shell: cmd
+        run: cd client-extension\installer\windows\ && "%programfiles(x86)%\Inno Setup 6\iscc.exe" "setup.iss"
+
+      - name: Upload artifact
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{ needs.create_release_deb.outputs.upload_url }}
+          asset_path: client-extension/installer/windows/oco-client-extension-windows.exe
+          asset_name: oco-client-extension-windows.exe
+          asset_content_type: application/vnd.microsoft.portable-executable

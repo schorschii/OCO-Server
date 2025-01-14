@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 ?>
 
 <h1><img src='img/package-new.dyn.svg'><span id='page-title'><?php echo LANG('new_package'); ?></span></h1>
@@ -10,6 +10,9 @@ require_once('../session.php');
 	<?php foreach($cl->getPackageFamilies() as $p) { ?>
 		<option><?php echo htmlspecialchars($p->name); ?></option>
 	<?php } ?>
+</datalist>
+<datalist id='lstVersions'>
+	<option>$$ProductVersion$$</option>
 </datalist>
 <datalist id='lstInstallProceduresTemplates'>
 	<option>[FILENAME]</option>
@@ -24,6 +27,7 @@ require_once('../session.php');
 </datalist>
 <datalist id='lstUninstallProceduresTemplates'>
 	<option>[FILENAME]</option>
+	<option>msiexec /quiet /x $$ProductCode$$</option>
 	<option>msiexec /quiet /x</option>
 	<option>apt remove -y</option>
 	<option>msiexec /quiet /x [FILENAME]</option>
@@ -36,6 +40,7 @@ require_once('../session.php');
 	<option>installer -target / -pkg</option>
 </datalist>
 <datalist id='lstUninstallProcedures'>
+	<option>msiexec /quiet /x $$ProductCode$$</option>
 	<option>msiexec /quiet /x</option>
 	<option>apt remove -y</option>
 </datalist>
@@ -66,13 +71,17 @@ require_once('../session.php');
 		<th><?php echo LANG('package_family_name'); ?></th>
 		<td><input type='text' id='txtName' list='lstPackageNames' value='<?php echo htmlspecialchars($_GET['name']??'',ENT_QUOTES); ?>'></td>
 		<th><?php echo LANG('version'); ?></th>
-		<td><input type='text' id='txtVersion' value='<?php echo htmlspecialchars($_GET['version']??'',ENT_QUOTES); ?>'></td>
+		<td><input type='text' id='txtVersion' list='lstVersions' value='<?php echo htmlspecialchars($_GET['version']??'',ENT_QUOTES); ?>'></td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os'); ?></th>
 		<td><input type='text' id='txtCompatibleOs' list='lstOs' placeholder='<?php echo LANG('optional_hint'); ?>' value='<?php echo htmlspecialchars($_GET['compatible_os']??'',ENT_QUOTES); ?>'></td>
 		<th><?php echo LANG('compatible_os_version'); ?></th>
 		<td><input type='text' id='txtCompatibleOsVersion' list='lstOsVersion' placeholder='<?php echo LANG('optional_hint'); ?>' value='<?php echo htmlspecialchars($_GET['compatible_os_version']??'',ENT_QUOTES); ?>'></td>
+	</tr>
+	<tr class='nospace'>
+		<th><?php echo LANG('licenses'); ?></th>
+		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0' value='<?php echo htmlspecialchars($_GET['license_count']??'',ENT_QUOTES); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
@@ -82,7 +91,7 @@ require_once('../session.php');
 	<tr><td colspan='2'><h2><?php echo LANG('package_content'); ?></h2></td></tr>
 	<tr>
 		<th><?php echo LANG('zip_archive'); ?></th>
-		<td colspan='3' class='fileinputwithbutton'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()'><button onclick='toggleInputDirectory(fleArchive)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/folder.dyn.svg'></button></td>
+		<td colspan='3' class='fileinputwithbutton'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()'><button onclick='toggleInputDirectory(fleArchive,this)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/files.dyn.svg'></button></td>
 	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG('installation'); ?></h2></td></tr>
@@ -157,6 +166,7 @@ require_once('../session.php');
 			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(
 				txtName.value,
 				txtVersion.value,
+				txtLicenseCount.value=="" ? -1 : txtLicenseCount.value,
 				txtNotes.value,
 				fleArchive.files,
 				txtInstallProcedure.value,

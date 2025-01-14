@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 $group = null;
 $family = null;
@@ -59,7 +59,7 @@ try {
 	<h1><img src='<?php echo $family->getIcon(); ?>'><span id='page-title'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($family->name); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
-		<button onclick='showDialogEditPackageFamily(<?php echo $family->id; ?>, spnPackageFamilyName.innerText, spnPackageFamilyNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='showDialogEditPackageFamily(<?php echo $family->id; ?>, spnPackageFamilyName.innerText, <?php echo $family->license_count===null?-1:$family->license_count; ?>, spnPackageFamilyNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button class='<?php echo (!empty($family->icon)?'nomarginright':''); ?>' onclick='fleIcon.click()' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-add.dyn.svg'>&nbsp;<?php echo LANG('change_icon'); ?></button>
 		<?php if(!empty($family->icon)) { ?>
 			<button onclick='removePackageFamilyIcon(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-remove.dyn.svg'>&nbsp;<?php echo LANG('remove_icon'); ?></button>
@@ -74,6 +74,17 @@ try {
 		<p class='quote'><?php echo nl2br(htmlspecialchars($family->notes)); ?></p>
 	<?php } ?>
 	</span>
+	<?php if($family->license_count !== null && $family->license_count >= 0) {
+		$licenseUsed = $family->install_count;
+		$licensePercent = $family->license_count==0 ? 100 : $licenseUsed * 100 / $family->license_count;
+	?>
+		<table class='list fullwidth marginbottom'>
+			<tr>
+				<th><?php echo LANG('licenses'); ?></th>
+				<td><?php echo progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$family->license_count.')'); ?></td>
+			</tr>
+		</table>
+	<?php } ?>
 <?php } else {
 	$subGroups = $cl->getPackageGroups(null);
 	$permissionCreatePackage = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
@@ -107,6 +118,7 @@ try {
 				<th class='searchable sortable'><?php echo LANG('size'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('description'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('licenses'); ?></th>
 				<?php if($group !== null) { ?>
 					<th class='searchable sortable'><?php echo LANG('order'); ?></th>
 					<th><?php echo LANG('move'); ?></th>
@@ -122,12 +134,19 @@ try {
 			if($group !== null) echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onkeyup='handlePackageReorderByKeyboard(event, ".$group->id.", ".$p->package_group_member_sequence.")'></td>";
 			else echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."'></td>";
 
-			if($family==null) echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
+			if($family==null) echo "<td><a ".explorerLink('views/packages.php?package_family_id='.$p->package_family_id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
 			echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->version)."</a></td>";
 			echo "<td>".htmlspecialchars($p->created_by_system_user_username??'')."</td>";
 			echo "<td sort_key='".htmlspecialchars($size ? $size : 0)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG('not_found'))."</td>";
 			echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 			echo "<td>".htmlspecialchars($p->created)."</td>";
+			if($p->license_count !== null && $p->license_count >= 0) {
+				$licenseUsed = $p->install_count;
+				$licensePercent = $p->license_count==0 ? 100 : $licenseUsed * 100 / $p->license_count;
+				echo "<td>".progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$p->license_count.')')."</td>";
+			} else {
+				echo "<td>-</td>";
+			}
 
 			if($group !== null) {
 				echo "<td>".htmlspecialchars($p->package_group_member_sequence ?? '-')."</td>";

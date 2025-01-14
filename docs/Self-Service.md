@@ -60,6 +60,11 @@ The LDAP sync will assign the ldap flag and role with the given ID to the domain
 
 Please note that **no** user attributes will be synced via LDAP. The OCO agent is the only data source for domain user information.
 
+#### Unique Identifier
+The LDAP sync is done using the unique identifier (configured LDAP attribute `uid`) of the user object. However, there is a use case in which you may want to use the username for the LDAP sync, e.g. if your client machines are not using domain accounts for login (= they use local user accounts with the same username as in your LDAP directory). In this case, add the configuration value `"username-as-identifier": true,` to your self service LDAP server config.
+
+Note that using the username as identifier ist **not** recommended as they are not unique. This can lead into problems if you have multiple users with the same account name or when changing an account name.
+
 ## Self Service Jobs
 Self service jobs can be monitored and changed by admins in the admin web frontend. Self service job containers are displayed separately besides normal job containers, created by system users.
 

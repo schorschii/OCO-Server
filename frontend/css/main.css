@@ -281,7 +281,7 @@ h3 {
 #header #search-results a:focus,
 #header #search-results a:hover,
 #header #search-results a:active,
-.blockListItem:focus,
+.blockListItem:focus, .blockListItem:focus-within,
 .blockListItem:hover,
 .blockListItem:active {
 	background-color: #eeeeee;
@@ -311,14 +311,32 @@ h3 {
 #explorer-tree .node > .subitems {
 	margin-left: 17px;
 }
+#explorer-tree .node.expandable > a:hover > img,
+#explorer-tree .node.expandable > a:focus > img,
+#explorer-tree .subnode.expandable > a:hover > img,
+#explorer-tree .subnode.expandable > a:focus > img {
+	object-position: 16px 16px;
+	background-image: url('../img/expand.dyn.svg');
+	background-size: 16px 16px;
+}
+#explorer-tree .node.expandable.expanded > a:hover > img,
+#explorer-tree .node.expandable.expanded > a:focus > img,
+#explorer-tree .subnode.expandable.expanded > a:hover > img,
+#explorer-tree .subnode.expandable.expanded > a:focus > img {
+	object-position: 16px 16px;
+	background-image: url('../img/collapse.dyn.svg');
+	background-size: 16px 16px;
+}
 #explorer-tree .subitems {
+	display: none;
 	max-height: 0px;
 	overflow: hidden;
 	margin-left: 12px;
 	padding-left: 8px;
 	border-left: 1px dashed rgb(150,150,150,0.4);
 }
-#explorer-tree .subitems.expanded {
+#explorer-tree .expanded > .subitems {
+	display: block;
 	max-height: none;
 	overflow: visible;
 }
@@ -417,6 +435,7 @@ h3 {
 	display: inline-block;
 }
 #dialog-container #dialog-box {
+	position: relative;
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
@@ -447,13 +466,14 @@ h3 {
 	margin-top: 15px;
 }
 #dialog-container #dialog-box #dialog-text.monospace {
-	font-family: 'SourceCodePro';
 	white-space: pre-wrap;
 	border-left: 2px solid rgb(200,200,200);
 	padding: 10px;
 }
-#dialog-container #dialog-box #dialog-controls {
-	margin-top: 15px;
+#dialog-container #dialog-box #btnDialogClose {
+	position: absolute;
+	top: -16px; right: -16px;
+	border-radius: 999px;
 }
 .first {
 	margin-top: 0px;
@@ -718,6 +738,26 @@ table.list, .boxshadow {
 }
 .box .subgroup {
 	margin-left: 22px;
+}
+.deletable {
+	position: relative;
+}
+.deletable::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: white;
+	background-image: url('../img/close.dyn.svg');
+	background-repeat: no-repeat;
+	background-position: center;
+	opacity: 0;
+	transition: opacity 0.2s;
+}
+.deletable:hover::after{
+	opacity: 0.8;
 }
 input, select, button, textarea {
 	box-sizing: border-box;
@@ -1129,7 +1169,7 @@ a.subbuttons > button {
 	font-size: 90%;
 }
 .monospace {
-	font-family: 'SourceCodePro';
+	font-family: 'SourceCodePro', monospace;
 }
 .rawvalue {
 	display: none;
@@ -1345,6 +1385,12 @@ div.stickytable > table.list tfoot {
 .checkboxWithText .hint {
 	max-width: 650px;
 }
+.mask {
+	-webkit-text-security: disc;
+}
+.mask:hover, .mask:focus {
+	-webkit-text-security: none;
+}
 
 .listSearch {
 	position: relative;
@@ -1474,6 +1520,15 @@ div.stickytable > table.list tfoot {
 	margin-bottom: 0px;
 }
 
+.beta {
+	font-size: 70%;
+	padding: 1px 6px;
+	margin: 1px 4px;
+	border-radius: 999px;
+	background-color: #314351;
+	color: white;
+}
+
 @media (max-width: 1050px) {
 	#header button > span {
 		display: none;
@@ -1568,7 +1623,7 @@ div.stickytable > table.list tfoot {
 	#header #search-results a:focus,
 	#header #search-results a:hover,
 	#header #search-results a:active,
-	.blockListItem:focus,
+	.blockListItem:focus, .blockListItem:focus-within,
 	.blockListItem:hover,
 	.blockListItem:active {
 		background-color: #30363d;
@@ -1591,6 +1646,9 @@ div.stickytable > table.list tfoot {
 	#explorer-content .gallery h2,
 	#explorer-content .gallery h3 {
 		color: rgb(233,236,239);
+	}
+	.deletable::after {
+		background-color: black;
 	}
 	.inactive {
 		color: rgba(233,236,239,0.4);

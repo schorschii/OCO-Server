@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 const DOCS_PATH      = __DIR__.'/../../docs';
 const DECISIONS_DIR  = 'decisions';
@@ -39,8 +39,11 @@ if(file_exists(DOCS_PATH.'/'.$fileName) && is_file(DOCS_PATH.'/'.$fileName)) { /
 	foreach($nodes as $node) {
 		$attr = $node->getAttribute('href');
 		if(!empty($attr)) {
-			if(startsWith($attr, 'https://github.com/')) continue;
-			$node->setAttribute('href', 'index.php?view=docs&page='.urlencode($attr));
+			if(startsWith($attr, 'https://')) {
+				$node->setAttribute('target', '_blank');
+			} else {
+				$node->setAttribute('href', 'index.php?view=docs&page='.urlencode($attr));
+			}
 		}
 	}
 	// image adjustments
@@ -49,8 +52,9 @@ if(file_exists(DOCS_PATH.'/'.$fileName) && is_file(DOCS_PATH.'/'.$fileName)) { /
 		$attr = $node->getAttribute('src');
 		if(!empty($attr)) {
 			$prefix = ''; if(startsWith($fileName, '../')) $prefix = '../';
-			$base64 = base64_encode(file_get_contents(DOCS_PATH.'/'.$prefix.$node->getAttribute('src')));
-			$node->setAttribute('src', 'data:image/png;base64,'.$base64);
+			$filePath = DOCS_PATH.'/'.$prefix.$node->getAttribute('src');
+			$base64 = base64_encode(file_get_contents($filePath));
+			$node->setAttribute('src', 'data:'.mime_content_type($filePath).';base64,'.$base64);
 		}
 	}
 	echo $dom->saveHTML();

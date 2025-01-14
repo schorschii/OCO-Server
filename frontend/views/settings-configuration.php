@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 $license = new LicenseCheck($db);
 $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION, false);
@@ -17,7 +17,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 			<h2><?php echo LANG('license'); ?></h2>
 			<div class='filler invisible'></div>
 			<span><a href='https://georg-sieber.de/?page=oco' target='_blank'><?php echo LANG('buy_license'); ?></a></span>
-			<button onclick='showDialogEditLicense()' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<button onclick='showDialogEditSetting("license",".ocolicense",false,true,LANG["license_file"])' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		</div>
 		<table class='list'>
 			<tr>
@@ -108,7 +108,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 		<table class='list'>
 			<tr>
 				<th><?php echo LANG('webserver_version'); ?>:</th>
-				<td><?php echo htmlspecialchars(apache_get_version()); ?></td>
+				<td><?php echo htmlspecialchars($_SERVER['SERVER_SOFTWARE']??'?'); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('database_server_version'); ?>:</th>

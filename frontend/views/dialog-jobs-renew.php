@@ -1,16 +1,23 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 ?>
 
-<p style='max-width:450px'><?php echo LANG('renew_jobs_description'); ?></p>
 <input type='hidden' id='txtRenewJobContainerId' value=''></input>
 <input type='hidden' id='txtRenewJobContainerJobId' value=''></input>
 <table class='fullwidth aligned'>
 	<tr>
+		<th><?php echo LANG('mode'); ?></th>
+		<td>
+			<label><input type='checkbox' id='chkCreateNewJobContainer' autofocus='true' onclick='if(this.checked) tbNewJobContainer.style.display="table-row-group"; else tbNewJobContainer.style.display="none";'><?php echo LANG('create_new_job_container'); ?></label>
+			<div style='max-width:400px' class='hint'><?php echo LANG('renew_jobs_description'); ?></div>
+		</td>
+	</tr>
+	<tbody id='tbNewJobContainer' style='display:none'>
+	<tr>
 		<th><?php echo LANG('name'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtRenewJobContainerName' autofocus='true' value='<?php echo LANG('renew').' '.date('Y-m-d H:i:s'); ?>'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtRenewJobContainerName' value='<?php echo LANG('renew').' '.date('Y-m-d H:i:s'); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
@@ -48,10 +55,7 @@ require_once('../session.php');
 			</div>
 		</td>
 	</tr>
-	<tr>
-		<th></th>
-		<td></td>
-	</tr>
+	</tbody>
 </table>
 
 <div class='controls right'>
@@ -59,6 +63,7 @@ require_once('../session.php');
 	<button class='primary' onclick='renewFailedStaticJobs(
 		txtRenewJobContainerId.value,
 		txtRenewJobContainerJobId.value,
+		chkCreateNewJobContainer.checked,
 		txtRenewJobContainerName.value,
 		txtRenewJobContainerNotes.value,
 		txtRenewJobContainerStartDate.value+" "+txtRenewJobContainerStartTime.value,

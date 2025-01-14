@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once(__DIR__.'/../../loader.inc.php');
-require_once(__DIR__.'/../session.php');
+require_once(__DIR__.'/../session.inc.php');
 
 // ----- prepare view -----
 $stats = $db->getStats();
@@ -29,6 +29,10 @@ $license = new LicenseCheck($db);
 
 	<?php if(!$license->isValid()) { ?>
 		<div class='alert bold error'><?php echo LANG('your_license_is_invalid'); ?></div>
+	<?php } elseif(!$license->isFree() && $license->getRemainingTime() < 60*60*24*14) {
+		$remainingDays = round($license->getRemainingTime() / (60*60*24));
+	?>
+		<div class='alert bold warning'><?php echo str_replace('%1', $remainingDays, LANG('your_license_expires_in_days')); ?></div>
 	<?php } ?>
 
 	<table class='list fullwidth margintop fixed largepadding'>
@@ -49,8 +53,12 @@ $license = new LicenseCheck($db);
 			<td class='center' colspan='2' title='<?php echo htmlspecialchars(niceSize($used).' / '.niceSize($total)); ?>'>
 				<div><?php echo LANG('disk_space'); ?></div>
 				<?php
-				$percent = round($used/$total*100);
-				echo progressBar($percent, null, null, '', 'width:280px');
+				if($total !== false && $free !== false) {
+					$percent = round($used/$total*100);
+					echo progressBar($percent, null, null, '', 'width:280px');
+				} else {
+					echo '???';
+				}
 				?>
 			</td>
 		</tr>

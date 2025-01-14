@@ -31,6 +31,20 @@ You can specify multiple IPv4 or IPv6 ranges (comma separated) in the appropriat
 - allow all clients inside `192.168.2.0/24` except `!192.168.2.3/32`
 - allow all clients inside `CAFF:EECA:FFEE:0000::/64`
 
+## Time Frame Constraint
+You can add a time frame condition to each job container in order to only execute the related jobs in specific time windows. This can be useful for very big software packages which you want to rollout e.g. only outside of working hours or only on saturday etc.
+
+You can specify multiple time ranges (comma separated) in the appropriate text field on the deployment assistant. Negations are also possible using `!` in front of the range. Please note that the order of the ranges is important. If a negated range matches, the job will instantly be ignored.
+
+**Example: `6:00-7:00,FRI 18:00-23:00,!SAT 11:00-13:00,SAT 0:00-23:59`**
+- allow job execution every day between 6:00 and 7:00
+- allow job execution on friday between 18:00 and 23:00
+- allow job execution on saturday, but not between 11:00 and 13:00
+
+## Job Runtime Measurement
+- "Total runtime" shows the time range between the start time of the container and the end time of the last job. If there are unfinished jobs in the container, a "~" is prepended.
+- "Effective runtime" shows the time range between the start time of the first job and the last job end time. This time span can be shorter than the "total runtime" if the client comes online at a later point in time than the container start time.
+
 # Install Packages via Deployment Rule (Dynamic Jobs)
 Deployment rules can tell the OCO system how to automatically roll out packages to computers. In other words, these jobs are dynamically created based on computer and package group memberships.
 

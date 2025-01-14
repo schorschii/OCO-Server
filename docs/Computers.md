@@ -3,7 +3,7 @@
 ## Register New Computers
 After you have installed the agent on the client computer, you have to set the server URL and agent key in the agent config file (`oco-agent.ini`). If you do not specify a server URL in the agent config file, the agent will query your DNS for the SRV record `_oco._tcp` to get the server address (DNS auto discovery). You can also set your server address manually. For that, please let `api-url` point to the full URL to `api-agent.php` on your server, e.g. `https://oco.example.com/api-agent.php`.
 
-Please note: for performance reasons, a MySQL INDEX is created over the `hostnamename` column and therefore, the max length is limited to 200 chars.
+Please note: for performance reasons, a MySQL INDEX is created over the `hostname` column and therefore, the max length is limited to 200 chars.
 
 There are 2 methods for registering new computers:
 
@@ -19,7 +19,11 @@ You can create computer groups e.g. to group all computers of specific locations
 These are static, manually filled groups. In contrast to that, you can create a report if you want a "dynamic group" whose contents is automatically filled/updated based on various criteria (e.g. "all computers of a certain model").
 
 ## Updating Computer Inventory Values
-The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in "Agent Update Interval" on the config page. The recommended default value is 2 hours. Do not make this time interval too short as the query of the inventory values can produce some CPU load.
+The agent will only send updated inventory data to the server if the last inventory data update is older than the time span defined in "Agent Update Interval" on the config page. The recommended default value is 2 hours. Do not make this time interval too short as the query of the inventory values (logins, installed software etc.) can produce some CPU load.
+
+To manually force an update once, hover over the "Last Refresh" date of the computer with your mouse and click the "Force Update" button. The agent will then update its values even if the update time is not reached yet.
+
+![Force update button on mouse hover](img/force-agent-update.png)
 
 ## Event Log Query
 You can monitor the Windows event log and journalctl on Linux by creating Event Query Rules on the OCO server. These rules are communicated with the agent and if an event matches the rule, the agent will send the event data to the server. This feature can be used as a simple central syslog functionality for your managed clients.
@@ -39,6 +43,11 @@ For Linux, as log name, please enter `journalctl` - this is currently the only s
 Please note that the operating systems are producing many log entries. A meaningful filter should always be applied to not spam the database with unnecessary events.
 
 For performance reasons, a MySQL INDEX is created over the `log` column and therefore, the max length is limited to 200 chars.
+
+## Password Rotation Rules
+With the password rotation feature, you can periodically change passwords of local (admin) accounts. This feature is an alternative to the Local Administrator Password Solution (LAPS) from Microsoft.
+
+To use it, you just need to create appropriate password rotation rule in the OCO settings, and the agent will generate a new random password for your local accounts after the given password expiration time is reached.
 
 ### Example Rules
 #### Windows: Get Defender Warning, Error and Critical Events
@@ -81,3 +90,6 @@ When using the satellite WOL technology, the OCO server connects to another serv
 
 ## Remote (Screen) Access
 OCO does not contain a remote access solution as found in some commercial client management systems. OCO doesn't want to reinvent the wheel. Please use a VNC server/client for this and also have a look at the section "Computer Commands" in [WebApplication.md](WebApplication.md).
+
+## Troubleshooting
+If you encounter issues with the agent, please follow the steps described in [debugging](https://github.com/schorschii/oco-agent#troubleshootingdebugging).

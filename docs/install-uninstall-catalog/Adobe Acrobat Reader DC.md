@@ -8,6 +8,5 @@ AcroRdrDC2100520048_de_DE.exe /sAll /rs /msi EULA_ACCEPT=YES DISABLEDESKTOPSHORT
 
 **Uninstallation:**
 ```
-msiexec /quiet /x {AC76BA86-7AD7-1031-7B44-AC0F074E4100}
+wmic product where "name like 'Adobe Acrobat Reader%'" call uninstall /nointeractive
 ```
-(find the correct GUID for your version from Registry: `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`)

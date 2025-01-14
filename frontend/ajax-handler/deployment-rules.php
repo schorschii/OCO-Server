@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 try {
 
@@ -11,7 +11,6 @@ try {
 	&& isset($_POST['computer_group_id'])
 	&& isset($_POST['package_group_id'])
 	&& isset($_POST['priority'])
-	&& isset($_POST['auto_uninstall'])
 	&& isset($_POST['notes'])) {
 		if($_POST['edit_deployment_rule_id'] == '-1') {
 			die($cl->createDeploymentRule(
@@ -20,8 +19,7 @@ try {
 				$_POST['enabled'],
 				$_POST['computer_group_id'],
 				$_POST['package_group_id'],
-				$_POST['priority'],
-				$_POST['auto_uninstall']
+				$_POST['priority']
 			));
 		} else {
 			$cl->editDeploymentRule($_POST['edit_deployment_rule_id'],
@@ -30,8 +28,7 @@ try {
 				$_POST['enabled'],
 				$_POST['computer_group_id'],
 				$_POST['package_group_id'],
-				$_POST['priority'],
-				$_POST['auto_uninstall']
+				$_POST['priority']
 			);
 		}
 		die();
@@ -59,7 +56,7 @@ try {
 	die(LANG('permission_denied'));
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
-	die($e->getMessage());
+	die(htmlspecialchars($e->getMessage()));
 }
 
 header('HTTP/1.1 400 Invalid Request');

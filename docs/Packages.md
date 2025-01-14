@@ -81,11 +81,17 @@ It depends on the platform and program which command can be used for (un)install
 #### Windows
 Several installer systems have become established under Windows. Please check which parameters are available by executing `installer.exe /?` or consult the software manufacturer for more information. Please also consider repacking EXE setups as MSI package, which can be uninstalled by the standardized command `msiexec /x` (see below).
 
+In general, you should always use system-wide installations, that's what OCO is made for. You as the administrator want to ensure and enforce that every managed computer has the newest version installed with all security and bug fixes. In contrast, some software vendors offers installations in user context. These cannot be easily managed and updated in that way. Also, user-wide installations take up unnecessary space for each user separately on the computer. While the most software comes as system-wide installation (which needs admin rights), some software offers separate user-installation packages or parameters to switch the installation mode to system-wide (e.g. `ALLUSERS=1` (MSI) or `/ALLUSERS` (InnoSetup)).
+
 ##### Windows Installer
 - silent MSI installation: `msiexec /quiet /i package.msi`
 - silent MSI repair: `msiexec /quiet /f package.msi` or `msiexec /quiet /f {PRODUCT-GUID}`
 - silent MSI uninstallation: `msiexec /quiet /x package.msi` or `msiexec /quiet /x {PRODUCT-GUID}`
-  - It is easier to uninstall `.msi` packages using the original installation file - but this means that the package must be downloaded again for uninstallation. That's why, for bigger packages, you should use the GUID in the uninstallation command. You can find it out by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup).
+  - It is easier to uninstall `.msi` packages using the original installation file - but this means that the package must be downloaded again for uninstallation.
+  - That's why, for bigger packages, you should use the MSI product GUID instead of the MSI file name in the uninstallation command.
+  - OCO can automatically find the GUID if you enter the placeholder `$$ProductCode$$` into the uninstallation procedure, e.g. `msiexec /quiet /x $$ProductCode$$`. This requires that Wine with its `msidb.exe` command is installed on your server.
+  - Alternatively, you can find the GUID by using a method described [here](https://stackoverflow.com/questions/29937568/how-can-i-find-the-product-guid-of-an-installed-msi-setup) (e.g. by looking into the Registry below `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`).
+  - Other supported MSI placeholders are `$$UpgradeCode$$`, `$$ProductName$$`, `$$ProductVersion$$`, `$$Manufacturer$$` and can be used in installation procedure, version and description fields too.
 - additional parameters
   - `/norestart`: prevent automatic restart - if your product needs a restart, you should set this option and use the OCO restart feature ("post action") instead
   - `MY_PROP="myValue"`: custom software-specific properties - please contact the MSI package software vendor for a list of supported options

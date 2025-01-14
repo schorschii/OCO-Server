@@ -1,13 +1,13 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 $subGroups = [];
 $permissionCreatePackage = false;
 $permissionCreateGroup   = false;
 try {
-	$families = $cl->getPackageFamilies();
+	$families = $cl->getPackageFamilies(null, false, true);
 	$subGroups = $cl->getPackageGroups(null);
 	$permissionCreatePackage = $cl->checkPermission(new Models\Package(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission(new Models\PackageFamily(), PermissionManager::METHOD_CREATE, false);
 	$permissionCreateGroup   = $cl->checkPermission(new Models\PackageGroup(), PermissionManager::METHOD_CREATE, false);
@@ -47,6 +47,7 @@ try {
 				<th class='searchable sortable'><?php echo LANG('count'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('newest'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('oldest'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('licenses'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -59,6 +60,13 @@ try {
 			echo "<td>".htmlspecialchars($p->package_count)."</td>";
 			echo "<td>".htmlspecialchars($p->newest_package_created??'')."</td>";
 			echo "<td>".htmlspecialchars($p->oldest_package_created??'')."</td>";
+			if($p->license_count !== null && $p->license_count >= 0) {
+				$licenseUsed = $p->install_count;
+				$licensePercent = $p->license_count==0 ? 100 : $licenseUsed * 100 / $p->license_count;
+				echo "<td>".progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$p->license_count.')')."</td>";
+			} else {
+				echo "<td>-</td>";
+			}
 			echo "</tr>";
 		}
 		?>

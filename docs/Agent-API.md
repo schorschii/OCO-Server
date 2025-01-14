@@ -72,6 +72,13 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 					"log": "System",
 					"query": "<QueryList><Query><Select>*[System[(EventID=1130)]]<\/Select><\/Query><\/QueryList>"
 				}
+			],
+			"update-passwords": [
+				{
+					"username": "administrator",
+					"alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+					"length": 15
+				}
 			]
 		}
 	}
@@ -212,6 +219,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 ## `oco.agent.update_job_state` - Update Job Deployment Status
 ### Parameters
 - `job-id`: ID of the job to update (static job: `<job_id>`, dynamic job: `dynamic-<job_id>`)
+- `download-progress` (optional): download progress in percent
 - `state`: state of the job, e.g. downloading, executing, finished (integer) - see const definitions in 'Job' class
 - `return-code`: procedure command return code
 - `message`: procedure command output (stdout & stderr)
@@ -228,6 +236,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 		"data": {
 			"job-id": 123,
 			"state": 3,
+			"download-progress": 50,
 			"return-code": 0,
 			"message": ""
 		}
@@ -268,6 +277,43 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 					"level": 3,
 					"timestamp": "2022-10-05 16:21:05",
 					"data": {"Product Name": "Microsoft Defender Antivirus", "Product Version": "4.18.2207.7", "Scan ID": "{00000000-0000-0000-0000-000000000000}", "Scan Type Index": "1", "Scan Type": "Antimalware", "Scan Parameters Index": "1", "Scan Parameters": "Schnell\u00fcberpr\u00fcfung", "Domain": "NT-AUTORIT\u00c4T", "User": "SYSTEM", "SID": "S-1-5-18"}
+				}
+			]
+		}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"params": {
+			"server-key": "abc123"
+		}
+	}
+}
+```
+
+## `oco.agent.passwords` - Store New Rotated Password On The Server
+### Parameters
+- `passwords`: the passwords to store
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.agent.passwords",
+	"params": {
+		"agent-key": "🌈💜👆🚧🛸💩",
+		"uid": "00000000-0000-0000-0000-000000000000",
+		"hostname": "mypc",
+		"data": {
+			"passwords": [
+				{
+					"username": "administrator",
+					"password": "wee9ze4ieHeik3G"
 				}
 			]
 		}

@@ -168,15 +168,13 @@ In addition to that, can use dynamic administrator passwords by using [LAPS](htt
 More information can be found in the official wimboot documentation: https://ipxe.org/howto/winpe
 
 ### Unattended Installation
-To make fully unattended installations, you can now place some XML files into `/srv/smb/images/preseed` with the name of the MAC address of your computer, e.g. `00-50-56-aa-bb-cc.xml` (separate config files per computer are necessary under Windows in order to give every computer the desired hostname). Of course, this file creation should be automated with some kind of user interface and own scripts in your specific device deployment workflow.
+To make fully unattended installations, you can now place some XML files into `/srv/smb/images/preseed` with the name of the MAC address of your computer, e.g. `00-50-56-aa-bb-cc.xml` (separate config files per computer are necessary under Windows in order to give every computer the desired hostname). Of course, this file creation should be automated with some kind of user interface and own scripts in your specific device deployment workflow. An example "Install Tool" for this purpose can be found in the [OCO Server Extension Repo](https://github.com/schorschii/OCO-Server-Extensions/tree/master/install-tool).
 
-There are several tools out there to create such Windows setup answer files, e.g. https://www.windowsafg.com/win10x86_x64_uefi.html.
+You can use a tool like https://www.windowsafg.com/win10x86_x64_uefi.html to create a Windows Setup XML answer file template.
 
-Notice that the Samba share is readable for everyone. Therefore, you should not set an administrator password in your unattended `.xml`, as it is only stored Base64 encoded. This can simply be decoded into plaintext!
+Notice that the Samba share is readable for everyone. Therefore, you should not set an administrator password in your unattended `.xml`, as it is only stored Base64 encoded. This can simply be decoded into plaintext! Instead, you can use a technique described [here](https://georg-sieber.de/?page=blog-windows-hash) to put a password hash into the `.xml` file (as known from Linux preseed files) instead of a plaintext password.
 
-Instead, you can use a technique described [here](https://georg-sieber.de/?page=blog-windows-hash) to put a password hash into the `.xml` file (as known from Linux preseed files) instead of a plaintext password.
-
-In addition to that, can use dynamic administrator passwords by using [LAPS](https://www.microsoft.com/en-us/download/details.aspx?id=46899).
+For even more security, can use dynamic administrator passwords by using [LAPS](https://www.microsoft.com/en-us/download/details.aspx?id=46899).
 
 ## 6. Boot!
 Boot your client device via PXE. Maybe you need to enter your BIOS/UEFI settings and set the network card as first boot device.

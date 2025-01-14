@@ -9,6 +9,5 @@ CitrixWorkspaceApp.exe /silent
 
 **Uninstallation:**
 ```
-msiexec /quiet /x {GUID}
+CitrixWorkspaceApp.exe /uninstall /silent
 ```
-(find the correct GUID for your version from Registry: `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`)

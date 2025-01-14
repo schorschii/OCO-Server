@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 // ----- prepare view -----
 try {
@@ -116,21 +116,59 @@ try {
 						</div>
 						<div class='controls'>
 							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-							<?php if($hasComputerIds) { ?>
-								<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
-								<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
-								<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
-								<button onclick='removeSelectedComputer("id[]", "computer_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
-							<?php } ?>
-							<?php if($hasPackageIds) { ?>
-								<button onclick='deploySelectedPackage("id[]", "package_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
-								<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
-								<button onclick='removeSelectedPackage("id[]", "package_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+							<?php if($hasComputerIds xor $hasPackageIds) { ?>
+								<?php if($hasComputerIds) { ?>
+									<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+									<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
+									<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
+									<button onclick='removeSelectedComputer("id[]", "computer_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+								<?php } ?>
+								<?php if($hasPackageIds) { ?>
+									<button onclick='deploySelectedPackage("id[]", "package_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+									<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
+									<button onclick='removeSelectedPackage("id[]", "package_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+								<?php } ?>
 							<?php } ?>
 						</div>
 					</div>
 				</td>
 			</tr>
+
+			<?php if($hasComputerIds && $hasPackageIds) { ?>
+				<?php if($hasComputerIds) { ?>
+					<tr>
+						<td colspan='999'>
+							<div class='spread'>
+								<div>
+									<?php echo LANG('computers'); ?>
+								</div>
+								<div class='controls'>
+									<button onclick='deploySelectedComputer("id[]", "computer_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+									<button onclick='wolSelectedComputer("id[]", "computer_id")'><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
+									<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]", "computer_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
+									<button onclick='removeSelectedComputer("id[]", "computer_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+								</div>
+							</div>
+						</td>
+					</tr>
+				<?php } ?>
+				<?php if($hasPackageIds) { ?>
+					<tr>
+						<td colspan='999'>
+							<div class='spread'>
+								<div>
+									<?php echo LANG('packages'); ?>
+								</div>
+								<div class='controls'>
+									<button onclick='deploySelectedPackage("id[]", "package_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+									<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]", "package_id", true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add_to'); ?></button>
+									<button onclick='removeSelectedPackage("id[]", "package_id", event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+								</div>
+							</div>
+						</td>
+					</tr>
+				<?php } ?>
+			<?php } ?>
 		</tfoot>
 		</table>
 

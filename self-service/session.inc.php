@@ -1,6 +1,6 @@
 <?php
 
-require_once('session-options.php');
+require_once('session-options.inc.php');
 
 // check if user has a valid session and is authenticated (logged in)
 $selfServiceEnabled = boolval($db->settings->get('self-service-enabled'));
@@ -20,9 +20,14 @@ function redirectToLogin($forceLogout=false) {
 	global $SUBVIEW;
 	header('HTTP/1.1 401 Not Authorized');
 	if(empty($SUBVIEW)) {
-		if(!empty($_SERVER['REQUEST_URI']) && startsWith($_SERVER['REQUEST_URI'], '/'))
-			$_SESSION['oco_self_service_login_redirect'] = $_SERVER['REQUEST_URI'];
-		header('Location: login.php'.($forceLogout ? '?logout=1' : ''));
+		$params = [];
+		if($forceLogout) {
+			$params[] = 'logout=1';
+		}
+		if(!empty($_SERVER['REQUEST_URI']) && startsWith($_SERVER['REQUEST_URI'], '/')) {
+			$params[] = 'redirect='.urlencode($_SERVER['REQUEST_URI']);
+		}
+		header('Location: login.php'.(empty($params) ? '' : '?').implode('&', $params));
 	}
 	die();
 }

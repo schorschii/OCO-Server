@@ -1,16 +1,23 @@
+<img align="right" style="width:180px" src="frontend/img/logo.dyn.svg">
+
 # Open Computer Orchestration
 **Self Hosted / On Premise Desktop and Server Inventory, Management & Software Deployment**
 
-The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines using a comfortable web interface. Additionally, it provides software deployment features, a user-computer logon overview, lists software packages installed on all computers ("recognised software") and features a fine-grained permission/role system.
+The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines using a comfortable web interface. It provides software deployment features, a user-computer logon overview, lists software packages installed on each computer ("recognised software") and features a fine-grained permission/role system.
 
-It focuses on easy usability (good GUI/UX), simplicity (assessable code with minimal external dependencies) and performance (you can manage many computers with minimal server resources).
+It focuses on easy usability (UI/UX), simplicity (assessable code with minimal external dependencies) and performance (you can manage many computers with minimal server resources).
 
-- [OCO Server](https://github.com/schorschii/oco-server)
-- [OCO Server Extensions](https://github.com/schorschii/oco-server-extensions)
-- [OCO Agent](https://github.com/schorschii/oco-agent)
+These features allow you to roll out any new software or updates (patch management) - just create an OCO package and distribute it to your clients. You can track progress and view the results (exit code and command output) of every software job. Custom reports let you to get even more out of your data.
+
+| [OCO Server] | [OCO Server Extensions] | [OCO Agent] |
+| ------------ | ----------------------- | ----------- |
+
+[OCO Server]: https://github.com/schorschii/oco-server
+[OCO Server Extensions]: https://github.com/schorschii/oco-server-extensions
+[OCO Agent]: https://github.com/schorschii/oco-agent
 
 ## About OCO Server
-The OCO server provides the Agent API (used to communicate with the OCO agent), the [Client API](docs/Client-API.md) (can be used by admins to automate workflows, e.g. for Continuous Integration/Delivery/Deployment) and the admin web frontend for the OCO project. On the web frontend you can view computer details and configure software deployment jobs. It can be installed on any Linux distribution. Data is stored in a MySQL database.
+The OCO server provides the Agent API (used to communicate with the OCO agent), the [Client API](docs/Client-API.md) (can be used by admins to automate workflows, e.g. for Continuous Integration/Delivery/Deployment) and the admin web frontend for the OCO project. On the web frontend you can view computer details and configure software deployment jobs. It can be installed on any Linux distribution. Data is stored in a MariaDB database.
 
 ![Schematic](.github/oco-schematic.png)
 
@@ -23,7 +30,7 @@ The OCO server provides the Agent API (used to communicate with the OCO agent), 
 ### Server
 - Software
   - any Linux Distribution
-  - MySQL/MariaDB Database Server
+  - MariaDB Database Server
   - Apache2 Web Server
   - PHP 7.3 or newer
 - Hardware Recommendations for ~600 Managed Computers
@@ -53,8 +60,10 @@ Quick Links:
 - [Overview](docs/README.md)
 - [Installation Guide](docs/Server-Installation.md)
 
+If you like this project, please do not forget to star the GitHub repo.
+
 ## License
-The Open Computer Orchestration Project is open source, which means you have the freedom to view the source code, report issues and submit improvements on GitHub, which are very welcome. However, a license is required if you want to manage more than 20 computers with this system. Please buy the appropriate licenses [here](https://georg-sieber.de/?page=oco).
+The Open Computer Orchestration Project is open source, which means you have the freedom to view the source code, report issues and submit improvements on GitHub, which are very welcome. However, a license is required if you want to manage more than 20 computers with this system. Please buy the appropriate licenses [here](https://georg-sieber.de/?page=oco) to support further development.
 
 ## Support & Specific Adjustments
 You need support or specific adjustments for your environment? You can hire me to extend OCO to your needs or to write custom reports etc. Please [contact me](https://georg-sieber.de/?page=impressum) if you are interested.

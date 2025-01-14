@@ -1,11 +1,12 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 try {
 
 	if(!empty($_POST['ldap_sync_system_users'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 		try {
 			$ldapSync = new LdapSync($db, true);
 			$ldapSync->syncSystemUsers();
@@ -17,9 +18,34 @@ try {
 	}
 
 	if(!empty($_POST['ldap_sync_domain_users'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 		try {
 			$ldapSync = new LdapSync($db, true);
 			$ldapSync->syncDomainUsers();
+		} catch(Exception $e) {
+			header('HTTP/1.1 500 Internal Server Error');
+			die($e->getMessage());
+		}
+		die();
+	}
+
+	if(!empty($_POST['sync_apple_devices'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+		try {
+			$ade = new Apple\AutomatedDeviceEnrollment($db);
+			$ade->syncDevices();
+		} catch(Exception $e) {
+			header('HTTP/1.1 500 Internal Server Error');
+			die($e->getMessage());
+		}
+		die();
+	}
+
+	if(!empty($_POST['sync_apple_assets'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+		try {
+			$ade = new Apple\VolumePurchaseProgram($db);
+			$ade->syncAssets();
 		} catch(Exception $e) {
 			header('HTTP/1.1 500 Internal Server Error');
 			die($e->getMessage());
@@ -170,6 +196,31 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['edit_password_rotation_rule_id'])
+	&& isset($_POST['computer_group_id'])
+	&& isset($_POST['username'])
+	&& isset($_POST['alphabet'])
+	&& isset($_POST['length'])
+	&& isset($_POST['valid_seconds'])
+	&& isset($_POST['history'])) {
+		die($cl->createEditPasswordRotationRule(
+			$_POST['edit_password_rotation_rule_id']<=0 ? null : $_POST['edit_password_rotation_rule_id'],
+			$_POST['computer_group_id'] ? $_POST['computer_group_id'] : null,
+			$_POST['username'],
+			$_POST['alphabet'],
+			$_POST['length'],
+			$_POST['valid_seconds'],
+			$_POST['history'],
+		));
+	}
+
+	if(!empty($_POST['remove_password_rotation_rule_id']) && is_array($_POST['remove_password_rotation_rule_id'])) {
+		foreach($_POST['remove_password_rotation_rule_id'] as $id) {
+			$cl->removePasswordRotationRule($id);
+		}
+		die();
+	}
+
 	if(!empty($_POST['edit_general_config'])) {
 		if(isset($_POST['client_api_enabled'])) {
 			$cl->editSetting('client-api-enabled', $_POST['client_api_enabled']);
@@ -218,20 +269,64 @@ try {
 		}
 		die();
 	}
-	if(!empty($_FILES['edit_license'])) {
-		// use file from user upload
-		$tmpFilePath = $_FILES['edit_license']['tmp_name'];
-		$tmpFileName = $_FILES['edit_license']['name'];
-		$cl->editLicense(file_get_contents($tmpFilePath));
-		die();
-	}
 	if(!empty($_POST['edit_wol_satellites'])) {
 		$cl->editWolSatellites($_POST['edit_wol_satellites']);
 		die();
 	}
 	if(!empty($_POST['edit_setting'])) {
-		$cl->editSetting($_POST['edit_setting'], $_POST['value']);
-		die();
+		$key = $_POST['edit_setting'];
+		if(isset($_POST['value'])) {
+			// special handlings
+			if($key == 'apple-mdm-activation-profile') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$ade = new Apple\AutomatedDeviceEnrollment($db);
+				$ade->storeActivationProfile($_POST['value']);
+				die();
+			}
+			if($key == 'apple-appstore-teamid') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$vpp = new Apple\VolumePurchaseProgram($db);
+				$as = new Apple\AppStore($db, $vpp);
+				$as->storeTeamId($_POST['value']);
+				die();
+			}
+			if($key == 'apple-appstore-keyid') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$vpp = new Apple\VolumePurchaseProgram($db);
+				$as = new Apple\AppStore($db, $vpp);
+				$as->storeKeyId($_POST['value']);
+				die();
+			}
+			$cl->editSetting($key, $_POST['value']);
+			die();
+		} elseif(isset($_FILES['value'])) {
+			// special handlings
+			$value = file_get_contents($_FILES['value']['tmp_name']);
+			if($key == 'apple-mdm-token') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$ade = new Apple\AutomatedDeviceEnrollment($db);
+				$ade->storeMdmServerToken($value);
+				die();
+			}
+			if($key == 'apple-vpp-token') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$vpp = new Apple\VolumePurchaseProgram($db);
+				$vpp->storeToken($value);
+				die();
+			}
+			if($key == 'apple-appstore-key') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				$vpp = new Apple\VolumePurchaseProgram($db);
+				$as = new Apple\AppStore($db, $vpp);
+				$as->storeKey($value);
+				die();
+			}
+			if($key == 'apple-mdm-vendor-cert') { // ('apple-mdm-apn-cert' file is already pem encoded)
+				$value = Apple\Util\PemDerConverter::der2pem($value);
+			}
+			$cl->editSetting($key, $value);
+			die();
+		}
 	}
 	if(!empty($_POST['remove_setting']) && is_array($_POST['remove_setting'])) {
 		foreach($_POST['remove_setting'] as $setting) {
@@ -254,7 +349,7 @@ try {
 	die(LANG('permission_denied'));
 } catch(Exception $e) {
 	header('HTTP/1.1 400 Invalid Request');
-	die($e->getMessage());
+	die(htmlspecialchars($e->getMessage()));
 }
 
 header('HTTP/1.1 400 Invalid Request');

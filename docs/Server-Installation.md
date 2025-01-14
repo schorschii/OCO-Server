@@ -12,10 +12,14 @@ docker exec -it <CONTAINER-ID> bash
 ```
 
 ## Basic Setup
-0. Install PHP (7.3 or newer) with ZIP & DOM modules, MySQL/MariaDB and Apache2 on a Linux server (Debian recommended).
+0. Install PHP (7.3 or newer) with ZIP & DOM modules, MariaDB and Apache2 on a Linux server (Debian recommended).
    ```
-   apt install php php-zip php-dom php-mysql php-curl mariadb-server apache2 libapache2-mod-php
+   apt install php php-zip php-dom php-mbstring php-mysql php-curl php-ldap php-oauth mariadb-server apache2 libapache2-mod-php
    php --version
+   ```
+   Optional: if you want to use automatic MSI product code extraction when creating packages, you need to install Wine.
+   ```
+   apt install wine
    ```
 1. Download the [latest release](https://github.com/schorschii/oco-server/releases) and copy/extract all files into `/srv/www/oco`.
 2. Configure your Apache webserver
@@ -26,13 +30,7 @@ docker exec -it <CONTAINER-ID> bash
      a2enmod rewrite
      service apache2 restart
      ```
-3. Configure your MariaDB server lock timeout (via `/etc/mysql/conf.d/lock-timeout.cnf`) and restart the database server.
-   ```
-   [mysqld]
-   innodb_lock_wait_timeout = 120
-   ```
-
-   Import the database schema (including all schema upgrades, `/sql/*.sql`) into an empty database.
+3. Import the database schema (including all schema upgrades, `/sql/*.sql`) into an empty database.
    ```
    root@ocoserver:/# mysql
    mysql> CREATE DATABASE oco DEFAULT CHARACTER SET utf8mb4;
@@ -43,7 +41,7 @@ docker exec -it <CONTAINER-ID> bash
    root@ocoserver:/# cat sql/*.sql | mysql oco
    ```
 4. Create the configuration file `conf.php` (create this file by copying the template `conf.php.example`).
-   - Enter your MySQL credentials in `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`. Use a separate database user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.
+   - Enter your MariaDB credentials in `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`. Use a separate database user for the database connection which only has permission to read and write in the specific OCO database. Do not use the root account.
    - Make sure that the defined `PACKAGE_PATH` (where to save the software packages) is writeable for the webserver user.
 5. **Important:** set up HTTPS with a valid certificate and configure your web server to redirect any HTTP request to HTTPS.
    - It is very insecure to let the agent communicate via HTTP with your server because a man-in-the-middle attack can be used to send and install any (malicious) software packages to your client!!!
@@ -78,16 +76,18 @@ docker exec -it <CONTAINER-ID> bash
      ```
      </details>
    - Please refer to the section "Certificate Setup" how to obtain appropriate certificates.
-6. Adjust your PHP config (`/etc/php/x.x/apache2/php.ini`) to allow uploading packages of larger size  
-  (pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size` and `max_execution_time`).
-7. Adjust you Apache config to allow uploading packages of larger size  
-  (pick a value that fit your needs for the settings `LimitRequestBody`, `SSLRenegBufferSize`).
+6. Adjust your PHP config (`/etc/php/x.x/apache2/php.ini`) to allow uploading packages of larger size.
+   Pick a value that fit your needs for the settings `upload_max_filesize`, `post_max_size`, `max_file_uploads`, `max_execution_time`, `max_input_time`, `memory_limit`. Also, please set your timezone using `date.timezone`.
+7. Adjust you Apache config to allow uploading packages of larger size.
+   Pick a value that fit your needs for the settings `LimitRequestBody`, `SSLRenegBufferSize`.
 8. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
 9. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
    ```
    */2 *  * * *  www-data  cd /srv/www/oco && php console.php housekeeping
    ```
 10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
+
+If you like this project, please do not forget to star the GitHub repo.
 
 ## Certificate Setup
 There are two common ways to get a certificate for your OCO server. Based on your needs, you have to decide which one you want to go.
@@ -109,6 +109,7 @@ SRVNAME="myserver.local"
 openssl req -new -nodes -out "$SRVNAME.csr" -newkey rsa:4096 -keyout "$SRVNAME.key"
 
 # create an openssl config file in order to integrate "subject alt names" (IP and/or DNS name) into server certificate
+# (using IP addresses in certificates is not recommended)
 cat > "$SRVNAME.v3.ext" << EOF
 authorityKeyIdentifier=keyid,issuer
 basicConstraints=CA:FALSE
@@ -128,11 +129,11 @@ openssl x509 -req -in "$SRVNAME.csr" -CA "$CANAME.crt" -CAkey "$CANAME.key" -CAc
 
 # keep "$CANAME.key" and it's passphrase to renew your server certificate and to issue new certificates later
 
-# import "$CANAME.crt" in the client's system trust store now to verify the server certificate on your clients:
-# Debian, Ubuntu: sudo cp "$CANAME.crt" /usr/local/share/ca-certificates && sudo update-ca-certificates
-# Fedora, CentOS: sudo cp "$CANAME.crt" /etc/pki/ca-trust/source/anchors && sudo update-ca-trust
-# Windows GUI: Open the .crt file and install it for all users to "Trusted Root Certificate Authorities"
-# Windows cmd: certutil.exe -addstore root "$CANAME.crt"
+# now you need to import "$CANAME.crt" in your client's system trust store so that it can verify the server certificate:
+# - Debian, Ubuntu: sudo cp "$CANAME.crt" /usr/local/share/ca-certificates && sudo update-ca-certificates
+# - Fedora, CentOS: sudo cp "$CANAME.crt" /etc/pki/ca-trust/source/anchors && sudo update-ca-trust
+# - Windows GUI: Open the .crt file and install it for all users to "Trusted Root Certificate Authorities"
+# - Windows cmd: certutil.exe -addstore root "$CANAME.crt"
 ```
 
 ### Let’s Encrypt Certificate
@@ -144,8 +145,23 @@ Let's Encrypt Certificates are trusted by default in nearly all operating system
    Certificate files (private key + certificate, chain) will be saved in '/etc/letsencrypt/live/'.
 3. Certificate will be renewed automatically (use `certbot --apache renew` for manual renewal).
 
+## Server Tuning
+On big setups with more than 200 active clients/agents, you may encounter errors like "Lock wait timeout exceeded; try restarting transaction" in your Apache log.
+
+In this case, you should configure your MariaDB server lock timeout and increase your InnoDB Buffer Pool Size (~75% of your system's RAM). The InnoDB IO capacity should be increased when fast SSD storage is used.
+
+Example configuration via `/etc/mysql/conf.d/oco.cnf`:
+```
+[mysqld]
+innodb_lock_wait_timeout = 120
+innodb_buffer_pool_size = 4G
+innodb_buffer_pool_instances = 4
+innodb_io_capacity = 400
+```
+Don't forget to restart the database server.
+
 ## Server Hardening
-While it is technically possible, **never** let the agent commuicate in plaintext HTTP with the server! Attackers can do a man-in-the-middle attack to send any malicious software package to your agent. **Always** configure your (Apache) web server to use HTTPS with a valid certificate. Redirect **all** HTTP requests to HTTPS using appropriate rewrite rules as described in the installation guide.
+While it is technically possible, **never let the agent commuicate in plaintext HTTP with the server**! Attackers can do a man-in-the-middle attack to send any malicious software package to your agent. Configure your (Apache) web server to use HTTPS with a valid certificate. **Redirect all HTTP requests to HTTPS** using appropriate rewrite rules as described in the installation guide.
 
 It is recommended to not make the OCO server available on the internet to prevent brute force attacks. If possible, make the server only available in your internal company network and use a VPN connection for mobile devices.
 
@@ -154,10 +170,34 @@ It is also possible to use a self-signed certificate if necessary. Then, you hav
 ### fail2ban
 You can set up fail2ban to prevent brute force attacks. Example configuration can be found in the `examples/fail2ban` directory.
 
-### Only Provide Agent API On Virtual Host
-Ou may only want to provide the agent API and not the full web interface with client API on a virtual host. In this case, please use `api-agent` as web server root directory for the virtual host (instead of `frontend`).
+### Only Provide Agent API On (Virtual) Host (On The Internet)
+Ou may only want to provide the agent/MDM API (available on the internet) and not the full web interface with client API on a separate server or virtual host. In this case, please use `api-agent` as web server root directory for the virtual host (instead of `frontend`).
 
-The web interface and client API can then be made available on a separate, internal-only web server or virtual host, which has additional security options set in the web server config (e.g. IP address restrictions or an additional HTTP basic auth).
+When using this to expose the API on a dedicated server on the internet, you may use a separate database login too in the `conf.php` of this installation, which only has `SELECT, UPDATE, INSERT, DELETE` rights on the necessary database tables.
+<details>
+     <summary>Such a permission set may look like this.</summary>
+
+     ```
+     +-------------------------------------------------------------------------------------------------------------+
+     | Grants for oco-ext@oco-ext.example.com                                                                      |
+     +-------------------------------------------------------------------------------------------------------------+
+     | GRANT USAGE ON *.* TO `oco-ext`@`oco-ext.example.com` IDENTIFIED BY PASSWORD '*ABCDEFGHIJKLMNOPQRSTUVWXYZ'  |
+     | GRANT SELECT, INSERT, UPDATE, DELETE ON `oco`.`mobile_device_app` TO `oco-ext`@`oco-ext.example.com`        |
+     | GRANT SELECT, UPDATE, DELETE ON `oco`.`mobile_device_group_profile` TO `oco-ext`@`oco-ext.example.com`      |
+     | GRANT SELECT ON `oco`.`mobile_device_group` TO `oco-ext`@`oco-ext.example.com`                              |
+     | GRANT SELECT, INSERT, UPDATE, DELETE ON `oco`.`app` TO `oco-ext`@`oco-ext.example.com`                      |
+     | GRANT SELECT, INSERT, UPDATE, DELETE ON `oco`.`mobile_device` TO `oco-ext`@`oco-ext.example.com`            |
+     | GRANT SELECT, UPDATE, DELETE ON `oco`.`profile` TO `oco-ext`@`oco-ext.example.com`                          |
+     | GRANT SELECT, UPDATE, DELETE ON `oco`.`mobile_device_command` TO `oco-ext`@`oco-ext.example.com`            |
+     | GRANT SELECT, INSERT, UPDATE, DELETE ON `oco`.`mobile_device_profile` TO `oco-ext`@`oco-ext.example.com`    |
+     | GRANT SELECT ON `oco`.`mobile_device_group_member` TO `oco-ext`@`oco-ext.example.com`                       |
+     | GRANT SELECT ON `oco`.`setting` TO `oco-ext`@`oco-ext.example.com`                                          |
+     | GRANT INSERT ON `oco`.`log` TO `oco-ext`@`oco-ext.example.com`                                              |
+     +-------------------------------------------------------------------------------------------------------------+
+     ```
+</details>
+
+The normal web interface and client API can then be made available on a separate, internal-only web server or virtual host, which has additional security options set in the web server config (e.g. IP address restrictions or an additional HTTP basic/negotiate auth).
 
 ## Set Up LDAP Sync & Authentication
 If you want to use LDAP to authenticate admin users on the web frontend, please follow this steps.

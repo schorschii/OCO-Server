@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 function echoTargetPackageGroupOptions($parent=null) {
 	global $db;
@@ -11,7 +11,7 @@ function echoTargetPackageGroupOptions($parent=null) {
 		if(!$cl->checkPermission($pg, PermissionManager::METHOD_READ, false)
 		&& !$cl->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
 
-		echo "<a class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.")'>";
+		echo "<a href='#' class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.");return false'>";
 		echo htmlspecialchars($pg->name);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</a>";
@@ -32,11 +32,11 @@ function echoTargetPackageGroupOptions($parent=null) {
 			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divPackageList, this.value)'>
 		</div>
 		<div id='divPackageList' class='box listSearchList'>
-			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+			<a href='#' class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1);return false'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 			<?php echoTargetPackageGroupOptions(); ?>
 		</div>
 		<div id='divPackageListHome' class='box listSearchList hidden'>
-			<a class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1)'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+			<a href='#' class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1);return false'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 			<?php echoTargetPackageGroupOptions(); ?>
 		</div>
 	</div>

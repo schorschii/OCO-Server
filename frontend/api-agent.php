@@ -49,8 +49,6 @@ $resdata = ['id' => $srcdata['id']];
 $params = $srcdata['params'];
 switch($srcdata['method']) {
 	case 'oco.agent.update_job_state':
-	case 'oco.agent.update_deploy_status':
-	case 'oco.update_deploy_status':
 		$data = $params['data'] ?? [];
 
 		// check parameter
@@ -58,7 +56,7 @@ switch($srcdata['method']) {
 			|| !isset($params['agent-key'])
 			|| !isset($data['job-id'])
 			|| !isset($data['state'])
-			|| !isset($data['return-code'])
+			|| !array_key_exists('return-code', $data) // null is allowed here
 			|| !isset($data['message'])) {
 			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE, 'invalid JSON data');
 		}
@@ -114,8 +112,11 @@ switch($srcdata['method']) {
 
 		// update job execution state in database
 		$job->state = $state;
-		$job->return_code = intval($data['return-code']);
+		$job->return_code = ($data['return-code']===null) ? null : intval($data['return-code']);
 		$job->message = $data['message'];
+		if(isset($data['download-progress']) && is_numeric($data['download-progress'])) {
+			$job->download_progress = $data['download-progress']; // new in >= 1.1.0
+		}
 		$db->updateComputerPing($computer->id);
 		$db->updateJobExecutionState($job);
 		$db->insertLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE_JOB_STATE,
@@ -144,7 +145,6 @@ switch($srcdata['method']) {
 		break;
 
 	case 'oco.agent.hello':
-	case 'oco.agent_hello':
 		// check parameter
 		if(!isset($params['hostname']) || !isset($params['agent-key'])) {
 			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_HELLO,
@@ -172,7 +172,7 @@ switch($srcdata['method']) {
 					$params['hostname'],
 					$data['agent_version'] ?? '?',
 					$data['networks'] ?? [],
-					LANG('self_registration').' '.date('Y-m-d H:i:s'),
+					'self_registration',
 					$agent_key,
 					$server_key,
 					null /*created_by_system_user_id*/
@@ -215,7 +215,7 @@ switch($srcdata['method']) {
 			}
 
 			// update common computer metadata and service status
-			$db->updateComputerPing($computer->id, $data['agent_version']??'?', $data['networks']??[]);
+			$db->updateComputerPing($computer->id, $data['agent_version']??'?', $data['networks']??[], $data['uptime']??null, $_SERVER['REMOTE_ADDR']??null);
 			if(!empty($data['services'])) foreach($data['services'] as $s) {
 				if(empty($s['name']) || !isset($s['status']) || !is_numeric($s['status'])) continue;
 				$db->insertOrUpdateComputerService($computer->id, $s['status'], $s['name'], $s['metrics'] ?? '-', $s['details'] ?? '');
@@ -229,25 +229,47 @@ switch($srcdata['method']) {
 
 			// get pending jobs
 			foreach($db->selectAllPendingAndActiveJobForAgentByComputerId($computer->id) as $pj) {
-				// constraint check
+				// IP constraint check
 				if(!empty($pj->job_container_agent_ip_ranges)) {
-					$continue = true;
-					foreach(explode(',', $pj->job_container_agent_ip_ranges) as $range) {
+					$ignore = true;
+					foreach(explode(',', $pj->job_container_agent_ip_ranges) as $rangex) {
+						$range = trim($rangex);
 						if(startsWith($range, '!')) {
 							if(isIpInRange($_SERVER['REMOTE_ADDR'], ltrim($range, '!'))) {
-								// agent IP is in that range but should not be - ignore this job
+								// agent IP is in illegal range - ignore this job
 								continue 2;
 							}
 						} else {
 							if(isIpInRange($_SERVER['REMOTE_ADDR'], $range)) {
 								// agent IP is in desired range - abort check and send job to agent
-								$continue = false;
+								$ignore = false;
 								break;
 							}
 						}
 					}
 					// continue if agent is not in one of the desired IP ranges
-					if($continue) continue;
+					if($ignore) continue;
+				}
+				// time frame constraint check
+				if(!empty($pj->job_container_time_frames)) {
+					$ignore = true;
+					foreach(explode(',', $pj->job_container_time_frames) as $rangex) {
+						$range = trim($rangex);
+						if(startsWith($range, '!')) {
+							if(isTimeInRange(ltrim($range, '!'))) {
+								// current time is in illegal range - ignore this job
+								continue 2;
+							}
+						} else {
+							if(isTimeInRange($range)) {
+								// current time is in desired range - abort check and send job to agent
+								$ignore = false;
+								break;
+							}
+						}
+					}
+					// continue if agent is not in one of the desired IP ranges
+					if($ignore) continue;
 				}
 				// set post action
 				$restart = null; $shutdown = null; $exit = null;
@@ -300,16 +322,32 @@ switch($srcdata['method']) {
 			$loginsSince = localTimeToUtc($tmpLogon->timestamp);
 		} catch(Exception $e) {}
 
+		// get password update rules
+		$passwords = [];
+		foreach($db->selectAllPasswordRotationRuleByComputerId($computer->id) as $rule) {
+			$lastUpdateTime = 0;
+			foreach($db->selectAllComputerPasswordByComputerId($computer->id) as $password) {
+				if($password->username === $rule->username) {
+					$lastUpdateTime = strtotime($password->created);
+					break;
+				}
+			}
+			if(time() - $lastUpdateTime > $rule->valid_seconds) {
+				$passwords[] = ['username'=>$rule->username, 'alphabet'=>$rule->alphabet, 'length'=>$rule->length];
+			}
+		}
+
 		$resdata['error'] = null;
 		$resdata['result'] = [
 			'success' => $success,
-			'params' => [
-				'server-key' => $server_key, // tell the agent our server key, so it can validate the server
-				'agent-key' => $agent_key,   // tell the agent that it should save a new agent key for further requests
-				'update' => $update,         // tell the agent that it should update the inventory data
-				'logins-since' => $loginsSince, // tell the agent to only send logins since the last login date
-				'software-jobs' => $jobs,    // tell the agent all pending software jobs
-				'events' => $events,         // tell the agent to send specific events from local log files
+			'params' => [ // tell the agent...
+				'server-key' => $server_key,     // ...our server key, so it can validate the server
+				'agent-key' => $agent_key,       // ...that it should save a new agent key for further requests
+				'update' => $update,             // ...that it should update the inventory data
+				'logins-since' => $loginsSince,  // ...to only send logins since the last login date
+				'software-jobs' => $jobs,        // ...all pending software jobs
+				'events' => $events,             // ...to send specific events from local log files
+				'update-passwords' => $passwords // ...to update local admin passwords
 			]
 		];
 
@@ -380,8 +418,61 @@ switch($srcdata['method']) {
 
 		break;
 
+	case 'oco.agent.passwords':
+		// check parameter
+		if(!isset($params['hostname']) || !isset($params['agent-key']) || empty($params['data'])) {
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE,
+				'invalid JSON data'
+			);
+		}
+
+		$data = $params['data'];
+		if(!isset($data['passwords']) || !is_array($data['passwords'])) {
+			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE,
+				'invalid JSON data'
+			);
+		}
+
+		// check authorization
+		$computer = $db->selectComputerByHostname($params['hostname']);
+		if($computer === null) {
+			errorExit('404 Computer Not Found', $params['hostname'], null, Models\Log::ACTION_AGENT_API_UPDATE,
+				'computer not found'
+			);
+		}
+		if($params['agent-key'] !== $computer->agent_key) {
+			errorExit('401 Client Not Authorized', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE,
+				'computer found but agent key mismatch: '.$params['agent-key']
+			);
+		}
+
+		$success = false;
+		foreach($data['passwords'] as $password) {
+			foreach($db->selectAllPasswordRotationRuleByComputerId($computer->id) as $rule) {
+				if($rule->username === $password['username']) {
+					$success = $db->insertComputerPassword(
+						$computer->id,
+						$password['username'],
+						$password['password'],
+						$rule->history
+					);
+					if(!$success) throw new Exception('Error while inserting password into database');
+					break;
+				}
+			}
+		}
+
+		$resdata['error'] = null;
+		$resdata['result'] = [
+			'success' => $success,
+			'params' => [
+				'server-key' => $computer->server_key,
+			]
+		];
+
+		break;
+
 	case 'oco.agent.update':
-	case 'oco.agent_update':
 		// check parameter
 		if(!isset($params['hostname']) || !isset($params['agent-key']) || empty($params['data'])) {
 			errorExit('400 Parameter Mismatch', null, null, Models\Log::ACTION_AGENT_API_UPDATE,

@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 // ----- prepare view -----
 $tab = 'general';
@@ -65,6 +65,10 @@ $isOnline = $computer->isOnline($db);
 						<tr>
 							<th><?php echo LANG('id'); ?></th>
 							<td><?php echo htmlspecialchars($computer->id); ?></td>
+						</tr>
+						<tr>
+							<th><?php echo LANG('uid'); ?></th>
+							<td><?php echo htmlspecialchars($computer->uid??''); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('os'); ?></th>
@@ -177,7 +181,7 @@ $isOnline = $computer->isOnline($db);
 						<tr>
 							<th><?php echo LANG('notes'); ?></th>
 							<td>
-								<span id='spnComputerNotes'><?php echo nl2br(htmlspecialchars($computer->notes)); ?></span>
+								<span id='spnComputerNotes'><?php echo nl2br(htmlspecialchars(LANG($computer->notes))); ?></span>
 							</td>
 						</tr>
 					</table>
@@ -210,6 +214,32 @@ $isOnline = $computer->isOnline($db);
 								echo "</tr>";
 							}
 							?>
+						</tbody>
+					</table>
+
+					<h2><?php echo LANG('passwords'); ?></h2>
+					<table id='tblPasswordsData' class='list sortable savesort'>
+						<thead>
+							<tr>
+								<th><?php echo LANG('login_name'); ?></th>
+								<th><?php echo LANG('password'); ?></th>
+								<th><?php echo LANG('created'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach($db->selectAllComputerPasswordByComputerId($computer->id) as $password) { ?>
+								<tr>
+								<td class='subbuttons'>
+									<?php echo htmlspecialchars($password->username); ?>
+									<button onclick='navigator.clipboard.writeText(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->username,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+								</td>
+								<td class='subbuttons mask monospace'>
+									<?php echo htmlspecialchars($password->password); ?>
+									<button onclick='navigator.clipboard.writeText(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->password,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+								</td>
+								<td><?php echo htmlspecialchars($password->created); ?></td>
+								</tr>
+							<?php } ?>
 						</tbody>
 					</table>
 				</div>
@@ -325,8 +355,9 @@ $isOnline = $computer->isOnline($db);
 							<?php
 							foreach($db->selectAllComputerPartitionByComputerId($computer->id) as $p) {
 								$percent = 0;
-								if(!empty($p->free) && !empty($p->size))
-								$percent = round(100 - ($p->free / $p->size * 100));
+								if(!empty($p->size)) {
+									$percent = round(100 - ($p->free / $p->size * 100));
+								}
 								echo '<tr>';
 								echo '<td>'.htmlspecialchars($p->device).'</a></td>';
 								echo '<td>'.htmlspecialchars($p->mountpoint).'</td>';

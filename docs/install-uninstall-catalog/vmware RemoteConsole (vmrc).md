@@ -9,8 +9,9 @@ VMware-VMRC-12.0.1-18113358.exe /s /v "/qn EULAS_AGREED=1 AUTOSOFTWAREUPDATE=0 D
 
 **Uninstallation:**
 ```
-msiexec /quiet /x {0FBB958D-A777-4D04-A8AA-ADF11224FE06}
+msiexec /quiet /x {GUID}
 ```
+(find the correct GUID for your version from Registry: `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall`)
 
 ## Linux
 While VMware documents the silent options for the Windows setup file [1], there is (currently) no official documentation how to silently install the Linux version with options for data collection and auto update. VMware docs currently only describes the manual installation of the Linux version [2].

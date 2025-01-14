@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 ?>
 
 <input type='hidden' id='txtEditPackageId'></input>
@@ -25,11 +25,15 @@ require_once('../session.php');
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os'); ?></th>
-		<td><input type='text' autocomplete='new-password' id='txtEditPackageCompatibleOs'></input></td>
+		<td><input type='text' autocomplete='new-password' id='txtEditPackageCompatibleOs' placeholder='<?php echo LANG('optional_hint'); ?>'></input></td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os_version'); ?></th>
-		<td><input autocomplete='new-password' id='txtEditPackageCompatibleOsVersion'></input></td>
+		<td><input autocomplete='new-password' id='txtEditPackageCompatibleOsVersion' placeholder='<?php echo LANG('optional_hint'); ?>'></input></td>
+	</tr>
+	<tr>
+		<th><?php echo LANG('licenses'); ?></th>
+		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPackageLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
@@ -39,7 +43,7 @@ require_once('../session.php');
 	<tr><td colspan='2'><h2><?php echo LANG('package_content'); ?></h2></td></tr>
 	<tr>
 		<th><label><input type='checkbox' id='chkReplaceArchive' onclick='fleArchive.disabled=!this.checked'>&nbsp;<?php echo LANG('replace_zip_archive'); ?></label></th>
-		<td colspan='3' class='fileinputwithbutton'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()' disabled='true'><button onclick='toggleInputDirectory(fleArchive)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/folder.dyn.svg'></button></td>
+		<td colspan='3' class='fileinputwithbutton'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()' disabled='true'><button onclick='toggleInputDirectory(fleArchive,this)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/files.dyn.svg'></button></td>
 	</tr>
 
 	<tr>
@@ -80,7 +84,7 @@ require_once('../session.php');
 	<tr class='nospace'>
 		<th><?php echo LANG('procedure'); ?></th>
 		<td class='inputwithbutton'>
-			<input class='fullwidth monospace' autocomplete='new-password' id='txtEditPackageUninstallProcedure'></input>
+			<input class='fullwidth monospace' autocomplete='new-password' id='txtEditPackageUninstallProcedure' placeholder='<?php echo LANG('optional_hint'); ?>'></input>
 			<button onclick='toggleTextBoxMultiLine(txtEditPackageUninstallProcedure)' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button>
 		</td>
 	</tr>
@@ -113,6 +117,7 @@ require_once('../session.php');
 		txtEditPackageVersion.value,
 		txtEditPackageCompatibleOs.value,
 		txtEditPackageCompatibleOsVersion.value,
+		txtEditPackageLicenseCount.value=="" ? -1 : txtEditPackageLicenseCount.value,
 		txtEditPackageNotes.value,
 		chkReplaceArchive.checked ? fleArchive.files : null,
 		txtEditPackageInstallProcedure.value,

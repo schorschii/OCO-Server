@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
-require_once('../session.php');
+require_once('../session.inc.php');
 
 $group = null;
 $computers = [];
@@ -46,6 +46,7 @@ try {
 		<button onclick='refreshContentDeploy([],[],[],{"id":<?php echo $group->id; ?>,"name":spnComputerGroupName.innerText})' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy_for_all'); ?></button>
 		<button onclick='renameComputerGroup(<?php echo $group->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('rename_group'); ?></button>
 		<button onclick='confirmRemoveComputerGroup([<?php echo $group->id; ?>], event, spnComputerGroupName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_group'); ?></button>
+		<span class='filler'></span>
 	</div>
 <?php } ?>
 
@@ -108,7 +109,7 @@ try {
 			echo "<td>".htmlspecialchars($c->manufacturer.' '.$c->model)."</td>";
 			echo "<td>".htmlspecialchars($c->serial)."</td>";
 			echo "<td>".htmlspecialchars($c->agent_version)."</td>";
-			echo "<td>".htmlspecialchars(shorter($c->notes))."</td>";
+			echo "<td>".htmlspecialchars(shorter(LANG($c->notes)))."</td>";
 			echo "<td>".htmlspecialchars($c->last_ping??'')."</td>";
 			echo "</tr>";
 		}
