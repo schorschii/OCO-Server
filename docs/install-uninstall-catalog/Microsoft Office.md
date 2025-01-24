@@ -40,3 +40,15 @@ cd \ && setup.exe /configure config.xml && reg add "HKLM\software\policies\micro
 ```
 setup.exe /configure uninstall.xml
 ```
+
+**uninstall.xml**
+```
+<Configuration>
+<Remove OfficeClientEdition="64">
+<Product ID="ProPlus2024Volume">
+<Language ID="de-de"/>
+</Product>
+</Remove>
+<Display Level="Full" AcceptEULA="TRUE"/>
+</Configuration>
+```
