@@ -619,7 +619,7 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':name' => $name, ':parameter' => $parameter])) return false;
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand') as $row) {
-			return null;
+			return $row->id;
 		}
 
 		$this->stmt = $this->dbh->prepare(
