@@ -15,6 +15,8 @@ When clicking on a Computer Command button, a custom URL will be opened in your 
 
 It is recommended to visit the Github Releases Page to download a ready-to-use package which automatically installs the OCO Client Extension on your system. Alternatively, you can configure the Client Extension by yourself using the follwing information.
 
+There is no port for macOS since macOS can handle `vnc://` and `ssh://` links out-of-the-box. `rdp://` links can be openened on macOS after installing the "Windows App" from the app store (formerly known as "Microsoft Remote Desktop").
+
 ### Linux XDG Configuration
 Copy `oco-client-extension-linux.desktop` into `/usr/share/applications` and execute `update-desktop-database`. Copy `oco-client-extension-linux.py` into `/usr/bin`, make sure it is executable and check if Python 3 is working properly.
 

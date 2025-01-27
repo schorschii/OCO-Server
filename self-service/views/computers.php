@@ -55,7 +55,7 @@ $commands = Models\Computer::getCommands($ext);
 		<span class='filler'></span>
 		<?php
 		foreach($commands as $command) {
-			echoCommandButton($command, $computer->hostname);
+			Models\Computer::echoCommandButton($command, $computer->hostname);
 		}
 		?>
 	</div>
@@ -207,7 +207,10 @@ $commands = Models\Computer::getCommands($ext);
 								echo  htmlspecialchars($n->address);
 								if(count($commands) > 0) {
 									echo '<div class="flyout box">';
-									foreach($commands as $c) { echoCommandButton($c, $n->address, true); echo ' '; }
+									foreach($commands as $c) {
+										Models\Computer::echoCommandButton($c, $n->address, true);
+										echo ' ';
+									}
 									echo '</div>';
 								}
 								echo '</td>';
