@@ -1476,6 +1476,12 @@ class DatabaseController {
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPassword');
 	}
+	public function deleteComputerPassword($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_password WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
+	}
 	public function insertUpdatePasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history) {
 		$this->stmt = $this->dbh->prepare(
 			'REPLACE INTO password_rotation_rule (id, computer_group_id, username, alphabet, length, valid_seconds, history)

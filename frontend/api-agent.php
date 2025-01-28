@@ -448,6 +448,18 @@ switch($srcdata['method']) {
 
 		$success = false;
 		foreach($data['passwords'] as $password) {
+			if(empty($password['username']) || empty($password['password'])) continue;
+			if(!empty($password['revoke'])) {
+				foreach($db->selectAllComputerPasswordByComputerId($computer->id) as $p) {
+					if($p->username === $password['username']
+					&& $p->password === $password['password']
+					// revoking is only allowed in the first 5 minutes
+					&& time() - strtotime($p->created) < 60*5) {
+						$db->deleteComputerPassword($p->id);
+					}
+				}
+				continue;
+			}
 			foreach($db->selectAllPasswordRotationRuleByComputerId($computer->id) as $rule) {
 				if($rule->username === $password['username']) {
 					$success = $db->insertComputerPassword(
