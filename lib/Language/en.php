@@ -43,6 +43,7 @@ return [
 	'valid_for' => 'Valid for',
 	'history_count' => 'History Count',
 	'initial_password_macos' => 'Initial Password (macOS)',
+	'copied_to_clipboard' => 'Copied to Clipboard',
 	'user_does_not_exist' => 'User does not exist',
 	'login_failes' => 'Login failed',
 	'log_out_successful' => 'Logout successful',

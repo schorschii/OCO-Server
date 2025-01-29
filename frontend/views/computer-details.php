@@ -231,11 +231,11 @@ $isOnline = $computer->isOnline($db);
 								<tr>
 								<td class='subbuttons'>
 									<?php echo htmlspecialchars($password->username); ?>
-									<button onclick='navigator.clipboard.writeText(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->username,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+									<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->username,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
 								</td>
 								<td class='subbuttons mask monospace'>
 									<?php echo htmlspecialchars($password->password); ?>
-									<button onclick='navigator.clipboard.writeText(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->password,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+									<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->password,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
 								</td>
 								<td><?php echo htmlspecialchars($password->created); ?></td>
 								</tr>

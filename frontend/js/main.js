@@ -4,6 +4,10 @@ var draggedElementBeginIndex;
 function obj(id) {
 	return document.getElementById(id);
 }
+function toClipboard(text, info=null) {
+	navigator.clipboard.writeText(text);
+	emitMessage(LANG['copied_to_clipboard'], info?info:text, MESSAGE_TYPE_INFO, 2000);
+}
 function getChildIndex(node) {
 	return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
 }
