@@ -202,7 +202,8 @@ try {
 	&& isset($_POST['alphabet'])
 	&& isset($_POST['length'])
 	&& isset($_POST['valid_seconds'])
-	&& isset($_POST['history'])) {
+	&& isset($_POST['history'])
+	&& isset($_POST['default_password'])) {
 		die($cl->createEditPasswordRotationRule(
 			$_POST['edit_password_rotation_rule_id']<=0 ? null : $_POST['edit_password_rotation_rule_id'],
 			$_POST['computer_group_id'] ? $_POST['computer_group_id'] : null,
@@ -211,6 +212,7 @@ try {
 			$_POST['length'],
 			$_POST['valid_seconds'],
 			$_POST['history'],
+			$_POST['default_password'],
 		));
 	}
 

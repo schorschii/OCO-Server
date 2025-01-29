@@ -2250,14 +2250,14 @@ class CoreLogic {
 		return $result;
 	}
 
-	public function createEditPasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history) {
+	public function createEditPasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history, $default_password) {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_PASSWORD_ROTATION_RULES);
 
 		if(empty(trim($username)) || empty(trim($alphabet)) || $length<=0 || $valid_seconds<=0 || $history<0) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
 
-		$this->db->insertUpdatePasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history);
+		$this->db->insertUpdatePasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history, $default_password);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.password_rotation_rule.update', [
 			'id'=>$id,
 			'computer_group_id'=>$computer_group_id,
@@ -2266,6 +2266,7 @@ class CoreLogic {
 			'length'=>$length,
 			'valid_seconds'=>$valid_seconds,
 			'history'=>$history,
+			'default_password'=>$default_password,
 		]);
 	}
 	public function removePasswordRotationRule($id) {

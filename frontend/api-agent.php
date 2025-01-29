@@ -333,7 +333,19 @@ switch($srcdata['method']) {
 				}
 			}
 			if(time() - $lastUpdateTime > $rule->valid_seconds) {
-				$passwords[] = ['username'=>$rule->username, 'alphabet'=>$rule->alphabet, 'length'=>$rule->length];
+				$passwordUpdateRequest = [
+					'username'=>$rule->username, 'alphabet'=>$rule->alphabet, 'length'=>$rule->length
+				];
+				if($computer->os === 'macOS') {
+					$passwordUpdateRequest['old_password'] = $rule->default_password;
+					foreach($db->selectAllComputerPasswordByComputerId($computer->id) as $p) {
+						if($p->username === $rule->username) {
+							$passwordUpdateRequest['old_password'] = $p->password;
+							break;
+						}
+					}
+				}
+				$passwords[] = $passwordUpdateRequest;
 			}
 		}
 

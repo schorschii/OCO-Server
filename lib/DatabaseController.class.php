@@ -1482,10 +1482,10 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id]);
 	}
-	public function insertUpdatePasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history) {
+	public function insertUpdatePasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history, $default_password) {
 		$this->stmt = $this->dbh->prepare(
-			'REPLACE INTO password_rotation_rule (id, computer_group_id, username, alphabet, length, valid_seconds, history)
-			VALUES (:id, :computer_group_id, :username, :alphabet, :length, :valid_seconds, :history)');
+			'REPLACE INTO password_rotation_rule (id, computer_group_id, username, alphabet, length, valid_seconds, history, default_password)
+			VALUES (:id, :computer_group_id, :username, :alphabet, :length, :valid_seconds, :history, :default_password)');
 		$this->stmt->execute([
 			':id' => $id,
 			':computer_group_id' => $computer_group_id,
@@ -1494,6 +1494,7 @@ class DatabaseController {
 			':length' => $length,
 			':valid_seconds' => $valid_seconds,
 			':history' => $history,
+			':default_password' => $default_password,
 		]);
 		return $this->dbh->lastInsertId();
 	}

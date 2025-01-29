@@ -35,6 +35,10 @@ require_once('../session.inc.php');
 		<th><?php echo LANG('history_count'); ?></th>
 		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPasswordRotationRuleHistory'></input></td>
 	</tr>
+	<tr>
+		<th><?php echo LANG('initial_password_macos'); ?></th>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditPasswordRotationRuleDefaultPassword'></input></td>
+	</tr>
 </table>
 
 <div class='controls right'>
@@ -46,6 +50,7 @@ require_once('../session.inc.php');
 		txtEditPasswordRotationRuleAlphabet.value,
 		txtEditPasswordRotationRuleLength.value,
 		txtEditPasswordRotationRuleValidSeconds.value,
-		txtEditPasswordRotationRuleHistory.value
+		txtEditPasswordRotationRuleHistory.value,
+		txtEditPasswordRotationRuleDefaultPassword.value
 	)'><img src='img/send.white.svg'>&nbsp;<span id='spnBtnUpdatePasswordRotationRule'><?php echo LANG('change'); ?></span></button>
 </div>

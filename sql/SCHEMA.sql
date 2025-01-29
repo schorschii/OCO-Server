@@ -954,6 +954,7 @@ CREATE TABLE `password_rotation_rule` (
   `length` int(11) NOT NULL,
   `valid_seconds` int(11) NOT NULL,
   `history` int(11) NOT NULL,
+  `default_password` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_password_rotation_rule_1` (`computer_group_id`),
   CONSTRAINT `fk_password_rotation_rule_1` FOREIGN KEY (`computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

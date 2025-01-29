@@ -49,6 +49,8 @@ With the password rotation feature, you can periodically change passwords of loc
 
 To use it, you just need to create appropriate password rotation rule in the OCO settings, and the agent will generate a new random password for your local accounts after the given password expiration time is reached.
 
+For macOS, since passwords can only be changed by giving the current password too, you need to specifiy the initial account password before it cn be rotated.
+
 ### Example Rules
 #### Windows: Get Defender Warning, Error and Critical Events
 (including "Malware Detected" events with event ID 1116)

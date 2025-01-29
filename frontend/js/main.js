@@ -2604,7 +2604,7 @@ function confirmRemoveSelectedEventQueryRule(checkboxName) {
 	}
 }
 
-function showDialogEditPasswordRotationRule(id=-1, computer_group_id='', username='administrator', alphabet='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_+*.#=!', length=15, validSeconds=2592000, history=5) {
+function showDialogEditPasswordRotationRule(id=-1, computer_group_id='', username='administrator', alphabet='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_+*.#=!', length=15, validSeconds=2592000, history=5, default_password='') {
 	title = LANG['change'];
 	buttonText = LANG['change'];
 	if(id == -1) {
@@ -2619,10 +2619,11 @@ function showDialogEditPasswordRotationRule(id=-1, computer_group_id='', usernam
 		txtEditPasswordRotationRuleLength.value = length;
 		txtEditPasswordRotationRuleValidSeconds.value = validSeconds;
 		txtEditPasswordRotationRuleHistory.value = history;
+		txtEditPasswordRotationRuleDefaultPassword.value = default_password;
 		spnBtnUpdatePasswordRotationRule.innerText = buttonText;
 	});
 }
-function editPasswordRotationRule(id, computer_group_id, username, alphabet, length, valid_seconds, history) {
+function editPasswordRotationRule(id, computer_group_id, username, alphabet, length, valid_seconds, history, default_password) {
 	var params = [];
 	params.push({'key':'edit_password_rotation_rule_id', 'value':id});
 	params.push({'key':'computer_group_id', 'value':computer_group_id});
@@ -2631,6 +2632,7 @@ function editPasswordRotationRule(id, computer_group_id, username, alphabet, len
 	params.push({'key':'length', 'value':length});
 	params.push({'key':'valid_seconds', 'value':valid_seconds});
 	params.push({'key':'history', 'value':history});
+	params.push({'key':'default_password', 'value':default_password});
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
 		hideDialog(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);

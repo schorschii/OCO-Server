@@ -42,6 +42,7 @@ return [
 	'length' => 'Length',
 	'valid_for' => 'Valid for',
 	'history_count' => 'History Count',
+	'initial_password_macos' => 'Initial Password (macOS)',
 	'user_does_not_exist' => 'User does not exist',
 	'login_failes' => 'Login failed',
 	'log_out_successful' => 'Logout successful',

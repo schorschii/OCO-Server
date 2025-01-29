@@ -349,6 +349,15 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		if(!$this->getTableColumnInfo('password_rotation_rule', 'default_password')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add default_password column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `password_rotation_rule` ADD COLUMN `default_password` text DEFAULT NULL AFTER history");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

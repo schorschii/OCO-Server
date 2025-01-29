@@ -37,6 +37,7 @@ return [
 	'length' => 'Länge',
 	'valid_for' => 'Gültig für',
 	'history_count' => 'Anzahl Historie',
+	'initial_password_macos' => 'Initialpasswort (macOS)',
 	'user_does_not_exist' => 'Benutzer existiert nicht',
 	'login_failes' => 'Anmeldung fehlgeschlagen',
 	'log_out_successful' => 'Abmeldung erfolgreich',

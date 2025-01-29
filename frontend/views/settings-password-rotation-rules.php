@@ -33,6 +33,7 @@ try {
 					<th class='searchable sortable'><?php echo LANG('length'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('valid_for'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('history_count'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('initial_password_macos'); ?></th>
 					<th class=''><?php echo LANG('action'); ?></th>
 				</tr>
 			</thead>
@@ -47,7 +48,8 @@ try {
 					echo "<td id='spnPasswordRotationRuleLength".$r->id."'>".htmlspecialchars($r->length)."</td>";
 					echo "<td id='spnPasswordRotationRuleValidSeconds".$r->id."' value='".htmlspecialchars($r->valid_seconds,ENT_QUOTES)."'>".niceTime($r->valid_seconds)."</td>";
 					echo "<td id='spnPasswordRotationRuleHistory".$r->id."'>".htmlspecialchars($r->history)."</td>";
-					echo "<td><button onclick='showDialogEditPasswordRotationRule(".$r->id.", spnPasswordRotationRuleComputerGroup".$r->id.".getAttribute(\"value\"), spnPasswordRotationRuleUsername".$r->id.".innerText, spnPasswordRotationRuleAlphabet".$r->id.".innerText, spnPasswordRotationRuleLength".$r->id.".innerText, spnPasswordRotationRuleValidSeconds".$r->id.".getAttribute(\"value\"), spnPasswordRotationRuleHistory".$r->id.".innerText)' title='".LANG('edit')."'><img src='img/edit.dyn.svg'></button></td>";
+					echo "<td id='spnPasswordRotationRuleDefaultPassword".$r->id."' class='mask monspace'>".htmlspecialchars($r->default_password)."</td>";
+					echo "<td><button onclick='showDialogEditPasswordRotationRule(".$r->id.", spnPasswordRotationRuleComputerGroup".$r->id.".getAttribute(\"value\"), spnPasswordRotationRuleUsername".$r->id.".innerText, spnPasswordRotationRuleAlphabet".$r->id.".innerText, spnPasswordRotationRuleLength".$r->id.".innerText, spnPasswordRotationRuleValidSeconds".$r->id.".getAttribute(\"value\"), spnPasswordRotationRuleHistory".$r->id.".innerText, spnPasswordRotationRuleDefaultPassword".$r->id.".innerText)' title='".LANG('edit')."'><img src='img/edit.dyn.svg'></button></td>";
 					echo "</tr>";
 				}
 				?>

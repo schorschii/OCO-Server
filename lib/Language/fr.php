@@ -42,6 +42,7 @@ return [
 	'length' => 'Longueur',
 	'valid_for' => 'Valide jusqu\'au',
 	'history_count' => 'Historique de rotation',
+	'initial_password_macos' => 'Mot de passe initial (macOS)',
 	'user_does_not_exist' => 'L\'utilisateur n\'existe pas',
 	'login_failes' => 'Échec de connexion',
 	'log_out_successful' => 'Déconnexion réussie',
