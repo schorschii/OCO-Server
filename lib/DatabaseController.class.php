@@ -719,6 +719,13 @@ class DatabaseController {
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPartition');
 	}
+	public function selectAllComputerDeviceByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_device WHERE computer_id = :computer_id'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerDevice');
+	}
 	public function selectAllComputerSoftwareByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cs.id AS "id", s.id AS "software_id", s.name AS "software_name", s.version AS "software_version", s.description AS "software_description", cs.installed AS "installed"
@@ -777,7 +784,7 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname, ':notes' => $notes]);
 	}
-	public function updateComputerPing($id, $agent_version=null, $networks=null, $uptime=null, $remote_address=null) {
+	public function updateComputerPing($id, $agent_version=null, $networks=null, $battery_level=null, $battery_status=null, $uptime=null, $remote_address=null) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET last_ping = CURRENT_TIMESTAMP WHERE id = :id'
 		);
@@ -815,6 +822,14 @@ class DatabaseController {
 			);
 			if(!$this->stmt->execute([':id' => $id, ':uptime' => $uptime])) return false;
 		}
+		if($battery_level !== null && $battery_status !== null) {
+			if($battery_level === false) $battery_level = null;
+			if($battery_status === false) $battery_status = null;
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE computer SET battery_level = :battery_level, battery_status = :battery_status WHERE id = :id'
+			);
+			if(!$this->stmt->execute([':id' => $id, ':battery_level' => $battery_level, ':battery_status' => $battery_status])) return false;
+		}
 		if($remote_address !== null) {
 			$this->stmt = $this->dbh->prepare(
 				'UPDATE computer SET remote_address = :remote_address WHERE id = :id'
@@ -841,12 +856,12 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':server_key' => $server_key]);
 	}
-	public function updateComputerInventoryValues($id, $uid, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins) {
+	public function updateComputerInventoryValues($id, $uid, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $battery_level, $battery_status, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins, $devices) {
 		$this->dbh->beginTransaction();
 
 		// update general info
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer SET uid = :uid, hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, remote_address = :remote_address, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, uptime = :uptime, boot_type = :boot_type, secure_boot = :secure_boot, domain = :domain, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP, force_update = 0 WHERE id = :id'
+			'UPDATE computer SET uid = :uid, hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, remote_address = :remote_address, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, battery_level = :battery_level, battery_status = :battery_status, uptime = :uptime, boot_type = :boot_type, secure_boot = :secure_boot, domain = :domain, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP, force_update = 0 WHERE id = :id'
 		);
 		if(!$this->stmt->execute([
 			':id' => $id,
@@ -868,6 +883,8 @@ class DatabaseController {
 			':model' => $model,
 			':bios_version' => $bios_version,
 			':uptime' => $uptime,
+			':battery_level' => $battery_level===false ? null : $battery_level,
+			':battery_status' => $battery_status===false ? null : $battery_status,
 			':boot_type' => $boot_type,
 			':secure_boot' => $secure_boot,
 			':domain' => $domain,
@@ -988,8 +1005,57 @@ class DatabaseController {
 		// old logins, which are not present in local client logs anymore, should NOT automatically be deleted
 		// instead, old logins are cleaned up by the server's housekeeping process after a certain amount of time (defined in configuration)
 
+		// update devices
+		$pids = [];
+		foreach($devices as $device) {
+			if(empty($device['subsystem'])) continue;
+			$pid = $this->insertOrUpdateComputerDevice(
+				$id,
+				$device['subsystem'],
+				intval($device['vendor'] ?? 0),
+				intval($device['product'] ?? 0),
+				$device['serial'] ?? '?',
+				$device['name'] ?? '?'
+			);
+			$pids[] = $pid;
+		}
+		// remove devices which can not be found in agent output
+		list($in_placeholders, $in_params) = self::compileSqlInValues($pids);
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_device WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
+		);
+		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
+
 		$this->dbh->commit();
 		return true;
+	}
+	private function insertOrUpdateComputerDevice($computer_id, $subsystem, $vendor, $product, $serial, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_device SET id = LAST_INSERT_ID(id) WHERE computer_id = :computer_id AND subsystem = :subsystem AND vendor = :vendor AND product = :product AND `serial` = :serial AND name = :name LIMIT 1'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':subsystem' => $subsystem,
+			':vendor' => $vendor,
+			':product' => $product,
+			':serial' => $serial,
+			':name' => $name,
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_device (computer_id, subsystem, vendor, product, `serial`, name)
+			VALUES (:computer_id, :subsystem, :vendor, :product, :serial, :name)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':subsystem' => $subsystem,
+			':vendor' => $vendor,
+			':product' => $product,
+			':serial' => $serial,
+			':name' => $name,
+		])) return false;
+		return $this->dbh->lastInsertId();
 	}
 	private function insertOrUpdateComputerPartition($computer_id, $device, $mountpoint, $filesystem, $size, $free) {
 		$this->stmt = $this->dbh->prepare(

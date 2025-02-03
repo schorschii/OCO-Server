@@ -215,7 +215,7 @@ switch($srcdata['method']) {
 			}
 
 			// update common computer metadata and service status
-			$db->updateComputerPing($computer->id, $data['agent_version']??'?', $data['networks']??[], $data['uptime']??null, $_SERVER['REMOTE_ADDR']??null);
+			$db->updateComputerPing($computer->id, $data['agent_version']??'?', $data['networks']??[], $data['battery_level']??null, $data['battery_status']??null, $data['uptime']??null, $_SERVER['REMOTE_ADDR']??null);
 			if(!empty($data['services'])) foreach($data['services'] as $s) {
 				if(empty($s['name']) || !isset($s['status']) || !is_numeric($s['status'])) continue;
 				$db->insertOrUpdateComputerService($computer->id, $s['status'], $s['name'], $s['metrics'] ?? '-', $s['details'] ?? '');
@@ -556,6 +556,8 @@ switch($srcdata['method']) {
 				$data['manufacturer'] ?? '',
 				$data['model'] ?? '',
 				$data['bios_version'] ?? '',
+				$data['battery_level'] ?? null,
+				$data['battery_status'] ?? null,
 				intval($data['uptime'] ?? 0),
 				$data['boot_type'] ?? '',
 				$data['secure_boot'] ?? '',
@@ -565,7 +567,8 @@ switch($srcdata['method']) {
 				$data['printers'] ?? [],
 				$data['partitions'] ?? [],
 				$data['software'] ?? [],
-				$logins
+				$logins,
+				$data['devices'] ?? [],
 			);
 			$db->insertLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE, [
 				'hostname' => $params['hostname'],
@@ -583,6 +586,8 @@ switch($srcdata['method']) {
 				'manufacturer' => $data['manufacturer'] ?? '',
 				'model' => $data['model'] ?? '',
 				'bios_version' => $data['bios_version'] ?? '',
+				'battery_level' => $data['battery_level']??null,
+				'battery_status' => $data['battery_status']??null,
 				'uptime' => intval($data['uptime'] ?? 0),
 				'boot_type' => $data['boot_type'] ?? '',
 				'secure_boot' => $data['secure_boot'] ?? '',
@@ -592,7 +597,8 @@ switch($srcdata['method']) {
 				'printers' => $data['printers'] ?? [],
 				'partitions' => $data['partitions'] ?? [],
 				'software' => $data['software'] ?? [],
-				'logins' => $logins
+				'logins' => $logins,
+				'devices' => $data['devices'] ?? [],
 			]);
 		} else {
 			errorExit('400 Update Not Necessary', $params['hostname'], $computer, Models\Log::ACTION_AGENT_API_UPDATE,

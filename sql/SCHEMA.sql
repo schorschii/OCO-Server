@@ -265,6 +265,8 @@ CREATE TABLE IF NOT EXISTS `computer` (
   `boot_type` text NOT NULL,
   `secure_boot` text NOT NULL,
   `domain` text NOT NULL,
+  `battery_level` float DEFAULT NULL,
+  `battery_status` tinyint(4) DEFAULT NULL,
   `last_ping` datetime DEFAULT NULL,
   `last_update` datetime DEFAULT NULL,
   `force_update` tinyint(4) NOT NULL DEFAULT 0,
@@ -959,6 +961,26 @@ CREATE TABLE `password_rotation_rule` (
   KEY `fk_password_rotation_rule_1` (`computer_group_id`),
   CONSTRAINT `fk_password_rotation_rule_1` FOREIGN KEY (`computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `computer_device`
+--
+
+CREATE TABLE `computer_device` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `computer_id` int(11) NOT NULL,
+  `subsystem` tinytext NOT NULL,
+  `vendor` int(11) NOT NULL,
+  `product` int(11) NOT NULL,
+  `serial` text NOT NULL,
+  `name` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_computer_device_1` (`computer_id`),
+  CONSTRAINT `fk_computer_device_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

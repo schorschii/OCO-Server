@@ -147,6 +147,10 @@ $isOnline = $computer->isOnline($db);
 							<td><?php if(!empty($computer->uptime)) echo niceTime($computer->uptime); ?></td>
 						</tr>
 						<tr>
+							<th><?php echo LANG('battery_status'); ?></th>
+							<td><?php if(empty($computer->battery_level)) echo '-'; else echo progressBar($computer->battery_level*100, null, null, 'stretch'); ?></td>
+						</tr>
+						<tr>
 							<th><?php echo LANG('created'); ?></th>
 							<td><?php echo htmlspecialchars($computer->created); ?></td>
 						</tr>
@@ -367,6 +371,36 @@ $isOnline = $computer->isOnline($db);
 								echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG('used').': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG('free').': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
+								echo '</tr>';
+							}
+							?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div class='details-abreast'>
+				<div>
+					<h2><?php echo LANG('devices'); ?></h2>
+					<table id='tblDeviceData' class='list searchable sortable savesort'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('subsystem'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('vendor_id'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('product_id'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('serial_no'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							foreach($db->selectAllComputerDeviceByComputerId($computer->id) as $p) {
+								echo '<tr>';
+								echo '<td>'.htmlspecialchars($p->subsystem).'</a></td>';
+								echo '<td>'.htmlspecialchars($p->name).'</td>';
+								echo '<td class="monospace">'.htmlspecialchars('0x'.str_pad(dechex($p->vendor),4,'0',STR_PAD_LEFT).' ('.str_pad($p->vendor,4,'0',STR_PAD_LEFT)).')</td>';
+								echo '<td class="monospace">'.htmlspecialchars('0x'.str_pad(dechex($p->product),4,'0',STR_PAD_LEFT).' ('.str_pad($p->product,4,'0',STR_PAD_LEFT)).')</td>';
+								echo '<td class="monospace">'.htmlspecialchars($p->serial).'</td>';
 								echo '</tr>';
 							}
 							?>

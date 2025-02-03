@@ -22,6 +22,8 @@ class Computer {
 	public $manufacturer;
 	public $model;
 	public $bios_version;
+	public $battery_level;
+	public $battery_status;
 	public $uptime;
 	public $boot_type;
 	public $domain;
