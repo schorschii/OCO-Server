@@ -3388,16 +3388,9 @@ class DatabaseController {
 	}
 	public function insertOrUpdateSettingByKey($key, $value) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE setting SET id = LAST_INSERT_ID(id), `value` = :value WHERE `key` = :key LIMIT 1'
+			'REPLACE INTO setting (`value`, `key`) VALUES (:value, :key)'
 		);
-		$this->stmt->execute([':key' => $key, ':value' => $value]);
-		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
-
-		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO setting (`key`, `value`) VALUES (:key, :value)'
-		);
-		if(!$this->stmt->execute([':key' => $key, ':value' => $value])) return false;
-		return $this->dbh->lastInsertId();
+		return $this->stmt->execute([':key' => $key, ':value' => $value]);
 	}
 	public function deleteSettingByKey($key) {
 		$this->stmt = $this->dbh->prepare(
