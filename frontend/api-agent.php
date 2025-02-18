@@ -538,13 +538,27 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			$success = false;
 			foreach($data['passwords'] as $password) {
 				if(empty($password['username']) || empty($password['password'])) continue;
+				if(is_array($password['password'])) {
+					$decryptedPassword = openssl_decrypt(
+						$password['password']['data'],
+						'aes-256-cbc',
+						$computer->agent_key,
+						0,
+						base64_decode($password['password']['iv']),
+					);
+					if(!$decryptedPassword)
+						throw new InvalidRequestException('Invalid password data', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
+				} else {
+					$decryptedPassword = $password['password'];
+				}
+
 				if(!empty($password['revoke'])) {
 					foreach($db->selectAllComputerPasswordByComputerId($computer->id) as $p) {
 						if($p->username === $password['username']
-						&& $p->password === $password['password']
+						&& $p->password === $decryptedPassword
 						// revoking is only allowed in the first 5 minutes
 						&& time() - strtotime($p->created) < 60*5) {
-							$db->deleteComputerPassword($p->id);
+							$success = $db->deleteComputerPassword($p->id);
 						}
 					}
 					continue;
@@ -554,7 +568,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 						$success = $db->insertComputerPassword(
 							$computer->id,
 							$password['username'],
-							$password['password'],
+							$decryptedPassword,
 							$rule->history
 						);
 						if(!$success) throw new Exception('Error while inserting password into database');
