@@ -1562,11 +1562,12 @@ function removeMobileDeviceFromGroup(ids, groupId) {
 function showDialogCreateComputer() {
 	showDialogAjax(LANG['create_computer'], 'views/dialog-computer-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function createComputer(hostname, notes, agentKey) {
+function createComputer(hostname, notes, agentKey, serverKey) {
 	var params = [];
 	params.push({'key':'create_computer', 'value':hostname});
 	params.push({'key':'notes', 'value':notes});
 	params.push({'key':'agent_key', 'value':agentKey});
+	params.push({'key':'server_key', 'value':serverKey});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
 		hideDialog();

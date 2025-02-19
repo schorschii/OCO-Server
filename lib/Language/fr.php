@@ -517,6 +517,7 @@ return [
 	'self_service_is_disabled' => 'Le portail du self-service est actuellement désactivé',
 	'password_set' => 'Définir le mot de passe',
 	'individual_agent_key' => 'Clé agent individuelle',
+	'individual_server_key' => 'Clé serveur individuelle',
 	'services' => 'Services',
 	'all_services' => 'Tous les services',
 	'events' => 'Évènements',
