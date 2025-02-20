@@ -335,6 +335,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 					$data['partitions'] ?? [],
 					$data['software'] ?? [],
 					$logins,
+					$data['users'] ?? [],
 					$data['devices'] ?? [],
 				);
 				$db->insertLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE, [
@@ -365,6 +366,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 					'partitions' => $data['partitions'] ?? [],
 					'software' => $data['software'] ?? [],
 					'logins' => $logins,
+					'users' => $data['users'] ?? [],
 					'devices' => $data['devices'] ?? [],
 				]);
 			} else {

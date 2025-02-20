@@ -856,7 +856,7 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':server_key' => $server_key]);
 	}
-	public function updateComputerInventoryValues($id, $uid, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $battery_level, $battery_status, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins, $devices) {
+	public function updateComputerInventoryValues($id, $uid, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $battery_level, $battery_status, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins, $users, $devices) {
 		$this->dbh->beginTransaction();
 
 		// update general info
@@ -1005,6 +1005,29 @@ class DatabaseController {
 		// old logins, which are not present in local client logs anymore, should NOT automatically be deleted
 		// instead, old logins are cleaned up by the server's housekeeping process after a certain amount of time (defined in configuration)
 
+		// update users
+		$pids = [];
+		foreach($users as $user) {
+			if(empty($user['username'])) continue;
+			$pid = $this->insertOrUpdateComputerUser(
+				$id,
+				$user['username'],
+				$user['display_name'] ?? '',
+				$user['uid'] ?? '?',
+				$user['gid'] ?? '?',
+				$user['home'] ?? '?',
+				$user['shell'] ?? '?',
+				intval($user['disabled'] ?? 0)
+			);
+			$pids[] = $pid;
+		}
+		// remove users which can not be found in agent output
+		list($in_placeholders, $in_params) = self::compileSqlInValues($pids);
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_user WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
+		);
+		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
+
 		// update devices
 		$pids = [];
 		foreach($devices as $device) {
@@ -1028,6 +1051,38 @@ class DatabaseController {
 
 		$this->dbh->commit();
 		return true;
+	}
+	private function insertOrUpdateComputerUser($computer_id, $username, $display_name, $uid, $gid, $home, $shell, $disabled) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_user SET id = LAST_INSERT_ID(id) WHERE computer_id = :computer_id AND username = :username AND display_name = :display_name AND uid = :uid AND gid = :gid AND home = :home AND shell = :shell AND `disabled` = :disabled LIMIT 1'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':username' => $username,
+			':display_name' => $display_name,
+			':uid' => $uid,
+			':gid' => $gid,
+			':home' => $home,
+			':shell' => $shell,
+			':disabled' => $disabled,
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_user (computer_id, username, display_name, uid, gid, home, shell, `disabled`)
+			VALUES (:computer_id, :username, :display_name, :uid, :gid, :home, :shell, :disabled)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':username' => $username,
+			':display_name' => $display_name,
+			':uid' => $uid,
+			':gid' => $gid,
+			':home' => $home,
+			':shell' => $shell,
+			':disabled' => $disabled,
+		])) return false;
+		return $this->dbh->lastInsertId();
 	}
 	private function insertOrUpdateComputerDevice($computer_id, $subsystem, $vendor, $product, $serial, $name) {
 		$this->stmt = $this->dbh->prepare(
@@ -1541,6 +1596,24 @@ class DatabaseController {
 		);
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPassword');
+	}
+	public function selectAllComputerUserWithPasswordByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cu.*, cp.password, cp.created FROM computer_user cu
+			RIGHT JOIN (
+				SELECT cp.*, (SELECT COUNT(*) FROM computer_password cp3 WHERE cp3.computer_id = cp.computer_id AND cp3.username = cp.username) AS "history_count"
+				FROM computer_password cp INNER JOIN computer c ON c.id = cp.computer_id WHERE cp.id IN (SELECT MAX(cp2.id) FROM computer_password cp2 GROUP BY cp2.computer_id, cp2.username) AND cp.computer_id = :computer_id
+			) cp ON cu.username = cp.username
+			WHERE cu.computer_id = :computer_id
+			UNION SELECT cu.*, cp.password, cp.created FROM computer_user cu
+			LEFT JOIN (
+				SELECT cp.*, (SELECT COUNT(*) FROM computer_password cp3 WHERE cp3.computer_id = cp.computer_id AND cp3.username = cp.username) AS "history_count"
+				FROM computer_password cp INNER JOIN computer c ON c.id = cp.computer_id WHERE cp.id IN (SELECT MAX(cp2.id) FROM computer_password cp2 GROUP BY cp2.computer_id, cp2.username) AND cp.computer_id = :computer_id
+			) cp ON cu.username = cp.username
+			WHERE cu.computer_id = :computer_id'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerUser');
 	}
 	public function deleteComputerPassword($id) {
 		$this->stmt = $this->dbh->prepare(

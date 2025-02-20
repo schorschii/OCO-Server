@@ -6,7 +6,7 @@ class ComputerPassword {
 
 	public $id;
 	public $computer_id;
-	public $user;
+	public $username;
 	public $password;
 	public $created;
 

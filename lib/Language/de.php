@@ -31,7 +31,7 @@ return [
 	'user_locked' => 'Benutzer gesperrt',
 	'username' => 'Benutzername',
 	'password' => 'Passwort',
-	'passwords' => 'Passwörter',
+	'local_users' => 'Lokale Benutzer',
 	'password_rotation_rules' => 'Passwort-Rotationsregeln',
 	'alphabet' => 'Alphabet',
 	'length' => 'Länge',

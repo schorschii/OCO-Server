@@ -36,7 +36,7 @@ return [
 	'user_locked' => 'User locked',
 	'username' => 'Username',
 	'password' => 'Password',
-	'passwords' => 'Passwords',
+	'local_users' => 'Local Users',
 	'password_rotation_rules' => 'Password Rotation Rules',
 	'alphabet' => 'Alphabet',
 	'length' => 'Length',

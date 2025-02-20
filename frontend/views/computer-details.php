@@ -221,27 +221,33 @@ $isOnline = $computer->isOnline($db);
 						</tbody>
 					</table>
 
-					<h2><?php echo LANG('passwords'); ?></h2>
+					<h2><?php echo LANG('local_users'); ?></h2>
 					<table id='tblPasswordsData' class='list sortable savesort'>
 						<thead>
 							<tr>
 								<th><?php echo LANG('login_name'); ?></th>
+								<th><?php echo LANG('display_name'); ?></th>
 								<th><?php echo LANG('password'); ?></th>
-								<th><?php echo LANG('created'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach($db->selectAllComputerPasswordByComputerId($computer->id) as $password) { ?>
-								<tr>
+							<?php foreach($db->selectAllComputerUserWithPasswordByComputerId($computer->id) as $u) { ?>
+								<tr class='<?php echo empty($u->disabled)?'':'inactive'; ?>'>
 								<td class='subbuttons'>
-									<?php echo htmlspecialchars($password->username); ?>
-									<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->username,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+									<?php echo htmlspecialchars($u->username); ?>
+									<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->username,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+									<div class='hint'><?php echo htmlspecialchars($u->uid); ?></div>
 								</td>
-								<td class='subbuttons mask monospace'>
-									<?php echo htmlspecialchars($password->password); ?>
-									<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($password->password,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+								<td><?php echo htmlspecialchars($u->display_name); ?></td>
+								<td>
+									<?php if($u->password) { ?>
+									<div class='subbuttons mask monospace'>
+										<?php echo htmlspecialchars($u->password??''); ?>
+										<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->password??'',ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+									</div>
+									<div class='hint'><?php echo htmlspecialchars($u->created??''); ?></div>
+									<?php } ?>
 								</td>
-								<td><?php echo htmlspecialchars($password->created); ?></td>
 								</tr>
 							<?php } ?>
 						</tbody>

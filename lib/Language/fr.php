@@ -36,7 +36,7 @@ return [
 	'user_locked' => 'Utilisateur verrouillé',
 	'username' => 'Utilisateur',
 	'password' => 'Mot de passe',
-	'passwords' => 'Mots de passe',
+	'local_users' => 'Utilisateurs locaux',
 	'password_rotation_rules' => 'Règles de rotation de mot de passe',
 	'alphabet' => 'Alphabet',
 	'length' => 'Longueur',
