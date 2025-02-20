@@ -392,6 +392,28 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		if(!$this->getTableColumnInfo('computer_user', 'id')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add computer_user table)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `computer_user` (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `computer_id` int(11) NOT NULL,
+				  `username` text NOT NULL,
+				  `display_name` text NOT NULL,
+				  `uid` text NOT NULL,
+				  `gid` text NOT NULL,
+				  `home` text NOT NULL,
+				  `shell` text NOT NULL,
+				  `disabled` tinyint(4) NOT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `fk_computer_user_1` (`computer_id`),
+				  CONSTRAINT `fk_computer_user_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 
