@@ -52,7 +52,7 @@ try {
 						</tr>
 						<tr>
 							<th><?php echo LANG('uid'); ?></th>
-							<td><?php echo htmlspecialchars($md->udid); ?></td>
+							<td><?php echo htmlspecialchars($md->udid ?? ''); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('serial_no'); ?></th>
@@ -121,38 +121,13 @@ try {
 				<div>
 					<h2><?php echo LANG('information'); ?></h2>
 					<?php
-					function echoInfoRow($value) {
-						if($value === true) echo '<img src="img/success.dyn.svg">';
-						elseif($value === false) echo '<img src="img/close.opacity.svg">';
-						elseif(is_array($value)) {
-							echo '<table class="list metadata"><tbody>';
-							foreach($value as $subkey => $subvalue) {
-								if($subkey == 'UDID' || $subkey == 'SerialNumber' || $subkey == 'DeviceName'
-								|| $subkey == 'ProductName' || $subkey == 'OSVersion' || $subkey == 'AvailableDeviceCapacity')
-									continue;
-								echo '<tr>'
-									.'<th>'.htmlspecialchars(LANG($subkey)).'</th>'
-									.'<td>';
-								if($subkey == 'BatteryLevel') {
-									echo progressBar($subvalue*100, null, null, 'stretch');
-								} elseif($subkey == 'DeviceCapacity' && isset($value['AvailableDeviceCapacity'])) {
-									$total = $value['DeviceCapacity'];
-									$free = $value['AvailableDeviceCapacity'];
-									$used = $total - $free;
-									echo progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
-								} else {
-									echoInfoRow($subvalue);
-								}
-								echo '</td>'
-									.'</tr>';
-							}
-							echo '</tbody></table>';
-						}
-						else echo htmlspecialchars($value);
-					}
 					if(empty($md->info)) { ?>
 						<div class='alert info'><?php echo LANG('device_does_not_delivered_info_yet'); ?></div>
-					<?php } else echoInfoRow(json_decode($md->info,true)); ?>
+					<?php } else {
+						echoDictTable(json_decode($md->info, true), [
+							'UDID', 'SerialNumber', 'DeviceName', 'ProductName', 'OSVersion', 'AvailableDeviceCapacity'
+						]);
+					} ?>
 				</div>
 			</div>
 		</div>

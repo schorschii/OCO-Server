@@ -70,6 +70,34 @@ function explorerLink($explorerContentUrl, $extraJs=null) {
 		.($extraJs===null ? "" : " onclick='event.preventDefault();".$extraJs."'");
 }
 
+function echoDictTable($value, array $exclude=[]) {
+	if($value === true) echo '<img src="img/success.dyn.svg">';
+	elseif($value === false) echo '<img src="img/close.opacity.svg">';
+	elseif(is_array($value)) {
+		echo '<table class="list metadata"><tbody>';
+		foreach($value as $subkey => $subvalue) {
+			if(in_array($subkey, $exclude)) continue;
+			echo '<tr>'
+				.'<th>'.htmlspecialchars(LANG($subkey)).'</th>'
+				.'<td>';
+			if($subkey == 'BatteryLevel') {
+				echo progressBar($subvalue*100, null, null, 'stretch');
+			} elseif($subkey == 'DeviceCapacity' && isset($value['AvailableDeviceCapacity'])) {
+				$total = $value['DeviceCapacity'];
+				$free = $value['AvailableDeviceCapacity'];
+				$used = $total - $free;
+				echo progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
+			} else {
+				echoDictTable($subvalue);
+			}
+			echo '</td>'
+				.'</tr>';
+		}
+		echo '</tbody></table>';
+	}
+	else echo htmlspecialchars($value);
+}
+
 function randomString($length = 30) {
 	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
 	$charactersLength = strlen($characters);

@@ -94,7 +94,7 @@ try {
 		foreach($mobileDevices as $md) {
 			$ip_addresses = [];
 			$mac_addresses = [];
-			$info = json_decode($md->info, true);
+			$info = json_decode($md->info ?? '', true);
 			if($info) {
 				if(isset($info['WiFiMAC'])) $mac_addresses[] = $info['WiFiMAC'];
 				if(isset($info['BluetoothMAC'])) $mac_addresses[] = $info['BluetoothMAC'];
