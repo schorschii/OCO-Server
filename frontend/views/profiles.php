@@ -30,17 +30,23 @@ try {
 				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('notes'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
 				<th class=''><?php echo LANG('action'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 		<?php
 		foreach($profiles as $p) {
+			$groupLinks = [];
+			foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
+				$groupLinks[] = "<a ".explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
+
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
 			echo "<td id='tdProfile".$p->id."'>".htmlspecialchars($p->name)."</td>";
 			echo "<td>".htmlspecialchars(shorter(LANG($p->notes)))."</td>";
 			echo "<td>".htmlspecialchars($p->created)."</td>";
+			echo "<td>".implode("<br>", $groupLinks)."</td>";
 			echo "<td><button onclick='showDialogAjax(tdProfile".$p->id.".innerText, \"views/dialog-profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button></td>";
 			echo "</tr>";
 		}
