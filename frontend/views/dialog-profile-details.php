@@ -6,7 +6,7 @@ require_once('../session.inc.php');
 try {
 	$profile = null;
 	foreach($cl->getProfiles() as $p) {
-		if($p->id == $_GET['id'] ?? -1) {
+		if($p->id == ($_GET['id'] ?? -1)) {
 			$profile = $p;
 		}
 	}
@@ -22,5 +22,5 @@ try {
 }
 
 $requestPlist = new CFPropertyList\CFPropertyList();
-$requestPlist->parse($p->payload);
+$requestPlist->parse($profile->payload);
 echoDictTable($requestPlist->toArray());
