@@ -140,19 +140,19 @@ try {
 						<table id='tblMobileDeviceProfileData' class='list searchable sortable savesort margintop fullwidth'>
 							<thead>
 								<tr>
-									<th class='searchable sortable'><?php echo LANG('uid'); ?></th>
-									<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
 									<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
 									<th class='searchable sortable'><?php echo LANG('version'); ?></th>
+									<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
+									<th class='searchable sortable'><?php echo LANG('uid'); ?></th>
 								</tr>
 							</thead>
 							<tbody>
 								<?php foreach($db->selectAllMobileDeviceProfileUuidByMobileDeviceId($md->id) as $ip) { ?>
 									<tr>
-										<td><?php echo htmlspecialchars($ip->uuid); ?></td>
-										<td><?php echo htmlspecialchars($ip->identifier); ?></td>
 										<td><?php echo htmlspecialchars($ip->display_name); ?></td>
 										<td><?php echo htmlspecialchars($ip->version); ?></td>
+										<td><?php echo htmlspecialchars($ip->identifier); ?></td>
+										<td><?php echo htmlspecialchars($ip->uuid); ?></td>
 									</tr>
 								<?php } ?>
 							</tbody>
@@ -229,8 +229,8 @@ try {
 				<table id='tblMobileDeviceAppData' class='list searchable sortable savesort margintop'>
 						<thead>
 							<tr>
-								<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('version'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('version_code'); ?></th>
 							</tr>
@@ -238,8 +238,8 @@ try {
 						<tbody>
 							<?php foreach($db->selectAllMobileDeviceAppIdentifierByMobileDeviceId($md->id) as $a) { ?>
 								<tr>
-									<td><?php echo htmlspecialchars($a->identifier); ?></td>
 									<td><?php echo htmlspecialchars($a->name); ?></td>
+									<td><?php echo htmlspecialchars($a->identifier); ?></td>
 									<td><?php echo htmlspecialchars($a->display_version); ?></td>
 									<td><?php echo htmlspecialchars($a->version); ?></td>
 								</tr>
