@@ -361,12 +361,12 @@ class DatabaseMigrationController {
 		if(!$this->getTableColumnInfo('computer', 'battery_level')) {
 			if($this->debug) echo 'Upgrading to 1.1.4... (add battery_level column)'."\n";
 			$this->stmt = $this->dbh->prepare(
-				"ALTER TABLE `password_rotation_rule` ADD COLUMN `battery_level` float DEFAULT NULL AFTER domain");
+				"ALTER TABLE `computer` ADD COLUMN `battery_level` float DEFAULT NULL AFTER domain");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			if($this->debug) echo 'Upgrading to 1.1.4... (add battery_status column)'."\n";
 			$this->stmt = $this->dbh->prepare(
-				"ALTER TABLE `password_rotation_rule` ADD COLUMN `battery_status` tinyint(4) DEFAULT NULL AFTER battery_level");
+				"ALTER TABLE `computer` ADD COLUMN `battery_status` tinyint(4) DEFAULT NULL AFTER battery_level");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			$upgraded = true;
