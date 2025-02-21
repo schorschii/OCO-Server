@@ -27,6 +27,13 @@ try {
 
 $commands = Models\Computer::getCommands($ext);
 $isOnline = $computer->isOnline($db);
+
+$services = $db->selectAllCurrentComputerServiceByComputerId($computer->id);
+$servicesWarn = 0; $servicesCrit = 0;
+foreach($services as $s) {
+	if($s->getStatusClass() == 'warn') $servicesWarn ++;
+	if($s->getStatusClass() == 'crit') $servicesCrit ++;
+}
 ?>
 
 <div class='details-header'>
@@ -48,12 +55,26 @@ $isOnline = $computer->isOnline($db);
 
 <div id='tabControlComputer' class='tabcontainer'>
 	<div class='tabbuttons'>
-		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('general_and_hardware'); ?></a>
-		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('packages_and_jobs'); ?></a>
-		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('recognised_software'); ?></a>
-		<a href='#' name='services' class='<?php if($tab=='services') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('services'); ?></a>
-		<a href='#' name='events' class='<?php if($tab=='events') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('events'); ?></a>
-		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('history'); ?></a>
+		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'>
+			<?php echo LANG('general_and_hardware'); ?>
+		</a>
+		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'>
+			<?php echo LANG('packages_and_jobs'); ?>
+		</a>
+		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'>
+			<?php echo LANG('recognised_software'); ?>
+		</a>
+		<a href='#' name='services' class='<?php if($tab=='services') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'>
+			<?php echo LANG('services'); ?>
+			<?php if($servicesWarn) echo '<span class="servicecount warn">'.$servicesWarn.'</span>'; ?>
+			<?php if($servicesCrit) echo '<span class="servicecount crit">'.$servicesCrit.'</span>'; ?>
+		</a>
+		<a href='#' name='events' class='<?php if($tab=='events') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'>
+			<?php echo LANG('events'); ?>
+		</a>
+		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'>
+			<?php echo LANG('history'); ?>
+		</a>
 	</div>
 	<div class='tabcontents'>
 
@@ -592,7 +613,7 @@ $isOnline = $computer->isOnline($db);
 					</table>
 				</div>
 			</div>
-			<?php } elseif($tab == 'services') { ?>
+			<?php } else { ?>
 			<div class='details-abreast'>
 				<div class='stickytable'>
 					<table id='tblComputerServicesData' class='list searchable sortable savesort margintop actioncolumn'>
@@ -608,7 +629,7 @@ $isOnline = $computer->isOnline($db);
 						</thead>
 						<tbody>
 							<?php $counter = 0;
-							foreach($db->selectAllCurrentComputerServiceByComputerId($computer->id) as $e) {
+							foreach($services as $e) {
 								echo "<tr>";
 								echo "<td class='servicestatus ".$e->getStatusClass()."'>".htmlspecialchars($e->getStatusText())."</td>";
 								echo "<td id='service".$counter."'>".htmlspecialchars($e->name)."</td>";
