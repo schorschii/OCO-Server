@@ -33,9 +33,9 @@ To manually force an update once, hover over the "Last Refresh" date of the comp
 ## Password Rotation Rules
 With the password rotation feature, you can periodically change passwords of local (admin) accounts. This feature is an alternative to the Local Administrator Password Solution (LAPS) from Microsoft.
 
-To use it, you just need to create appropriate password rotation rule in the OCO settings, and the agent will generate a new random password for your local accounts after the given password expiration time is reached.
+To use it, you just need to create appropriate password rotation rules in the OCO settings, and the agent will generate a new random password for your local accounts after the given password expiration time is reached. These rules can be applied to specific computer groups or to all computers, if you do not select a group.
 
-For macOS, since passwords can only be changed by giving the current password too, you need to specifiy the initial account password before it cn be rotated.
+For macOS, since passwords can only be changed by giving the current password too, you need to specifiy the initial account password before it can be rotated.
 
 ## Event Log Query
 You can monitor the Windows event log and journalctl on Linux by creating Event Query Rules on the OCO server. These rules are communicated with the agent and if an event matches the rule, the agent will send the event data to the server. This feature can be used as a simple central syslog functionality for your managed clients.
