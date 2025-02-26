@@ -30,6 +30,13 @@ To manually force an update once, hover over the "Last Refresh" date of the comp
 
 ![Force update button on mouse hover](img/force-agent-update.png)
 
+## Password Rotation Rules
+With the password rotation feature, you can periodically change passwords of local (admin) accounts. This feature is an alternative to the Local Administrator Password Solution (LAPS) from Microsoft.
+
+To use it, you just need to create appropriate password rotation rule in the OCO settings, and the agent will generate a new random password for your local accounts after the given password expiration time is reached.
+
+For macOS, since passwords can only be changed by giving the current password too, you need to specifiy the initial account password before it cn be rotated.
+
 ## Event Log Query
 You can monitor the Windows event log and journalctl on Linux by creating Event Query Rules on the OCO server. These rules are communicated with the agent and if an event matches the rule, the agent will send the event data to the server. This feature can be used as a simple central syslog functionality for your managed clients.
 
@@ -47,14 +54,7 @@ For Linux, as log name, please enter `journalctl` - this is currently the only s
 
 Please note that the operating systems are producing many log entries. A meaningful filter should always be applied to not spam the database with unnecessary events.
 
-For performance reasons, a MySQL INDEX is created over the `log` column and therefore, the max length is limited to 200 chars.
-
-## Password Rotation Rules
-With the password rotation feature, you can periodically change passwords of local (admin) accounts. This feature is an alternative to the Local Administrator Password Solution (LAPS) from Microsoft.
-
-To use it, you just need to create appropriate password rotation rule in the OCO settings, and the agent will generate a new random password for your local accounts after the given password expiration time is reached.
-
-For macOS, since passwords can only be changed by giving the current password too, you need to specifiy the initial account password before it cn be rotated.
+For performance reasons, a MySQL INDEX is created over the `computer_event`.`log` column and therefore, the max length of the event source is limited to 200 chars.
 
 ### Example Rules
 #### Windows: Get Defender Warning, Error and Critical Events
