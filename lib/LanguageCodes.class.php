@@ -4,9 +4,11 @@ class LanguageCodes {
 
 	public static function getLocaleNameByLcid($lcid) {
 		if(empty($lcid) || $lcid == '-' || $lcid == '?') return $lcid;
-		$lcidDec = intval(hexdec($lcid));
-		if(array_key_exists($lcidDec, self::LCIDS)) {
-			return self::LCIDS[$lcidDec][0].' '.(self::LCIDS[$lcidDec][2] ?? '');
+		if(is_numeric($lcid)) {
+			$lcidDec = intval(hexdec($lcid));
+			if(array_key_exists($lcidDec, self::LCIDS)) {
+				return self::LCIDS[$lcidDec][0].' '.(self::LCIDS[$lcidDec][2] ?? '');
+			}
 		}
 		return $lcid;
 	}

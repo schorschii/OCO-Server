@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `system_user_role` (
 --
 
 REPLACE INTO `system_user_role` (`id`, `name`, `permissions`) VALUES
-(1, 'Superadmin', '{\"Special\\\\ClientApi\": true, \"Special\\\\WebFrontend\": true, \"Special\\\\GeneralConfiguration\": true, \"Special\\\\EventQueryRules\": true, \"Special\\\\DeletedObjects\": true, \"Models\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true}}, \"Models\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\SystemUser\": true, \"Models\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Software\": true, \"Models\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}}}');
+(1, 'Superadmin', '{\"Special\\\\ClientApi\": true, \"Special\\\\WebFrontend\": true, \"Special\\\\GeneralConfiguration\": true, \"Special\\\\EventQueryRules\": true, \"Special\\\\PasswordRotationRules\": true, \"Special\\\\DeletedObjects\": true, \"Models\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\SystemUser\": true, \"Models\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Software\": true, \"Models\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}}}');
 
 -- --------------------------------------------------------
 
@@ -265,6 +265,8 @@ CREATE TABLE IF NOT EXISTS `computer` (
   `boot_type` text NOT NULL,
   `secure_boot` text NOT NULL,
   `domain` text NOT NULL,
+  `battery_level` float DEFAULT NULL,
+  `battery_status` tinyint(4) DEFAULT NULL,
   `last_ping` datetime DEFAULT NULL,
   `last_update` datetime DEFAULT NULL,
   `force_update` tinyint(4) NOT NULL DEFAULT 0,
@@ -633,7 +635,6 @@ CREATE TABLE IF NOT EXISTS `job_container_job` (
 --
 
 CREATE TABLE IF NOT EXISTS `log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `timestamp` datetime NOT NULL DEFAULT current_timestamp(),
   `level` tinyint(4) NOT NULL,
   `host` text NOT NULL,
@@ -641,7 +642,7 @@ CREATE TABLE IF NOT EXISTS `log` (
   `object_id` int(11) DEFAULT NULL,
   `action` text NOT NULL,
   `data` longtext NOT NULL,
-  PRIMARY KEY (`id`)
+  KEY `object_id` (`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -710,10 +711,9 @@ REPLACE INTO `report` (`id`, `report_group_id`, `name`, `notes`, `query`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `setting` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `key` text NOT NULL,
+  `key` VARCHAR(50) NOT NULL,
   `value` text NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -925,6 +925,84 @@ CREATE TABLE `mobile_device_group_managed_app` (
   CONSTRAINT `fk_mobile_device_group_managed_app_1` FOREIGN KEY (`mobile_device_group_id`) REFERENCES `mobile_device_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_mobile_device_group_managed_app_2` FOREIGN KEY (`managed_app_id`) REFERENCES `managed_app` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `computer_password`
+--
+
+CREATE TABLE `computer_password` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `computer_id` int(11) NOT NULL,
+  `username` text NOT NULL,
+  `password` text NOT NULL,
+  `created` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `fk_computer_password_1` (`computer_id`),
+  CONSTRAINT `fk_computer_password_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `password_rotation_rule`
+--
+
+CREATE TABLE `password_rotation_rule` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `computer_group_id` int(11) DEFAULT NULL,
+  `username` text NOT NULL,
+  `alphabet` text NOT NULL,
+  `length` int(11) NOT NULL,
+  `valid_seconds` int(11) NOT NULL,
+  `history` int(11) NOT NULL,
+  `default_password` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_password_rotation_rule_1` (`computer_group_id`),
+  CONSTRAINT `fk_password_rotation_rule_1` FOREIGN KEY (`computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `computer_device`
+--
+
+CREATE TABLE `computer_device` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `computer_id` int(11) NOT NULL,
+  `subsystem` tinytext NOT NULL,
+  `vendor` int(11) NOT NULL,
+  `product` int(11) NOT NULL,
+  `serial` text NOT NULL,
+  `name` text NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_computer_device_1` (`computer_id`),
+  CONSTRAINT `fk_computer_device_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `computer_user`
+--
+
+CREATE TABLE `computer_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `computer_id` int(11) NOT NULL,
+  `username` text NOT NULL,
+  `display_name` text NOT NULL,
+  `uid` text NOT NULL,
+  `gid` text NOT NULL,
+  `home` text NOT NULL,
+  `shell` text NOT NULL,
+  `disabled` tinyint(4) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_computer_user_1` (`computer_id`),
+  CONSTRAINT `fk_computer_user_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

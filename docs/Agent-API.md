@@ -2,24 +2,36 @@
 This document describes the JSON-REST and package download API for the OCO agent provided by the OCO server. By implementing this protocol you can create your own agents.
 
 # The JSON-RPC Package
-A valid JSON-RPC request is sent via HTTP(S) with the HTTP header `Content-Type: application/json` to the API endpoint `api-agent.php`.
+A valid JSON-RPC request is sent via HTTP(S) with the HTTP header `content-type: application/json` to the API endpoint `api-agent.php`.
 
-Within the `params` object, please send the `hostname` and `uid` (machine UUID/GUID) with the correct `agent-key` value and all required additional parameters for the method you are calling inside a `data` object. The server will trust the agent only if the `agent-key` matches the one saved in the database.
+Within the JSON-RPC `params` object, please send the `hostname` and `uid` (machine UUID/GUID) and all required additional parameters for the method you are calling inside a `data` object. Additionally, a `timestamp` needs to be included within the `params` object. This timestamp has to be newer than the last timestamp. This rolling timestamp acts as security enhancement, to ensure that the agent signature changes for every request (see authentication section). This ensures that one request, intercepted by an attacker, cannot be used again.
 
 Please have a look at the following API method documentation for JSON-RPC request/response examples.
 
 # Authentication
 The agent authentication of the REST-API is based on the "trust on first use" (TOFU) principle.
 
-Before the first agent request, both `agent-key` and `server-key` are empty by default (in the server database and the agent config file). In this case, the server will generate new random keys and send it to the agent during the normal `agent_hello` response. The agent should then save the keys into it's config file. On the next request, the agent only trusts the server if it sends the same `server-key` again. If the `{agent|server}-key` is not empty in the agent config file, the agent should not allow a key update!
+Before the first agent request, the `agent-key` should be set to the global or individual agent key (as defined on the server) using the installer or by manually editing the config file.
 
-The server-agent communcation should be encrypted via HTTPS as mentioned in the installation instructions, otherwise attackers can easily obtain the agent and server key.
+The agent now authenticates by adding a signature as HTTP header `x-oco-agent-signature` to the request. The signature is a hexadecimal SHA256 HMAC calculated over the HTTP (JSON) body using the agent key in the local agent configuration.
+
+The `server-key` is empty by default (in the server database and the agent config file). Now, on the first request, the server will generate new random keys and send it to the agent during the `agent_hello` response.
+
+The agent then saves the keys into its config file (TOFU principle). On the next request, the agent only trusts the server if it can validate the `x-oco-server-signature` HTTP header. This is again a SHA256 HMAC calculated over the HTTP response body, but this time the previously saved server key is used for the HMAC calculation.
+
+The agent refuses to store a new agent or server key if the key is already set (= not empty) in the agent config file!
+
+Every server-agent communcation should be encrypted via HTTPS as mentioned in the installation instructions.
 
 # JSON-REST-API Methods
 ## `oco.agent.hello` - Agent Contact Approach
 ### Parameters
 - `agent_version`: the agent version
-- `networks`: the network interface information of the managed computer
+- `networks`: network interface information (array of objects)
+- `services`: status output of service checks
+- `uptime`: uptime in seconds
+- `battery_level`: battery level (0-1 or false if no battery installed)
+- `battery_status`: battery status (1 if power supply attached, false if no battery installed)
 ### Example
 ```
 {
@@ -27,12 +39,20 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"id": 1,
 	"method": "oco.agent.hello",
 	"params": {
-		"agent-key": "🌈💜👆🚧🛸💩",
+		"timestamp": 1739376524,
 		"uid": "00000000-0000-0000-0000-000000000000",
 		"hostname": "mypc",
 		"data": {
 			"agent_version": "1.0.0",
-			"networks": []
+			"networks": [
+				{"addr": "10.1.1.1", "netmask": "255.0.0.0", "broadcast": "10.255.255.255", "mac": "ca:ff:ee:ca:ff:ee", "interface": "enp4s0"}
+			],
+			"services": [
+				{"status": "0", "name": "Windows Defender Advanced Threat Protection Service", "merics": "myvalue=73;80;90", "details": "My output text"}
+			],
+			"uptime": 3292876.5516221523,
+			"battery_level": false,
+			"battery_status": false
 		}
 	}
 }
@@ -72,6 +92,13 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 					"log": "System",
 					"query": "<QueryList><Query><Select>*[System[(EventID=1130)]]<\/Select><\/Query><\/QueryList>"
 				}
+			],
+			"update-passwords": [
+				{
+					"username": "administrator",
+					"alphabet": "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
+					"length": 15
+				}
 			]
 		}
 	}
@@ -98,12 +125,15 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 - `boot_type`: boot type (UEFI or legacy)
 - `secure_boot`: secure boot status (0 or 1)
 - `domain`: domain name
-- `networks`: network information (array of objects)
+- `networks`: network interface information (array of objects)
+- `battery_level`: battery level (0-1 or false if no battery installed)
+- `battery_status`: battery status (1 if power supply attached, false if no battery installed)
 - `screens`: screen information (array of objects)
 - `printers`: printer information (array of objects)
 - `partitions`: partition information (array of objects)
 - `software`: installed software (array of objects)
 - `logins`: user logins since `logins-since` (array of objects)
+- `devices`: attached devices information (array of objects)
 ### Example
 ```
 {
@@ -111,7 +141,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"id": 1,
 	"method": "oco.agent.update",
 	"params": {
-		"agent-key": "🌈💜👆🚧🛸💩",
+		"timestamp": 1739376524,
 		"uid": "00000000-0000-0000-0000-000000000000",
 		"hostname": "mypc",
 		"data": {
@@ -133,6 +163,8 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 			"boot_type": "UEFI",
 			"secure_boot": 1,
 			"domain": "example.com",
+			"battery_level": false,
+			"battery_status": false,
 			"networks": [
 				{
 					"address": "10.1.2.3",
@@ -191,6 +223,15 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 					"console": "127.0.0.1",
 					"timestamp": "2022-10-05 16:21:03"
 				}
+			],
+			"devices": [
+				{
+					"subsystem": "usb",
+					"vendor": 7531,
+					"product": 2,
+					"serial": "1234567890",
+					"name": "xHCI Host Controller"
+				}
 			]
 		}
 	}
@@ -202,9 +243,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"error": null,
 	"result": {
 		"success": true,
-		"params": {
-			"server-key": "abc123"
-		}
+		"params": {}
 	}
 }
 ```
@@ -223,7 +262,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"id": 1,
 	"method": "oco.agent.update_job_state",
 	"params": {
-		"agent-key": "🌈💜👆🚧🛸💩",
+		"timestamp": 1739376524,
 		"uid": "00000000-0000-0000-0000-000000000000",
 		"hostname": "mypc",
 		"data": {
@@ -243,7 +282,6 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"result": {
 		"success": true,
 		"params": {
-			"server-key": "abc123",
 			"job-succeeded": true
 		}
 	}
@@ -260,7 +298,7 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"id": 1,
 	"method": "oco.agent.events",
 	"params": {
-		"agent-key": "🌈💜👆🚧🛸💩",
+		"timestamp": 1739376524,
 		"uid": "00000000-0000-0000-0000-000000000000",
 		"hostname": "mypc",
 		"data": {
@@ -282,18 +320,63 @@ The server-agent communcation should be encrypted via HTTPS as mentioned in the 
 	"error": null,
 	"result": {
 		"success": true,
-		"params": {
-			"server-key": "abc123"
-		}
+		"params": {}
 	}
 }
 ```
 
-# Package Download API
-To download the package payload ZIP file, the agent has to contact the API endpoint `api-agent.php` with the following HTTP GET parameter.
-- `id`: the package id to download
-- `hostname`: the hostname of the client for authentication
-- `uid`: the UUID of the client for authentication
-- `agent-key`: the corresponding agent key for authentication
+## `oco.agent.passwords` - Store New Rotated Password On The Server
+### Parameters
+- `passwords`: the passwords to store
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.agent.passwords",
+	"params": {
+		"timestamp": 1739376524,
+		"uid": "00000000-0000-0000-0000-000000000000",
+		"hostname": "mypc",
+		"data": {
+			"passwords": [
+				{
+					"username": "administrator",
+					"password": "wee9ze4ieHeik3G"
+				}
+			]
+		}
+	}
+}
+```
+```
+{
+	"id": 1,
+	"error": null,
+	"result": {
+		"success": true,
+		"params": {}
+	}
+}
+```
 
-Note: the download will be declined with HTTP code 401 if the agent key is not correct or if there is no active job for the given package and computer.
+## `oco.agent.download` - Download Software Package
+### Parameters
+- `package-id`: the package id to download
+### Example
+```
+{
+	"jsonrpc": "2.0",
+	"id": 1,
+	"method": "oco.agent.download",
+	"params": {
+		"timestamp": 1739376524,
+		"uid": "00000000-0000-0000-0000-000000000000",
+		"hostname": "mypc",
+		"package-id": 1
+	}
+}
+```
+As response, the ZIP file will be downloaded. There is no JSON response.
+
+Note: the download will be declined with HTTP code 401 if there is no active job for the given package and computer.

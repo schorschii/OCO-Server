@@ -34,7 +34,10 @@ try {
 
 	if(isset($_POST['create_computer'])) {
 		die(
-			$cl->createComputer($_POST['create_computer'], $_POST['notes']??'', $_POST['agent_key']??'')
+			$cl->createComputer(
+				$_POST['create_computer'], $_POST['notes']??'',
+				$_POST['agent_key']??'', $_POST['server_key']??''
+			)
 		);
 	}
 

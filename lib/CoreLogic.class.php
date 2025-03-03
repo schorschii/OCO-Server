@@ -375,7 +375,7 @@ class CoreLogic {
 		$this->checkPermission($computerGroup, PermissionManager::METHOD_READ);
 		return $computerGroup;
 	}
-	public function createComputer($hostname, $notes='', $agentKey='') {
+	public function createComputer($hostname, $notes='', $agentKey='', $serverKey='') {
 		$this->checkPermission(new Models\Computer(), PermissionManager::METHOD_CREATE);
 
 		$finalHostname = trim($hostname);
@@ -385,7 +385,7 @@ class CoreLogic {
 		if($this->db->selectComputerByHostname($finalHostname) !== null) {
 			throw new InvalidRequestException(LANG('hostname_already_exists'));
 		}
-		$insertId = $this->db->insertComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, $agentKey, ''/*Server Key*/, $this->su->id);
+		$insertId = $this->db->insertComputer($finalHostname, ''/*Agent Version*/, []/*Networks*/, $notes, $agentKey, $serverKey, $this->su->id);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.computer.create', ['hostname'=>$finalHostname, 'notes'=>$notes]);
 		return $insertId;
@@ -1545,6 +1545,7 @@ class CoreLogic {
 						empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure,
 						empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes,
 						$package->upgrade_behavior,
+						$package->getFilePath() ? 1 : 0,
 						empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action
 					);
 				}
@@ -2245,6 +2246,34 @@ class CoreLogic {
 		$result = $this->db->deleteEventQueryRule($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $u->id, 'oco.event_query_rule.delete', []);
+		return $result;
+	}
+
+	public function createEditPasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history, $default_password) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_PASSWORD_ROTATION_RULES);
+
+		if(empty(trim($username)) || empty(trim($alphabet)) || $length<=0 || $valid_seconds<=0 || $history<0) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+
+		$this->db->insertUpdatePasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history, $default_password);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.password_rotation_rule.update', [
+			'id'=>$id,
+			'computer_group_id'=>$computer_group_id,
+			'username'=>$username,
+			'alphabet'=>$alphabet,
+			'length'=>$length,
+			'valid_seconds'=>$valid_seconds,
+			'history'=>$history,
+			'default_password'=>$default_password,
+		]);
+	}
+	public function removePasswordRotationRule($id) {
+		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_PASSWORD_ROTATION_RULES);
+
+		$result = $this->db->deletePasswordRotationRule($id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.password_rotation_rule.delete', []);
 		return $result;
 	}
 
