@@ -21,7 +21,6 @@ try {
 	<button onclick='showDialogManagedPlayStore()' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_android_apps'); ?></button>
 	<span class='filler'></span>
 	<button onclick='syncAppleAssets(this)' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_apple_vpp'); ?></button>
-	<button onclick='syncPlayStoreAssets(this)' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_play_store'); ?></button>
 </div>
 
 <div class='details-abreast'>

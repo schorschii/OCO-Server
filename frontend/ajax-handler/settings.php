@@ -74,17 +74,6 @@ try {
 		}
 		die();
 	}
-	if(!empty($_POST['sync_android_assets'])) {
-		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
-		try {
-			$ade = new Android\AndroidEnrollment($db);
-			$ade->syncAssets();
-		} catch(Exception $e) {
-			header('HTTP/1.1 500 Internal Server Error');
-			die($e->getMessage());
-		}
-		die();
-	}
 
 	if(!empty($_POST['edit_system_user_id'])
 	&& isset($_POST['username'])

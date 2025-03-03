@@ -603,7 +603,6 @@ return [
 	'manage_ios_apps' => 'iOS-Apps verwalten',
 	'manage_android_apps' => 'Android-Apps verwalten',
 	'sync_apple_vpp' => 'Apple Volume Purchase Program-Sync',
-	'sync_play_store' => 'Play Store-Sync',
 	'removable' => 'Entfernbar',
 	'disable_cloud_backup' => 'Cloud-Backup verbieten',
 	'remove_when_leaving_mdm' => 'Entfernen, wenn MDM verlassen wird',

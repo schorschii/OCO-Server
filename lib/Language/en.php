@@ -608,7 +608,6 @@ return [
 	'manage_ios_apps' => 'Manage iOS Apps',
 	'manage_android_apps' => 'Manage Android Apps',
 	'sync_apple_vpp' => 'Apple Volume Purchase Program Sync',
-	'sync_play_store' => 'Play Store Sync',
 	'removable' => 'Removable',
 	'disable_cloud_backup' => 'Disable cloud backup',
 	'remove_when_leaving_mdm' => 'Remove when leaving MDM',
