@@ -23,8 +23,14 @@ try {
 			$mdcc->mdmCron();
 			break;
 
+		case 'googlesync':
+			echo 'Syncing Android devices...'."\n";
+			$ae = new Android\AndroidEnrollment($db);
+			$ae->syncDevices();
+			break;
+
 		case 'applesync':
-			echo 'Syncing devices...'."\n";
+			echo 'Syncing iOS devices...'."\n";
 			$ade = new Apple\AutomatedDeviceEnrollment($db);
 			$ade->syncDevices();
 
@@ -34,7 +40,7 @@ try {
 				$vppToken = $vpp->getToken();
 			} catch(RuntimeException $ignored) {}
 			if($vppToken) {
-				echo 'Syncing assets...'."\n";
+				echo 'Syncing AppStore assets...'."\n";
 				$vpp->syncAssets();
 			}
 			break;

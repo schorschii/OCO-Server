@@ -1514,6 +1514,17 @@ div.stickytable > table.list tfoot {
 	margin-bottom: 0px;
 }
 
+.animRotate {
+	animation-name: animateRotation;
+	animation-duration: 750ms;
+	animation-timing-function: ease-out;
+	animation-iteration-count: infinite;
+}
+@keyframes animateRotation {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+
 .beta {
 	font-size: 70%;
 	padding: 1px 6px;

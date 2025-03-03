@@ -725,8 +725,9 @@ CREATE TABLE IF NOT EXISTS `setting` (
 CREATE TABLE `mobile_device` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `udid` varchar(40) DEFAULT NULL,
+  `state` text NULL DEFAULT NULL,
   `device_name` text NOT NULL,
-  `serial` varchar(100) NOT NULL,
+  `serial` varchar(100) DEFAULT NULL,
   `vendor_description` text NOT NULL,
   `model` text NOT NULL,
   `os` text NOT NULL,

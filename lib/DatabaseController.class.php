@@ -222,13 +222,14 @@ class DatabaseController {
 		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroupManagedApp');
 	}
-	public function insertMobileDevice($udid, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update) {
+	public function insertMobileDevice($udid, $state, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO mobile_device (udid, device_name, serial, vendor_description, model, os, device_family, color, profile_uuid, push_token, push_magic, push_sent, unlock_token, info, notes, force_update)
-			VALUES (:udid, :device_name, :serial, :vendor_description, :model, :os, :device_family, :color, :profile_uuid, :push_token, :push_magic, :push_sent, :unlock_token, :info, :notes, :force_update)'
+			'INSERT INTO mobile_device (udid, state, device_name, serial, vendor_description, model, os, device_family, color, profile_uuid, push_token, push_magic, push_sent, unlock_token, info, notes, force_update)
+			VALUES (:udid, :state, :device_name, :serial, :vendor_description, :model, :os, :device_family, :color, :profile_uuid, :push_token, :push_magic, :push_sent, :unlock_token, :info, :notes, :force_update)'
 		);
-		return $this->stmt->execute([
+		if(!$this->stmt->execute([
 			':udid' => $udid,
+			':state' => $state,
 			':device_name' => $device_name,
 			':serial' => $serial,
 			':vendor_description' => $vendor_description,
@@ -244,17 +245,21 @@ class DatabaseController {
 			':info' => $info,
 			':notes' => $notes,
 			':force_update' => $force_update,
-		]);
+		])) return false;
+		return $this->dbh->lastInsertId();
 	}
-	public function updateMobileDevice($id, $udid, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update, $update_last_update=true) {
+	public function updateMobileDevice($id, $udid, $state, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update, $last_update=false) {
+		if($last_update === true)
+			$last_update = date('Y-m-d H:i:s', time());
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE mobile_device SET udid=:udid, device_name=:device_name, serial=:serial, vendor_description=:vendor_description, model=:model, os=:os, device_family=:device_family, color=:color, profile_uuid=:profile_uuid, push_token=:push_token, push_magic=:push_magic, push_sent=:push_sent, unlock_token=:unlock_token, info=:info, notes=:notes, force_update=:force_update'
-			.($update_last_update ? ', last_update=CURRENT_TIMESTAMP' : '')
+			'UPDATE mobile_device SET udid=:udid, state=:state, device_name=:device_name, serial=:serial, vendor_description=:vendor_description, model=:model, os=:os, device_family=:device_family, color=:color, profile_uuid=:profile_uuid, push_token=:push_token, push_magic=:push_magic, push_sent=:push_sent, unlock_token=:unlock_token, info=:info, notes=:notes, force_update=:force_update'
+			.($last_update ? ', last_update=:last_update' : '')
 			.' WHERE id=:id'
 		);
-		return $this->stmt->execute([
+		$params = [
 			':id' => $id,
 			':udid' => $udid,
+			':state' => $state,
 			':device_name' => $device_name,
 			':serial' => $serial,
 			':vendor_description' => $vendor_description,
@@ -270,7 +275,9 @@ class DatabaseController {
 			':info' => $info,
 			':notes' => $notes,
 			':force_update' => $force_update,
-		]);
+		];
+		if($last_update) $params[':last_update'] = $last_update;
+		return $this->stmt->execute($params);
 	}
 	public function selectAllMobileDeviceAppIdentifierByMobileDeviceId($mobile_device_id) {
 		$identifier = [];
@@ -3241,16 +3248,9 @@ class DatabaseController {
 	}
 	public function insertOrUpdateSettingByKey($key, $value) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE setting SET id = LAST_INSERT_ID(id), `value` = :value WHERE `key` = :key LIMIT 1'
+			'REPLACE INTO setting (`value`, `key`) VALUES (:value, :key)'
 		);
-		$this->stmt->execute([':key' => $key, ':value' => $value]);
-		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
-
-		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO setting (`key`, `value`) VALUES (:key, :value)'
-		);
-		if(!$this->stmt->execute([':key' => $key, ':value' => $value])) return false;
-		return $this->dbh->lastInsertId();
+		return $this->stmt->execute([':key' => $key, ':value' => $value]);
 	}
 	public function deleteSettingByKey($key) {
 		$this->stmt = $this->dbh->prepare(

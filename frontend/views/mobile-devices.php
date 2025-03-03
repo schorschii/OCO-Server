@@ -31,9 +31,11 @@ try {
 	<h1><img src='img/mobile-device.dyn.svg'><span id='page-title'><?php echo LANG('all_mobile_devices'); ?></span></h1>
 	<div class='controls'>
 		<button onclick='showDialogCreateMobileDeviceIos()' <?php if(!$permissionCreateMobileDevice) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_ios_device'); ?></button>
+		<button onclick='showDialogCreateMobileDeviceAndroid()' <?php if(!$permissionCreateMobileDevice) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_android_device'); ?></button>
 		<button onclick='createMobileDeviceGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
 		<span class='filler'></span>
-		<button onclick='syncAppleDevices()' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_with_apple_business_manager'); ?></button>
+		<button onclick='syncAppleDevices(this)' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_with_apple_business_manager'); ?></button>
+		<button onclick='syncAndroidDevices(this)' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_with_android_enterprise'); ?></button>
 	</div>
 <?php } else {
 	$permissionCreate = $cl->checkPermission($group, PermissionManager::METHOD_CREATE, false);
@@ -102,7 +104,7 @@ try {
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='mobile_device_id[]' value='".$md->id."'></td>";
 			echo "<td>";
-			echo  "<img src='".$md->getIcon()."' class='".($md->udid ? 'online' : 'offline')."' title='".($md->udid ? LANG('enrolled') : LANG('not_enrolled'))."'>&nbsp;";
+			echo  "<img src='".$md->getIcon()."' class='".($md->isOnline() ? 'online' : 'offline')."' title='".($md->isOnline() ? LANG('enrolled') : LANG('not_enrolled'))."'>&nbsp;";
 			echo  "<a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->device_name?$md->device_name:$md->serial)."</a>";
 			echo "</td>";
 			echo "<td>".htmlspecialchars($md->serial)."</td>";

@@ -5,10 +5,13 @@ require_once('../session.inc.php');
 
 try {
 
-	if(isset($_POST['create_mobile_device'])) {
-		// TODO Android?
+	if(isset($_POST['create_mobile_device']) && isset($_POST['type'])) {
+		$os = '';
+		if($_POST['type'] == 'ios') {
+			$os = 'iOS';
+		} else throw new Exception('Unknown type');
 		die(
-			$cl->createMobileDevice($_POST['create_mobile_device'], $_POST['notes']??'')
+			$cl->createMobileDevice($_POST['create_mobile_device'], $os, $_POST['notes']??'')
 		);
 	}
 
@@ -69,71 +72,86 @@ try {
 
 	if(!empty($_POST['send_command_to_mobile_device_id'])
 	&& !empty($_POST['command'])) {
-		if($_POST['command'] == 'ScheduleOSUpdateScan') {
-			$parameter = json_encode([
-				'RequestType' => 'ScheduleOSUpdateScan',
-				'Force' => true,
-			]);
-		} elseif($_POST['command'] == 'AvailableOSUpdates') {
-			$parameter = json_encode([
-				'RequestType' => 'AvailableOSUpdates',
-			]);
-		} elseif($_POST['command'] == 'ScheduleOSUpdate') {
-			$parameter = json_encode([
-				'RequestType' => 'ScheduleOSUpdate',
-				'Updates' => [
+		$md = $cl->getMobileDevice($_POST['send_command_to_mobile_device_id']);
+		if($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) {
+
+			if(!in_array($_POST['command'], [
+				'ScheduleOSUpdateScan', 'AvailableOSUpdates', 'ScheduleOSUpdate', 'OSUpdateStatus',
+				'DeviceLock', 'EraseDevice', 'ClearPasscode', 'EnableLostMode', 'PlayLostModeSound', 'DisableLostMode'
+			])) throw new InvalidRequestException('Unknown command');
+			$parameter = [
+				'RequestType' => $_POST['command'],
+			];
+			if($_POST['command'] == 'ScheduleOSUpdateScan') {
+				$parameter['Force'] = true;
+			} elseif($_POST['command'] == 'ScheduleOSUpdate') {
+				$parameter['Updates'] = [
 					[ 'InstallAction' => 'Default' ]
-				]
-			]);
-		} elseif($_POST['command'] == 'OSUpdateStatus') {
-			$parameter = json_encode([
-				'RequestType' => 'OSUpdateStatus',
-			]);
-		} elseif($_POST['command'] == 'DeviceLock') {
-			$parameter = json_encode([
-				'RequestType' => 'DeviceLock',
+				];
+			} elseif($_POST['command'] == 'DeviceLock') {
 				#'Message' => '',
 				#'PhoneNumber' => '',
 				#'PIN' => '', // six-character PIN for Find My
-			]);
-		} elseif($_POST['command'] == 'EraseDevice') {
-			$parameter = json_encode([
-				'RequestType' => 'EraseDevice',
+			} elseif($_POST['command'] == 'EraseDevice') {
 				#'PIN' => '', // six-character PIN for Find My
-			]);
-		} elseif($_POST['command'] == 'ClearPasscode') {
-			$md = $cl->getMobileDevice($_POST['send_command_to_mobile_device_id']);
-			$parameter = json_encode([
-				'RequestType' => 'ClearPasscode',
-				'UnlockToken' => base64_encode($md->unlock_token),
-				'_data' => ['UnlockToken'],
-			]);
-		} elseif($_POST['command'] == 'EnableLostMode') {
-			if(empty($_POST['message']))
-				throw new InvalidRequestException('A message is required for EnableLostMode command');
-			$parameter = json_encode([
-				'RequestType' => 'EnableLostMode',
-				'Message' => $_POST['message'],
+			} elseif($_POST['command'] == 'ClearPasscode') {
+				$parameter['UnlockToken'] = base64_encode($md->unlock_token);
+				$parameter['_data'] = ['UnlockToken'];
+			} elseif($_POST['command'] == 'EnableLostMode') {
+				if(empty($_POST['message']))
+					throw new InvalidRequestException('A message is required for EnableLostMode command');
+				$parameter['Message'] = $_POST['message'];
 				#'Footnote' => '',
 				#'PhoneNumber' => '',
-			]);
-		} elseif($_POST['command'] == 'PlayLostModeSound') {
-				$parameter = json_encode([
-					'RequestType' => 'PlayLostModeSound',
-				]);
-		} elseif($_POST['command'] == 'DisableLostMode') {
-			$parameter = json_encode([
-				'RequestType' => 'DisableLostMode',
-			]);
-		} else {
-			throw new InvalidRequestException('Unknown command');
-		}
-		$cl->createMobileDeviceCommand($_POST['send_command_to_mobile_device_id'], $_POST['command'], $parameter);
+			} else {
+				throw new InvalidRequestException('Unknown command');
+			}
+			$cl->createMobileDeviceCommand($_POST['send_command_to_mobile_device_id'], $_POST['command'], json_encode($parameter));
 
-		// instantly send push notification
-		$mdcc = new MobileDeviceCommandController($db);
-		$mdcc->mdmCron();
-		die();
+			// instantly send push notification
+			$mdcc = new MobileDeviceCommandController($db);
+			$mdcc->mdmCron();
+			die();
+
+		} elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) {
+
+			// manual permission check because CoreLogic->insertCommand is called after sending it to the Google API
+			$cl->checkPermission($md, PermissionManager::METHOD_DEPLOY);
+
+			if(!in_array($_POST['command'], [
+				'LOCK', 'RESET_PASSWORD', 'REBOOT', 'RELINQUISH_OWNERSHIP',
+				'CLEAR_APP_DATA', 'START_LOST_MODE', 'STOP_LOST_MODE'
+			])) throw new InvalidRequestException('Unknown command');
+			$parameter = [];
+			if($_POST['command'] == 'RESET_PASSWORD') {
+				if(empty($_POST['password']))
+					throw new InvalidRequestException('A password is required for RESET_PASSWORD command');
+				if(strlen($_POST['password']) < 6)
+					throw new InvalidRequestException('The password must be at least 6 chars long');
+				$parameter = [
+					'newPassword' => $_POST['password'],
+					'resetPasswordFlags' => []
+				];
+			} elseif($_POST['command'] == 'START_LOST_MODE') {
+				if(empty($_POST['message']))
+					throw new InvalidRequestException('A message is required for START_LOST_MODE command');
+				$parameter = [
+					'startLostModeParams' => [
+						'lostMessage' => [ 'defaultMessage' => $_POST['message'] ]
+					]
+				];
+			} elseif($_POST['command'] == 'STOP_LOST_MODE') {
+				$parameter = [
+					'stopLostModeParams' => []
+				];
+			}
+			$ae = new Android\AndroidEnrollment($db);
+			$commandId = $ae->issueCommand($md->udid, $_POST['command'], $parameter);
+			$cl->createMobileDeviceCommand($md->id, $_POST['command'], json_encode($parameter));
+			die();
+
+		}
+
 	}
 
 	if(!empty($_POST['remove_mobile_device_command_id']) && is_array($_POST['remove_mobile_device_command_id'])) {

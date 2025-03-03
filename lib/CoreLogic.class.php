@@ -80,26 +80,26 @@ class CoreLogic {
 		$this->checkPermission($mdGroup, PermissionManager::METHOD_READ);
 		return $mdGroup;
 	}
-	public function createMobileDevice($serial, $notes='') {
+	public function createMobileDevice($deviceName, $os, $notes='') {
 		$this->checkPermission(new Models\MobileDevice(), PermissionManager::METHOD_CREATE);
 
-		$finalSerial = trim($serial);
-		if(empty($finalSerial)) {
-			throw new InvalidRequestException(LANG('serial_cannot_be_empty'));
+		$finalDeviceName = trim($deviceName);
+		if(empty($finalDeviceName)) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		if($this->db->selectMobileDeviceBySerialNumber($finalSerial) !== null) {
-			throw new InvalidRequestException(LANG('serial_already_exists'));
-		}
+		//if($this->db->selectMobileDeviceBySerialNumber($finalSerial) !== null) {
+		//	throw new InvalidRequestException(LANG('serial_already_exists'));
+		//}
 		$insertId = $this->db->insertMobileDevice(
-			null/*udid*/, ''/*device_name*/, $finalSerial, ''/*vendor_description*/,
-			''/*model*/, ''/*os*/, ''/*device_family*/, ''/*color*/,
+			null/*udid*/, null/*state*/, $finalDeviceName, null/*serial_no*/, ''/*vendor_description*/,
+			''/*model*/, $os, ''/*device_family*/, ''/*color*/,
 			null/*profile_uuid*/, null/*push_token*/, null/*push_magic*/, null/*push_sent*/,
 			null/*unlock_token*/, null/*info*/, $notes, 0/*force_update*/
 		);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.mobile_device.create', [
-			'hostname'=>$finalSerial,
-			'notes'=>$notes
+			'name'=>$finalDeviceName,
+			'notes'=>$notes,
 		]);
 		return $insertId;
 	}
@@ -109,10 +109,9 @@ class CoreLogic {
 		$this->checkPermission($md, PermissionManager::METHOD_WRITE);
 
 		$result = $this->db->updateMobileDevice($md->id,
-			$md->udid, $md->device_name, $md->serial, $md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
+			$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
 			$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token, $md->info,
-			$notes, $forceUpdate,
-			false/*update_last_update*/
+			$notes, $forceUpdate, false/*update_last_update*/
 		);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.update', [

@@ -6,6 +6,7 @@ class MobileDevice {
 
 	public $id;
 	public $udid;
+	public $state;
 	public $device_name;
 	public $serial_number;
 	public $vendor_description;
@@ -41,6 +42,14 @@ class MobileDevice {
 		elseif($type == self::OS_TYPE_ANDROID) return 'img/mobile-device-android.dyn.svg';
 		elseif($type == self::OS_TYPE_IOS) return 'img/mobile-device-ios.dyn.svg';
 		else return '';
+	}
+	function isOnline() {
+		if($this->getOsType() == self::OS_TYPE_ANDROID) {
+			return empty($this->state) ? false : $this->state != 'PROVISIONING';
+		} elseif($this->getOsType() == self::OS_TYPE_IOS) {
+			return !empty($this->udid);
+		}
+		return false;
 	}
 
 }

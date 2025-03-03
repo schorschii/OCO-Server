@@ -45,6 +45,12 @@ class LicenseCheck {
 	public function getCompany() : string {
 		return $this->licenseCompany;
 	}
+	public function getObjects() : int {
+		return $this->licenseObjects;
+	}
+	public function getExpireTime() : int {
+		return $this->licenseExpireTime;
+	}
 	public function getLicenseText() : string {
 		return $this->licenseText;
 	}
