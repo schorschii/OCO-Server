@@ -1,4 +1,5 @@
 # Mobile Device Management (MDM)
+First, define the URL to your OCO MDM API as seen by your devices. This URL is used in enrollment profiles and QR codes and cannot be changed as soon as you have one mobile device in management. In OCO web frontend, go to Settings -> Mobile Device Management and enter your server URL including the path to the MDM API PHP script as reachable by the devices, e.g. `https://oco.example.com/api-mdm.php`.
 
 ## iOS
 - ABM: Apple Business Manager
@@ -34,15 +35,12 @@ Requires you to install the OCO MDM enrollment profile manually, e.g. by downloa
 
    **Important!** This certificate expires after 1 year. When you renew the certificate, use the renew button in the Apple Pushcert Portal. If you create a new certificate, you need to delete and re-register all iOS devices!
 
-3. Define your MDM API URL
-   - OCO: Go to Settings -> Mobile Device Management and enter your server URL including the path to the MDM api script as reachable by the iOS device, e.g. `https://oco.example.com/api-mdm.php`.
-
-4. Get a MDM Server Token (only necessary for ADE)
+3. Get a MDM Server Token (only necessary for ADE)
    - OCO: Go to Settings -> Mobile Device Management and download the MDM Server Token public key (`mdm-token-cert.pem`).
    - Add a new MDM server [in ABM/ASM](https://business.apple.com/#/main/preferences/mdmserver-new) by uploading the public key file you downloaded from your OCO server before.
    - Upload the token you got from ABM/ASM (`MDM Server_Token_xxxx-xx-xxTxx-xx-xxZ_smime.p7m`) into OCO.
 
-5. Define activation profile (only necessary for ADE)
+4. Define activation profile (only necessary for ADE)
    - Define an activation profile like the following example. This profile is the first thing the iPhone will get after activating with Apple servers.
    - The URL must be the path to your server URL including the path to the MDM api script with `/profile` attached. More information about this profile can be found [here](https://developer.apple.com/documentation/devicemanagement/profile).
      ```
@@ -105,4 +103,17 @@ Next, you need to buy something in ABM/ASM (even if the desired apps are free). 
 
 
 ## Android
-Coming soon (maybe)!
+### Setup
+1. Prepare OCO for communication with the Android Management API by Google.
+   - With a Google account, create a Google Cloud project, enable the "Android Management API" in this project and create a service account for OCO. Follow the steps described [here](https://developers.google.com/android/management/service-account).
+   - When creating the service account key, select key type "JavaScript Object Notation" to download it as .json file. Upload the .json file in OCO Settings -> Mobile Device Management -> Google API Service Account.
+   - Don't forget to grant the role "Android Management User" to your service account as described on the linked Google page.
+2. Click "Generate Signup URL" in OCO Settings -> Mobile Device Management. Then, follow the link to the Google Android Enterprise login. Sign in with a Google account and follow the instructions. After that, you will be redirected to OCO and you should see that the "Company" is now set in the OCO Mobile Device Management settings.
+3. Create a crontab entry for executing `php console.php googlesync` every 30 minutes and `php console.php mdmcron` every minute.
+
+### Enrollment Options
+#### Classic Enrollment via QR code
+You can now add Android devices into OCO by clicking "New Android Device" on the "Mobile Devices" page. Tap 6 times on Android welcome screen of a factory-resetted device, then scan the QR code displayed by OCO. The QR code is valid only for 1 hour.
+
+#### Zero-Touch Enrollment
+// TODO

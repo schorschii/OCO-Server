@@ -336,20 +336,19 @@ class AutomatedDeviceEnrollment {
 			$md = $this->db->selectMobileDeviceBySerialNumber($device['serial_number']);
 			if($md) {
 				$this->db->updateMobileDevice($md->id,
-					$md->udid, $md->device_name, $md->serial, $device['description']??'',
+					$md->udid, $md->state, $md->device_name, $md->serial, $device['description']??'',
 					$md->model?$md->model:($device['model']??''), $md->os?$md->os:($device['os']??''),
 					$device['device_family']??'', $device['color']??'',
 					$device['profile_uuid']??null, $md->push_token, $md->push_magic, $md->push_sent,
 					$md->unlock_token, $md->info, $md->notes, $md->force_update,
-					false/*update_last_update*/
 				);
 			} else {
 				echo 'Creating device '.$device['serial_number'].'...'."\n";
 				$this->db->insertMobileDevice(
-					null/*udid*/, ''/*name*/, $device['serial_number'], $device['description']??'',
+					null/*udid*/, null/*state*/, ''/*name*/, $device['serial_number'], $device['description']??'',
 					$device['model']??'', $device['os']??'', $device['device_family']??'', $device['color']??'',
 					$device['profile_uuid']??null, null/*push_token*/, null/*push_magic*/, null/*push_sent*/,
-					null/*unlock_token*/, null/*info*/, ''/*notes*/, 0/*force_update*/
+					null/*unlock_token*/, null/*info*/, ''/*notes*/, 0/*force_update*/, null/*agent_key*/, null/*server_key*/
 				);
 			}
 			if(empty($md) || empty($md->profile_uuid)) {
@@ -370,10 +369,10 @@ class AutomatedDeviceEnrollment {
 				$md = $this->db->selectMobileDeviceBySerialNumber($mdSerial);
 				if($md) {
 					$this->db->updateMobileDevice($md->id,
-						$md->udid, $md->device_name, $md->serial, $md->vendor_description,
+						$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 						$md->model, $md->os, $md->device_family, $md->color,
 						$profileUuid, $md->push_token, $md->push_magic, $md->push_sent,
-						$md->unlock_token, $md->info, $md->notes, $md->force_update
+						$md->unlock_token, $md->info, $md->notes, $md->force_update,
 					);
 				}
 			}
@@ -405,7 +404,7 @@ class AutomatedDeviceEnrollment {
 		return $this->curlRequest('DELETE', self::APPLE_MDMENROLLMENT_API.'/profile/devices', json_encode(['profile_uuid'=>$uuid, 'devices'=>$devices]), 200);
 	}
 
-	function generateEnrollmentProfile(string $serial) {
+	function generateEnrollmentProfile(string $cn) {
 		$ca = $this->getMdmDeviceCa();
 
 		// create a new device cert, signed by internal CA
@@ -416,7 +415,7 @@ class AutomatedDeviceEnrollment {
 		]);
 		$csr = openssl_csr_new([
 			'organizationName' => 'Sieber Systems',
-			'commonName' => $serial,
+			'commonName' => $cn,
 		], $privKey);
 		$cert = openssl_csr_sign($csr, $ca['cert'], $ca['privkey'], 3650, null, 0);
 
@@ -440,7 +439,14 @@ class AutomatedDeviceEnrollment {
 		$tmpDeviceP12 = '/tmp/device.p12';
 		openssl_pkey_export_to_file($privKey, $tmpDeviceKey, null);
 		openssl_x509_export_to_file($cert, $tmpDeviceCrt);
-		if(system('/usr/bin/openssl pkcs12 -export -inkey '.$tmpDeviceKey.' -in '.$tmpDeviceCrt.' -out '.$tmpDeviceP12.' -legacy -password pass:'.$passphrase, $returnCode) === false) {
+		if(system(
+			'/usr/bin/openssl pkcs12 -export -legacy'
+			.' -inkey '.$tmpDeviceKey
+			.' -in '.$tmpDeviceCrt
+			.' -out '.$tmpDeviceP12
+			.' -password '.escapeshellarg('pass:'.$passphrase),
+			$returnCode
+		) === false) {
 			throw new \RuntimeException('Unable to run openssl command');
 		}
 		if($returnCode !== 0) {

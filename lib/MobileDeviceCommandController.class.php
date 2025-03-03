@@ -132,8 +132,8 @@ class MobileDeviceCommandController {
 				if(empty($md->push_token) || empty($md->push_magic)) continue;
 				echo('Sending push notification to '.$md->serial."\n");
 				$apn->send($md->push_token, $md->push_magic);
-				$this->db->updateMobileDevice(
-					$md->id, $md->udid, $md->device_name, $md->serial, $md->vendor_description,
+				$this->db->updateMobileDevice($md->id,
+					$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 					$md->model, $os??$md->os, $md->device_family, $md->color,
 					$md->profile_uuid, $md->push_token, $md->push_magic, date('Y-m-d H:i:s'), $md->unlock_token,
 					$md->info, $md->notes, 0/*force_update*/

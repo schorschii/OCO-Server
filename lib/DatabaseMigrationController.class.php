@@ -18,7 +18,7 @@ class DatabaseMigrationController {
 	}
 
 	private function getTableColumnInfo($table, $column) {
-		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE, EXTRA FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :tbl AND COLUMN_NAME = :col AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt = $this->dbh->prepare("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :tbl AND COLUMN_NAME = :col AND TABLE_SCHEMA = '".DB_NAME."'");
 		$this->stmt->execute([':tbl'=>$table, ':col'=>$column]);
 		if($this->stmt->rowCount() == 0) return false;
 		foreach($this->stmt->fetchAll() as $row) {
@@ -409,6 +409,20 @@ class DatabaseMigrationController {
 				  KEY `fk_computer_user_1` (`computer_id`),
 				  CONSTRAINT `fk_computer_user_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if($this->getTableColumnInfo('mobile_device', 'serial')['COLUMN_DEFAULT'] !== 'NULL') {
+			if($this->debug) echo 'Upgrading to 1.1.4... (make mobile_device.serial nullable)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device` CHANGE `serial` `serial` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.4... (add battery_status column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device` ADD COLUMN `state` text DEFAULT NULL AFTER udid");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			$upgraded = true;

@@ -56,7 +56,7 @@ class AppStore {
 
 	private function getHeader() {
 		if(empty($this->jwt)) {
-			$this->jwt = Util\JsonWebToken::generateJwtEs256($this->getKey(), $this->getKeyId(), $this->getTeamId());
+			$this->jwt = Util\JsonWebToken::generateJwt('ES256', $this->getKey(), $this->getKeyId(), $this->getTeamId());
 		}
 		return [
 			'Authorization: Bearer '.$this->jwt,
@@ -67,8 +67,7 @@ class AppStore {
 	private function curlRequest(string $method, string $url, string $payload=null, int $expectedStatusCode=null) {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
-		//curl_setopt($ch, CURLOPT_POST, true);
-		//curl_setopt($ch, CURLOPT_VERBOSE, true);
+		#curl_setopt($ch, CURLOPT_VERBOSE, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHeader());
 		if($payload) curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);

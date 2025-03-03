@@ -37,7 +37,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 					<div class='controls'>
 						<span class='filler'></span>
 						<button onclick='showDialogEditLdapConfigDomainUsers()'><img src='img/ldap-directory.dyn.svg'>&nbsp;<?php echo LANG('ldap_config'); ?></button>
-						<button onclick='ldapSyncDomainUsers()' <?php if(!$ldapActive) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
+						<button onclick='ldapSyncDomainUsers(this)' <?php if(!$ldapActive) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
 					</div>
 					<p><?php echo LANG('domain_user_self_service_management_hint'); ?>
 					<table id='tblSelfServiceUserData' class='list searchable sortable savesort actioncolumn'>
