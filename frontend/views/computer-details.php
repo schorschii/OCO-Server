@@ -27,6 +27,13 @@ try {
 
 $commands = Models\Computer::getCommands($ext);
 $isOnline = $computer->isOnline($db);
+
+$services = $db->selectAllCurrentComputerServiceByComputerId($computer->id);
+$servicesWarn = 0; $servicesCrit = 0;
+foreach($services as $s) {
+	if($s->getStatusClass() == 'warn') $servicesWarn ++;
+	if($s->getStatusClass() == 'crit') $servicesCrit ++;
+}
 ?>
 
 <div class='details-header'>
@@ -40,7 +47,7 @@ $isOnline = $computer->isOnline($db);
 		<span class='filler'></span>
 		<?php
 		foreach($commands as $command) {
-			echoCommandButton($command, $computer->hostname);
+			Models\Computer::echoCommandButton($command, $computer->hostname);
 		}
 		?>
 	</div>
@@ -48,12 +55,26 @@ $isOnline = $computer->isOnline($db);
 
 <div id='tabControlComputer' class='tabcontainer'>
 	<div class='tabbuttons'>
-		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('general_and_hardware'); ?></a>
-		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('packages_and_jobs'); ?></a>
-		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'><?php echo LANG('recognised_software'); ?></a>
-		<a href='#' name='services' class='<?php if($tab=='services') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('services'); ?></a>
-		<a href='#' name='events' class='<?php if($tab=='events') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('events'); ?></a>
-		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'><?php echo LANG('history'); ?></a>
+		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'>
+			<?php echo LANG('general_and_hardware'); ?>
+		</a>
+		<a href='#' name='packages' class='<?php if($tab=='packages') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'>
+			<?php echo LANG('packages_and_jobs'); ?>
+		</a>
+		<a href='#' name='software' class='<?php if($tab=='software') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'>
+			<?php echo LANG('recognised_software'); ?>
+		</a>
+		<a href='#' name='services' class='<?php if($tab=='services') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"))'>
+			<?php echo LANG('services'); ?>
+			<?php if($servicesWarn) echo '<span class="servicecount warn">'.$servicesWarn.'</span>'; ?>
+			<?php if($servicesCrit) echo '<span class="servicecount crit">'.$servicesCrit.'</span>'; ?>
+		</a>
+		<a href='#' name='events' class='<?php if($tab=='events') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'>
+			<?php echo LANG('events'); ?>
+		</a>
+		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlComputer,this.getAttribute("name"),true)'>
+			<?php echo LANG('history'); ?>
+		</a>
 	</div>
 	<div class='tabcontents'>
 
@@ -68,7 +89,7 @@ $isOnline = $computer->isOnline($db);
 						</tr>
 						<tr>
 							<th><?php echo LANG('uid'); ?></th>
-							<td><?php echo htmlspecialchars($computer->uid); ?></td>
+							<td><?php echo htmlspecialchars($computer->uid??''); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('os'); ?></th>
@@ -147,6 +168,10 @@ $isOnline = $computer->isOnline($db);
 							<td><?php if(!empty($computer->uptime)) echo niceTime($computer->uptime); ?></td>
 						</tr>
 						<tr>
+							<th><?php echo LANG('battery_status'); ?></th>
+							<td><?php if(empty($computer->battery_level)) echo '-'; else echo progressBar($computer->battery_level*100, null, null, 'stretch'); ?></td>
+						</tr>
+						<tr>
 							<th><?php echo LANG('created'); ?></th>
 							<td><?php echo htmlspecialchars($computer->created); ?></td>
 						</tr>
@@ -216,6 +241,38 @@ $isOnline = $computer->isOnline($db);
 							?>
 						</tbody>
 					</table>
+
+					<h2><?php echo LANG('local_users'); ?></h2>
+					<table id='tblPasswordsData' class='list sortable savesort'>
+						<thead>
+							<tr>
+								<th><?php echo LANG('login_name'); ?></th>
+								<th><?php echo LANG('display_name'); ?></th>
+								<th><?php echo LANG('password'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach($db->selectAllComputerUserWithPasswordByComputerId($computer->id) as $u) { ?>
+								<tr class='<?php echo empty($u->disabled)?'':'inactive'; ?>'>
+								<td class='subbuttons'>
+									<?php echo htmlspecialchars($u->username); ?>
+									<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->username,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+									<div class='hint'><?php echo htmlspecialchars($u->uid); ?></div>
+								</td>
+								<td><?php echo htmlspecialchars($u->display_name); ?></td>
+								<td>
+									<?php if($u->password) { ?>
+									<div class='subbuttons mask monospace'>
+										<?php echo htmlspecialchars($u->password??''); ?>
+										<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->password??'',ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+									</div>
+									<div class='hint'><?php echo htmlspecialchars($u->created??''); ?></div>
+									<?php } ?>
+								</td>
+								</tr>
+							<?php } ?>
+						</tbody>
+					</table>
 				</div>
 			</div>
 
@@ -240,7 +297,10 @@ $isOnline = $computer->isOnline($db);
 								echo  htmlspecialchars($n->address);
 								if(count($commands) > 0) {
 									echo '<div class="flyout box">';
-									foreach($commands as $c) { echoCommandButton($c, $n->address, true); echo ' '; }
+									foreach($commands as $c) {
+										Models\Computer::echoCommandButton($c, $n->address, true);
+										echo ' ';
+									}
 									echo '</div>';
 								}
 								echo '</td>';
@@ -338,6 +398,36 @@ $isOnline = $computer->isOnline($db);
 								echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG('used').': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG('free').': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
+								echo '</tr>';
+							}
+							?>
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+			<div class='details-abreast'>
+				<div>
+					<h2><?php echo LANG('devices'); ?></h2>
+					<table id='tblDeviceData' class='list searchable sortable savesort'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('subsystem'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('vendor_id'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('product_id'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('serial_no'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php
+							foreach($db->selectAllComputerDeviceByComputerId($computer->id) as $p) {
+								echo '<tr>';
+								echo '<td>'.htmlspecialchars($p->subsystem).'</a></td>';
+								echo '<td>'.htmlspecialchars($p->name).'</td>';
+								echo '<td class="monospace">'.htmlspecialchars('0x'.str_pad(dechex($p->vendor),4,'0',STR_PAD_LEFT).' ('.str_pad($p->vendor,4,'0',STR_PAD_LEFT)).')</td>';
+								echo '<td class="monospace">'.htmlspecialchars('0x'.str_pad(dechex($p->product),4,'0',STR_PAD_LEFT).' ('.str_pad($p->product,4,'0',STR_PAD_LEFT)).')</td>';
+								echo '<td class="monospace">'.htmlspecialchars($p->serial).'</td>';
 								echo '</tr>';
 							}
 							?>
@@ -523,7 +613,7 @@ $isOnline = $computer->isOnline($db);
 					</table>
 				</div>
 			</div>
-			<?php } elseif($tab == 'services') { ?>
+			<?php } else { ?>
 			<div class='details-abreast'>
 				<div class='stickytable'>
 					<table id='tblComputerServicesData' class='list searchable sortable savesort margintop actioncolumn'>
@@ -539,7 +629,7 @@ $isOnline = $computer->isOnline($db);
 						</thead>
 						<tbody>
 							<?php $counter = 0;
-							foreach($db->selectAllCurrentComputerServiceByComputerId($computer->id) as $e) {
+							foreach($services as $e) {
 								echo "<tr>";
 								echo "<td class='servicestatus ".$e->getStatusClass()."'>".htmlspecialchars($e->getStatusText())."</td>";
 								echo "<td id='service".$counter."'>".htmlspecialchars($e->name)."</td>";

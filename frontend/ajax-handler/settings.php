@@ -218,6 +218,33 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['edit_password_rotation_rule_id'])
+	&& isset($_POST['computer_group_id'])
+	&& isset($_POST['username'])
+	&& isset($_POST['alphabet'])
+	&& isset($_POST['length'])
+	&& isset($_POST['valid_seconds'])
+	&& isset($_POST['history'])
+	&& isset($_POST['default_password'])) {
+		die($cl->createEditPasswordRotationRule(
+			$_POST['edit_password_rotation_rule_id']<=0 ? null : $_POST['edit_password_rotation_rule_id'],
+			$_POST['computer_group_id'] ? $_POST['computer_group_id'] : null,
+			$_POST['username'],
+			$_POST['alphabet'],
+			$_POST['length'],
+			$_POST['valid_seconds'],
+			$_POST['history'],
+			$_POST['default_password'],
+		));
+	}
+
+	if(!empty($_POST['remove_password_rotation_rule_id']) && is_array($_POST['remove_password_rotation_rule_id'])) {
+		foreach($_POST['remove_password_rotation_rule_id'] as $id) {
+			$cl->removePasswordRotationRule($id);
+		}
+		die();
+	}
+
 	if(!empty($_POST['edit_general_config'])) {
 		if(isset($_POST['client_api_enabled'])) {
 			$cl->editSetting('client-api-enabled', $_POST['client_api_enabled']);

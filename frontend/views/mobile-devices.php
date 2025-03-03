@@ -68,10 +68,10 @@ try {
 <?php if($group != null) { ?>
 	<div class='controls subfolders'>
 		<?php foreach($db->selectAllProfileByMobileDeviceGroupId($group->id) as $p) { ?>
-			<a class='box deletable' href='#' title='<?php echo LANG('remove_assignment'); ?>' onclick='removeProfileFromGroup([<?php echo $p->profile_id; ?>],<?php echo $group->id; ?>);return false;'><img src='img/profile.dyn.svg'>&nbsp;<?php echo htmlspecialchars($p->name); ?></a>
+			<a class='box deletable' href='#' title='<?php echo LANG('remove_assignment'); ?>' onclick='removeProfileFromGroup([<?php echo $p->id; ?>],<?php echo $group->id; ?>);return false;'><img src='img/profile.dyn.svg'>&nbsp;<?php echo htmlspecialchars($p->name); ?></a>
 		<?php } ?>
 		<?php foreach($db->selectAllManagedAppByMobileDeviceGroupId($group->id) as $ma) { ?>
-			<a class='box deletable' href='#' title='<?php echo LANG('remove_assignment'); ?>' onclick='removeManagedAppFromGroup([<?php echo $ma->managed_app_id; ?>],<?php echo $group->id; ?>);return false;'><img src='img/store.dyn.svg'>&nbsp;<?php echo htmlspecialchars($ma->name); ?></a>
+			<a class='box deletable' href='#' title='<?php echo LANG('remove_assignment'); ?>' onclick='removeManagedAppFromGroup([<?php echo $ma->id; ?>],<?php echo $group->id; ?>);return false;'><img src='img/store.dyn.svg'>&nbsp;<?php echo htmlspecialchars($ma->name); ?></a>
 		<?php } ?>
 	</div>
 <?php } ?>
@@ -96,7 +96,7 @@ try {
 		foreach($mobileDevices as $md) {
 			$ip_addresses = [];
 			$mac_addresses = [];
-			$info = json_decode($md->info, true);
+			$info = json_decode($md->info ?? '', true);
 			if($info) {
 				if(isset($info['WiFiMAC'])) $mac_addresses[] = $info['WiFiMAC'];
 				if(isset($info['BluetoothMAC'])) $mac_addresses[] = $info['BluetoothMAC'];

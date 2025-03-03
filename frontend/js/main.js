@@ -4,6 +4,10 @@ var draggedElementBeginIndex;
 function obj(id) {
 	return document.getElementById(id);
 }
+function toClipboard(text, info=null) {
+	navigator.clipboard.writeText(text);
+	emitMessage(LANG['copied_to_clipboard'], info?info:text, MESSAGE_TYPE_INFO, 2000);
+}
 function getChildIndex(node) {
 	return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
 }
@@ -1570,11 +1574,12 @@ function removeMobileDeviceFromGroup(ids, groupId) {
 function showDialogCreateComputer() {
 	showDialogAjax(LANG['create_computer'], 'views/dialog-computer-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function createComputer(hostname, notes, agentKey) {
+function createComputer(hostname, notes, agentKey, serverKey) {
 	var params = [];
 	params.push({'key':'create_computer', 'value':hostname});
 	params.push({'key':'notes', 'value':notes});
 	params.push({'key':'agent_key', 'value':agentKey});
+	params.push({'key':'server_key', 'value':serverKey});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
 		hideDialog();
@@ -2604,6 +2609,64 @@ function confirmRemoveSelectedEventQueryRule(checkboxName) {
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_event_query_rule_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete'])) {
+		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+
+function showDialogEditPasswordRotationRule(id=-1, computer_group_id='', username='administrator', alphabet='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_+*.#=!', length=15, validSeconds=2592000, history=5, default_password='') {
+	title = LANG['change'];
+	buttonText = LANG['change'];
+	if(id == -1) {
+		title = LANG['create'];
+		buttonText = LANG['create'];
+	}
+	showDialogAjax(title, 'views/dialog-password-rotation-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+		txtEditPasswordRotationRuleId.value = id;
+		sltEditPasswordRotationRuleComputerGroupId.value = computer_group_id;
+		txtEditPasswordRotationRuleUsername.value = username;
+		txtEditPasswordRotationRuleAlphabet.value = alphabet;
+		txtEditPasswordRotationRuleLength.value = length;
+		txtEditPasswordRotationRuleValidSeconds.value = validSeconds;
+		txtEditPasswordRotationRuleHistory.value = history;
+		txtEditPasswordRotationRuleDefaultPassword.value = default_password;
+		spnBtnUpdatePasswordRotationRule.innerText = buttonText;
+	});
+}
+function editPasswordRotationRule(id, computer_group_id, username, alphabet, length, valid_seconds, history, default_password) {
+	var params = [];
+	params.push({'key':'edit_password_rotation_rule_id', 'value':id});
+	params.push({'key':'computer_group_id', 'value':computer_group_id});
+	params.push({'key':'username', 'value':username});
+	params.push({'key':'alphabet', 'value':alphabet});
+	params.push({'key':'length', 'value':length});
+	params.push({'key':'valid_seconds', 'value':valid_seconds});
+	params.push({'key':'history', 'value':history});
+	params.push({'key':'default_password', 'value':default_password});
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+		hideDialog(); refreshContent();
+		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
+	});
+}
+function confirmRemoveSelectedPasswordRotationRule(checkboxName) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_password_rotation_rule_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {

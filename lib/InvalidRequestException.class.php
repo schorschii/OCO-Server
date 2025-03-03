@@ -2,8 +2,17 @@
 
 class InvalidRequestException extends Exception {
 	
-	// Exception which is thrown if a user sends an invalid request
+	// Exception which is thrown if a user computer sends an invalid request
 
-	// this exception is only used for custom error handling and does not have any special logic in it
+	public $action;
+	public $user;
+	public $objectId;
+
+	public function __construct(string $message='', string $action=null, string $user=null, int $objectId=null) {
+		parent::__construct($message);
+		$this->action = $action;
+		$this->user = $user;
+		$this->objectId = $objectId;
+	}
 
 }

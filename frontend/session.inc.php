@@ -21,12 +21,12 @@ function redirectToLogin($forceLogout=false) {
 	if(empty($SUBVIEW)) {
 		$params = [];
 		if($forceLogout) {
-			$params[] = 'logout=1';
+			$params['logout'] = '1';
 		}
 		if(!empty($_SERVER['REQUEST_URI']) && startsWith($_SERVER['REQUEST_URI'], '/')) {
-			$params[] = 'redirect='.urlencode($_SERVER['REQUEST_URI']);
+			$params['redirect'] = $_SERVER['REQUEST_URI'];
 		}
-		header('Location: login.php'.(empty($params) ? '' : '?').implode('&', $params));
+		header('Location: login.php'.(empty($params) ? '' : '?').http_build_query($params));
 	}
 	die();
 }

@@ -70,6 +70,34 @@ function explorerLink($explorerContentUrl, $extraJs=null) {
 		.($extraJs===null ? "" : " onclick='event.preventDefault();".$extraJs."'");
 }
 
+function echoDictTable($value, array $exclude=[]) {
+	if($value === true) echo '<img src="img/success.dyn.svg">';
+	elseif($value === false) echo '<img src="img/close.opacity.svg">';
+	elseif(is_array($value)) {
+		echo '<table class="list metadata"><tbody>';
+		foreach($value as $subkey => $subvalue) {
+			if(in_array($subkey, $exclude)) continue;
+			echo '<tr>'
+				.'<th>'.htmlspecialchars(LANG($subkey)).'</th>'
+				.'<td>';
+			if($subkey == 'BatteryLevel') {
+				echo progressBar($subvalue*100, null, null, 'stretch');
+			} elseif($subkey == 'DeviceCapacity' && isset($value['AvailableDeviceCapacity'])) {
+				$total = $value['DeviceCapacity'];
+				$free = $value['AvailableDeviceCapacity'];
+				$used = $total - $free;
+				echo progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
+			} else {
+				echoDictTable($subvalue);
+			}
+			echo '</td>'
+				.'</tr>';
+		}
+		echo '</tbody></table>';
+	}
+	else echo htmlspecialchars($value);
+}
+
 function randomString($length = 30) {
 	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
 	$charactersLength = strlen($characters);
@@ -174,32 +202,5 @@ function echoReportGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $prese
 	foreach($cl->getReportGroups($parentId) as $g) {
 		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
 		echoReportGroupOptions($cl, $g->id, $indent+1, $preselect);
-	}
-}
-
-function echoCommandButton($c, $target, $link=false) {
-	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
-	$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);
-	$description = LANG($c['description']);
-	if($c['new_tab']) {
-		if($link) {
-			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."' target='_blank'>";
-			echo htmlspecialchars($c['name']);
-			echo "</a>";
-		} else {
-			echo "<button title='".htmlspecialchars($description)."' onclick='window.open(\"".htmlspecialchars($actionUrl)."\")'>";
-			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
-			echo "</button>";
-		}
-	} else {
-		if($link) {
-			echo "<a title='".htmlspecialchars($description)."' href='".htmlspecialchars($actionUrl)."'>";
-			echo htmlspecialchars($c['name']);
-			echo "</a>";
-		} else {
-			echo "<button title='".htmlspecialchars($description)."' onclick='window.location=\"".htmlspecialchars($actionUrl)."\"'>";
-			if(!empty($c['icon'])) echo "<img src='".$c['icon']."'>&nbsp;"; echo htmlspecialchars($c['name']);
-			echo "</button>";
-		}
 	}
 }

@@ -217,7 +217,8 @@ class DatabaseController {
 			'SELECT mdgma.*, ma.* FROM managed_app ma
 			INNER JOIN mobile_device_group_managed_app mdgma ON mdgma.managed_app_id = ma.id
 			INNER JOIN mobile_device_group_member mdgm ON mdgm.mobile_device_group_id = mdgma.mobile_device_group_id
-			WHERE mdgm.mobile_device_id = :mobile_device_id'
+			WHERE mdgm.mobile_device_id = :mobile_device_id
+			ORDER BY ma.name'
 		);
 		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroupManagedApp');
@@ -284,7 +285,8 @@ class DatabaseController {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT a.* FROM app a
 			INNER JOIN mobile_device_app mda ON mda.app_id = a.id
-			WHERE mobile_device_id = :mobile_device_id'
+			WHERE mobile_device_id = :mobile_device_id
+			ORDER BY a.name'
 		);
 		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\App') as $row) {
@@ -403,9 +405,10 @@ class DatabaseController {
 	}
 	public function selectAllManagedAppByMobileDeviceGroupId($mobile_device_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM managed_app ma
+			'SELECT ma.* FROM managed_app ma
 			INNER JOIN mobile_device_group_managed_app mdgma ON mdgma.managed_app_id = ma.id
-			WHERE mdgma.mobile_device_group_id = :mobile_device_group_id'
+			WHERE mdgma.mobile_device_group_id = :mobile_device_group_id
+			ORDER BY ma.name'
 		);
 		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ManagedApp');
@@ -454,7 +457,7 @@ class DatabaseController {
 	}
 
 	public function selectAllProfile() {
-		$this->stmt = $this->dbh->prepare('SELECT * FROM profile');
+		$this->stmt = $this->dbh->prepare('SELECT * FROM profile ORDER BY name');
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile');
 	}
@@ -467,22 +470,34 @@ class DatabaseController {
 	}
 	public function selectAllProfileByMobileDeviceId($mobile_device_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM profile p
+			'SELECT p.* FROM profile p
 			INNER JOIN mobile_device_group_profile mdgp ON mdgp.profile_id = p.id
 			INNER JOIN mobile_device_group_member mdgm ON mdgm.mobile_device_group_id = mdgp.mobile_device_group_id
-			WHERE mdgm.mobile_device_id = :mobile_device_id'
+			WHERE mdgm.mobile_device_id = :mobile_device_id
+			ORDER BY p.name'
 		);
 		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile');
 	}
 	public function selectAllProfileByMobileDeviceGroupId($mobile_device_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM profile p
+			'SELECT p.* FROM profile p
 			INNER JOIN mobile_device_group_profile mdgp ON mdgp.profile_id = p.id
-			WHERE mdgp.mobile_device_group_id = :mobile_device_group_id'
+			WHERE mdgp.mobile_device_group_id = :mobile_device_group_id
+			ORDER BY p.name'
 		);
 		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile');
+	}
+	public function selectAllMobileDeviceGroupByProfileId($profile_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT mdg.* FROM mobile_device_group mdg
+			INNER JOIN mobile_device_group_profile mdgp ON mdgp.mobile_device_group_id = mdg.id
+			WHERE mdgp.profile_id = :profile_id
+			ORDER BY mdg.name'
+		);
+		$this->stmt->execute([':profile_id' => $profile_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
 	}
 	public function insertProfile($name, $payload, $notes, $system_user_id) {
 		$this->stmt = $this->dbh->prepare(
@@ -626,7 +641,7 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':name' => $name, ':parameter' => $parameter])) return false;
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand') as $row) {
-			return null;
+			return $row->id;
 		}
 
 		$this->stmt = $this->dbh->prepare(
@@ -726,6 +741,13 @@ class DatabaseController {
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPartition');
 	}
+	public function selectAllComputerDeviceByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM computer_device WHERE computer_id = :computer_id'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerDevice');
+	}
 	public function selectAllComputerSoftwareByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT cs.id AS "id", s.id AS "software_id", s.name AS "software_name", s.version AS "software_version", s.description AS "software_description", cs.installed AS "installed"
@@ -784,7 +806,7 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':hostname' => $hostname, ':notes' => $notes]);
 	}
-	public function updateComputerPing($id, $agent_version=null, $networks=null, $uptime=null) {
+	public function updateComputerPing($id, $agent_version=null, $networks=null, $battery_level=null, $battery_status=null, $uptime=null, $remote_address=null) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE computer SET last_ping = CURRENT_TIMESTAMP WHERE id = :id'
 		);
@@ -822,6 +844,20 @@ class DatabaseController {
 			);
 			if(!$this->stmt->execute([':id' => $id, ':uptime' => $uptime])) return false;
 		}
+		if($battery_level !== null && $battery_status !== null) {
+			if($battery_level === false) $battery_level = null;
+			if($battery_status === false) $battery_status = null;
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE computer SET battery_level = :battery_level, battery_status = :battery_status WHERE id = :id'
+			);
+			if(!$this->stmt->execute([':id' => $id, ':battery_level' => $battery_level, ':battery_status' => $battery_status])) return false;
+		}
+		if($remote_address !== null) {
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE computer SET remote_address = :remote_address WHERE id = :id'
+			);
+			if(!$this->stmt->execute([':id' => $id, ':remote_address' => $remote_address])) return false;
+		}
 		return true;
 	}
 	public function updateComputerForceUpdate($id, $force_update) {
@@ -842,12 +878,12 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':server_key' => $server_key]);
 	}
-	public function updateComputerInventoryValues($id, $uid, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins) {
+	public function updateComputerInventoryValues($id, $uid, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $battery_level, $battery_status, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins, $users, $devices) {
 		$this->dbh->beginTransaction();
 
 		// update general info
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer SET uid = :uid, hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, remote_address = :remote_address, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, uptime = :uptime, boot_type = :boot_type, secure_boot = :secure_boot, domain = :domain, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP, force_update = 0 WHERE id = :id'
+			'UPDATE computer SET uid = :uid, hostname = :hostname, os = :os, os_version = :os_version, os_license = :os_license, os_locale = :os_locale, kernel_version = :kernel_version, architecture = :architecture, cpu = :cpu, gpu = :gpu, ram = :ram, agent_version = :agent_version, remote_address = :remote_address, serial = :serial, manufacturer = :manufacturer, model = :model, bios_version = :bios_version, battery_level = :battery_level, battery_status = :battery_status, uptime = :uptime, boot_type = :boot_type, secure_boot = :secure_boot, domain = :domain, last_ping = CURRENT_TIMESTAMP, last_update = CURRENT_TIMESTAMP, force_update = 0 WHERE id = :id'
 		);
 		if(!$this->stmt->execute([
 			':id' => $id,
@@ -869,6 +905,8 @@ class DatabaseController {
 			':model' => $model,
 			':bios_version' => $bios_version,
 			':uptime' => $uptime,
+			':battery_level' => $battery_level===false ? null : $battery_level,
+			':battery_status' => $battery_status===false ? null : $battery_status,
 			':boot_type' => $boot_type,
 			':secure_boot' => $secure_boot,
 			':domain' => $domain,
@@ -989,8 +1027,112 @@ class DatabaseController {
 		// old logins, which are not present in local client logs anymore, should NOT automatically be deleted
 		// instead, old logins are cleaned up by the server's housekeeping process after a certain amount of time (defined in configuration)
 
+		// update users
+		$pids = [];
+		foreach($users as $user) {
+			if(empty($user['username'])) continue;
+			$pid = $this->insertOrUpdateComputerUser(
+				$id,
+				$user['username'],
+				$user['display_name'] ?? '',
+				$user['uid'] ?? '?',
+				$user['gid'] ?? '?',
+				$user['home'] ?? '?',
+				$user['shell'] ?? '?',
+				intval($user['disabled'] ?? 0)
+			);
+			$pids[] = $pid;
+		}
+		// remove users which can not be found in agent output
+		list($in_placeholders, $in_params) = self::compileSqlInValues($pids);
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_user WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
+		);
+		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
+
+		// update devices
+		$pids = [];
+		foreach($devices as $device) {
+			if(empty($device['subsystem'])) continue;
+			$pid = $this->insertOrUpdateComputerDevice(
+				$id,
+				$device['subsystem'],
+				intval($device['vendor'] ?? 0),
+				intval($device['product'] ?? 0),
+				$device['serial'] ?? '?',
+				$device['name'] ?? '?'
+			);
+			$pids[] = $pid;
+		}
+		// remove devices which can not be found in agent output
+		list($in_placeholders, $in_params) = self::compileSqlInValues($pids);
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_device WHERE computer_id = :computer_id AND id NOT IN ('.$in_placeholders.')'
+		);
+		if(!$this->stmt->execute(array_merge([':computer_id' => $id], $in_params))) return false;
+
 		$this->dbh->commit();
 		return true;
+	}
+	private function insertOrUpdateComputerUser($computer_id, $username, $display_name, $uid, $gid, $home, $shell, $disabled) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_user SET id = LAST_INSERT_ID(id) WHERE computer_id = :computer_id AND username = :username AND display_name = :display_name AND uid = :uid AND gid = :gid AND home = :home AND shell = :shell AND `disabled` = :disabled LIMIT 1'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':username' => $username,
+			':display_name' => $display_name,
+			':uid' => $uid,
+			':gid' => $gid,
+			':home' => $home,
+			':shell' => $shell,
+			':disabled' => $disabled,
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_user (computer_id, username, display_name, uid, gid, home, shell, `disabled`)
+			VALUES (:computer_id, :username, :display_name, :uid, :gid, :home, :shell, :disabled)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':username' => $username,
+			':display_name' => $display_name,
+			':uid' => $uid,
+			':gid' => $gid,
+			':home' => $home,
+			':shell' => $shell,
+			':disabled' => $disabled,
+		])) return false;
+		return $this->dbh->lastInsertId();
+	}
+	private function insertOrUpdateComputerDevice($computer_id, $subsystem, $vendor, $product, $serial, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer_device SET id = LAST_INSERT_ID(id) WHERE computer_id = :computer_id AND subsystem = :subsystem AND vendor = :vendor AND product = :product AND `serial` = :serial AND name = :name LIMIT 1'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':subsystem' => $subsystem,
+			':vendor' => $vendor,
+			':product' => $product,
+			':serial' => $serial,
+			':name' => $name,
+		])) return false;
+		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
+
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_device (computer_id, subsystem, vendor, product, `serial`, name)
+			VALUES (:computer_id, :subsystem, :vendor, :product, :serial, :name)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':subsystem' => $subsystem,
+			':vendor' => $vendor,
+			':product' => $product,
+			':serial' => $serial,
+			':name' => $name,
+		])) return false;
+		return $this->dbh->lastInsertId();
 	}
 	private function insertOrUpdateComputerPartition($computer_id, $device, $mountpoint, $filesystem, $size, $free) {
 		$this->stmt = $this->dbh->prepare(
@@ -1429,6 +1571,98 @@ class DatabaseController {
 			$this->evaluateDeploymentRule($dr->id);
 		}
 		return true;
+	}
+	public function insertComputerPassword($computer_id, $username, $password, $history) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_password WHERE id NOT IN (
+				SELECT id FROM (
+					SELECT id FROM computer_password WHERE computer_id = :computer_id AND username = :username ORDER BY created DESC LIMIT '.intval($history).'
+				) temp
+			) AND computer_id = :computer_id AND username = :username'
+		);
+		$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':username' => $username,
+		]);
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_password (computer_id, username, password) VALUES (:computer_id, :username, :password)'
+		);
+		if(!$this->stmt->execute([
+			':computer_id' => $computer_id,
+			':username' => $username,
+			':password' => $password,
+		])) return false;
+		return $this->dbh->lastInsertId();
+	}
+	public function selectAllPasswordRotationRule() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT prr.*, cg.name AS "computer_group_name" FROM password_rotation_rule prr
+			LEFT JOIN computer_group cg ON cg.id = prr.computer_group_id'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PasswordRotationRule');
+	}
+	public function selectAllPasswordRotationRuleByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT prr.* FROM password_rotation_rule prr
+			LEFT JOIN computer_group_member cgm ON prr.computer_group_id = cgm.computer_group_id
+			WHERE cgm.computer_id = :computer_id OR prr.computer_group_id IS NULL'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PasswordRotationRule');
+	}
+	public function selectAllComputerPasswordByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cp.*, (SELECT COUNT(*) FROM computer_password cp3 WHERE cp3.computer_id = cp.computer_id AND cp3.username = cp.username) AS "history_count"
+			FROM computer_password cp INNER JOIN computer c ON c.id = cp.computer_id WHERE cp.id IN (SELECT MAX(cp2.id) FROM computer_password cp2 GROUP BY cp2.computer_id, cp2.username) AND cp.computer_id = :computer_id'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerPassword');
+	}
+	public function selectAllComputerUserWithPasswordByComputerId($computer_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cu.*, cp.password, cp.created FROM computer_user cu
+			RIGHT JOIN (
+				SELECT cp.*, (SELECT COUNT(*) FROM computer_password cp3 WHERE cp3.computer_id = cp.computer_id AND cp3.username = cp.username) AS "history_count"
+				FROM computer_password cp INNER JOIN computer c ON c.id = cp.computer_id WHERE cp.id IN (SELECT MAX(cp2.id) FROM computer_password cp2 GROUP BY cp2.computer_id, cp2.username) AND cp.computer_id = :computer_id
+			) cp ON cu.username = cp.username
+			WHERE cu.computer_id = :computer_id
+			UNION SELECT cu.*, cp.password, cp.created FROM computer_user cu
+			LEFT JOIN (
+				SELECT cp.*, (SELECT COUNT(*) FROM computer_password cp3 WHERE cp3.computer_id = cp.computer_id AND cp3.username = cp.username) AS "history_count"
+				FROM computer_password cp INNER JOIN computer c ON c.id = cp.computer_id WHERE cp.id IN (SELECT MAX(cp2.id) FROM computer_password cp2 GROUP BY cp2.computer_id, cp2.username) AND cp.computer_id = :computer_id
+			) cp ON cu.username = cp.username
+			WHERE cu.computer_id = :computer_id'
+		);
+		$this->stmt->execute([':computer_id' => $computer_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerUser');
+	}
+	public function deleteComputerPassword($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_password WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
+	}
+	public function insertUpdatePasswordRotationRule($id, $computer_group_id, $username, $alphabet, $length, $valid_seconds, $history, $default_password) {
+		$this->stmt = $this->dbh->prepare(
+			'REPLACE INTO password_rotation_rule (id, computer_group_id, username, alphabet, length, valid_seconds, history, default_password)
+			VALUES (:id, :computer_group_id, :username, :alphabet, :length, :valid_seconds, :history, :default_password)');
+		$this->stmt->execute([
+			':id' => $id,
+			':computer_group_id' => $computer_group_id,
+			':username' => $username,
+			':alphabet' => $alphabet,
+			':length' => $length,
+			':valid_seconds' => $valid_seconds,
+			':history' => $history,
+			':default_password' => $default_password,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function deletePasswordRotationRule($id) {
+		$this->stmt = $this->dbh->prepare('DELETE FROM password_rotation_rule WHERE id = :id');
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->rowCount();
 	}
 
 	// Package Operations
@@ -2331,11 +2565,11 @@ class DatabaseController {
 			':post_action' => $post_action,
 		])) return false;
 	}
-	public function renewStaticJob($id, $procedure, $success_return_codes, $upgrade_behavior, $post_action) {
+	public function renewStaticJob($id, $procedure, $success_return_codes, $upgrade_behavior, $download, $post_action) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container_job
 			SET state = 0, download_progress = NULL, return_code = NULL, message = "", download_started = NULL, execution_started = NULL, execution_finished = NULL,
-			`procedure` = :procedure, success_return_codes = :success_return_codes, upgrade_behavior = :upgrade_behavior, post_action = :post_action
+			`procedure` = :procedure, success_return_codes = :success_return_codes, upgrade_behavior = :upgrade_behavior, download = :download, post_action = :post_action
 			WHERE id = :id'
 		);
 		return $this->stmt->execute([
@@ -2343,6 +2577,7 @@ class DatabaseController {
 			':procedure' => $procedure,
 			':success_return_codes' => $success_return_codes,
 			':upgrade_behavior' => $upgrade_behavior,
+			':download' => $download,
 			':post_action' => $post_action,
 		]);
 	}

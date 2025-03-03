@@ -13,6 +13,11 @@ This feature must be activated first by enabling "Agent Self-Registration" on th
 ### 2. Manual (Pre-)Registration
 For this method, a new computer object must be created first in the web frontend or using the client API. The name which you enter on the dialog must exactly match the new computers hostname. Then, the computer is able update its inventory values using the global agent key (defined in the server config file; key can also be set to an empty string - this allows you to install and use the agent without further configuration on the client computer). During the first communication with the server, a unique agent key will be set for the new computer.
 
+### Trust of First Use (TOFU) vs. Pre-Shared Secrets
+The intital agent authentication is based on the Trust of First Use (TOFU) principle (see [Agent-API.md](Agent-API.md) for details). In most cases, the operating system and agent installation takes place in a trusted environment inside your IT department, where the TOFU principle is fine.
+
+However, if you do not want that the agent key gets negotiated on the first startup, you can define your own agent and server key when creating a new computer. You then need to enter those values manually on the setup screen or in the agent config file. This is an additional protection against man-in-the-middle attackers who may intercept your traffic (assuming that the attacker managed to sniff your agent HTTPS/TLS connection, which is very unlikely as well if configured correctly).
+
 ## Group Computers
 You can create computer groups e.g. to group all computers of specific locations inside your company, or to group computers which should get special software packages installed.
 
@@ -43,6 +48,13 @@ For Linux, as log name, please enter `journalctl` - this is currently the only s
 Please note that the operating systems are producing many log entries. A meaningful filter should always be applied to not spam the database with unnecessary events.
 
 For performance reasons, a MySQL INDEX is created over the `log` column and therefore, the max length is limited to 200 chars.
+
+## Password Rotation Rules
+With the password rotation feature, you can periodically change passwords of local (admin) accounts. This feature is an alternative to the Local Administrator Password Solution (LAPS) from Microsoft.
+
+To use it, you just need to create appropriate password rotation rule in the OCO settings, and the agent will generate a new random password for your local accounts after the given password expiration time is reached.
+
+For macOS, since passwords can only be changed by giving the current password too, you need to specifiy the initial account password before it cn be rotated.
 
 ### Example Rules
 #### Windows: Get Defender Warning, Error and Critical Events

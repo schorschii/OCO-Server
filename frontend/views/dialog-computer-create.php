@@ -26,6 +26,10 @@ require_once('../session.inc.php');
 		<th><?php echo LANG('individual_agent_key'); ?></th>
 		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtCreateComputerAgentKey' placeholder='<?php echo LANG('optional'); ?>'></input></td>
 	</tr>
+	<tr>
+		<th><?php echo LANG('individual_server_key'); ?></th>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtCreateComputerServerKey' placeholder='<?php echo LANG('optional'); ?>'></input></td>
+	</tr>
 </table>
 
 <div class='controls right'>
@@ -33,6 +37,7 @@ require_once('../session.inc.php');
 	<button id='btnCreateComputer' class='primary' onclick='createComputer(
 		txtCreateComputerHostname.value,
 		txtCreateComputerNotes.value,
-		txtCreateComputerAgentKey.value
+		txtCreateComputerAgentKey.value,
+		txtCreateComputerServerKey.value
 		)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create'); ?></button>
 </div>
