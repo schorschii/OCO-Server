@@ -51,6 +51,9 @@ class MobileDevice {
 		}
 		return false;
 	}
+	function getDisplayName() {
+		return $this->device_name ? $this->device_name : $this->serial;
+	}
 	function getMacAddresses() {
 		$addrs = [];
 		if($this->getOsType() === self::OS_TYPE_IOS) {

@@ -22,7 +22,7 @@ try {
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $md->getIcon(); ?>' class='<?php echo($md->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($md->isOnline() ? LANG('enrolled') : LANG('not_enrolled')); ?>'><span id='page-title'><span id='spnMobileDeviceSerial'><?php echo htmlspecialchars($md->device_name?$md->device_name:$md->serial); ?></span></span></h1>
+	<h1><img src='<?php echo $md->getIcon(); ?>' class='<?php echo($md->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($md->isOnline() ? LANG('enrolled') : LANG('not_enrolled')); ?>'><span id='page-title'><span id='spnMobileDeviceSerial'><?php echo htmlspecialchars($md->getDisplayName()); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='showDialogMobileDeviceCommand(<?php echo $md->id; ?>)' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/command.dyn.svg'>&nbsp;<?php echo LANG('send_command'); ?></button>
 		<button onclick='showDialogEditMobileDevice(<?php echo $md->id; ?>, spnMobileDeviceNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>

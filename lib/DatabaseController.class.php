@@ -172,6 +172,58 @@ class DatabaseController {
 			return $row;
 		}
 	}
+	public function selectAllMobileDeviceByAppId($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT md.*
+			FROM mobile_device_app mda
+			INNER JOIN mobile_device md ON mda.mobile_device_id = md.id
+			INNER JOIN app a ON mda.app_id = a.id
+			WHERE mda.app_id = :id
+			ORDER BY md.device_name'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice');
+	}
+	public function selectAllMobileDeviceByAppName($name) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT md.*, a.id AS "app_id", a.name AS "app_name", a.version AS "app_version"
+			FROM mobile_device_app mda
+			INNER JOIN mobile_device md ON mda.mobile_device_id = md.id
+			INNER JOIN app a ON mda.app_id = a.id
+			WHERE a.name = :name
+			ORDER BY md.device_name'
+		);
+		$this->stmt->execute([':name' => $name]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice');
+	}
+	public function selectApp($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM app a WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\App') as $row) {
+			return $row;
+		}
+	}
+	public function selectAllAppByMobileDeviceOs($osType) {
+		if($osType === Models\MobileDevice::OS_TYPE_IOS) {
+			$where = 'WHERE md.os LIKE "%iOS%"';
+		} elseif($osType === Models\MobileDevice::OS_TYPE_ANDROID) {
+			$where = 'WHERE md.os LIKE "%Android%"';
+		} else {
+			$where = '';
+		}
+		$this->stmt = $this->dbh->prepare(
+			'SELECT a.name AS "name", count(mda.mobile_device_id) AS "installations"
+			FROM app a
+			INNER JOIN mobile_device_app mda ON mda.app_id = a.id
+			INNER JOIN mobile_device md ON mda.mobile_device_id = md.id
+			'.$where.'
+			GROUP BY a.name ORDER BY a.name ASC'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\App');
+	}
 	public function selectAllMobileDeviceByMobileDeviceGroupId($mobile_device_group_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT md.* FROM mobile_device_group_member mdgm
@@ -3179,37 +3231,20 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
 	}
-	public function selectAllSoftwareByComputerOsWindows() {
+	public function selectAllSoftwareByComputerOs($osType) {
+		if($osType === Models\Computer::OS_TYPE_WINDOWS) {
+			$where = 'WHERE c.os LIKE "%Windows%"';
+		} elseif($osType === Models\Computer::OS_TYPE_MACOS) {
+			$where = 'WHERE c.os LIKE "%macOS%"';
+		} elseif($osType === Models\Computer::OS_TYPE_LINUX) {
+			$where = 'WHERE c.os NOT LIKE "%Windows%" AND c.os NOT LIKE "%macOS%"';
+		}
 		$this->stmt = $this->dbh->prepare(
 			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
 			FROM software s
 			INNER JOIN computer_software cs ON cs.software_id = s.id
 			INNER JOIN computer c ON cs.computer_id = c.id
-			WHERE c.os LIKE "%Windows%"
-			GROUP BY s.name ORDER BY s.name ASC'
-		);
-		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
-	}
-	public function selectAllSoftwareByComputerOsMacOs() {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
-			FROM software s
-			INNER JOIN computer_software cs ON cs.software_id = s.id
-			INNER JOIN computer c ON cs.computer_id = c.id
-			WHERE c.os LIKE "%macOS%"
-			GROUP BY s.name ORDER BY s.name ASC'
-		);
-		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Software');
-	}
-	public function selectAllSoftwareByComputerOsOther() {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT s.name AS "name", count(cs.computer_id) AS "installations"
-			FROM software s
-			INNER JOIN computer_software cs ON cs.software_id = s.id
-			INNER JOIN computer c ON cs.computer_id = c.id
-			WHERE c.os NOT LIKE "%Windows%" AND c.os NOT LIKE "%macOS%"
+			'.$where.'
 			GROUP BY s.name ORDER BY s.name ASC'
 		);
 		$this->stmt->execute();

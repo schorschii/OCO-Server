@@ -9,35 +9,33 @@ if(!$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VI
 
 <?php
 if(!empty($_GET['id'])) {
-	$software = $db->selectSoftware($_GET['id']);
-	if($software === null) die("<div class='alert warning'>".LANG('not_found')."</div>");
+	$app = $db->selectApp($_GET['id']);
+	if($app === null) die("<div class='alert warning'>".LANG('not_found')."</div>");
 ?>
 
 
 <div class='details-header'>
-	<h1><img src='img/software.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($software->name) . ' ' . htmlspecialchars($software->version); ?></span></h1>
+	<h1><img src='img/apps.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($app->name) . ' ' . htmlspecialchars($app->display_version.' ('.$app->version.')'); ?></span></h1>
 </div>
-<?php if(!empty($software->description)) { ?>
-	<p class='quote'><?php echo nl2br(htmlspecialchars($software->description)); ?></p>
+<?php if(!empty($app->identifier)) { ?>
+	<p class='quote'><?php echo nl2br(htmlspecialchars($app->identifier)); ?></p>
 <?php } ?>
 <div class='details-abreast'>
 	<div class='stickytable'>
 		<h2><?php echo LANG('installed_on'); ?></h2>
-		<table id='tblSoftwareComputerData1' class='list searchable sortable savesort'>
+		<table id='tblAppMobileDeviceData1' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th class='searchable sortable'><?php echo LANG('hostname'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('device_name'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('os'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('version'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 			<?php
-			foreach($db->selectAllComputerBySoftwareId($_GET['id']) as $c) {
+			foreach($db->selectAllMobileDeviceByAppId($_GET['id']) as $md) {
 				echo "<tr>";
-				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
-				echo "<td>".htmlspecialchars($c->os)."</td>";
-				echo "<td>".htmlspecialchars($c->os_version)."</td>";
+				echo "<td><a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->getDisplayName())."</a></td>";
+				echo "<td>".htmlspecialchars($md->os)."</td>";
 				echo "</tr>";
 			}
 			?>
@@ -67,24 +65,24 @@ if(!empty($_GET['id'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/software.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($_GET['name']); ?></span></h1>
+	<h1><img src='img/apps.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($_GET['name']); ?></span></h1>
 </div>
 <div class='details-abreast'>
 	<div class='stickytable'>
 		<h2><?php echo LANG('installed_on'); ?></h2>
-		<table id='tblSoftwareComputerData2' class='list searchable sortable savesort'>
+		<table id='tblAppMobileDeviceData2' class='list searchable sortable savesort'>
 			<thead>
 				<tr>
-					<th class='searchable sortable'><?php echo LANG('hostname'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('device_name'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('version'); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 			<?php
-			foreach($db->selectAllComputerBySoftwareName($_GET['name']) as $c) {
+			foreach($db->selectAllMobileDeviceByAppName($_GET['name']) as $md) {
 				echo "<tr>";
-				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
-				echo "<td><a ".explorerLink('views/software.php?id='.$c->software_id).">".htmlspecialchars($c->software_version)."</a></td>";
+				echo "<td><a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->getDisplayName())."</a></td>";
+				echo "<td><a ".explorerLink('views/apps.php?id='.$md->app_id).">".htmlspecialchars($md->app_version)."</a></td>";
 				echo "</tr>";
 			}
 			?>
@@ -112,26 +110,23 @@ if(!empty($_GET['id'])) {
 
 
 <div class='details-header'>
-	<h1><img src='img/software.dyn.svg'><span id='page-title'><?php echo LANG('recognised_software'); ?></span></h1>
+	<h1><img src='img/apps.dyn.svg'><span id='page-title'><?php echo LANG('recognised_apps'); ?></span></h1>
 </div>
 <div class='details-abreast'>
 	<div class='stickytable'>
-		<?php $software = [];
-		if(isset($_GET['os']) && $_GET['os'] == 'windows') {
-			echo "<h2>".LANG('windows')."</h2>";
-			$software = $db->selectAllSoftwareByComputerOs(Models\Computer::OS_TYPE_WINDOWS);
-		} elseif(isset($_GET['os']) && $_GET['os'] == 'macos') {
-			echo "<h2>".LANG('macos')."</h2>";
-			$software = $db->selectAllSoftwareByComputerOs(Models\Computer::OS_TYPE_MACOS);
-		} elseif(isset($_GET['os']) && $_GET['os'] == 'other') {
-			echo "<h2>".LANG('linux')."</h2>";
-			$software = $db->selectAllSoftwareByComputerOs(Models\Computer::OS_TYPE_LINUX);
+		<?php $apps = [];
+		if(isset($_GET['os']) && $_GET['os'] == 'ios') {
+			echo "<h2>".LANG('ios')."</h2>";
+			$apps = $db->selectAllAppByMobileDeviceOs(Models\MobileDevice::OS_TYPE_IOS);
+		} elseif(isset($_GET['os']) && $_GET['os'] == 'android') {
+			echo "<h2>".LANG('android')."</h2>";
+			$apps = $db->selectAllAppByMobileDeviceOs(Models\MobileDevice::OS_TYPE_ANDROID);
 		} else {
 			echo "<h2>".LANG('all_os')."</h2>";
-			$software = $db->selectAllSoftware();
+			$apps = $db->selectAllAppByMobileDeviceOs(-1);
 		}
 		?>
-		<table id='tblSoftwareData' class='list searchable sortable savesort'>
+		<table id='tblAppData' class='list searchable sortable savesort'>
 		<thead>
 			<tr>
 				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
@@ -140,10 +135,10 @@ if(!empty($_GET['id'])) {
 		</thead>
 		<tbody>
 		<?php
-		foreach($software as $s) {
+		foreach($apps as $a) {
 			echo "<tr>";
-			echo "<td><a ".explorerLink('views/software.php?name='.urlencode($s->name)).">".htmlspecialchars($s->name)."</a></td>";
-			echo "<td>".$s->installations."</td>";
+			echo "<td><a ".explorerLink('views/apps.php?name='.urlencode($a->name)).">".htmlspecialchars($a->name)."</a></td>";
+			echo "<td>".$a->installations."</td>";
 			echo "</tr>";
 		}
 		?>

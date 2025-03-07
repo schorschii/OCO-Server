@@ -107,6 +107,7 @@ return [
 	'installation_date' => 'Installation Date',
 	'action' => 'Action',
 	'recognised_software' => 'Recognised Software',
+	'recognised_apps' => 'Recognised Apps',
 	'description' => 'Description',
 	'deployment_assistant' => 'Deployment Assistant',
 	'start' => 'Start',

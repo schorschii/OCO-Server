@@ -37,6 +37,16 @@ require_once('../session.inc.php');
 </div>
 <?php } ?>
 
+<?php if($cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
+<div id='divSubnodeApps' class='node expandable'>
+	<a <?php echo explorerLink('views/apps.php'); ?>><img src='img/apps.dyn.svg'><?php echo LANG('recognised_apps'); ?></a>
+	<div class='subitems'>
+		<a <?php echo explorerLink('views/apps.php?os=ios'); ?>><img src='img/mobile-device-ios.dyn.svg'><?php echo LANG('ios'); ?></a>
+		<a <?php echo explorerLink('views/apps.php?os=adnroid'); ?>><img src='img/mobile-device-android.dyn.svg'><?php echo LANG('android'); ?></a>
+	</div>
+</div>
+<?php } ?>
+
 <?php $packageGroupsHtml = getPackageGroupsHtml($cl); ?>
 <div id='divNodePackages' class='node <?php if($packageGroupsHtml) echo 'expandable'; ?>'>
 	<a <?php echo explorerLink('views/package-families.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG('packages'); ?></a>

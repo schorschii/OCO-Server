@@ -98,7 +98,7 @@ try {
 			echo "<td><input type='checkbox' name='mobile_device_id[]' value='".$md->id."'></td>";
 			echo "<td>";
 			echo  "<img src='".$md->getIcon()."' class='".($md->isOnline() ? 'online' : 'offline')."' title='".($md->isOnline() ? LANG('enrolled') : LANG('not_enrolled'))."'>&nbsp;";
-			echo  "<a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->device_name?$md->device_name:$md->serial)."</a>";
+			echo  "<a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->getDisplayName())."</a>";
 			echo "</td>";
 			echo "<td>".htmlspecialchars($md->serial)."</td>";
 			echo "<td>".htmlspecialchars($md->os)."</td>";

@@ -102,6 +102,7 @@ return [
 	'installation_date' => 'Installationszeitpunkt',
 	'action' => 'Aktion',
 	'recognised_software' => 'Erkannte Software',
+	'recognised_apps' => 'Erkannte Apps',
 	'description' => 'Beschreibung',
 	'deployment_assistant' => 'Bereitstellungs-Assistent',
 	'start' => 'Start',
