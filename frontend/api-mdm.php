@@ -215,15 +215,15 @@ if($path === '/profile') {
 
 	// store info about previous command result
 	if(isset($request['Status']) && isset($request['CommandUUID'])) {
-		$status = null;
+		$state = null;
 		if($request['Status'] == 'Acknowledged')
-			$status = Models\MobileDeviceCommand::STATE_SUCCESS;
+			$state = Models\MobileDeviceCommand::STATE_SUCCESS;
 		else
-			$status = Models\MobileDeviceCommand::STATE_FAILED;
+			$state = Models\MobileDeviceCommand::STATE_FAILED;
 
 		$mdc = $db->selectMobileDeviceCommand($request['CommandUUID']);
 		if(!$mdc) throw new Exception('Unknown command UUID');
-		$db->updateMobileDeviceCommand($request['CommandUUID'], $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $status, $body, date('Y-m-d H:i:s'));
+		$db->updateMobileDeviceCommand($request['CommandUUID'], $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $state, $body, date('Y-m-d H:i:s'));
 		$rt = json_decode($mdc->parameter, true)['RequestType'] ?? '';
 
 		// reset push_sent timestamp

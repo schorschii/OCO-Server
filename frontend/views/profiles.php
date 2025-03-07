@@ -15,9 +15,10 @@ try {
 }
 ?>
 
-<h1><img src='img/profile.dyn.svg'><span id='page-title'><?php echo LANG('profiles'); ?></span></h1>
+<h1><img src='img/profile.dyn.svg'><span id='page-title'><?php echo LANG('profiles_and_policies'); ?></span></h1>
 <div class='controls'>
-	<button onclick='showDialogEditProfile()' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_profile'); ?></button>
+	<button onclick='showDialogEditProfile(false)' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_ios_profile'); ?></button>
+	<button onclick='showDialogEditProfile(true)' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_android_policy'); ?></button>
 	<span class='filler'></span>
 </div>
 

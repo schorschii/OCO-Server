@@ -94,13 +94,6 @@ try {
 		<tbody>
 		<?php
 		foreach($mobileDevices as $md) {
-			$ip_addresses = [];
-			$mac_addresses = [];
-			$info = json_decode($md->info ?? '', true);
-			if($info) {
-				if(isset($info['WiFiMAC'])) $mac_addresses[] = $info['WiFiMAC'];
-				if(isset($info['BluetoothMAC'])) $mac_addresses[] = $info['BluetoothMAC'];
-			}
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='mobile_device_id[]' value='".$md->id."'></td>";
 			echo "<td>";
@@ -110,7 +103,7 @@ try {
 			echo "<td>".htmlspecialchars($md->serial)."</td>";
 			echo "<td>".htmlspecialchars($md->os)."</td>";
 			echo "<td>".htmlspecialchars($md->model)."</td>";
-			echo "<td>".htmlspecialchars(implode(', ',$mac_addresses))."</td>";
+			echo "<td>".htmlspecialchars(implode(', ',$md->getMacAddresses()))."</td>";
 			echo "<td>".htmlspecialchars(shorter(LANG($md->notes)))."</td>";
 			echo "<td>".htmlspecialchars($md->last_update??'')."</td>";
 			echo "</tr>";

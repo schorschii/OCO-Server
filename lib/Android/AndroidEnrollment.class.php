@@ -8,6 +8,24 @@ class AndroidEnrollment {
 
 	const ANDROID_MANAGEMENT_API_URL = 'https://androidmanagement.googleapis.com/v1';
 
+	const DEFAULT_POLICIES = [
+		'statusReportingSettings' => [
+			'applicationReportsEnabled' => true,
+			'deviceSettingsEnabled' => true,
+			'softwareInfoEnabled' => true,
+			'memoryInfoEnabled' => true,
+			'networkInfoEnabled' => true,
+			'displayInfoEnabled' => true,
+			'powerManagementEventsEnabled' => true,
+			'hardwareStatusEnabled' => true,
+			'systemPropertiesEnabled' => true,
+			'applicationReportingSettings' => [
+				'includeRemovedApps' => true,
+			],
+			'commonCriteriaModeEnabled' => true
+		]
+	];
+
 	private $db;
 	private $accessToken;
 
@@ -167,13 +185,24 @@ class AndroidEnrollment {
 		return $data;
 	}
 
+	function patchPolicy(string $policyId, array $policyValues, string $deviceId=null) {
+		$enterpriseName = $this->getEnterprise()['name'];
+		$this->apiCall('PATCH', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/policies/'.urlencode($policyId), json_encode(array_merge(self::DEFAULT_POLICIES, $policyValues)));
+
+		if($deviceId) {
+			$this->apiCall('PATCH', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/devices/'.urlencode($deviceId).'?updateMask=policyName', json_encode([
+				'policyName' => $policyId
+			]));
+		}
+	}
+
 	function generateEnrollmentToken() {
 		$enterpriseName = $this->getEnterprise()['name'];
 
 		// create dummy policy since a policy is mandatory
-		$this->apiCall('PATCH', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/policies/default', json_encode([
+		$this->patchPolicy('default', [
 			'name' => 'policies/default'
-		]));
+		]);
 
 		$response = $this->apiCall('POST', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/enrollmentTokens', json_encode([
 			'policyName' => $enterpriseName.'/policies/default'
@@ -217,7 +246,7 @@ class AndroidEnrollment {
 		$response = $this->apiCall('GET', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/devices/'.urlencode($deviceId).'/operations/'.urlencode($operationId), null);
 		if(empty($response['name']))
 			throw new \RuntimeException('Unexpected server response: '.json_encode($response));
-		return $response['name'];
+		return $response;
 	}
 
 	public function syncDevices() {
@@ -228,31 +257,63 @@ class AndroidEnrollment {
 			$state = $device['state'];
 			$model = ($device['hardwareInfo']['brand']??'').' '.($device['hardwareInfo']['model']??'');
 			$family = $device['hardwareInfo']['hardware']??'';
-			$os = 'Android '.($device['softwareInfo']['androidVersion']??'').' '.($device['softwareInfo']['androidBuildNumber']??'');
+			$os = 'Android';
+			if(!empty($device['softwareInfo']))
+				$os .= ' '.($device['softwareInfo']['androidVersion']??'').' '.($device['softwareInfo']['androidBuildNumber']??'');
+
 			$md = $this->db->selectMobileDeviceBySerialNumber($serial);
 			if($md) {
+				$mdId = $md->id;
 				$this->db->updateMobileDevice($md->id,
 					end($udidSplitter), $state, $md->device_name, $md->serial, ''/*description*/,
-					$md->model ? $md->model : $model,
-					$md->os ? $md->os : $os, $family, ''/*color*/,
+					$model ? $model : $md->model,
+					$os ? $os : $md->os, $family, ''/*color*/,
 					$device['policy_name']??null, $md->push_token, $md->push_magic, $md->push_sent,
 					$md->unlock_token, json_encode($device), $md->notes, $md->force_update,
 					empty($device['lastStatusReportTime']) ? false : date('Y-m-d H:i:s', strtotime($device['lastStatusReportTime']))
 				);
 			} else {
 				echo 'Creating device '.$serial.'...'."\n";
-				$this->db->insertMobileDevice(
+				$mdId = $this->db->insertMobileDevice(
 					end($udidSplitter), $state, ''/*name*/, $serial, ''/*description*/,
 					$model, $os, $family, ''/*color*/,
 					$device['policy_name']??null, null/*push_token*/, null/*push_magic*/, null/*push_sent*/,
 					null/*unlock_token*/, json_encode($device), ''/*notes*/, 0/*force_update*/
 				);
 			}
+
+			$apps = [];
+			foreach($device['applicationReports']??[] as $app) {
+				if(empty($app['packageName']) || empty($app['displayName']) || empty($app['versionName']) || empty($app['versionCode'])) continue;
+				$apps[] = [
+					'identifier' => $app['packageName'],
+					'name' => $app['displayName'],
+					'display_version' => $app['versionName'],
+					'version' => $app['versionCode'],
+				];
+			}
+			$this->db->updateMobileDeviceApps($mdId, $apps);
 		}
 	}
 
 	public function syncCommands() {
+		foreach($this->db->selectAllMobileDeviceCommand() as $mdc) {
+			$md = $this->db->selectMobileDevice($mdc->mobile_device_id);
+			if($md->getOsType() != \Models\MobileDevice::OS_TYPE_ANDROID) continue;
+			if($mdc->state == \Models\MobileDeviceCommand::STATE_SUCCESS
+			|| $mdc->state == \Models\MobileDeviceCommand::STATE_FAILED) continue;
 
+			$op = $this->getOperation($md->udid, $mdc->external_id);
+			if(!empty($op['done'])) {
+				$state = null;
+				if(!empty($op['error']) || !empty($op['metadata']['errorCode'])) {
+					$state = \Models\MobileDeviceCommand::STATE_FAILED;
+				} else {
+					$state = \Models\MobileDeviceCommand::STATE_SUCCESS;
+				}
+				$this->db->updateMobileDeviceCommand($mdc->id, $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $state, json_encode($op), date('Y-m-d H:i:s'));
+			}
+		}
 	}
 
 }

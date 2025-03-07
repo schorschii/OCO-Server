@@ -27,6 +27,10 @@ try {
 			echo 'Syncing Android devices...'."\n";
 			$ae = new Android\AndroidEnrollment($db);
 			$ae->syncDevices();
+
+			echo 'Syncing Android device commands...'."\n";
+			$ae = new Android\AndroidEnrollment($db);
+			$ae->syncCommands();
 			break;
 
 		case 'applesync':

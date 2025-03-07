@@ -428,6 +428,42 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		if(!$this->getTableColumnInfo('managed_app', 'type')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add type column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `managed_app` ADD `type` VARCHAR(10) NOT NULL DEFAULT 'ios' AFTER `id`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(!$this->getTableColumnInfo('mobile_device_command', 'external_id')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add external_id column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device_command` ADD `external_id` VARCHAR(10) NULL DEFAULT NULL AFTER `id`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(!$this->getTableColumnInfo('mobile_device_group_managed_app', 'install_type')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add external_id column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device_group_managed_app` ADD `install_type` TINYTEXT NULL DEFAULT NULL AFTER `remove_on_mdm_remove`;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(strtolower($this->getTableColumnInfo('mobile_device', 'info')['COLUMN_TYPE']) !== 'mediumtext') {
+			if($this->debug) echo 'Upgrading to 1.1.4... (modify info column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device` CHANGE `info` `info` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

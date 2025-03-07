@@ -14,9 +14,11 @@ class Profile {
 
 	// functions
 	function getUuid() {
-		$plist = new \CFPropertyList\CFPropertyList();
-		$plist->parse($this->payload);
-		return $plist->toArray()['PayloadUUID'] ?? null;
+		try {
+			$plist = new \CFPropertyList\CFPropertyList();
+			$plist->parse($this->payload);
+			return $plist->toArray()['PayloadUUID'] ?? null;
+		} catch(\Exception $e) {}
 	}
 
 }

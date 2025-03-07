@@ -20,7 +20,7 @@ require_once('../session.inc.php');
 <div id='divNodeMobileDevices' class='node expandable'>
 	<a <?php echo explorerLink('views/mobile-devices.php'); ?>><img src='img/mobile-device.dyn.svg'><?php echo LANG('mobile_devices'); ?><span class='beta'>BETA</span></a>
 	<div class='subitems'>
-		<a <?php echo explorerLink('views/profiles.php'); ?>><img src='img/profile.dyn.svg'><?php echo LANG('profiles'); ?></a>
+		<a <?php echo explorerLink('views/profiles.php'); ?>><img src='img/profile.dyn.svg'><?php echo LANG('profiles_and_policies'); ?></a>
 		<a <?php echo explorerLink('views/managed-apps.php'); ?>><img src='img/store.dyn.svg'><?php echo LANG('managed_apps'); ?></a>
 		<?php echo $mobileDeviceGroupsHtml; ?>
 	</div>

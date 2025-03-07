@@ -106,12 +106,7 @@ try {
 			} else {
 				throw new InvalidRequestException('Unknown command');
 			}
-			$cl->createMobileDeviceCommand($_POST['send_command_to_mobile_device_id'], $_POST['command'], json_encode($parameter));
-
-			// instantly send push notification
-			$mdcc = new MobileDeviceCommandController($db);
-			$mdcc->mdmCron();
-			die();
+			$cl->createMobileDeviceCommand($_POST['send_command_to_mobile_device_id'], $_POST['command'], json_encode($parameter), null);
 
 		} elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) {
 
@@ -147,10 +142,15 @@ try {
 			}
 			$ae = new Android\AndroidEnrollment($db);
 			$commandId = $ae->issueCommand($md->udid, $_POST['command'], $parameter);
-			$cl->createMobileDeviceCommand($md->id, $_POST['command'], json_encode($parameter));
+			$cl->createMobileDeviceCommand($md->id, $_POST['command'], json_encode($parameter), $commandId);
 			die();
 
 		}
+
+		// instantly send push notification
+		$mdcc = new MobileDeviceCommandController($db);
+		$mdcc->mdmCron();
+		die();
 
 	}
 
@@ -166,9 +166,9 @@ try {
 		// no payload change by default
 		$payload = null;
 		if(!empty($_POST['update_payload'])) {
-			// no payload by default
-			$payload = [];
-			if(!empty($_FILES['payload']) && is_array($_FILES['payload']['tmp_name'])) {
+			if(!empty($_POST['payload_text'])) {
+				$payload = $_POST['payload_text'];
+			} elseif(!empty($_FILES['payload']) && is_array($_FILES['payload']['tmp_name'])) {
 				// use files from user upload
 				for($i=0; $i < count($_FILES['payload']['tmp_name']); $i++) {
 					if(isset($_FILES['payload']['name'][$i]) && file_exists($_FILES['payload']['tmp_name'][$i])) {
@@ -209,7 +209,8 @@ try {
 					($_POST['removable']??1) ? 1 : 0,
 					($_POST['disable_cloud_backup']??0) ? 1 : 0,
 					($_POST['remove_on_mdm_remove']??1) ? 1 : 0,
-					($_POST['config']??null),
+					empty($_POST['install_type']) ? null : $_POST['install_type'],
+					$_POST['config'] ?? null,
 				);
 			}
 		}
@@ -228,6 +229,22 @@ try {
 	if(!empty($_POST['remove_profile_id']) && is_array($_POST['remove_profile_id'])) {
 		foreach($_POST['remove_profile_id'] as $id) {
 			$cl->removeProfile($id, !empty($_POST['force']));
+		}
+		die();
+	}
+
+	if(isset($_POST['playstore_onproductselect'])
+	&& !empty($_POST['package_name'])
+	&& !empty($_POST['product_id'])) {
+		// TODO permission check
+		die(
+			$db->insertOrUpdateManagedApp('android', $_POST['package_name'], $_POST['product_id'], $_POST['app_name']??'?', null)
+		);
+	}
+
+	if(!empty($_POST['remove_managed_app_id']) && is_array($_POST['remove_managed_app_id'])) {
+		foreach($_POST['remove_managed_app_id'] as $id) {
+			$cl->removeManagedApp($id);
 		}
 		die();
 	}

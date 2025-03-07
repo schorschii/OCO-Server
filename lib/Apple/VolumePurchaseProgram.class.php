@@ -68,7 +68,7 @@ class VolumePurchaseProgram {
 				echo 'Unable to get app metadata '.$asset['adamId']."\n";
 				continue;
 			}
-			$this->db->insertOrUpdateManagedApp($app['attributes']['platformAttributes']['ios']['bundleId'], $asset['adamId'], $app['attributes']['name'], $asset['totalCount']);
+			$this->db->insertOrUpdateManagedApp('ios', $app['attributes']['platformAttributes']['ios']['bundleId'], $asset['adamId'], $app['attributes']['name'], $asset['totalCount']);
 		}
 	}
 

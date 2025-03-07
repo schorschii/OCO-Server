@@ -71,8 +71,8 @@ function explorerLink($explorerContentUrl, $extraJs=null) {
 }
 
 function echoDictTable($value, array $exclude=[]) {
-	if($value === true) echo '<img src="img/success.dyn.svg">';
-	elseif($value === false) echo '<img src="img/close.opacity.svg">';
+	if($value === true) echo '<img title="'.LANG('yes').'" src="img/success.dyn.svg">';
+	elseif($value === false) echo '<img title="'.LANG('no').'" src="img/close.opacity.svg">';
 	elseif(is_array($value)) {
 		echo '<table class="list metadata"><tbody>';
 		foreach($value as $subkey => $subvalue) {
@@ -80,16 +80,7 @@ function echoDictTable($value, array $exclude=[]) {
 			echo '<tr>'
 				.'<th>'.htmlspecialchars(LANG($subkey)).'</th>'
 				.'<td>';
-			if($subkey == 'BatteryLevel') {
-				echo progressBar($subvalue*100, null, null, 'stretch');
-			} elseif($subkey == 'DeviceCapacity' && isset($value['AvailableDeviceCapacity'])) {
-				$total = $value['DeviceCapacity'];
-				$free = $value['AvailableDeviceCapacity'];
-				$used = $total - $free;
-				echo progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
-			} else {
-				echoDictTable($subvalue);
-			}
+			echoDictTable($subvalue);
 			echo '</td>'
 				.'</tr>';
 		}

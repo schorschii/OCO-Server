@@ -51,5 +51,22 @@ class MobileDevice {
 		}
 		return false;
 	}
+	function getMacAddresses() {
+		$addrs = [];
+		if($this->getOsType() === self::OS_TYPE_IOS) {
+			$info = json_decode($this->info ?? '', true);
+			if($info) {
+				if(isset($info['WiFiMAC'])) $addrs[] = $info['WiFiMAC'];
+				if(isset($info['BluetoothMAC'])) $addrs[] = $info['BluetoothMAC'];
+			}
+		} elseif($this->getOsType() === self::OS_TYPE_ANDROID) {
+			$info = json_decode($this->info ?? '', true);
+			if($info) {
+				if(isset($info['networkInfo']) && !empty(isset($info['networkInfo']['wifiMacAddress'])))
+					$addrs[] = $info['networkInfo']['wifiMacAddress'];
+			}
+		}
+		return $addrs;
+	}
 
 }

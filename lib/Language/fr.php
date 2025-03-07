@@ -604,9 +604,11 @@ return [
 	'profiles_and_commands' => 'Profils et commandes',
 	'installed_profiles' => 'Installed Profiles',
 	'installed_apps' => 'Applications installées',
-	'profiles' => 'Profils',
-	'new_profile' => 'Nouveau profil',
+	'profiles_and_policies' => 'Profiles and Policies',
+	'new_ios_profile' => 'Nouveau iOS profil',
+	'new_android_policy' => 'New Android Policy',
 	'profile_file' => 'Fichier de profil',
+	'profile_content' => 'Profile Content',
 	'assign' => 'Attribuer',
 	'profil_assigned' => 'Profil attribué',
 	'device_does_not_delivered_info_yet' => 'L\'appareil ne fournit pas encore d\'informations.',
@@ -654,6 +656,8 @@ return [
 	'team_id' => 'Team ID',
 	'app_config_json' => 'Configuration d\'appli (JSON)',
 	'apple_devices' => 'Apple Devices',
+	'ios' => 'iOS',
+	'android' => 'Android',
 	'package_creation_notes' => '
 		<p>
 			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.

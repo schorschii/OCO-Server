@@ -194,24 +194,30 @@ class CoreLogic {
 		}
 		$result = $this->db->deleteMobileDeviceGroup($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdGroup->id, 'oco.mobile_device_group.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdGroup->id, 'oco.mobile_device_group.delete', json_encode($mdGroup));
 		return $result;
 	}
 
-	public function getManagedApps(Object $filterRessource=null) {
-		if($filterRessource === null) {
-			$pFiltered = [];
-			foreach($this->db->selectAllManagedApp() as $p) {
-				if($this->checkPermission($p, PermissionManager::METHOD_READ, false))
-					$pFiltered[] = $p;
-			}
-			return $pFiltered;
-		} else {
-			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+	public function getManagedApps(string $type) {
+		$pFiltered = [];
+		foreach($this->db->selectAllManagedAppByType($type) as $p) {
+			if($this->checkPermission($p, PermissionManager::METHOD_READ, false))
+				$pFiltered[] = $p;
 		}
+		return $pFiltered;
 	}
-	public function assignManagedAppToMobileDeviceGroup($pId, $groupId, $removable, $disableCloudBackup, $removeOnMdmRemove, $config) {
-		$ma = $this->db->selectManagedApp($pId);
+	public function removeManagedApp($id, $force=false) {
+		$ma = $this->db->selectManagedApp($id);
+		if(empty($ma)) throw new NotFoundException();
+		$this->checkPermission($ma, PermissionManager::METHOD_DELETE);
+
+		$result = $this->db->deleteManagedApp($id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.mobile_device_group.delete', json_encode($ma));
+		return $result;
+	}
+	public function assignManagedAppToMobileDeviceGroup($maId, $groupId, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $config) {
+		$ma = $this->db->selectManagedApp($maId);
 		if(empty($ma)) throw new NotFoundException();
 		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
 		if(empty($mdGroup)) throw new NotFoundException();
@@ -226,8 +232,16 @@ class CoreLogic {
 				throw new InvalidArgumentException('Invalid JSON config');
 		}
 
-		$this->db->insertMobileDeviceGroupManagedApp($mdGroup->id, $ma->id, $removable, $disableCloudBackup, $removeOnMdmRemove, $config);
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.assign', ['mobile_device_group_id'=>$mdGroup->id]);
+		$this->db->insertMobileDeviceGroupManagedApp($mdGroup->id, $ma->id, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $config);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.assign', [
+			'mobile_device_group_id'=>$mdGroup->id,
+			'managed_app_id'=>$maId,
+			'removable'=>$removable,
+			'disable_cloud_backup'=>$disableCloudBackup,
+			'removeOnMdmRemove'=>$removeOnMdmRemove,
+			'install_type'=>$installType,
+			'config'=>$config,
+		]);
 	}
 	public function removeManagedAppFromMobileDeviceGroup($pId, $groupId) {
 		$ma = $this->db->selectManagedApp($pId);
@@ -259,17 +273,21 @@ class CoreLogic {
 		if(empty($name) || empty($payload)) {
 			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
-		$plist = new CFPropertyList\CFPropertyList();
-		$plist->parse($payload);
-		$newUuid = $plist->toArray()['PayloadUUID'] ?? null;
-		if(empty($newUuid)) {
-			throw new InvalidRequestException(LANG('please_fill_required_fields'));
-		}
-
-		foreach($this->db->selectAllProfile() as $p) {
-			if($p->getUuid() == $newUuid) {
-				throw new InvalidRequestException(str_replace('%1', $p->name, LANG('uuid_aready_used_by_profile')));
+		try {
+			$plist = new CFPropertyList\CFPropertyList();
+			$plist->parse($payload);
+			$newUuid = $plist->toArray()['PayloadUUID'] ?? null;
+			if(empty($newUuid)) {
+				throw new InvalidRequestException('Profile has no PayloadUUID');
 			}
+			foreach($this->db->selectAllProfile() as $p) {
+				if($p->getUuid() == $newUuid) {
+					throw new InvalidRequestException(str_replace('%1', $p->name, LANG('uuid_aready_used_by_profile')));
+				}
+			}
+		} catch(DOMException|TypeError $e) {
+			if(!is_string($payload) || json_decode($payload) === null)
+				throw new InvalidRequestException('Payload is no valid XML or JSON');
 		}
 
 		$result = $this->db->insertProfile($name, $payload, $notes, $this->su->id);
@@ -299,7 +317,7 @@ class CoreLogic {
 		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
 
 		$this->db->deleteMobileDeviceGroupProfile($mdGroup->id, $profile->id);
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $profile->id, 'oco.profile.unassign', ['mobile_device_group_id'=>$mdGroup->id]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $profile->id, 'oco.profile.unassign', ['profile_id'=>$profile->id, 'mobile_device_group_id'=>$mdGroup->id]);
 	}
 	public function removeProfile($id, $force=false) {
 		$profile = $this->db->selectProfile($id);
@@ -308,11 +326,11 @@ class CoreLogic {
 
 		$result = $this->db->deleteProfile($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $profile->id, 'oco.profile.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $profile->id, 'oco.profile.delete', json_encode($profile));
 		return $result;
 	}
 
-	public function createMobileDeviceCommand($mobileDeviceId, $name, $parameter) {
+	public function createMobileDeviceCommand($mobileDeviceId, $name, $parameter, $externalId) {
 		$md = $this->db->selectMobileDevice($mobileDeviceId);
 		if(empty($md)) throw new NotFoundException();
 		$this->checkPermission($md, PermissionManager::METHOD_DEPLOY);
@@ -321,9 +339,14 @@ class CoreLogic {
 			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
 
-		$result = $this->db->insertMobileDeviceCommand($mobileDeviceId, $name, $parameter);
+		$result = $this->db->insertMobileDeviceCommand($mobileDeviceId, $name, $parameter, $externalId);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $result, 'oco.mobile_device_command.create', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $result, 'oco.mobile_device_command.create', [
+			'mobile_device_id'=>$mobileDeviceId,
+			'name'=>$name,
+			'parameter'=>$parameter,
+			'external_id'=>$externalId,
+		]);
 		return $result;
 	}
 	public function removeMobileDeviceCommand($id) {
@@ -333,7 +356,7 @@ class CoreLogic {
 
 		$result = $this->db->deleteMobileDeviceCommand($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdc->id, 'oco.mobile_device_command.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $mdc->id, 'oco.mobile_device_command.delete', json_encode($mdc));
 		return $result;
 	}
 
@@ -516,7 +539,7 @@ class CoreLogic {
 		}
 		$result = $this->db->deleteComputerGroup($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $computerGroup->id, 'oco.computer_group.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $computerGroup->id, 'oco.computer_group.delete', json_encode($computerGroup));
 		return $result;
 	}
 
@@ -790,7 +813,7 @@ class CoreLogic {
 
 		$result = $this->db->deletePackageGroup($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $packageGroup->id, 'oco.package_group.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $packageGroup->id, 'oco.package_group.delete', json_encode($packageGroup));
 		return $result;
 	}
 	public function editPackageFamily($id, $name, $licenseCount, $notes) {
@@ -1893,7 +1916,7 @@ class CoreLogic {
 		}
 		$result = $this->db->deleteReportGroup($reportGroup->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $reportGroup->id, 'oco.report_group.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $reportGroup->id, 'oco.report_group.delete', json_encode($reportGroup));
 		return $result;
 	}
 
@@ -1958,7 +1981,7 @@ class CoreLogic {
 
 		$result = $this->db->deleteDomainUserRole($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $r->id, 'oco.domain_user_role.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $r->id, 'oco.domain_user_role.delete', json_encode($r));
 		return $result;
 	}
 	public function getDomainUsers(Object $filterRessource=null) {
@@ -2070,7 +2093,7 @@ class CoreLogic {
 
 		$result = $this->db->deleteSystemUserRole($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $r->id, 'oco.system_user_role.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $r->id, 'oco.system_user_role.delete', json_encode($r));
 		return $result;
 	}
 
@@ -2205,7 +2228,7 @@ class CoreLogic {
 
 		$result = $this->db->deleteSystemUser($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $u->id, 'oco.system_user.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $u->id, 'oco.system_user.delete', json_encode($u));
 		return $result;
 	}
 
@@ -2240,12 +2263,12 @@ class CoreLogic {
 	public function removeEventQueryRule($id) {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_EVENT_QUERY_RULES);
 
-		$u = $this->db->selectEventQueryRule($id);
-		if($u === null) throw new NotFoundException();
+		$eqr = $this->db->selectEventQueryRule($id);
+		if($eqr === null) throw new NotFoundException();
 
 		$result = $this->db->deleteEventQueryRule($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $u->id, 'oco.event_query_rule.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $eqr->id, 'oco.event_query_rule.delete', json_encode($eqr));
 		return $result;
 	}
 
@@ -2273,7 +2296,7 @@ class CoreLogic {
 
 		$result = $this->db->deletePasswordRotationRule($id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.password_rotation_rule.delete', []);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.password_rotation_rule.delete', ['id'=>$id]);
 		return $result;
 	}
 

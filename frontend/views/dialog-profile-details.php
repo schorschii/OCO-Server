@@ -13,6 +13,15 @@ try {
 	if(!$profile) {
 		throw new NotFoundException();
 	}
+	try {
+		$requestPlist = new CFPropertyList\CFPropertyList();
+		$requestPlist->parse($profile->payload);
+		$payloadData = $requestPlist->toArray();
+	} catch(DOMException|TypeError $e) {
+		$payloadData = json_decode($profile->payload, true);
+		if($payloadData === null)
+			throw new InvalidRequestException('Payload is no valid XML or JSON');
+	}
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
@@ -21,6 +30,4 @@ try {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
 
-$requestPlist = new CFPropertyList\CFPropertyList();
-$requestPlist->parse($profile->payload);
-echoDictTable($requestPlist->toArray());
+echoDictTable($payloadData);

@@ -738,7 +738,7 @@ CREATE TABLE `mobile_device` (
   `push_magic` text DEFAULT NULL,
   `push_sent` timestamp NULL DEFAULT NULL,
   `unlock_token` blob DEFAULT NULL,
-  `info` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `info` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `notes` text NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_update` timestamp NULL DEFAULT NULL,
@@ -756,6 +756,7 @@ CREATE TABLE `mobile_device` (
 
 CREATE TABLE `mobile_device_command` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `external_id` VARCHAR(10) NULL DEFAULT NULL,
   `mobile_device_id` int(11) NOT NULL,
   `name` text NOT NULL,
   `parameter` text NOT NULL,
@@ -898,6 +899,7 @@ CREATE TABLE `mobile_device_profile` (
 
 CREATE TABLE `managed_app` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(10) NOT NULL DEFAULT 'ios',
   `identifier` text NOT NULL,
   `store_id` text NOT NULL,
   `name` text NOT NULL,
@@ -918,6 +920,7 @@ CREATE TABLE `mobile_device_group_managed_app` (
   `removable` tinyint(4) NOT NULL DEFAULT 1,
   `disable_cloud_backup` tinyint(4) NOT NULL DEFAULT 1,
   `remove_on_mdm_remove` tinyint(4) NOT NULL DEFAULT 1,
+  `install_type` TINYTEXT NULL DEFAULT NULL,
   `config` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_mobile_device_group_managed_app_1` (`mobile_device_group_id`),
