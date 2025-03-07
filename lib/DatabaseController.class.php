@@ -71,6 +71,7 @@ class DatabaseController {
 			'SELECT
 			(SELECT count(id) FROM domain_user) AS "domain_users",
 			(SELECT count(id) FROM computer) AS "computers",
+			(SELECT count(id) FROM mobile_device) AS "mobile_devices",
 			(SELECT count(id) FROM package) AS "packages",
 			(SELECT (SELECT count(id) FROM job_container_job jcj)+(SELECT count(id) FROM deployment_rule_job)) AS "jobs",
 			(SELECT count(id) FROM report) AS "reports"
@@ -223,13 +224,14 @@ class DatabaseController {
 		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroupManagedApp');
 	}
-	public function insertMobileDevice($udid, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update) {
+	public function insertMobileDevice($udid, $state, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO mobile_device (udid, device_name, serial, vendor_description, model, os, device_family, color, profile_uuid, push_token, push_magic, push_sent, unlock_token, info, notes, force_update)
-			VALUES (:udid, :device_name, :serial, :vendor_description, :model, :os, :device_family, :color, :profile_uuid, :push_token, :push_magic, :push_sent, :unlock_token, :info, :notes, :force_update)'
+			'INSERT INTO mobile_device (udid, state, device_name, serial, vendor_description, model, os, device_family, color, profile_uuid, push_token, push_magic, push_sent, unlock_token, info, notes, force_update)
+			VALUES (:udid, :state, :device_name, :serial, :vendor_description, :model, :os, :device_family, :color, :profile_uuid, :push_token, :push_magic, :push_sent, :unlock_token, :info, :notes, :force_update)'
 		);
-		return $this->stmt->execute([
+		if(!$this->stmt->execute([
 			':udid' => $udid,
+			':state' => $state,
 			':device_name' => $device_name,
 			':serial' => $serial,
 			':vendor_description' => $vendor_description,
@@ -245,17 +247,21 @@ class DatabaseController {
 			':info' => $info,
 			':notes' => $notes,
 			':force_update' => $force_update,
-		]);
+		])) return false;
+		return $this->dbh->lastInsertId();
 	}
-	public function updateMobileDevice($id, $udid, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update, $update_last_update=true) {
+	public function updateMobileDevice($id, $udid, $state, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update, $last_update=false) {
+		if($last_update === true)
+			$last_update = date('Y-m-d H:i:s', time());
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE mobile_device SET udid=:udid, device_name=:device_name, serial=:serial, vendor_description=:vendor_description, model=:model, os=:os, device_family=:device_family, color=:color, profile_uuid=:profile_uuid, push_token=:push_token, push_magic=:push_magic, push_sent=:push_sent, unlock_token=:unlock_token, info=:info, notes=:notes, force_update=:force_update'
-			.($update_last_update ? ', last_update=CURRENT_TIMESTAMP' : '')
+			'UPDATE mobile_device SET udid=:udid, state=:state, device_name=:device_name, serial=:serial, vendor_description=:vendor_description, model=:model, os=:os, device_family=:device_family, color=:color, profile_uuid=:profile_uuid, push_token=:push_token, push_magic=:push_magic, push_sent=:push_sent, unlock_token=:unlock_token, info=:info, notes=:notes, force_update=:force_update'
+			.($last_update ? ', last_update=:last_update' : '')
 			.' WHERE id=:id'
 		);
-		return $this->stmt->execute([
+		$params = [
 			':id' => $id,
 			':udid' => $udid,
+			':state' => $state,
 			':device_name' => $device_name,
 			':serial' => $serial,
 			':vendor_description' => $vendor_description,
@@ -271,7 +277,9 @@ class DatabaseController {
 			':info' => $info,
 			':notes' => $notes,
 			':force_update' => $force_update,
-		]);
+		];
+		if($last_update) $params[':last_update'] = $last_update;
+		return $this->stmt->execute($params);
 	}
 	public function selectAllMobileDeviceAppIdentifierByMobileDeviceId($mobile_device_id) {
 		$identifier = [];
@@ -384,9 +392,9 @@ class DatabaseController {
 		return $this->stmt->execute();
 	}
 
-	public function selectAllManagedApp() {
-		$this->stmt = $this->dbh->prepare('SELECT * FROM managed_app');
-		$this->stmt->execute();
+	public function selectAllManagedAppByType($type) {
+		$this->stmt = $this->dbh->prepare('SELECT * FROM managed_app WHERE type = :type');
+		$this->stmt->execute([':type' => $type]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ManagedApp');
 	}
 	public function selectManagedApp($id) {
@@ -406,29 +414,46 @@ class DatabaseController {
 		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ManagedApp');
 	}
-	public function insertOrUpdateManagedApp($identifier, $store_id, $name, $vpp_amount) {
+	public function insertOrUpdateManagedApp($type, $identifier, $store_id, $name, $vpp_amount) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM managed_app WHERE identifier = :identifier AND store_id = :store_id'
+			'SELECT * FROM managed_app WHERE type = :type AND identifier = :identifier AND store_id = :store_id'
 		);
-		if(!$this->stmt->execute([':identifier' => $identifier, ':store_id' => $store_id])) return false;
+		if(!$this->stmt->execute([
+			':type' => $type,
+			':identifier' => $identifier,
+			':store_id' => $store_id
+		])) return false;
 		if($this->stmt->rowCount() > 0) {
 			$this->stmt = $this->dbh->prepare(
-				'UPDATE managed_app SET name = :name, vpp_amount = :vpp_amount WHERE identifier = :identifier AND store_id = :store_id'
+				'UPDATE managed_app SET id = LAST_INSERT_ID(id), name = :name, vpp_amount = :vpp_amount WHERE type = :type AND identifier = :identifier AND store_id = :store_id'
 			);
-			return $this->stmt->execute([':identifier' => $identifier, ':store_id' => $store_id, ':name' => $name, ':vpp_amount' => $vpp_amount]);
+			if(!$this->stmt->execute([
+				':type' => $type,
+				':identifier' => $identifier,
+				':store_id' => $store_id,
+				':name' => $name,
+				':vpp_amount' => $vpp_amount
+			])) return false;
+			return $this->dbh->lastInsertId();
 		} else {
 			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO managed_app (identifier, store_id, name, vpp_amount) VALUES (:identifier, :store_id, :name, :vpp_amount)'
+				'INSERT INTO managed_app (type, identifier, store_id, name, vpp_amount) VALUES (:type, :identifier, :store_id, :name, :vpp_amount)'
 			);
-			if(!$this->stmt->execute([':identifier' => $identifier, ':store_id' => $store_id, ':name' => $name, ':vpp_amount' => $vpp_amount])) return false;
+			if(!$this->stmt->execute([
+				':type' => $type,
+				':identifier' => $identifier,
+				':store_id' => $store_id,
+				':name' => $name,
+				':vpp_amount' => $vpp_amount
+			])) return false;
 			return $this->dbh->lastInsertId();
 		}
 	}
-	public function insertMobileDeviceGroupManagedApp($mobile_device_group_id, $managed_app_id, $removable, $disable_cloud_backup, $remove_on_mdm_remove, $config) {
+	public function insertMobileDeviceGroupManagedApp($mobile_device_group_id, $managed_app_id, $removable, $disable_cloud_backup, $remove_on_mdm_remove, $install_type, $config) {
 		$this->deleteMobileDeviceGroupManagedApp($mobile_device_group_id, $managed_app_id);
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO mobile_device_group_managed_app (mobile_device_group_id, managed_app_id, removable, disable_cloud_backup, remove_on_mdm_remove, config)
-			VALUES (:mobile_device_group_id, :managed_app_id, :removable, :disable_cloud_backup, :remove_on_mdm_remove, :config)'
+			'INSERT INTO mobile_device_group_managed_app (mobile_device_group_id, managed_app_id, removable, disable_cloud_backup, remove_on_mdm_remove, install_type, config)
+			VALUES (:mobile_device_group_id, :managed_app_id, :removable, :disable_cloud_backup, :remove_on_mdm_remove, :install_type, :config)'
 		);
 		$this->stmt->execute([
 			':mobile_device_group_id' => $mobile_device_group_id,
@@ -436,6 +461,7 @@ class DatabaseController {
 			':removable' => $removable,
 			':disable_cloud_backup' => $disable_cloud_backup,
 			':remove_on_mdm_remove' => $remove_on_mdm_remove,
+			':install_type' => $install_type,
 			':config' => $config,
 		]);
 		return $this->dbh->lastInsertId();
@@ -445,6 +471,14 @@ class DatabaseController {
 			'DELETE FROM mobile_device_group_managed_app WHERE mobile_device_group_id = :mobile_device_group_id AND managed_app_id = :managed_app_id'
 		);
 		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id, ':managed_app_id' => $managed_app_id]);
+		if($this->stmt->rowCount() != 1) return false;
+		return true;
+	}
+	public function deleteManagedApp($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM managed_app WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
 		if($this->stmt->rowCount() != 1) return false;
 		return true;
 	}
@@ -627,21 +661,24 @@ class DatabaseController {
 		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand');
 	}
-	public function insertMobileDeviceCommand($mobile_device_id, $name, $parameter) {
-		// do not create command twice if the same command already exists pending!
-		$this->stmt = $this->dbh->prepare(
-			'SELECT id FROM mobile_device_command WHERE mobile_device_id = :mobile_device_id AND name = :name AND parameter = :parameter AND state = '.Models\MobileDeviceCommand::STATE_QUEUED.' LIMIT 1'
-		);
-		if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':name' => $name, ':parameter' => $parameter])) return false;
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand') as $row) {
-			return $row->id;
+	public function insertMobileDeviceCommand($mobile_device_id, $name, $parameter, $external_id=null) {
+		if(!$external_id) {
+			// do not create command twice if the same command already exists pending!
+			$this->stmt = $this->dbh->prepare(
+				'SELECT id FROM mobile_device_command WHERE mobile_device_id = :mobile_device_id AND name = :name AND parameter = :parameter AND state = '.Models\MobileDeviceCommand::STATE_QUEUED.' LIMIT 1'
+			);
+			if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':name' => $name, ':parameter' => $parameter])) return false;
+			foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand') as $row) {
+				return $row->id;
+			}
 		}
 
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO mobile_device_command (mobile_device_id, name, parameter)
-			VALUES (:mobile_device_id, :name, :parameter)'
+			'INSERT INTO mobile_device_command (external_id, mobile_device_id, name, parameter)
+			VALUES (:external_id, :mobile_device_id, :name, :parameter)'
 		);
 		return $this->stmt->execute([
+			':external_id' => $external_id,
 			':mobile_device_id' => $mobile_device_id,
 			':name' => $name,
 			':parameter' => $parameter,

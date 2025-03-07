@@ -11,11 +11,11 @@ require_once(__DIR__.'/../session.inc.php');
 		<div class='subtitle'><?php echo LANG('project_name'); ?></div>
 	</p>
 
-	<table class='list fullwidth margintop fixed largepadding'>
-		<tr>
-			<td class='center' colspan='5'><?php echo LANG('self_service_welcome_text'); ?></td>
-		</tr>
-	</table>
+	<div class='box fullwidth margintop stats'>
+		<div>
+			<div class='motd'><?php echo LANG('self_service_welcome_text'); ?></div>
+		</div>
+	</div>
 
 	<div class='footer'>
 		<?php echo LANG('app_copyright'); ?>

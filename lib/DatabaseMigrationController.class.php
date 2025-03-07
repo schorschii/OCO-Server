@@ -18,7 +18,7 @@ class DatabaseMigrationController {
 	}
 
 	private function getTableColumnInfo($table, $column) {
-		$this->stmt = $this->dbh->prepare("SELECT DATA_TYPE, EXTRA FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :tbl AND COLUMN_NAME = :col AND TABLE_SCHEMA = '".DB_NAME."'");
+		$this->stmt = $this->dbh->prepare("SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :tbl AND COLUMN_NAME = :col AND TABLE_SCHEMA = '".DB_NAME."'");
 		$this->stmt->execute([':tbl'=>$table, ':col'=>$column]);
 		if($this->stmt->rowCount() == 0) return false;
 		foreach($this->stmt->fetchAll() as $row) {
@@ -306,13 +306,7 @@ class DatabaseMigrationController {
 				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-			if($this->debug) echo 'Upgrading to 1.1.3... (update permissions of superadmin role)'."\n";
-				$this->stmt = $this->dbh->prepare(
-					"UPDATE system_user_role SET permissions='{\"Special\\\\\\\\ClientApi\": true, \"Special\\\\\\\\WebFrontend\": true, \"Special\\\\\\\\GeneralConfiguration\": true, \"Special\\\\\\\\EventQueryRules\": true, \"Special\\\\\\\\PasswordRotationRules\": true, \"Special\\\\\\\\DeletedObjects\": true, \"Models\\\\\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\\\\\SystemUser\": true, \"Models\\\\\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Software\": true, \"Models\\\\\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}}}' WHERE id = 1"
-				);
-				if(!$this->stmt->execute()) throw new Exception('SQL error');
-
-				$upgraded = true;
+			$upgraded = true;
 		}
 
 		/*** 1.1.4 ***/
@@ -409,6 +403,62 @@ class DatabaseMigrationController {
 				  KEY `fk_computer_user_1` (`computer_id`),
 				  CONSTRAINT `fk_computer_user_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if($this->getTableColumnInfo('mobile_device', 'serial')['COLUMN_DEFAULT'] !== 'NULL') {
+			if($this->debug) echo 'Upgrading to 1.1.4... (make mobile_device.serial nullable)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device` CHANGE `serial` `serial` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.4... (add battery_status column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device` ADD COLUMN `state` text DEFAULT NULL AFTER udid");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(!$this->getTableColumnInfo('managed_app', 'type')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add type column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `managed_app` ADD `type` VARCHAR(10) NOT NULL DEFAULT 'ios' AFTER `id`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(!$this->getTableColumnInfo('mobile_device_command', 'external_id')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add external_id column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device_command` ADD `external_id` VARCHAR(10) NULL DEFAULT NULL AFTER `id`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(!$this->getTableColumnInfo('mobile_device_group_managed_app', 'install_type')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add external_id column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device_group_managed_app` ADD `install_type` TINYTEXT NULL DEFAULT NULL AFTER `remove_on_mdm_remove`;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(strtolower($this->getTableColumnInfo('mobile_device', 'info')['COLUMN_TYPE']) !== 'mediumtext') {
+			if($this->debug) echo 'Upgrading to 1.1.4... (modify info column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device` CHANGE `info` `info` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.4... (update permissions of superadmin role)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"UPDATE system_user_role SET permissions='{\"Special\\\\\\\\ClientApi\": true, \"Special\\\\\\\\WebFrontend\": true, \"Special\\\\\\\\GeneralConfiguration\": true, \"Special\\\\\\\\EventQueryRules\": true, \"Special\\\\\\\\PasswordRotationRules\": true, \"Special\\\\\\\\DeletedObjects\": true, \"Models\\\\\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\\\\\SystemUser\": true, \"Models\\\\\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Software\": true, \"Models\\\\\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}, \"create\": true}}' WHERE id = 1"
+			);
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			$upgraded = true;

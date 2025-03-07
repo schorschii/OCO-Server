@@ -55,10 +55,10 @@ if($path === '/profile') {
 	$md = $db->selectMobileDeviceBySerialNumber($request['SERIAL']);
 	if(!$md) throw new NotFoundException();
 	$db->updateMobileDevice(
-		$md->id, $request['UDID'], $md->device_name, $md->serial, $md->vendor_description,
+		$md->id, $request['UDID'], $md->state, $md->device_name, $md->serial, $md->vendor_description,
 		$md->model, $md->os, $md->device_family, $md->color,
 		$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent,
-		$md->unlock_token, $md->info, $md->notes, $md->force_update
+		$md->unlock_token, $md->info, $md->notes, $md->force_update, true/*last_update*/
 	);
 
 	// deliver the enrollment profile to the device
@@ -105,22 +105,15 @@ if($path === '/profile') {
 			$os = $request['OSVersion'] ? 'iOS '.$request['OSVersion'] : null;
 			$md = $db->selectMobileDeviceBySerialNumber($request['SerialNumber']);
 			if(!$md) {
-				// if this is a manual enrollment (not synced via ABM/ASM), we need to create the mobile device record here
-				$db->insertMobileDevice(
-					$request['UDID'], ''/*name*/, $request['SerialNumber'], ''/*description*/,
-					$request['ProductName']??'', $os??'iOS', $request['device_family']??'iPhone', ''/*color*/,
-					null/*profile*/, null/*push_token*/, null/*push_magic*/, null/*push_sent*/, null/*unlock_token*/,
-					null/*info*/, ''/*notes*/, 0/*force_update*/
-				);
-			} else {
-				// device already registered - store the UDID
-				$db->updateMobileDevice(
-					$md->id, $request['UDID'], $md->device_name, $md->serial, $md->vendor_description,
-					$md->model, $os??$md->os, $md->device_family, $md->color,
-					$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent,
-					$md->unlock_token, $md->info, $md->notes, $md->force_update
-				);
+				throw new InvalidRequestException('Device not found');
 			}
+			// device already registered - store the UDID
+			$db->updateMobileDevice(
+				$md->id, $request['UDID'], $md->state, $md->device_name, $md->serial, $md->vendor_description,
+				$md->model, $os??$md->os, $md->device_family, $md->color,
+				$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent,
+				$md->unlock_token, $md->info, $md->notes, $md->force_update, true/*last_update*/
+			);
 			break;
 
 		case 'TokenUpdate':
@@ -154,10 +147,10 @@ if($path === '/profile') {
 			$md = $db->selectMobileDeviceByUdid($request['UDID']);
 			if(!$md) throw new NotFoundException();
 			$db->updateMobileDevice(
-				$md->id, $md->udid, $md->device_name, $md->serial, $md->vendor_description,
+				$md->id, $md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 				$md->model, $md->os, $md->device_family, $md->color,
 				$md->profile_uuid, $request['Token'], $request['PushMagic'], $md->push_sent,
-				$request['UnlockToken'], $md->info, $md->notes, $md->force_update
+				$request['UnlockToken'], $md->info, $md->notes, $md->force_update, true/*last_update*/
 			);
 			break;
 
@@ -180,10 +173,10 @@ if($path === '/profile') {
 			$md = $db->selectMobileDeviceByUdid($request['UDID']);
 			if(!$md) throw new NotFoundException();
 			$db->updateMobileDevice(
-				$md->id, null/*udid*/, $md->device_name, $md->serial, $md->vendor_description,
+				$md->id, null/*udid*/, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 				$md->model, $md->os, $md->device_family, $md->color,
 				$md->profile_uuid, null/*push_token*/, null/*push_magic*/, null/*push_sent*/,
-				null/*unlock_token*/, $md->info, $md->notes, $md->force_update
+				null/*unlock_token*/, $md->info, $md->notes, $md->force_update, true/*last_update*/
 			);
 			break;
 
@@ -222,20 +215,20 @@ if($path === '/profile') {
 
 	// store info about previous command result
 	if(isset($request['Status']) && isset($request['CommandUUID'])) {
-		$status = null;
+		$state = null;
 		if($request['Status'] == 'Acknowledged')
-			$status = Models\MobileDeviceCommand::STATE_SUCCESS;
+			$state = Models\MobileDeviceCommand::STATE_SUCCESS;
 		else
-			$status = Models\MobileDeviceCommand::STATE_FAILED;
+			$state = Models\MobileDeviceCommand::STATE_FAILED;
 
 		$mdc = $db->selectMobileDeviceCommand($request['CommandUUID']);
 		if(!$mdc) throw new Exception('Unknown command UUID');
-		$db->updateMobileDeviceCommand($request['CommandUUID'], $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $status, $body, date('Y-m-d H:i:s'));
+		$db->updateMobileDeviceCommand($request['CommandUUID'], $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $state, $body, date('Y-m-d H:i:s'));
 		$rt = json_decode($mdc->parameter, true)['RequestType'] ?? '';
 
 		// reset push_sent timestamp
 		$db->updateMobileDevice(
-			$md->id, $md->udid, $md->device_name, $md->serial,
+			$md->id, $md->udid, $md->state, $md->device_name, $md->serial,
 			$md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
 			$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
 			$md->unlock_token, $md->info, $md->notes, $md->force_update
@@ -246,10 +239,12 @@ if($path === '/profile') {
 			$os = $request['QueryResponses']['OSVersion'] ? 'iOS '.$request['QueryResponses']['OSVersion'] : null;
 			$product = $request['QueryResponses']['ProductName'] ? $request['QueryResponses']['ProductName'] : null;
 			$db->updateMobileDevice(
-				$md->id, $md->udid, $request['QueryResponses']['DeviceName']??'?', $request['QueryResponses']['SerialNumber']??$md->serial,
+				$md->id, $md->udid, $md->state,
+				$request['QueryResponses']['DeviceName']??'?',
+				$request['QueryResponses']['SerialNumber']??$md->serial,
 				$md->vendor_description, $product??$md->model, $os??$md->os, $md->device_family, $md->color,
 				$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
-				$md->unlock_token, json_encode($request['QueryResponses']), $md->notes, $md->force_update
+				$md->unlock_token, json_encode($request['QueryResponses']), $md->notes, $md->force_update, true/*last_update*/
 			);
 		} elseif($rt === 'InstalledApplicationList') {
 			$apps = [];
@@ -312,9 +307,23 @@ if($path === '/profile') {
 		}
 	}
 
+} elseif(!empty($_GET['enterpriseToken'])) {
+
+	$enterprise = null;
+	$ae = new Android\AndroidEnrollment($db);
+	try {
+		$enterprise = $ae->getEnterprise();
+	} catch(RuntimeException $e) {}
+	if(!$enterprise) {
+		$ae->createEnterprise($_GET['enterpriseToken']);
+		header('Location: index.php?view=settings-mdm');
+		die();
+	} else echo 'Enterprise already set!';
+
 } else {
 
 	header('HTTP/1.1 400 INVALID REQUEST');
+	die();
 
 }
 
@@ -328,6 +337,8 @@ function checkSignature(string $body, string $signature) {
 	$tmpFileCa   = '/tmp/mdm-ca-'.$processId;
 	file_put_contents($tmpFileBody, $body);
 	file_put_contents($tmpFileCa, $ade->getMdmDeviceCaCert());
+
+	// TODO: check CN === $md->id
 
 	// it seems not possible to verify detached signatures using PHP's openssl_cms_verify(),
 	// that's why we use the command line utility

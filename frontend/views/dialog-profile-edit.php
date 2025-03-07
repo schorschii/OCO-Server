@@ -10,9 +10,13 @@ require_once('../session.inc.php');
 		<th><?php echo LANG('name'); ?></th>
 		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtProfileName' autofocus='true'></input></td>
 	</tr>
-	<tr>
+	<tr id='trProfileFile'>
 		<th><?php echo LANG('profile_file'); ?></th>
 		<td><input type='file' class='fullwidth' id='fleProfilePayload'></input></td>
+	</tr>
+	<tr id='trProfileText' style='display:none'>
+		<th><?php echo LANG('profile_content'); ?></th>
+		<td><textarea class='fullwidth' id='txtProfilePayload'></textarea></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('notes'); ?></th>
@@ -25,7 +29,7 @@ require_once('../session.inc.php');
 	<button id='btnUpdateProfile' class='primary' onclick='editProfile(
 		txtProfileId.value,
 		txtProfileName.value,
-		fleProfilePayload.files,
+		txtProfilePayload.value != "" ? txtProfilePayload.value : fleProfilePayload.files,
 		txtNotes.value
 	)'><img src='img/send.white.svg'>&nbsp;<span id='spnBtnUpdateProfile'><?php echo LANG('change'); ?></span></button>
 </div>

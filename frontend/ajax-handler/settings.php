@@ -40,12 +40,34 @@ try {
 		}
 		die();
 	}
-
 	if(!empty($_POST['sync_apple_assets'])) {
 		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 		try {
 			$ade = new Apple\VolumePurchaseProgram($db);
 			$ade->syncAssets();
+		} catch(Exception $e) {
+			header('HTTP/1.1 500 Internal Server Error');
+			die($e->getMessage());
+		}
+		die();
+	}
+
+	if(!empty($_POST['get_playstore_token'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+		try {
+			$ae = new Android\AndroidEnrollment($db);
+			die($ae->generateWebToken());
+		} catch(Exception $e) {
+			header('HTTP/1.1 500 Internal Server Error');
+			die($e->getMessage());
+		}
+		die();
+	}
+	if(!empty($_POST['sync_android_devices'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+		try {
+			$ade = new Android\AndroidEnrollment($db);
+			$ade->syncDevices();
 		} catch(Exception $e) {
 			header('HTTP/1.1 500 Internal Server Error');
 			die($e->getMessage());

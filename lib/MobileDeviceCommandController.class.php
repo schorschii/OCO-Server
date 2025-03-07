@@ -4,20 +4,84 @@ class MobileDeviceCommandController {
 
 	private $db;
 	private $vpp;
+	private $ae;
 	private $debug;
 
 	function __construct(DatabaseController $db, bool $debug=false) {
 		$this->db = $db;
 		$this->vpp = new Apple\VolumePurchaseProgram($db);
+		$this->ae = new Android\AndroidEnrollment($db);
 		$this->debug = $debug;
 	}
 
 	function mdmCron() {
 		$mds = $this->db->selectAllMobileDevice();
 
-		// check if every assigned profile is installed, otherwise create job
 		$changedMdIds = [];
+		$this->iosProfiles($mds, $changedMdIds);
+		$this->iosAppInstalls($mds, $changedMdIds);
+		$this->iosInventoryJobs($mds, $changedMdIds);
+		$this->iosPush();
+
+		$policies = [];
+		$this->androidAppInstalls($mds, $policies);
+		$this->androidPolicies($mds, $policies);
+		$this->androidPoliciesPatch($policies);
+	}
+
+	private function androidAppInstalls(array $mds, array &$policies) {
+		// check if every assigned app is installed, otherwise add to policy
 		foreach($mds as $md) {
+			if($md->getOsType() != Models\MobileDevice::OS_TYPE_ANDROID) continue;
+
+			foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
+				if($app->type != Models\ManagedApp::TYPE_ANDROID) continue;
+
+				if(empty($policies[$md->udid]) || empty($policies[$md->udid]['applications']))
+					$policies[$md->udid]['applications'] = [];
+
+				$policies[$md->udid]['applications'][] = [
+					'packageName' => $app->identifier,
+					'installType' => $app->install_type,
+					'managedConfiguration' => json_decode($app->config, true),
+				];
+			}
+		}
+	}
+
+	private function androidPolicies(array $mds, array &$policies) {
+		// check if every assigned app is installed, otherwise add to policy
+		foreach($mds as $md) {
+			if($md->getOsType() != Models\MobileDevice::OS_TYPE_ANDROID) continue;
+
+			foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
+				if(empty($policies[$md->udid]))
+					$policies[$md->udid] = [];
+
+				foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
+					$policyValues = json_decode($p->payload, true);
+					if(!$policyValues || !is_array($policyValues)) continue;
+					$policies[$md->udid] = array_merge($policies[$md->udid], $policyValues);
+				}
+			}
+		}
+	}
+
+	private function androidPoliciesPatch(array $policies) {
+		// check if every assigned app is installed, otherwise add to policy
+		foreach($policies as $mdId => $policyValues) {
+			$appCount = count($policyValues['applications']??[]);
+			$policyCount = count($policyValues);
+			$this->ae->patchPolicy(strval($mdId), $policyValues, strval($mdId));
+			echo('Updated policy for device '.$mdId.' ('.$appCount.' apps, '.$policyCount.' policies)'."\n");
+		}
+	}
+
+	private function iosProfiles(array $mds, array &$changedMdIds) {
+		// check if every assigned profile is installed, otherwise create job
+		foreach($mds as $md) {
+			if($md->getOsType() != Models\MobileDevice::OS_TYPE_IOS) continue;
+
 			$installedProfileUuids = $this->db->selectAllMobileDeviceProfileUuidByMobileDeviceId($md->id);
 			foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
 				$uuid = $p->getUuid();
@@ -55,41 +119,50 @@ class MobileDeviceCommandController {
 				}
 			}
 		}
+	}
 
+	private function iosAppInstalls(array $mds, array &$changedMdIds) {
 		// check if every assigned app is installed, otherwise create job
 		foreach($mds as $md) {
+			if($md->getOsType() != Models\MobileDevice::OS_TYPE_IOS) continue;
+
 			$installedApps = $this->db->selectAllMobileDeviceAppIdentifierByMobileDeviceId($md->id);
 			foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
-				if(!array_key_exists($app->identifier, $installedApps)) {
-					// assign VPP license
-					if($app->vpp_amount) {
-						$this->vpp->associateAssets(
-							[ [ 'adamId' => $app->store_id ] ],
-							[], [ $md->serial ]
-						);
-					}
-					// create install command
-					$flagRemoveOnMdmRemove = $app->remove_on_mdm_remove ? 1 : 0;
-					$flagPreventBackup = $app->disable_cloud_backup ? 4 : 0;
-					$result = $this->db->insertMobileDeviceCommand($md->id, 'InstallApplication', json_encode([
-						'RequestType' => 'InstallApplication',
-						'iTunesStoreID' => $app->store_id,
-						'ManagementFlags' => $flagRemoveOnMdmRemove + $flagPreventBackup,
-						'Options' => [ 'PurchaseMethod' => ($app->vpp_amount ? 1 : 0) ],
-						'InstallAsManaged' => true,
-						'Attributes' => [ 'Removable' => boolval($app->removable) ],
-						'Configuration' => ($app->config && json_decode($app->config, true)) ? json_decode($app->config, true) : []
-					]));
-					if($result) {
-						$changedMdIds[] = $md->id;
-						echo('Created command for installing app '.$app->identifier.' on device '.$md->id."\n");
-					}
+				if($app->type != Models\ManagedApp::TYPE_IOS) continue;
+				if(array_key_exists($app->identifier, $installedApps)) continue;
+
+				// assign VPP license
+				if($app->vpp_amount) {
+					$this->vpp->associateAssets(
+						[ [ 'adamId' => $app->store_id ] ],
+						[], [ $md->serial ]
+					);
+				}
+				// create install command
+				$flagRemoveOnMdmRemove = $app->remove_on_mdm_remove ? 1 : 0;
+				$flagPreventBackup = $app->disable_cloud_backup ? 4 : 0;
+				$result = $this->db->insertMobileDeviceCommand($md->id, 'InstallApplication', json_encode([
+					'RequestType' => 'InstallApplication',
+					'iTunesStoreID' => $app->store_id,
+					'ManagementFlags' => $flagRemoveOnMdmRemove + $flagPreventBackup,
+					'Options' => [ 'PurchaseMethod' => ($app->vpp_amount ? 1 : 0) ],
+					'InstallAsManaged' => true,
+					'Attributes' => [ 'Removable' => boolval($app->removable) ],
+					'Configuration' => ($app->config && json_decode($app->config, true)) ? json_decode($app->config, true) : []
+				]));
+				if($result) {
+					$changedMdIds[] = $md->id;
+					echo('Created command for installing app '.$app->identifier.' on device '.$md->id."\n");
 				}
 			}
 		}
+	}
 
+	private function iosInventoryJobs(array $mds, array $changedMdIds) {
 		// check if device should update inventory data and if so, create a job command for that
 		foreach($mds as $md) {
+			if($md->getOsType() != Models\MobileDevice::OS_TYPE_IOS) continue;
+
 			if(time() - strtotime($md->last_update??'') > intval($this->db->settings->get('agent-update-interval'))
 			|| $md->info === null
 			|| !empty($md->force_update)
@@ -103,20 +176,23 @@ class MobileDeviceCommandController {
 					}
 				}
 				if(!$hasUpdateJob) {
-					echo('Add mobile device info update job for '.$md->serial."\n");
+					echo('Add mobile device info update job for device '.$md->id."\n");
 					$this->db->insertMobileDeviceCommand($md->id, Apple\MdmCommand::DEVICE_INFO['RequestType'], json_encode(Apple\MdmCommand::DEVICE_INFO));
 					$this->db->insertMobileDeviceCommand($md->id, Apple\MdmCommand::APPS_INFO['RequestType'], json_encode(Apple\MdmCommand::APPS_INFO));
 					$this->db->insertMobileDeviceCommand($md->id, Apple\MdmCommand::PROFILE_INFO['RequestType'], json_encode(Apple\MdmCommand::PROFILE_INFO));
 				}
 			}
 		}
+	}
 
+	private function iosPush() {
 		// get which devices should be contacted via push
 		$wakeMdIds = [];
 		foreach($this->db->selectAllMobileDeviceCommand() as $mdc) {
 			if($mdc->state == Models\MobileDeviceCommand::STATE_QUEUED
 			&& !in_array($mdc->mobile_device_id, $wakeMdIds)) {
 				$md = $this->db->selectMobileDevice($mdc->mobile_device_id);
+				if($md->getOsType() != Models\MobileDevice::OS_TYPE_IOS) continue;
 				if(empty($md->push_sent) || time() - strtotime($md->push_sent) > 60*60) {
 					$wakeMdIds[] = $md->id;
 				}
@@ -130,10 +206,10 @@ class MobileDeviceCommandController {
 			foreach($wakeMdIds as $mdId) {
 				$md = $this->db->selectMobileDevice($mdId);
 				if(empty($md->push_token) || empty($md->push_magic)) continue;
-				echo('Sending push notification to '.$md->serial."\n");
+				echo('Sending push notification to device '.$md->id.' '.$md->serial."\n");
 				$apn->send($md->push_token, $md->push_magic);
-				$this->db->updateMobileDevice(
-					$md->id, $md->udid, $md->device_name, $md->serial, $md->vendor_description,
+				$this->db->updateMobileDevice($md->id,
+					$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 					$md->model, $os??$md->os, $md->device_family, $md->color,
 					$md->profile_uuid, $md->push_token, $md->push_magic, date('Y-m-d H:i:s'), $md->unlock_token,
 					$md->info, $md->notes, 0/*force_update*/

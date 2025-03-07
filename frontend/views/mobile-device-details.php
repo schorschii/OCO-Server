@@ -22,7 +22,7 @@ try {
 ?>
 
 <div class='details-header'>
-	<h1><img src='<?php echo $md->getIcon(); ?>' class='<?php echo($md->udid ? 'online' : 'offline'); ?>' title='<?php echo($md->udid ? LANG('enrolled') : LANG('not_enrolled')); ?>'><span id='page-title'><span id='spnMobileDeviceSerial'><?php echo htmlspecialchars($md->device_name?$md->device_name:$md->serial); ?></span></span></h1>
+	<h1><img src='<?php echo $md->getIcon(); ?>' class='<?php echo($md->isOnline() ? 'online' : 'offline'); ?>' title='<?php echo($md->isOnline() ? LANG('enrolled') : LANG('not_enrolled')); ?>'><span id='page-title'><span id='spnMobileDeviceSerial'><?php echo htmlspecialchars($md->device_name?$md->device_name:$md->serial); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='showDialogMobileDeviceCommand(<?php echo $md->id; ?>)' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/command.dyn.svg'>&nbsp;<?php echo LANG('send_command'); ?></button>
 		<button onclick='showDialogEditMobileDevice(<?php echo $md->id; ?>, spnMobileDeviceNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
@@ -66,6 +66,7 @@ try {
 							<th><?php echo LANG('os'); ?></th>
 							<td><?php echo htmlspecialchars($md->os); ?></td>
 						</tr>
+						<?php if($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) { ?>
 						<tr>
 							<th><?php echo LANG('vendor_description'); ?></th>
 							<td><?php echo htmlspecialchars($md->vendor_description); ?></td>
@@ -82,6 +83,7 @@ try {
 							<th><?php echo LANG('push_token'); ?></th>
 							<td><?php echo empty($md->push_token) ? '<img src="img/close.opacity.svg">' : '<img src="img/success.dyn.svg">'; ?></td>
 						</tr>
+						<?php } ?>
 						<tr>
 							<th><?php echo LANG('created'); ?></th>
 							<td><?php echo htmlspecialchars($md->created); ?></td>
@@ -123,11 +125,178 @@ try {
 					<?php
 					if(empty($md->info)) { ?>
 						<div class='alert info'><?php echo LANG('device_does_not_delivered_info_yet'); ?></div>
-					<?php } else {
-						echoDictTable(json_decode($md->info, true), [
-							'UDID', 'SerialNumber', 'DeviceName', 'ProductName', 'OSVersion', 'AvailableDeviceCapacity'
-						]);
-					} ?>
+					<?php } elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) {
+						$info = json_decode($md->info, true); ?>
+						<table class='list metadata'>
+							<tr>
+								<th><?php echo LANG('build'); ?></th>
+								<td><?php echo htmlspecialchars($info['BuildVersion']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('model'); ?></th>
+								<td><?php echo htmlspecialchars($info['ModelNumber']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('eas_device_identifier'); ?></th>
+								<td><?php echo htmlspecialchars($info['EASDeviceIdentifier']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('time_zone'); ?></th>
+								<td><?php echo htmlspecialchars($info['TimeZone']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('app_analytics'); ?></th>
+								<td><?php echoDictTable($info['AppAnalyticsEnabled']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('diagnostic_submission'); ?></th>
+								<td><?php echoDictTable($info['DiagnosticSubmissionEnabled']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('cloud_backup'); ?></th>
+								<td><?php echoDictTable($info['IsCloudBackupEnabled']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('device_locator_service'); ?></th>
+								<td><?php echoDictTable($info['IsDeviceLocatorServiceEnabled']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('do_not_disturb'); ?></th>
+								<td><?php echoDictTable($info['IsDoNotDisturbInEffect']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('lost_mode'); ?></th>
+								<td><?php echoDictTable($info['IsMDMLostModeEnabled']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('multi_user'); ?></th>
+								<td><?php echoDictTable($info['IsMultiUser']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('personal_hotspot'); ?></th>
+								<td><?php echoDictTable($info['PersonalHotspotEnabled']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('data_roaming'); ?></th>
+								<td><?php echoDictTable($info['DataRoamingEnabled']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('cellular_technology'); ?></th>
+								<td><?php
+									if(($info['CellularTechnology']??'-') == '0') echo '-';
+									elseif(($info['CellularTechnology']??'-') == '1') echo 'GSM';
+									elseif(($info['CellularTechnology']??'-') == '2') echo 'CDMA';
+									elseif(($info['CellularTechnology']??'-') == '3') echo 'GSM+CDMA';
+									else echo htmlspecialchars($info['CellularTechnology']??'-');
+								?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('modem_firmware'); ?></th>
+								<td><?php echo htmlspecialchars($info['ModemFirmwareVersion']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('sim_slots'); ?></th>
+								<td><?php echoDictTable($info['ServiceSubscriptions']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('bluetooth_mac'); ?></th>
+								<td><?php echo htmlspecialchars($info['BluetoothMAC']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('wifi_mac'); ?></th>
+								<td><?php echo htmlspecialchars($info['WiFiMAC']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('itunes_store_account_hash'); ?></th>
+								<td><?php echo htmlspecialchars($info['iTunesStoreAccountHash']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('battery_status'); ?></th>
+								<td><?php echo progressBar(($info['BatteryLevel']??0)*100, null, null, 'stretch'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('storage'); ?></th>
+								<td><?php
+								$total = $info['DeviceCapacity'] ?? 0;
+								$free = $info['AvailableDeviceCapacity'] ?? 0;
+								$used = $total - $free;
+								echo progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
+								?></td>
+							</tr>
+						</table>
+					<?php } elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) {
+						$info = json_decode($md->info, true); ?>
+						<table class='list metadata'>
+							<tr>
+								<th><?php echo LANG('identifier'); ?></th>
+								<td><?php echo htmlspecialchars($info['name']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('management_mode'); ?></th>
+								<td><?php echo htmlspecialchars($info['managementMode']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('ownership'); ?></th>
+								<td><?php echo htmlspecialchars($info['ownership']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('status'); ?></th>
+								<td><?php echo htmlspecialchars($info['state']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('policy_compliant'); ?></th>
+								<td><?php echoDictTable($info['policyCompliant']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('api_level'); ?></th>
+								<td><?php echo htmlspecialchars($info['apiLevel']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('device_policy_version'); ?></th>
+								<td><?php echo htmlspecialchars($info['softwareInfo']['androidDevicePolicyVersionName']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('kernel_version'); ?></th>
+								<td><?php echo htmlspecialchars($info['softwareInfo']['deviceKernelVersion']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('bootloader_version'); ?></th>
+								<td><?php echo htmlspecialchars($info['softwareInfo']['bootloaderVersion']??'-'); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('system_update'); ?></th>
+								<td><?php echoDictTable($info['softwareInfo']['systemUpdateInfo']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('screens'); ?></th>
+								<td><?php echoDictTable($info['displays']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('network'); ?></th>
+								<td><?php echoDictTable($info['networkInfo']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('ram'); ?></th>
+								<td><?php echo niceSIze($info['memoryInfo']['totalRam']??0, false); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('storage'); ?></th>
+								<td><?php echo niceSIze($info['memoryInfo']['totalInternalStorage']??0, false); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('encrypted'); ?></th>
+								<td><?php echoDictTable($info['deviceSettings']['isEncrypted']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('app_verification_enabled'); ?></th>
+								<td><?php echoDictTable($info['deviceSettings']['verifyAppsEnabled']??null); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('common_criteria_mode'); ?></th>
+								<td><?php echo echoDictTable($info['commonCriteriaModeInfo']??'-'); ?></td>
+							</tr>
+						</table>
+					<?php } ?>
 				</div>
 			</div>
 		</div>

@@ -184,7 +184,7 @@ function showDialogAjax(title='', url='', controls=false, size=false, callback=n
 	};
 	ajaxRequest(url, null, function(text) {
 		showDialogHTML(title, text, controls, size, false);
-		if(callback != undefined && typeof callback == 'function') {
+		if(callback && typeof callback == 'function') {
 			callback(this.responseText);
 		}
 		finalAction();
@@ -230,6 +230,7 @@ function showDialogHTML(title='', text='', controls=false, size=false, monospace
 		for(var i = 0; i < childs.length; i++) {
 			if(childs[i].getAttribute('autofocus')) {
 				childs[i].focus();
+				break;
 			}
 		}
 	};
@@ -1346,10 +1347,21 @@ function searchItems(container, search) {
 function showDialogCreateMobileDeviceIos() {
 	showDialogAjax(LANG['new_ios_device'], 'views/dialog-mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
+function showDialogCreateMobileDeviceAndroid() {
+	showDialogAjax(LANG['new_android_device'], 'views/dialog-mobile-device-create-android.php', DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+}
 function showDialogEditMobileDevice(id, notes) {
 	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog-mobile-device-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditMobileDeviceId.value = id;
 		txtEditMobileDeviceNotes.value = notes;
+	});
+}
+function createMobileDeviceIos(name, notes) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'create_mobile_device':name, 'notes':notes, 'type':'ios'}), null, function(response) {
+		refreshContent();
+		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
+		hideDialog();showLoader(false);showLoader2(false);
+		window.open('views/dialog-mobile-device-create-ios.php?download_profile='+encodeURIComponent(response), '_blank')
 	});
 }
 function editMobileDevice(id, notes) {
@@ -1491,13 +1503,14 @@ function removeProfileFromGroup(ids, groupId) {
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogAssignManagedAppToGroup(id) {
-	if(!id) return;
-	showDialogAjax(LANG['assign'], 'views/dialog-managed-app-assign.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtManagedAppId.value = id;
+function showDialogAssignManagedAppToGroup(ids) {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'id[]', 'value':entry});
 	});
+	showDialogAjax(LANG['assign'], 'views/dialog-managed-app-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, config) {
+function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, installType, config) {
 	if(groupId === false) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
@@ -1509,6 +1522,7 @@ function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudB
 	params.push({'key':'removable', 'value':removable});
 	params.push({'key':'disable_cloud_backup', 'value':disableCloudBackup});
 	params.push({'key':'remove_on_mdm_remove', 'value':removeOnMdmRemove});
+	params.push({'key':'install_type', 'value':installType});
 	params.push({'key':'config', 'value':config});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
@@ -1757,9 +1771,7 @@ function showDialogAddComputerToGroup(id) {
 
 // ======== JOB OPERATIONS ========
 function showDialogMobileDeviceCommand(mobile_device_id) {
-	showDialogAjax(LANG['send_command'], 'views/dialog-mobile-device-command.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtMobileDeviceId.value = mobile_device_id;
-	});
+	showDialogAjax(LANG['send_command'], 'views/dialog-mobile-device-command.php?id='+encodeURIComponent(mobile_device_id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function showMobileDeviceCommandParameter(option) {
 	let param = option.getAttribute('parameter');
@@ -1784,7 +1796,7 @@ function sendMobileDeviceCommand(mobile_device_id, name, parameter) {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditProfile(id=-1, name='', notes='') {
+function showDialogEditProfile(textInput, id=-1, name='', notes='') {
 	title = LANG['edit_profile'];
 	buttonText = LANG['change'];
 	if(id == -1) {
@@ -1793,6 +1805,10 @@ function showDialogEditProfile(id=-1, name='', notes='') {
 	}
 	showDialogAjax(title, 'views/dialog-profile-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		spnBtnUpdateProfile.innerText = buttonText;
+		if(textInput) {
+			trProfileText.style.display = 'table-row';
+			trProfileFile.style.display = 'none';
+		}
 	});
 }
 function editProfile(id, name, payload, notes) {
@@ -1800,8 +1816,12 @@ function editProfile(id, name, payload, notes) {
 	let formData = new FormData();
 
 	if(payload !== null) {
-		for(i = 0; i <= payload.length; i++) {
-			formData.append('payload[]', payload[i]);
+		if(typeof payload == 'string') {
+			formData.append('payload_text', payload);
+		} else {
+			for(i = 0; i <= payload.length; i++) {
+				formData.append('payload[]', payload[i]);
+			}
 		}
 		formData.append('update_payload', '1');
 	}
@@ -2742,22 +2762,40 @@ function editLdapConfigDomainUsers(jsonConfig) {
 	req.open('POST', 'ajax-handler/settings.php');
 	req.send(formData);
 }
-function ldapSyncSystemUsers() {
+function enableDisableButton(btn, state) {
+	var btnImg = btn.querySelectorAll('img')[0];
+	if(state) {
+		btn.disabled = false;
+		btnImg.classList.remove('animRotate');
+	} else {
+		btn.disabled = true;
+		btnImg.classList.add('animRotate');
+	}
+}
+function ldapSyncSystemUsers(btn) {
+	enableDisableButton(btn, false);
 	var params = [];
 	params.push({'key':'ldap_sync_system_users', 'value':1});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
 		refreshContent();
 		emitMessage(LANG['ldap_sync'], text, MESSAGE_TYPE_SUCCESS);
+	}, function(status, statusText, responseText){
+		enableDisableButton(btn, true);
+		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
-function ldapSyncDomainUsers() {
+function ldapSyncDomainUsers(btn) {
+	enableDisableButton(btn, false);
 	var params = [];
 	params.push({'key':'ldap_sync_domain_users', 'value':1});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
 		refreshContent();
 		emitMessage(LANG['ldap_sync'], text, MESSAGE_TYPE_SUCCESS);
+	}, function(status, statusText, responseText){
+		enableDisableButton(btn, true);
+		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
 function showDialogEditWolSatellites() {
@@ -2787,7 +2825,7 @@ function showDialogEditSetting(key='', file=false, warning=true, keyHidden=false
 			title = LANG['create_setting'];
 		}
 	}
-	showDialogAjax(title, 'views/dialog-setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(title, 'views/dialog-setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		if(file) {
 			fleEditSettingValue.classList.remove('hidden');
 			txtEditSettingValue.classList.add('hidden');
@@ -2795,6 +2833,9 @@ function showDialogEditSetting(key='', file=false, warning=true, keyHidden=false
 				console.log(file);
 				fleEditSettingValue.accept = file;
 			}
+			if(keyHidden) window.setTimeout(() => fleEditSettingValue.focus(), 0);
+		} else {
+			if(keyHidden) window.setTimeout(() => txtEditSettingValue.focus(), 0);
 		}
 		if(!warning) {
 			trSettingsManualChangesWarning.classList.add('hidden');
@@ -2865,22 +2906,164 @@ function readFileInputBlob(file) {
 	return blob;
 }
 
-function syncAppleDevices() {
+function syncAppleDevices(btn) {
 	var params = [];
 	params.push({'key':'sync_apple_devices', 'value':1});
 	var paramString = urlencodeArray(params);
+	enableDisableButton(btn, false);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
 		emitMessage(LANG['sync_with_apple_business_manager'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
+	}, function(status, statusText, responseText){
+		enableDisableButton(btn, true);
+		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
-function syncAppleAssets() {
+function syncAppleAssets(btn) {
 	var params = [];
 	params.push({'key':'sync_apple_assets', 'value':1});
 	var paramString = urlencodeArray(params);
+	enableDisableButton(btn, false);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
-		emitMessage(LANG['sync_with_apple_business_manager'], text, MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['sync_apple_vpp'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
+	}, function(status, statusText, responseText){
+		enableDisableButton(btn, true);
+		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
+	});
+}
+
+function showDialogManagedPlayStore() {
+	// get the token for the Play Store iframe
+	var paramString = urlencodeArray([
+		{'key':'get_playstore_token', 'value':1}
+	]);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(token) {
+		// load the Google JS
+		var script = document.createElement('script');
+		script.src = 'https://apis.google.com/js/api.js';
+		script.onload = function() {
+			// show the OCO dialog
+			showDialog(LANG['manage_android_apps'], '', DIALOG_BUTTONS_CLOSE);
+			// embed the Play Store iframe into the dialog
+			gapi.load('gapi.iframes', function() {
+				var options = {
+					'url': 'https://play.google.com/work/embedded/search?token='+encodeURIComponent(token)+'&mode=SELECT',
+					'where': obj('dialog-text'),
+					'attributes': { style:'height:100%; display:block', scrolling:'yes'}
+				};
+				var iframe = gapi.iframes.getContext().openChild(options);
+				iframe.register('onproductselect', function(event) {
+					var paramString = urlencodeArray([
+						{'key':'playstore_onproductselect', 'value':event.action},
+						{'key':'package_name', 'value':event.packageName},
+						{'key':'product_id', 'value':event.productId},
+						{'key':'app_name', 'value':prompt(LANG['display_name'])},
+					]);
+					ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
+						emitMessage(LANG['saved'], event.packageName, MESSAGE_TYPE_SUCCESS);
+						refreshContent();
+					});
+				}, gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER);
+			});
+		};
+		document.head.appendChild(script);
+	});
+}
+function showDialogAndroidZeroTouch() {
+	// get the token for the Play Store iframe
+	var params = [];
+	params.push({'key':'get_playstore_token', 'value':1});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(token) {
+		// load the Google JS
+		var script = document.createElement('script');
+		script.src = 'https://apis.google.com/js/api.js';
+		script.onload = function() {
+			// show the OCO dialog
+			showDialog(LANG['manage_zero_touch_enrollment'], '', DIALOG_BUTTONS_CLOSE);
+			// embed the Play Store iframe into the dialog
+			gapi.load('gapi.iframes', function() {
+				var options = {
+					'url': 'https://enterprise.google.com/android/zero-touch/embedded/companyhome?token='+encodeURIComponent(token)+'&dpcId=com.google.android.apps.work.clouddpc',
+					'where': obj('dialog-text'),
+					'attributes': { style:'height:100%; display:block', scrolling:'yes'}
+				};
+				var iframe = gapi.iframes.getContext().openChild(options);
+			});
+		};
+		document.head.appendChild(script);
+	});
+}
+function showDialogManagedPlayStoreConfig(packageName) {
+	// get the token for the Play Store iframe
+	var params = [];
+	params.push({'key':'get_playstore_token', 'value':1});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(token) {
+		// load the Google JS
+		var script = document.createElement('script');
+		script.src = 'https://apis.google.com/js/api.js';
+		script.onload = function() {
+			// show the OCO dialog
+			showDialog(packageName, '', DIALOG_BUTTONS_CLOSE);
+			// embed the Play Store iframe into the dialog
+			gapi.load('gapi.iframes', function() {
+				var options = {
+					'url': 'https://play.google.com/managed/mcm?token='+encodeURIComponent(token)+'&packageName='+encodeURIComponent(packageName),
+					'where': obj('dialog-text'),
+					'attributes': { style:'height:100%; display:block', scrolling:'yes'}
+				};
+				var iframe = gapi.iframes.getContext().openChild(options);
+				iframe.register('onconfigupdated', function(event) {
+					console.log(event);
+				}, gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER);
+				iframe.register('onconfigdeleted', function(event) {
+					console.log(event);
+				}, gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER);
+			});
+		};
+		document.head.appendChild(script);
+	});
+}
+function removeSelectedManagedApp(checkboxName, attributeName=null) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			if(attributeName == null) {
+				ids.push(entry.value);
+			} else {
+				ids.push(entry.getAttribute(attributeName));
+			}
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_managed_app_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['really_delete'])) {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+			emitMessage(LANG['object_deleted'], null, MESSAGE_TYPE_SUCCESS);
+			refreshContent();
+		});
+	}
+}
+function syncAndroidDevices(btn) {
+	var params = [];
+	params.push({'key':'sync_android_devices', 'value':1});
+	var paramString = urlencodeArray(params);
+	enableDisableButton(btn, false);
+	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+		emitMessage(LANG['sync_with_android_enterprise'], text, MESSAGE_TYPE_SUCCESS);
+		refreshContent();
+	}, function(status, statusText, responseText){
+		enableDisableButton(btn, true);
+		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
 

@@ -7,6 +7,7 @@ try {
 	$ade = new Apple\AutomatedDeviceEnrollment($db);
 	$vpp = new Apple\VolumePurchaseProgram($db);
 	$as = new Apple\AppStore($db, $vpp);
+	$ae = new Android\AndroidEnrollment($db);
 	$license = new LicenseCheck($db);
 	$permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 
@@ -24,10 +25,12 @@ try {
 			header('Content-Disposition: attachment; filename=mdm-token-cert.pem');
 			echo $ade->generateMdmServerTokenCert();
 			die();
-		case 'mdm-enrollment-profile':
-			if(empty($_GET['serial'])) throw new InvalidRequestException('A serial number is required');
-			header('Content-Disposition: attachment; filename=oco-mdm-enrollment-profile-'.urlencode($_GET['serial']).'.mobileconfig');
-			echo $ade->generateEnrollmentProfile($_GET['serial']);
+	}
+
+	// deliver download file if requested
+	if(!empty($_POST['action'])) switch($_POST['action']) {
+		case 'generate-google-signup-url':
+			$ae->generateSignupUrl();
 			die();
 	}
 
@@ -39,6 +42,10 @@ try {
 	$mdmApiUrl = null;
 	$vppTokenExpiry = null;
 	$appStoreKey = false;
+	$googleApiCredentials = null;
+	$companyName = null;
+	$signupUrl = null;
+	$enterprise = null;
 	try {
 		$ownMdmVendorCertInfo = openssl_x509_parse( $ade->getOwnMdmVendorCert()['cert'] );
 		$ownMdmVendorCertExpiry = date('Y-m-d H:i:s', intval($ownMdmVendorCertInfo['validTo_time_t']));
@@ -64,6 +71,18 @@ try {
 	try {
 		$appStoreKey = $as->getKey() && $as->getKeyId() && $as->getTeamId();
 	} catch(RuntimeException $e) {}
+	try {
+		$googleApiCredentials = $ae->getOAuthCredentials();
+	} catch(RuntimeException $e) {}
+	try {
+		$companyName = $ae->getCompanyName();
+	} catch(RuntimeException $e) {}
+	try {
+		$signupUrl = $ae->getSignupUrl();
+	} catch(RuntimeException $e) {}
+	try {
+		$enterprise = $ae->getEnterprise();
+	} catch(RuntimeException $e) {}
 } catch(PermissionException $e) {
 	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
 } catch(InvalidRequestException $e) {
@@ -77,6 +96,24 @@ try {
 
 <div class='details-abreast'>
 	<div>
+		<div class='controls heading'>
+			<h2><?php echo LANG('general'); ?></h2>
+			<div class='filler invisible'></div>
+		</div>
+		<table class='list'>
+			<tr>
+				<th><?php echo LANG('mdm_api_url'); ?>:</th>
+				<td>
+					<?php if($mdmApiUrl) { ?>
+						<div class='alert success'><?php echo htmlspecialchars($mdmApiUrl); ?></div>
+					<?php } else { ?>
+						<div class='alert error'><?php echo LANG('not_defined'); ?></div>
+					<?php } ?>
+					<button onclick='showDialogEditSetting("apple-mdm-api-url",false,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+				</td>
+			</tr>
+		</table>
+
 		<div class='controls heading'>
 			<h2><?php echo LANG('apple_business_manager'); ?></h2>
 			<div class='filler invisible'></div>
@@ -121,17 +158,6 @@ try {
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('mdm_api_url'); ?>:</th>
-				<td>
-					<?php if($mdmApiUrl) { ?>
-						<div class='alert success'><?php echo htmlspecialchars($mdmApiUrl); ?></div>
-					<?php } else { ?>
-						<div class='alert error'><?php echo LANG('not_defined'); ?></div>
-					<?php } ?>
-					<button onclick='showDialogEditSetting("apple-mdm-api-url",false,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
-				</td>
-			</tr>
-			<tr>
 				<th><?php echo LANG('activation_profile'); ?>:</th>
 				<td>
 					<?php if($mdmActivationProfile) { ?>
@@ -164,6 +190,57 @@ try {
 					<button onclick='showDialogEditSetting("apple-appstore-key",true,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('upload_key'); ?></button>
 					<button onclick='showDialogEditSetting("apple-appstore-keyid",false,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('key_id'); ?></button>
 					<button onclick='showDialogEditSetting("apple-appstore-teamid",false,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('team_id'); ?></button>
+				</td>
+			</tr>
+		</table>
+
+		<div class='controls heading'>
+			<h2><?php echo LANG('google_android_enterprise'); ?></h2>
+			<div class='filler invisible'></div>
+		</div>
+		<table class='list'>
+			<tr>
+				<th><?php echo LANG('service_account_credentials'); ?>:</th>
+				<td>
+					<?php
+					if($googleApiCredentials) { ?>
+						<div class='alert success'><?php echo htmlspecialchars($googleApiCredentials['client_email']); ?></div>
+					<?php } else { ?>
+						<div class='alert warning'><?php echo LANG('not_set_up'); ?></div>
+					<?php } ?>
+					<button onclick='showDialogEditSetting("google-api-credentials",true,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('company_name'); ?>:</th>
+				<td>
+					<?php if($companyName) { ?>
+						<div class='alert success'><?php echo htmlspecialchars($companyName); ?></div>
+					<?php } else { ?>
+						<div class='alert warning'><?php echo LANG('not_set_up'); ?></div>
+					<?php } ?>
+					<button onclick='showDialogEditSetting("google-company-name",false,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('signup_url'); ?>:</th>
+				<td>
+					<?php if($signupUrl) { ?>
+						<div class='alert success'><a target='_blank' href='<?php echo htmlspecialchars($signupUrl['url']); ?>'><?php echo htmlspecialchars($signupUrl['url']); ?></a></div>
+					<?php } else { ?>
+						<div class='alert warning'><?php echo LANG('not_set_up'); ?></div>
+					<?php } ?>
+					<button onclick='ajaxRequestPost("views/settings-mdm.php","action=generate-google-signup-url", null, refreshContent)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('generate'); ?></button>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('linked_enterprise'); ?>:</th>
+				<td>
+					<?php if($enterprise) { ?>
+						<div class='alert success'><?php echo htmlspecialchars($enterprise['name']); ?></div>
+					<?php } else { ?>
+						<div class='alert warning'><?php echo LANG('not_set_up'); ?></div>
+					<?php } ?>
 				</td>
 			</tr>
 		</table>
