@@ -628,13 +628,16 @@ function emitMessage(title, text, type='info', timeout=8000) {
 	messageBox.classList.add('message');
 	messageBox.classList.add('icon');
 	messageBox.classList.add(type);
+	var messageBoxContent = document.createElement('div');
+	messageBoxContent.classList.add('message-content');
+	messageBox.appendChild(messageBoxContent);
 	var messageBoxTitle = document.createElement('div');
 	messageBoxTitle.classList.add('message-title');
 	messageBoxTitle.innerText = title;
-	messageBox.appendChild(messageBoxTitle);
+	messageBoxContent.appendChild(messageBoxTitle);
 	var messageBoxText = document.createElement('div');
 	messageBoxText.innerText = text;
-	messageBox.appendChild(messageBoxText);
+	messageBoxContent.appendChild(messageBoxText);
 	var messageBoxClose = document.createElement('button');
 	messageBoxClose.classList.add('message-close');
 	messageBoxClose.innerText = 'Close';
