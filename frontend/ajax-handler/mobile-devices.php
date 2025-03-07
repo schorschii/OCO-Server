@@ -236,9 +236,8 @@ try {
 	if(isset($_POST['playstore_onproductselect'])
 	&& !empty($_POST['package_name'])
 	&& !empty($_POST['product_id'])) {
-		// TODO permission check
 		die(
-			$db->insertOrUpdateManagedApp('android', $_POST['package_name'], $_POST['product_id'], $_POST['app_name']??'?', null)
+			$cl->createOrEditManagedApp('android', $_POST['package_name'], $_POST['product_id'], $_POST['app_name']??'?', null)
 		);
 	}
 

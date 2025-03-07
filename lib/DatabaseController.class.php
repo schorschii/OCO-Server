@@ -424,15 +424,16 @@ class DatabaseController {
 		])) return false;
 		if($this->stmt->rowCount() > 0) {
 			$this->stmt = $this->dbh->prepare(
-				'UPDATE managed_app SET name = :name, vpp_amount = :vpp_amount WHERE type = :type AND identifier = :identifier AND store_id = :store_id'
+				'UPDATE managed_app SET id = LAST_INSERT_ID(id), name = :name, vpp_amount = :vpp_amount WHERE type = :type AND identifier = :identifier AND store_id = :store_id'
 			);
-			return $this->stmt->execute([
+			if(!$this->stmt->execute([
 				':type' => $type,
 				':identifier' => $identifier,
 				':store_id' => $store_id,
 				':name' => $name,
 				':vpp_amount' => $vpp_amount
-			]);
+			])) return false;
+			return $this->dbh->lastInsertId();
 		} else {
 			$this->stmt = $this->dbh->prepare(
 				'INSERT INTO managed_app (type, identifier, store_id, name, vpp_amount) VALUES (:type, :identifier, :store_id, :name, :vpp_amount)'

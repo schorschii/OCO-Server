@@ -206,6 +206,17 @@ class CoreLogic {
 		}
 		return $pFiltered;
 	}
+	public function createOrEditManagedApp($type, $packageName, $productId, $appName, $vppAmount) {
+		$this->checkPermission(new Models\ManagedApp(), PermissionManager::METHOD_CREATE);
+		$id = $this->db->insertOrUpdateManagedApp($type, $packageName, $productId, $appName, $vppAmount);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.managed_app.update', json_encode([
+			'type'=>$type,
+			'packageName'=>$packageName,
+			'productId'=>$productId,
+			'appName'=>$appName,
+			'vppAmount'=>$vppAmount,
+		]));
+	}
 	public function removeManagedApp($id, $force=false) {
 		$ma = $this->db->selectManagedApp($id);
 		if(empty($ma)) throw new NotFoundException();
