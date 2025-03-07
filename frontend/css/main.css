@@ -391,20 +391,6 @@ h3 {
 	background-color: transparent;
 }
 
-#homepage {
-	text-align: center;
-}
-#homepage .title {
-	font-size: 20px;
-}
-#homepage .subtitle {
-	font-size: 92%;
-	opacity: 0.6;
-}
-#homepage .subtitle2 {
-	font-weight: bold;
-}
-
 #dialog-container {
 	display: none;
 	position: fixed;
@@ -723,6 +709,9 @@ table.list, .boxshadow {
 }
 
 /*** INPUTS & BUTTONS ***/
+hr {
+	border: 1px solid #DBDBDB;
+}
 .box {
 	box-sizing: border-box;
 	background-color: white;
@@ -915,10 +904,46 @@ img.dragicon {
 	margin-right: 5px;
 }
 
-table.largepadding td,
-table.largepadding th {
+#homepage {
+	text-align: center;
+}
+#homepage .title {
+	font-size: 20px;
+}
+#homepage .subtitle {
+	font-size: 92%;
+	opacity: 0.6;
+}
+#homepage .subtitle2 {
+	font-weight: bold;
+}
+.stats > div {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	justify-content: space-between;
+	align-items: center;
 	padding: 15px;
 }
+.stats > div > * {
+	flex-grow: 1;
+	flex-shrink: 1;
+	flex-basis: 50px;
+	max-width: 100%;
+}
+.stats > div > *:not(.motd) {
+	white-space: nowrap;
+}
+@media (max-width: 850px) {
+	.stats > div.bars {
+		flex-direction: column;
+		gap: 5px;
+	}
+	.stats > div.bars > div.version {
+		order: -1;
+	}
+}
+
 table.list {
 	border-spacing: 0;
 	background-color: white;
@@ -1046,6 +1071,7 @@ table.list .eventlevel.verbose {
 }
 
 img.small,
+.stats img,
 table tr th > img,
 table tr td > img {
 	height: 16px;
@@ -1699,6 +1725,9 @@ div.stickytable > table.list tfoot {
 	table.list tr th:last-child,
 	table.list tr td:last-child {
 		border-right: 1px solid rgba(255,255,255,0.1);
+	}
+	hr {
+		border: 1px solid rgba(255,255,255,0.1);
 	}
 	.box {
 		border: 2px solid rgba(255,255,255,0.1);

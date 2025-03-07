@@ -71,6 +71,7 @@ class DatabaseController {
 			'SELECT
 			(SELECT count(id) FROM domain_user) AS "domain_users",
 			(SELECT count(id) FROM computer) AS "computers",
+			(SELECT count(id) FROM mobile_device) AS "mobile_devices",
 			(SELECT count(id) FROM package) AS "packages",
 			(SELECT (SELECT count(id) FROM job_container_job jcj)+(SELECT count(id) FROM deployment_rule_job)) AS "jobs",
 			(SELECT count(id) FROM report) AS "reports"

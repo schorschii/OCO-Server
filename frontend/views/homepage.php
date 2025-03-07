@@ -23,7 +23,7 @@ $license = new LicenseCheck($db);
 <div id='homepage'>
 	<img src='img/logo.dyn.svg'>
 	<p>
-		<div class='title'>[ <?php echo LANG('project_name'); ?> ]</div>
+		<div class='title'><?php echo LANG('project_name'); ?></div>
 		<div class='subtitle'><?php echo LANG('app_subtitle'); ?></div>
 	</p>
 
@@ -35,22 +35,23 @@ $license = new LicenseCheck($db);
 		<div class='alert bold warning'><?php echo str_replace('%1', $remainingDays, LANG('your_license_expires_in_days')); ?></div>
 	<?php } ?>
 
-	<table class='list fullwidth margintop fixed largepadding'>
-		<tr>
-			<th class='center' colspan='5'><?php echo LANG('server_overview'); ?></th>
-		</tr>
-		<tr>
-			<td class='center' colspan='2' title='<?php echo htmlspecialchars($sysload.' / '.$ncpu); ?>'>
+	<div class='box fullwidth margintop stats'>
+		<div>
+			<div class='bold'><?php echo LANG('server_overview'); ?></div>
+		</div>
+		<hr/>
+		<div class='bars'>
+			<div class='' title='<?php echo htmlspecialchars($sysload.' / '.$ncpu); ?>'>
 				<div><?php echo LANG('usage'); ?></div>
 				<?php
 				$percent = round($sysload/$ncpu*100);
 				echo progressBar($percent, null, null, '', 'width:280px');
 				?>
-			</td>
-			<td class='center'>
+			</div>
+			<div class=' version'>
 				<?php echo LANG('version').' '.OcoServer::APP_VERSION.' '.OcoServer::APP_RELEASE; ?>
-			</td>
-			<td class='center' colspan='2' title='<?php echo htmlspecialchars(niceSize($used).' / '.niceSize($total)); ?>'>
+			</div>
+			<div class='' title='<?php echo htmlspecialchars(niceSize($used).' / '.niceSize($total)); ?>'>
 				<div><?php echo LANG('disk_space'); ?></div>
 				<?php
 				if($total !== false && $free !== false) {
@@ -60,20 +61,22 @@ $license = new LicenseCheck($db);
 					echo '???';
 				}
 				?>
-			</td>
-		</tr>
-		<tr>
-			<td class='center'><img src='img/users.dyn.svg'><br><?php echo $stats['domain_users'].' '.LANG('domain_users'); ?></td>
-			<td class='center'><img src='img/computer.dyn.svg'><br><?php echo $stats['computers'].' '.LANG('computer'); ?></td>
-			<td class='center'><img src='img/package.dyn.svg'><br><?php echo $stats['packages'].' '.LANG('packages'); ?></td>
-			<td class='center'><img src='img/job.dyn.svg'><br><?php echo $stats['jobs'].' '.LANG('jobs'); ?></td>
-			<td class='center'><img src='img/report.dyn.svg'><br><?php echo $stats['reports'].' '.LANG('reports'); ?></td>
-		</tr>
-
-		<tr>
-			<td class='center' colspan='5'><?php echo LANG($db->settings->get('motd')); ?></td>
-		</tr>
-	</table>
+			</div>
+		</div>
+		<hr/>
+		<div>
+			<div><img src='img/users.dyn.svg'><br><?php echo $stats['domain_users'].' '.LANG('domain_users'); ?></div>
+			<div><img src='img/computer.dyn.svg'><br><?php echo $stats['computers'].' '.LANG('computer'); ?></div>
+			<div><img src='img/mobile-device.dyn.svg'><br><?php echo $stats['mobile_devices'].' '.LANG('mobile_devices'); ?></div>
+			<div><img src='img/package.dyn.svg'><br><?php echo $stats['packages'].' '.LANG('packages'); ?></div>
+			<div><img src='img/job.dyn.svg'><br><?php echo $stats['jobs'].' '.LANG('jobs'); ?></div>
+			<div><img src='img/report.dyn.svg'><br><?php echo $stats['reports'].' '.LANG('reports'); ?></div>
+		</div>
+		<hr/>
+		<div>
+			<div class='motd'><?php echo LANG($db->settings->get('motd')); ?></div>
+		</div>
+	</div>
 
 	<div class='footer'>
 		<?php echo LANG('app_copyright'); ?>
