@@ -157,7 +157,7 @@ try {
 						<td colspan='999'>
 							<div class='spread'>
 								<div>
-									<?php echo LANG('packages'); ?>
+									<?php echo LANG('software_packages'); ?>
 								</div>
 								<div class='controls'>
 									<button onclick='deploySelectedPackage("id[]", "package_id")'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>

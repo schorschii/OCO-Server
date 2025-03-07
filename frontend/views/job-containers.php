@@ -175,7 +175,7 @@ if(!empty($_GET['id'])) {
 
 	<div class='details-abreast'>
 	<div class='stickytable'>
-		<h2><?php echo LANG('jobs'); ?></h2>
+		<h2><?php echo LANG('software_jobs'); ?></h2>
 		<table id='tblJobContainerJobData' class='list searchable sortable savesort'>
 			<thead>
 				<tr>

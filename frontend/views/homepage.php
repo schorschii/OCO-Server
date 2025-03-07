@@ -68,8 +68,8 @@ $license = new LicenseCheck($db);
 			<div><img src='img/users.dyn.svg'><br><?php echo $stats['domain_users'].' '.LANG('domain_users'); ?></div>
 			<div><img src='img/computer.dyn.svg'><br><?php echo $stats['computers'].' '.LANG('computer'); ?></div>
 			<div><img src='img/mobile-device.dyn.svg'><br><?php echo $stats['mobile_devices'].' '.LANG('mobile_devices'); ?></div>
-			<div><img src='img/package.dyn.svg'><br><?php echo $stats['packages'].' '.LANG('packages'); ?></div>
-			<div><img src='img/job.dyn.svg'><br><?php echo $stats['jobs'].' '.LANG('jobs'); ?></div>
+			<div><img src='img/package.dyn.svg'><br><?php echo $stats['packages'].' '.LANG('software_packages'); ?></div>
+			<div><img src='img/job.dyn.svg'><br><?php echo $stats['jobs'].' '.LANG('software_jobs'); ?></div>
 			<div><img src='img/report.dyn.svg'><br><?php echo $stats['reports'].' '.LANG('reports'); ?></div>
 		</div>
 		<hr/>

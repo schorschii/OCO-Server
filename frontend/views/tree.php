@@ -16,18 +16,8 @@ require_once('../session.inc.php');
 	</div>
 </div>
 
-<?php $mobileDeviceGroupsHtml = getMobileDeviceGroupsHtml($cl); ?>
-<div id='divNodeMobileDevices' class='node expandable'>
-	<a <?php echo explorerLink('views/mobile-devices.php'); ?>><img src='img/mobile-device.dyn.svg'><?php echo LANG('mobile_devices'); ?><span class='beta'>BETA</span></a>
-	<div class='subitems'>
-		<a <?php echo explorerLink('views/profiles.php'); ?>><img src='img/profile.dyn.svg'><?php echo LANG('profiles_and_policies'); ?></a>
-		<a <?php echo explorerLink('views/managed-apps.php'); ?>><img src='img/store.dyn.svg'><?php echo LANG('managed_apps'); ?></a>
-		<?php echo $mobileDeviceGroupsHtml; ?>
-	</div>
-</div>
-
 <?php if($cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
-<div id='divSubnodeSoftware' class='node expandable'>
+<div id='divNodeSoftware' class='node expandable'>
 	<a <?php echo explorerLink('views/software.php'); ?>><img src='img/software.dyn.svg'><?php echo LANG('recognised_software'); ?></a>
 	<div class='subitems'>
 		<a <?php echo explorerLink('views/software.php?os=other'); ?>><img src='img/linux.dyn.svg'><?php echo LANG('linux'); ?></a>
@@ -37,26 +27,16 @@ require_once('../session.inc.php');
 </div>
 <?php } ?>
 
-<?php if($cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
-<div id='divSubnodeApps' class='node expandable'>
-	<a <?php echo explorerLink('views/apps.php'); ?>><img src='img/apps.dyn.svg'><?php echo LANG('recognised_apps'); ?></a>
-	<div class='subitems'>
-		<a <?php echo explorerLink('views/apps.php?os=ios'); ?>><img src='img/mobile-device-ios.dyn.svg'><?php echo LANG('ios'); ?></a>
-		<a <?php echo explorerLink('views/apps.php?os=adnroid'); ?>><img src='img/mobile-device-android.dyn.svg'><?php echo LANG('android'); ?></a>
-	</div>
-</div>
-<?php } ?>
-
 <?php $packageGroupsHtml = getPackageGroupsHtml($cl); ?>
 <div id='divNodePackages' class='node <?php if($packageGroupsHtml) echo 'expandable'; ?>'>
-	<a <?php echo explorerLink('views/package-families.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG('packages'); ?></a>
+	<a <?php echo explorerLink('views/package-families.php'); ?>><img src='img/package.dyn.svg'><?php echo LANG('software_packages'); ?></a>
 	<div class='subitems'>
 		<?php echo $packageGroupsHtml; ?>
 	</div>
 </div>
 
 <div id='divNodeJobs' class='node expandable'>
-	<a <?php echo explorerLink('views/jobs.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG('jobs'); ?></a>
+	<a <?php echo explorerLink('views/jobs.php'); ?>><img src='img/job.dyn.svg'><?php echo LANG('software_jobs'); ?></a>
 	<div id='divSubnodeJobs' class='subitems'>
 		<?php
 		$jobContainers = $cl->getJobContainers(true);
@@ -93,6 +73,36 @@ require_once('../session.inc.php');
 		?>
 	</div>
 </div>
+
+<hr/>
+
+<?php $mobileDeviceGroupsHtml = getMobileDeviceGroupsHtml($cl); ?>
+<div id='divNodeMobileDevices' class='node expandable'>
+	<a <?php echo explorerLink('views/mobile-devices.php'); ?>><img src='img/mobile-device.dyn.svg'><?php echo LANG('mobile_devices'); ?><span class='beta'>BETA</span></a>
+	<div class='subitems'>
+		<?php echo $mobileDeviceGroupsHtml; ?>
+	</div>
+</div>
+
+<?php if($cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SOFTWARE_VIEW, false)) { ?>
+<div id='divNodeApps' class='node expandable'>
+	<a <?php echo explorerLink('views/apps.php'); ?>><img src='img/apps.dyn.svg'><?php echo LANG('recognised_apps'); ?></a>
+	<div class='subitems'>
+		<a <?php echo explorerLink('views/apps.php?os=ios'); ?>><img src='img/mobile-device-ios.dyn.svg'><?php echo LANG('ios'); ?></a>
+		<a <?php echo explorerLink('views/apps.php?os=android'); ?>><img src='img/mobile-device-android.dyn.svg'><?php echo LANG('android'); ?></a>
+	</div>
+</div>
+<?php } ?>
+
+<div id='divNodeProfiles' class='node'>
+	<a <?php echo explorerLink('views/profiles.php'); ?>><img src='img/profile.dyn.svg'><?php echo LANG('profiles_and_policies'); ?></a>
+</div>
+
+<div id='divNodeManagedApps' class='node'>
+	<a <?php echo explorerLink('views/managed-apps.php'); ?>><img src='img/store.dyn.svg'><?php echo LANG('managed_apps'); ?></a>
+</div>
+
+<hr/>
 
 <?php $reportGroupsHtml = getReportGroupsHtml($cl); ?>
 <div id='divSubnodeReports' class='node <?php if($reportGroupsHtml) echo 'expandable'; ?>'>
