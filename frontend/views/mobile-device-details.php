@@ -104,7 +104,7 @@ try {
 								$res = $db->selectAllMobileDeviceGroupByMobileDeviceId($md->id);
 								$i = 0;
 								foreach($res as $group) {
-									echo "<a class='subbuttons' ".explorerLink('views/mobile-devices.php?id='.$group->id).">".wrapInSpanIfNotEmpty($db->getMobileDeviceGroupBreadcrumbString($group->id));
+									echo "<a class='subbuttons' ".explorerLink('views/mobile-devices.php?id='.$group->id).">".wrapInSpanIfNotEmpty($group->getBreadcrumbString($db));
 									echo "<button onclick='event.stopPropagation();removeMobileDeviceFromGroup([".$md->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.dyn.svg' title='".LANG('remove_from_group')."'></button>";
 									echo "</a>";
 									if(++$i != count($res)) { echo "<br>"; }

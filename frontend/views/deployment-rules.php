@@ -18,6 +18,8 @@ if(!empty($_GET['id'])) {
 		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
 
+	$cGroup = Models\ComputerGroup::constructWithId($container->computer_group_id);
+	$pGroup = Models\PackageGroup::constructWithId($container->package_group_id);
 	$jobs = $db->selectAllDynamicJobByDeploymentRuleId($container->id);
 	$done = 0; $failed = 0; $percent = 0;
 	if(count($jobs) > 0) {
@@ -67,14 +69,14 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG('computer_group'); ?></th>
 				<td>
-					<?php echo '<a '.explorerLink('views/computers.php?id='.$container->computer_group_id).'>'.htmlspecialchars($db->getComputerGroupBreadcrumbString($container->computer_group_id)).'</a>'; ?>
+					<?php echo '<a '.explorerLink('views/computers.php?id='.$container->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString($db)).'</a>'; ?>
 					<span id='spnDeploymentRuleComputerGroupId' class='rawvalue'><?php echo htmlspecialchars($container->computer_group_id); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('package_group'); ?></th>
 				<td>
-					<?php echo '<a '.explorerLink('views/packages.php?id='.$container->package_group_id).'>'.htmlspecialchars($db->getPackageGroupBreadcrumbString($container->package_group_id)).'</a>'; ?>
+					<?php echo '<a '.explorerLink('views/packages.php?id='.$container->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString($db)).'</a>'; ?>
 					<span id='spnDeploymentRulePackageGroupId' class='rawvalue'><?php echo htmlspecialchars($container->package_group_id); ?></span>
 				</td>
 			</tr>
@@ -223,6 +225,8 @@ if(!empty($_GET['id'])) {
 			<?php
 			foreach($rules as $dr) {
 				$done = 0; $percent = 0;
+				$cGroup = Models\ComputerGroup::constructWithId($dr->computer_group_id);
+				$pGroup = Models\PackageGroup::constructWithId($dr->package_group_id);
 				$jobs = $db->selectAllDynamicJobByDeploymentRuleId($dr->id);
 				if(count($jobs) > 0) {
 					foreach($jobs as $job) {
@@ -237,8 +241,8 @@ if(!empty($_GET['id'])) {
 				echo  "<a ".explorerLink('views/deployment-rules.php?id='.$dr->id).">".htmlspecialchars($dr->name)."</a>";
 				echo "</td>";
 				echo "<td>".htmlspecialchars($dr->created_by_system_user_username??'')."</td>";
-				echo "<td><a ".explorerLink('views/computers.php?id='.$dr->computer_group_id).'>'.htmlspecialchars($db->getComputerGroupBreadcrumbString($dr->computer_group_id))."</a></td>";
-				echo "<td><a ".explorerLink('views/packages.php?id='.$dr->package_group_id).'>'.htmlspecialchars($db->getPackageGroupBreadcrumbString($dr->package_group_id))."</a></td>";
+				echo "<td><a ".explorerLink('views/computers.php?id='.$dr->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString($db))."</a></td>";
+				echo "<td><a ".explorerLink('views/packages.php?id='.$dr->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString($db))."</a></td>";
 				echo "<td>".htmlspecialchars($dr->created)."</td>";
 				echo "<td>".htmlspecialchars($dr->priority)."</td>";
 				echo "<td>".htmlspecialchars(shorter($dr->notes))."</td>";

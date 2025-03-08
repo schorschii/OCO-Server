@@ -83,68 +83,6 @@ class DatabaseController {
 		}
 	}
 
-	// Breadcrumb Generation
-	public function getComputerGroupBreadcrumbString($id) {
-		$currentGroupId = $id;
-		$groupStrings = [];
-		while(true) {
-			$currentGroup = $this->selectComputerGroup($currentGroupId);
-			$groupStrings[] = $currentGroup->name;
-			if($currentGroup->parent_computer_group_id === null) {
-				break;
-			} else {
-				$currentGroupId = $currentGroup->parent_computer_group_id;
-			}
-		}
-		$groupStrings = array_reverse($groupStrings);
-		return implode(' » ', $groupStrings);
-	}
-	public function getMobileDeviceGroupBreadcrumbString($id) {
-		$currentGroupId = $id;
-		$groupStrings = [];
-		while(true) {
-			$currentGroup = $this->selectMobileDeviceGroup($currentGroupId);
-			$groupStrings[] = $currentGroup->name;
-			if($currentGroup->parent_mobile_device_group_id === null) {
-				break;
-			} else {
-				$currentGroupId = $currentGroup->parent_mobile_device_group_id;
-			}
-		}
-		$groupStrings = array_reverse($groupStrings);
-		return implode(' » ', $groupStrings);
-	}
-	public function getPackageGroupBreadcrumbString($id) {
-		$currentGroupId = $id;
-		$groupStrings = [];
-		while(true) {
-			$currentGroup = $this->selectPackageGroup($currentGroupId);
-			$groupStrings[] = $currentGroup->name;
-			if($currentGroup->parent_package_group_id === null) {
-				break;
-			} else {
-				$currentGroupId = $currentGroup->parent_package_group_id;
-			}
-		}
-		$groupStrings = array_reverse($groupStrings);
-		return implode(' » ', $groupStrings);
-	}
-	public function getReportGroupBreadcrumbString($id) {
-		$currentGroupId = $id;
-		$groupStrings = [];
-		while(true) {
-			$currentGroup = $this->selectReportGroup($currentGroupId);
-			$groupStrings[] = $currentGroup->name;
-			if($currentGroup->parent_report_group_id === null) {
-				break;
-			} else {
-				$currentGroupId = $currentGroup->parent_report_group_id;
-			}
-		}
-		$groupStrings = array_reverse($groupStrings);
-		return implode(' » ', $groupStrings);
-	}
-
 	// Mobile Device Operations
 	public function searchAllMobileDevice($search, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
