@@ -94,6 +94,10 @@ try {
 					echo "<td><a ".explorerLink('views/domain-users.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'job_container_id') {
 					echo "<td><a ".explorerLink('views/job-containers.php?id='.intval($value)).">".$value."</a></td>";
+				} elseif($key == 'mobile_device_id') {
+					echo "<td><a ".explorerLink('views/mobile-device-details.php?id='.intval($value)).">".$value."</a></td>";
+				} elseif($key == 'app_id') {
+					echo "<td><a ".explorerLink('views/apps.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'report_id') {
 					echo "<td><a ".explorerLink('views/report-details.php?id='.intval($value)).">".$value."</a></td>";
 				} elseif($key == 'parent_report_id') {
