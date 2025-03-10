@@ -415,6 +415,9 @@ CREATE TABLE IF NOT EXISTS `computer_partition` (
   `filesystem` text NOT NULL,
   `size` bigint(20) NOT NULL,
   `free` bigint(20) NOT NULL,
+  `name` text NOT NULL,
+  `uuid` text NOT NULL,
+  `encrypted` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `fk_computer_partition_1` (`computer_id`),
   CONSTRAINT `fk_computer_partition_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

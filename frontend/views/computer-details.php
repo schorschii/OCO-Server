@@ -395,7 +395,10 @@ foreach($services as $s) {
 								echo '<tr>';
 								echo '<td>'.htmlspecialchars($p->device).'</a></td>';
 								echo '<td>'.htmlspecialchars($p->mountpoint).'</td>';
-								echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
+								echo '<td title="'.htmlspecialchars($p->name,ENT_QUOTES).'">'
+									.htmlspecialchars($p->filesystem)
+									.($p->encrypted ? ' <img src="img/lock.dyn.svg" title="'.LANG('encrypted').'">' : '')
+									.'</td>';
 								echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG('used').': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG('free').': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
 								echo '</tr>';

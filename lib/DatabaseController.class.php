@@ -1011,7 +1011,10 @@ class DatabaseController {
 				$part['mountpoint'] ?? '?',
 				$part['filesystem'] ?? '?',
 				intval($part['size']),
-				intval($part['free'])
+				intval($part['free']),
+				$part['name'] ?? '',
+				$part['uuid'] ?? '',
+				intval($part['encrypted']) ?? 0
 			);
 			$pids[] = $pid;
 		}
@@ -1154,10 +1157,10 @@ class DatabaseController {
 		])) return false;
 		return $this->dbh->lastInsertId();
 	}
-	private function insertOrUpdateComputerPartition($computer_id, $device, $mountpoint, $filesystem, $size, $free) {
+	private function insertOrUpdateComputerPartition($computer_id, $device, $mountpoint, $filesystem, $size, $free, $name, $uuid, $encrypted) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE computer_partition SET id = LAST_INSERT_ID(id), size = :size, free = :free
-			WHERE computer_id = :computer_id AND device = :device AND mountpoint = :mountpoint AND filesystem = :filesystem LIMIT 1'
+			'UPDATE computer_partition SET id = LAST_INSERT_ID(id), size = :size, free = :free, name = :name, encrypted = :encrypted
+			WHERE computer_id = :computer_id AND device = :device AND mountpoint = :mountpoint AND filesystem = :filesystem AND uuid = :uuid LIMIT 1'
 		);
 		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
@@ -1166,12 +1169,15 @@ class DatabaseController {
 			':filesystem' => $filesystem,
 			':size' => $size,
 			':free' => $free,
+			':name' => $name,
+			':uuid' => $uuid,
+			':encrypted' => $encrypted,
 		])) return false;
 		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
 
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO computer_partition (computer_id, device, mountpoint, filesystem, size, free)
-			VALUES (:computer_id, :device, :mountpoint, :filesystem, :size, :free)'
+			'INSERT INTO computer_partition (computer_id, device, mountpoint, filesystem, size, free, name, uuid, encrypted)
+			VALUES (:computer_id, :device, :mountpoint, :filesystem, :size, :free, :name, :uuid, :encrypted)'
 		);
 		if(!$this->stmt->execute([
 			':computer_id' => $computer_id,
@@ -1180,6 +1186,9 @@ class DatabaseController {
 			':filesystem' => $filesystem,
 			':size' => $size,
 			':free' => $free,
+			':name' => $name,
+			':uuid' => $uuid,
+			':encrypted' => $encrypted,
 		])) return false;
 		return $this->dbh->lastInsertId();
 	}

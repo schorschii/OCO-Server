@@ -464,6 +464,23 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		if(!$this->getTableColumnInfo('computer_partition', 'name')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add name column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer_partition` ADD `name` text NOT NULL AFTER `free`;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			if($this->debug) echo 'Upgrading to 1.1.4... (add uuid column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer_partition` ADD `uuid` text NOT NULL AFTER `name`;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			if($this->debug) echo 'Upgrading to 1.1.4... (add encrypted column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer_partition` ADD `encrypted` tinyint(4) NOT NULL DEFAULT 0 AFTER `uuid`;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 
