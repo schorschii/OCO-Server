@@ -253,6 +253,9 @@ class CoreLogic {
 			'install_type'=>$installType,
 			'config'=>$config,
 		]);
+
+		$mdcc = new MobileDeviceCommandController($this->db);
+		$mdcc->mdmCron();
 	}
 	public function removeManagedAppFromMobileDeviceGroup($pId, $groupId) {
 		$ma = $this->db->selectManagedApp($pId);
@@ -264,6 +267,9 @@ class CoreLogic {
 
 		$this->db->deleteMobileDeviceGroupManagedApp($mdGroup->id, $ma->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.unassign', ['mobile_device_group_id'=>$mdGroup->id]);
+
+		$mdcc = new MobileDeviceCommandController($this->db);
+		$mdcc->mdmCron();
 	}
 
 	public function getProfilesByType($type) {
@@ -363,6 +369,9 @@ class CoreLogic {
 
 		$this->db->insertMobileDeviceGroupProfile($mdGroup->id, $profile->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $profile->id, 'oco.profile.assign', ['mobile_device_group_id'=>$mdGroup->id]);
+
+		$mdcc = new MobileDeviceCommandController($this->db);
+		$mdcc->mdmCron();
 	}
 	public function removeProfileFromMobileDeviceGroup($pId, $groupId) {
 		$profile = $this->db->selectProfile($pId);
@@ -374,6 +383,9 @@ class CoreLogic {
 
 		$this->db->deleteMobileDeviceGroupProfile($mdGroup->id, $profile->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $profile->id, 'oco.profile.unassign', ['profile_id'=>$profile->id, 'mobile_device_group_id'=>$mdGroup->id]);
+
+		$mdcc = new MobileDeviceCommandController($this->db);
+		$mdcc->mdmCron();
 	}
 	public function removeProfile($id, $force=false) {
 		$profile = $this->db->selectProfile($id);
@@ -403,6 +415,10 @@ class CoreLogic {
 			'parameter'=>$parameter,
 			'external_id'=>$externalId,
 		]);
+
+		$mdcc = new MobileDeviceCommandController($this->db);
+		$mdcc->mdmCron();
+
 		return $result;
 	}
 	public function removeMobileDeviceCommand($id) {

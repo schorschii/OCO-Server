@@ -103,10 +103,9 @@ try {
 				$parameter['Message'] = $_POST['message'];
 				#'Footnote' => '',
 				#'PhoneNumber' => '',
-			} else {
-				throw new InvalidRequestException('Unknown command');
 			}
 			$cl->createMobileDeviceCommand($_POST['send_command_to_mobile_device_id'], $_POST['command'], json_encode($parameter), null);
+			die();
 
 		} elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) {
 
@@ -146,11 +145,6 @@ try {
 			die();
 
 		}
-
-		// instantly send push notification
-		$mdcc = new MobileDeviceCommandController($db);
-		$mdcc->mdmCron();
-		die();
 
 	}
 
