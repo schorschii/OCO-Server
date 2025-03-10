@@ -4,7 +4,7 @@ namespace Models;
 
 class ComputerGroup extends HierarchicalGroup {
 
-	protected const GET_OBJECT_FUNCTION = 'selectComputerGroup';
+	const GET_OBJECT_FUNCTION = 'selectComputerGroup';
 
 	public $id;
 	public $parent_computer_group_id;

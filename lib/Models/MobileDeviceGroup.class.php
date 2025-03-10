@@ -4,7 +4,7 @@ namespace Models;
 
 class MobileDeviceGroup extends HierarchicalGroup {
 
-	protected const GET_OBJECT_FUNCTION = 'selectMobileDeviceGroup';
+	const GET_OBJECT_FUNCTION = 'selectMobileDeviceGroup';
 
 	public $id;
 	public $parent_mobile_device_group_id;

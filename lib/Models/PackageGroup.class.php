@@ -4,7 +4,7 @@ namespace Models;
 
 class PackageGroup extends HierarchicalGroup {
 
-	protected const GET_OBJECT_FUNCTION = 'selectPackageGroup';
+	const GET_OBJECT_FUNCTION = 'selectPackageGroup';
 
 	public $id;
 	public $parent_package_group_id;

@@ -4,7 +4,7 @@ namespace Models;
 
 class ReportGroup extends HierarchicalGroup {
 
-	protected const GET_OBJECT_FUNCTION = 'selectReportGroup';
+	const GET_OBJECT_FUNCTION = 'selectReportGroup';
 
 	public $id;
 	public $parent_report_group_id;

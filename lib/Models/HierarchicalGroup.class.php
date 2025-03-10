@@ -4,7 +4,7 @@ namespace Models;
 
 abstract class HierarchicalGroup implements IHierarchicalGroup {
 
-	protected const GET_OBJECT_FUNCTION = null;
+	const GET_OBJECT_FUNCTION = null;
 
 	private $db;
 

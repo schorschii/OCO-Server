@@ -137,30 +137,12 @@ class PermissionManager {
 	// so we query all parent groups to also check the privileges of them
 	private function getParentGroupsRecursively(Object $groupRessource) {
 		$parentGroups = [$groupRessource];
-		if(!$groupRessource instanceof Models\IHierarchicalGroup) {
-			throw new InvalidArgumentException('Permission check for this ressource type is not implemented');
-		}
-		if($groupRessource instanceof Models\ComputerGroup) {
+		if($groupRessource instanceof Models\IHierarchicalGroup) {
 			while($groupRessource->getParentId() != null) {
-				$parentGroup = $this->db->selectComputerGroup($groupRessource->getParentId());
+				$parentGroup = call_user_func([$this->db, $groupRessource::GET_OBJECT_FUNCTION], $groupRessource->getParentId());
 				$parentGroups[] = $parentGroup;
 				$groupRessource = $parentGroup;
 			}
-
-		} else if($groupRessource instanceof Models\PackageGroup) {
-			while($groupRessource->getParentId() != null) {
-				$parentGroup = $this->db->selectPackageGroup($groupRessource->getParentId());
-				$parentGroups[] = $parentGroup;
-				$groupRessource = $parentGroup;
-			}
-
-		} else if($groupRessource instanceof Models\ReportGroup) {
-			while($groupRessource->getParentId() != null) {
-				$parentGroup = $this->db->selectReportGroup($groupRessource->getParentId());
-				$parentGroups[] = $parentGroup;
-				$groupRessource = $parentGroup;
-			}
-
 		} else {
 			throw new InvalidArgumentException('Permission check for this ressource type is not implemented');
 		}
