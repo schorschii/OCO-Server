@@ -304,13 +304,13 @@ try {
 		<div name='profiles' class='<?php if($tab=='profiles') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div>
+					<?php if($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) { ?>
 					<h2><?php echo LANG('installed_profiles'); ?></h2>
 					<div class='stickytable'>
 						<table id='tblMobileDeviceProfileData' class='list searchable sortable savesort margintop fullwidth'>
 							<thead>
 								<tr>
 									<th class='searchable sortable'><?php echo LANG('display_name'); ?></th>
-									<th class='searchable sortable'><?php echo LANG('version'); ?></th>
 									<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
 									<th class='searchable sortable'><?php echo LANG('uid'); ?></th>
 								</tr>
@@ -319,7 +319,6 @@ try {
 								<?php foreach($db->selectAllMobileDeviceProfileUuidByMobileDeviceId($md->id) as $ip) { ?>
 									<tr>
 										<td><?php echo htmlspecialchars($ip->display_name); ?></td>
-										<td><?php echo htmlspecialchars($ip->version); ?></td>
 										<td><?php echo htmlspecialchars($ip->identifier); ?></td>
 										<td><?php echo htmlspecialchars($ip->uuid); ?></td>
 									</tr>
@@ -341,6 +340,41 @@ try {
 							</tfoot>
 						</table>
 					</div>
+					<?php } elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) { ?>
+					<h2><?php echo LANG('applied_policies'); ?></h2>
+					<div class='stickytable'>
+						<table id='tblMobileDevicePolicyData' class='list searchable sortable savesort margintop fullwidth'>
+							<thead>
+								<tr>
+									<th class='searchable sortable'><?php echo LANG('policy'); ?></th>
+									<th class='searchable sortable'><?php echo LANG('value'); ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php foreach(json_decode($md->policy, true) as $key => $value) { ?>
+									<tr>
+										<td><?php echo htmlspecialchars($key); ?></td>
+										<td><?php echo echoDictTable($value); ?></td>
+									</tr>
+								<?php } ?>
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan='999'>
+										<div class='spread'>
+											<div>
+												<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
+											</div>
+											<div class='controls'>
+												<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+											</div>
+										</div>
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+					<?php } ?>
 				</div>
 				<div>
 					<h2><?php echo LANG('commands'); ?></h2>
