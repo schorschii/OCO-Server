@@ -195,7 +195,7 @@ foreach($services as $s) {
 								$res = $db->selectAllComputerGroupByComputerId($computer->id);
 								$i = 0;
 								foreach($res as $group) {
-									echo "<a class='subbuttons' ".explorerLink('views/computers.php?id='.$group->id).">".wrapInSpanIfNotEmpty($group->getBreadcrumbString($db));
+									echo "<a class='subbuttons' ".explorerLink('views/computers.php?id='.$group->id).">".wrapInSpanIfNotEmpty($group->getBreadcrumbString());
 									echo "<button onclick='event.stopPropagation();removeComputerFromGroup([".$computer->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.dyn.svg' title='".LANG('remove_from_group')."'></button>";
 									echo "</a>";
 									if(++$i != count($res)) { echo "<br>"; }

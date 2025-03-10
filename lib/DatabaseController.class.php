@@ -96,7 +96,7 @@ class DatabaseController {
 			'SELECT * FROM mobile_device_group WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
 	}
 	public function selectAllMobileDevice() {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device');
@@ -514,7 +514,7 @@ class DatabaseController {
 			ORDER BY mdg.name'
 		);
 		$this->stmt->execute([':profile_id' => $profile_id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
 	}
 	public function insertProfile($name, $payload, $notes, $system_user_id) {
 		$this->stmt = $this->dbh->prepare(
@@ -556,7 +556,7 @@ class DatabaseController {
 	public function selectAllMobileDeviceGroup() {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group');
 		$this->stmt->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
 	}
 	public function selectAllMobileDeviceGroupByParentMobileDeviceGroupId($parent_id) {
 		if($parent_id === null) {
@@ -566,7 +566,7 @@ class DatabaseController {
 			$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group WHERE parent_mobile_device_group_id = :parent_id');
 			$this->stmt->execute([':parent_id' => $parent_id]);
 		}
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
 	}
 	public function selectAllMobileDeviceGroupByMobileDeviceId($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -575,12 +575,12 @@ class DatabaseController {
 			WHERE mdgm.mobile_device_id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
 	}
 	public function selectMobileDeviceGroup($id) {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group WHERE id = :id');
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]) as $row) {
 			return $row;
 		}
 	}
@@ -706,7 +706,7 @@ class DatabaseController {
 			'SELECT * FROM computer_group WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup', [$this]);
 	}
 	public function selectAllComputer() {
 		$this->stmt = $this->dbh->prepare(
@@ -1290,7 +1290,7 @@ class DatabaseController {
 			'SELECT * FROM computer_group WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup', [$this]) as $row) {
 			return $row;
 		}
 	}
@@ -1306,7 +1306,7 @@ class DatabaseController {
 			);
 			$this->stmt->execute([':parent_computer_group_id' => $parent_computer_group_id]);
 		}
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup', [$this]);
 	}
 	public function selectAllComputerBySoftwareName($name) {
 		$this->stmt = $this->dbh->prepare(
@@ -1360,7 +1360,7 @@ class DatabaseController {
 			ORDER BY cg.name'
 		);
 		$this->stmt->execute([':computer_id' => $computer_id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup', [$this]);
 	}
 	public function selectAllEventQueryRule() {
 		$this->stmt = $this->dbh->prepare('SELECT * FROM event_query_rule');
@@ -1898,7 +1898,7 @@ class DatabaseController {
 			ORDER BY pg.name'
 		);
 		$this->stmt->execute([':package_id' => $package_id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup', [$this]);
 	}
 	public function selectAllPackageGroupByParentPackageGroupId($parent_package_group_id=null) {
 		if($parent_package_group_id === null) {
@@ -1912,7 +1912,7 @@ class DatabaseController {
 			);
 			$this->stmt->execute([':parent_package_group_id' => $parent_package_group_id]);
 		}
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup', [$this]);
 	}
 	public function selectPackage($id, $binaryAsBase64=false) {
 		if($binaryAsBase64 === null) { // do not fetch icons if not necessary
@@ -1960,7 +1960,7 @@ class DatabaseController {
 			'SELECT * FROM package_group WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup', [$this]);
 	}
 	public function selectAllPackageByPackageFamilyNameAndVersion($name, $version) {
 		$this->stmt = $this->dbh->prepare(
@@ -1992,7 +1992,7 @@ class DatabaseController {
 			'SELECT * FROM package_group WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PackageGroup', [$this]) as $row) {
 			return $row;
 		}
 	}
@@ -3271,7 +3271,7 @@ class DatabaseController {
 			);
 			$this->stmt->execute([':parent_report_group_id' => $parent_id]);
 		}
-		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup');
+		$reports = $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup', [$this]);
 		foreach($reports as $report) {
 			$report->name = LANG($report->name);
 		}
@@ -3285,7 +3285,7 @@ class DatabaseController {
 			'SELECT * FROM report_group WHERE id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
-		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup') as $row) {
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup', [$this]) as $row) {
 			$row->name = LANG($row->name);
 			return $row;
 		}
@@ -3376,7 +3376,7 @@ class DatabaseController {
 			'SELECT * FROM report_group WHERE name LIKE :name ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':name' => '%'.$name.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ReportGroup', [$this]);
 	}
 	public function selectAllReportByReportGroupId($report_group_id) {
 		if($report_group_id == null) $sql = 'SELECT * FROM report WHERE report_group_id IS NULL ORDER BY name';

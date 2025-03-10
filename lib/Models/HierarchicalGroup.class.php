@@ -6,11 +6,24 @@ abstract class HierarchicalGroup implements IHierarchicalGroup {
 
 	protected const GET_OBJECT_FUNCTION = null;
 
-	public function getBreadcrumbString($databaseController) {
+	private $db;
+
+	public function __construct($db=null) {
+		$this->db = $db;
+	}
+
+	public function getId() {
+		return $this->id;
+	}
+	public function getName() {
+		return $this->name;
+	}
+
+	public function getBreadcrumbString() {
 		$currentGroupId = $this->getId();
 		$groupStrings = [];
 		while(true) {
-			$currentGroup = call_user_func([$databaseController, $this::GET_OBJECT_FUNCTION], $currentGroupId);
+			$currentGroup = call_user_func([$this->db, $this::GET_OBJECT_FUNCTION], $currentGroupId);
 			if(!$currentGroup instanceof IHierarchicalGroup)
 				throw new \Exception('Group object does not conform to IHierarchicalGroup');
 			$groupStrings[] = $currentGroup->getName();

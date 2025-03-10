@@ -42,7 +42,7 @@ try {
 	$permissionWrite  = $cl->checkPermission($group, PermissionManager::METHOD_WRITE, false);
 	$permissionDelete = $cl->checkPermission($group, PermissionManager::METHOD_DELETE, false);
 ?>
-	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($group->getBreadcrumbString($db)); ?></span><span id='spnMobileDeviceGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
+	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($group->getBreadcrumbString()); ?></span><span id='spnMobileDeviceGroupName' class='rawvalue'><?php echo htmlspecialchars($group->name); ?></span></h1>
 	<div class='controls'>
 		<button onclick='createMobileDeviceGroup(<?php echo $group->id; ?>)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_subgroup'); ?></button>
 		<button onclick='renameMobileDeviceGroup(<?php echo $group->id; ?>, this.getAttribute("oldName"))' oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('rename_group'); ?></button>

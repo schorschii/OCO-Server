@@ -132,7 +132,7 @@ try {
 								$res = $db->selectAllPackageGroupByPackageId($package->id);
 								$i = 0;
 								foreach($res as $group) {
-									echo "<a class='subbuttons' ".explorerLink('views/packages.php?id='.$group->id).">".wrapInSpanIfNotEmpty($group->getBreadcrumbString($db));
+									echo "<a class='subbuttons' ".explorerLink('views/packages.php?id='.$group->id).">".wrapInSpanIfNotEmpty($group->getBreadcrumbString());
 									echo "<button onclick='event.stopPropagation();removePackageFromGroup([".$package->id."], ".$group->id.");return false'><img class='small' src='img/folder-remove-from.dyn.svg' title='".LANG('remove_from_group')."'></button>";
 									echo "</a>";
 									if(++$i != count($res)) { echo "<br>"; }

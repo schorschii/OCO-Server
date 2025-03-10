@@ -10,20 +10,13 @@ class PackageGroup extends HierarchicalGroup {
 	public $parent_package_group_id;
 	public $name;
 
-	static function constructWithId($id) {
-		$g = new self();
-		$g->id = $id;
-		return $g;
+
+	public function __construct($db=null) {
+		parent::__construct($db);
 	}
 
-	public function getId() {
-		return $this->id;
-	}
 	public function getParentId() {
 		return $this->parent_package_group_id;
-	}
-	public function getName() {
-		return $this->name;
 	}
 
 }

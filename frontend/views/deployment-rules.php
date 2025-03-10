@@ -18,8 +18,8 @@ if(!empty($_GET['id'])) {
 		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
 
-	$cGroup = Models\ComputerGroup::constructWithId($container->computer_group_id);
-	$pGroup = Models\PackageGroup::constructWithId($container->package_group_id);
+	$cGroup = $db->selectComputerGroup($container->computer_group_id);
+	$pGroup = $db->selectPackageGroup($container->package_group_id);
 	$jobs = $db->selectAllDynamicJobByDeploymentRuleId($container->id);
 	$done = 0; $failed = 0; $percent = 0;
 	if(count($jobs) > 0) {
@@ -69,14 +69,14 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG('computer_group'); ?></th>
 				<td>
-					<?php echo '<a '.explorerLink('views/computers.php?id='.$container->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString($db)).'</a>'; ?>
+					<?php echo '<a '.explorerLink('views/computers.php?id='.$container->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString()).'</a>'; ?>
 					<span id='spnDeploymentRuleComputerGroupId' class='rawvalue'><?php echo htmlspecialchars($container->computer_group_id); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('package_group'); ?></th>
 				<td>
-					<?php echo '<a '.explorerLink('views/packages.php?id='.$container->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString($db)).'</a>'; ?>
+					<?php echo '<a '.explorerLink('views/packages.php?id='.$container->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString()).'</a>'; ?>
 					<span id='spnDeploymentRulePackageGroupId' class='rawvalue'><?php echo htmlspecialchars($container->package_group_id); ?></span>
 				</td>
 			</tr>
@@ -159,7 +159,7 @@ if(!empty($_GET['id'])) {
 						$jobTitle = LANG('download_started').': '.($job->download_started??'')
 							."\n".LANG('execution_started').': '.($job->execution_started??'');
 					} ?>
-					<td title='<?php echo htmlspecialchars($jobTitle, ENT_QUOTES); ?>'><?php echo htmlspecialchars($job->execution_finished); ?></td>
+					<td title='<?php echo htmlspecialchars($jobTitle, ENT_QUOTES); ?>'><?php echo htmlspecialchars($job->execution_finished??''); ?></td>
 				</tr>
 			<?php } ?>
 			</tbody>
@@ -225,8 +225,8 @@ if(!empty($_GET['id'])) {
 			<?php
 			foreach($rules as $dr) {
 				$done = 0; $percent = 0;
-				$cGroup = Models\ComputerGroup::constructWithId($dr->computer_group_id);
-				$pGroup = Models\PackageGroup::constructWithId($dr->package_group_id);
+				$cGroup = $db->selectComputerGroup($dr->computer_group_id);
+				$pGroup = $db->selectPackageGroup($dr->package_group_id);
 				$jobs = $db->selectAllDynamicJobByDeploymentRuleId($dr->id);
 				if(count($jobs) > 0) {
 					foreach($jobs as $job) {
@@ -241,8 +241,8 @@ if(!empty($_GET['id'])) {
 				echo  "<a ".explorerLink('views/deployment-rules.php?id='.$dr->id).">".htmlspecialchars($dr->name)."</a>";
 				echo "</td>";
 				echo "<td>".htmlspecialchars($dr->created_by_system_user_username??'')."</td>";
-				echo "<td><a ".explorerLink('views/computers.php?id='.$dr->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString($db))."</a></td>";
-				echo "<td><a ".explorerLink('views/packages.php?id='.$dr->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString($db))."</a></td>";
+				echo "<td><a ".explorerLink('views/computers.php?id='.$dr->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString())."</a></td>";
+				echo "<td><a ".explorerLink('views/packages.php?id='.$dr->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString())."</a></td>";
 				echo "<td>".htmlspecialchars($dr->created)."</td>";
 				echo "<td>".htmlspecialchars($dr->priority)."</td>";
 				echo "<td>".htmlspecialchars(shorter($dr->notes))."</td>";

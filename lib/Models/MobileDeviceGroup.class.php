@@ -10,14 +10,13 @@ class MobileDeviceGroup extends HierarchicalGroup {
 	public $parent_mobile_device_group_id;
 	public $name;
 
-	public function getId() {
-		return $this->id;
+
+	public function __construct($db=null) {
+		parent::__construct($db);
 	}
+
 	public function getParentId() {
 		return $this->parent_mobile_device_group_id;
-	}
-	public function getName() {
-		return $this->name;
 	}
 
 }
