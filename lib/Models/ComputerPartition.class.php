@@ -11,5 +11,8 @@ class ComputerPartition {
 	public $filesystem;
 	public $size;
 	public $free;
+	public $name;
+	public $uuid;
+	public $encrypted;
 
 }

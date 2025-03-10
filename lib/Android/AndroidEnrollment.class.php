@@ -269,7 +269,7 @@ class AndroidEnrollment {
 					$model ? $model : $md->model,
 					$os ? $os : $md->os, $family, ''/*color*/,
 					$device['policy_name']??null, $md->push_token, $md->push_magic, $md->push_sent,
-					$md->unlock_token, json_encode($device), $md->notes, $md->force_update,
+					$md->unlock_token, json_encode($device), $md->policy, $md->notes, $md->force_update,
 					empty($device['lastStatusReportTime']) ? false : date('Y-m-d H:i:s', strtotime($device['lastStatusReportTime']))
 				);
 			} else {

@@ -110,7 +110,7 @@ class CoreLogic {
 
 		$result = $this->db->updateMobileDevice($md->id,
 			$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
-			$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token, $md->info,
+			$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token, $md->info, $md->policy,
 			$notes, $forceUpdate, false/*update_last_update*/
 		);
 		if(!$result) throw new Exception(LANG('unknown_error'));
@@ -266,45 +266,90 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.unassign', ['mobile_device_group_id'=>$mdGroup->id]);
 	}
 
-	public function getProfiles(Object $filterRessource=null) {
-		if($filterRessource === null) {
-			$pFiltered = [];
-			foreach($this->db->selectAllProfile() as $p) {
-				if($this->checkPermission($p, PermissionManager::METHOD_READ, false))
-					$pFiltered[] = $p;
-			}
-			return $pFiltered;
-		} else {
-			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
+	public function getProfilesByType($type) {
+		$pFiltered = [];
+		foreach($this->db->selectAllProfileByType($type) as $p) {
+			if($this->checkPermission($p, PermissionManager::METHOD_READ, false))
+				$pFiltered[] = $p;
 		}
+		return $pFiltered;
 	}
-	public function createProfile($name, $payload, $notes) {
+	public function getProfile($id) {
+		$p = $this->db->selectProfile($id);
+		if(empty($p)) throw new NotFoundException();
+		$this->checkPermission($p, PermissionManager::METHOD_READ);
+		return $p;
+	}
+	public function createProfile($type, $name, $payload, $notes) {
 		$this->checkPermission(new Models\Profile(), PermissionManager::METHOD_CREATE);
 
 		if(empty($name) || empty($payload)) {
 			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
-		try {
-			$plist = new CFPropertyList\CFPropertyList();
-			$plist->parse($payload);
-			$newUuid = $plist->toArray()['PayloadUUID'] ?? null;
-			if(empty($newUuid)) {
-				throw new InvalidRequestException('Profile has no PayloadUUID');
-			}
-			foreach($this->db->selectAllProfile() as $p) {
-				if($p->getUuid() == $newUuid) {
-					throw new InvalidRequestException(str_replace('%1', $p->name, LANG('uuid_aready_used_by_profile')));
+		if($type == Models\Profile::TYPE_IOS) {
+			try {
+				$plist = new CFPropertyList\CFPropertyList();
+				$plist->parse($payload);
+				$newUuid = $plist->toArray()['PayloadUUID'] ?? null;
+				if(empty($newUuid)) {
+					throw new InvalidRequestException('Profile has no PayloadUUID');
 				}
+				foreach($this->db->selectAllProfileByType($type) as $p) {
+					if($p->getUuid() == $newUuid) {
+						throw new InvalidRequestException(str_replace('%1', $p->name, LANG('uuid_aready_used_by_profile')));
+					}
+				}
+			} catch(DOMException|TypeError $e) {
+				throw new InvalidRequestException('Payload is no valid XML');
 			}
-		} catch(DOMException|TypeError $e) {
+		} elseif($type == Models\Profile::TYPE_ANDROID) {
 			if(!is_string($payload) || json_decode($payload) === null)
-				throw new InvalidRequestException('Payload is no valid XML or JSON');
+				throw new InvalidRequestException('Payload is no valid JSON');
+		} else {
+			throw new InvalidRequestException('Unknown type');
 		}
 
-		$result = $this->db->insertProfile($name, $payload, $notes, $this->su->id);
+		$result = $this->db->insertProfile($type, $name, $payload, $notes, $this->su->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $result, 'oco.profile.create', [
-			'name' => $name, 'payload' => $payload, 'notes' => $notes
+			'type' => $type, 'name' => $name, 'payload' => $payload, 'notes' => $notes
+		]);
+		return $result;
+	}
+	public function editProfile($id, $type, $name, $payload, $notes) {
+		$p = $this->db->selectProfile($id);
+		if(empty($p)) throw new NotFoundException();
+		$this->checkPermission($p, PermissionManager::METHOD_WRITE);
+
+		if(empty($name) || empty($payload)) {
+			throw new InvalidRequestException(LANG('please_fill_required_fields'));
+		}
+		if($type == Models\Profile::TYPE_IOS) {
+			try {
+				$plist = new CFPropertyList\CFPropertyList();
+				$plist->parse($payload);
+				$data = $plist->toArray();
+			} catch(DOMException|TypeError $e) {
+				throw new InvalidRequestException('Payload is no valid XML');
+			}
+			// generate new UUID
+			foreach($plist->getValue(true) as $key => $value) {
+				if($key == 'PayloadUUID') {
+					$value->setValue( vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4)) );
+				}
+			}
+			$payload = $plist->toXML(true);
+		} elseif($type == Models\Profile::TYPE_ANDROID) {
+			if(!is_string($payload) || json_decode($payload) === null)
+				throw new InvalidRequestException('Payload is no valid JSON');
+		} else {
+			throw new InvalidRequestException('Unknown type');
+		}
+
+		$result = $this->db->updateProfile($id, $type, $name, $payload, $notes, $this->su->id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $result, 'oco.profile.edit', [
+			'id' => $id, 'type' => $type, 'name' => $name, 'payload' => $payload, 'notes' => $notes
 		]);
 		return $result;
 	}

@@ -4,7 +4,11 @@ namespace Models;
 
 class Profile {
 
+	const TYPE_IOS = 'ios';
+	const TYPE_ANDROID = 'android';
+
 	public $id;
+	public $type;
 	public $name;
 	public $payload;
 	public $notes;

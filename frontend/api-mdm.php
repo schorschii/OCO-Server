@@ -58,7 +58,7 @@ if($path === '/profile') {
 		$md->id, $request['UDID'], $md->state, $md->device_name, $md->serial, $md->vendor_description,
 		$md->model, $md->os, $md->device_family, $md->color,
 		$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent,
-		$md->unlock_token, $md->info, $md->notes, $md->force_update, true/*last_update*/
+		$md->unlock_token, $md->info, $md->policy, $md->notes, $md->force_update, true/*last_update*/
 	);
 
 	// deliver the enrollment profile to the device
@@ -112,7 +112,7 @@ if($path === '/profile') {
 				$md->id, $request['UDID'], $md->state, $md->device_name, $md->serial, $md->vendor_description,
 				$md->model, $os??$md->os, $md->device_family, $md->color,
 				$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent,
-				$md->unlock_token, $md->info, $md->notes, $md->force_update, true/*last_update*/
+				$md->unlock_token, $md->info, $md->policy, $md->notes, $md->force_update, true/*last_update*/
 			);
 			break;
 
@@ -150,7 +150,7 @@ if($path === '/profile') {
 				$md->id, $md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 				$md->model, $md->os, $md->device_family, $md->color,
 				$md->profile_uuid, $request['Token'], $request['PushMagic'], $md->push_sent,
-				$request['UnlockToken'], $md->info, $md->notes, $md->force_update, true/*last_update*/
+				$request['UnlockToken'], $md->info, $md->policy, $md->notes, $md->force_update, true/*last_update*/
 			);
 			break;
 
@@ -176,7 +176,7 @@ if($path === '/profile') {
 				$md->id, null/*udid*/, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 				$md->model, $md->os, $md->device_family, $md->color,
 				$md->profile_uuid, null/*push_token*/, null/*push_magic*/, null/*push_sent*/,
-				null/*unlock_token*/, $md->info, $md->notes, $md->force_update, true/*last_update*/
+				null/*unlock_token*/, $md->info, $md->policy, $md->notes, $md->force_update, true/*last_update*/
 			);
 			break;
 
@@ -231,7 +231,7 @@ if($path === '/profile') {
 			$md->id, $md->udid, $md->state, $md->device_name, $md->serial,
 			$md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
 			$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
-			$md->unlock_token, $md->info, $md->notes, $md->force_update
+			$md->unlock_token, $md->info, $md->policy, $md->notes, $md->force_update
 		);
 
 		// store device info
@@ -244,7 +244,7 @@ if($path === '/profile') {
 				$request['QueryResponses']['SerialNumber']??$md->serial,
 				$md->vendor_description, $product??$md->model, $os??$md->os, $md->device_family, $md->color,
 				$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
-				$md->unlock_token, json_encode($request['QueryResponses']), $md->notes, $md->force_update, true/*last_update*/
+				$md->unlock_token, json_encode($request['QueryResponses']), $md->policy, $md->notes, $md->force_update, true/*last_update*/
 			);
 		} elseif($rt === 'InstalledApplicationList') {
 			$apps = [];

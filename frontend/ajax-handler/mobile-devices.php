@@ -162,7 +162,9 @@ try {
 		die();
 	}
 
-	if(isset($_POST['edit_profile_id'])) {
+	if(isset($_POST['edit_profile_id'])
+	&& isset($_POST['name'])
+	&& isset($_POST['type'])) {
 		// no payload change by default
 		$payload = null;
 		if(!empty($_POST['update_payload'])) {
@@ -179,8 +181,11 @@ try {
 		}
 		if($_POST['edit_profile_id'] == '-1') {
 			die(
-				$cl->createProfile($_POST['name']??null, $payload, $_POST['notes']??'')
+				$cl->createProfile($_POST['type'], $_POST['name'], $payload, $_POST['notes']??'')
 			);
+		} else {
+			$cl->editProfile($_POST['edit_profile_id'], $_POST['type'], $_POST['name'], $payload, $_POST['notes']??'');
+			die();
 		}
 	}
 

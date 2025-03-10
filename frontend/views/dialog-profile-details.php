@@ -4,15 +4,7 @@ require_once('../../loader.inc.php');
 require_once('../session.inc.php');
 
 try {
-	$profile = null;
-	foreach($cl->getProfiles() as $p) {
-		if($p->id == ($_GET['id'] ?? -1)) {
-			$profile = $p;
-		}
-	}
-	if(!$profile) {
-		throw new NotFoundException();
-	}
+	$profile = $cl->getProfile($_GET['id'] ?? -1);
 	try {
 		$requestPlist = new CFPropertyList\CFPropertyList();
 		$requestPlist->parse($profile->payload);

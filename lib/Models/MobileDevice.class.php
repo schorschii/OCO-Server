@@ -20,6 +20,7 @@ class MobileDevice {
 	public $push_sent;
 	public $unlock_token;
 	public $info;
+	public $policy;
 	public $notes;
 	public $created;
 	public $last_update;

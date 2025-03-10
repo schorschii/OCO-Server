@@ -452,7 +452,7 @@ class DatabaseMigrationController {
 		if(strtolower($this->getTableColumnInfo('mobile_device', 'info')['COLUMN_TYPE']) !== 'mediumtext') {
 			if($this->debug) echo 'Upgrading to 1.1.4... (modify info column)'."\n";
 			$this->stmt = $this->dbh->prepare(
-				"ALTER TABLE `mobile_device` CHANGE `info` `info` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL;");
+				"ALTER TABLE `mobile_device` CHANGE `info` `info` MEDIUMTEXT NULL DEFAULT NULL;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			if($this->debug) echo 'Upgrading to 1.1.4... (update permissions of superadmin role)'."\n";
@@ -476,6 +476,19 @@ class DatabaseMigrationController {
 			if($this->debug) echo 'Upgrading to 1.1.4... (add encrypted column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `computer_partition` ADD `encrypted` tinyint(4) NOT NULL DEFAULT 0 AFTER `uuid`;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(!$this->getTableColumnInfo('profile', 'type')) {
+			if($this->debug) echo 'Upgrading to 1.1.4... (add type column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `profile` ADD `type` VARCHAR(10) NOT NULL DEFAULT 'ios' AFTER `id`;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			if($this->debug) echo 'Upgrading to 1.1.4... (add policy_update column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device` ADD `policy` MEDIUMTEXT NULL DEFAULT NULL AFTER `info`;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			$upgraded = true;

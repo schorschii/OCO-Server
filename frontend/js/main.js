@@ -1799,22 +1799,14 @@ function sendMobileDeviceCommand(mobile_device_id, name, parameter) {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditProfile(textInput, id=-1, name='', notes='') {
-	title = LANG['edit_profile'];
-	buttonText = LANG['change'];
+function showDialogEditProfile(type, id=-1) {
+	title = LANG['edit'];
 	if(id == -1) {
-		title = LANG['new_profile'];
-		buttonText = LANG['create'];
+		title = type=='android' ? LANG['new_android_policy'] : LANG['new_ios_profile'];
 	}
-	showDialogAjax(title, 'views/dialog-profile-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		spnBtnUpdateProfile.innerText = buttonText;
-		if(textInput) {
-			trProfileText.style.display = 'table-row';
-			trProfileFile.style.display = 'none';
-		}
-	});
+	showDialogAjax(title, 'views/dialog-profile-edit.php?id='+encodeURIComponent(id)+'&type='+encodeURIComponent(type), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function editProfile(id, name, payload, notes) {
+function editProfile(id, type, name, payload, notes) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 
@@ -1829,6 +1821,7 @@ function editProfile(id, name, payload, notes) {
 		formData.append('update_payload', '1');
 	}
 	formData.append('edit_profile_id', id);
+	formData.append('type', type);
 	formData.append('name', name);
 	formData.append('notes', notes);
 

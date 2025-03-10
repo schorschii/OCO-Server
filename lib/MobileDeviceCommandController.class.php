@@ -26,7 +26,7 @@ class MobileDeviceCommandController {
 		$policies = [];
 		$this->androidAppInstalls($mds, $policies);
 		$this->androidPolicies($mds, $policies);
-		$this->androidPoliciesPatch($policies);
+		$this->androidPoliciesPatch($mds, $policies);
 	}
 
 	private function androidAppInstalls(array $mds, array &$policies) {
@@ -50,7 +50,7 @@ class MobileDeviceCommandController {
 	}
 
 	private function androidPolicies(array $mds, array &$policies) {
-		// check if every assigned app is installed, otherwise add to policy
+		// check if every assigned policy is applied, otherwise add to policy
 		foreach($mds as $md) {
 			if($md->getOsType() != Models\MobileDevice::OS_TYPE_ANDROID) continue;
 
@@ -59,6 +59,7 @@ class MobileDeviceCommandController {
 					$policies[$md->udid] = [];
 
 				foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
+					if($p->type != Models\Profile::TYPE_ANDROID) continue;
 					$policyValues = json_decode($p->payload, true);
 					if(!$policyValues || !is_array($policyValues)) continue;
 					$policies[$md->udid] = array_merge($policies[$md->udid], $policyValues);
@@ -67,23 +68,41 @@ class MobileDeviceCommandController {
 		}
 	}
 
-	private function androidPoliciesPatch(array $policies) {
-		// check if every assigned app is installed, otherwise add to policy
-		foreach($policies as $mdId => $policyValues) {
+	private function androidPoliciesPatch(array $mds, array $policies) {
+		// sync policy with Google API
+		foreach($policies as $mdUdid => $policyValues) {
 			$appCount = count($policyValues['applications']??[]);
 			$policyCount = count($policyValues);
-			$this->ae->patchPolicy(strval($mdId), $policyValues, strval($mdId));
-			echo('Updated policy for device '.$mdId.' ('.$appCount.' apps, '.$policyCount.' policies)'."\n");
+			$newPolicy = json_encode($policyValues);
+
+			$md = null;
+			foreach($mds as $tmpMd) {
+				if($tmpMd->udid === $mdUdid)
+					$md = $tmpMd;
+			}
+			if(!$md) continue;
+
+			if($newPolicy != $md->policy) {
+				$this->ae->patchPolicy(strval($mdUdid), $policyValues, strval($mdUdid));
+				echo('Updated policy for device '.$mdUdid.' ('.$appCount.' apps, '.$policyCount.' policies)'."\n");
+				$this->db->updateMobileDevice($md->id,
+					$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
+					$md->model, $os??$md->os, $md->device_family, $md->color,
+					$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token,
+					$md->info, $newPolicy, $md->notes, $md->force_update
+				);
+			}
 		}
 	}
 
 	private function iosProfiles(array $mds, array &$changedMdIds) {
-		// check if every assigned profile is installed, otherwise create job
+		// check if every assigned profile is installed, otherwise create command
 		foreach($mds as $md) {
 			if($md->getOsType() != Models\MobileDevice::OS_TYPE_IOS) continue;
 
 			$installedProfileUuids = $this->db->selectAllMobileDeviceProfileUuidByMobileDeviceId($md->id);
 			foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
+				if($p->type != Models\Profile::TYPE_IOS) continue;
 				$uuid = $p->getUuid();
 				if(!$uuid) continue;
 				if(!array_key_exists($uuid, $installedProfileUuids)) {
@@ -212,7 +231,7 @@ class MobileDeviceCommandController {
 					$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 					$md->model, $os??$md->os, $md->device_family, $md->color,
 					$md->profile_uuid, $md->push_token, $md->push_magic, date('Y-m-d H:i:s'), $md->unlock_token,
-					$md->info, $md->notes, 0/*force_update*/
+					$md->info, $md->policy, $md->notes, 0/*force_update*/
 				);
 			}
 		}

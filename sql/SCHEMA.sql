@@ -741,7 +741,8 @@ CREATE TABLE `mobile_device` (
   `push_magic` text DEFAULT NULL,
   `push_sent` timestamp NULL DEFAULT NULL,
   `unlock_token` blob DEFAULT NULL,
-  `info` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `info` MEDIUMTEXT DEFAULT NULL,
+  `policy` MEDIUMTEXT NULL DEFAULT NULL,
   `notes` text NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_update` timestamp NULL DEFAULT NULL,
@@ -846,6 +847,7 @@ CREATE TABLE `mobile_device_app` (
 
 CREATE TABLE `profile` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` VARCHAR(10) NOT NULL DEFAULT 'ios',
   `name` text NOT NULL,
   `payload` text NOT NULL,
   `notes` text NOT NULL,
