@@ -1014,7 +1014,7 @@ class DatabaseController {
 				intval($part['free']),
 				$part['name'] ?? '',
 				$part['uuid'] ?? '',
-				intval($part['encrypted']) ?? 0
+				intval($part['encrypted'] ?? 0)
 			);
 			$pids[] = $pid;
 		}
