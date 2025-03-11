@@ -68,7 +68,7 @@ After OCO synced with ABM/ASM, the iOS devices are automatically visible in OCO.
 Without factory reset, you can click on "New iOS Device" in OCO and download an enrollment profile, which needs to be sent and installed on the target device. Note that not all MDM commands/features are available when using this method (the device is "not supervised").
 
 ### General/Configuration Management
-First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles and Policies" section in the OCO sidebar. Such profiles can be created using Apple Configurator, but Apple Configurator only knows a subset of all possible config options. For example configuring an Exchange profile must be done manually. See the [https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys](configuration payload reference) for all possible configuration values. After creating a profile, assign it to mobile device groups.
+First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles and Policies" section in the OCO sidebar. Such profiles can be created using Apple Configurator, but Apple Configurator only knows a subset of all possible config options. For example configuring an Exchange profile must be done manually. See the [configuration payload reference](https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys) for all possible configuration values. After creating a profile, assign it to mobile device groups.
 
 Common configuration profiles:
 - [Email Account](https://developer.apple.com/documentation/devicemanagement/mail)
@@ -121,7 +121,7 @@ You can now add Android devices into OCO by clicking "New Android Device" on the
 // TODO
 
 ### General/Configuration Management
-First, ceate a policy (JSON format) in the corresponding "Profiles and Policies" section in the OCO sidebar. See the [https://developers.google.com/android/management/reference/rest/v1/enterprises.policies#Policy](Android policy reference) for possible configuration values. After creating a policy, assign it to mobile device groups.
+First, ceate a policy (JSON format) in the corresponding "Profiles and Policies" section in the OCO sidebar. See the [Android policy reference](https://developers.google.com/android/management/reference/rest/v1/enterprises.policies#Policy) for possible configuration values. After creating a policy, assign it to mobile device groups.
 
 After the device checked in into OCO MDM, you can add the device to mobile device groups. This will apply the assigned policies.
 
