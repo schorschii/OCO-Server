@@ -26,7 +26,7 @@ try {
 <div class='details-abreast'>
 	<div class='stickytable'>
 		<h2><?php echo LANG('ios'); ?></h2>
-		<table id='tblIosProfileData' class='list searchable sortable savesort'>
+		<table id='tblIosProfileData' class='list searchable sortable savesort actioncolumn'>
 		<thead>
 			<tr>
 				<th><input type='checkbox' class='toggleAllChecked'></th>
@@ -79,7 +79,7 @@ try {
 
 	<div class='stickytable'>
 		<h2><?php echo LANG('android'); ?></h2>
-		<table id='tblAndroidProfileData' class='list searchable sortable savesort'>
+		<table id='tblAndroidProfileData' class='list searchable sortable savesort actioncolumn'>
 		<thead>
 			<tr>
 				<th><input type='checkbox' class='toggleAllChecked'></th>
