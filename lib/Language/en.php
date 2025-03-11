@@ -697,6 +697,7 @@ return [
 	'applied_policies' => 'Applied Policies',
 	'show_content' => 'Show Content',
 	'policy' => 'Policy',
+	'policy_docs' => '<a href="https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys" target="_blank">iOS profile payloads</a> | <a href="https://developers.google.com/android/management/reference/rest/v1/enterprises.policies#Policy" target="_blank">Android policy reference</a>',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

@@ -68,7 +68,7 @@ After OCO synced with ABM/ASM, the iOS devices are automatically visible in OCO.
 Without factory reset, you can click on "New iOS Device" in OCO and download an enrollment profile, which needs to be sent and installed on the target device. Note that not all MDM commands/features are available when using this method (the device is "not supervised").
 
 ### General/Configuration Management
-First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles" section in the OCO sidebar. Such profiles can be created using Apple Configurator, but Apple Configurator only knows a subset of all possible config options. For example configuring an Exchange profile must be done manually. After that, assign your profiles to mobile device groups.
+First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles and Policies" section in the OCO sidebar. Such profiles can be created using Apple Configurator, but Apple Configurator only knows a subset of all possible config options. For example configuring an Exchange profile must be done manually. See the [https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys](configuration payload reference) for all possible configuration values. After creating a profile, assign it to mobile device groups.
 
 Common configuration profiles:
 - [Email Account](https://developer.apple.com/documentation/devicemanagement/mail)
@@ -77,7 +77,9 @@ Common configuration profiles:
 - [Enforce Update Settings](https://developer.apple.com/documentation/devicemanagement/softwareupdate)
 - [Display Single App (Kiosk Mode)](https://developer.apple.com/documentation/devicemanagement/applock)
 
-After the device checked in into OCO MDM (via ADE or manual enrollment profile installation), you can add the device to mobile device groups. This will install the assigned configuration profiles. With the button "Send Command" on the device detail page, you can e.g. lock or erase a device.
+After the device checked in into OCO MDM (via ADE or manual enrollment profile installation), you can add the device to mobile device groups. This will install the assigned configuration profiles.
+
+With the button "Send Command" on the device detail page, you can e.g. lock or erase a device.
 
 ### Purchasing & Installing Apps
 ABM/ASM offers features for volume purchases of apps and books from the App Store. Before you can deploy apps through OCO, you first need to purchase them in ABM/ASM (even if they are free).
@@ -117,3 +119,15 @@ You can now add Android devices into OCO by clicking "New Android Device" on the
 
 #### Zero-Touch Enrollment
 // TODO
+
+### General/Configuration Management
+First, ceate a policy (JSON format) in the corresponding "Profiles and Policies" section in the OCO sidebar. See the [https://developers.google.com/android/management/reference/rest/v1/enterprises.policies#Policy](Android policy reference) for possible configuration values. After creating a policy, assign it to mobile device groups.
+
+After the device checked in into OCO MDM, you can add the device to mobile device groups. This will apply the assigned policies.
+
+With the button "Send Command" on the device detail page, you can e.g. lock a device or reset the passcode.
+
+### Installing Apps
+To deploy Android apps, open the managed Play Store by clicking "Manage Android Apps" on the "Managed Apps" page in OCO. A Google Play iframe will be displayed, where you can select the desired apps. After you imported an app into OCO, you can assign them to mobile device groups like on iOS and they will be installed automatically.
+
+When assigning apps to groups, you can add conguration values for the app. Consult the documentation of the specific app which configuration values are supported.

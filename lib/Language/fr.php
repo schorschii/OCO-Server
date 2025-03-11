@@ -697,6 +697,7 @@ return [
 	'applied_policies' => 'Applied Policies',
 	'show_content' => 'Show Content',
 	'policy' => 'Policy',
+	'policy_docs' => '<a href="https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys" target="_blank">iOS profile payloads</a> | <a href="https://developers.google.com/android/management/reference/rest/v1/enterprises.policies#Policy" target="_blank">Android policy reference</a>',
 	'package_creation_notes' => '
 		<p>
 			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.

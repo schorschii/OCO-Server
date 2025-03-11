@@ -27,6 +27,12 @@ try {
 			<textarea class='fullwidth monospace' id='txtProfilePayload' rows='12' cols='45'><?php echo htmlspecialchars($profile->payload??''); ?></textarea>
 		</td>
 	</tr>
+	<tr>
+		<th></th>
+		<td>
+			<div class='alert info'><?php echo LANG('policy_docs'); ?></div>
+		</td>
+	</tr>
 </table>
 
 <div class='controls right'>
