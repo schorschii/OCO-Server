@@ -3,12 +3,18 @@ $SUBVIEW = 1;
 require_once('../../loader.inc.php');
 require_once('../session.inc.php');
 
-$ae = new Android\AndroidEnrollment($db);
-$qrImageBase64 = base64_encode(
-	Android\AndroidEnrollment::generateQrCode(
-		$ae->generateEnrollmentToken()
-	)
-);
+try {
+	$ae = new Android\AndroidEnrollment($db);
+	$qrImageBase64 = base64_encode(
+		Android\AndroidEnrollment::generateQrCode(
+			$ae->generateEnrollmentToken()
+		)
+	);
+} catch(PermissionException $e) {
+	die('<div class="alert error">'.LANG('permission_denied')).'</div>';
+} catch(Exception $e) {
+	die('<div class="alert error">'.htmlspecialchars($e->getMessage())).'</div>';
+}
 ?>
 
 <table class='fullwidth aligned'>
