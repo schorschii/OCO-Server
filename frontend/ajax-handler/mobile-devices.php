@@ -16,16 +16,17 @@ try {
 	}
 
 	if(!empty($_POST['edit_mobile_device_id'])
+	&& isset($_POST['device_name'])
 	&& isset($_POST['notes'])) {
 		$md = $cl->getMobileDevice($_POST['edit_mobile_device_id']);
-		$cl->editMobileDevice($md->id, $_POST['notes'], $md->force_update);
+		$cl->editMobileDevice($md->id, $_POST['device_name'], $_POST['notes'], $md->force_update);
 		die();
 	}
 
 	if(!empty($_POST['edit_mobile_device_id'])
 	&& isset($_POST['force_update'])) {
 		$md = $cl->getMobileDevice($_POST['edit_mobile_device_id']);
-		$cl->editMobileDevice($md->id, $md->notes, $_POST['force_update']);
+		$cl->editMobileDevice($md->id, $md->device_name, $md->notes, $_POST['force_update']);
 		die();
 	}
 

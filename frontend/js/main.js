@@ -1353,11 +1353,8 @@ function showDialogCreateMobileDeviceIos() {
 function showDialogCreateMobileDeviceAndroid() {
 	showDialogAjax(LANG['new_android_device'], 'views/dialog-mobile-device-create-android.php', DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
 }
-function showDialogEditMobileDevice(id, notes) {
-	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog-mobile-device-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditMobileDeviceId.value = id;
-		txtEditMobileDeviceNotes.value = notes;
-	});
+function showDialogEditMobileDevice(id) {
+	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog-mobile-device-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function createMobileDeviceIos(name, notes) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'create_mobile_device':name, 'notes':notes, 'type':'ios'}), null, function(response) {
@@ -1367,8 +1364,12 @@ function createMobileDeviceIos(name, notes) {
 		window.open('views/dialog-mobile-device-create-ios.php?download_profile='+encodeURIComponent(response), '_blank')
 	});
 }
-function editMobileDevice(id, notes) {
-	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'edit_mobile_device_id':id, 'notes':notes}), null, function() {
+function editMobileDevice(id, deviceName, notes) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
+		'edit_mobile_device_id':id,
+		'device_name':deviceName,
+		'notes':notes
+	}), null, function() {
 		refreshContent(); hideDialog();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
