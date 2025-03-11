@@ -2908,7 +2908,7 @@ function syncAppleDevices(btn) {
 	params.push({'key':'sync_apple_devices', 'value':1});
 	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
 		emitMessage(LANG['sync_with_apple_business_manager'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){
@@ -2921,7 +2921,7 @@ function syncAppleAssets(btn) {
 	params.push({'key':'sync_apple_assets', 'value':1});
 	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
 		emitMessage(LANG['sync_apple_vpp'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){
@@ -2935,7 +2935,7 @@ function showDialogManagedPlayStore() {
 	var paramString = urlencodeArray([
 		{'key':'get_playstore_token', 'value':1}
 	]);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(token) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(token) {
 		// load the Google JS
 		var script = document.createElement('script');
 		script.src = 'https://apis.google.com/js/api.js';
@@ -2972,7 +2972,7 @@ function showDialogAndroidZeroTouch() {
 	var params = [];
 	params.push({'key':'get_playstore_token', 'value':1});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(token) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(token) {
 		// load the Google JS
 		var script = document.createElement('script');
 		script.src = 'https://apis.google.com/js/api.js';
@@ -2997,7 +2997,7 @@ function showDialogManagedPlayStoreConfig(packageName) {
 	var params = [];
 	params.push({'key':'get_playstore_token', 'value':1});
 	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(token) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(token) {
 		// load the Google JS
 		var script = document.createElement('script');
 		script.src = 'https://apis.google.com/js/api.js';
@@ -3055,7 +3055,7 @@ function syncAndroidDevices(btn) {
 	params.push({'key':'sync_android_devices', 'value':1});
 	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
 		emitMessage(LANG['sync_with_android_enterprise'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){

@@ -21,6 +21,7 @@ class PermissionManager {
 	const SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT = 'Models\\SystemUser';
 	const SPECIAL_PERMISSION_SOFTWARE_VIEW          = 'Models\\Software';
 	const SPECIAL_PERMISSION_GENERAL_CONFIGURATION  = 'Special\\GeneralConfiguration';
+	const SPECIAL_PERMISSION_MOBILE_DEVICE_SYNC     = 'Special\\MobileDeviceSync';
 	const SPECIAL_PERMISSION_EVENT_QUERY_RULES      = 'Special\\EventQueryRules';
 	const SPECIAL_PERMISSION_PASSWORD_ROTATION_RULES= 'Special\\PasswordRotationRules';
 	const SPECIAL_PERMISSION_VIEW_DELETED_OBJECTS   = 'Special\\DeletedObjects';
