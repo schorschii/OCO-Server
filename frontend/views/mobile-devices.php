@@ -26,7 +26,7 @@ try {
 <?php if($group === null) {
 	$permissionCreateMobileDevice = $cl->checkPermission(new Models\MobileDevice(), PermissionManager::METHOD_CREATE, false);
 	$permissionCreateGroup = $cl->checkPermission(new Models\MobileDeviceGroup(), PermissionManager::METHOD_CREATE, false);
-	$permissionGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION, false);
+	$permissionSync = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_MOBILE_DEVICE_SYNC, false);
 ?>
 	<h1><img src='img/mobile-device.dyn.svg'><span id='page-title'><?php echo LANG('all_mobile_devices'); ?></span></h1>
 	<div class='controls'>
@@ -34,8 +34,8 @@ try {
 		<button onclick='showDialogCreateMobileDeviceAndroid()' <?php if(!$permissionCreateMobileDevice) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_android_device'); ?></button>
 		<button onclick='createMobileDeviceGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
 		<span class='filler'></span>
-		<button onclick='syncAppleDevices(this)' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_with_apple_business_manager'); ?></button>
-		<button onclick='syncAndroidDevices(this)' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_with_android_enterprise'); ?></button>
+		<button onclick='syncAppleDevices(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_with_apple_business_manager'); ?></button>
+		<button onclick='syncAndroidDevices(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_with_android_enterprise'); ?></button>
 	</div>
 <?php } else {
 	$permissionCreate = $cl->checkPermission($group, PermissionManager::METHOD_CREATE, false);

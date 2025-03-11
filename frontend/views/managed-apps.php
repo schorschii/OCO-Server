@@ -6,7 +6,7 @@ require_once('../session.inc.php');
 try {
 	$iosApps = $cl->getManagedApps(Models\ManagedApp::TYPE_IOS);
 	$androidApps = $cl->getManagedApps(Models\ManagedApp::TYPE_ANDROID);
-	$permissionGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION, false);
+	$permissionSync = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_MOBILE_DEVICE_SYNC, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
@@ -18,10 +18,10 @@ try {
 
 <h1><img src='img/store.dyn.svg'><span id='page-title'><?php echo LANG('managed_apps'); ?></span></h1>
 <div class='controls'>
-	<button onclick='window.open("https://business.apple.com/#/main/appsandbooks", "_blank").focus();' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_ios_apps'); ?></button>
-	<button onclick='showDialogManagedPlayStore()' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_android_apps'); ?></button>
+	<button onclick='window.open("https://business.apple.com/#/main/appsandbooks", "_blank").focus();' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_ios_apps'); ?></button>
+	<button onclick='showDialogManagedPlayStore()' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_android_apps'); ?></button>
 	<span class='filler'></span>
-	<button onclick='syncAppleAssets(this)' <?php if(!$permissionGeneral) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_apple_vpp'); ?></button>
+	<button onclick='syncAppleAssets(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_apple_vpp'); ?></button>
 </div>
 
 <div class='details-abreast'>
