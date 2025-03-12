@@ -41,6 +41,5 @@ Please refer to the [README.md in the OCO Agent repo](https://github.com/schorsc
 - [Client API](Client-API.md)
 - [Agent API](Agent-API.md)
 - [Architecture Decision Records](decisions)
-
-### Webapp Architecture
-![WebApp Architecture](../.github/oco-architecture.png)
+- [Database Schema](Database-Schema.md)
+- [WebApp Architecture](WebApp-Architecture.md)

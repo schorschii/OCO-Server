@@ -32,7 +32,7 @@ try {
 		<button onclick='showDialogCreateReport()' <?php if(!$permissionCreateReport) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_report'); ?></button>
 		<button onclick='createReportGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
 		<span class='filler'></span>
-		<span><a target='_blank' href='img/dbschema.png' title='<?php echo LANG('database_schema_description'); ?>'><?php echo LANG('database_schema'); ?></a></span>
+		<span><a <?php echo explorerLink('views/docs.php?page=Reports.md'); ?>><?php echo LANG('infos_and_database_schema'); ?></a></span>
 	</div>
 <?php } else {
 	$permissionCreateReport = $cl->checkPermission(new Models\Report(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission($group, PermissionManager::METHOD_WRITE, false);
