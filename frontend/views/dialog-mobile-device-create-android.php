@@ -11,9 +11,11 @@ try {
 		)
 	);
 } catch(PermissionException $e) {
-	die('<div class="alert error">'.LANG('permission_denied')).'</div>';
+	header('HTTP/1.1 403 Forbidden');
+	die(LANG('permission_denied'));
 } catch(Exception $e) {
-	die('<div class="alert error">'.htmlspecialchars($e->getMessage())).'</div>';
+	header('HTTP/1.1 400 Invalid Request');
+	die(htmlspecialchars($e->getMessage()));
 }
 ?>
 
