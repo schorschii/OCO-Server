@@ -441,7 +441,7 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('mobile_device_group_managed_app', 'install_type')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add external_id column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.4... (add install_type column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `mobile_device_group_managed_app` ADD `install_type` TINYTEXT NULL DEFAULT NULL AFTER `remove_on_mdm_remove`;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -489,6 +489,15 @@ class DatabaseMigrationController {
 			$this->stmt = $this->dbh->prepare(
 				"UPDATE system_user_role SET permissions='{\"Special\\\\\\\\ClientApi\": true, \"Special\\\\\\\\WebFrontend\": true, \"Special\\\\\\\\GeneralConfiguration\": true,  \"Special\\\\\\\\MobileDeviceSync\": true, \"Special\\\\\\\\EventQueryRules\": true, \"Special\\\\\\\\PasswordRotationRules\": true, \"Special\\\\\\\\DeletedObjects\": true, \"Models\\\\\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\\\\\SystemUser\": true, \"Models\\\\\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Software\": true, \"Models\\\\\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}, \"create\": true}}' WHERE id = 1"
 			);
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(strtolower($this->getTableColumnInfo('mobile_device_command', 'external_id')['COLUMN_TYPE']) != 'varchar(20)') {
+			if($this->debug) echo 'Upgrading to 1.1.8... (modify external_id column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device_command` CHANGE `external_id` `external_id` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			$upgraded = true;

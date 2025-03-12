@@ -760,7 +760,7 @@ CREATE TABLE `mobile_device` (
 
 CREATE TABLE `mobile_device_command` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `external_id` VARCHAR(10) NULL DEFAULT NULL,
+  `external_id` VARCHAR(20) NULL DEFAULT NULL,
   `mobile_device_id` int(11) NOT NULL,
   `name` text NOT NULL,
   `parameter` text NOT NULL,
