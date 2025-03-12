@@ -309,19 +309,19 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
-		/*** 1.1.4 ***/
+		/*** 1.1.6 ***/
 		if($this->getTableColumnInfo('setting', 'id')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (remove id from setting table)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.6... (remove id from setting table)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `setting` DROP `id`");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-			if($this->debug) echo 'Upgrading to 1.1.4... (change key to varchar in setting table)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.6... (change key to varchar in setting table)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `setting` CHANGE `key` `key` VARCHAR(50) NOT NULL");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-			if($this->debug) echo 'Upgrading to 1.1.4... (make key primary key in setting table)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.6... (make key primary key in setting table)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `setting` ADD PRIMARY KEY(`key`)");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -330,12 +330,12 @@ class DatabaseMigrationController {
 		}
 
 		if($this->getTableColumnInfo('log', 'id')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (remove id from log table)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.6... (remove id from log table)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `log` DROP `id`");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-			if($this->debug) echo 'Upgrading to 1.1.4... (object_id index in setting table)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.6... (object_id index in setting table)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `log` ADD INDEX(`object_id`)");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -344,7 +344,7 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('password_rotation_rule', 'default_password')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add default_password column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.6... (add default_password column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `password_rotation_rule` ADD COLUMN `default_password` text DEFAULT NULL AFTER history");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -352,13 +352,14 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		/*** 1.1.7 ***/
 		if(!$this->getTableColumnInfo('computer', 'battery_level')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add battery_level column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add battery_level column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `computer` ADD COLUMN `battery_level` float DEFAULT NULL AFTER domain");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-			if($this->debug) echo 'Upgrading to 1.1.4... (add battery_status column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add battery_status column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `computer` ADD COLUMN `battery_status` tinyint(4) DEFAULT NULL AFTER battery_level");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -367,7 +368,7 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('computer_device', 'id')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add computer_device table)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add computer_device table)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"CREATE TABLE `computer_device` (
 				  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -387,7 +388,7 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('computer_user', 'id')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add computer_user table)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add computer_user table)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"CREATE TABLE `computer_user` (
 				  `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -409,12 +410,12 @@ class DatabaseMigrationController {
 		}
 
 		if($this->getTableColumnInfo('mobile_device', 'serial')['COLUMN_DEFAULT'] !== 'NULL') {
-			if($this->debug) echo 'Upgrading to 1.1.4... (make mobile_device.serial nullable)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (make mobile_device.serial nullable)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `mobile_device` CHANGE `serial` `serial` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-			if($this->debug) echo 'Upgrading to 1.1.4... (add battery_status column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add battery_status column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `mobile_device` ADD COLUMN `state` text DEFAULT NULL AFTER udid");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -423,7 +424,7 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('managed_app', 'type')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add type column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add type column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `managed_app` ADD `type` VARCHAR(10) NOT NULL DEFAULT 'ios' AFTER `id`");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -432,7 +433,7 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('mobile_device_command', 'external_id')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add external_id column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add external_id column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `mobile_device_command` ADD `external_id` VARCHAR(10) NULL DEFAULT NULL AFTER `id`");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -441,7 +442,7 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('mobile_device_group_managed_app', 'install_type')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add install_type column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add install_type column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `mobile_device_group_managed_app` ADD `install_type` TINYTEXT NULL DEFAULT NULL AFTER `remove_on_mdm_remove`;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -450,7 +451,7 @@ class DatabaseMigrationController {
 		}
 
 		if(strtolower($this->getTableColumnInfo('mobile_device', 'info')['COLUMN_TYPE']) !== 'mediumtext') {
-			if($this->debug) echo 'Upgrading to 1.1.4... (modify info column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (modify info column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `mobile_device` CHANGE `info` `info` MEDIUMTEXT NULL DEFAULT NULL;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -459,15 +460,15 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('computer_partition', 'name')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add name column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add name column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `computer_partition` ADD `name` text NOT NULL AFTER `free`;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
-			if($this->debug) echo 'Upgrading to 1.1.4... (add uuid column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add uuid column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `computer_partition` ADD `uuid` text NOT NULL AFTER `name`;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
-			if($this->debug) echo 'Upgrading to 1.1.4... (add encrypted column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add encrypted column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `computer_partition` ADD `encrypted` tinyint(4) NOT NULL DEFAULT 0 AFTER `uuid`;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -476,16 +477,16 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('profile', 'type')) {
-			if($this->debug) echo 'Upgrading to 1.1.4... (add type column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add type column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `profile` ADD `type` VARCHAR(10) NOT NULL DEFAULT 'ios' AFTER `id`;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
-			if($this->debug) echo 'Upgrading to 1.1.4... (add policy_update column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (add policy_update column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `mobile_device` ADD `policy` MEDIUMTEXT NULL DEFAULT NULL AFTER `info`;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-			if($this->debug) echo 'Upgrading to 1.1.4... (update permissions of superadmin role)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.7... (update permissions of superadmin role)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"UPDATE system_user_role SET permissions='{\"Special\\\\\\\\ClientApi\": true, \"Special\\\\\\\\WebFrontend\": true, \"Special\\\\\\\\GeneralConfiguration\": true,  \"Special\\\\\\\\MobileDeviceSync\": true, \"Special\\\\\\\\EventQueryRules\": true, \"Special\\\\\\\\PasswordRotationRules\": true, \"Special\\\\\\\\DeletedObjects\": true, \"Models\\\\\\\\Computer\": {\"*\": {\"read\": true, \"write\": true, \"wol\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\ComputerGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Package\": {\"*\": {\"read\": true, \"write\": true, \"download\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\PackageGroup\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\PackageFamily\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\DomainUser\": {\"read\": true, \"delete\": true}, \"Models\\\\\\\\SystemUser\": true, \"Models\\\\\\\\Report\": {\"create\": true, \"*\": {\"read\": true, \"write\": true, \"delete\": true} }, \"Models\\\\\\\\ReportGroup\": {\"create\":true, \"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}}, \"Models\\\\\\\\JobContainer\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Software\": true, \"Models\\\\\\\\DeploymentRule\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\MobileDevice\": {\"*\": {\"read\": true, \"write\": true, \"delete\": true, \"deploy\": true}, \"create\": true}, \"Models\\\\\\\\MobileDeviceGroup\": {\"*\": {\"read\": true, \"write\": true, \"create\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\Profile\": {\"*\": {\"read\": true, \"write\": true, \"deploy\": true, \"delete\": true}, \"create\": true}, \"Models\\\\\\\\ManagedApp\": {\"*\": {\"read\":true, \"write\":true, \"delete\":true, \"deploy\":true}, \"create\": true}}' WHERE id = 1"
 			);
@@ -494,6 +495,7 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		/*** 1.1.8 ***/
 		if(strtolower($this->getTableColumnInfo('mobile_device_command', 'external_id')['COLUMN_TYPE']) != 'varchar(20)') {
 			if($this->debug) echo 'Upgrading to 1.1.8... (modify external_id column)'."\n";
 			$this->stmt = $this->dbh->prepare(
