@@ -125,7 +125,7 @@ try {
 					throw new InvalidRequestException('The password must be at least 6 chars long');
 				$parameter = [
 					'newPassword' => $_POST['password'],
-					'resetPasswordFlags' => []
+					'resetPasswordFlags' => ['LOCK_NOW']
 				];
 			} elseif($_POST['command'] == 'START_LOST_MODE') {
 				if(empty($_POST['message']))
@@ -137,7 +137,7 @@ try {
 				];
 			} elseif($_POST['command'] == 'STOP_LOST_MODE') {
 				$parameter = [
-					'stopLostModeParams' => []
+					'stopLostModeParams' => new stdClass()
 				];
 			}
 			$ae = new Android\AndroidEnrollment($db);

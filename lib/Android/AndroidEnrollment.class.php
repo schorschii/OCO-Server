@@ -233,7 +233,7 @@ class AndroidEnrollment {
 	function issueCommand(string $deviceId, string $command, array $params=[]) {
 		$enterpriseName = $this->getEnterprise()['name'];
 		$response = $this->apiCall('POST', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/devices/'.urlencode($deviceId).':issueCommand', json_encode(
-			array_merge(['type' => $command], $params), JSON_FORCE_OBJECT
+			array_merge(['type' => $command], $params)
 		));
 		if(empty($response['name']))
 			throw new \RuntimeException('Unexpected server response: '.json_encode($response));
