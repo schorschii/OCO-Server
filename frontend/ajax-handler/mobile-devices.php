@@ -276,6 +276,7 @@ try {
 		try {
 			$ade = new Android\AndroidEnrollment($db);
 			$ade->syncDevices();
+			$ade->syncCommands();
 		} catch(Exception $e) {
 			header('HTTP/1.1 500 Internal Server Error');
 			die($e->getMessage());
