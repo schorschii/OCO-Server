@@ -351,7 +351,7 @@ try {
 								</tr>
 							</thead>
 							<tbody>
-								<?php foreach(json_decode($md->policy, true) as $key => $value) { ?>
+								<?php foreach(json_decode($md->policy??'', true) ?? [] as $key => $value) { ?>
 									<tr>
 										<td><?php echo htmlspecialchars($key); ?></td>
 										<td><?php echo echoDictTable($value); ?></td>
