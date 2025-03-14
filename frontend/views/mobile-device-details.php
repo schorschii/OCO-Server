@@ -130,19 +130,19 @@ try {
 						<table class='list metadata'>
 							<tr>
 								<th><?php echo LANG('build'); ?></th>
-								<td><?php echo htmlspecialchars($info['BuildVersion']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['BuildVersion']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('model'); ?></th>
-								<td><?php echo htmlspecialchars($info['ModelNumber']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['ModelNumber']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('eas_device_identifier'); ?></th>
-								<td><?php echo htmlspecialchars($info['EASDeviceIdentifier']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['EASDeviceIdentifier']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('time_zone'); ?></th>
-								<td><?php echo htmlspecialchars($info['TimeZone']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['TimeZone']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('app_analytics'); ?></th>
@@ -187,12 +187,12 @@ try {
 									elseif(($info['CellularTechnology']??'-') == '1') echo 'GSM';
 									elseif(($info['CellularTechnology']??'-') == '2') echo 'CDMA';
 									elseif(($info['CellularTechnology']??'-') == '3') echo 'GSM+CDMA';
-									else echo htmlspecialchars($info['CellularTechnology']??'-');
+									else echo htmlspecialchars($info['CellularTechnology']??'');
 								?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('modem_firmware'); ?></th>
-								<td><?php echo htmlspecialchars($info['ModemFirmwareVersion']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['ModemFirmwareVersion']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('sim_slots'); ?></th>
@@ -200,27 +200,29 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('bluetooth_mac'); ?></th>
-								<td><?php echo htmlspecialchars($info['BluetoothMAC']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['BluetoothMAC']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('wifi_mac'); ?></th>
-								<td><?php echo htmlspecialchars($info['WiFiMAC']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['WiFiMAC']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('itunes_store_account_hash'); ?></th>
-								<td><?php echo htmlspecialchars($info['iTunesStoreAccountHash']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['iTunesStoreAccountHash']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('battery_status'); ?></th>
-								<td><?php echo progressBar(($info['BatteryLevel']??0)*100, null, null, 'stretch'); ?></td>
+								<td><?php if($info['BatteryLevel']??0) echo progressBar(($info['BatteryLevel']??0)*100, null, null, 'stretch'); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('storage'); ?></th>
 								<td><?php
 								$total = $info['DeviceCapacity'] ?? 0;
-								$free = $info['AvailableDeviceCapacity'] ?? 0;
-								$used = $total - $free;
-								echo progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
+								if($total) {
+									$free = $info['AvailableDeviceCapacity'] ?? 0;
+									$used = $total - $free;
+									echo progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
+								}
 								?></td>
 							</tr>
 						</table>
@@ -229,19 +231,19 @@ try {
 						<table class='list metadata'>
 							<tr>
 								<th><?php echo LANG('identifier'); ?></th>
-								<td><?php echo htmlspecialchars($info['name']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['name']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('management_mode'); ?></th>
-								<td><?php echo htmlspecialchars($info['managementMode']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['managementMode']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('ownership'); ?></th>
-								<td><?php echo htmlspecialchars($info['ownership']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['ownership']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('status'); ?></th>
-								<td><?php echo htmlspecialchars($info['state']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['state']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('policy_compliant'); ?></th>
@@ -249,23 +251,23 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('api_level'); ?></th>
-								<td><?php echo htmlspecialchars($info['apiLevel']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['apiLevel']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('device_policy_version'); ?></th>
-								<td><?php echo htmlspecialchars($info['softwareInfo']['androidDevicePolicyVersionName']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['softwareInfo']['androidDevicePolicyVersionName']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('kernel_version'); ?></th>
-								<td><?php echo htmlspecialchars($info['softwareInfo']['deviceKernelVersion']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['softwareInfo']['deviceKernelVersion']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('bootloader_version'); ?></th>
-								<td><?php echo htmlspecialchars($info['softwareInfo']['bootloaderVersion']??'-'); ?></td>
+								<td><?php echo htmlspecialchars($info['softwareInfo']['bootloaderVersion']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('system_update'); ?></th>
-								<td><?php $updateStatus = $info['softwareInfo']['systemUpdateInfo']['updateStatus']??'?';
+								<td><?php $updateStatus = $info['softwareInfo']['systemUpdateInfo']['updateStatus']??'';
 								if($updateStatus === 'UP_TO_DATE') echo LANG('up_to_date');
 								elseif($updateStatus === 'UNKNOWN_UPDATE_AVAILABLE') echo '<span class="badge">'.LANG('update_available').'</span>';
 								elseif($updateStatus === 'SECURITY_UPDATE_AVAILABLE') echo '<span class="badge">'.LANG('security_update_available').'</span>';
@@ -304,11 +306,11 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('ram'); ?></th>
-								<td><?php echo niceSIze($info['memoryInfo']['totalRam']??0, false); ?></td>
+								<td><?php if($info['memoryInfo']['totalRam']??null) echo niceSize($info['memoryInfo']['totalRam'], false); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('storage'); ?></th>
-								<td><?php echo niceSIze($info['memoryInfo']['totalInternalStorage']??0, false); ?></td>
+								<td><?php if($info['memoryInfo']['totalInternalStorage']??null) echo niceSize($info['memoryInfo']['totalInternalStorage'], false); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('encrypted'); ?></th>
@@ -320,10 +322,11 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('common_criteria_mode'); ?></th>
-								<td><?php if(($info['commonCriteriaModeInfo']['commonCriteriaModeStatus']??'') === 'COMMON_CRITERIA_MODE_ENABLED') {
+								<td><?php $ccm = $info['commonCriteriaModeInfo']['commonCriteriaModeStatus']??null;
+								if($ccm === 'COMMON_CRITERIA_MODE_ENABLED') {
 									echoDictTable(true);
 									echo htmlspecialchars($info['commonCriteriaModeInfo']['policySignatureVerificationStatus']??'');
-								} else echoDictTable(false);
+								} elseif($ccm !== null) echoDictTable(false);
 								?></td>
 							</tr>
 						</table>
