@@ -17,10 +17,16 @@ TL;DR: it's complicated. Apple did everything to make it as hard as possible to 
 
 ### Enrollment Options
 #### Automated Device Enrollment (ADE)
-Previously called Apple Device Enrollment Program (DEP). This option configures settings using ABM/ASM (requires an MDM server token for OCO set up in ABM/ASM). It enrolls a large number of devices, without ever touching them. These devices are purchased from Apple, have your preconfigured settings, and can be shipped directly to users or schools.
+Previously called Apple Device Enrollment Program (DEP). This option configures settings using ABM/ASM (requires an MDM server token for OCO set up in ABM/ASM). It enrolls a large number of devices, without ever touching them. For this, the devices must be purchased from Apple or a reseller participating in the ADE program. Then, they will get your preconfigured settings, and can be shipped directly to users or schools.
 
-#### Manual (Apple Configurator)
-Requires you to install the OCO MDM enrollment profile manually, e.g. by downloading it via Safari or sending it via email. You can download this `.mobileconfig` file in OCO Settings -> Mobile Device Management -> Download Enrollment Profile.
+Existing devices, bought without ADE integration, can be added to your ABM afterwards using [Apple Configurator](https://support.apple.com/de-de/guide/apple-configurator/apd4015ec300/ios). Note that when using this method, users can remove the MDM profile 30 days after integration.
+
+After OCO synced with ABM/ASM (via cron job or manual started in web frontend), the iOS devices are automatically visible in OCO. Now, when the iDevice is put into operation or when factory reset the device, it will automatically contact your OCO server as MDM solution. The device is now "supervised".
+
+#### Manual
+Requires you to install the OCO MDM enrollment profile manually, e.g. by downloading it via Safari or sending it via email. You can download this `.mobileconfig` file in OCO by clicking on "New iOS Device" on the mobile devices page.
+
+Note that not all MDM commands/features are available when using this method (the device is "not supervised"). Also, users can remove the profile at any time when using this method.
 
 ### Setup
 1. Get a MDM Vendor Cert from Apple or an OCO license - one of them is needed to sign the MDM APN (next step).
@@ -61,11 +67,6 @@ Requires you to install the OCO MDM enrollment profile manually, e.g. by downloa
 5. Create a crontab entry for executing `php console.php applesync` every 30 minutes and `php console.php mdmcron` every minute.
 
 Now, you can assign devices in ABM/ASM to your OCO server. Note that you can set OCO as default MDM server for every new device bought.
-
-### Join Devices Into MDM
-After OCO synced with ABM/ASM, the iOS devices are automatically visible in OCO. Now, when first put the iDevice into operation and when factory reset the device, it will automatically contact your OCO server as MDM solution. The device is now "supervised".
-
-Without factory reset, you can click on "New iOS Device" in OCO and download an enrollment profile, which needs to be sent and installed on the target device. Note that not all MDM commands/features are available when using this method (the device is "not supervised").
 
 ### General/Configuration Management
 First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles and Policies" section in the OCO sidebar. Such profiles can be created using Apple Configurator, but Apple Configurator only knows a subset of all possible config options. For example configuring an Exchange profile must be done manually. See the [configuration payload reference](https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys) for all possible configuration values. After creating a profile, assign it to mobile device groups.
