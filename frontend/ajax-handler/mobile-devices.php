@@ -11,7 +11,7 @@ try {
 			$os = 'iOS';
 		} else throw new Exception('Unknown type');
 		die(
-			$cl->createMobileDevice($_POST['create_mobile_device'], $os, $_POST['notes']??'')
+			$cl->createMobileDevice($_POST['create_mobile_device'], $os, $_POST['serial']??'', $_POST['notes']??'')
 		);
 	}
 

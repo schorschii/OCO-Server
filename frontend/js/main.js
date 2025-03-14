@@ -1356,8 +1356,10 @@ function showDialogCreateMobileDeviceAndroid() {
 function showDialogEditMobileDevice(id) {
 	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog-mobile-device-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function createMobileDeviceIos(name, notes) {
-	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'create_mobile_device':name, 'notes':notes, 'type':'ios'}), null, function(response) {
+function createMobileDeviceIos(name, serial, notes) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
+		'create_mobile_device':name, 'notes':notes, 'serial':serial, 'type':'ios'
+	}), null, function(response) {
 		refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 		hideDialog();showLoader(false);showLoader2(false);

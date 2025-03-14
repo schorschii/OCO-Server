@@ -80,18 +80,19 @@ class CoreLogic {
 		$this->checkPermission($mdGroup, PermissionManager::METHOD_READ);
 		return $mdGroup;
 	}
-	public function createMobileDevice($deviceName, $os, $notes='') {
+	public function createMobileDevice($deviceName, $os, $serial, $notes='') {
 		$this->checkPermission(new Models\MobileDevice(), PermissionManager::METHOD_CREATE);
 
 		$finalDeviceName = trim($deviceName);
 		if(empty($finalDeviceName)) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		//if($this->db->selectMobileDeviceBySerialNumber($finalSerial) !== null) {
-		//	throw new InvalidRequestException(LANG('serial_already_exists'));
-		//}
+		$finalSerial = trim($serial);
+		if($this->db->selectMobileDeviceBySerialNumber($finalSerial) !== null) {
+			throw new InvalidRequestException(LANG('serial_already_exists'));
+		}
 		$insertId = $this->db->insertMobileDevice(
-			null/*udid*/, null/*state*/, $finalDeviceName, null/*serial_no*/, ''/*vendor_description*/,
+			null/*udid*/, null/*state*/, $finalDeviceName, $finalSerial, ''/*vendor_description*/,
 			''/*model*/, $os, ''/*device_family*/, ''/*color*/,
 			null/*profile_uuid*/, null/*push_token*/, null/*push_magic*/, null/*push_sent*/,
 			null/*unlock_token*/, null/*info*/, $notes, 0/*force_update*/

@@ -24,6 +24,12 @@ if(!empty($_GET['download_profile'])) {
 		</td>
 	</tr>
 	<tr>
+		<th><?php echo LANG('serial_no'); ?></th>
+		<td>
+			<input type='text' class='fullwidth' id='txtCreateMobileDeviceSerial'>
+		</td>
+	</tr>
+	<tr>
 		<th><?php echo LANG('notes'); ?></th>
 		<td>
 			<textarea class='fullwidth' id='txtCreateMobileDeviceNotes'></textarea>
@@ -42,6 +48,7 @@ if(!empty($_GET['download_profile'])) {
 	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
 	<button id='btnCreateMobileDevice' class='primary' onclick='createMobileDeviceIos(
 		txtCreateMobileDeviceName.value,
+		txtCreateMobileDeviceSerial.value,
 		txtCreateMobileDeviceNotes.value
 	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create'); ?></button>
 </div>
