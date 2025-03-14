@@ -265,15 +265,42 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('system_update'); ?></th>
-								<td><?php echoDictTable($info['softwareInfo']['systemUpdateInfo']??null); ?></td>
+								<td><?php $updateStatus = $info['softwareInfo']['systemUpdateInfo']['updateStatus']??'?';
+								if($updateStatus === 'UP_TO_DATE') echo LANG('up_to_date');
+								elseif($updateStatus === 'UNKNOWN_UPDATE_AVAILABLE') echo '<span class="badge">'.LANG('update_available').'</span>';
+								elseif($updateStatus === 'SECURITY_UPDATE_AVAILABLE') echo '<span class="badge">'.LANG('security_update_available').'</span>';
+								elseif($updateStatus === 'OS_UPDATE_AVAILABLE') echo '<span class="badge">'.LANG('os_update_available').'</span>';
+								elseif($updateStatus === 'UPDATE_STATUS_UNKNOWN') echo '?';
+								else echo htmlspecialchars($updateStatus);
+								?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('screens'); ?></th>
-								<td><?php echoDictTable($info['displays']??null); ?></td>
+								<td><?php foreach($info['displays']??[] as $display) {
+									echo '<div>'.htmlspecialchars(
+										($display['name']??'').' '.
+										($display['width']??'').'x'.($display['height']??'').' '.
+										($display['density']??'').'ppi '.
+										($display['refreshRate']??'').'Hz '.
+										($display['state']??'')
+									);
+								} ?></td>
 							</tr>
 							<tr>
-								<th><?php echo LANG('network'); ?></th>
-								<td><?php echoDictTable($info['networkInfo']??null); ?></td>
+								<th><?php echo LANG('imei'); ?></th>
+								<td><?php echo htmlspecialchars($info['networkInfo']['imei']??''); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('meid'); ?></th>
+								<td><?php echo htmlspecialchars($info['networkInfo']['meid']??''); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('sim_slots'); ?></th>
+								<td><?php echoDictTable($info['networkInfo']['telephonyInfos']??''); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('wifi_mac'); ?></th>
+								<td><?php echo htmlspecialchars($info['networkInfo']['wifiMacAddress']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('ram'); ?></th>
@@ -293,7 +320,11 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('common_criteria_mode'); ?></th>
-								<td><?php echo echoDictTable($info['commonCriteriaModeInfo']??'-'); ?></td>
+								<td><?php if(($info['commonCriteriaModeInfo']['commonCriteriaModeStatus']??'') === 'COMMON_CRITERIA_MODE_ENABLED') {
+									echoDictTable(true);
+									echo htmlspecialchars($info['commonCriteriaModeInfo']['policySignatureVerificationStatus']??'');
+								} else echoDictTable(false);
+								?></td>
 							</tr>
 						</table>
 					<?php } ?>

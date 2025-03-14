@@ -1571,7 +1571,7 @@ div.stickytable > table.list tfoot {
 	100% { transform: rotate(360deg); }
 }
 
-.beta {
+.badge {
 	font-size: 70%;
 	padding: 1px 6px;
 	margin: 1px 4px;

@@ -692,6 +692,12 @@ return [
 	'show_content' => 'Zeige Inhalt',
 	'policy' => 'Richtlinie',
 	'policy_docs' => '<a href="https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys" target="_blank">iOS Profil-Payloads</a> | <a href="https://developers.google.com/android/management/reference/rest/v1/enterprises.policies#Policy" target="_blank">Android Richtlinienreferenz</a>',
+	'up_to_date' => 'aktuell',
+	'update_available' => 'Update verfügbar',
+	'security_update_available' => 'Sicherheitsupdate verfügbar',
+	'os_update_available' => 'Betriebssystemupdate verfügbar',
+	'imei' => 'IMEI',
+	'meid' => 'MEID',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
