@@ -15,7 +15,7 @@ try {
 	<tr>
 		<th><?php echo LANG('command'); ?></th>
 		<td>
-			<select id='sltMobileDeviceCommand' class='fullwidth' onclick='showMobileDeviceCommandParameter(this.selectedOptions[0])'>
+			<select id='sltMobileDeviceCommand' class='fullwidth' onchange='showMobileDeviceCommandParameter(this.selectedOptions[0])'>
 				<option value='' selected disabled><?php echo LANG('please_select_placeholder'); ?></option>
 
 				<?php if($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) { ?>
