@@ -195,7 +195,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 			<div class='filler invisible'></div>
 			<button onclick='showDialogEditSetting()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 		</div>
-		<table class='list searchable sortable actioncolumn sticky'>
+		<table id='tblSettingsData' class='list searchable sortable savesort actioncolumn sticky'>
 			<thead>
 				<tr>
 					<th></th>
