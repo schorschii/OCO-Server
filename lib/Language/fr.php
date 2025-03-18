@@ -649,6 +649,7 @@ return [
 	'vpp_token' => 'VPP Token',
 	'no_vpp_token_provided' => 'Aucun token du Volume Purchase Program token n\'est disponible. L\'installation d\'appplis nécessite que l\'utilisateur se log à l\'App Store avec un compte Apple.',
 	'uuid_aready_used_by_profile' => 'L\'UUID est déjà utilisé par le profil »%1«',
+	'payload_identifier_aready_used_by_profile' => 'PayloadIdentifier is already used by profile »%1«',
 	'app_store_api_key' => 'App Store Clé API de l\'App Store',
 	'no_app_store_api_key_provided' => 'Aucune clé API de l\'App Store, Clé ID ou Apple développeur team ID n\'est défini. Les applis VPP ne peuvent ni être utilisées ni être synchronisées.',
 	'upload_key' => 'Charger la clé',

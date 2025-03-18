@@ -24,5 +24,12 @@ class Profile {
 			return $plist->toArray()['PayloadUUID'] ?? null;
 		} catch(\Exception $e) {}
 	}
+	function getPayloadIdentifier() {
+		try {
+			$plist = new \CFPropertyList\CFPropertyList();
+			$plist->parse($this->payload);
+			return $plist->toArray()['PayloadIdentifier'] ?? null;
+		} catch(\Exception $e) {}
+	}
 
 }

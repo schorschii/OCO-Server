@@ -288,6 +288,19 @@ class CoreLogic {
 		$this->checkPermission($p, PermissionManager::METHOD_READ);
 		return $p;
 	}
+	private function checkProfileUnique($type, $uuid, $identifier, $ignoreId=null) {
+		if(empty($uuid))
+			throw new InvalidRequestException('Profile has no PayloadUUID');
+		if(empty($identifier))
+			throw new InvalidRequestException('Profile has no PayloadIdentifier');
+		foreach($this->db->selectAllProfileByType($type) as $p) {
+			if($p->id === $ignoreId) continue;
+			if($p->getUuid() == $uuid)
+				throw new InvalidRequestException(str_replace('%1', $p->name, LANG('uuid_aready_used_by_profile')));
+			if($p->getPayloadIdentifier() == $identifier)
+				throw new InvalidRequestException(str_replace('%1', $p->name, LANG('payload_identifier_aready_used_by_profile')));
+		}
+	}
 	public function createProfile($type, $name, $payload, $notes) {
 		$this->checkPermission(new Models\Profile(), PermissionManager::METHOD_CREATE);
 
@@ -299,14 +312,8 @@ class CoreLogic {
 				$plist = new CFPropertyList\CFPropertyList();
 				$plist->parse($payload);
 				$newUuid = $plist->toArray()['PayloadUUID'] ?? null;
-				if(empty($newUuid)) {
-					throw new InvalidRequestException('Profile has no PayloadUUID');
-				}
-				foreach($this->db->selectAllProfileByType($type) as $p) {
-					if($p->getUuid() == $newUuid) {
-						throw new InvalidRequestException(str_replace('%1', $p->name, LANG('uuid_aready_used_by_profile')));
-					}
-				}
+				$newIdentifier = $plist->toArray()['PayloadIdentifier'] ?? null;
+				$this->checkProfileUnique($type, $newUuid, $newIdentifier);
 			} catch(DOMException|TypeError $e) {
 				throw new InvalidRequestException('Payload is no valid XML');
 			}
@@ -342,10 +349,15 @@ class CoreLogic {
 			}
 			// generate new UUID
 			foreach($plist->getValue(true) as $key => $value) {
-				if($key == 'PayloadUUID') {
-					$value->setValue( vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4)) );
-				}
+				if($key == 'PayloadUUID')
+					$value->setValue(
+						vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex(random_bytes(16)), 4))
+					);
 			}
+			// check unique
+			$newUuid = $plist->toArray()['PayloadUUID'] ?? null;
+			$newIdentifier = $plist->toArray()['PayloadIdentifier'] ?? null;
+			$this->checkProfileUnique($type, $newUuid, $newIdentifier, $p->id);
 			$payload = $plist->toXML(true);
 		} elseif($type == Models\Profile::TYPE_ANDROID) {
 			if(!is_string($payload) || json_decode($payload) === null)

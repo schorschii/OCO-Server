@@ -644,6 +644,7 @@ return [
 	'vpp_token' => 'VPP-Token',
 	'no_vpp_token_provided' => 'Kein Volume Purchase Program-Token vorhanden. App-Installationen erfordern daher eine Anmeldung des Nutzers im App Store mit einer Apple ID.',
 	'uuid_aready_used_by_profile' => 'UUID wird bereits von Profil »%1« verwendet',
+	'payload_identifier_aready_used_by_profile' => 'PayloadIdentifier wird bereits von Profil »%1« verwendet',
 	'app_store_api_key' => 'App Store API-Key',
 	'no_app_store_api_key_provided' => 'Kein App Store API-Key, Key-ID oder Apple Developer Team-ID vorhanden. VPP-Apps können nicht synchronisiert und verwendet werden.',
 	'upload_key' => 'Key hochladen',
