@@ -54,16 +54,15 @@ class MobileDeviceCommandController {
 		foreach($mds as $md) {
 			if($md->getOsType() != Models\MobileDevice::OS_TYPE_ANDROID) continue;
 
-			foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
+			foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
+				if($p->type != Models\Profile::TYPE_ANDROID) continue;
+
 				if(empty($policies[$md->udid]))
 					$policies[$md->udid] = [];
 
-				foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
-					if($p->type != Models\Profile::TYPE_ANDROID) continue;
-					$policyValues = json_decode($p->payload, true);
-					if(!$policyValues || !is_array($policyValues)) continue;
-					$policies[$md->udid] = array_merge($policies[$md->udid], $policyValues);
-				}
+				$policyValues = json_decode($p->payload, true);
+				if(!$policyValues || !is_array($policyValues)) continue;
+				$policies[$md->udid] = array_merge($policies[$md->udid], $policyValues);
 			}
 		}
 	}
