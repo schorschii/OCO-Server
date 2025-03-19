@@ -82,14 +82,18 @@ class MobileDeviceCommandController {
 			if(!$md) continue;
 
 			if($newPolicy != $md->policy) {
-				$this->ae->patchPolicy(strval($mdUdid), $policyValues, strval($mdUdid));
-				echo('Updated policy for device '.$mdUdid.' ('.$appCount.' apps, '.$policyCount.' policies)'."\n");
-				$this->db->updateMobileDevice($md->id,
-					$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
-					$md->model, $os??$md->os, $md->device_family, $md->color,
-					$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token,
-					$md->info, $newPolicy, $md->notes, $md->force_update
-				);
+				try {
+					$this->ae->patchPolicy(strval($mdUdid), $policyValues, strval($mdUdid));
+					echo('Updated policy for device '.$mdUdid.' ('.$appCount.' apps, '.$policyCount.' policies)'."\n");
+					$this->db->updateMobileDevice($md->id,
+						$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
+						$md->model, $os??$md->os, $md->device_family, $md->color,
+						$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token,
+						$md->info, $newPolicy, $md->notes, $md->force_update
+					);
+				} catch(Exception $e) {
+					echo('Error updating policy for device '.$mdUdid.': '.$e->getMessage()."\n");
+				}
 			}
 		}
 	}
