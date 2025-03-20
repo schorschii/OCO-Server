@@ -5,7 +5,7 @@ REM OPEN COMPUTER ORCHESTRATION
 REM startnet.cmd
 REM Windows Setup Bootstrap Script
 REM ------------------------------
-REM (c) 2020-2023 Georg Sieber
+REM (c) 2020-2025 Georg Sieber
 REM ==============================
 
 REM ==============================
@@ -61,6 +61,22 @@ echo.
 echo Mount I: -^> %IMAGE_SHARE%
 net use I: %IMAGE_SHARE% /user:dummy dummy
 
+REM have a break to give the poor Windows admin a chance to install missing drivers
+if %ERRORLEVEL% NEQ 0 (
+	echo Unable to mount the network share with installation sources.
+	echo You may need to load a driver in the WinPE environment for your network card.
+	echo.
+	echo OPTION 1: Do this now by executing "drvload E:\drivers\FILENAME.inf"
+	echo Then, check your connectivity with "ipconfig /all" and execute
+	echo "%0 /InstallDrivers E:\drivers" to restart the setup with the
+	echo option to install the driver in the new Windows installation too.
+	echo.
+	echo OPTION 2: Include your driver into the boot.wim and install.wim image using "dism".
+	echo.
+	cmd.exe
+	pause
+)
+
 REM bypass silly Win 11 restrictions
 reg add HKLM\SYSTEM\Setup\LabConfig /v BypassTPMCheck /t REG_DWORD /d 1 /f
 reg add HKLM\SYSTEM\Setup\LabConfig /v BypassSecureBootCheck /t REG_DWORD /d 1 /f
@@ -71,18 +87,18 @@ reg add HKLM\SYSTEM\Setup\LabConfig /v BypassStorageCheck /t REG_DWORD /d 1 /f
 REM start setup with specific unattended config if available
 if exist I:\%PRESEED_DIR%\%serial%.xml (
 	echo Starting setup with config file: I:\\%PRESEED_DIR%\\%serial%.xml ...
-	I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%serial%.xml
+	I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%serial%.xml %*
 ) else (
 	if exist I:\%PRESEED_DIR%\%uuid%.xml (
 		echo Starting setup with config file: I:\\%PRESEED_DIR%\\%uuid%.xml ...
-		I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%uuid%.xml
+		I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%uuid%.xml %*
 	) else (
 		if exist I:\%PRESEED_DIR%\%mac%.xml (
 			echo Starting setup with config file: I:\\%PRESEED_DIR%\\%mac%.xml ...
-			I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%mac%.xml
+			I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%mac%.xml %*
 		) else (
 			echo Could not find an unattended installation answer file. We recommend a Linux installation instead.
-			I:\%SETUP_EXE%
+			I:\%SETUP_EXE% %*
 		)
 	)
 )
