@@ -30,19 +30,20 @@ REM print ipconfig for debugging
 ipconfig
 echo.
 
-REM get mac address, UUID and serial number
-for /F "tokens=*" %%a in ('ipconfig /all') DO (
-	for /F "tokens=1,2 delims=:" %%b in ('echo %%a') DO (
-		if "%%b" == "Physische Adresse . . . . . . . . " (
+REM get mac address, replace : with -
+for /F "tokens=*" %%a in ('wmic nic where "NetConnectionStatus=2" list /format') DO (
+	for /F "usebackq tokens=1,2 delims==" %%b in ('%%a') DO (
+		if "%%b" == "MACAddress" (
 			SET mac=%%c
 		)
 	)
 )
-SET "mac=%mac: =%"
+SET "mac=%mac::=-%"
 echo My MAC    : %mac%
 
+REM get UUID and serial number, remove whitespaces
 for /F "tokens=*" %%a in ('wmic csproduct list /format') DO (
-	for /F "tokens=1,2 delims==" %%b in ('echo %%a') DO (
+	for /F "usebackq tokens=1,2 delims==" %%b in ('%%a') DO (
 		if "%%b" == "UUID" (
 			SET uuid=%%c
 		)
