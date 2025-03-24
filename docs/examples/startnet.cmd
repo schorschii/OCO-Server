@@ -31,6 +31,7 @@ ipconfig
 echo.
 
 REM get mac address, replace : with -
+SET mac=?
 for /F "tokens=*" %%a in ('wmic nic where "NetConnectionStatus=2" list /format') DO (
 	for /F "usebackq tokens=1,2 delims==" %%b in ('%%a') DO (
 		if "%%b" == "MACAddress" (
@@ -42,6 +43,8 @@ SET "mac=%mac::=-%"
 echo My MAC    : %mac%
 
 REM get UUID and serial number, remove whitespaces
+SET uuid=?
+SET serial=?
 for /F "tokens=*" %%a in ('wmic csproduct list /format') DO (
 	for /F "usebackq tokens=1,2 delims==" %%b in ('%%a') DO (
 		if "%%b" == "UUID" (
