@@ -24,7 +24,7 @@ $license = new LicenseCheck($db);
 	<img src='img/logo.dyn.svg'>
 	<p>
 		<div class='title'><?php echo LANG('project_name'); ?></div>
-		<div class='subtitle'><?php echo LANG('app_subtitle'); ?></div>
+		<div class='subtitle'><?php echo LANG('project_subtitle'); ?></div>
 	</p>
 
 	<?php if(!$license->isValid()) { ?>
@@ -79,6 +79,6 @@ $license = new LicenseCheck($db);
 	</div>
 
 	<div class='footer'>
-		<?php echo LANG('app_copyright'); ?>
+		<?php require('partial/copyright.php'); ?>
 	</div>
 </div>

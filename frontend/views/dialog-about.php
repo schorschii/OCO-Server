@@ -9,8 +9,8 @@ require_once('../session.inc.php');
 	<div style='display:inline-block'>
 		<h3 style='margin-top:0px'><?php echo LANG('project_name'); ?></h3>
 		<div><?php echo LANG('version').' '.OcoServer::APP_VERSION.' '.OcoServer::APP_RELEASE; ?></div>
-		<div><?php echo LANG('app_subtitle'); ?></div>
-		<div><?php echo LANG('app_copyright'); ?></div>
+		<div><?php echo LANG('project_subtitle'); ?></div>
+		<div><?php require('partial/copyright.php'); ?></div>
 	</div>
 </div>
 

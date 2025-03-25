@@ -1,0 +1,1 @@
+../../../frontend/views/partial/copyright.php

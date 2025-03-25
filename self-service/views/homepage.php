@@ -18,6 +18,6 @@ require_once(__DIR__.'/../session.inc.php');
 	</div>
 
 	<div class='footer'>
-		<?php echo LANG('app_copyright'); ?>
+		<?php require('partial/copyright.php'); ?>
 	</div>
 </div>

@@ -7,8 +7,9 @@
 return [
 	'app_name' => 'OCO IT Client Manager',
 	'project_name' => 'Open Computer Orchestration',
-	'app_subtitle' => 'Client inventory and software delivery made simple',
-	'app_copyright' => '© <a href="https://sieber.systems" target="_blank">Georg Sieber</a> 2020-2025 | <a href="https://oco.sieber.systems" target="_blank">Website</a> | <a href="https://github.com/schorschii/oco-server" target="_blank">Github</a>',
+	'project_subtitle' => 'Client inventory and software delivery made simple',
+	'website' => 'Website',
+	'github' => 'Github',
 	'self_service_name' => 'OCO Self Service Portal',
 	'self_service_welcome_text' => 'The self-service portal enables you to independently install new software approved by your system administrator on your computer. Please select a computer or package from the sidebar to begin.',
 	'choose_admin_username' => 'Choose admin username...',
