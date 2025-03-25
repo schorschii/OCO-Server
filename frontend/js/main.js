@@ -2905,6 +2905,20 @@ function readFileInputBlob(file) {
 	return blob;
 }
 
+function syncAppsProfiles(btn) {
+	var params = [];
+	params.push({'key':'sync_apps_profiles', 'value':1});
+	var paramString = urlencodeArray(params);
+	enableDisableButton(btn, false);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
+		emitMessage(LANG['sync_apps_profiles'], text, MESSAGE_TYPE_SUCCESS);
+		refreshContent();
+	}, function(status, statusText, responseText){
+		enableDisableButton(btn, true);
+		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
+	});
+}
+
 function syncAppleDevices(btn) {
 	var params = [];
 	params.push({'key':'sync_apple_devices', 'value':1});

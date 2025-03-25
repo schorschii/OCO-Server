@@ -34,6 +34,7 @@ try {
 		<button onclick='showDialogCreateMobileDeviceAndroid()' <?php if(!$permissionCreateMobileDevice) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_android_device'); ?></button>
 		<button onclick='createMobileDeviceGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
 		<span class='filler'></span>
+		<button onclick='syncAppsProfiles(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_apps_profiles'); ?></button>
 		<button onclick='syncAppleDevices(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_with_apple_business_manager'); ?></button>
 		<button onclick='syncAndroidDevices(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_with_android_enterprise'); ?></button>
 	</div>
