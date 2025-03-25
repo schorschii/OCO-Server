@@ -19,9 +19,8 @@ class MobileDeviceCommandController {
 		foreach($mds as $md) {
 			if($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) {
 				$force = false;
-				if($this->iosProfiles($md)
-				|| $this->iosAppInstalls($md))
-					$force = true;
+				if($this->iosProfiles($md)) $force = true;
+				if($this->iosAppInstalls($md)) $force = true;
 				$this->iosInventoryJobs($md, $force);
 
 			} elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) {
