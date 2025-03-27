@@ -1662,18 +1662,15 @@ class DatabaseController {
 	}
 	public function selectAllComputerUserWithPasswordByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cu.*, cp.password, cp.created FROM computer_user cu
-			RIGHT JOIN (
-				SELECT cp.*, (SELECT COUNT(*) FROM computer_password cp3 WHERE cp3.computer_id = cp.computer_id AND cp3.username = cp.username) AS "history_count"
-				FROM computer_password cp INNER JOIN computer c ON c.id = cp.computer_id WHERE cp.id IN (SELECT MAX(cp2.id) FROM computer_password cp2 GROUP BY cp2.computer_id, cp2.username) AND cp.computer_id = :computer_id
-			) cp ON cu.username = cp.username
-			WHERE cu.computer_id = :computer_id
-			UNION SELECT cu.*, cp.password, cp.created FROM computer_user cu
-			LEFT JOIN (
-				SELECT cp.*, (SELECT COUNT(*) FROM computer_password cp3 WHERE cp3.computer_id = cp.computer_id AND cp3.username = cp.username) AS "history_count"
-				FROM computer_password cp INNER JOIN computer c ON c.id = cp.computer_id WHERE cp.id IN (SELECT MAX(cp2.id) FROM computer_password cp2 GROUP BY cp2.computer_id, cp2.username) AND cp.computer_id = :computer_id
-			) cp ON cu.username = cp.username
-			WHERE cu.computer_id = :computer_id'
+			'SELECT id, username, display_name, uid, gid, home, shell, disabled, MAX(password) AS "password", MAX(created) AS "created" FROM (
+				SELECT cu.id, cu.username, cu.display_name, cu.uid, cu.gid, cu.home, cu.shell, cu.disabled, NULL AS "password", NULL AS "created"
+				FROM computer_user cu
+				WHERE cu.computer_id = :computer_id
+				UNION SELECT NULL, cp.username, NULL, NULL, NULL, NULL, NULL, NULL, cp.password, cp.created
+				FROM computer_password cp INNER JOIN computer c ON c.id = cp.computer_id WHERE cp.id IN
+					(SELECT MAX(cp2.id) FROM computer_password cp2 GROUP BY cp2.computer_id, cp2.username) AND cp.computer_id = :computer_id
+			) t
+			GROUP BY username;'
 		);
 		$this->stmt->execute([':computer_id' => $computer_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerUser');
