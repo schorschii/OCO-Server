@@ -128,10 +128,11 @@ class AndroidEnrollment {
 				'Content-Type: application/json',
 			] : $header
 		);
-		$response = curl_exec($ch);
-		curl_close($ch);
 
+		$response = curl_exec($ch);
 		$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		curl_close($ch);
+		
 		if($expectedStatusCode && $statusCode !== $expectedStatusCode)
 			throw new \Exception('Unexpected status code '.$statusCode.' '.$response);
 
