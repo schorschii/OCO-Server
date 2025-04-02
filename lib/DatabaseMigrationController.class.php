@@ -505,6 +505,20 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		$this->stmt = $this->dbh->prepare("SELECT JSON_UNQUOTE(JSON_EXTRACT(permissions, '$.\"Models\\\\\\\\ManagedApp\".create')) AS 'permissions' FROM system_user_role WHERE id = 1");
+		$this->stmt->execute();
+		foreach($this->stmt->fetchAll() as $row) {
+			if($row['permissions'] != 'true') {
+				if($this->debug) echo 'Upgrading to 1.1.8... (update permissions of superadmin role)'."\n";
+				$this->stmt = $this->dbh->prepare(
+					"UPDATE system_user_role SET permissions=JSON_SET(permissions, '$.\"Models\\\\\\\\ManagedApp\".create', 'true') WHERE id = 1"
+				);
+				if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+				$upgraded = true;
+			}
+		}
+
 		return $upgraded;
 	}
 
