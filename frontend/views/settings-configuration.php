@@ -16,7 +16,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 		<div class='controls heading'>
 			<h2><?php echo LANG('license'); ?></h2>
 			<div class='filler invisible'></div>
-			<span><a href='https://georg-sieber.de/?page=oco' target='_blank'><?php echo LANG('buy_license'); ?></a></span>
+			<span><a href='https://oco.sieber.systems/licenses.php' target='_blank'><?php echo LANG('buy_license'); ?></a></span>
 			<button onclick='showDialogEditSetting("license",".ocolicense",false,true,LANG["license_file"])' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		</div>
 		<table class='list'>
