@@ -1,0 +1,10 @@
+<?php
+
+const MAIL_SENDER_NAME = '';
+const MAIL_SENDER_ADDR = '';
+
+const PAYPAL_CLIENT_ID = '';
+const PAYPAL_CLIENT_SECRET = '';
+const PAYPAL_LIVE = false;
+
+const OCO_SIGN_PRIV_KEY = '';
