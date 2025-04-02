@@ -2,7 +2,7 @@
 return [
 	'app_name' => 'OCO IT Client Manager',
 	'project_name' => 'Open Computer Orchestration',
-	'project_subtitle' => 'Client inventory and software delivery made simple',
+	'project_subtitle' => 'Linux, macOS & Windows Client-Inventur und Softwareverteilung einfach gemacht<br>iOS & Android Mobilgerätemanagement für alle',
 	'website' => 'Webseite',
 	'github' => 'Github',
 	'self_service_name' => 'OCO Self Service Portal',

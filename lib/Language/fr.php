@@ -7,7 +7,7 @@
 return [
 	'app_name' => 'OCO IT Client Manager',
 	'project_name' => 'Open Computer Orchestration',
-	'project_subtitle' => 'L\'inventaire client et de déploiement de logiciels simplifiés',
+	'project_subtitle' => 'Inventaire client et livraison de logiciels Linux, macOS et Windows simplifiés<br>Gestion des appareils mobiles iOS et Android pour tous',
 	'website' => 'Website',
 	'github' => 'Github',
 	'self_service_name' => 'Portail du self-service d\'OCO',
