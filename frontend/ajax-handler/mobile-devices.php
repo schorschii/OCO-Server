@@ -18,8 +18,7 @@ try {
 	if(!empty($_POST['edit_mobile_device_id'])
 	&& isset($_POST['device_name'])
 	&& isset($_POST['notes'])) {
-		$md = $cl->getMobileDevice($_POST['edit_mobile_device_id']);
-		$cl->editMobileDevice($md->id, $_POST['device_name'], $_POST['notes'], $md->force_update);
+		$cl->editMobileDevice($_POST['edit_mobile_device_id'], $_POST['device_name'], $_POST['notes']);
 		die();
 	}
 

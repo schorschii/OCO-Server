@@ -104,11 +104,23 @@ class CoreLogic {
 		]);
 		return $insertId;
 	}
-	public function editMobileDevice($id, $deviceName, $notes, $forceUpdate) {
+	public function editMobileDevice($id, $deviceName, $notes, $forceUpdate=null) {
 		$md = $this->db->selectMobileDevice($id);
 		if(empty($md)) throw new NotFoundException();
 		$this->checkPermission($md, PermissionManager::METHOD_WRITE);
 
+		if($deviceName != $md->device_name
+		&& $md->getOsType() === Models\MobileDevice::OS_TYPE_IOS) {
+			$this->createMobileDeviceCommand($md->id, 'Settings', json_encode([
+				'RequestType' => 'Settings',
+				'Settings' => [
+					['Item'=>'DeviceName', 'DeviceName'=>$deviceName]
+				]
+			]), null);
+			$deviceName = $md->device_name;
+		}
+
+		if($forceUpdate === null) $forceUpdate = $md->force_update;
 		$result = $this->db->updateMobileDevice($md->id,
 			$md->udid, $md->state, $deviceName, $md->serial, $md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
 			$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token, $md->info, $md->policy,
