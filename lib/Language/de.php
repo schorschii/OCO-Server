@@ -701,6 +701,7 @@ return [
 	'imei' => 'IMEI',
 	'meid' => 'MEID',
 	'sync_apps_profiles' => 'Apps & Profile synchronisieren',
+	'ios_device_name_update_note' => 'Es wird ein Kommando gesendet, welches den Gerätenamen ändert. Der Name in OCO wird nach erfolgreicher Ausführung angepasst.',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

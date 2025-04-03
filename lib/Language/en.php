@@ -706,6 +706,7 @@ return [
 	'imei' => 'IMEI',
 	'meid' => 'MEID',
 	'sync_apps_profiles' => 'Sync Apps & Profiles',
+	'ios_device_name_update_note' => 'A command will be sent that changes the device name. The name in OCO is updated after successful execution.',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

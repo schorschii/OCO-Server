@@ -706,6 +706,7 @@ return [
 	'imei' => 'IMEI',
 	'meid' => 'MEID',
 	'sync_apps_profiles' => 'Sync Apps & Profiles',
+	'ios_device_name_update_note' => 'A command will be sent that changes the device name. The name in OCO is updated after successful execution.',
 	'package_creation_notes' => '
 		<p>
 			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.

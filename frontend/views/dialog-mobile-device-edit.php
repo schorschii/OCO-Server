@@ -20,6 +20,9 @@ try {
 		<th><?php echo LANG('device_name'); ?></th>
 		<td>
 			<input type='text' id='txtEditMobileDeviceName' class='fullwidth' value='<?php echo htmlspecialchars($md->device_name??''); ?>'></input>
+			<?php if($md->getOsType() === Models\MobileDevice::OS_TYPE_IOS) { ?>
+				<div class='alert info' style='width:350px; min-width:100%'><?php echo LANG('ios_device_name_update_note'); ?></div>
+			<?php } ?>
 		</td>
 	</tr>
 	<tr>
