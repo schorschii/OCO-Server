@@ -117,6 +117,7 @@ class CoreLogic {
 					['Item'=>'DeviceName', 'DeviceName'=>$deviceName]
 				]
 			]), null);
+			$this->createMobileDeviceCommand($md->id, Apple\MdmCommand::DEVICE_INFO['RequestType'], json_encode(Apple\MdmCommand::DEVICE_INFO), null);
 			$deviceName = $md->device_name;
 		}
 
