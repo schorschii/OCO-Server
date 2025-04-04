@@ -48,6 +48,9 @@ class LicenseCheck {
 	public function getObjects() : int {
 		return $this->licenseObjects;
 	}
+	public function getCurrentObjectCount() : int {
+		return $this->currentObjectCount;
+	}
 	public function getExpireTime() : int {
 		return $this->licenseExpireTime;
 	}
