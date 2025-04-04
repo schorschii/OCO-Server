@@ -120,12 +120,10 @@ In general, you should always use system-wide installations, that's what OCO is 
   - `/DS=0`: exclude the desktop shortcut
   - `/SMS=0`: exclude start menu shortcut
 
-##### Windows Driver Installation
-You may want to deploy drivers for printers, scanners etc. They can be installed with the `pnputil` command line utility from windows. Example:
-```
-pnputil -i -a oemsetup.inf
-```
-Where `oemsetup.inf` is the name of your driver's `.inf` file. Important: the ZIP archive must contain all necessary driver files, not only the `.inf` metadata file!
+##### Windows Update/Upgrade/Driver Installation
+- [Windows Updates](install-uninstall-catalog/Windows%20Update.md)
+- [Windows Upgrade](install-uninstall-catalog/Windows%20Upgrade.md)
+- [Windows Drivers](install-uninstall-catalog/Windows%20Drivers.md)
 
 ##### Update Programs Which Are Currently Running
 Under Windows, an executable file cannot be deleted if the program is currently open. This can cause problems (e.g. MSI exit code 3010) when installing a new version of a package.
