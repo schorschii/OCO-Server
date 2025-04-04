@@ -8,4 +8,4 @@ Install it with:
 dism /online /add-package /packagepath:FILENAME.cab
 ```
 
-Or even better: use the [Paketeer]() extension!
+Or even better: use the [Paketeer](https://github.com/schorschii/OCO-Server-Extensions/tree/master/paketeer) extension!
