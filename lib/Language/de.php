@@ -569,8 +569,10 @@ return [
 	'download_public_key' => 'Öffentlichen Schlüssel herunterladen',
 	'upload_cert' => 'Zertifikat hochladen',
 	'upload_token' => 'Token hochladen',
-	'sync_with_apple_business_manager' => 'Apple Business Manager-Sync',
-	'sync_with_android_enterprise' => 'Android Enterprise-Sync',
+	'sync_apple_devices' => 'Apple-Geräte-Sync',
+	'sync_android_devices' => 'Android-Geräte-Sync',
+	'sync_with_apple_business_manager' => 'Mit Apple Business Manager-API synchronisieren',
+	'sync_with_android_enterprise' => 'Android Enterprise-API synchronisieren',
 	'new_ios_device' => 'Neues iOS-Gerät',
 	'new_android_device' => 'Neues Android-Gerät',
 	'mobile_device_created' => 'Mobilgerät erstellt',
@@ -700,7 +702,7 @@ return [
 	'os_update_available' => 'Betriebssystemupdate verfügbar',
 	'imei' => 'IMEI',
 	'meid' => 'MEID',
-	'sync_apps_profiles' => 'Apps & Profile synchronisieren',
+	'install_apps_profiles' => 'Apps & Profile installieren',
 	'ios_device_name_update_note' => 'Es wird ein Kommando gesendet, welches den Gerätenamen ändert. Der Name in OCO wird nach erfolgreicher Ausführung angepasst.',
 	'package_creation_notes' => '
 		<p>
