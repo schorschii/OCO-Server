@@ -955,7 +955,7 @@ table.list {
 table.list tr th, table.list tr td {
 	border-bottom: 1px solid rgba(0,0,0,0.2);
 }
-table.list tr th.middle > *, table.list tr td.middle > * {
+table.list tr .middle > *, table.list tr .middle > * {
 	vertical-align: middle;
 }
 table.list tr:first-child th,
@@ -1076,8 +1076,8 @@ table.list .eventlevel.verbose {
 
 img.small,
 .stats img,
-table tr th > img,
-table tr td > img {
+table tr th img,
+table tr td img {
 	height: 16px;
 	vertical-align: middle;
 	margin-bottom: 2px;

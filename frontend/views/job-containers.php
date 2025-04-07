@@ -194,16 +194,20 @@ if(!empty($_GET['id'])) {
 					<td><input type='checkbox' name='job_id[]' value='<?php echo $job->id; ?>'></td>
 					<td><a <?php echo explorerLink('views/computer-details.php?id='.$job->computer_id); ?>><?php echo htmlspecialchars($job->computer_hostname); ?></a></td>
 					<td><a <?php echo explorerLink('views/package-details.php?id='.$job->package_id); ?>><?php echo htmlspecialchars($job->package_family_name).' ('.htmlspecialchars($job->package_version).')'; ?></a></td>
-					<td class='middle monospace' title='<?php echo htmlspecialchars($job->procedure, ENT_QUOTES); ?>'>
-						<?php if($job->is_uninstall == 0) { ?>
-							<img src='img/install.dyn.svg' title='<?php echo LANG('install'); ?>'>
-						<?php } else { ?>
-							<img src='img/delete.dyn.svg' title='<?php echo LANG('uninstall'); ?>'>
-						<?php } ?>
+					<td class='middle' title='<?php echo htmlspecialchars($job->procedure, ENT_QUOTES); ?>'>
+						<div class='middle monospace'>
+							<?php if($job->is_uninstall == 0) { ?>
+								<img src='img/install.dyn.svg' title='<?php echo LANG('install'); ?>'>
+							<?php } else { ?>
+								<img src='img/delete.dyn.svg' title='<?php echo LANG('uninstall'); ?>'>
+							<?php } ?>
 						<?php echo htmlspecialchars(shorter($job->procedure)); ?>
-						<?php if($job->post_action == Models\Package::POST_ACTION_RESTART) echo ' ('.LANG('restart_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
-						elseif($job->post_action == Models\Package::POST_ACTION_SHUTDOWN) echo ' ('.LANG('shutdown_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
-						elseif($job->post_action == Models\Package::POST_ACTION_EXIT) echo ' ('.LANG('restart_agent').')'; ?>
+						</div>
+						<div>
+							<?php if($job->post_action == Models\Package::POST_ACTION_RESTART) echo ' ('.LANG('restart_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
+							elseif($job->post_action == Models\Package::POST_ACTION_SHUTDOWN) echo ' ('.LANG('shutdown_after').' '.intval($job->post_action_timeout).' '.LANG('minutes').')';
+							elseif($job->post_action == Models\Package::POST_ACTION_EXIT) echo ' ('.LANG('restart_agent').')'; ?>
+						</div>
 					</td>
 					<td><?php echo htmlspecialchars($job->sequence); ?></td>
 					<td class='middle'>
