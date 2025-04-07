@@ -90,7 +90,10 @@ try {
 		</tr>
 		<tr>
 			<th>Total:</th>
-			<td id='total'>0,00 €</td>
+			<td>
+				<div id='total'>0,00 €</div>
+				<div class='hint'>According to § 19 Abs. 1 German UStG, no sales tax is shown.</div>
+			</td>
 		</tr>
 		<tr>
 			<th></th>
