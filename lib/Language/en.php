@@ -90,6 +90,7 @@ return [
 	'agent_version' => 'Agent-Version',
 	'assigned_groups' => 'Assigned Groups',
 	'logins' => 'Logins',
+	'computers' => 'Computers',
 	'computer' => 'Computer',
 	'count' => 'Count',
 	'last_login' => 'Last Login',

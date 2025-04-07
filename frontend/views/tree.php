@@ -10,7 +10,7 @@ require_once('../session.inc.php');
 
 <?php $computerGroupsHtml = getComputerGroupsHtml($cl); ?>
 <div id='divNodeComputers' class='node <?php if($computerGroupsHtml) echo 'expandable'; ?>'>
-	<a <?php echo explorerLink('views/computers.php'); ?>><img src='img/computer.dyn.svg'><?php echo LANG('computer'); ?></a>
+	<a <?php echo explorerLink('views/computers.php'); ?>><img src='img/computer.dyn.svg'><?php echo LANG('computers'); ?></a>
 	<div class='subitems'>
 		<?php echo $computerGroupsHtml; ?>
 	</div>

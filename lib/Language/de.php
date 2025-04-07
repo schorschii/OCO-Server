@@ -85,6 +85,7 @@ return [
 	'agent_version' => 'Agent-Version',
 	'assigned_groups' => 'Zugewiesene Gruppen',
 	'logins' => 'Anmeldungen',
+	'computers' => 'Computer',
 	'computer' => 'Computer',
 	'count' => 'Anzahl',
 	'last_login' => 'Letzte Anmeldung',
