@@ -77,7 +77,7 @@ require_once('../session.inc.php');
 <hr/>
 
 <?php $mobileDeviceGroupsHtml = getMobileDeviceGroupsHtml($cl); ?>
-<div id='divNodeMobileDevices' class='node expandable'>
+<div id='divNodeMobileDevices' class='node <?php if($mobileDeviceGroupsHtml) echo 'expandable'; ?>'>
 	<a <?php echo explorerLink('views/mobile-devices.php'); ?>><img src='img/mobile-device.dyn.svg'><?php echo LANG('mobile_devices'); ?><span class='badge'>BETA</span></a>
 	<div class='subitems'>
 		<?php echo $mobileDeviceGroupsHtml; ?>
