@@ -39,7 +39,7 @@ if(!empty($_GET['view'])) {
 
 <div id='container'>
 
-	<div id='header'>
+	<div id='header' role='banner'>
 		<span class='left'>
 			<button id='btnSidebar' class='noprint' onclick='toggleSidebar()' title='<?php echo LANG('show_hide_sidebar'); ?>'><img src='img/menu.light.svg'></button>
 			<a href='index.php' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' class='title'><?php echo LANG('self_service_name'); ?></a>
@@ -58,16 +58,16 @@ if(!empty($_GET['view'])) {
 	</div>
 
 	<div id='explorer'>
-		<div id='explorer-tree' onclick='toggleSidebar(false)'>
+		<div id='explorer-tree' onclick='toggleSidebar(false)' role='navigation'>
 		</div>
-		<div id='explorer-content'>
+		<div id='explorer-content' role='main'>
 			<?php if($initialExplorerContent == null) { ?>
 				<div class='alert error'><?php echo LANG('requested_view_does_not_exist'); ?></div>
 			<?php } ?>
 		</div>
 	</div>
 
-	<div id='dialog-container'>
+	<div id='dialog-container' role='complementary'>
 		<img src='img/loader.svg'>
 		<div id='dialog-box'>
 			<h2 id='dialog-title'></h2>
@@ -76,7 +76,7 @@ if(!empty($_GET['view'])) {
 		</div>
 	</div>
 
-	<div id='message-container'>
+	<div id='message-container' role='complementary'>
 	</div>
 
 	<script>
