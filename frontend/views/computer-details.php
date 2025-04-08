@@ -262,8 +262,8 @@ foreach($services as $s) {
 								<td><?php echo htmlspecialchars($u->display_name); ?></td>
 								<td>
 									<?php if($u->password) { ?>
-									<div class='subbuttons mask monospace'>
-										<?php echo htmlspecialchars($u->password??''); ?>
+									<div class='subbuttons mask monospace' tabindex='0'>
+										<div class='maskValue'><?php echo htmlspecialchars($u->password??''); ?></div>
 										<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->password??'',ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
 									</div>
 									<div class='hint'><?php echo htmlspecialchars($u->created??''); ?></div>

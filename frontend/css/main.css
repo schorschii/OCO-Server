@@ -1090,6 +1090,9 @@ table.fixed {
 	table-layout: fixed;
 }
 
+.subbuttons {
+	white-space: nowrap;
+}
 .subbuttons > button {
 	opacity: 0;
 	transition: opacity 0.2s ease;
@@ -1116,11 +1119,15 @@ a.subbuttons > button {
 	margin: 0px;
 }
 .subbuttons:hover > button,
-.subbuttons:hover .subbutton {
+.subbuttons:hover .subbutton,
+.subbuttons:focus > button,
+.subbuttons:focus .subbutton {
 	opacity: 0.85;
 }
 .subbuttons:hover > button:hover,
-.subbuttons:hover .subbutton:hover {
+.subbuttons:hover .subbutton:hover,
+.subbuttons > button:focus,
+.subbuttons .subbutton:focus {
 	opacity: 1;
 }
 .subbuttons:hover .subbutton {
@@ -1425,10 +1432,12 @@ div.stickytable > table.list tfoot {
 .checkboxWithText .hint {
 	max-width: 650px;
 }
-.mask {
+.mask > .maskValue {
+	display: inline-block;
 	-webkit-text-security: disc;
+	white-space: nowrap;
 }
-.mask:hover, .mask:focus {
+.mask:hover > .maskValue, .mask:focus > .maskValue {
 	-webkit-text-security: none;
 }
 
