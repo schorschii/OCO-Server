@@ -816,6 +816,9 @@ button {
 	padding: 6px 7px;
 	border-color: rgba(0,0,0,0.1);
 }
+button:focus-visible {
+	outline: 2px auto #212121;
+}
 button.small,
 tfoot button {
 	padding: 3px 4px;
@@ -842,6 +845,7 @@ button:disabled > img {
 button > img {
 	vertical-align: middle;
 	margin-bottom: 1px;
+	pointer-events: none;
 }
 button > select {
 	padding: 1px;
