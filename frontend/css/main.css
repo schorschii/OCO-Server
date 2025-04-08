@@ -1453,7 +1453,7 @@ div.stickytable > table.list tfoot {
 	top: 6px;
 	left: 5px;
 }
-.listSearch input[type=text] {
+.listSearch input[type=search] {
 	display: block;
 	padding-left: 27px;
 	width: 100%;
