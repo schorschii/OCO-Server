@@ -704,6 +704,7 @@ return [
 	'imei' => 'IMEI',
 	'meid' => 'MEID',
 	'apps_profiles_policies' => 'Apps, Profile, Richtlinien',
+	'apps_profiles_policies_synced' => 'Apps, Profile, Richtlinien wurden synchronisiert',
 	'install_apps_profiles_policies_notes' => 'Verwaltete Apps, Profile, Richtlinien entsprechend der Gruppenzuweisungen installieren (wird in regelmäßigen Abständen via Cron ausgeführt)',
 	'ios_device_name_update_note' => 'Es wird ein Kommando gesendet, welches den Gerätenamen ändert. Der Name in OCO wird nach erfolgreicher Ausführung angepasst.',
 	'confirm_delete_mobile_device' => 'Sind Sie sicher, dass Sie das Mobilgerät bzw. die Mobilgeräte löschen möchten?'."\n\n".'iOS-Geräte werden auch aus der Organisation im Apple Business Manager entfernt.',

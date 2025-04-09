@@ -2911,7 +2911,7 @@ function syncAppsProfiles(btn) {
 	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
-		emitMessage(LANG['sync_apps_profiles'], text, MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['apps_profiles_policies_synced'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){
 		enableDisableButton(btn, true);
@@ -2925,7 +2925,7 @@ function syncAppleDevices(btn) {
 	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
-		emitMessage(LANG['sync_with_apple_business_manager'], text, MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['sync_apple_devices'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){
 		enableDisableButton(btn, true);
@@ -3072,7 +3072,7 @@ function syncAndroidDevices(btn) {
 	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
-		emitMessage(LANG['sync_with_android_enterprise'], text, MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['sync_android_devices'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){
 		enableDisableButton(btn, true);
