@@ -577,8 +577,8 @@ return [
 	'upload_token' => 'Upload Token',
 	'sync_apple_devices' => 'Sync Apple devices',
 	'sync_android_devices' => 'Sync Android devices',
-	'sync_with_apple_business_manager' => 'Sync with Apple Business Manager API',
-	'sync_with_android_enterprise' => 'Sync with Android Enterprise API',
+	'sync_with_apple_business_manager' => 'Sync with Apple Business Manager API (runs at regular intervals via Cron)',
+	'sync_with_android_enterprise' => 'Sync with Android Enterprise API (runs at regular intervals via Cron)',
 	'new_ios_device' => 'New iOS Device',
 	'new_android_device' => 'New Android Device',
 	'mobile_device_created' => 'Mobile device created',
@@ -708,7 +708,8 @@ return [
 	'os_update_available' => 'OS Update available',
 	'imei' => 'IMEI',
 	'meid' => 'MEID',
-	'install_apps_profiles' => 'Install Apps & Profiles',
+	'apps_profiles_policies' => 'Apps, Profiles, Policies',
+	'install_apps_profiles_policies_notes' => 'Install managed apps, profiles, policies according to group assignments (runs at regular intervals via Cron)',
 	'ios_device_name_update_note' => 'A command will be sent that changes the device name. The name in OCO is updated after successful execution.',
 	'package_creation_notes' => '
 		<p>

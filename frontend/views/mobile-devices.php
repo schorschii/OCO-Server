@@ -34,7 +34,7 @@ try {
 		<button onclick='showDialogCreateMobileDeviceAndroid()' <?php if(!$permissionCreateMobileDevice) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_android_device'); ?></button>
 		<button onclick='createMobileDeviceGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
 		<span class='filler'></span>
-		<button onclick='syncAppsProfiles(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('install_apps_profiles'); ?></button>
+		<button onclick='syncAppsProfiles(this)' title='<?php echo LANG('install_apps_profiles_policies_notes'); ?>' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('apps_profiles_policies'); ?></button>
 		<button onclick='syncAppleDevices(this)' title='<?php echo htmlspecialchars(LANG('sync_with_apple_business_manager'),ENT_QUOTES); ?>' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_apple_devices'); ?></button>
 		<button onclick='syncAndroidDevices(this)' title='<?php echo htmlspecialchars(LANG('sync_with_android_enterprise'),ENT_QUOTES); ?>' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_android_devices'); ?></button>
 	</div>
