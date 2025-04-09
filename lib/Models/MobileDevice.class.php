@@ -8,7 +8,7 @@ class MobileDevice {
 	public $udid;
 	public $state;
 	public $device_name;
-	public $serial_number;
+	public $serial;
 	public $vendor_description;
 	public $model;
 	public $os;

@@ -711,6 +711,7 @@ return [
 	'apps_profiles_policies' => 'Apps, Profiles, Policies',
 	'install_apps_profiles_policies_notes' => 'Install managed apps, profiles, policies according to group assignments (runs at regular intervals via Cron)',
 	'ios_device_name_update_note' => 'A command will be sent that changes the device name. The name in OCO is updated after successful execution.',
+	'confirm_delete_mobile_device' => 'Are you sure you want to delete the mobile device(s)?'."\n\n".'iOS devices are also removed from the organization in Apple Business Manager.',
 	'package_creation_notes' => '
 		<p>
 			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.

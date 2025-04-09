@@ -318,7 +318,7 @@ class AutomatedDeviceEnrollment {
 		$response = curl_exec($ch);
 		$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if($expectedStatusCode && $statusCode !== $expectedStatusCode)
-			throw new \Exception('Unexpected status code '.$statusCode);
+			throw new \Exception('Unexpected status code '.$statusCode.' '.$response);
 		curl_close($ch);
 		return $response;
 	}
@@ -382,6 +382,11 @@ class AutomatedDeviceEnrollment {
 	// https://developer.apple.com/documentation/devicemanagement/get_device_details
 	function getDeviceInfo(array $devices) {
 		return $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/devices', json_encode(['devices' => $devices]), 200);
+	}
+
+	// https://developer.apple.com/documentation/devicemanagement/disown-devices
+	function disownDevices(array $devices) {
+		return $this->curlRequest('POST', self::APPLE_MDMENROLLMENT_API.'/devices/disown', json_encode(['devices' => $devices]), 200);
 	}
 
 	// https://developer.apple.com/documentation/devicemanagement/define_a_profile

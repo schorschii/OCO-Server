@@ -140,6 +140,11 @@ class CoreLogic {
 		if(empty($md)) throw new NotFoundException();
 		$this->checkPermission($md, PermissionManager::METHOD_DELETE);
 
+		if($md->getOsType() === Models\MobileDevice::OS_TYPE_IOS) {
+			$ade = new Apple\AutomatedDeviceEnrollment($this->db);
+			$ade->disownDevices([$md->serial]);
+		}
+
 		$result = $this->db->deleteMobileDevice($md->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.delete', json_encode($md));
