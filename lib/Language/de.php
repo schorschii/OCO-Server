@@ -661,6 +661,7 @@ return [
 	'build' => 'Build',
 	'eas_device_identifier' => 'EAS-Geräte-ID',
 	'time_zone' => 'Zeitzone',
+	'supervised' => 'Supervised',
 	'app_analytics' => 'App-Analysedatenübermittlung',
 	'diagnostic_submission' => 'Diagnosedatenübermittlung',
 	'cloud_backup' => 'Cloud-Backup',

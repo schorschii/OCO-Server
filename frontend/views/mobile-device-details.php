@@ -145,6 +145,10 @@ try {
 								<td><?php echo htmlspecialchars($info['TimeZone']??''); ?></td>
 							</tr>
 							<tr>
+								<th><?php echo LANG('supervised'); ?></th>
+								<td><?php echoDictTable($info['IsSupervised']??null); ?></td>
+							</tr>
+							<tr>
 								<th><?php echo LANG('app_analytics'); ?></th>
 								<td><?php echoDictTable($info['AppAnalyticsEnabled']??null); ?></td>
 							</tr>

@@ -666,6 +666,7 @@ return [
 	'build' => 'Build',
 	'eas_device_identifier' => 'EAS Device Identifier',
 	'time_zone' => 'Time Zone',
+	'supervised' => 'Supervised',
 	'app_analytics' => 'App Analytics',
 	'diagnostic_submission' => 'Diagnostic Submission',
 	'cloud_backup' => 'Cloud Backup',
