@@ -221,6 +221,12 @@ class AndroidEnrollment {
 		return $response['devices'];
 	}
 
+	function deleteDevice(string $deviceId) {
+		$enterpriseName = $this->getEnterprise()['name'];
+		$response = $this->apiCall('DELETE', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/devices/'.urlencode($deviceId), null);
+		return true;
+	}
+
 	function generateWebToken() {
 		$enterpriseName = $this->getEnterprise()['name'];
 		$response = $this->apiCall('POST', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/webTokens', json_encode([

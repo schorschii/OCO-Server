@@ -143,11 +143,16 @@ class CoreLogic {
 		if($md->getOsType() === Models\MobileDevice::OS_TYPE_IOS) {
 			$ade = new Apple\AutomatedDeviceEnrollment($this->db);
 			$ade->disownDevices([$md->serial]);
+		} elseif($md->getOsType() === Models\MobileDevice::OS_TYPE_ANDROID) {
+			$ae = new Android\AndroidEnrollment($this->db);
+			$ae->deleteDevice($md->udid);
+		} else {
+			throw new Exception('Unkown device type');
 		}
 
 		$result = $this->db->deleteMobileDevice($md->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.delete', json_encode($md));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.delete', json_encode($md,JSON_PARTIAL_OUTPUT_ON_ERROR));
 		return $result;
 	}
 	public function createMobileDeviceGroup($name, $parentGroupId=null) {

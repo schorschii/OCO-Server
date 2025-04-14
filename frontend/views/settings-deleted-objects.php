@@ -31,7 +31,7 @@ try {
 			</thead>
 			<tbody>
 				<?php
-				foreach($db->selectAllLogEntryByObjectIdAndActions(false, ['oco.computer.delete', 'oco.package.delete', 'oco.package_family.delete', 'oco.job_container.delete', 'oco.deployment_rule.delete', 'oco.domain_user.delete', 'oco.report.delete'], empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
+				foreach($db->selectAllLogEntryByObjectIdAndActions(false, ['oco.computer.delete', 'oco.package.delete', 'oco.package_family.delete', 'oco.job_container.delete', 'oco.deployment_rule.delete', 'oco.domain_user.delete', 'oco.report.delete', 'oco.mobile_device.delete', 'oco.managed_app.delete', 'oco.profile.delete'], empty($_GET['nolimit'])?Models\Log::DEFAULT_VIEW_LIMIT:false) as $l) {
 					echo "<tr>";
 					echo "<td>".htmlspecialchars($l->timestamp)."</td>";
 					echo "<td>".htmlspecialchars($l->host)."</td>";
