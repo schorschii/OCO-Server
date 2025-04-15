@@ -32,6 +32,9 @@ try {
 				<option value='PlayLostModeSound' parameter=''><?php echo LANG('play_lost_mode_sound'); ?></option>
 				<option value='DisableLostMode' parameter=''><?php echo LANG('disable_lost_mode'); ?></option>
 				<option value='' disabled>──────────</option>
+				<option value='RestartDevice' parameter=''><?php echo LANG('reboot'); ?></option>
+				<option value='ShutDownDevice' parameter=''><?php echo LANG('shutdown'); ?></option>
+				<option value='' disabled>──────────</option>
 				<option value='EraseDevice' parameter=''><?php echo LANG('erase_device'); ?></option>
 
 				<?php } elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) { ?>
@@ -39,12 +42,13 @@ try {
 				<option value='LOCK' parameter=''><?php echo LANG('lock_device'); ?></option>
 				<option value='RESET_PASSWORD' parameter='password'><?php echo LANG('clear_passcode'); ?></option>
 				<option value='' disabled>──────────</option>
-				<option value='REBOOT' parameter=''><?php echo LANG('reboot'); ?></option>
 				<option value='RELINQUISH_OWNERSHIP' parameter=''><?php echo LANG('relinquish_ownership'); ?></option>
 				<option value='CLEAR_APP_DATA' parameter=''><?php echo LANG('clear_app_data'); ?></option>
 				<option value='' disabled>──────────</option>
 				<option value='START_LOST_MODE' parameter='message'><?php echo LANG('enable_lost_mode'); ?></option>
 				<option value='STOP_LOST_MODE' parameter=''><?php echo LANG('disable_lost_mode'); ?></option>
+				<option value='' disabled>──────────</option>
+				<option value='REBOOT' parameter=''><?php echo LANG('reboot'); ?></option>
 
 				<?php } ?>
 			</select>
