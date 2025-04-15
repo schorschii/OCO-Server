@@ -1,6 +1,6 @@
 @echo off
 
-SET LOG=C:\Windows\Setup\oco-install.log
+SET LOG=%WINDIR%\Setup\oco-install.log
 
 echo Install OCO Agent... >> %LOG%
 "%WINDIR%\Setup\Files\oco-agent.exe" /LOADINF=%WINDIR%\Setup\Files\oco-agent-setup.inf /SILENT >> %LOG% 2>&1
