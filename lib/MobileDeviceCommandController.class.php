@@ -14,9 +14,11 @@ class MobileDeviceCommandController {
 		$this->debug = $debug;
 	}
 
-	function mdmCron() {
+	function mdmCron(array|null $deviceIds=null) {
 		$mds = $this->db->selectAllMobileDevice();
 		foreach($mds as $md) {
+			if(!empty($deviceIds) && !in_array($md->id, $deviceIds)) continue;
+
 			if($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) {
 				$force = false;
 				if($this->iosProfiles($md)) $force = true;

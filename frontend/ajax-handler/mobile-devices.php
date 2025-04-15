@@ -25,7 +25,14 @@ try {
 	if(!empty($_POST['edit_mobile_device_id'])
 	&& isset($_POST['force_update'])) {
 		$md = $cl->getMobileDevice($_POST['edit_mobile_device_id']);
-		$cl->editMobileDevice($md->id, $md->device_name, $md->notes, $_POST['force_update']);
+		// force_update has no effect on Android
+		$forceUpdate = intval($_POST['force_update']);
+		if($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) $forceUpdate = 0;
+		// update record
+		$cl->editMobileDevice($md->id, $md->device_name, $md->notes, $forceUpdate);
+		// instant apps & policy installation + metadata update jobs for iOS for this device
+		$mdcc = new MobileDeviceCommandController($db, true);
+		$mdcc->mdmCron([$md->id]);
 		die();
 	}
 

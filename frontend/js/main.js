@@ -1377,9 +1377,9 @@ function editMobileDevice(id, deviceName, notes) {
 	});
 }
 function setMobileDeviceForceUpdate(id, value) {
-	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'edit_mobile_device_id':id, 'force_update':value}), null, function() {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'edit_mobile_device_id':id, 'force_update':value}), null, function(responseText) {
 		refreshContent();
-		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['force_update'], responseText, MESSAGE_TYPE_SUCCESS);
 	});
 }
 function removeSelectedMobileDevice(checkboxName, attributeName=null, event=null) {
@@ -1615,9 +1615,9 @@ function editComputer(id, hostname, notes) {
 	});
 }
 function setComputerForceUpdate(id, value) {
-	ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'edit_computer_id':id, 'force_update':value}), null, function() {
+	ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({'edit_computer_id':id, 'force_update':value}), null, function(responseText) {
 		refreshContent();
-		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['force_update'], responseText, MESSAGE_TYPE_SUCCESS);
 	});
 }
 function removeSelectedComputerFromGroup(checkboxName, groupId) {
