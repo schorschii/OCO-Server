@@ -603,10 +603,9 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			$resdata['result']['params']['server-key'] = $computer->server_key;
 			if(empty($resdata['result']['params']['agent-key']))
 				$resdata['result']['params']['agent-key'] = null;
-		} else {
-			$resdata['result']['timestamp'] = microtime(true);
-			header('x-oco-server-signature: '.hash_hmac('sha256', json_encode($resdata), $computer->server_key));
 		}
+		$resdata['result']['timestamp'] = microtime(true);
+		header('x-oco-server-signature: '.hash_hmac('sha256', json_encode($resdata), $computer->server_key));
 	}
 	echo json_encode($resdata);
 
