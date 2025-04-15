@@ -282,16 +282,43 @@ class CoreLogic {
 		$mdcc = new MobileDeviceCommandController($this->db);
 		$mdcc->mdmCron();
 	}
-	public function removeManagedAppFromMobileDeviceGroup($pId, $groupId) {
-		$ma = $this->db->selectManagedApp($pId);
+	public function removeManagedAppFromMobileDeviceGroup($maId, $groupId) {
+		$ma = $this->db->selectManagedApp($maId);
 		if(empty($ma)) throw new NotFoundException();
 		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
 		if(empty($mdGroup)) throw new NotFoundException();
 		$this->checkPermission($ma, PermissionManager::METHOD_DEPLOY);
 		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
 
+		// for iOS: get all assigned apps before changes
+		// (directly removing the managed app from all devices of the group is not a good idea
+		// since the same app is may still assigned to the device by another group)
+		$deviceAppMap = [];
+		foreach($this->db->selectAllMobileDeviceByMobileDeviceGroupId($groupId) as $md) {
+			if($md->getOsType() != Models\MobileDevice::OS_TYPE_IOS) continue;
+			$deviceAppMap[$md->id] = $this->db->selectAllManagedAppByMobileDeviceId($md->id);
+		}
+
+		// remove the app from the group
 		$this->db->deleteMobileDeviceGroupManagedApp($mdGroup->id, $ma->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.unassign', ['mobile_device_group_id'=>$mdGroup->id]);
+
+		// for iOS: get all assigned apps after changes - then uninstall the difference
+		foreach($deviceAppMap as $mdId => $mdApps) {
+			$uninstallApps = array_udiff($mdApps, $this->db->selectAllManagedAppByMobileDeviceId($mdId), function($a,$b){
+				return $a->id - $b->id;
+			});
+			foreach($uninstallApps as $app) {
+				$result = $this->db->insertMobileDeviceCommand($mdId, 'RemoveApplication', json_encode([
+					'RequestType' => 'RemoveApplication',
+					'Identifier' => $app->identifier,
+				]));
+				if($result) {
+					$changed = true;
+					echo('Created command for uninstalling app '.$app->identifier.' on device '.$mdId."\n");
+				}
+			}
+		}
 
 		$mdcc = new MobileDeviceCommandController($this->db);
 		$mdcc->mdmCron();
