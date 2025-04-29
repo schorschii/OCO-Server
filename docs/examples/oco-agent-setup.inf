@@ -1,4 +1,5 @@
 [Setup]
 ServerName=oco.example.com
 AgentKey=1235678
+ServerKey=
 DoNotStartService=1
