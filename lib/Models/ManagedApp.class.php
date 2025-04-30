@@ -12,5 +12,10 @@ class ManagedApp {
 	public $store_id;
 	public $name;
 	public $vpp_amount;
+	public $configurations;
+
+	function getConfigurations() {
+		return json_decode($this->configurations??'{}', true);
+	}
 
 }

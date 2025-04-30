@@ -3,10 +3,14 @@ $SUBVIEW = 1;
 require_once('../../loader.inc.php');
 require_once('../session.inc.php');
 
+$configs = null;
 try {
 	if(empty($_GET['id']) || !is_array($_GET['id']))
 		throw new Exception('GET id[] missing');
 	$ma = $db->selectManagedApp($_GET['id'][0]);
+	if(count($_GET['id']) === 1) {
+		$configs = $ma->getConfigurations();
+	}
 } catch(Exception $e) {
 	die($e->getMessage());
 }
@@ -43,6 +47,19 @@ try {
 			<?php } ?>
 		</td>
 	</tr>
+	<?php if($configs) { ?>
+	<tr>
+		<th><?php echo LANG('app_config'); ?></th>
+		<td>
+			<select id='sltManagedAppConfig' class='fullwidth'>
+				<option value=''>-</option>
+				<?php foreach($configs as $cId => $cName) { ?>
+					<option value='<?php echo htmlspecialchars($cId,ENT_QUOTES); ?>'><?php echo htmlspecialchars($cName); ?></option>
+				<?php } ?>
+			</select>
+		</td>
+	</tr>
+	<?php } ?>
 	<tr>
 		<th><?php echo LANG('app_config_json'); ?></th>
 		<td>
@@ -60,6 +77,7 @@ try {
 		typeof chkDisableCloudBackup !== "undefined" && chkDisableCloudBackup.checked ? 1 : 0,
 		typeof chkRemoveOnMdmRemove !== "undefined" && chkRemoveOnMdmRemove.checked ? 1 : 0,
 		typeof sltInstallType !== "undefined" ? sltInstallType.value : "",
+		typeof sltManagedAppConfig !== "undefined" ? sltManagedAppConfig.value : "",
 		txtManagedAppConfig.value
 	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 </div>

@@ -76,7 +76,7 @@ try {
 				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
-				<!--<th><?php echo LANG('action'); ?></th>-->
+				<th><?php echo LANG('configurations'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -86,7 +86,12 @@ try {
 			echo "<td><input type='checkbox' name='managed_app_android_id[]' value='".$a->id."'></td>";
 			echo "<td>".htmlspecialchars($a->name)."</td>";
 			echo "<td>".htmlspecialchars($a->identifier)."</td>";
-			//echo "<td><button class='small' onclick='showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\")'><img src='img/settings.dyn.svg'></button></td>";
+			echo "<td>";
+			echo "<button class='small' onclick='showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\", \"".htmlspecialchars($a->id)."\")'>".LANG('add')."</button>";
+			foreach($a->getConfigurations() as $cId => $cName) {
+				echo "<div><a href='#' onclick='event.preventDefault(); showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\", \"".htmlspecialchars($a->id)."\", \"".htmlspecialchars($cId)."\" )'>".htmlspecialchars($cName)."</a></div>";
+			}
+			echo "</td>";
 			echo "</tr>";
 		}
 		?>

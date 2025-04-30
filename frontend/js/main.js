@@ -1516,7 +1516,7 @@ function showDialogAssignManagedAppToGroup(ids) {
 	});
 	showDialogAjax(LANG['assign'], 'views/dialog-managed-app-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, installType, config) {
+function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, installType, configId, config) {
 	if(groupId === false) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
@@ -1529,6 +1529,7 @@ function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudB
 	params.push({'key':'disable_cloud_backup', 'value':disableCloudBackup});
 	params.push({'key':'remove_on_mdm_remove', 'value':removeOnMdmRemove});
 	params.push({'key':'install_type', 'value':installType});
+	params.push({'key':'config_id', 'value':configId});
 	params.push({'key':'config', 'value':config});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
@@ -3008,7 +3009,7 @@ function showDialogAndroidZeroTouch() {
 		document.head.appendChild(script);
 	});
 }
-function showDialogManagedPlayStoreConfig(packageName) {
+function showDialogManagedPlayStoreConfig(packageName, managedAppId, configId=null) {
 	// get the token for the Play Store iframe
 	var params = [];
 	params.push({'key':'get_playstore_token', 'value':1});
@@ -3023,20 +3024,50 @@ function showDialogManagedPlayStoreConfig(packageName) {
 			// embed the Play Store iframe into the dialog
 			gapi.load('gapi.iframes', function() {
 				var options = {
-					'url': 'https://play.google.com/managed/mcm?token='+encodeURIComponent(token)+'&packageName='+encodeURIComponent(packageName),
+					'url': 'https://play.google.com/managed/mcm?token='+encodeURIComponent(token)+'&packageName='+encodeURIComponent(packageName)+(configId ? '&mcmId='+encodeURIComponent(configId)+'&canDelete=TRUE' : ''),
 					'where': obj('dialog-text'),
 					'attributes': { style:'height:100%; display:block', scrolling:'yes'}
 				};
 				var iframe = gapi.iframes.getContext().openChild(options);
 				iframe.register('onconfigupdated', function(event) {
-					console.log(event);
+					var paramString = urlencodeArray([
+						{'key':'playstore_onconfigupdated', 'value':event.mcmId},
+						{'key':'name', 'value':event.name},
+						{'key':'managed_app_id', 'value':managedAppId},
+					]);
+					ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
+						emitMessage(LANG['saved'], event.packageName, MESSAGE_TYPE_SUCCESS);
+						refreshContent();
+						hideDialog();
+					});
 				}, gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER);
 				iframe.register('onconfigdeleted', function(event) {
-					console.log(event);
+					var paramString = urlencodeArray([
+						{'key':'playstore_onconfigdeleted', 'value':event.mcmId},
+						{'key':'managed_app_id', 'value':managedAppId},
+					]);
+					ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
+						emitMessage(LANG['configuration_deleted'], '', MESSAGE_TYPE_SUCCESS);
+						refreshContent();
+						hideDialog();
+					});
 				}, gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER);
 			});
 		};
 		document.head.appendChild(script);
+	});
+}
+function saveManagedPlayStoreConfig(configId, name, appId) {
+	var params = [];
+	params.push({'key':'save_managed_play_config', 'value':configId});
+	params.push({'key':'name', 'value':name});
+	params.push({'key':'managed_app_identifier', 'value':appId});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
+		emitMessage(LANG['configurations'], name, MESSAGE_TYPE_SUCCESS);
+		refreshContent();
+	}, function(status, statusText, responseText){
+		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
 function removeSelectedManagedApp(checkboxName, attributeName=null) {

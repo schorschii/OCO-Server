@@ -218,6 +218,7 @@ try {
 					($_POST['disable_cloud_backup']??0) ? 1 : 0,
 					($_POST['remove_on_mdm_remove']??1) ? 1 : 0,
 					empty($_POST['install_type']) ? null : $_POST['install_type'],
+					$_POST['config_id'] ?? null,
 					$_POST['config'] ?? null,
 				);
 			}
@@ -245,7 +246,7 @@ try {
 	&& !empty($_POST['package_name'])
 	&& !empty($_POST['product_id'])) {
 		die(
-			$cl->createOrEditManagedApp('android', $_POST['package_name'], $_POST['product_id'], $_POST['app_name']??'?', null)
+			$cl->createOrEditManagedApp('android', $_POST['package_name'], $_POST['product_id'], $_POST['app_name']??'?', null, null)
 		);
 	}
 
@@ -253,6 +254,26 @@ try {
 		foreach($_POST['remove_managed_app_id'] as $id) {
 			$cl->removeManagedApp($id);
 		}
+		die();
+	}
+
+	if(!empty($_POST['playstore_onconfigupdated'])
+	&& !empty($_POST['name'])
+	&& !empty($_POST['managed_app_id'])) {
+		$ma = $db->selectManagedApp($_POST['managed_app_id']);
+		if(!$ma) throw new NotFoundException();
+		$newConfigurations = array_merge($ma->getConfigurations(), [$_POST['playstore_onconfigupdated']=>$_POST['name']]);
+		$cl->createOrEditManagedApp($ma->type, $ma->identifier, $ma->store_id, $ma->name, $ma->vpp_amount, json_encode($newConfigurations));
+		die();
+	}
+	if(!empty($_POST['playstore_onconfigdeleted'])
+	&& !empty($_POST['managed_app_id'])) {
+		$ma = $db->selectManagedApp($_POST['managed_app_id']);
+		if(!$ma) throw new NotFoundException();
+		$newConfigurations = $ma->getConfigurations();
+		if(isset($newConfigurations[$_POST['playstore_onconfigdeleted']]))
+			unset($newConfigurations[$_POST['playstore_onconfigdeleted']]);
+		$cl->createOrEditManagedApp($ma->type, $ma->identifier, $ma->store_id, $ma->name, $ma->vpp_amount, json_encode($newConfigurations));
 		die();
 	}
 

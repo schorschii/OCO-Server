@@ -909,6 +909,7 @@ CREATE TABLE `managed_app` (
   `store_id` text NOT NULL,
   `name` text NOT NULL,
   `vpp_amount` int(11) DEFAULT NULL,
+  `configurations` TEXT NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -926,6 +927,7 @@ CREATE TABLE `mobile_device_group_managed_app` (
   `disable_cloud_backup` tinyint(4) NOT NULL DEFAULT 1,
   `remove_on_mdm_remove` tinyint(4) NOT NULL DEFAULT 1,
   `install_type` TINYTEXT NULL DEFAULT NULL,
+  `config_id` BIGINT NULL DEFAULT NULL,
   `config` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_mobile_device_group_managed_app_1` (`mobile_device_group_id`),

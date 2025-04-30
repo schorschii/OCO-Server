@@ -519,6 +519,20 @@ class DatabaseMigrationController {
 			}
 		}
 
+		if(!$this->getTableColumnInfo('managed_app', 'configurations')) {
+			if($this->debug) echo 'Upgrading to 1.1.8... (add configurations column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `managed_app` ADD `configurations` TEXT NULL DEFAULT NULL AFTER `vpp_amount`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.8... (add config_id column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device_group_managed_app` ADD `config_id` BIGINT NULL DEFAULT NULL AFTER `install_type`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

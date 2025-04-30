@@ -11,6 +11,7 @@ class MobileDeviceGroupManagedApp {
 	public $disable_cloud_backup;
 	public $remove_on_mdm_remove;
 	public $install_type;
+	public $config_id;
 	public $config;
 
 	// joined attributes

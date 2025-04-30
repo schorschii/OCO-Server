@@ -654,6 +654,7 @@ return [
 	'upload_key' => 'Key hochladen',
 	'key_id' => 'Key-ID',
 	'team_id' => 'Team-ID',
+	'app_config' => 'App-Konfiguration',
 	'app_config_json' => 'App-Konfiguration (JSON)',
 	'apple_devices' => 'Apple-Geräte',
 	'ios' => 'iOS',
@@ -709,6 +710,8 @@ return [
 	'install_apps_profiles_policies_notes' => 'Verwaltete Apps, Profile, Richtlinien entsprechend der Gruppenzuweisungen installieren (wird in regelmäßigen Abständen via Cron ausgeführt)',
 	'ios_device_name_update_note' => 'Es wird ein Kommando gesendet, welches den Gerätenamen ändert. Der Name in OCO wird nach erfolgreicher Ausführung angepasst.',
 	'confirm_delete_mobile_device' => 'Sind Sie sicher, dass Sie das Mobilgerät bzw. die Mobilgeräte löschen möchten?'."\n\n".'iOS-Geräte werden auch aus der Organisation im Apple Business Manager entfernt.'."\n\n".'Android-Geräte werden auf Werkseinstellungen zurückgesetzt und aus der Organisation entfernt.',
+	'configurations' => 'Konfigurationen',
+	'configuration_deleted' => 'Konfiguration gelöscht',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

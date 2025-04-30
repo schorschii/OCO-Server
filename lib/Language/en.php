@@ -659,6 +659,7 @@ return [
 	'upload_key' => 'Upload Key',
 	'key_id' => 'Key ID',
 	'team_id' => 'Team ID',
+	'app_config' => 'App Configuration',
 	'app_config_json' => 'App Configuration (JSON)',
 	'apple_devices' => 'Apple Devices',
 	'ios' => 'iOS',
@@ -714,6 +715,8 @@ return [
 	'install_apps_profiles_policies_notes' => 'Install managed apps, profiles, policies according to group assignments (runs at regular intervals via Cron)',
 	'ios_device_name_update_note' => 'A command will be sent that changes the device name. The name in OCO is updated after successful execution.',
 	'confirm_delete_mobile_device' => 'Are you sure you want to delete the mobile device(s)?'."\n\n".'iOS devices are also removed from the organization in Apple Business Manager.'."\n\n".'Android devices will be factory-reset and removed from the Enterprise.',
+	'configurations' => 'Configurations',
+	'configuration_deleted' => 'Configuration deleted',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

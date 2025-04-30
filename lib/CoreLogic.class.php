@@ -231,15 +231,16 @@ class CoreLogic {
 		}
 		return $pFiltered;
 	}
-	public function createOrEditManagedApp($type, $packageName, $productId, $appName, $vppAmount) {
+	public function createOrEditManagedApp($type, $identifier, $storeId, $name, $vppAmount, $configurations) {
 		$this->checkPermission(new Models\ManagedApp(), PermissionManager::METHOD_CREATE);
-		$id = $this->db->insertOrUpdateManagedApp($type, $packageName, $productId, $appName, $vppAmount);
+		$id = $this->db->insertOrUpdateManagedApp($type, $identifier, $storeId, $name, $vppAmount, $configurations);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.managed_app.update', json_encode([
 			'type'=>$type,
-			'packageName'=>$packageName,
-			'productId'=>$productId,
-			'appName'=>$appName,
+			'identifier'=>$identifier,
+			'storeId'=>$storeId,
+			'name'=>$name,
 			'vppAmount'=>$vppAmount,
+			'configurations'=>$configurations,
 		]));
 	}
 	public function removeManagedApp($id, $force=false) {
@@ -252,7 +253,7 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.mobile_device_group.delete', json_encode($ma));
 		return $result;
 	}
-	public function assignManagedAppToMobileDeviceGroup($maId, $groupId, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $config) {
+	public function assignManagedAppToMobileDeviceGroup($maId, $groupId, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $configId, $config) {
 		$ma = $this->db->selectManagedApp($maId);
 		if(empty($ma)) throw new NotFoundException();
 		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
@@ -260,6 +261,9 @@ class CoreLogic {
 		$this->checkPermission($ma, PermissionManager::METHOD_DEPLOY);
 		$this->checkPermission($mdGroup, PermissionManager::METHOD_WRITE);
 
+		if(empty($configId)) {
+			$configId = null;
+		}
 		if(empty($config)) {
 			$config = null;
 		} else {
@@ -268,7 +272,7 @@ class CoreLogic {
 				throw new InvalidArgumentException('Invalid JSON config');
 		}
 
-		$this->db->insertMobileDeviceGroupManagedApp($mdGroup->id, $ma->id, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $config);
+		$this->db->insertMobileDeviceGroupManagedApp($mdGroup->id, $ma->id, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $configId, $config);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.assign', [
 			'mobile_device_group_id'=>$mdGroup->id,
 			'managed_app_id'=>$maId,
@@ -276,6 +280,7 @@ class CoreLogic {
 			'disable_cloud_backup'=>$disableCloudBackup,
 			'removeOnMdmRemove'=>$removeOnMdmRemove,
 			'install_type'=>$installType,
+			'config_id'=>$configId,
 			'config'=>$config,
 		]);
 

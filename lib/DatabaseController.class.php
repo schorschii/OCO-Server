@@ -405,7 +405,7 @@ class DatabaseController {
 		$this->stmt->execute([':mobile_device_group_id' => $mobile_device_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ManagedApp');
 	}
-	public function insertOrUpdateManagedApp($type, $identifier, $store_id, $name, $vpp_amount) {
+	public function insertOrUpdateManagedApp($type, $identifier, $store_id, $name, $vpp_amount, $configurations=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM managed_app WHERE type = :type AND identifier = :identifier AND store_id = :store_id'
 		);
@@ -416,35 +416,37 @@ class DatabaseController {
 		])) return false;
 		if($this->stmt->rowCount() > 0) {
 			$this->stmt = $this->dbh->prepare(
-				'UPDATE managed_app SET id = LAST_INSERT_ID(id), name = :name, vpp_amount = :vpp_amount WHERE type = :type AND identifier = :identifier AND store_id = :store_id'
+				'UPDATE managed_app SET id = LAST_INSERT_ID(id), name = :name, vpp_amount = :vpp_amount, configurations = :configurations WHERE type = :type AND identifier = :identifier AND store_id = :store_id'
 			);
 			if(!$this->stmt->execute([
 				':type' => $type,
 				':identifier' => $identifier,
 				':store_id' => $store_id,
 				':name' => $name,
-				':vpp_amount' => $vpp_amount
+				':vpp_amount' => $vpp_amount,
+				':configurations' => $configurations,
 			])) return false;
 			return $this->dbh->lastInsertId();
 		} else {
 			$this->stmt = $this->dbh->prepare(
-				'INSERT INTO managed_app (type, identifier, store_id, name, vpp_amount) VALUES (:type, :identifier, :store_id, :name, :vpp_amount)'
+				'INSERT INTO managed_app (type, identifier, store_id, name, vpp_amount, configurations) VALUES (:type, :identifier, :store_id, :name, :vpp_amount, :configurations)'
 			);
 			if(!$this->stmt->execute([
 				':type' => $type,
 				':identifier' => $identifier,
 				':store_id' => $store_id,
 				':name' => $name,
-				':vpp_amount' => $vpp_amount
+				':vpp_amount' => $vpp_amount,
+				':configurations' => $configurations,
 			])) return false;
 			return $this->dbh->lastInsertId();
 		}
 	}
-	public function insertMobileDeviceGroupManagedApp($mobile_device_group_id, $managed_app_id, $removable, $disable_cloud_backup, $remove_on_mdm_remove, $install_type, $config) {
+	public function insertMobileDeviceGroupManagedApp($mobile_device_group_id, $managed_app_id, $removable, $disable_cloud_backup, $remove_on_mdm_remove, $install_type, $config_id, $config) {
 		$this->deleteMobileDeviceGroupManagedApp($mobile_device_group_id, $managed_app_id);
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO mobile_device_group_managed_app (mobile_device_group_id, managed_app_id, removable, disable_cloud_backup, remove_on_mdm_remove, install_type, config)
-			VALUES (:mobile_device_group_id, :managed_app_id, :removable, :disable_cloud_backup, :remove_on_mdm_remove, :install_type, :config)'
+			'INSERT INTO mobile_device_group_managed_app (mobile_device_group_id, managed_app_id, removable, disable_cloud_backup, remove_on_mdm_remove, install_type, config_id, config)
+			VALUES (:mobile_device_group_id, :managed_app_id, :removable, :disable_cloud_backup, :remove_on_mdm_remove, :install_type, :config_id, :config)'
 		);
 		$this->stmt->execute([
 			':mobile_device_group_id' => $mobile_device_group_id,
@@ -453,6 +455,7 @@ class DatabaseController {
 			':disable_cloud_backup' => $disable_cloud_backup,
 			':remove_on_mdm_remove' => $remove_on_mdm_remove,
 			':install_type' => $install_type,
+			':config_id' => $config_id,
 			':config' => $config,
 		]);
 		return $this->dbh->lastInsertId();

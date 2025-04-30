@@ -42,11 +42,19 @@ class MobileDeviceCommandController {
 
 			if(empty($policy)) $policy['applications'] = [];
 
-			$policy['applications'][] = [
+			$appConfig = [
 				'packageName' => $app->identifier,
 				'installType' => $app->install_type,
-				'managedConfiguration' => json_decode($app->config, true),
 			];
+			if(empty($app->config_id)) {
+				$appConfig['managedConfiguration'] = json_decode($app->config, true);
+			} else {
+				$appConfig['managedConfigurationTemplate'] = [
+					'templateId' => strval($app->config_id),
+					'configurationVariables' => json_decode($app->config, true),
+				];
+			}
+			$policy['applications'][] = $appConfig;
 		}
 		return $policy;
 	}
