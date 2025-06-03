@@ -33,7 +33,7 @@ class HouseKeeping {
 		}
 
 		// set timestamp for monitoring
-		$this->db->insertOrUpdateSettingByKey('cron-executed', date('Y-m-d'));
+		$this->db->insertOrUpdateSettingByKey('cron-executed', date('Y-m-d H:i:s'));
 
 		if($this->debug) echo('Done.'."\n");
 	}

@@ -24,8 +24,8 @@ try {
 	}
 
 	// check last cron run
-	$lastCronRun = $db->selectSettingByKey('cron-executed')->value ?? 0;
-	if($lastCronRun > (time() - 60*60*10)) {
+	$lastCronRun = strtotime($db->selectSettingByKey('cron-executed')->value ?? '1970-01-01 00:00:00');
+	if($lastCronRun > (time() - 60*11)) {
 		printCheckResult('0', 'Cron Execution', '-', 'Housekeeping cron job is running');
 	} else {
 		printCheckResult('2', 'Cron Execution', '-', 'Housekeeping cron job last execution was on '.date('Y-m-d H:i:s', $lastCronRun));
