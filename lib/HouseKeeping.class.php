@@ -32,6 +32,9 @@ class HouseKeeping {
 			call_user_func($func, $this->db);
 		}
 
+		// set timestamp for monitoring
+		$this->db->insertOrUpdateSettingByKey('cron-executed', date('Y-m-d'));
+
 		if($this->debug) echo('Done.'."\n");
 	}
 
