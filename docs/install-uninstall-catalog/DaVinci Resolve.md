@@ -18,8 +18,9 @@ DaVinci_Resolve_20.0.0_Windows.exe /x /q /noreboot
 **Installation:**
 For Ubuntu 24.04 with library adjustments:
 ```
-apt install -y libapr1 libaprutil1 libasound2 libglib2.0-0
-bash -c 'SKIP_PACKAGE_CHECK=1 ./DaVinci_Resolve_20.0_Linux.run --install --noconfirm'
+apt install -y libapr1 libaprutil1 libglib2.0-0
+chmod +x ./DaVinci_Resolve_20.0_Linux.run
+bash -c 'SKIP_PACKAGE_CHECK=1 ./DaVinci_Resolve_20.0_Linux.run --install --noconfirm --allowroot'
 
 mkdir /opt/resolve/libs/obsolete
 mv /opt/resolve/libs/libgio* /opt/resolve/libs/obsolete/
@@ -29,5 +30,5 @@ mv /opt/resolve/libs/libgmodule* /opt/resolve/libs/obsolete/
 
 **Uninstallation:**
 ```
-/opt/resolve/installer --uninstall --noconfirm /opt/resolve
+/opt/resolve/installer --uninstall --noconfirm --allowroot /opt/resolve
 ```
