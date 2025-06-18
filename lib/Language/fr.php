@@ -734,6 +734,7 @@ return [
 			<li>MSI setup pour Windows: <code>msiexec /quiet /i package.msi</code></li>
 			<li>MSI désinstallation pour Windows: <code>msiexec /quiet /x package.msi</code> ou <code>msiexec /quiet /x $$ProductCode$$</code>
 				<br/>Si Wine est installé, les espaces réservés <code>$$ProductCode$$</code>, <code>$$UpgradeCode$$</code>, <code>$$ProductName$$</code>, <code > $$ProductVersion$$</code>, <code>$$Manufacturer$$</code> automatiquement remplacé par les valeurs du package MSI.</li>
+			<li>DEB paquet pour Linux: <code>apt install -y ./package.deb</code></li>
 			<li>DEB paquet désinstallation pour Linux: <code>apt remove -y packagename</code></li>
 			<li>.app directory for macOS from DMG file: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>
 			<li>.app directory pour macOS uninstallation: <code>rm -R /Applications/program.app</code></li>

@@ -734,7 +734,7 @@ return [
 			<li>MSI setup for Windows: <code>msiexec /quiet /i package.msi</code></li>
 			<li>MSI uninstallation for Windows: <code>msiexec /quiet /x package.msi</code> or <code>msiexec /quiet /x $$ProductCode$$</code>
 				<br/>If you have Wine installed, the placeholders <code>$$ProductCode$$</code>, <code>$$UpgradeCode$$</code>, <code>$$ProductName$$</code>, <code>$$ProductVersion$$</code>, <code>$$Manufacturer$$</code> are automatically replaced with the values ​​of the MSI package.</li>
-			<li>DEB package for Linux: <code>gdebi -n package.deb</code></li>
+			<li>DEB package for Linux: <code>apt install -y ./package.deb</code></li>
 			<li>DEB package for Linux uninstallation: <code>apt remove -y packagename</code></li>
 			<li>.app directory for macOS from DMG file: <code>hdiutil attach program.dmg && cp -R /Volumes/program/program.app /Applications && hdiutil detach /Volumes/program</code></li>
 			<li>.app directory for macOS uninstallation: <code>rm -R /Applications/program.app</code></li>
