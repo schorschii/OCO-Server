@@ -712,6 +712,7 @@ return [
 	'confirm_delete_mobile_device' => 'Sind Sie sicher, dass Sie das Mobilgerät bzw. die Mobilgeräte löschen möchten?'."\n\n".'iOS-Geräte werden auch aus der Organisation im Apple Business Manager entfernt.'."\n\n".'Android-Geräte werden auf Werkseinstellungen zurückgesetzt und aus der Organisation entfernt.',
 	'configurations' => 'Konfigurationen',
 	'configuration_deleted' => 'Konfiguration gelöscht',
+	'charging' => 'lädt',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

@@ -717,6 +717,7 @@ return [
 	'confirm_delete_mobile_device' => 'Are you sure you want to delete the mobile device(s)?'."\n\n".'iOS devices are also removed from the organization in Apple Business Manager.'."\n\n".'Android devices will be factory-reset and removed from the Enterprise.',
 	'configurations' => 'Configurations',
 	'configuration_deleted' => 'Configuration deleted',
+	'charging' => 'charging',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

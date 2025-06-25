@@ -717,6 +717,7 @@ return [
 	'confirm_delete_mobile_device' => 'Are you sure you want to delete the mobile device(s)?'."\n\n".'iOS devices are also removed from the organization in Apple Business Manager.'."\n\n".'Android devices will be factory-reset and removed from the Enterprise.',
 	'configurations' => 'Configurations',
 	'configuration_deleted' => 'Configuration deleted',
+	'charging' => 'charging',
 	'package_creation_notes' => '
 		<p>
 			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.

@@ -169,7 +169,7 @@ foreach($services as $s) {
 						</tr>
 						<tr>
 							<th><?php echo LANG('battery_status'); ?></th>
-							<td><?php if(empty($computer->battery_level)) echo ''; else echo progressBar($computer->battery_level*100, null, null, 'stretch'); ?></td>
+							<td><?php if(!empty($computer->battery_level)) echo progressBar(($computer->battery_level*100), null, null, 'stretch', '', ($computer->battery_level*100).'%'.($computer->battery_status==1 ? ' ('.LANG('charging').')' : '')); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('created'); ?></th>
