@@ -2,12 +2,6 @@
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
 require_once('../session.inc.php');
-
-$tab = 'own-system-user-settings';
-if(!empty($_GET['tab'])) $tab = $_GET['tab'];
-
-$showSystemUserManagement = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT, false);
-$showDeletedObjects = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_VIEW_DELETED_OBJECTS, false);
 ?>
 
 <div class='details-header'>
