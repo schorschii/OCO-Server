@@ -29,7 +29,7 @@ function echoTargetPackageGroupOptions($parent=null) {
 		<h3><?php echo LANG('package_selection'); ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</h3>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked);refreshDeployPackageCount()'>
-			<input type='text' id='txtDeploySearchPackages' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divPackageList, this.value)'>
+			<input type='search' id='txtDeploySearchPackages' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divPackageList, this.value)'>
 		</div>
 		<div id='divPackageList' class='box listSearchList'>
 			<a href='#' class='blockListItem big noSearch' onclick='refreshDeployPackageList(-1);return false'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
