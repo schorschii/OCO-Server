@@ -729,7 +729,7 @@ function createPackage(name, version, license_count, notes, archive, install_pro
 				var newPackageId = parseInt(this.responseText);
 				refreshContentExplorer('views/package-details.php?id='+newPackageId);
 				emitMessage(LANG['package_created'], name+' ('+version+')', MESSAGE_TYPE_SUCCESS);
-				if(newPackageId == 1 || newPackageId % 100 == 0) topConfettiRain();
+				if(newPackageId == 1 || newPackageId % 100 == 0) sideConfetti();
 			} else {
 				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 				setInputsDisabled(frmNewPackage, false);
