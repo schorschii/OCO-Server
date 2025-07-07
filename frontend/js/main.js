@@ -297,6 +297,11 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 					}
 					initLinks(object);
 				}
+				// execute inline scripts
+				var scripts = object.getElementsByTagName('script');
+				for(var i = 0; i < scripts.length; i++) {
+					eval(scripts[i].innerHTML);
+				}
 			}
 			if(callback != undefined && typeof callback == 'function') {
 				callback(this.responseText);
