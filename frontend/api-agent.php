@@ -112,7 +112,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 					// which may be used by an attacker who captured one agent request
 					$agentTimestamp = $params['timestamp'] ?? 0;
 					if(!is_numeric($agentTimestamp) || strtotime($computer->last_ping) >= floatval($agentTimestamp))
-						throw new PermissionException('Agent timestamp too old', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
+						throw new PermissionException('Agent timestamp too old, please make sure server and client share the same time without difference.', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
 				}
 
 				if(empty($computer->agent_key)) {
