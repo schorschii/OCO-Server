@@ -7,7 +7,7 @@ require_once('../session.inc.php');
 <input type='hidden' id='txtEditPackageFamilyId'></input>
 <table class='fullwidth aligned'>
 	<tr>
-		<th><?php echo LANG('hostname'); ?></th>
+		<th><?php echo LANG('name'); ?></th>
 		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditPackageFamilyName' autofocus='true'></input></td>
 	</tr>
 	<tr>
