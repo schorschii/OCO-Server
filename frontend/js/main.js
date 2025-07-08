@@ -798,30 +798,8 @@ function editPackageFamily(id, name, license_count, notes) {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditPackage(id, package_family_id, version, compatible_os, compatible_os_version, license_count, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
-	showDialogAjax(LANG['edit_package'], 'views/dialog-package-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditPackageId.value = id;
-		sltEditPackagePackageFamily.value = package_family_id;
-		txtEditPackageVersion.value = version;
-		txtEditPackageCompatibleOs.value = compatible_os;
-		txtEditPackageCompatibleOsVersion.value = compatible_os_version;
-		if(license_count >= 0) {
-			txtEditPackageLicenseCount.value = license_count;
-		}
-		txtEditPackageNotes.value = notes;
-
-		if(install_procedure.includes("\n")) toggleTextBoxMultiLine(txtEditPackageInstallProcedure);
-		txtEditPackageInstallProcedure.value = install_procedure;
-		txtEditPackageInstallProcedureSuccessReturnCodes.value = install_procedure_success_return_codes;
-		setCheckedRadioValue('edit_package_install_procedure_post_action', install_procedure_post_action);
-		setCheckedRadioValue('upgrade_behavior', upgrade_behavior);
-
-		if(uninstall_procedure.includes("\n")) toggleTextBoxMultiLine(txtEditPackageUninstallProcedure);
-		txtEditPackageUninstallProcedure.value = uninstall_procedure;
-		txtEditPackageUninstallProcedureSuccessReturnCodes.value = uninstall_procedure_success_return_codes;
-		setCheckedRadioValue('edit_package_uninstall_procedure_post_action', uninstall_procedure_post_action);
-		chkEditPackageDownloadForUninstall.checked = download_for_uninstall=='1';
-	});
+function showDialogEditPackage(id) {
+	showDialogAjax(LANG['edit_package'], 'views/dialog-package-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	let req = new XMLHttpRequest();

@@ -678,6 +678,9 @@ tfoot .controls {
 	flex-grow: 1;
 }
 
+.block {
+	display: block;
+}
 .inlineblock {
 	display: inline-block;
 }

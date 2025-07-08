@@ -44,26 +44,6 @@ require_once('../session.inc.php');
 	<option>msiexec /quiet /x</option>
 	<option>apt remove -y</option>
 </datalist>
-<datalist id='lstOs'>
-	<?php
-	$mentioned = [];
-	foreach($cl->getComputers() as $c) {
-		if(in_array($c->os, $mentioned)) continue;
-		$mentioned[] = $c->os;
-	?>
-		<option><?php echo htmlspecialchars($c->os); ?></option>
-	<?php } ?>
-</datalist>
-<datalist id='lstOsVersion'>
-	<?php
-	$mentioned = [];
-	foreach($cl->getComputers() as $c) {
-		if(in_array($c->os_version, $mentioned)) continue;
-		$mentioned[] = $c->os_version;
-	?>
-		<option><?php echo htmlspecialchars($c->os_version); ?></option>
-	<?php } ?>
-</datalist>
 
 <table id='frmNewPackage' class='form fullwidth'>
 	<tr><td colspan='2'><h2><?php echo LANG('general'); ?></h2></td></tr>
@@ -75,9 +55,27 @@ require_once('../session.inc.php');
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os'); ?></th>
-		<td><input type='text' id='txtCompatibleOs' list='lstOs' placeholder='<?php echo LANG('optional_hint'); ?>' value='<?php echo htmlspecialchars($_GET['compatible_os']??'',ENT_QUOTES); ?>'></td>
+		<td>
+			<select id='sltCompatibleOs' title='<?php echo LANG('optional_hint'); ?>' multiple>
+			<?php
+			$values = array_map('trim', explode(',', $_GET['compatible_os']??''));
+			foreach($db->selectAllComputerAttribute('os') as $v) {
+			?>
+				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
+			<?php } ?>
+			</select>
+		</td>
 		<th><?php echo LANG('compatible_os_version'); ?></th>
-		<td><input type='text' id='txtCompatibleOsVersion' list='lstOsVersion' placeholder='<?php echo LANG('optional_hint'); ?>' value='<?php echo htmlspecialchars($_GET['compatible_os_version']??'',ENT_QUOTES); ?>'></td>
+		<td>
+			<select id='sltCompatibleOsVersion' title='<?php echo LANG('optional_hint'); ?>' multiple>
+			<?php
+			$values = array_map('trim', explode(',', $_GET['compatible_os_version']??''));
+			foreach($db->selectAllComputerAttribute('os_version') as $v) {
+			?>
+				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
+			<?php } ?>
+			</select>
+		</td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('licenses'); ?></th>
@@ -177,8 +175,8 @@ require_once('../session.inc.php');
 				txtUninstallProcedureSuccessReturnCodes.value,
 				chkDownloadForUninstall.checked,
 				getCheckedRadioValue("uninstall_post_action"),
-				txtCompatibleOs.value,
-				txtCompatibleOsVersion.value)
+				getSelectedSelectBoxValues("sltCompatibleOs").join(", "),
+				getSelectedSelectBoxValues("sltCompatibleOsVersion").join(", "))
 			'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create_package'); ?></button>
 		</div>
 		</td>

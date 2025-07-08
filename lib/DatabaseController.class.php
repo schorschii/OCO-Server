@@ -1711,6 +1711,13 @@ class DatabaseController {
 		$this->stmt->execute([':id' => $id]);
 		return $this->stmt->rowCount();
 	}
+	public function selectAllComputerAttribute($attribute) {
+		$array = [];
+		$this->stmt = $this->dbh->prepare('SELECT DISTINCT '.$attribute.' FROM computer ORDER BY '.$attribute);
+		$this->stmt->execute();
+		foreach($this->stmt->fetchAll(PDO::FETCH_ASSOC) as $row) $array[] = $row[$attribute];
+		return $array;
+	}
 
 	// Package Operations
 	public function insertPackageFamily($name, $notes) {
