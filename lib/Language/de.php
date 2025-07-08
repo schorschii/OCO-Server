@@ -294,6 +294,8 @@ return [
 	'your_license_is_invalid' => 'Ihre Lizenz ist ungültig. Bitte laden Sie eine neue Lizenz in den Einstellungen.',
 	'license_expired_on' => 'Lizenz ist am %1 abgelaufen',
 	'computer_count_exeeds_license_limit' => 'Die Geräteanzahl %1 übersteigt die lizenzierten %2 Geräte',
+	'thank_you_for_support' => 'Danke, dass Sie das OCO-Projekt mit einem Lizenzkauf unterstützen!',
+	'congratulations_package_placeholder' => 'Glückwunsch zum %. Paket!',
 	'locale' => 'Sprache',
 	'confirm_create_empty_package' => 'Keine Datei ausgewählt. Möchten Sie ein leeres Paket erstellen?',
 	'package_family_name' => 'Paketfamilien-Name',

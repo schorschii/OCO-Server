@@ -299,6 +299,8 @@ return [
 	'your_license_is_invalid' => 'Your license is invalid. Please upload a new license in the settings.',
 	'license_expired_on' => 'License expired on %1',
 	'computer_count_exeeds_license_limit' => 'The device count %1 exceeds the licensed %2 devices',
+	'thank_you_for_support' => 'Thank you for supporting the OCO project with a license purchase!',
+	'congratulations_package_placeholder' => 'Congratulations on your %. package!',
 	'locale' => 'Locale',
 	'confirm_create_empty_package' => 'No file selected. Do you want to create an empty package?',
 	'package_family_name' => 'Package Family Name',

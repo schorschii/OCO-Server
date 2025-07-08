@@ -729,7 +729,10 @@ function createPackage(name, version, license_count, notes, archive, install_pro
 				var newPackageId = parseInt(this.responseText);
 				refreshContentExplorer('views/package-details.php?id='+newPackageId);
 				emitMessage(LANG['package_created'], name+' ('+version+')', MESSAGE_TYPE_SUCCESS);
-				if(newPackageId == 1 || newPackageId % 100 == 0) sideConfetti();
+				if(newPackageId == 1 || newPackageId % 100 == 0) {
+					fireworkConfetti();
+					emitMessage(LANG['congratulations_package_placeholder'].replace('%',newPackageId), '', MESSAGE_TYPE_INFO);
+				}
 			} else {
 				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 				setInputsDisabled(frmNewPackage, false);
@@ -2835,7 +2838,6 @@ function showDialogEditSetting(key='', file=false, warning=true, keyHidden=false
 			fleEditSettingValue.classList.remove('hidden');
 			txtEditSettingValue.classList.add('hidden');
 			if(typeof file === 'string' || file instanceof String) {
-				console.log(file);
 				fleEditSettingValue.accept = file;
 			}
 			if(keyHidden) window.setTimeout(() => fleEditSettingValue.focus(), 0);
@@ -2860,6 +2862,10 @@ function editSetting(key, value) {
 			if(this.status == 200) {
 				hideDialog(); refreshContent();
 				emitMessage(LANG['saved'], key, MESSAGE_TYPE_SUCCESS);
+				if(key == 'license') {
+					emitMessage(LANG['thank_you_for_support'], '', MESSAGE_TYPE_INFO);
+					sideConfetti();
+				}
 			} else {
 				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 			}

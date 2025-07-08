@@ -42,7 +42,7 @@ function mouseConfetti(char=null, particles=70, velocity=20, decay=0.9, gravity=
 		scalar: scalar,
 		spread: 360,
 		ticks: 100,
-		zIndex: 0,
+		zIndex: 999,
 		origin: { x: mX, y: mY }
 	};
 	if(char) {
