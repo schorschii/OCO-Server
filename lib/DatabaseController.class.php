@@ -913,6 +913,12 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':id' => $id, ':server_key' => $server_key]);
 	}
+	public function updateComputerAgentTimestamp($id, $agent_timestamp) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE computer SET agent_timestamp = :agent_timestamp WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':agent_timestamp' => $agent_timestamp]);
+	}
 	public function updateComputerInventoryValues($id, $uid, $hostname, $os, $os_version, $os_license, $os_locale, $kernel_version, $architecture, $cpu, $gpu, $ram, $agent_version, $remote_address, $serial, $manufacturer, $model, $bios_version, $battery_level, $battery_status, $uptime, $boot_type, $secure_boot, $domain, $networks, $screens, $printers, $partitions, $software, $logins, $users, $devices) {
 		$this->dbh->beginTransaction();
 

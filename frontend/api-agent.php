@@ -111,8 +111,9 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 					// without this changing timestamp value in the request, the signature of the agent_hello is always the same
 					// which may be used by an attacker who captured one agent request
 					$agentTimestamp = $params['timestamp'] ?? 0;
-					if(!is_numeric($agentTimestamp) || strtotime($computer->last_ping) >= floatval($agentTimestamp))
-						throw new PermissionException('Agent timestamp too old, please make sure server and client share the same time without difference.', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
+					if(!is_numeric($agentTimestamp) || strtotime($computer->agent_timestamp) >= floatval($agentTimestamp))
+						throw new PermissionException('Agent timestamp too old, please make sure the client has correct clock time settings.', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
+					$db->updateComputerAgentTimestamp($computer->id, date('Y-m-d H:i:s', floor(floatval($agentTimestamp))));
 				}
 
 				if(empty($computer->agent_key)) {

@@ -533,6 +533,15 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		if(!$this->getTableColumnInfo('computer', 'agent_timestamp')) {
+			if($this->debug) echo 'Upgrading to 1.1.8... (add agent_timestamp column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer` ADD `agent_timestamp` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00' AFTER `force_update`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

@@ -270,6 +270,7 @@ CREATE TABLE IF NOT EXISTS `computer` (
   `last_ping` datetime DEFAULT NULL,
   `last_update` datetime DEFAULT NULL,
   `force_update` tinyint(4) NOT NULL DEFAULT 0,
+  `agent_timestamp` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
   `notes` text NOT NULL,
   `agent_key` text NOT NULL,
   `server_key` text NOT NULL,
