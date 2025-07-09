@@ -62,10 +62,10 @@ require_once('../session.inc.php');
 		<td>
 			<select id='sltCompatibleOs' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $_GET['compatible_os']??''));
-			foreach($db->selectAllComputerAttribute('os') as $v) {
+			$values = array_filter(array_map('trim', explode(',', $_GET['compatible_os']??'')));
+			foreach(array_unique(array_merge($db->selectAllComputerAttribute('os'), $values)) as $v) {
 			?>
-				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
+				<option value='<?php echo htmlspecialchars($v,ENT_QUOTES); ?>' <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
 			<?php } ?>
 			</select>
 		</td>
@@ -73,10 +73,10 @@ require_once('../session.inc.php');
 		<td>
 			<select id='sltCompatibleOsVersion' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $_GET['compatible_os_version']??''));
-			foreach($db->selectAllComputerAttribute('os_version') as $v) {
+			$values = array_filter(array_map('trim', explode(',', $_GET['compatible_os_version']??'')));
+			foreach(array_unique(array_merge($db->selectAllComputerAttribute('os_version'), $values)) as $v) {
 			?>
-				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
+				<option value='<?php echo htmlspecialchars($v,ENT_QUOTES); ?>' <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
 			<?php } ?>
 			</select>
 		</td>
@@ -86,10 +86,10 @@ require_once('../session.inc.php');
 		<td>
 			<select id='sltCompatibleArchitecture' title='<?php echo LANG('optional_hint'); ?>' size='2' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $_GET['compatible_architecture']??''));
-			foreach($db->selectAllComputerAttribute('architecture') as $v) {
+			$values = array_filter(array_map('trim', explode(',', $_GET['compatible_architecture']??'')));
+			foreach(array_unique(array_merge($db->selectAllComputerAttribute('architecture'), $values)) as $v) {
 			?>
-				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
+				<option value='<?php echo htmlspecialchars($v,ENT_QUOTES); ?>' <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
 			<?php } ?>
 			</select>
 		</td>
@@ -199,7 +199,7 @@ require_once('../session.inc.php');
 				getCheckedRadioValue("uninstall_post_action"),
 				getSelectedSelectBoxValues("sltCompatibleOs").join(", "),
 				getSelectedSelectBoxValues("sltCompatibleOsVersion").join(", "),
-				getSelectedSelectBoxValues("sltCompatibleArchitecure").join(", "))
+				getSelectedSelectBoxValues("sltCompatibleArchitecture").join(", "))
 			'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create_package'); ?></button>
 		</div>
 		</td>
