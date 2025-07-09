@@ -37,7 +37,7 @@ try {
 <div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG('query'); ?></h2>
-		<code class='block'><span id='spnReportQuery'><?php echo nl2br(htmlspecialchars($report->query)); ?></span></code>
+		<code class='block'><span id='spnReportQuery'><?php echo htmlspecialchars($report->query); ?></span></code>
 	</div>
 	<div>
 		<h2><?php echo LANG('description'); ?></h2>

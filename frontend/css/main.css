@@ -1242,6 +1242,7 @@ code.block {
 	display: block;
 	line-height: 1.3;
 	border: 1px solid rgba(0, 0, 0, 0.1);
+	white-space: pre-wrap;
 }
 code.block.hscroll {
 	white-space: pre;
