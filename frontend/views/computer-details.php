@@ -117,11 +117,11 @@ foreach($services as $s) {
 						</tr>
 						<tr>
 							<th><?php echo LANG('cpu'); ?></th>
-							<td><?php echo htmlspecialchars($computer->cpu); ?></td>
+							<td><?php echo nl2br(htmlspecialchars($computer->cpu)); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('gpu'); ?></th>
-							<td><?php echo htmlspecialchars($computer->gpu); ?></td>
+							<td><?php echo nl2br(htmlspecialchars($computer->gpu)); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('ram'); ?></th>
