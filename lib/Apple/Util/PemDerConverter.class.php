@@ -4,7 +4,7 @@ namespace Apple\Util;
 
 class PemDerConverter {
 
-    static function pem2der($pem_data) {
+	static function pem2der($pem_data) {
 		$pem_data = trim(preg_replace('/-----(.*)-----/', '', $pem_data));
 		$der = base64_decode($pem_data);
 		return $der;
