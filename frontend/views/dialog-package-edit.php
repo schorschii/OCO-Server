@@ -40,8 +40,8 @@ try {
 		<td>
 			<select id='sltCompatibleOs' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $package->compatible_os));
-			foreach($db->selectAllComputerAttribute('os') as $v) {
+			$values = array_filter(array_map('trim', explode(',', $package->compatible_os)));
+			foreach(array_unique(array_merge($db->selectAllComputerAttribute('os'), $values)) as $v) {
 			?>
 				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
 			<?php } ?>
@@ -53,8 +53,8 @@ try {
 		<td>
 			<select id='sltCompatibleOsVersion' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $package->compatible_os_version));
-			foreach($db->selectAllComputerAttribute('os_version') as $v) {
+			$values = array_filter(array_map('trim', explode(',', $package->compatible_os_version)));
+			foreach(array_unique(array_merge($db->selectAllComputerAttribute('os_version'), $values)) as $v) {
 			?>
 				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
 			<?php } ?>
@@ -66,8 +66,8 @@ try {
 		<td>
 			<select id='sltCompatibleArchitecture' title='<?php echo LANG('optional_hint'); ?>' size='2' multiple>
 			<?php
-			$values = array_map('trim', explode(',',  $package->compatible_architecture));
-			foreach($db->selectAllComputerAttribute('architecture') as $v) {
+			$values = array_filter(array_map('trim', explode(',',  $package->compatible_architecture)));
+			foreach(array_unique(array_merge($db->selectAllComputerAttribute('architecture'), $values)) as $v) {
 			?>
 				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
 			<?php } ?>
