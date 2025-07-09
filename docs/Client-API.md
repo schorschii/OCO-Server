@@ -704,7 +704,8 @@ none
 - `download_for_uninstall` - enable/disable download for uninstallation (0 or 1)
 - `uninstall_procedure_post_action` - enable/disable restart or shutdown after uninstallation (0, 1 or 2)
 - `compatible_os` - compatible operating system name (optional)
-- `compatible_os_version` - compatible operating systen version (optional)
+- `compatible_os_version` - compatible operating system version (optional)
+- `compatible_architecture` - compatible operating system architecture (optional)
 - `files` - array of files with `name` and `content` (base64 encoded) for package payload (optional - leave empty to create a package without payload)
   - can be one single ZIP file or
   - one or more files of other types - this will automatically create a ZIP archive with them

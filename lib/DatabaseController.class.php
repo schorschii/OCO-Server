@@ -1763,9 +1763,9 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $license_count, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
+	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $compatible_architecture, $license_count, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, license_count = :license_count, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, upgrade_behavior = :upgrade_behavior, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, compatible_architecture = :compatible_architecture, license_count = :license_count, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, upgrade_behavior = :upgrade_behavior, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
@@ -1773,6 +1773,7 @@ class DatabaseController {
 			':version' => $version,
 			':compatible_os' => $compatible_os,
 			':compatible_os_version' => $compatible_os_version,
+			':compatible_architecture' => $compatible_architecture,
 			':license_count' => $license_count,
 			':notes' => $notes,
 			':install_procedure' => $install_procedure,

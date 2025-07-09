@@ -748,7 +748,7 @@ class CoreLogic {
 	public function createPackage($name, $version, $licenseCount, $description,
 		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior,
 		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction,
-		$compatibleOs, $compatibleOsVersion, $tmpFiles) {
+		$compatibleOs, $compatibleOsVersion, $compatibleArchitecture, $tmpFiles) {
 
 		// permission/input checks
 		$license = new LicenseCheck($this->db);
@@ -845,7 +845,7 @@ class CoreLogic {
 			$uninstallProcedureSuccessReturnCodes,
 			$downloadForUninstall,
 			$uninstallProcedurePostAction,
-			$compatibleOs, $compatibleOsVersion
+			$compatibleOs, $compatibleOsVersion, $compatibleArchitecture
 		);
 		if(!$insertId) {
 			throw new Exception(LANG('database_error'));
@@ -1001,7 +1001,7 @@ class CoreLogic {
 		$this->db->deletePackageDependencyByPackageIdAndDependentPackageId($package->id, $dependentPackage->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $package->id, 'oco.package.remove_dependency', ['dependent_package_id'=>$dependentPackage->id]);
 	}
-	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $licenseCount, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall, $tmpFiles) {
+	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $compatibleArchitecture, $licenseCount, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall, $tmpFiles) {
 		$package = $this->db->selectPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->checkPermission($package, PermissionManager::METHOD_WRITE);
@@ -1092,6 +1092,7 @@ class CoreLogic {
 			$version,
 			$compatibleOs,
 			$compatibleOsVersion,
+			$compatibleArchitecture,
 			$licenseCount,
 			$notes,
 			$installProcedure,
@@ -1124,6 +1125,7 @@ class CoreLogic {
 			'version'=>$version,
 			'compatible_os'=>$compatibleOs,
 			'compatible_os_version'=>$compatibleOsVersion,
+			'compatible_architecture'=>$compatibleArchitecture,
 			'notes'=>$notes,
 			'install_procedure'=>$installProcedure,
 			'install_procedure_success_return_codes'=>$installProcedureSuccessReturnCodes,
@@ -1422,9 +1424,10 @@ class CoreLogic {
 
 					$targetJobState = Models\Job::STATE_WAITING_FOR_AGENT;
 
-					// check OS compatibility
-					if(!$this->isOsCompatible($tmpComputer, $package['compatible_os'])
-					|| !$this->isOsVersionCompatible($tmpComputer, $package['compatible_os_version'])) {
+					// check OS compatibility   // TODO test
+					if(!$this->isAttributeCompatible($tmpComputer, 'os', $package['compatible_os'])
+					|| !$this->isAttributeCompatible($tmpComputer, 'os_version', $package['compatible_os_version'])
+					|| !$this->isAttributeCompatible($tmpComputer, 'architecture', $package['compatible_architecture'])) {
 						// create failed job
 						if($this->db->insertStaticJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
@@ -1491,24 +1494,12 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username??'SYSTEM', $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 		return $jcid;
 	}
-	private function isOsCompatible(Models\Computer $computer, $compatibleOs) {
-		if(empty($compatibleOs) || empty($computer->os)) {
+	private function isAttributeCompatible(Models\Computer $computer, string $attribute, string $compatible) {
+		if(empty($compatible) || empty($computer->$attribute)) {
 			return true;
 		} else {
-			foreach(explode(',', $compatibleOs) as $os) {
-				if(trim($os) === trim($computer->os)) {
-					return true;
-				}
-			}
-			return false;
-		}
-	}
-	private function isOsVersionCompatible(Models\Computer $computer, $compatibleOsVersion) {
-		if(empty($compatibleOsVersion) || empty($computer->os_version)) {
-			return true;
-		} else {
-			foreach(explode(',', $compatibleOsVersion) as $osVersion) {
-				if(trim($osVersion) === trim($computer->os_version)) {
+			foreach(explode(',', $compatible) as $c) {
+				if(trim($c) === trim($computer->$attribute)) {
 					return true;
 				}
 			}
@@ -1579,6 +1570,7 @@ class CoreLogic {
 			'upgrade_behavior' => $p->upgrade_behavior,
 			'compatible_os' => $p->compatible_os,
 			'compatible_os_version' => $p->compatible_os_version,
+			'compatible_architecture' => $p->compatible_architecture,
 			'download' => $p->getFilePath() ? true : false,
 			'is_dependency' => $isDependency,
 		];

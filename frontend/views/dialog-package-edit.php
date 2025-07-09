@@ -31,7 +31,9 @@ try {
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('version'); ?></th>
-		<td><input type='text' autocomplete='new-password' id='txtEditPackageVersion' autofocus='true' value='<?php echo htmlspecialchars($package->version,ENT_QUOTES); ?>'></input></td>
+		<td>
+			<input type='text' autocomplete='new-password' id='txtEditPackageVersion' autofocus='true' value='<?php echo htmlspecialchars($package->version,ENT_QUOTES); ?>'></input>
+		</td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os'); ?></th>
@@ -60,9 +62,22 @@ try {
 		</td>
 	</tr>
 	<tr>
+		<th><?php echo LANG('compatible_architecture'); ?></th>
+		<td>
+			<select id='sltCompatibleArchitecture' title='<?php echo LANG('optional_hint'); ?>' size='2' multiple>
+			<?php
+			$values = array_map('trim', explode(',',  $package->compatible_architecture));
+			foreach($db->selectAllComputerAttribute('architecture') as $v) {
+			?>
+				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
+			<?php } ?>
+			</select>
+		</td>
+	</tr>
+	<tr>
 		<th><?php echo LANG('licenses'); ?></th>
 		<td>
-			<input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPackageLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0' value='<?php echo htmlspecialchars($package->licenses??'',ENT_QUOTES); ?>'></input>
+			<input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPackageLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0' value='<?php echo htmlspecialchars($package->license_count??'',ENT_QUOTES); ?>'></input>
 		</td>
 	</tr>
 	<tr>
@@ -184,6 +199,7 @@ try {
 		txtEditPackageVersion.value,
 		getSelectedSelectBoxValues("sltCompatibleOs").join(", "),
 		getSelectedSelectBoxValues("sltCompatibleOsVersion").join(", "),
+		getSelectedSelectBoxValues("sltCompatibleArchitecture").join(", "),
 		txtEditPackageLicenseCount.value=="" ? -1 : txtEditPackageLicenseCount.value,
 		txtEditPackageNotes.value,
 		chkReplaceArchive.checked ? fleArchive.files : null,

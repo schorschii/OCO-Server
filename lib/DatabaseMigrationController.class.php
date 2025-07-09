@@ -542,6 +542,15 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		if(!$this->getTableColumnInfo('package', 'compatible_architecture')) {
+			if($this->debug) echo 'Upgrading to 1.1.8... (add compatible_architecture column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `package` ADD `compatible_architecture` text DEFAULT NULL AFTER `compatible_os_version`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

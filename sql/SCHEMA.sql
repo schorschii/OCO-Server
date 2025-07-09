@@ -145,6 +145,7 @@ CREATE TABLE IF NOT EXISTS `package` (
   `uninstall_procedure_post_action` tinyint(4) NOT NULL DEFAULT 0,
   `compatible_os` text DEFAULT NULL,
   `compatible_os_version` text DEFAULT NULL,
+  `compatible_architecture` text DEFAULT NULL,
   `license_count` int(11) DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `created_by_system_user_id` int(11) DEFAULT NULL,

@@ -14,6 +14,7 @@ class Package {
 	public $version;
 	public $compatible_os;
 	public $compatible_os_version;
+	public $compatible_architecture;
 	public $notes;
 	public $install_procedure;
 	public $install_procedure_success_return_codes;

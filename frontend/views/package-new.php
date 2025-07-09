@@ -49,9 +49,13 @@ require_once('../session.inc.php');
 	<tr><td colspan='2'><h2><?php echo LANG('general'); ?></h2></td></tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('package_family_name'); ?></th>
-		<td><input type='text' id='txtName' list='lstPackageNames' value='<?php echo htmlspecialchars($_GET['name']??'',ENT_QUOTES); ?>'></td>
+		<td>
+			<input type='text' id='txtName' list='lstPackageNames' value='<?php echo htmlspecialchars($_GET['name']??'',ENT_QUOTES); ?>'>
+		</td>
 		<th><?php echo LANG('version'); ?></th>
-		<td><input type='text' id='txtVersion' list='lstVersions' value='<?php echo htmlspecialchars($_GET['version']??'',ENT_QUOTES); ?>'></td>
+		<td>
+			<input type='text' id='txtVersion' list='lstVersions' value='<?php echo htmlspecialchars($_GET['version']??'',ENT_QUOTES); ?>'>
+		</td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os'); ?></th>
@@ -78,18 +82,36 @@ require_once('../session.inc.php');
 		</td>
 	</tr>
 	<tr class='nospace'>
+		<th><?php echo LANG('compatible_architecture'); ?></th>
+		<td>
+			<select id='sltCompatibleArchitecture' title='<?php echo LANG('optional_hint'); ?>' size='2' multiple>
+			<?php
+			$values = array_map('trim', explode(',', $_GET['compatible_architecture']??''));
+			foreach($db->selectAllComputerAttribute('architecture') as $v) {
+			?>
+				<option <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
+			<?php } ?>
+			</select>
+		</td>
 		<th><?php echo LANG('licenses'); ?></th>
-		<td><input type='number' class='fullwidth' autocomplete='new-password' id='txtLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0' value='<?php echo htmlspecialchars($_GET['license_count']??'',ENT_QUOTES); ?>'></input></td>
+		<td>
+			<input type='number' class='fullwidth' autocomplete='new-password' id='txtLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0' value='<?php echo htmlspecialchars($_GET['license_count']??'',ENT_QUOTES); ?>'></input>
+		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
-		<td colspan='3'><textarea id='txtNotes' placeholder='<?php echo LANG('optional_hint'); ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea></td>
+		<td colspan='3'>
+			<textarea id='txtNotes' placeholder='<?php echo LANG('optional_hint'); ?>'><?php echo htmlspecialchars($_GET['description']??'',ENT_QUOTES); ?></textarea>
+		</td>
 	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG('package_content'); ?></h2></td></tr>
 	<tr>
 		<th><?php echo LANG('zip_archive'); ?></th>
-		<td colspan='3' class='fileinputwithbutton'><input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()'><button onclick='toggleInputDirectory(fleArchive,this)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/files.dyn.svg'></button></td>
+		<td colspan='3' class='fileinputwithbutton'>
+			<input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()'>
+			<button onclick='toggleInputDirectory(fleArchive,this)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/files.dyn.svg'></button>
+		</td>
 	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG('installation'); ?></h2></td></tr>
@@ -176,7 +198,8 @@ require_once('../session.inc.php');
 				chkDownloadForUninstall.checked,
 				getCheckedRadioValue("uninstall_post_action"),
 				getSelectedSelectBoxValues("sltCompatibleOs").join(", "),
-				getSelectedSelectBoxValues("sltCompatibleOsVersion").join(", "))
+				getSelectedSelectBoxValues("sltCompatibleOsVersion").join(", "),
+				getSelectedSelectBoxValues("sltCompatibleArchitecure").join(", "))
 			'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create_package'); ?></button>
 		</div>
 		</td>

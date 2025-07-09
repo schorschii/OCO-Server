@@ -334,6 +334,7 @@ return [
 	'wol_satellites' => 'WOL Satellite Server',
 	'compatible_os' => 'Compatible OS',
 	'compatible_os_version' => 'Compatible OS Version',
+	'compatible_architecture' => 'Compatible Architecture',
 	'incompatible' => 'Incompatible',
 	'package_conflict' => 'Package Conflict',
 	'optional_hint' => '(optional)',

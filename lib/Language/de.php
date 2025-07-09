@@ -329,6 +329,7 @@ return [
 	'wol_satellites' => 'WOL-Satelliten-Server',
 	'compatible_os' => 'Kompatibles Betriebssystem',
 	'compatible_os_version' => 'Kompatible Betriebssystemversion',
+	'compatible_architecture' => 'Kompatible Architektur',
 	'incompatible' => 'Inkompatibel',
 	'package_conflict' => 'Paketkonflikt',
 	'optional_hint' => '(optional)',

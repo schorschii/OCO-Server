@@ -584,7 +584,7 @@ function toggleAutoRefresh(force=null) {
 function refreshContentExplorer(url) {
 	ajaxRequest(url, 'explorer-content');
 }
-function refreshContentPackageNew(name=null, version=null, license_count=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, upgrade_behavior=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null) {
+function refreshContentPackageNew(name=null, version=null, license_count=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, upgrade_behavior=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null, compatible_architecture=null) {
 	toggleAutoRefresh(false);
 	ajaxRequest('views/package-new.php?' +
 		(name ? '&name='+encodeURIComponent(name) : '') +
@@ -600,7 +600,8 @@ function refreshContentPackageNew(name=null, version=null, license_count=null, d
 		(uninstall_procedure_post_action ? '&uninstall_procedure_post_action='+encodeURIComponent(uninstall_procedure_post_action) : '') +
 		(download_for_uninstall ? '&download_for_uninstall='+encodeURIComponent(download_for_uninstall) : '') +
 		(compatible_os ? '&compatible_os='+encodeURIComponent(compatible_os) : '') +
-		(compatible_os_version ? '&compatible_os_version='+encodeURIComponent(compatible_os_version) : ''),
+		(compatible_os_version ? '&compatible_os_version='+encodeURIComponent(compatible_os_version) : '') +
+		(compatible_architecture ? '&compatible_architecture='+encodeURIComponent(compatible_architecture) : ''),
 		'explorer-content'
 	);
 }
@@ -673,7 +674,7 @@ function updatePackageProcedureTemplates() {
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
 }
-function createPackage(name, version, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version) {
+function createPackage(name, version, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version, compatible_architecture) {
 	if(typeof archive === 'undefined' || archive.length == 0) {
 		if(!confirm(LANG['confirm_create_empty_package'])) {
 			return;
@@ -703,6 +704,7 @@ function createPackage(name, version, license_count, notes, archive, install_pro
 	formData.append('uninstall_procedure_post_action', uninstall_procedure_post_action);
 	formData.append('compatible_os', compatible_os);
 	formData.append('compatible_os_version', compatible_os_version);
+	formData.append('compatible_architecture', compatible_architecture);
 
 	req.upload.onprogress = function(evt) {
 		if(evt.lengthComputable) {
@@ -801,7 +803,7 @@ function editPackageFamily(id, name, license_count, notes) {
 function showDialogEditPackage(id) {
 	showDialogAjax(LANG['edit_package'], 'views/dialog-package-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, compatible_architecture, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 
@@ -827,6 +829,7 @@ function editPackage(id, package_family_id, version, compatible_os, compatible_o
 	formData.append('version', version);
 	formData.append('compatible_os', compatible_os);
 	formData.append('compatible_os_version', compatible_os_version);
+	formData.append('compatible_architecture', compatible_architecture);
 	formData.append('license_count', license_count);
 	formData.append('notes', notes);
 	formData.append('install_procedure', install_procedure);
