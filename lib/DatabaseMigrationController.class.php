@@ -551,6 +551,18 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		if(strtolower($this->getTableColumnInfo('computer', 'agent_timestamp')['DATA_TYPE']) != 'double') {
+			if($this->debug) echo 'Upgrading to 1.1.8... (change agent_timestamp to DOUBLE)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `computer` CHANGE `agent_timestamp` `agent_timestamp` DOUBLE NOT NULL DEFAULT '0'");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"UPDATE `computer` SET `agent_timestamp` = 0 WHERE 1 = 1");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 
