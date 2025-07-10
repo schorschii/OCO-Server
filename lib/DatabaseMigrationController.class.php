@@ -560,6 +560,16 @@ class DatabaseMigrationController {
 				"UPDATE `computer` SET `agent_timestamp` = 0 WHERE 1 = 1");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE `package` SET compatible_os = REPLACE(compatible_os, ",", "\n") WHERE 1 = 1');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE `package` SET compatible_os_version = REPLACE(compatible_os_version, ",", "\n") WHERE 1 = 1');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE `package` SET compatible_architecture = REPLACE(compatible_architecture, ",", "\n") WHERE 1 = 1');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
 			$upgraded = true;
 		}
 

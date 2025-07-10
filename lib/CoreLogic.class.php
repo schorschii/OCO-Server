@@ -1498,7 +1498,7 @@ class CoreLogic {
 		if(empty($compatible) || empty($computer->$attribute)) {
 			return true;
 		} else {
-			foreach(explode(',', $compatible) as $c) {
+			foreach(explode("\n", $compatible) as $c) {
 				if(trim($c) === trim($computer->$attribute)) {
 					return true;
 				}

@@ -62,7 +62,7 @@ require_once('../session.inc.php');
 		<td>
 			<select id='sltCompatibleOs' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $_GET['compatible_os']??''));
+			$values = array_map('trim', explode("\n", $_GET['compatible_os']??''));
 			foreach(array_filter(array_unique(array_merge($db->selectAllComputerAttribute('os'), $values))) as $v) {
 			?>
 				<option value='<?php echo htmlspecialchars($v,ENT_QUOTES); ?>' <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
@@ -73,7 +73,7 @@ require_once('../session.inc.php');
 		<td>
 			<select id='sltCompatibleOsVersion' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $_GET['compatible_os_version']??''));
+			$values = array_map('trim', explode("\n", $_GET['compatible_os_version']??''));
 			foreach(array_filter(array_unique(array_merge($db->selectAllComputerAttribute('os_version'), $values))) as $v) {
 			?>
 				<option value='<?php echo htmlspecialchars($v,ENT_QUOTES); ?>' <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
@@ -86,7 +86,7 @@ require_once('../session.inc.php');
 		<td>
 			<select id='sltCompatibleArchitecture' title='<?php echo LANG('optional_hint'); ?>' size='2' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $_GET['compatible_architecture']??''));
+			$values = array_map('trim', explode("\n", $_GET['compatible_architecture']??''));
 			foreach(array_filter(array_unique(array_merge($db->selectAllComputerAttribute('architecture'), $values))) as $v) {
 			?>
 				<option value='<?php echo htmlspecialchars($v,ENT_QUOTES); ?>' <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
@@ -197,9 +197,9 @@ require_once('../session.inc.php');
 				txtUninstallProcedureSuccessReturnCodes.value,
 				chkDownloadForUninstall.checked,
 				getCheckedRadioValue("uninstall_post_action"),
-				getSelectedSelectBoxValues("sltCompatibleOs").join(", "),
-				getSelectedSelectBoxValues("sltCompatibleOsVersion").join(", "),
-				getSelectedSelectBoxValues("sltCompatibleArchitecture").join(", "))
+				getSelectedSelectBoxValues("sltCompatibleOs").join("\n"),
+				getSelectedSelectBoxValues("sltCompatibleOsVersion").join("\n"),
+				getSelectedSelectBoxValues("sltCompatibleArchitecture").join("\n"))
 			'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create_package'); ?></button>
 		</div>
 		</td>

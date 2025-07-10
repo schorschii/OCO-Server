@@ -40,7 +40,7 @@ try {
 		<td>
 			<select id='sltCompatibleOs' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $package->compatible_os));
+			$values = array_map('trim', explode("\n", $package->compatible_os));
 			foreach(array_filter(array_unique(array_merge($db->selectAllComputerAttribute('os'), $values))) as $v) {
 			?>
 				<option value='<?php echo htmlspecialchars($v,ENT_QUOTES); ?>' <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
@@ -53,7 +53,7 @@ try {
 		<td>
 			<select id='sltCompatibleOsVersion' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
-			$values = array_map('trim', explode(',', $package->compatible_os_version));
+			$values = array_map('trim', explode("\n", $package->compatible_os_version));
 			foreach(array_filter(array_unique(array_merge($db->selectAllComputerAttribute('os_version'), $values))) as $v) {
 			?>
 				<option value='<?php echo htmlspecialchars($v,ENT_QUOTES); ?>' <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
@@ -66,7 +66,7 @@ try {
 		<td>
 			<select id='sltCompatibleArchitecture' title='<?php echo LANG('optional_hint'); ?>' size='2' multiple>
 			<?php
-			$values = array_map('trim', explode(',',  $package->compatible_architecture));
+			$values = array_map('trim', explode("\n",  $package->compatible_architecture));
 			foreach(array_filter(array_unique(array_merge($db->selectAllComputerAttribute('architecture'), $values))) as $v) {
 			?>
 				<option value='<?php echo htmlspecialchars($v,ENT_QUOTES); ?>' <?php if(in_array($v, $values)) echo 'selected'; ?>><?php echo htmlspecialchars($v); ?></option>
@@ -197,9 +197,9 @@ try {
 		txtEditPackageId.value,
 		sltEditPackagePackageFamily.value,
 		txtEditPackageVersion.value,
-		getSelectedSelectBoxValues("sltCompatibleOs").join(", "),
-		getSelectedSelectBoxValues("sltCompatibleOsVersion").join(", "),
-		getSelectedSelectBoxValues("sltCompatibleArchitecture").join(", "),
+		getSelectedSelectBoxValues("sltCompatibleOs").join("\n"),
+		getSelectedSelectBoxValues("sltCompatibleOsVersion").join("\n"),
+		getSelectedSelectBoxValues("sltCompatibleArchitecture").join("\n"),
 		txtEditPackageLicenseCount.value=="" ? -1 : txtEditPackageLicenseCount.value,
 		txtEditPackageNotes.value,
 		chkReplaceArchive.checked ? fleArchive.files : null,

@@ -82,19 +82,19 @@ try {
 						<tr>
 							<th><?php echo LANG('compatible_os'); ?></th>
 							<td>
-								<span id='spnPackageCompatibleOs'><?php echo htmlspecialchars($package->compatible_os); ?></span>
+								<span id='spnPackageCompatibleOs'><?php echo nl2br(htmlspecialchars($package->compatible_os)); ?></span>
 							</td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('compatible_os_version'); ?></th>
 							<td>
-								<span id='spnPackageCompatibleOsVersion'><?php echo htmlspecialchars($package->compatible_os_version); ?></span>
+								<span id='spnPackageCompatibleOsVersion'><?php echo nl2br(htmlspecialchars($package->compatible_os_version)); ?></span>
 							</td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('compatible_architecture'); ?></th>
 							<td>
-								<span id='spnPackageCompatibleArchitecture'><?php echo htmlspecialchars($package->compatible_architecture); ?></span>
+								<span id='spnPackageCompatibleArchitecture'><?php echo nl2br(htmlspecialchars($package->compatible_architecture)); ?></span>
 							</td>
 						</tr>
 						<tr>
