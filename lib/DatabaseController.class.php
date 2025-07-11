@@ -1765,9 +1765,9 @@ class DatabaseController {
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $compatible_architecture, $license_count, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall) {
+	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $compatible_architecture, $license_count, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall, $last_update_by_system_user_id=null) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, compatible_architecture = :compatible_architecture, license_count = :license_count, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, upgrade_behavior = :upgrade_behavior, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall WHERE id = :id'
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, compatible_architecture = :compatible_architecture, license_count = :license_count, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, upgrade_behavior = :upgrade_behavior, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall, last_update_by_system_user_id = :last_update_by_system_user_id WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
@@ -1786,6 +1786,7 @@ class DatabaseController {
 			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
 			':uninstall_procedure_post_action' => $uninstall_procedure_post_action,
 			':download_for_uninstall' => $download_for_uninstall,
+			':last_update_by_system_user_id' => $last_update_by_system_user_id,
 		]);
 	}
 	public function insertComputerPackage($package_id, $computer_id, $installed_by_system_user_id, $installed_by_domain_user_id, $procedure) {
@@ -1954,20 +1955,22 @@ class DatabaseController {
 	public function selectPackage($id, $binaryAsBase64=false) {
 		if($binaryAsBase64 === null) { // do not fetch icons if not necessary
 			$this->stmt = $this->dbh->prepare(
-				'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username",
+				'SELECT p.*, pf.name AS "package_family_name", su.username AS "created_by_system_user_username", su2.username AS "last_update_by_system_user_username",
 				(SELECT COUNT(cp2.id) FROM computer_package cp2 WHERE cp2.package_id = p.id) AS "install_count"
 				FROM package p
 				INNER JOIN package_family pf ON pf.id = p.package_family_id
 				LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
+				LEFT JOIN system_user su2 ON su2.id = p.last_update_by_system_user_id
 				WHERE p.id = :id'
 			);
 		} else {
 			$this->stmt = $this->dbh->prepare(
-				'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon", su.username AS "created_by_system_user_username",
+				'SELECT p.*, pf.name AS "package_family_name", pf.icon AS "package_family_icon", su.username AS "created_by_system_user_username", su2.username AS "last_update_by_system_user_username",
 				(SELECT COUNT(cp2.id) FROM computer_package cp2 WHERE cp2.package_id = p.id) AS "install_count"
 				FROM package p
 				INNER JOIN package_family pf ON pf.id = p.package_family_id
 				LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
+				LEFT JOIN system_user su2 ON su2.id = p.last_update_by_system_user_id
 				WHERE p.id = :id'
 			);
 		}

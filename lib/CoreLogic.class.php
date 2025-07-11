@@ -1103,6 +1103,7 @@ class CoreLogic {
 			$uninstallProcedureSuccessReturnCodes,
 			intval($uninstallProcedurePostAction),
 			intval($downloadForUninstall),
+			$this->su->id,
 		);
 
 		// replace file in payload dir

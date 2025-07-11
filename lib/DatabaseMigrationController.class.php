@@ -573,6 +573,18 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		if(!$this->getTableColumnInfo('package', 'last_update_by_system_user_id')) {
+			if($this->debug) echo 'Upgrading to 1.1.8... (add last_update_by_system_user_id to DOUBLE)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `package` ADD `last_update_by_system_user_id` INT NULL DEFAULT NULL AFTER `last_update`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `package` ADD CONSTRAINT `fk_package_3` FOREIGN KEY (`last_update_by_system_user_id`) REFERENCES `system_user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 
