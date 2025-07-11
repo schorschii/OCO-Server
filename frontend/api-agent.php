@@ -49,6 +49,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 	}
 
 	// handle requested method
+	$remoteAddr = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
 	$resdata = ['id' => $srcdata['id']];
 	$params = $srcdata['params'];
 	switch($srcdata['method']) {
@@ -130,7 +131,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 				}
 
 				// update common computer metadata and service status
-				$db->updateComputerPing($computer->id, $data['agent_version']??'?', $data['networks']??[], $data['battery_level']??null, $data['battery_status']??null, $data['uptime']??null, $_SERVER['REMOTE_ADDR']??null);
+				$db->updateComputerPing($computer->id, $data['agent_version']??'?', $data['networks']??[], $data['battery_level']??null, $data['battery_status']??null, $data['uptime']??null, $remoteAddr);
 				if(!empty($data['services'])) foreach($data['services'] as $s) {
 					if(empty($s['name']) || !isset($s['status']) || !is_numeric($s['status'])) continue;
 					$db->insertOrUpdateComputerService($computer->id, $s['status'], $s['name'], $s['metrics'] ?? '-', $s['details'] ?? '');
@@ -150,12 +151,12 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 						foreach(explode(',', $pj->job_container_agent_ip_ranges) as $rangex) {
 							$range = trim($rangex);
 							if(startsWith($range, '!')) {
-								if(isIpInRange($_SERVER['REMOTE_ADDR'], ltrim($range, '!'))) {
+								if(isIpInRange($remoteAddr, ltrim($range, '!'))) {
 									// agent IP is in illegal range - ignore this job
 									continue 2;
 								}
 							} else {
-								if(isIpInRange($_SERVER['REMOTE_ADDR'], $range)) {
+								if(isIpInRange($remoteAddr, $range)) {
 									// agent IP is in desired range - abort check and send job to agent
 									$ignore = false;
 									break;
@@ -319,7 +320,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 					$data['gpu'] ?? '',
 					$data['ram'] ?? '',
 					$data['agent_version'] ?? '?',
-					$_SERVER['REMOTE_ADDR'],
+					$remoteAddr,
 					$data['serial'] ?? '',
 					$data['manufacturer'] ?? '',
 					$data['model'] ?? '',
