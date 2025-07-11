@@ -49,18 +49,20 @@ if(!empty($_GET['id'])) {
 				<td><?php echo htmlspecialchars($container->id); ?></td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('author'); ?></th>
-				<td><?php echo htmlspecialchars($container->created_by_system_user_username??$container->created_by_domain_user_username??''); ?></td>
-			</tr>
-			<tr>
-				<th><?php echo LANG('created'); ?></th>
-				<td><?php echo htmlspecialchars($container->created); ?></td>
-			</tr>
-			<tr>
 				<th><?php echo LANG('enabled'); ?></th>
 				<td>
 					<?php if($container->enabled=='1') echo LANG('yes'); else echo LANG('no'); ?>
 					<span id='spnJobContainerEnabled' class='rawvalue'><?php echo htmlspecialchars($container->enabled); ?></span>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('created'); ?></th>
+				<td>
+					<?php echo htmlspecialchars($container->created); ?>
+					<?php
+					$author = $container->created_by_system_user_username ?? $container->created_by_domain_user_username ?? null;
+					if($author) echo htmlspecialchars('('.$author.')');
+					?>
 				</td>
 			</tr>
 			<tr>

@@ -120,12 +120,14 @@ try {
 							</td>
 						</tr>
 						<tr>
-							<th><?php echo LANG('author'); ?></th>
-							<td><?php echo htmlspecialchars($package->created_by_system_user_username??''); ?></td>
-						</tr>
-						<tr>
 							<th><?php echo LANG('created'); ?></th>
-							<td><?php echo htmlspecialchars($package->created); ?></td>
+							<td>
+								<?php echo htmlspecialchars($package->created); ?>
+								<?php
+								if(!empty($package->created_by_system_user_username))
+									echo htmlspecialchars('('.$package->created_by_system_user_username.')');
+								?>
+							</td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('last_updated'); ?></th>

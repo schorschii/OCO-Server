@@ -741,7 +741,9 @@ class DatabaseController {
 	}
 	public function selectComputer($id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM computer WHERE id = :id'
+			'SELECT c.*, su.username AS "created_by_system_user_username" FROM computer c
+			LEFT JOIN system_user su ON su.id = c.created_by_system_user_id
+			WHERE c.id = :id'
 		);
 		$this->stmt->execute([':id' => $id]);
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Computer') as $row) {

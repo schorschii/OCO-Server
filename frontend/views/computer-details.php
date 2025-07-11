@@ -173,7 +173,13 @@ foreach($services as $s) {
 						</tr>
 						<tr>
 							<th><?php echo LANG('created'); ?></th>
-							<td><?php echo htmlspecialchars($computer->created); ?></td>
+							<td>
+								<?php echo htmlspecialchars($computer->created); ?>
+								<?php
+								if(!empty($computer->created_by_system_user_username))
+									echo htmlspecialchars('('.$computer->created_by_system_user_username.')');
+								?>
+							</td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('last_seen'); ?></th>
