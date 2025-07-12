@@ -45,10 +45,10 @@ You can also decide to not upload any file. Then, no archive will be downloaded 
 ### Continuous Integration/Delivery/Deployment
 The OCO API can for example be used to automatically create packages from a Continuous Integration service like GitLab CI/CD. Your CI pipeline will then call the OCO API after builing the binaries, and create a package with them. OCO can act as Continuous Delivery or Continuous Deployment service, which automatically deploys your binaries on tester's or user's computers.
 
-### Compatible OS And Version
-You can define on which operating systems (and versions) your package can be deployed. Simply add the string of the target operating system as can be found on the computer detail page. Multiple compatible operating systems can be defined comma-separated.
+### Compatible OS, Version, Architecture
+You can define on which operating systems, versions and architecture your package can be deployed. With Ctrl key pressed, multiple compatible entries can be selected.
 
-If you leave the fields "compatible operating system" and "compatible operating system version" empty the package can be deployed on every computer, no matter what operating system is detected by the agent.
+If you do not select an OS, version and architecture, the package can be deployed on every computer, no matter what operating system is detected by the agent.
 
 ### Procedure And Return Codes
 In the 'Procedure' fields, you define which commands should be executed when installing or uninstalling a package.
