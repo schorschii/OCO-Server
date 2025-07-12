@@ -100,7 +100,7 @@ try {
 			<h2><?php echo LANG('general'); ?></h2>
 			<div class='filler invisible'></div>
 		</div>
-		<table class='list'>
+		<table class='list fixed'>
 			<tr>
 				<th><?php echo LANG('mdm_api_url'); ?>:</th>
 				<td>
@@ -118,7 +118,7 @@ try {
 			<h2><?php echo LANG('apple_business_manager'); ?></h2>
 			<div class='filler invisible'></div>
 		</div>
-		<table class='list'>
+		<table class='list fixed'>
 			<tr>
 				<th><?php echo LANG('mdm_vendor_cert'); ?>:</th>
 				<td>
@@ -198,7 +198,7 @@ try {
 			<h2><?php echo LANG('google_android_enterprise'); ?></h2>
 			<div class='filler invisible'></div>
 		</div>
-		<table class='list'>
+		<table class='list fixed'>
 			<tr>
 				<th><?php echo LANG('service_account_credentials'); ?>:</th>
 				<td>
