@@ -32,14 +32,14 @@ function randomInRange(min, max) {
 	return Math.random() * (max - min) + min;
 }
 
-function mouseConfetti(char=null, particles=70, velocity=20, decay=0.9, gravity=1, scalar=1, flat=false) {
+function mouseConfetti(char=null, options={}) {
 	var defaults = {
-		particleCount: particles,
-		startVelocity: velocity,
-		gravity: gravity,
-		decay: decay,
-		flat: flat,
-		scalar: scalar,
+		particleCount: 70,
+		startVelocity: 20,
+		gravity: 1,
+		decay: 0.9,
+		flat: false,
+		scalar: 1,
 		spread: 360,
 		ticks: 100,
 		zIndex: 999,
@@ -48,7 +48,7 @@ function mouseConfetti(char=null, particles=70, velocity=20, decay=0.9, gravity=
 	if(char) {
 		defaults.shapes = [confetti.shapeFromText({ text: char })];
 	}
-	confetti(defaults);
+	confetti({...defaults, ...options});
 }
 function topConfettiRain() {
 	var defaults = { particleCount: 70, angle: 270, spread: 180, particleCount: 100, startVelocity: 15, ticks: 180 };
