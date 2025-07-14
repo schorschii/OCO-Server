@@ -19,12 +19,18 @@
 
 <?php
 // include extension JS
-foreach($ext->getAggregatedConf('self-service-js') as $filename) {
-	echo '<script src="js/'.htmlspecialchars(basename($filename), ENT_QUOTES).'"></script>';
+foreach($ext->getLoadedExtensions() as $e) {
+	if(!isset($e['self-service-js']) || !is_array($e['self-service-js'])) continue;
+	foreach($e['self-service-js'] as $filename => $path) {
+		echo '<script src="js/'.htmlspecialchars(basename($filename), ENT_QUOTES).'?v='.urlencode($e['version']).'"></script>'."\n";
+	}
 }
 // include extension CSS
-foreach($ext->getAggregatedConf('self-service-css') as $filename) {
-	echo '<link rel="stylesheet" type="text/css" href="css/'.htmlspecialchars(basename($filename), ENT_QUOTES).'"></link>';
+foreach($ext->getLoadedExtensions() as $e) {
+	if(!isset($e['self-service-css']) || !is_array($e['self-service-css'])) continue;
+	foreach($e['self-service-css'] as $filename => $path) {
+		echo '<link rel="stylesheet" type="text/css" href="css/'.htmlspecialchars(basename($filename), ENT_QUOTES).'?v='.urlencode($e['version']).'" />'."\n";
+	}
 }
 ?>
 
