@@ -2960,16 +2960,19 @@ function showDialogManagedPlayStore() {
 				};
 				var iframe = gapi.iframes.getContext().openChild(options);
 				iframe.register('onproductselect', function(event) {
-					var paramString = urlencodeArray([
-						{'key':'playstore_onproductselect', 'value':event.action},
-						{'key':'package_name', 'value':event.packageName},
-						{'key':'product_id', 'value':event.productId},
-						{'key':'app_name', 'value':prompt(LANG['display_name'])},
-					]);
-					ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
-						emitMessage(LANG['saved'], event.packageName, MESSAGE_TYPE_SUCCESS);
-						refreshContent();
-					});
+					var displayName = prompt(LANG['display_name']);
+					if(displayName) {
+						var paramString = urlencodeArray([
+							{'key':'playstore_onproductselect', 'value':event.action},
+							{'key':'package_name', 'value':event.packageName},
+							{'key':'product_id', 'value':event.productId},
+							{'key':'app_name', 'value':displayName},
+						]);
+						ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
+							emitMessage(LANG['saved'], event.packageName, MESSAGE_TYPE_SUCCESS);
+							refreshContent();
+						});
+					}
 				}, gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER);
 			});
 		};
