@@ -40,7 +40,7 @@ A domain user role is defined by a JSON string as known from the [system user ro
   }
 }
 ```
-In this example, the domain user can read, deploy and send WOL packets to computers on which the last login is not longer than 604800 seconds (7 days) ago. This time frame is the mechanism which determines which domain users have access on which computers in the portal.
+In this example, the domain user can read, deploy and send WOL packets to computers on which the last login is not longer than 604800 seconds (7 days) ago. This time frame is the mechanism which determines which domain users have access on which computers in the portal. The use case of this time span is that some companies have shared desks. When a user moved on to the next desk/computer, he should not be able to access it in the self service portal anymore.
 
 Furthermore, the domain user is allowed to deploy packages from the package group with ID "20". OCO admins should add packages into this group to allow the self service deployment.
 
