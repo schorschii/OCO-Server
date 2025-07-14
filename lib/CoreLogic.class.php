@@ -1495,7 +1495,7 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username??'SYSTEM', $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 		return $jcid;
 	}
-	private function isAttributeCompatible(Models\Computer $computer, string $attribute, string $compatible) {
+	private function isAttributeCompatible(Models\Computer $computer, string $attribute, string|null $compatible) {
 		if(empty($compatible) || empty($computer->$attribute)) {
 			return true;
 		} else {
