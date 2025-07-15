@@ -497,7 +497,7 @@ class DatabaseMigrationController {
 
 		/*** 1.1.8 ***/
 		if(strtolower($this->getTableColumnInfo('mobile_device_command', 'external_id')['COLUMN_TYPE']) != 'varchar(20)') {
-			if($this->debug) echo 'Upgrading to 1.1.8... (modify external_id column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.10... (modify external_id column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `mobile_device_command` CHANGE `external_id` `external_id` VARCHAR(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -509,7 +509,7 @@ class DatabaseMigrationController {
 		$this->stmt->execute();
 		foreach($this->stmt->fetchAll() as $row) {
 			if($row['permissions'] != 'true') {
-				if($this->debug) echo 'Upgrading to 1.1.8... (update permissions of superadmin role)'."\n";
+				if($this->debug) echo 'Upgrading to 1.1.10... (update permissions of superadmin role)'."\n";
 				$this->stmt = $this->dbh->prepare(
 					"UPDATE system_user_role SET permissions=JSON_SET(permissions, '$.\"Models\\\\\\\\ManagedApp\".create', 'true') WHERE id = 1"
 				);
@@ -520,12 +520,12 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('managed_app', 'configurations')) {
-			if($this->debug) echo 'Upgrading to 1.1.8... (add configurations column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.10... (add configurations column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `managed_app` ADD `configurations` TEXT NULL DEFAULT NULL AFTER `vpp_amount`");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
-			if($this->debug) echo 'Upgrading to 1.1.8... (add config_id column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.10... (add config_id column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `mobile_device_group_managed_app` ADD `config_id` BIGINT NULL DEFAULT NULL AFTER `install_type`");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -534,7 +534,7 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('computer', 'agent_timestamp')) {
-			if($this->debug) echo 'Upgrading to 1.1.8... (add agent_timestamp column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.10... (add agent_timestamp column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `computer` ADD `agent_timestamp` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00' AFTER `force_update`");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -543,7 +543,7 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('package', 'compatible_architecture')) {
-			if($this->debug) echo 'Upgrading to 1.1.8... (add compatible_architecture column)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.10... (add compatible_architecture column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `package` ADD `compatible_architecture` text DEFAULT NULL AFTER `compatible_os_version`");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -552,7 +552,7 @@ class DatabaseMigrationController {
 		}
 
 		if(strtolower($this->getTableColumnInfo('computer', 'agent_timestamp')['DATA_TYPE']) != 'double') {
-			if($this->debug) echo 'Upgrading to 1.1.8... (change agent_timestamp to DOUBLE)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.10... (change agent_timestamp to DOUBLE)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `computer` CHANGE `agent_timestamp` `agent_timestamp` DOUBLE NOT NULL DEFAULT '0'");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
@@ -574,12 +574,21 @@ class DatabaseMigrationController {
 		}
 
 		if(!$this->getTableColumnInfo('package', 'last_update_by_system_user_id')) {
-			if($this->debug) echo 'Upgrading to 1.1.8... (add last_update_by_system_user_id to DOUBLE)'."\n";
+			if($this->debug) echo 'Upgrading to 1.1.10... (add last_update_by_system_user_id column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `package` ADD `last_update_by_system_user_id` INT NULL DEFAULT NULL AFTER `last_update`");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `package` ADD CONSTRAINT `fk_package_3` FOREIGN KEY (`last_update_by_system_user_id`) REFERENCES `system_user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		if(strtolower($this->getTableColumnInfo('mobile_device_group_managed_app', 'config_id')['COLUMN_TYPE']) != 'bigint(20) unsigned') {
+			if($this->debug) echo 'Upgrading to 1.1.11... (change config_id to UNSIGNED)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device_group_managed_app` CHANGE `config_id` `config_id` BIGINT(20) UNSIGNED NULL DEFAULT NULL");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			$upgraded = true;

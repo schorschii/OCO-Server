@@ -931,7 +931,7 @@ CREATE TABLE `mobile_device_group_managed_app` (
   `disable_cloud_backup` tinyint(4) NOT NULL DEFAULT 1,
   `remove_on_mdm_remove` tinyint(4) NOT NULL DEFAULT 1,
   `install_type` TINYTEXT NULL DEFAULT NULL,
-  `config_id` BIGINT NULL DEFAULT NULL,
+  `config_id` BIGINT UNSIGNED NULL DEFAULT NULL,
   `config` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_mobile_device_group_managed_app_1` (`mobile_device_group_id`),
