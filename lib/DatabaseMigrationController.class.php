@@ -495,7 +495,7 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
-		/*** 1.1.8 ***/
+		/*** 1.1.10 ***/
 		if(strtolower($this->getTableColumnInfo('mobile_device_command', 'external_id')['COLUMN_TYPE']) != 'varchar(20)') {
 			if($this->debug) echo 'Upgrading to 1.1.10... (modify external_id column)'."\n";
 			$this->stmt = $this->dbh->prepare(
@@ -585,6 +585,7 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		/*** 1.1.11 ***/
 		if(strtolower($this->getTableColumnInfo('mobile_device_group_managed_app', 'config_id')['COLUMN_TYPE']) != 'bigint(20) unsigned') {
 			if($this->debug) echo 'Upgrading to 1.1.11... (change config_id to UNSIGNED)'."\n";
 			$this->stmt = $this->dbh->prepare(
