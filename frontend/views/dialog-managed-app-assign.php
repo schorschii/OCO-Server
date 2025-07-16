@@ -37,12 +37,9 @@ try {
 				<label><input type='checkbox' id='chkRemoveOnMdmRemove' checked='true'></input><?php echo LANG('remove_when_leaving_mdm'); ?></label>
 			<?php } elseif($ma->type == Models\ManagedApp::TYPE_ANDROID) { ?>
 				<select id='sltInstallType' class='fullwidth'>
-					<option value='PREINSTALLED'><?php echo LANG('preinstalled_deletable'); ?></option>
-					<option value='FORCE_INSTALLED'><?php echo LANG('force_installed'); ?></option>
-					<option value='BLOCKED'><?php echo LANG('blocked'); ?></option>
-					<option value='AVAILABLE'><?php echo LANG('available_for_install'); ?></option>
-					<option value='REQUIRED_FOR_SETUP'><?php echo LANG('required_for_setup'); ?></option>
-					<option value='KIOSK'><?php echo LANG('kiosk_mode'); ?></option>
+					<?php foreach(Models\ManagedApp::ANDROID_INSTALL_TYPES as $key => $title) { ?>
+						<option value='<?php echo htmlspecialchars($key,ENT_QUOTES); ?>'><?php echo LANG($title); ?></option>
+					<?php } ?>
 				</select>
 			<?php } ?>
 		</td>

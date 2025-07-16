@@ -397,7 +397,8 @@ class DatabaseController {
 	}
 	public function selectAllManagedAppByMobileDeviceGroupId($mobile_device_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT ma.* FROM managed_app ma
+			'SELECT ma.*, mdgma.removable, mdgma.disable_cloud_backup, mdgma.remove_on_mdm_remove, mdgma.install_type, mdgma.config_id, mdgma.config
+			FROM managed_app ma
 			INNER JOIN mobile_device_group_managed_app mdgma ON mdgma.managed_app_id = ma.id
 			WHERE mdgma.mobile_device_group_id = :mobile_device_group_id
 			ORDER BY ma.name'

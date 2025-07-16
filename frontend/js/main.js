@@ -1485,6 +1485,7 @@ function assignProfileToGroup(profileId, groupId) {
 }
 function removeProfileFromGroup(ids, groupId) {
 	if(!confirm(LANG['are_you_sure'])) return;
+	hideDialog();
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'remove_from_group_id[]', 'value':entry});
@@ -1529,6 +1530,7 @@ function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudB
 }
 function removeManagedAppFromGroup(ids, groupId) {
 	if(!confirm(LANG['are_you_sure'])) return;
+	hideDialog();
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'remove_from_group_id[]', 'value':entry});
@@ -3052,19 +3054,6 @@ function showDialogManagedPlayStoreConfig(packageName, managedAppId, configId=nu
 		document.head.appendChild(script);
 	});
 }
-function saveManagedPlayStoreConfig(configId, name, appId) {
-	var params = [];
-	params.push({'key':'save_managed_play_config', 'value':configId});
-	params.push({'key':'name', 'value':name});
-	params.push({'key':'managed_app_identifier', 'value':appId});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
-		emitMessage(LANG['configurations'], name, MESSAGE_TYPE_SUCCESS);
-		refreshContent();
-	}, function(status, statusText, responseText){
-		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
-	});
-}
 function removeSelectedManagedApp(checkboxName, attributeName=null) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
@@ -3104,6 +3093,12 @@ function syncAndroidDevices(btn) {
 		enableDisableButton(btn, true);
 		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
+}
+function showDialogAssignedProfileInfo(groupId, profileId) {
+	showDialogAjax(LANG['managed_app'], 'views/dialog-mobile-device-assigned-profile-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&profile_id='+encodeURIComponent(profileId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+}
+function showDialogAssignedManagedAppInfo(groupId, managedAppId) {
+	showDialogAjax(LANG['managed_app'], 'views/dialog-mobile-device-assigned-managed-app-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&managed_app_id='+encodeURIComponent(managedAppId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
 }
 
 function checkUpdate() {

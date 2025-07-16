@@ -69,10 +69,28 @@ try {
 <?php if($group != null) { ?>
 	<div class='controls subfolders'>
 		<?php foreach($db->selectAllProfileByMobileDeviceGroupId($group->id) as $p) { ?>
-			<a class='box deletable' href='#' title='<?php echo LANG('remove_assignment'); ?>' onclick='removeProfileFromGroup([<?php echo $p->id; ?>],<?php echo $group->id; ?>);return false;'><img src='img/profile.dyn.svg'>&nbsp;<?php echo htmlspecialchars($p->name); ?></a>
+			<a class='box infohover' href='#' title='<?php echo LANG('information'); ?>' onclick='showDialogAssignedProfileInfo(<?php echo $group->id; ?>, <?php echo $p->id; ?>);return false;'>
+				<img src='img/profile.dyn.svg'>&nbsp;
+				<span>
+					<span class='hint'>
+						<?php if($p->type == Models\Profile::TYPE_ANDROID) echo LANG('android').'<br>';
+						elseif($p->type == Models\Profile::TYPE_IOS) echo LANG('ios').'<br>'; ?>
+					</span>
+					<?php echo htmlspecialchars($p->name); ?>
+				</span>
+			</a>
 		<?php } ?>
 		<?php foreach($db->selectAllManagedAppByMobileDeviceGroupId($group->id) as $ma) { ?>
-			<a class='box deletable' href='#' title='<?php echo LANG('remove_assignment'); ?>' onclick='removeManagedAppFromGroup([<?php echo $ma->id; ?>],<?php echo $group->id; ?>);return false;'><img src='img/store.dyn.svg'>&nbsp;<?php echo htmlspecialchars($ma->name); ?></a>
+			<a class='box infohover' href='#' title='<?php echo LANG('information'); ?>' onclick='showDialogAssignedManagedAppInfo(<?php echo $group->id; ?>, <?php echo $ma->id; ?>);return false;'>
+				<img src='img/store.dyn.svg'>&nbsp;
+				<span>
+					<span class='hint'>
+						<?php if($ma->type == Models\ManagedApp::TYPE_ANDROID) echo LANG('android').'<br>';
+						elseif($ma->type == Models\ManagedApp::TYPE_IOS) echo LANG('ios').'<br>'; ?>
+					</span>
+					<?php echo htmlspecialchars($ma->name); ?>
+				</span>
+			</a>
 		<?php } ?>
 	</div>
 <?php } ?>
