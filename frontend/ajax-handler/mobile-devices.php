@@ -262,7 +262,8 @@ try {
 	&& !empty($_POST['managed_app_id'])) {
 		$ma = $db->selectManagedApp($_POST['managed_app_id']);
 		if(!$ma) throw new NotFoundException();
-		$newConfigurations = array_merge($ma->getConfigurations(), [$_POST['playstore_onconfigupdated']=>$_POST['name']]);
+		$strippedId = ltrim($_POST['playstore_onconfigupdated'], '0');
+		$newConfigurations = array_merge($ma->getConfigurations(), [$strippedId=>$_POST['name']]);
 		$cl->createOrEditManagedApp($ma->type, $ma->identifier, $ma->store_id, $ma->name, $ma->vpp_amount, json_encode($newConfigurations));
 		die();
 	}
