@@ -263,18 +263,20 @@ try {
 		$ma = $db->selectManagedApp($_POST['managed_app_id']);
 		if(!$ma) throw new NotFoundException();
 		$strippedId = ltrim($_POST['playstore_onconfigupdated'], '0');
-		$newConfigurations = array_merge($ma->getConfigurations(), [$strippedId=>$_POST['name']]);
-		$cl->createOrEditManagedApp($ma->type, $ma->identifier, $ma->store_id, $ma->name, $ma->vpp_amount, json_encode($newConfigurations));
+		$newConfigurations = $ma->getConfigurations();
+		$newConfigurations[$strippedId] = $_POST['name'];
+		$cl->createOrEditManagedApp($ma->type, $ma->identifier, $ma->store_id, $ma->name, $ma->vpp_amount, json_encode($newConfigurations,JSON_FORCE_OBJECT));
 		die();
 	}
 	if(!empty($_POST['playstore_onconfigdeleted'])
 	&& !empty($_POST['managed_app_id'])) {
 		$ma = $db->selectManagedApp($_POST['managed_app_id']);
 		if(!$ma) throw new NotFoundException();
+		$strippedId = ltrim($_POST['playstore_onconfigdeleted'], '0');
 		$newConfigurations = $ma->getConfigurations();
-		if(isset($newConfigurations[$_POST['playstore_onconfigdeleted']]))
-			unset($newConfigurations[$_POST['playstore_onconfigdeleted']]);
-		$cl->createOrEditManagedApp($ma->type, $ma->identifier, $ma->store_id, $ma->name, $ma->vpp_amount, json_encode($newConfigurations));
+		if(isset($newConfigurations[$strippedId]))
+			unset($newConfigurations[$strippedId]);
+		$cl->createOrEditManagedApp($ma->type, $ma->identifier, $ma->store_id, $ma->name, $ma->vpp_amount, json_encode($newConfigurations,JSON_FORCE_OBJECT));
 		die();
 	}
 
