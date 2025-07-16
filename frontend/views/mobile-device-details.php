@@ -93,7 +93,7 @@ try {
 							<td class='subbuttons'>
 								<?php echo htmlspecialchars($md->last_update.($md->force_update ? ' ('.LANG('force_update').')' : '')); ?>
 								<?php if($permissionWrite) { ?>
-									<button onclick='event.stopPropagation();setMobileDeviceForceUpdate(<?php echo $md->id; ?>, 1);return false'><img class='small' src='img/force-update.dyn.svg' title='<?php echo LANG('force_update'); ?>'></button>
+									<button onclick='event.stopPropagation();setMobileDeviceForceUpdate(<?php echo $md->id; ?>, 1);return false' title='<?php echo LANG('force_update'); ?>'><img class='small' src='img/force-update.dyn.svg'></button>
 								<?php } ?>
 							</td>
 						</tr>
