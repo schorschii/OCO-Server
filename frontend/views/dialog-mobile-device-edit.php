@@ -39,5 +39,5 @@ try {
 	txtEditMobileDeviceId.value,
 	txtEditMobileDeviceName.value,
 	txtEditMobileDeviceNotes.value
-	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('change'); ?></button>
 </div>

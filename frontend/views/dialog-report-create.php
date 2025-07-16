@@ -22,5 +22,5 @@ require_once('../session.inc.php');
 
 <div class='controls right'>
 	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button class='primary' onclick='createReport(txtCreateReportName.value, txtCreateReportNotes.value, txtCreateReportQuery.value, txtCreateReportGroup.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+	<button class='primary' onclick='createReport(txtCreateReportName.value, txtCreateReportNotes.value, txtCreateReportQuery.value, txtCreateReportGroup.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create'); ?></button>
 </div>

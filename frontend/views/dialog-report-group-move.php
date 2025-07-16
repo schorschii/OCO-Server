@@ -15,5 +15,5 @@ require_once('../session.inc.php');
 
 <div class='controls right'>
 	<button onclick='hideDialog()'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button class='primary' onclick='moveReportToGroup(txtEditReportId.value, sltNewReportGroup.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+	<button class='primary' onclick='moveReportToGroup(txtEditReportId.value, sltNewReportGroup.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('move'); ?></button>
 </div>
