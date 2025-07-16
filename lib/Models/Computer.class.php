@@ -79,7 +79,6 @@ class Computer {
 		['icon'=>'img/screen-access.dyn.svg', 'name'=>'RDP', 'description'=>'client_extension_note', 'command'=>'rdp://$$TARGET$$', 'new_tab'=>false],
 		['icon'=>'img/screen-access.dyn.svg', 'name'=>'SSH', 'description'=>'client_extension_note', 'command'=>'ssh://$$TARGET$$', 'new_tab'=>false],
 		['icon'=>'img/ping.dyn.svg', 'name'=>'Ping', 'description'=>'client_extension_note', 'command'=>'ping://$$TARGET$$', 'new_tab'=>false],
-		['icon'=>'img/portscan.dyn.svg', 'name'=>'Nmap', 'description'=>'client_extension_note', 'command'=>'nmap://$$TARGET$$', 'new_tab'=>false],
 	];
 	static function getCommands(\ExtensionController $ext) {
 		$extensionCommands = $ext->getAggregatedConf('computer-commands');
