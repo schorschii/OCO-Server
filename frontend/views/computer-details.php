@@ -190,7 +190,7 @@ foreach($services as $s) {
 							<td class='subbuttons'>
 								<?php echo htmlspecialchars($computer->last_update.($computer->force_update ? ' ('.LANG('force_update').')' : '')); ?>
 								<?php if($permissionWrite) { ?>
-									<button onclick='event.stopPropagation();setComputerForceUpdate(<?php echo $computer->id; ?>, 1);return false'><img class='small' src='img/force-update.dyn.svg' title='<?php echo LANG('force_update'); ?>'></button>
+									<button onclick='event.stopPropagation();setComputerForceUpdate(<?php echo $computer->id; ?>, 1);return false' title='<?php echo LANG('force_update',ENT_QUOTES); ?>'><img class='small' src='img/force-update.dyn.svg'></button>
 								<?php } ?>
 							</td>
 						</tr>
