@@ -31,19 +31,22 @@ try {
 		<thead>
 			<tr>
 				<th><input type='checkbox' class='toggleAllChecked'></th>
-				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
-				<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('identifier'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('vpp_amount'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 		<?php
 		foreach($iosApps as $a) {
+			$groupLinks = [];
+			foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
+				$groupLinks[] = "<a ".explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='managed_app_ios_id[]' value='".$a->id."'></td>";
-			echo "<td>".htmlspecialchars($a->name)."</td>";
-			echo "<td>".htmlspecialchars($a->identifier)."</td>";
+			echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";
 			echo "<td>".htmlspecialchars($a->vpp_amount??'-')."</td>";
+			echo "<td>".implode("<br>", $groupLinks)."</td>";
 			echo "</tr>";
 		}
 		?>
@@ -74,23 +77,26 @@ try {
 		<thead>
 			<tr>
 				<th><input type='checkbox' class='toggleAllChecked'></th>
-				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
-				<th class='searchable sortable'><?php echo LANG('identifier'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('identifier'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
 				<th><?php echo LANG('configurations'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 		<?php
 		foreach($androidApps as $a) {
+			$groupLinks = [];
+			foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
+				$groupLinks[] = "<a ".explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='managed_app_android_id[]' value='".$a->id."'></td>";
-			echo "<td>".htmlspecialchars($a->name)."</td>";
-			echo "<td>".htmlspecialchars($a->identifier)."</td>";
+			echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";
 			echo "<td>";
 			echo "<button class='small' onclick='showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\", \"".htmlspecialchars($a->id)."\")'>".LANG('add')."</button>";
 			foreach($a->getConfigurations() as $cId => $cName) {
 				echo "<div><a href='#' onclick='event.preventDefault(); showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\", \"".htmlspecialchars($a->id)."\", \"".htmlspecialchars($cId)."\" )'>".htmlspecialchars($cName)."</a></div>";
 			}
+			echo "<td>".implode("<br>", $groupLinks)."</td>";
 			echo "</td>";
 			echo "</tr>";
 		}

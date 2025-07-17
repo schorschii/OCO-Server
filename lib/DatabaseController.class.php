@@ -521,6 +521,16 @@ class DatabaseController {
 		$this->stmt->execute([':profile_id' => $profile_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
 	}
+	public function selectAllMobileDeviceGroupByManagedAppId($managed_app_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT mdg.* FROM mobile_device_group mdg
+			INNER JOIN mobile_device_group_managed_app mdgma ON mdgma.mobile_device_group_id = mdg.id
+			WHERE mdgma.managed_app_id = :managed_app_id
+			ORDER BY mdg.name'
+		);
+		$this->stmt->execute([':managed_app_id' => $managed_app_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
+	}
 	public function insertProfile($type, $name, $payload, $notes, $system_user_id) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO profile (type, name, payload, notes, created_by_system_user_id)
