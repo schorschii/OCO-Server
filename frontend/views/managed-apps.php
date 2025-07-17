@@ -33,7 +33,7 @@ try {
 				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('identifier'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('vpp_amount'); ?></th>
-				<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
+				<th class='searchable'><?php echo LANG('groups'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -78,8 +78,8 @@ try {
 			<tr>
 				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('identifier'); ?></th>
-				<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
-				<th><?php echo LANG('configurations'); ?></th>
+				<th class='searchable'><?php echo LANG('configurations'); ?></th>
+				<th class='searchable'><?php echo LANG('groups'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
