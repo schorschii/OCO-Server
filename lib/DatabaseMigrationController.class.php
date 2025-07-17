@@ -595,6 +595,15 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		if(strtoupper($this->getTableColumnInfo('package', 'last_update')['COLUMN_DEFAULT']) != 'NULL') {
+			if($this->debug) echo 'Upgrading to 1.1.11... (change last_update to NULL)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `package` CHANGE `last_update` `last_update` TIMESTAMP NULL DEFAULT NULL");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

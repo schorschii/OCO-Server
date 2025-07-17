@@ -149,7 +149,7 @@ CREATE TABLE IF NOT EXISTS `package` (
   `license_count` int(11) DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `created_by_system_user_id` int(11) DEFAULT NULL,
-  `last_update` timestamp NOT NULL DEFAULT current_timestamp(),
+  `last_update` timestamp NULL DEFAULT NULL,
   `last_update_by_system_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_package_family_id` (`package_family_id`),

@@ -132,7 +132,7 @@ try {
 						<tr>
 							<th><?php echo LANG('last_updated'); ?></th>
 							<td>
-								<?php echo htmlspecialchars($package->last_update); ?>
+								<?php echo htmlspecialchars($package->last_update ?? ''); ?>
 								<?php
 								if(!empty($package->last_update_by_system_user_username))
 									echo htmlspecialchars('('.$package->last_update_by_system_user_username.')');
