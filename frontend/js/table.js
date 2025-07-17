@@ -404,7 +404,7 @@ function downloadTableCsv(table, separator = ';') {
 		var firstColumn = true;
 		var row = [], cols = rows[i].querySelectorAll('td, th');
 		for(var j = 0; j < cols.length; j++) {
-			// clean innertext to remove multiple spaces and jumpline (break csv)
+			// clean innertext to remove multiple spaces
 			var data = cols[j].innerText.replace(/(\s\s)/gm, ' ')
 			// escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
 			data = data.replace(/"/g, '""');
