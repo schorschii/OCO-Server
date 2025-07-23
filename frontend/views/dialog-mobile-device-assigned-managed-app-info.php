@@ -38,19 +38,19 @@ try {
 	<tr>
 		<th><?php echo LANG('removable'); ?></th>
 		<td>
-			<?php echoDictTable(boolval($managedApp->removable)); ?>
+			<?php Html::dictTable(boolval($managedApp->removable)); ?>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('disable_cloud_backup'); ?></th>
 		<td>
-			<?php echoDictTable(boolval($managedApp->disable_cloud_backup)); ?>
+			<?php Html::dictTable(boolval($managedApp->disable_cloud_backup)); ?>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('remove_when_leaving_mdm'); ?></th>
 		<td>
-			<?php echoDictTable(boolval($managedApp->remove_on_mdm_remove)); ?>
+			<?php Html::dictTable(boolval($managedApp->remove_on_mdm_remove)); ?>
 		</td>
 	</tr>
 	<?php } elseif($managedApp->type == Models\ManagedApp::TYPE_ANDROID) { ?>
@@ -72,7 +72,7 @@ try {
 				echo htmlspecialchars($configs[$managedApp->config_id] ?? '?');
 			} ?>
 			</div>
-			<?php echoDictTable(json_decode($managedApp->config ?? '{}', true)); ?>
+			<?php Html::dictTable(json_decode($managedApp->config ?? '{}', true)); ?>
 		</td>
 	</tr>
 </table>

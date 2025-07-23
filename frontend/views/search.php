@@ -131,7 +131,7 @@ if(count($items) == 0) {
 						<?php echo htmlspecialchars($item->type); ?>
 					</td>
 					<td>
-						<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink($item->link); ?>><?php echo htmlspecialchars($item->text); ?></a>
+						<a onkeydown='handleSearchResultNavigation(event)' <?php echo Html::explorerLink($item->link); ?>><?php echo htmlspecialchars($item->text); ?></a>
 					</td>
 				</tr>
 			<?php } ?>
@@ -158,12 +158,12 @@ if(count($items) == 0) {
 
 <?php foreach($items as $item) { ?>
 	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink($item->link, 'closeSearchResults()'); ?>><img src='<?php echo htmlspecialchars($item->icon); ?>'><?php echo htmlspecialchars($item->text); ?></a>
+		<a onkeydown='handleSearchResultNavigation(event)' <?php echo Html::explorerLink($item->link, 'closeSearchResults()'); ?>><img src='<?php echo htmlspecialchars($item->icon); ?>'><?php echo htmlspecialchars($item->text); ?></a>
 	</div>
 <?php } ?>
 <?php if($moreAvail) { ?>
 	<div class='node'>
-		<a onkeydown='handleSearchResultNavigation(event)' <?php echo explorerLink('views/search.php?context=more&query='.urlencode($_GET['query']), 'closeSearchResults()'); ?>><img src='img/eye.dyn.svg'><?php echo LANG('more'); ?></a>
+		<a onkeydown='handleSearchResultNavigation(event)' <?php echo Html::explorerLink('views/search.php?context=more&query='.urlencode($_GET['query']), 'closeSearchResults()'); ?>><img src='img/eye.dyn.svg'><?php echo LANG('more'); ?></a>
 	</div>
 <?php } ?>
 

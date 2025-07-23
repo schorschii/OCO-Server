@@ -34,7 +34,7 @@ if(!empty($_GET['id'])) {
 			<?php
 			foreach($db->selectAllMobileDeviceByAppId($_GET['id']) as $md) {
 				echo "<tr>";
-				echo "<td><a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->getDisplayName())."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->getDisplayName())."</a></td>";
 				echo "<td>".htmlspecialchars($md->os)."</td>";
 				echo "</tr>";
 			}
@@ -81,8 +81,8 @@ if(!empty($_GET['id'])) {
 			<?php
 			foreach($db->selectAllMobileDeviceByAppName($_GET['name']) as $md) {
 				echo "<tr>";
-				echo "<td><a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->getDisplayName())."</a></td>";
-				echo "<td><a ".explorerLink('views/apps.php?id='.$md->app_id).">".htmlspecialchars($md->app_version)."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->getDisplayName())."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/apps.php?id='.$md->app_id).">".htmlspecialchars($md->app_version)."</a></td>";
 				echo "</tr>";
 			}
 			?>
@@ -137,7 +137,7 @@ if(!empty($_GET['id'])) {
 		<?php
 		foreach($apps as $a) {
 			echo "<tr>";
-			echo "<td><a ".explorerLink('views/apps.php?name='.urlencode($a->name)).">".htmlspecialchars($a->name)."</a></td>";
+			echo "<td><a ".Html::explorerLink('views/apps.php?name='.urlencode($a->name)).">".htmlspecialchars($a->name)."</a></td>";
 			echo "<td>".$a->installations."</td>";
 			echo "</tr>";
 		}

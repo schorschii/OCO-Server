@@ -32,7 +32,7 @@ try {
 		<button onclick='showDialogCreateReport()' <?php if(!$permissionCreateReport) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_report'); ?></button>
 		<button onclick='createReportGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
 		<span class='filler'></span>
-		<span><a <?php echo explorerLink('views/docs.php?page=Reports.md'); ?>><?php echo LANG('infos_and_database_schema'); ?></a></span>
+		<span><a <?php echo Html::explorerLink('views/docs.php?page=Reports.md'); ?>><?php echo LANG('infos_and_database_schema'); ?></a></span>
 	</div>
 <?php } else {
 	$permissionCreateReport = $cl->checkPermission(new Models\Report(), PermissionManager::METHOD_CREATE, false) && $cl->checkPermission($group, PermissionManager::METHOD_WRITE, false);
@@ -54,13 +54,13 @@ try {
 <div class='controls subfolders'>
 	<?php if($group != null) { ?>
 		<?php if($group->parent_report_group_id == null) { ?>
-			<a class='box' <?php echo explorerLink('views/reports.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('reports'); ?></a>
+			<a class='box' <?php echo Html::explorerLink('views/reports.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('reports'); ?></a>
 		<?php } else { $subGroup = $cl->getReportGroup($group->parent_report_group_id); ?>
-			<a class='box' <?php echo explorerLink('views/reports.php?id='.$group->parent_report_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
+			<a class='box' <?php echo Html::explorerLink('views/reports.php?id='.$group->parent_report_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
 		<?php } ?>
 	<?php } ?>
 	<?php foreach($subGroups as $g) { ?>
-		<a class='box' <?php echo explorerLink('views/reports.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
+		<a class='box' <?php echo Html::explorerLink('views/reports.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>
 </div>
 <?php } ?>
@@ -79,7 +79,7 @@ try {
 			<?php foreach($reports as $r) {
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='report_id[]' value='".$r->id."'></td>";
-				echo "<td><a ".explorerLink('views/report-details.php?id='.$r->id).">".htmlspecialchars($r->name)."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/report-details.php?id='.$r->id).">".htmlspecialchars($r->name)."</a></td>";
 				echo "<td>".htmlspecialchars(shorter($r->notes))."</td>";
 				echo "</tr>";
 			} ?>

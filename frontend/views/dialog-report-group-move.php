@@ -8,7 +8,7 @@ require_once('../session.inc.php');
 <div class='gallery'>
 	<div>
 		<select id='sltNewReportGroup' class='resizeVertical' size='10'>
-			<?php echoReportGroupOptions($cl); ?>
+			<?php Html::buildGroupOptions($cl, new Models\ReportGroup()); ?>
 		</select>
 	</div>
 </div>

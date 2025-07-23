@@ -121,7 +121,7 @@ if(!empty($_GET['id'])) {
 		<table class='list metadata'>
 			<tr>
 				<th><?php echo LANG('progress'); ?></th>
-				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, 'stretch', ''); ?></td>
+				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo Html::progressBar($percent, null, null, 'stretch', ''); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('total_runtime'); ?></th>
@@ -194,8 +194,8 @@ if(!empty($_GET['id'])) {
 			<?php foreach($jobs as $job) { ?>
 				<tr>
 					<td><input type='checkbox' name='job_id[]' value='<?php echo $job->id; ?>'></td>
-					<td><a <?php echo explorerLink('views/computer-details.php?id='.$job->computer_id); ?>><?php echo htmlspecialchars($job->computer_hostname); ?></a></td>
-					<td><a <?php echo explorerLink('views/package-details.php?id='.$job->package_id); ?>><?php echo htmlspecialchars($job->package_family_name).' ('.htmlspecialchars($job->package_version).')'; ?></a></td>
+					<td><a <?php echo Html::explorerLink('views/computer-details.php?id='.$job->computer_id); ?>><?php echo htmlspecialchars($job->computer_hostname); ?></a></td>
+					<td><a <?php echo Html::explorerLink('views/package-details.php?id='.$job->package_id); ?>><?php echo htmlspecialchars($job->package_family_name).' ('.htmlspecialchars($job->package_version).')'; ?></a></td>
 					<td class='middle' title='<?php echo htmlspecialchars($job->procedure, ENT_QUOTES); ?>'>
 						<div class='middle monospace'>
 							<?php if($job->is_uninstall == 0) { ?>
@@ -315,7 +315,7 @@ if(!empty($_GET['id'])) {
 				echo "<td><input type='checkbox' name='job_container_id[]' value='".$jc->id."'></td>";
 				echo "<td class='middle'>";
 				echo  "<img src='img/".$jc->getStatus($jobs).".dyn.svg' class='".($jc->enabled?'online':'offline')."'>&nbsp;";
-				echo  "<a ".explorerLink('views/job-containers.php?id='.$jc->id).">".htmlspecialchars($jc->name)."</a>";
+				echo  "<a ".Html::explorerLink('views/job-containers.php?id='.$jc->id).">".htmlspecialchars($jc->name)."</a>";
 				echo "</td>";
 				echo "<td>".htmlspecialchars($jc->created_by_system_user_username??$jc->created_by_domain_user_username??'')."</td>";
 				echo "<td>".htmlspecialchars($jc->created)."</td>";
@@ -323,7 +323,7 @@ if(!empty($_GET['id'])) {
 				echo "<td>".htmlspecialchars($jc->end_time ?? "-")."</td>";
 				echo "<td>".htmlspecialchars($jc->priority)."</td>";
 				echo "<td>".htmlspecialchars(shorter($jc->notes))."</td>";
-				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, 'stretch', '')."</td>";
+				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".Html::progressBar($percent, null, null, 'stretch', '')."</td>";
 				echo "</tr>";
 			} ?>
 			</tbody>

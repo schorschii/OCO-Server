@@ -41,7 +41,7 @@ try {
 		foreach($profilesIos as $p) {
 			$groupLinks = [];
 			foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
-				$groupLinks[] = "<a ".explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
+				$groupLinks[] = "<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
 			echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
@@ -92,7 +92,7 @@ try {
 		foreach($profilesAndroid as $p) {
 			$groupLinks = [];
 			foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
-				$groupLinks[] = "<a ".explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
+				$groupLinks[] = "<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
 			echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";

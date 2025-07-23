@@ -182,7 +182,7 @@ require_once('../session.inc.php');
 		<td colspan='4'>
 		<div class='content-foot'>
 			<div class='filler'></div>
-			<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadText', 'hidden big'); ?>
+			<?php echo Html::progressBar(0, 'prgPackageUpload', 'prgPackageUploadText', 'hidden big'); ?>
 			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(
 				txtName.value,
 				txtVersion.value,

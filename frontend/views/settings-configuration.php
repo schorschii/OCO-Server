@@ -28,7 +28,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 				<th><?php echo LANG('status'); ?>:</th>
 				<td>
 					<div class='alert <?php echo $license->isValid() ? 'success' : 'error'; ?>'><?php echo htmlspecialchars($license->getLicenseText()); ?></div>
-					<?php echo progressBar($license->getCurrentObjectCount()/$license->getObjects()*100, 'prgLicenses', 'prgLicensesText', 'fullwidth', '', $license->getCurrentObjectCount().'/'.$license->getObjects()); ?>
+					<?php echo Html::progressBar($license->getCurrentObjectCount()/$license->getObjects()*100, 'prgLicenses', 'prgLicensesText', 'fullwidth', '', $license->getCurrentObjectCount().'/'.$license->getObjects()); ?>
 				</td>
 			</tr>
 		</table>

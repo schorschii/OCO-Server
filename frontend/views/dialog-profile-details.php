@@ -22,4 +22,4 @@ try {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
 
-echoDictTable($payloadData);
+Html::dictTable($payloadData);

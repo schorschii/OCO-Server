@@ -48,48 +48,6 @@ function niceTime($seconds) {
 	else return round($seconds/60/60/24).' '.LANG('days');
 }
 
-function wrapInSpanIfNotEmpty($text) {
-	if($text == null || $text == '') return '';
-	return '<span>'.htmlspecialchars($text).'</span>';
-}
-
-function progressBar($percent, $cid=null, $tid=null, $class=''/*hidden big stretch animated*/, $style='', $text=null) {
-	$percent = intval($percent);
-	return
-		'<span class="progressbar-container '.$class.'" style="--progress:'.$percent.'%; '.$style.'" '.($cid==null ? '' : 'id="'.htmlspecialchars($cid).'"').'>'
-			.'<span class="progressbar"><span class="progress"></span></span>'
-			.'<span class="progresstext" '.($tid==null ? '' : 'id="'.htmlspecialchars($tid).'"').'>'.(
-				$text ? htmlspecialchars($text) : (strpos($class,'animated')!==false ? LANG('in_progress') : $percent.'%')
-			).'</span>'
-		.'</span>';
-}
-
-function explorerLink($explorerContentUrl, $extraJs=null) {
-	$fileString = basename(parse_url($explorerContentUrl, PHP_URL_PATH), '.php');
-	$parameterString = parse_url($explorerContentUrl, PHP_URL_QUERY);
-	return "href='index.php?view=".urlencode($fileString)."&".$parameterString."'"
-		.($extraJs===null ? "" : " onclick='event.preventDefault();".$extraJs."'");
-}
-
-function echoDictTable($value, array $exclude=[]) {
-	if($value === true) echo '<img title="'.LANG('yes').'" src="img/success.dyn.svg">';
-	elseif($value === false) echo '<img title="'.LANG('no').'" src="img/close.opacity.svg">';
-	elseif(is_array($value)) {
-		echo '<table class="list metadata"><tbody>';
-		foreach($value as $subkey => $subvalue) {
-			if(in_array($subkey, $exclude)) continue;
-			echo '<tr>'
-				.'<th>'.htmlspecialchars(LANG($subkey)).'</th>'
-				.'<td>';
-			echoDictTable($subvalue);
-			echo '</td>'
-				.'</tr>';
-		}
-		echo '</tbody></table>';
-	}
-	else echo htmlspecialchars($value);
-}
-
 function randomString($length = 30) {
 	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
 	$charactersLength = strlen($characters);
@@ -170,54 +128,4 @@ function isTimeInRange($strRange, $time=null) {
 	$endDateTime = DateTime::createFromFormat('H:i', $parts[1]);
 	if(!$startDateTime || !$endDateTime) throw new Exception(LANG('invalid_time_input'));
 	return ($currentDateTime > $startDateTime && $currentDateTime < $endDateTime);
-}
-
-function echoComputerGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
-	foreach($cl->getComputerGroups($parentId) as $g) {
-		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
-		echoComputerGroupOptions($cl, $g->id, $indent+1, $preselect);
-	}
-}
-function echoMobileDeviceGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
-	foreach($cl->getMobileDeviceGroups($parentId) as $g) {
-		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
-		echoMobileDeviceGroupOptions($cl, $g->id, $indent+1, $preselect);
-	}
-}
-function echoPackageGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
-	foreach($cl->getPackageGroups($parentId) as $g) {
-		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
-		echoPackageGroupOptions($cl, $g->id, $indent+1, $preselect);
-	}
-}
-function echoReportGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $preselect=-1) {
-	foreach($cl->getReportGroups($parentId) as $g) {
-		echo "<option ".($preselect==$g->id ? "selected" : "")." value='".$g->id."'>".trim(str_repeat("‒",$indent)." ".htmlspecialchars($g->name))."</option>";
-		echoReportGroupOptions($cl, $g->id, $indent+1, $preselect);
-	}
-}
-
-function echoCommandButton($c, $target, $link=false) {
-	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
-	if(startsWith($c['command'], 'rdp://') && strpos($_SERVER['HTTP_USER_AGENT']??'', 'Mac') !== false) {
-		// for macOS "Windows App", see https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-uri#legacy-rdp-uri-scheme
-		$actionUrl = str_replace('$$TARGET$$', http_build_query(['full address'=>'s:'.$target]), $c['command']);
-	} else {
-		$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);
-	}
-	$description = LANG($c['description']);
-	if($link) {
-		echo "<a title='".htmlspecialchars($description,ENT_QUOTES)."' href='".htmlspecialchars($actionUrl,ENT_QUOTES)."' ".($c['new_tab'] ? "target='_blank'" : "").">"
-			. htmlspecialchars($c['name'])
-			. "</a>";
-	} else {
-		if($c['new_tab'])
-			$onclick = "window.open(\"".htmlspecialchars($actionUrl,ENT_QUOTES)."\")";
-		else
-			$onclick = "window.location=\"".htmlspecialchars($actionUrl,ENT_QUOTES)."\"";
-		echo "<button title='".htmlspecialchars($description,ENT_QUOTES)."' onclick='".$onclick."'>"
-			. (empty($c['icon']) ? "" : "<img src='".$c['icon']."'>&nbsp;")
-			. htmlspecialchars($c['name'])
-			. "</button>";
-	}
 }

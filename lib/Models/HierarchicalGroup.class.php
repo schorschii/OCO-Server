@@ -5,6 +5,7 @@ namespace Models;
 abstract class HierarchicalGroup implements IHierarchicalGroup {
 
 	const GET_OBJECT_FUNCTION = null;
+	const GET_OBJECTS_FUNCTION = null;
 
 	private $db;
 

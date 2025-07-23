@@ -64,7 +64,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 						echo "<td sort_key='".htmlspecialchars($u->username,ENT_QUOTES)."'>";
 						if(!empty($u->ldap)) echo "<img src='img/ldap-directory.dyn.svg' title='".LANG('ldap_account')."'>&nbsp;";
 						if(!empty($u->password)) echo "<img src='img/password.dyn.svg' title='".LANG('password_set')."'>&nbsp;";
-						echo "<a ".explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a>";
+						echo "<a ".Html::explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a>";
 						echo "</td>";
 						echo "<td>".htmlspecialchars($u->display_name)."</td>";
 						echo "<td>".htmlspecialchars($u->domain_user_role_name??'')."</td>";

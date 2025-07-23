@@ -35,7 +35,7 @@ if(!empty($_GET['id'])) {
 			<?php
 			foreach($db->selectAllComputerBySoftwareId($_GET['id']) as $c) {
 				echo "<tr>";
-				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($c->os)."</td>";
 				echo "<td>".htmlspecialchars($c->os_version)."</td>";
 				echo "</tr>";
@@ -83,8 +83,8 @@ if(!empty($_GET['id'])) {
 			<?php
 			foreach($db->selectAllComputerBySoftwareName($_GET['name']) as $c) {
 				echo "<tr>";
-				echo "<td><a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
-				echo "<td><a ".explorerLink('views/software.php?id='.$c->software_id).">".htmlspecialchars($c->software_version)."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/software.php?id='.$c->software_id).">".htmlspecialchars($c->software_version)."</a></td>";
 				echo "</tr>";
 			}
 			?>
@@ -142,7 +142,7 @@ if(!empty($_GET['id'])) {
 		<?php
 		foreach($software as $s) {
 			echo "<tr>";
-			echo "<td><a ".explorerLink('views/software.php?name='.urlencode($s->name)).">".htmlspecialchars($s->name)."</a></td>";
+			echo "<td><a ".Html::explorerLink('views/software.php?name='.urlencode($s->name)).">".htmlspecialchars($s->name)."</a></td>";
 			echo "<td>".$s->installations."</td>";
 			echo "</tr>";
 		}

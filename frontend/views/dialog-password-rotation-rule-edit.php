@@ -11,7 +11,7 @@ require_once('../session.inc.php');
 		<td>
 			<select class='fullwidth' id='sltEditPasswordRotationRuleComputerGroupId'>
 				<option value='' selected>-</option>
-				<?php echoComputerGroupOptions($cl); ?>
+				<?php Html::buildGroupOptions($cl, new Models\ComputerGroup()); ?>
 			</select>
 		</td>
 	</tr>

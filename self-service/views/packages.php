@@ -52,7 +52,7 @@ try {
 	<?php } else { ?>
 		<div class='gallery gap'>
 		<?php foreach($packages as $p) { ?>
-			<a class='item orange' <?php echo explorerLink('views/packages.php?id='.$p->id); ?>>
+			<a class='item orange' <?php echo Html::explorerLink('views/packages.php?id='.$p->id); ?>>
 				<img src='<?php echo $p->getIcon(); ?>'>
 				<h3><?php echo htmlspecialchars($p->getFullName()); ?></h3>
 			</a>
@@ -183,7 +183,7 @@ try {
 								if($p->id === $package->id) continue; // do not show this package
 								if(!$cl->checkPermission($p, SelfService\PermissionManager::METHOD_READ, false)) continue;
 								echo '<tr>';
-								echo '<td><a '.explorerLink('views/packages.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
+								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
 								echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
 								echo '<td>'.$p->created.'</td>';
 								echo '</tr>';
@@ -215,8 +215,8 @@ try {
 							<?php
 							foreach($db->selectAllPackageDependencyByPackageId($package->id) as $dp) {
 								echo '<tr>';
-								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
-								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
+								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
+								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
 								echo '</tr>';
 							}
 							?>
@@ -250,8 +250,8 @@ try {
 							<?php
 							foreach($db->selectAllPackageDependencyByDependentPackageId($package->id) as $dp) {
 								echo '<tr>';
-								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
-								echo '<td><a '.explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
+								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
+								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
 								echo '</tr>';
 							}
 							?>
@@ -294,7 +294,7 @@ try {
 								if(!$cl->checkPermission($db->selectComputer($p->computer_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'"></td>';
-								echo '<td><a '.explorerLink('views/computers.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
+								echo '<td><a '.Html::explorerLink('views/computers.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
 								echo '<td>'.htmlspecialchars($p->installed_by_system_user_username??$p->installed_by_domain_user_username??'').'</td>';
 								echo '<td>'.htmlspecialchars($p->installed).'</td>';
 								echo '</tr>';
@@ -338,12 +338,12 @@ try {
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
 								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
-								echo  '<a '.explorerLink('views/computers.php?id='.$j->computer_id).'>'.htmlspecialchars($j->computer_hostname).'</a>';
+								echo  '<a '.Html::explorerLink('views/computers.php?id='.$j->computer_id).'>'.htmlspecialchars($j->computer_hostname).'</a>';
 								echo '</td>';
 								if($j instanceof Models\DynamicJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.Html::explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
 								} elseif($j instanceof Models\StaticJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.Html::explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
 								}
 								echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 								echo '<td sort_key="'.htmlspecialchars($j->getSortKey()).'">'.htmlspecialchars($j->getPriority().'-'.$j->sequence).'</td>';

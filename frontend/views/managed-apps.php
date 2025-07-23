@@ -41,7 +41,7 @@ try {
 		foreach($iosApps as $a) {
 			$groupLinks = [];
 			foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
-				$groupLinks[] = "<a ".explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
+				$groupLinks[] = "<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='managed_app_ios_id[]' value='".$a->id."'></td>";
 			echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";
@@ -87,7 +87,7 @@ try {
 		foreach($androidApps as $a) {
 			$groupLinks = [];
 			foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
-				$groupLinks[] = "<a ".explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
+				$groupLinks[] = "<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='managed_app_android_id[]' value='".$a->id."'></td>";
 			echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";

@@ -8,7 +8,7 @@ require_once('../session.inc.php');
 <div class='gallery'>
 	<div>
 		<select id='sltNewMobileDeviceGroup' class='resizeVertical' size='10' multiple='true'>
-			<?php echoMobileDeviceGroupOptions($cl); ?>
+			<?php Html::buildGroupOptions($cl, new Models\MobileDeviceGroup()); ?>
 		</select>
 	</div>
 </div>

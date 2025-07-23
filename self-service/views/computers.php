@@ -37,7 +37,7 @@ $commands = Models\Computer::getCommands($ext);
 	<?php } else { ?>
 		<div class='gallery gap'>
 		<?php foreach($computers as $c) { ?>
-			<a class='item blue' <?php echo explorerLink('views/computers.php?id='.$c->id); ?>>
+			<a class='item blue' <?php echo Html::explorerLink('views/computers.php?id='.$c->id); ?>>
 				<img src='<?php echo $c->getIcon(); ?>' class='<?php if(!$c->isOnline($db)) echo 'offline'; ?>'>
 				<h3><?php echo htmlspecialchars($c->hostname); ?></h3>
 			</a>
@@ -55,7 +55,7 @@ $commands = Models\Computer::getCommands($ext);
 		<span class='filler'></span>
 		<?php
 		foreach($commands as $command) {
-			echoCommandButton($command, $computer->hostname);
+			Html::commandButton($command, $computer->hostname);
 		}
 		?>
 	</div>
@@ -208,7 +208,7 @@ $commands = Models\Computer::getCommands($ext);
 								if(count($commands) > 0) {
 									echo '<div class="flyout box">';
 									foreach($commands as $c) {
-										echoCommandButton($c, $n->address, true);
+										Html::commandButton($c, $n->address, true);
 										echo ' ';
 									}
 									echo '</div>';
@@ -306,7 +306,7 @@ $commands = Models\Computer::getCommands($ext);
 								echo '<td>'.htmlspecialchars($p->mountpoint).'</td>';
 								echo '<td>'.htmlspecialchars($p->filesystem).'</td>';
 								echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
-								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG('used').': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG('free').': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
+								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG('used').': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG('free').': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.Html::progressBar($percent, null, null, 'stretch', '').'</td>';
 								echo '</tr>';
 							}
 							?>
@@ -335,7 +335,7 @@ $commands = Models\Computer::getCommands($ext);
 								if(!$cl->checkPermission($db->selectPackage($p->package_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" package_id="'.$p->package_id.'"></td>';
-								echo '<td><a '.explorerLink('views/packages.php?id='.$p->package_id).'>'.htmlspecialchars($p->package_family_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
+								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$p->package_id).'>'.htmlspecialchars($p->package_family_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 								echo '<td>'.htmlspecialchars($p->installed_by_system_user_username??$p->installed_by_domain_user_username??'').'</td>';
 								echo '<td>'.htmlspecialchars($p->installed).'</td>';
 								echo '</tr>';
@@ -379,12 +379,12 @@ $commands = Models\Computer::getCommands($ext);
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
 								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
-								echo  '<a '.explorerLink('views/packages.php?id='.$j->package_id).'>'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
+								echo  '<a '.Html::explorerLink('views/packages.php?id='.$j->package_id).'>'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
 								echo '</td>';
 								if($j instanceof Models\DynamicJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.Html::explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
 								} elseif($j instanceof Models\StaticJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.Html::explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
 								}
 								echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 								echo '<td sort_key="'.htmlspecialchars($j->getSortKey()).'">'.htmlspecialchars($j->getPriority().'-'.$j->sequence).'</td>';

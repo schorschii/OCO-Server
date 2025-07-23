@@ -87,7 +87,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 
 <div class='content-foot'>
 	<div class='filler'></div>
-	<?php echo progressBar(100, 'prgDeploy', 'prgDeployText', 'hidden animated big'); ?>
+	<?php echo Html::progressBar(100, 'prgDeploy', 'prgDeployText', 'hidden animated big'); ?>
 	<button id='btnDeploy' class='primary' onclick='deploySelfService(
 			txtName.value,
 			getAllCheckBoxValues("target_computers", null, false, divTargetComputerList),

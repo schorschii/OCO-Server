@@ -8,7 +8,7 @@ require_once('../session.inc.php');
 <div class='gallery'>
 	<div>
 		<select id='sltNewPackageGroup' class='resizeVertical' size='10' multiple='true'>
-			<?php echoPackageGroupOptions($cl); ?>
+			<?php Html::buildGroupOptions($cl, new Models\PackageGroup()); ?>
 		</select>
 	</div>
 </div>

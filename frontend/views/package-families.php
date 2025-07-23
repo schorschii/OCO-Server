@@ -25,13 +25,13 @@ try {
 	<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_package'); ?></button>
 	<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
 	<span class='filler'></span>
-	<span><a <?php echo explorerLink('views/packages.php'); ?>><?php echo LANG('all_packages'); ?></a></span>
+	<span><a <?php echo Html::explorerLink('views/packages.php'); ?>><?php echo LANG('all_packages'); ?></a></span>
 </div>
 
 <?php if(!empty($subGroups)) { ?>
 <div class='controls subfolders'>
 	<?php foreach($subGroups as $g) { ?>
-		<a class='box' <?php echo explorerLink('views/packages.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
+		<a class='box' <?php echo Html::explorerLink('views/packages.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>
 </div>
 <?php } ?>
@@ -55,7 +55,7 @@ try {
 		foreach($families as $p) {
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='package_family_id[]' value='".$p->id."'></td>";
-			echo "<td><a ".explorerLink('views/packages.php?package_family_id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
+			echo "<td><a ".Html::explorerLink('views/packages.php?package_family_id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->name)."</a></td>";
 			echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
 			echo "<td>".htmlspecialchars($p->package_count)."</td>";
 			echo "<td>".htmlspecialchars($p->newest_package_created??'')."</td>";
@@ -63,7 +63,7 @@ try {
 			if($p->license_count !== null && $p->license_count >= 0) {
 				$licenseUsed = $p->install_count;
 				$licensePercent = $p->license_count==0 ? 100 : $licenseUsed * 100 / $p->license_count;
-				echo "<td>".progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$p->license_count.')')."</td>";
+				echo "<td>".Html::progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$p->license_count.')')."</td>";
 			} else {
 				echo "<td>-</td>";
 			}

@@ -22,7 +22,7 @@ try {
 		<th><?php echo LANG('groups'); ?></th>
 		<td>
 			<select id='sltNewMobileDeviceGroup' class='fullwidth' size='5' multiple='true' autofocus='true'>
-				<?php echoMobileDeviceGroupOptions($cl); ?>
+				<?php Html::buildGroupOptions($cl, new Models\MobileDeviceGroup()); ?>
 			</select>
 		</td>
 	</tr>

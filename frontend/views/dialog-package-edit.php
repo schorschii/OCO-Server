@@ -192,7 +192,7 @@ try {
 
 <div class='controls right'>
 	<button id='btnCloseDialog' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<?php echo progressBar(0, 'prgPackageUpload', 'prgPackageUploadText', 'hidden big'); ?>
+	<?php echo Html::progressBar(0, 'prgPackageUpload', 'prgPackageUploadText', 'hidden big'); ?>
 	<button id='btnEditPackage' class='primary' onclick='editPackage(
 		txtEditPackageId.value,
 		sltEditPackagePackageFamily.value,

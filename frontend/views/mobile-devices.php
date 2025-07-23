@@ -56,13 +56,13 @@ try {
 <div class='controls subfolders'>
 	<?php if($group != null) { ?>
 		<?php if($group->parent_mobile_device_group_id == null) { ?>
-			<a class='box' <?php echo explorerLink('views/mobile-devices.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_mobile_devices'); ?></a>
+			<a class='box' <?php echo Html::explorerLink('views/mobile-devices.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_mobile_devices'); ?></a>
 		<?php } else { $subGroup = $cl->getMobileDeviceGroup($group->parent_mobile_device_group_id); ?>
-			<a class='box' <?php echo explorerLink('views/mobile-devices.php?id='.$group->parent_mobile_device_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
+			<a class='box' <?php echo Html::explorerLink('views/mobile-devices.php?id='.$group->parent_mobile_device_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
 		<?php } ?>
 	<?php } ?>
 	<?php foreach($subGroups as $g) { ?>
-		<a class='box' <?php echo explorerLink('views/mobile-devices.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
+		<a class='box' <?php echo Html::explorerLink('views/mobile-devices.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>
 </div>
 <?php } ?>
@@ -117,7 +117,7 @@ try {
 			echo "<td><input type='checkbox' name='mobile_device_id[]' value='".$md->id."'></td>";
 			echo "<td>";
 			echo  "<img src='".$md->getIcon()."' class='".($md->isOnline() ? 'online' : 'offline')."' title='".($md->isOnline() ? LANG('enrolled') : LANG('not_enrolled'))."'>&nbsp;";
-			echo  "<a ".explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->getDisplayName())."</a>";
+			echo  "<a ".Html::explorerLink('views/mobile-device-details.php?id='.$md->id).">".htmlspecialchars($md->getDisplayName())."</a>";
 			echo "</td>";
 			echo "<td>".htmlspecialchars($md->serial)."</td>";
 			echo "<td>".htmlspecialchars($md->os)."</td>";

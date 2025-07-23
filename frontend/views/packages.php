@@ -43,12 +43,12 @@ try {
 	</div>
 	<div class='controls subfolders'>
 		<?php if($group->parent_package_group_id == null) { ?>
-			<a class='box' <?php echo explorerLink('views/package-families.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('package_families'); ?></a>
+			<a class='box' <?php echo Html::explorerLink('views/package-families.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('package_families'); ?></a>
 		<?php } else { $subGroup = $cl->getPackageGroup($group->parent_package_group_id); ?>
-			<a class='box' <?php echo explorerLink('views/packages.php?id='.$group->parent_package_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
+			<a class='box' <?php echo Html::explorerLink('views/packages.php?id='.$group->parent_package_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
 		<?php } ?>
 		<?php foreach($subGroups as $g) { ?>
-			<a class='box' <?php echo explorerLink('views/packages.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
+			<a class='box' <?php echo Html::explorerLink('views/packages.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 		<?php } ?>
 	</div>
 <?php } elseif($family !== null) {
@@ -66,7 +66,7 @@ try {
 		<?php } ?>
 		<button onclick='confirmRemovePackageFamily([<?php echo htmlspecialchars($family->id,ENT_QUOTES); ?>], spnPackageFamilyName.innerText, "views/package-families.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_package_family'); ?></button>
 		<span class='filler'></span>
-		<span><a <?php echo explorerLink('views/package-families.php'); ?>><?php echo LANG('package_families'); ?></a></span>
+		<span><a <?php echo Html::explorerLink('views/package-families.php'); ?>><?php echo LANG('package_families'); ?></a></span>
 	</div>
 	<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $family->id; ?>, this.files[0])'></input>
 	<span id='spnPackageFamilyNotes'>
@@ -81,7 +81,7 @@ try {
 		<table class='list fullwidth marginbottom'>
 			<tr>
 				<th><?php echo LANG('licenses'); ?></th>
-				<td><?php echo progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$family->license_count.')'); ?></td>
+				<td><?php echo Html::progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$family->license_count.')'); ?></td>
 			</tr>
 		</table>
 	<?php } ?>
@@ -95,12 +95,12 @@ try {
 		<button onclick='refreshContentPackageNew()' <?php if(!$permissionCreatePackage) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_package'); ?></button>
 		<button onclick='createPackageGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
 		<span class='filler'></span>
-		<span><a <?php echo explorerLink('views/package-families.php'); ?>><?php echo LANG('package_families'); ?></a></span>
+		<span><a <?php echo Html::explorerLink('views/package-families.php'); ?>><?php echo LANG('package_families'); ?></a></span>
 	</div>
 	<?php if(!empty($subGroups)) { ?>
 	<div class='controls subfolders'>
 		<?php foreach($subGroups as $g) { ?>
-			<a class='box' <?php echo explorerLink('views/packages.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
+			<a class='box' <?php echo Html::explorerLink('views/packages.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 		<?php } ?>
 	</div>
 	<?php } ?>
@@ -134,8 +134,8 @@ try {
 			if($group !== null) echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."' onkeyup='handlePackageReorderByKeyboard(event, ".$group->id.", ".$p->package_group_member_sequence.")'></td>";
 			else echo "<td><input type='checkbox' name='package_id[]' value='".$p->id."'></td>";
 
-			if($family==null) echo "<td><a ".explorerLink('views/packages.php?package_family_id='.$p->package_family_id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
-			echo "<td><a ".explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->version)."</a></td>";
+			if($family==null) echo "<td><a ".Html::explorerLink('views/packages.php?package_family_id='.$p->package_family_id)." ondragstart='return false'>".htmlspecialchars($p->package_family_name)."</a></td>";
+			echo "<td><a ".Html::explorerLink('views/package-details.php?id='.$p->id)." ondragstart='return false'>".htmlspecialchars($p->version)."</a></td>";
 			echo "<td>".htmlspecialchars($p->created_by_system_user_username??'')."</td>";
 			echo "<td sort_key='".htmlspecialchars($size ? $size : 0)."'>".($size ? htmlspecialchars(niceSize($size)) : LANG('not_found'))."</td>";
 			echo "<td>".htmlspecialchars(shorter($p->notes))."</td>";
@@ -143,7 +143,7 @@ try {
 			if($p->license_count !== null && $p->license_count >= 0) {
 				$licenseUsed = $p->install_count;
 				$licensePercent = $p->license_count==0 ? 100 : $licenseUsed * 100 / $p->license_count;
-				echo "<td>".progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$p->license_count.')')."</td>";
+				echo "<td>".Html::progressBar($licensePercent, null, null, 'stretch', '', '('.$licenseUsed.'/'.$p->license_count.')')."</td>";
 			} else {
 				echo "<td>-</td>";
 			}

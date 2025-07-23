@@ -31,7 +31,7 @@ try {
 		<span class='filler'></span>
 		<?php
 		foreach(Models\MobileDevice::getCommands($ext) as $command) {
-			echoCommandButton($command, $md->getDisplayName());
+			Html::commandButton($command, $md->getDisplayName());
 		}
 		?>
 	</div>
@@ -109,7 +109,7 @@ try {
 								$res = $db->selectAllMobileDeviceGroupByMobileDeviceId($md->id);
 								$i = 0;
 								foreach($res as $group) {
-									echo "<a class='subbuttons' ".explorerLink('views/mobile-devices.php?id='.$group->id).">".wrapInSpanIfNotEmpty($group->getBreadcrumbString());
+									echo "<a class='subbuttons' ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".Html::wrapInSpanIfNotEmpty($group->getBreadcrumbString());
 									echo "<button onclick='event.stopPropagation();removeMobileDeviceFromGroup([".$md->id."], ".$group->id.");return false' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
 									echo "</a>";
 									if(++$i != count($res)) { echo "<br>"; }
@@ -151,43 +151,43 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('supervised'); ?></th>
-								<td><?php echoDictTable($info['IsSupervised']??null); ?></td>
+								<td><?php Html::dictTable($info['IsSupervised']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('app_analytics'); ?></th>
-								<td><?php echoDictTable($info['AppAnalyticsEnabled']??null); ?></td>
+								<td><?php Html::dictTable($info['AppAnalyticsEnabled']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('diagnostic_submission'); ?></th>
-								<td><?php echoDictTable($info['DiagnosticSubmissionEnabled']??null); ?></td>
+								<td><?php Html::dictTable($info['DiagnosticSubmissionEnabled']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('cloud_backup'); ?></th>
-								<td><?php echoDictTable($info['IsCloudBackupEnabled']??null); ?></td>
+								<td><?php Html::dictTable($info['IsCloudBackupEnabled']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('device_locator_service'); ?></th>
-								<td><?php echoDictTable($info['IsDeviceLocatorServiceEnabled']??null); ?></td>
+								<td><?php Html::dictTable($info['IsDeviceLocatorServiceEnabled']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('do_not_disturb'); ?></th>
-								<td><?php echoDictTable($info['IsDoNotDisturbInEffect']??null); ?></td>
+								<td><?php Html::dictTable($info['IsDoNotDisturbInEffect']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('lost_mode'); ?></th>
-								<td><?php echoDictTable($info['IsMDMLostModeEnabled']??null); ?></td>
+								<td><?php Html::dictTable($info['IsMDMLostModeEnabled']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('multi_user'); ?></th>
-								<td><?php echoDictTable($info['IsMultiUser']??null); ?></td>
+								<td><?php Html::dictTable($info['IsMultiUser']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('personal_hotspot'); ?></th>
-								<td><?php echoDictTable($info['PersonalHotspotEnabled']??null); ?></td>
+								<td><?php Html::dictTable($info['PersonalHotspotEnabled']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('data_roaming'); ?></th>
-								<td><?php echoDictTable($info['DataRoamingEnabled']??null); ?></td>
+								<td><?php Html::dictTable($info['DataRoamingEnabled']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('cellular_technology'); ?></th>
@@ -205,7 +205,7 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('sim_slots'); ?></th>
-								<td><?php echoDictTable($info['ServiceSubscriptions']??null); ?></td>
+								<td><?php Html::dictTable($info['ServiceSubscriptions']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('bluetooth_mac'); ?></th>
@@ -221,7 +221,7 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('battery_status'); ?></th>
-								<td><?php if($info['BatteryLevel']??0) echo progressBar(($info['BatteryLevel']??0)*100, null, null, 'stretch'); ?></td>
+								<td><?php if($info['BatteryLevel']??0) echo Html::progressBar(($info['BatteryLevel']??0)*100, null, null, 'stretch'); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('storage'); ?></th>
@@ -230,7 +230,7 @@ try {
 								if($total) {
 									$free = $info['AvailableDeviceCapacity'] ?? 0;
 									$used = $total - $free;
-									echo progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
+									echo Html::progressBar($used*100/$total, null, null, 'stretch', '', round($used,2).' / '.round($total,2).' GB');
 								}
 								?></td>
 							</tr>
@@ -256,7 +256,7 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('policy_compliant'); ?></th>
-								<td><?php echoDictTable($info['policyCompliant']??null); ?></td>
+								<td><?php Html::dictTable($info['policyCompliant']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('api_level'); ?></th>
@@ -307,7 +307,7 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('sim_slots'); ?></th>
-								<td><?php echoDictTable($info['networkInfo']['telephonyInfos']??''); ?></td>
+								<td><?php Html::dictTable($info['networkInfo']['telephonyInfos']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('wifi_mac'); ?></th>
@@ -323,19 +323,19 @@ try {
 							</tr>
 							<tr>
 								<th><?php echo LANG('encrypted'); ?></th>
-								<td><?php echoDictTable($info['deviceSettings']['isEncrypted']??null); ?></td>
+								<td><?php Html::dictTable($info['deviceSettings']['isEncrypted']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('app_verification_enabled'); ?></th>
-								<td><?php echoDictTable($info['deviceSettings']['verifyAppsEnabled']??null); ?></td>
+								<td><?php Html::dictTable($info['deviceSettings']['verifyAppsEnabled']??null); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('common_criteria_mode'); ?></th>
 								<td><?php $ccm = $info['commonCriteriaModeInfo']['commonCriteriaModeStatus']??null;
 								if($ccm === 'COMMON_CRITERIA_MODE_ENABLED') {
-									echoDictTable(true);
+									Html::dictTable(true);
 									echo htmlspecialchars($info['commonCriteriaModeInfo']['policySignatureVerificationStatus']??'');
-								} elseif($ccm !== null) echoDictTable(false);
+								} elseif($ccm !== null) Html::dictTable(false);
 								?></td>
 							</tr>
 						</table>
@@ -397,7 +397,7 @@ try {
 								<?php foreach(json_decode($md->policy??'', true) ?? [] as $key => $value) { ?>
 									<tr>
 										<td><?php echo htmlspecialchars($key); ?></td>
-										<td><?php echo echoDictTable($value); ?></td>
+										<td><?php echo Html::dictTable($value); ?></td>
 									</tr>
 								<?php } ?>
 							</tbody>

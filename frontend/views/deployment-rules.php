@@ -69,14 +69,14 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG('computer_group'); ?></th>
 				<td>
-					<?php echo '<a '.explorerLink('views/computers.php?id='.$container->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString()).'</a>'; ?>
+					<?php echo '<a '.Html::explorerLink('views/computers.php?id='.$container->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString()).'</a>'; ?>
 					<span id='spnDeploymentRuleComputerGroupId' class='rawvalue'><?php echo htmlspecialchars($container->computer_group_id); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('package_group'); ?></th>
 				<td>
-					<?php echo '<a '.explorerLink('views/packages.php?id='.$container->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString()).'</a>'; ?>
+					<?php echo '<a '.Html::explorerLink('views/packages.php?id='.$container->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString()).'</a>'; ?>
 					<span id='spnDeploymentRulePackageGroupId' class='rawvalue'><?php echo htmlspecialchars($container->package_group_id); ?></span>
 				</td>
 			</tr>
@@ -99,7 +99,7 @@ if(!empty($_GET['id'])) {
 		<table class='list metadata'>
 			<tr>
 				<th><?php echo LANG('enforcement'); ?></th>
-				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, 'stretch', ''); ?></td>
+				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo Html::progressBar($percent, null, null, 'stretch', ''); ?></td>
 			</tr>
 		</table>
 	</div>
@@ -124,8 +124,8 @@ if(!empty($_GET['id'])) {
 			<?php foreach($jobs as $job) { ?>
 				<tr>
 					<td><input type='checkbox' name='job_id[]' value='<?php echo $job->id; ?>'></td>
-					<td><a <?php echo explorerLink('views/computer-details.php?id='.$job->computer_id); ?>><?php echo htmlspecialchars($job->computer_hostname); ?></a></td>
-					<td><a <?php echo explorerLink('views/package-details.php?id='.$job->package_id); ?>><?php echo htmlspecialchars($job->package_family_name).' ('.htmlspecialchars($job->package_version).')'; ?></a></td>
+					<td><a <?php echo Html::explorerLink('views/computer-details.php?id='.$job->computer_id); ?>><?php echo htmlspecialchars($job->computer_hostname); ?></a></td>
+					<td><a <?php echo Html::explorerLink('views/package-details.php?id='.$job->package_id); ?>><?php echo htmlspecialchars($job->package_family_name).' ('.htmlspecialchars($job->package_version).')'; ?></a></td>
 					<td class='middle monospace' title='<?php echo htmlspecialchars($job->procedure, ENT_QUOTES); ?>'>
 						<?php if($job->is_uninstall == 0) { ?>
 							<img src='img/install.dyn.svg' title='<?php echo LANG('install'); ?>'>
@@ -238,15 +238,15 @@ if(!empty($_GET['id'])) {
 				echo "<td><input type='checkbox' name='deployment_rule_id[]' value='".$dr->id."'></td>";
 				echo "<td class='middle'>";
 				echo  "<img src='img/".$dr->getStatus($jobs).".dyn.svg' class='".($dr->enabled?'online':'offline')."'>&nbsp;";
-				echo  "<a ".explorerLink('views/deployment-rules.php?id='.$dr->id).">".htmlspecialchars($dr->name)."</a>";
+				echo  "<a ".Html::explorerLink('views/deployment-rules.php?id='.$dr->id).">".htmlspecialchars($dr->name)."</a>";
 				echo "</td>";
 				echo "<td>".htmlspecialchars($dr->created_by_system_user_username??'')."</td>";
-				echo "<td><a ".explorerLink('views/computers.php?id='.$dr->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString())."</a></td>";
-				echo "<td><a ".explorerLink('views/packages.php?id='.$dr->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString())."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/computers.php?id='.$dr->computer_group_id).'>'.htmlspecialchars($cGroup->getBreadcrumbString())."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/packages.php?id='.$dr->package_group_id).'>'.htmlspecialchars($pGroup->getBreadcrumbString())."</a></td>";
 				echo "<td>".htmlspecialchars($dr->created)."</td>";
 				echo "<td>".htmlspecialchars($dr->priority)."</td>";
 				echo "<td>".htmlspecialchars(shorter($dr->notes))."</td>";
-				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".progressBar($percent, null, null, 'stretch', '')."</td>";
+				echo "<td sort_key='".$percent."' title='".htmlspecialchars($done.' / '.count($jobs))."'>".Html::progressBar($percent, null, null, 'stretch', '')."</td>";
 				echo "</tr>";
 			} ?>
 			</tbody>

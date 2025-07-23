@@ -8,7 +8,7 @@ require_once('../session.inc.php');
 <div class='gallery'>
 	<div>
 		<select id='sltNewComputerGroup' class='resizeVertical' size='10' multiple='true'>
-			<?php echoComputerGroupOptions($cl); ?>
+			<?php Html::buildGroupOptions($cl, new Models\ComputerGroup()); ?>
 		</select>
 	</div>
 </div>

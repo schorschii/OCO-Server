@@ -44,7 +44,7 @@ try {
 	<?php } else { ?>
 		<div class='gallery gap'>
 		<?php foreach($containers as $jc) { ?>
-			<a class='item red' <?php echo explorerLink('views/job-containers.php?id='.$jc->id); ?>>
+			<a class='item red' <?php echo Html::explorerLink('views/job-containers.php?id='.$jc->id); ?>>
 				<img src='img/<?php echo $jc->getStatus($db->selectAllStaticJobByJobContainer($jc->id)); ?>.dyn.svg'>
 				<h3><?php echo htmlspecialchars($jc->name); ?></h3>
 			</a>
@@ -123,7 +123,7 @@ try {
 		<table class='list metadata'>
 			<tr>
 				<th><?php echo LANG('progress'); ?></th>
-				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo progressBar($percent, null, null, 'stretch', ''); ?></td>
+				<td title='<?php echo htmlspecialchars($done.' / '.count($jobs)); ?>'><?php echo Html::progressBar($percent, null, null, 'stretch', ''); ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('total_runtime'); ?></th>
@@ -196,8 +196,8 @@ try {
 			<?php foreach($jobs as $job) { ?>
 				<tr>
 					<td><input type='checkbox' name='job_id[]' value='<?php echo $job->id; ?>'></td>
-					<td><a <?php echo explorerLink('views/computers.php?id='.$job->computer_id); ?>><?php echo htmlspecialchars($job->computer_hostname); ?></a></td>
-					<td><a <?php echo explorerLink('views/packages.php?id='.$job->package_id); ?>><?php echo htmlspecialchars($job->package_family_name).' ('.htmlspecialchars($job->package_version).')'; ?></a></td>
+					<td><a <?php echo Html::explorerLink('views/computers.php?id='.$job->computer_id); ?>><?php echo htmlspecialchars($job->computer_hostname); ?></a></td>
+					<td><a <?php echo Html::explorerLink('views/packages.php?id='.$job->package_id); ?>><?php echo htmlspecialchars($job->package_family_name).' ('.htmlspecialchars($job->package_version).')'; ?></a></td>
 					<td class='middle monospace' title='<?php echo htmlspecialchars($job->procedure, ENT_QUOTES); ?>'>
 						<?php if($job->is_uninstall == 0) { ?>
 							<img src='img/install.dyn.svg' title='<?php echo LANG('install'); ?>'>

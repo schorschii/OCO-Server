@@ -48,7 +48,7 @@ if(!empty($_GET['id'])) {
 				}
 				$counter ++;
 				echo "<tr>";
-				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 				echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
 				echo "</tr>";
@@ -91,7 +91,7 @@ if(!empty($_GET['id'])) {
 				}
 				$counter ++;
 				echo "<tr>";
-				echo "<td><a ".explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
+				echo "<td><a ".Html::explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
 				echo "<td>".htmlspecialchars($logon->console)."</td>";
 				echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
 				echo "</tr>";
@@ -152,7 +152,7 @@ if(!empty($_GET['id'])) {
 		foreach($domainUsers as $u) {
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."'></td>";
-			echo "<td><a ".explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a></td>";
+			echo "<td><a ".Html::explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a></td>";
 			echo "<td>".htmlspecialchars($u->display_name)."</td>";
 			echo "<td>".htmlspecialchars($u->logon_amount)."</td>";
 			echo "<td>".htmlspecialchars($u->computer_amount)."</td>";

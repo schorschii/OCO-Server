@@ -54,13 +54,13 @@ try {
 <div class='controls subfolders'>
 	<?php if($group != null) { ?>
 		<?php if($group->parent_computer_group_id == null) { ?>
-			<a class='box' <?php echo explorerLink('views/computers.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_computer'); ?></a>
+			<a class='box' <?php echo Html::Html::explorerLink('views/computers.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_computer'); ?></a>
 		<?php } else { $subGroup = $cl->getComputerGroup($group->parent_computer_group_id); ?>
-			<a class='box' <?php echo explorerLink('views/computers.php?id='.$group->parent_computer_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
+			<a class='box' <?php echo Html::Html::explorerLink('views/computers.php?id='.$group->parent_computer_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
 		<?php } ?>
 	<?php } ?>
 	<?php foreach($subGroups as $g) { ?>
-		<a class='box' <?php echo explorerLink('views/computers.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
+		<a class='box' <?php echo Html::Html::explorerLink('views/computers.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
 	<?php } ?>
 </div>
 <?php } ?>
@@ -99,7 +99,7 @@ try {
 			echo "<td><input type='checkbox' name='computer_id[]' value='".$c->id."'></td>";
 			echo "<td>";
 			echo  "<img src='".$c->getIcon()."' class='".($online ? 'online' : 'offline')."' title='".($online ? LANG('online') : LANG('offline'))."'>&nbsp;";
-			echo  "<a ".explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a>";
+			echo  "<a ".Html::Html::explorerLink('views/computer-details.php?id='.$c->id).">".htmlspecialchars($c->hostname)."</a>";
 			echo "</td>";
 			echo "<td>".htmlspecialchars($c->os)."</td>";
 			echo "<td>".htmlspecialchars($c->os_version)."</td>";

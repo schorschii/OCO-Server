@@ -47,7 +47,7 @@ foreach($services as $s) {
 		<span class='filler'></span>
 		<?php
 		foreach($commands as $command) {
-			echoCommandButton($command, $computer->hostname);
+			Html::commandButton($command, $computer->hostname);
 		}
 		?>
 	</div>
@@ -169,7 +169,7 @@ foreach($services as $s) {
 						</tr>
 						<tr>
 							<th><?php echo LANG('battery_status'); ?></th>
-							<td><?php if(!empty($computer->battery_level)) echo progressBar(($computer->battery_level*100), null, null, 'stretch', '', ($computer->battery_level*100).'%'.($computer->battery_status==1 ? ' ('.LANG('charging').')' : '')); ?></td>
+							<td><?php if(!empty($computer->battery_level)) echo Html::progressBar(($computer->battery_level*100), null, null, 'stretch', '', ($computer->battery_level*100).'%'.($computer->battery_status==1 ? ' ('.LANG('charging').')' : '')); ?></td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('created'); ?></th>
@@ -201,7 +201,7 @@ foreach($services as $s) {
 								$res = $db->selectAllComputerGroupByComputerId($computer->id);
 								$i = 0;
 								foreach($res as $group) {
-									echo "<a class='subbuttons' ".explorerLink('views/computers.php?id='.$group->id).">".wrapInSpanIfNotEmpty($group->getBreadcrumbString());
+									echo "<a class='subbuttons' ".Html::explorerLink('views/computers.php?id='.$group->id).">".Html::wrapInSpanIfNotEmpty($group->getBreadcrumbString());
 									echo "<button onclick='event.stopPropagation();removeComputerFromGroup([".$computer->id."], ".$group->id.");return false' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
 									echo "</a>";
 									if(++$i != count($res)) { echo "<br>"; }
@@ -238,7 +238,7 @@ foreach($services as $s) {
 								}
 								$counter ++;
 								echo "<tr>";
-								echo "<td><a ".explorerLink('views/domain-users.php?id='.$logon->domain_user_id).">".htmlspecialchars($logon->domain_user_username)."</a></td>";
+								echo "<td><a ".Html::explorerLink('views/domain-users.php?id='.$logon->domain_user_id).">".htmlspecialchars($logon->domain_user_username)."</a></td>";
 								echo "<td>".htmlspecialchars($logon->domain_user_display_name)."</td>";
 								echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 								echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
@@ -304,7 +304,7 @@ foreach($services as $s) {
 								if(count($commands) > 0) {
 									echo '<div class="flyout box">';
 									foreach($commands as $c) {
-										echoCommandButton($c, $n->address, true);
+										Html::commandButton($c, $n->address, true);
 										echo ' ';
 									}
 									echo '</div>';
@@ -406,7 +406,7 @@ foreach($services as $s) {
 									.($p->encrypted ? ' <img src="img/lock.dyn.svg" title="'.LANG('encrypted').'">' : '')
 									.'</td>';
 								echo '<td sort_key="'.htmlspecialchars($p->size).'">'.htmlspecialchars(niceSize($p->size)).'</td>';
-								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG('used').': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG('free').': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.progressBar($percent, null, null, 'stretch', '').'</td>';
+								echo '<td sort_key="'.htmlspecialchars($percent).'" title="'.LANG('used').': '.htmlspecialchars(niceSize($p->size-$p->free,true,1,true)).', '.LANG('free').': '.htmlspecialchars(niceSize($p->free,true,1,true)).'">'.Html::progressBar($percent, null, null, 'stretch', '').'</td>';
 								echo '</tr>';
 							}
 							?>
@@ -464,7 +464,7 @@ foreach($services as $s) {
 							foreach($db->selectAllComputerPackageByComputerId($computer->id) as $p) {
 								echo '<tr>';
 								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" package_id="'.$p->package_id.'"></td>';
-								echo '<td><a '.explorerLink('views/package-details.php?id='.$p->package_id).'>'.htmlspecialchars($p->package_family_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
+								echo '<td><a '.Html::explorerLink('views/package-details.php?id='.$p->package_id).'>'.htmlspecialchars($p->package_family_name).' ('.htmlspecialchars($p->package_version).')</a></td>';
 								echo '<td>'.htmlspecialchars($p->installed_by_system_user_username??$p->installed_by_domain_user_username??'').'</td>';
 								echo '<td>'.htmlspecialchars($p->installed).'</td>';
 								echo '</tr>';
@@ -509,12 +509,12 @@ foreach($services as $s) {
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
 								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
-								echo  '<a '.explorerLink('views/package-details.php?id='.$j->package_id).'>'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
+								echo  '<a '.Html::explorerLink('views/package-details.php?id='.$j->package_id).'>'.htmlspecialchars($j->package_family_name).' ('.htmlspecialchars($j->package_version).')</a>';
 								echo '</td>';
 								if($j instanceof Models\DynamicJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.Html::explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
 								} elseif($j instanceof Models\StaticJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
+									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.Html::explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
 								}
 								echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
 								echo '<td sort_key="'.htmlspecialchars($j->getSortKey()).'">'.htmlspecialchars($j->getPriority().'-'.$j->sequence).'</td>';
@@ -549,8 +549,8 @@ foreach($services as $s) {
 							<?php
 							foreach($db->selectAllComputerSoftwareByComputerId($computer->id) as $s) {
 								echo "<tr>";
-								echo "<td><a ".explorerLink('views/software.php?name='.urlencode($s->software_name)).">".htmlspecialchars($s->software_name)."</a></td>";
-								echo "<td><a ".explorerLink('views/software.php?id='.$s->software_id).">".htmlspecialchars($s->software_version)."</a></td>";
+								echo "<td><a ".Html::explorerLink('views/software.php?name='.urlencode($s->software_name)).">".htmlspecialchars($s->software_name)."</a></td>";
+								echo "<td><a ".Html::explorerLink('views/software.php?id='.$s->software_id).">".htmlspecialchars($s->software_version)."</a></td>";
 								echo "<td>".htmlspecialchars($s->software_description)."</td>";
 								echo "</tr>";
 							}

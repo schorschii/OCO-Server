@@ -45,7 +45,7 @@ $license = new LicenseCheck($db);
 				<div><?php echo LANG('usage'); ?></div>
 				<?php
 				$percent = round($sysload/$ncpu*100);
-				echo progressBar($percent, null, null, '', 'width:280px');
+				echo Html::progressBar($percent, null, null, '', 'width:280px');
 				?>
 			</div>
 			<div class=' version'>
@@ -56,7 +56,7 @@ $license = new LicenseCheck($db);
 				<?php
 				if($total !== false && $free !== false) {
 					$percent = round($used/$total*100);
-					echo progressBar($percent, null, null, '', 'width:280px');
+					echo Html::progressBar($percent, null, null, '', 'width:280px');
 				} else {
 					echo '???';
 				}
