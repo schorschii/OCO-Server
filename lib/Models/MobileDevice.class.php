@@ -72,5 +72,9 @@ class MobileDevice {
 		}
 		return $addrs;
 	}
+	static function getCommands(\ExtensionController $ext) {
+		$extensionCommands = $ext->getAggregatedConf('mobile-device-commands');
+		return array_merge([], $extensionCommands);
+	}
 
 }

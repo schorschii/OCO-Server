@@ -196,3 +196,28 @@ function echoReportGroupOptions(CoreLogic $cl, $parentId=null, $indent=0, $prese
 		echoReportGroupOptions($cl, $g->id, $indent+1, $preselect);
 	}
 }
+
+function echoCommandButton($c, $target, $link=false) {
+	if(empty($c) || !isset($c['command']) || !isset($c['name'])) return;
+	if(startsWith($c['command'], 'rdp://') && strpos($_SERVER['HTTP_USER_AGENT']??'', 'Mac') !== false) {
+		// for macOS "Windows App", see https://learn.microsoft.com/en-us/windows-server/remote/remote-desktop-services/clients/remote-desktop-uri#legacy-rdp-uri-scheme
+		$actionUrl = str_replace('$$TARGET$$', http_build_query(['full address'=>'s:'.$target]), $c['command']);
+	} else {
+		$actionUrl = str_replace('$$TARGET$$', $target, $c['command']);
+	}
+	$description = LANG($c['description']);
+	if($link) {
+		echo "<a title='".htmlspecialchars($description,ENT_QUOTES)."' href='".htmlspecialchars($actionUrl,ENT_QUOTES)."' ".($c['new_tab'] ? "target='_blank'" : "").">"
+			. htmlspecialchars($c['name'])
+			. "</a>";
+	} else {
+		if($c['new_tab'])
+			$onclick = "window.open(\"".htmlspecialchars($actionUrl,ENT_QUOTES)."\")";
+		else
+			$onclick = "window.location=\"".htmlspecialchars($actionUrl,ENT_QUOTES)."\"";
+		echo "<button title='".htmlspecialchars($description,ENT_QUOTES)."' onclick='".$onclick."'>"
+			. (empty($c['icon']) ? "" : "<img src='".$c['icon']."'>&nbsp;")
+			. htmlspecialchars($c['name'])
+			. "</button>";
+	}
+}

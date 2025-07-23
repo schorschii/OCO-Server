@@ -29,6 +29,11 @@ try {
 		<button onclick='showDialogAddMobileDeviceToGroup(<?php echo $md->id; ?>)' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 		<button onclick='confirmRemoveMobileDevice([<?php echo $md->id; ?>], event, spnMobileDeviceSerial.innerText, "views/mobile-devices.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
+		<?php
+		foreach(Models\MobileDevice::getCommands($ext) as $command) {
+			echoCommandButton($command, $md->getDisplayName());
+		}
+		?>
 	</div>
 </div>
 
