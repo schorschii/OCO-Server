@@ -1201,10 +1201,6 @@ a.subbuttons > button {
 	letter-spacing: 0.2px;
 	font-size: 16px;
 }
-.tabbuttons a.active {
-	border-color: #0079B8;
-	color: #0079B8;
-}
 .tabcontents > * {
 	display: none;
 }
@@ -1213,7 +1209,8 @@ a.subbuttons > button {
 }
 .actionmenu a:hover,
 .actionemnu a:focus,
-.actionmenu a:active {
+.actionmenu a:active,
+.tabbuttons a.active {
 	border-color: #0079B8;
 	color: #0079B8;
 }
