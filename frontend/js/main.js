@@ -226,13 +226,7 @@ function showDialogHTML(title='', text='', controls=false, size=false, monospace
 	);
 	// set focus
 	animation.onfinish = (event) => {
-		var childs = obj('dialog-text').querySelectorAll('*');
-		for(var i = 0; i < childs.length; i++) {
-			if(childs[i].getAttribute('autofocus')) {
-				childs[i].focus();
-				break;
-			}
-		}
+		setAutofocus(obj('dialog-text'));
 	};
 }
 function hideDialog() {
@@ -245,6 +239,15 @@ function hideDialog() {
 		obj('dialog-title').innerText = '';
 		obj('dialog-text').innerHTML = '';
 	};
+}
+function setAutofocus(container) {
+	var childs = container.querySelectorAll('*');
+	for(var i = 0; i < childs.length; i++) {
+		if(childs[i].getAttribute('autofocus')) {
+			childs[i].focus();
+			break;
+		}
+	}
 }
 function escapeHTML(unsafe) {
 	return unsafe
@@ -294,6 +297,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 						else document.title = LANG['app_name'];
 						// init newly loaded tables
 						initTables(object);
+						setAutofocus(object);
 					}
 					initLinks(object);
 				}
