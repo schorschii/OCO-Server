@@ -2,7 +2,7 @@
 
 namespace Models;
 
-class SystemUser {
+class SystemUser implements IUser {
 
 	// attributes
 	public $id;
@@ -23,5 +23,13 @@ class SystemUser {
 	// joined system user role attributes
 	public $system_user_role_name;
 	public $system_user_role_permissions;
+
+	// functions
+	public function getRoleName() {
+		return $this->system_user_role_name;
+	}
+	public function getRolePermissions() {
+		return $this->system_user_role_permissions;
+	}
 
 }

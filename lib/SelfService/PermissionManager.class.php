@@ -2,36 +2,14 @@
 
 namespace SelfService;
 
-class PermissionManager {
+class PermissionManager extends \PermissionManager {
 
-	const METHOD_CREATE   = 'create';
-	const METHOD_READ     = 'read';
-	const METHOD_WOL      = 'wol';
-	const METHOD_WRITE    = 'write';
-	const METHOD_DEPLOY   = 'deploy';
-	const METHOD_DOWNLOAD = 'download';
-	const METHOD_DELETE   = 'delete';
-
-	private /*\DatabaseController*/ $db;
-	private /*\Models\DomainUser*/ $domainUser;
-	private /*Array*/ $permData;
-
-	function __construct(\DatabaseController $db, \Models\DomainUser $domainUser) {
-		$this->db = $db;
-		$this->domainUser = $domainUser;
-		$this->permData = json_decode($domainUser->domain_user_role_permissions, true);
-		if(empty($this->permData)) { // json_decode returns false on error; it is intentional that we also throw an error if the permission list is empty
-			throw new \Exception('Invalid or no permission definition data found for this system user!');
-		}
+	function __construct(\DatabaseController $db, \Models\DomainUser $user) {
+		// with this constructor, we ensure that $user is typeof DomainUser
+		parent::__construct($db, $user);
 	}
 
-	public function getPermissionEntry($ressource, String $method=null) {
-		if(is_object($ressource)) $ressource = get_class($ressource);
-		if(!isset($this->permData[$ressource])) return false;
-		return $this->permData[$ressource];
-	}
-
-	public function hasPermission($ressource, String $method): bool {
+	public function hasPermission($ressource, String $method, $ressourceParentGroups=null): bool {
 		// check special permissions defined in array root if no object was given
 		if(empty($ressource)) {
 			if(!isset($this->permData[$method])) return false;
@@ -67,42 +45,12 @@ class PermissionManager {
 			);
 
 		} else {
+			$ressourceGroupType = null;
+			if(!empty($ressourceParentGroups) && is_array($ressourceParentGroups)) $ressourceGroupType = get_class($ressourceParentGroups[0]);
 			return $this->checkRessourcePermission(
-				get_class($ressource), null, null, $ressource, $method
+				get_class($ressource), $ressourceGroupType, $ressourceParentGroups, $ressource, $method
 			);
 		}
-	}
-
-	// as defined, all parent group access privileges also apply to sub groups
-	// so we query all parent groups to also check the privileges of them
-	private function getParentGroupsRecursively(Object $groupRessource) {
-		$parentGroups = [$groupRessource];
-		if($groupRessource instanceof \Models\ComputerGroup) {
-			while($groupRessource->parent_computer_group_id != null) {
-				$parentGroup = $this->db->selectComputerGroup($groupRessource->parent_computer_group_id);
-				$parentGroups[] = $parentGroup;
-				$groupRessource = $parentGroup;
-			}
-
-		} else if($groupRessource instanceof \Models\PackageGroup) {
-			while($groupRessource->parent_package_group_id != null) {
-				$parentGroup = $this->db->selectPackageGroup($groupRessource->parent_package_group_id);
-				$parentGroups[] = $parentGroup;
-				$groupRessource = $parentGroup;
-			}
-
-		} else if($groupRessource instanceof \Models\ReportGroup) {
-			while($groupRessource->parent_report_group_id != null) {
-				$parentGroup = $this->db->selectReportGroup($groupRessource->parent_report_group_id);
-				$parentGroups[] = $parentGroup;
-				$groupRessource = $parentGroup;
-			}
-
-		} else {
-			throw new \InvalidArgumentException('Permission check for this ressource type is not implemented');
-		}
-
-		return $parentGroups;
 	}
 
 	// self service computer permissions can be granted by time frame, which means that the
@@ -112,7 +60,7 @@ class PermissionManager {
 			if(is_bool($value)) {
 				return $value;
 			} else {
-				$lastLogon = $this->db->selectLastDomainUserLogonByDomainUserIdAndComputerId($this->domainUser->id, $ressource->id);
+				$lastLogon = $this->db->selectLastDomainUserLogonByDomainUserIdAndComputerId($this->user->id, $ressource->id);
 				if(!$lastLogon) return false;
 				$lastLogonUnixTime = strtotime($lastLogon->timestamp);
 				return (time() - $lastLogonUnixTime < intval($value));
@@ -122,7 +70,7 @@ class PermissionManager {
 		}
 	}
 
-	private function checkRessourcePermission(String $ressourceType, String $ressourceGroupType=null, Array $assignedGroups=null, Object $ressource, String $method): bool {
+	protected function checkRessourcePermission(String $ressourceType, String $ressourceGroupType=null, Array $assignedGroups=null, Object $ressource, String $method): bool {
 		if(isset($this->permData[$ressourceType])) {
 			// 1st try: check permissions defined in array root if no specific object was given (e.g. create permissions)
 			if(empty($ressource->id)) {
@@ -139,7 +87,7 @@ class PermissionManager {
 			// 3rd try: check if `own` rules are applicable (currently only implemented for job containers)
 			if(isset($this->permData[$ressourceType]['own'][$method])
 			&& property_exists($ressource, 'created_by_domain_user_id')
-			&& $ressource->created_by_domain_user_id === $this->domainUser->id)
+			&& $ressource->created_by_domain_user_id === $this->user->id)
 				return ((bool) $this->permData[$ressourceType]['own'][$method]);
 
 			// 4th try: check general permissions for this ressource type

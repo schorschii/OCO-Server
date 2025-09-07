@@ -2,7 +2,7 @@
 
 namespace Models;
 
-class DomainUser {
+class DomainUser implements IUser {
 
 	public $id;
 	public $uid;
@@ -31,6 +31,12 @@ class DomainUser {
 		} else {
 			return $this->display_name.' ('.$this->username.')';
 		}
+	}
+	public function getRoleName() {
+		return $this->domain_user_role_name;
+	}
+	public function getRolePermissions() {
+		return $this->domain_user_role_permissions;
 	}
 
 }

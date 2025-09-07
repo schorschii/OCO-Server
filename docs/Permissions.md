@@ -156,6 +156,15 @@ You can create your own roles by adding a new role on the web frontend settings 
             "write": false,
             "delete": false
         }
+    },
+
+    "Models\\DomainUser": {
+        "read": true,               <-- allows the system user to view and delete domain users
+        "delete": true,             <-´
+        "history_limit": 20,                  <-- limits the domain user logon history view to 20 entries
+        "computer_history_limit": 10,         <-- limits the domain user logon view on teh computer detail page to 10 entries
+        "login_display_date_format": "Y-m-d"  <-- sets the display format of the domain user logon view
+                                                  (hide hour:minute:second which are shown by default)
     }
 }
 ```

@@ -28,15 +28,16 @@ class PermissionManager {
 	const SPECIAL_PERMISSION_CLIENT_API             = 'Special\\ClientApi';
 	const SPECIAL_PERMISSION_CLIENT_WEB_FRONTEND    = 'Special\\WebFrontend';
 
-	private /*DatabaseController*/ $db;
-	private /*Models\SystemUser*/ $systemUser;
-	private /*Array*/ $permData;
+	protected /*DatabaseController*/ $db;
+	protected /*Models\IUser*/ $user;
+	protected /*Array*/ $permData;
 
-	function __construct(DatabaseController $db, Models\SystemUser $systemUser) {
+	function __construct(DatabaseController $db, Models\IUser $user) {
 		$this->db = $db;
-		$this->systemUser = $systemUser;
-		$this->permData = json_decode($systemUser->system_user_role_permissions, true);
-		if(empty($this->permData)) { // json_decode returns false on error; it is intentional that we also throw an error if the permission list is empty
+		$this->user = $user;
+		$this->permData = json_decode($user->getRolePermissions(), true);
+		if(empty($this->permData)) {
+			// json_decode returns false on error; it is intentional that we also throw an error if the permission list is empty
 			throw new Exception('Invalid or no permission definition data found for this system user!');
 		}
 	}
@@ -136,7 +137,7 @@ class PermissionManager {
 
 	// as defined, all parent group access privileges also apply to sub groups
 	// so we query all parent groups to also check the privileges of them
-	private function getParentGroupsRecursively(Object $groupRessource) {
+	protected function getParentGroupsRecursively(Object $groupRessource) {
 		$parentGroups = [$groupRessource];
 		if($groupRessource instanceof Models\IHierarchicalGroup) {
 			while($groupRessource->getParentId() != null) {
@@ -151,7 +152,7 @@ class PermissionManager {
 		return $parentGroups;
 	}
 
-	private function checkRessourcePermission(String $ressourceType, String $ressourceGroupType=null, Array $assignedGroups=null, Object $ressource, String $method): bool {
+	protected function checkRessourcePermission(String $ressourceType, String $ressourceGroupType=null, Array $assignedGroups=null, Object $ressource, String $method): bool {
 		if(isset($this->permData[$ressourceType])) {
 			// 1st try: check permissions defined in array root if no specific object was given (e.g. create permissions)
 			if(empty($ressource->id)) {
@@ -169,7 +170,7 @@ class PermissionManager {
 			// (currently implemented for computers, packages, job containers and deployment rules)
 			if(isset($this->permData[$ressourceType]['own'][$method])
 			&& property_exists($ressource, 'created_by_system_user_id')
-			&& $ressource->created_by_system_user_id === $this->systemUser->id)
+			&& $ressource->created_by_system_user_id === $this->user->id)
 				return ((bool) $this->permData[$ressourceType]['own'][$method]);
 
 			// 4th try: check general permissions for this ressource type

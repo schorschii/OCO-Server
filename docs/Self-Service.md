@@ -32,11 +32,15 @@ A domain user role is defined by a JSON string as known from the [system user ro
   },
   "Models\\JobContainer": {
     "create": true,
-    "create_priority": -1,
+    "create_priority": -1,              <-- self-service jobs will be created with priority -1
     "own": {
       "read": true,
       "delete": true
     }
+  },
+  "Models\\DomainUser": {
+    "computer_history_limit": 5,        <-- limits the domain user logon view on teh computer detail page to 5 entries
+    "login_display_date_format": "F Y"  <-- sets the display format of the domain user logon table (only show month and year)
   }
 }
 ```
@@ -44,7 +48,9 @@ In this example, the domain user can read, deploy and send WOL packets to comput
 
 Furthermore, the domain user is allowed to deploy packages from the package group with ID "20". OCO admins should add packages into this group to allow the self service deployment.
 
-Last, the self service user is allowed to create job containers with a priority of -1 and to read and delete his own jobs.
+Then, the self service user is allowed to create job containers with a priority of -1 and to read and delete his own jobs.
+
+Last, the domain user logon table will be limited to 5 entries with month and year only for data protection reasons.
 
 ### Password
 The password and role can be manually set in the settings of the OCO admin web frontend. System user management permissions are required in order to do this.

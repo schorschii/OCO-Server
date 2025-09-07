@@ -14,6 +14,10 @@ try {
 		$permissionDeploy = $cl->checkPermission($computer, SelfService\PermissionManager::METHOD_DEPLOY, false);
 		$permissionWol    = $cl->checkPermission($computer, SelfService\PermissionManager::METHOD_WOL, false);
 	}
+
+	$computerHistoryLimit = null;
+	$permissionEntry = $cl->getPermissionEntry(PermissionManager::SPECIAL_PERMISSION_DOMAIN_USER, PermissionManager::METHOD_READ);
+	if(isset($permissionEntry['computer_history_limit'])) $computerHistoryLimit = intval($permissionEntry['computer_history_limit']);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
@@ -172,12 +176,18 @@ $commands = Models\Computer::getCommands($ext);
 						</thead>
 						<tbody>
 							<?php
+							$counter = 0;
 							foreach($db->selectAllDomainUserLogonByComputerId($computer->id) as $logon) {
+								if(is_int($computerHistoryLimit) && $counter >= $computerHistoryLimit) {
+									echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
+									break;
+								}
+								$counter ++;
 								echo "<tr>";
 								echo "<td>".htmlspecialchars($logon->domain_user_username)."</td>";
 								echo "<td>".htmlspecialchars($logon->domain_user_display_name)."</td>";
 								echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
-								echo "<td>".htmlspecialchars($logon->timestamp)."</td>";
+								echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
 								echo "</tr>";
 							}
 							?>
