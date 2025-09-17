@@ -93,6 +93,9 @@ try {
 <div class='details-header'>
 	<h1><img src='img/settings.dyn.svg'><span id='page-title'><?php echo LANG('mobile_device_management'); ?></span></h1>
 </div>
+<div class='actionmenu'>
+	<a href='index.php?view=docs&page=Mobile-Device-Management.md' target='_blank' class='normal'>&rarr;&nbsp;<?php echo LANG('help'); ?></a>
+</div>
 
 <div class='details-abreast'>
 	<div>
@@ -120,7 +123,10 @@ try {
 		</div>
 		<table class='list fixed'>
 			<tr>
-				<th><?php echo LANG('mdm_vendor_cert'); ?>:</th>
+				<th>
+					<div><?php echo LANG('mdm_vendor_cert'); ?>:</div>
+					<div><a href='https://developer.apple.com/account/resources/certificates/add' target='_blank' class='normal'>https://developer.apple.com</a></div>
+				</th>
 				<td>
 					<?php if($ownMdmVendorCertExpiry !== null) { ?>
 						<?php if($ownMdmVendorCertExpiry < time()) { ?>
@@ -138,7 +144,10 @@ try {
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('mdm_apn_cert'); ?>:</th>
+				<th>
+					<div><?php echo LANG('mdm_apn_cert'); ?>:</div>
+					<div><a href='https://identity.apple.com/pushcert/' target='_blank' class='normal'>https://identity.apple.com/pushcert</a></div>
+				</th>
 				<td>
 					<?php if($mdmApnCertExpiry !== null) { ?>
 						<?php if($mdmApnCertExpiry < time()) { ?>
@@ -154,7 +163,10 @@ try {
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('mdm_server_token'); ?>:</th>
+				<th>
+					<div><?php echo LANG('mdm_server_token'); ?>:</div>
+					<div><a href='https://business.apple.com/#/main/preferences' target='_blank' class='normal'>https://business.apple.com</a></div>
+				</th>
 				<td>
 					<?php if($mdmServerTokenExpiry !== null) { ?>
 						<?php if($mdmServerTokenExpiry < time()) { ?>
@@ -181,7 +193,10 @@ try {
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('vpp_token'); ?>:</th>
+				<th>
+					<div><?php echo LANG('vpp_token'); ?>:</div>
+					<div><a href='https://business.apple.com/#/main/preferences/paymentsandbilling/appsandbooks' target='_blank' class='normal'>https://business.apple.com</a></div>
+				</th>
 				<td>
 					<?php if($vppTokenExpiry !== null) { ?>
 						<?php if($vppTokenExpiry < time()) { ?>
@@ -196,7 +211,10 @@ try {
 				</td>
 			</tr>
 			<tr>
-				<th><?php echo LANG('app_store_api_key'); ?>:</th>
+				<th>
+					<div><?php echo LANG('app_store_api_key'); ?>:</div>
+					<div><a href='https://developer.apple.com/account/resources/identifiers/add/serviceId' target='_blank' class='normal'>https://developer.apple.com</a></div>
+				</th>
 				<td>
 					<?php if($appStoreKey) { ?>
 						<div class='alert success'><?php echo LANG('defined'); ?></div>
@@ -216,7 +234,10 @@ try {
 		</div>
 		<table class='list fixed'>
 			<tr>
-				<th><?php echo LANG('service_account_credentials'); ?>:</th>
+				<th>
+					<div><?php echo LANG('service_account_credentials'); ?>:</div>
+					<div><a href='https://developers.google.com/android/management/service-account' target='_blank' class='normal'>https://developers.google.com</a></div>
+				</th>
 				<td>
 					<?php
 					if($googleApiCredentials) { ?>
