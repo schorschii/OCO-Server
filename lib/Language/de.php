@@ -590,6 +590,7 @@ return [
 	'defined' => 'Definiert',
 	'not_defined' => 'Nicht definiert',
 	'valid_until_placeholder' => 'Gültig bis %1',
+	'expired_placeholder' => 'Abgelaufen am %1',
 	'all_mobile_devices' => 'Alle Mobilgeräte',
 	'device_name' => 'Gerätename',
 	'push_token' => 'Push-Token',

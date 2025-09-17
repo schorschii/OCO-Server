@@ -48,15 +48,15 @@ try {
 	$enterprise = null;
 	try {
 		$ownMdmVendorCertInfo = openssl_x509_parse( $ade->getOwnMdmVendorCert()['cert'] );
-		$ownMdmVendorCertExpiry = date('Y-m-d H:i:s', intval($ownMdmVendorCertInfo['validTo_time_t']));
+		$ownMdmVendorCertExpiry = intval($ownMdmVendorCertInfo['validTo_time_t']);
 	} catch(RuntimeException $e) {}
 	try {
 		$mdmApnCertInfo = openssl_x509_parse( $ade->getMdmApnCert()['cert'] );
-		$mdmApnCertExpiry = date('Y-m-d H:i:s', intval($mdmApnCertInfo['validTo_time_t']));
+		$mdmApnCertExpiry = intval($mdmApnCertInfo['validTo_time_t']);
 	} catch(RuntimeException $e) {}
 	try {
 		$mdmServerToken = $ade->getMdmServerToken();
-		$mdmServerTokenExpiry = date('Y-m-d H:i:s', strtotime($mdmServerToken['access_token_expiry']));
+		$mdmServerTokenExpiry = strtotime($mdmServerToken['access_token_expiry']);
 	} catch(RuntimeException $e) {}
 	try {
 		$mdmActivationProfile = $ade->getActivationProfile();
@@ -66,7 +66,7 @@ try {
 	} catch(RuntimeException $e) {}
 	try {
 		$vppToken = $vpp->getToken();
-		$vppTokenExpiry = date('Y-m-d H:i:s', strtotime($vppToken['expDate']));
+		$vppTokenExpiry = strtotime($vppToken['expDate']);
 	} catch(RuntimeException $e) {}
 	try {
 		$appStoreKey = $as->getKey() && $as->getKeyId() && $as->getTeamId();
@@ -122,8 +122,12 @@ try {
 			<tr>
 				<th><?php echo LANG('mdm_vendor_cert'); ?>:</th>
 				<td>
-					<?php if($ownMdmVendorCertExpiry) { ?>
-						<div class='alert success'><?php echo str_replace('%1', $ownMdmVendorCertExpiry, LANG('valid_until_placeholder')); ?></div>
+					<?php if($ownMdmVendorCertExpiry !== null) { ?>
+						<?php if($ownMdmVendorCertExpiry < time()) { ?>
+							<div class='alert error'><?php echo str_replace('%1', date('Y-m-d H:i:s',$ownMdmVendorCertExpiry), LANG('expired_placeholder')); ?></div>
+						<?php } else { ?>
+							<div class='alert success'><?php echo str_replace('%1', date('Y-m-d H:i:s',$ownMdmVendorCertExpiry), LANG('valid_until_placeholder')); ?></div>
+						<?php } ?>
 					<?php } elseif($license->isValid()) { ?>
 						<div class='alert info'><?php echo LANG('valid_oco_license_vendor_mdm_cert_service_can_be_used'); ?></div>
 					<?php } else { ?>
@@ -136,8 +140,12 @@ try {
 			<tr>
 				<th><?php echo LANG('mdm_apn_cert'); ?>:</th>
 				<td>
-					<?php if($mdmApnCertExpiry) { ?>
-						<div class='alert success'><?php echo str_replace('%1', $mdmApnCertExpiry, LANG('valid_until_placeholder')); ?></div>
+					<?php if($mdmApnCertExpiry !== null) { ?>
+						<?php if($mdmApnCertExpiry < time()) { ?>
+							<div class='alert error'><?php echo str_replace('%1', date('Y-m-d H:i:s',$mdmApnCertExpiry), LANG('expired_placeholder')); ?></div>
+						<?php } else { ?>
+							<div class='alert success'><?php echo str_replace('%1', date('Y-m-d H:i:s',$mdmApnCertExpiry), LANG('valid_until_placeholder')); ?></div>
+						<?php } ?>
 					<?php } else { ?>
 						<div class='alert error'><?php echo LANG('not_found'); ?></div>
 					<?php } ?>
@@ -148,8 +156,12 @@ try {
 			<tr>
 				<th><?php echo LANG('mdm_server_token'); ?>:</th>
 				<td>
-					<?php if($mdmServerTokenExpiry) { ?>
-						<div class='alert success'><?php echo str_replace('%1', $mdmServerTokenExpiry, LANG('valid_until_placeholder')); ?></div>
+					<?php if($mdmServerTokenExpiry !== null) { ?>
+						<?php if($mdmServerTokenExpiry < time()) { ?>
+							<div class='alert error'><?php echo str_replace('%1', date('Y-m-d H:i:s', $mdmServerTokenExpiry), LANG('expired_placeholder')); ?></div>
+						<?php } else { ?>
+							<div class='alert success'><?php echo str_replace('%1', date('Y-m-d H:i:s', $mdmServerTokenExpiry), LANG('valid_until_placeholder')); ?></div>
+						<?php } ?>
 					<?php } else { ?>
 						<div class='alert error'><?php echo LANG('not_found'); ?></div>
 					<?php } ?>
@@ -171,8 +183,12 @@ try {
 			<tr>
 				<th><?php echo LANG('vpp_token'); ?>:</th>
 				<td>
-					<?php if($vppTokenExpiry) { ?>
-						<div class='alert success'><?php echo str_replace('%1', $vppTokenExpiry, LANG('valid_until_placeholder')); ?></div>
+					<?php if($vppTokenExpiry !== null) { ?>
+						<?php if($vppTokenExpiry < time()) { ?>
+							<div class='alert error'><?php echo str_replace('%1', date('Y-m-d H:i:s', $vppTokenExpiry), LANG('expired_placeholder')); ?></div>
+						<?php } else { ?>
+							<div class='alert success'><?php echo str_replace('%1', date('Y-m-d H:i:s', $vppTokenExpiry), LANG('valid_until_placeholder')); ?></div>
+						<?php } ?>
 					<?php } else { ?>
 						<div class='alert warning'><?php echo LANG('no_vpp_token_provided'); ?></div>
 					<?php } ?>

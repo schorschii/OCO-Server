@@ -37,12 +37,12 @@ try {
 	try {
 		$mdmApnCertInfo = openssl_x509_parse( $ade->getMdmApnCert()['cert'] );
 		$mdmApnCertExpiry = intval($mdmApnCertInfo['validTo_time_t']);
-		if($mdmApnCertExpiry > 60*60*24*14) {
-			printCheckResult('0', 'Apple MDM APN Cert', '-', 'Valid until '.date('Y-m-d', $mdmApnCertExpiry));
-		} elseif($mdmApnCertExpiry > 60*60*24*7) {
-			printCheckResult('1', 'Apple MDM APN Cert', '-', 'Expires in '.date('Y-m-d', $mdmApnCertExpiry));
-		} else {
+		if($mdmApnCertExpiry - time() < 0) {
 			printCheckResult('2', 'Apple MDM APN Cert', '-', 'Expired '.date('Y-m-d', $mdmApnCertExpiry));
+		} elseif($mdmApnCertExpiry - time() > 60*60*24*14) {
+			printCheckResult('0', 'Apple MDM APN Cert', '-', 'Valid until '.date('Y-m-d', $mdmApnCertExpiry));
+		} else {
+			printCheckResult('1', 'Apple MDM APN Cert', '-', 'Expires in '.date('Y-m-d', $mdmApnCertExpiry));
 		}
 	} catch(RuntimeException $e) {
 		// probably no cert configured - ignoring
@@ -50,12 +50,12 @@ try {
 	try {
 		$mdmServerToken = $ade->getMdmServerToken();
 		$mdmServerTokenExpiry = strtotime($mdmServerToken['access_token_expiry']);
-		if($mdmServerTokenExpiry > 60*60*24*14) {
-			printCheckResult('0', 'Apple MDM Server Token', '-', 'Valid until '.date('Y-m-d', $mdmServerTokenExpiry));
-		} elseif($mdmServerTokenExpiry > 60*60*24*7) {
-			printCheckResult('1', 'Apple MDM Server Token', '-', 'Expires in '.date('Y-m-d', $mdmServerTokenExpiry));
-		} else {
+		if($mdmServerTokenExpiry - time() < 0) {
 			printCheckResult('2', 'Apple MDM Server Token', '-', 'Expired '.date('Y-m-d', $mdmServerTokenExpiry));
+		} elseif($mdmServerTokenExpiry - time() > 60*60*24*14) {
+			printCheckResult('0', 'Apple MDM Server Token', '-', 'Valid until '.date('Y-m-d', $mdmServerTokenExpiry));
+		} else {
+			printCheckResult('1', 'Apple MDM Server Token', '-', 'Expires in '.date('Y-m-d', $mdmServerTokenExpiry));
 		}
 	} catch(RuntimeException $e) {
 		// probably no token configured - ignoring
@@ -63,12 +63,12 @@ try {
 	try {
 		$vppToken = $vpp->getToken();
 		$vppTokenExpiry = strtotime($vppToken['expDate']);
-		if($vppTokenExpiry > 60*60*24*14) {
-			printCheckResult('0', 'Apple MDM VPP Token', '-', 'Valid until '.date('Y-m-d', $vppTokenExpiry));
-		} elseif($vppTokenExpiry > 60*60*24*7) {
-			printCheckResult('1', 'Apple MDM VPP Token', '-', 'Expires in '.date('Y-m-d', $vppTokenExpiry));
-		} else {
+		if($vppTokenExpiry - time() < 0) {
 			printCheckResult('2', 'Apple MDM VPP Token', '-', 'Expired '.date('Y-m-d', $vppTokenExpiry));
+		} elseif($vppTokenExpiry - time() > 60*60*24*14) {
+			printCheckResult('0', 'Apple MDM VPP Token', '-', 'Valid until '.date('Y-m-d', $vppTokenExpiry));
+		} else {
+			printCheckResult('1', 'Apple MDM VPP Token', '-', 'Expires in '.date('Y-m-d', $vppTokenExpiry));
 		}
 	} catch(RuntimeException $e) {
 		// probably no token configured - ignoring

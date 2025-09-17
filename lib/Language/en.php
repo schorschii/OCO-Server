@@ -595,6 +595,7 @@ return [
 	'defined' => 'Defined',
 	'not_defined' => 'Not defined',
 	'valid_until_placeholder' => 'Valid until %1',
+	'expired_placeholder' => 'Expired on %1',
 	'all_mobile_devices' => 'All Mobile Devices',
 	'device_name' => 'Device Name',
 	'push_token' => 'Push Token',
