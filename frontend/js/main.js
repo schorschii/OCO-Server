@@ -3037,7 +3037,7 @@ function showDialogManagedPlayStoreConfig(packageName, managedAppId, configId=nu
 						{'key':'managed_app_id', 'value':managedAppId},
 					]);
 					ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
-						emitMessage(LANG['saved'], event.packageName, MESSAGE_TYPE_SUCCESS);
+						emitMessage(LANG['saved'], event.name, MESSAGE_TYPE_SUCCESS);
 						refreshContent();
 						hideDialog();
 					});
