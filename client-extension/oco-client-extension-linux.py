@@ -1,14 +1,18 @@
 #!/usr/bin/python3
 
 from urllib.parse import unquote
+from pathlib import Path
 import subprocess
-import tempfile
 import sys
 import os
 
 def main():
 
-	REMMINA_FILE = tempfile.gettempdir()+'/oco.client.remmina'
+	CONFIG_PATH  = str(Path.home())+'/.config/oco-client'
+	if(not os.path.isdir(CONFIG_PATH)):
+		os.makedirs(CONFIG_PATH, exist_ok=True)
+
+	REMMINA_FILE = CONFIG_PATH+'/oco-client.remmina'
 	TERMINAL_EMULATORS = [
 		['/usr/bin/gnome-terminal', '--wait', '--', 'bash', '-c'],
 		['/usr/bin/xfce4-terminal', '-x', 'bash', '-c'],
