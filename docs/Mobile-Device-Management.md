@@ -132,3 +132,13 @@ With the button "Send Command" on the device detail page, you can e.g. lock a de
 To deploy Android apps, open the managed Play Store by clicking "Manage Android Apps" on the "Managed Apps" page in OCO. A Google Play iframe will be displayed, where you can select the desired apps. After you imported an app into OCO, you can assign them to mobile device groups like on iOS and they will be installed automatically.
 
 When assigning apps to groups, you can add conguration values for the app. Consult the documentation of the specific app which configuration values are supported.
+
+## Common Best Practices
+### Certificate Enrollment
+You propably want to enroll certificates onto your mobile devices, e.g. for WiFi or VPN authentication. The best way is to automate this using a SCEP (Simple Certificate Enrollment Protocol) server.
+
+While iOS already has a [SCEP enrollment option](https://developer.apple.com/documentation/devicemanagement/scep) built-in, for Android, you need a 3rd party app. For this, [Droid_SCEP](https://github.com/schorschii/Droid_SCEP) was written as part of the OCO MDM project.
+
+A common practise is to configure your SCEP server to have a static password (also called "preshared secret" or "challenge") with manual certificate approval. Dynamically generated passwords are hard to handle in MDM context since you would need to update them every time in the policy configuration.
+
+If you are using Windows Server CA, you can configure NDES (the Microsoft implementation of SCEP) as described [here](https://www.gradenegger.eu/en/configure-device-template-for-network-device-enrollment-service-ndes/) and [here](https://www.gradenegger.eu/en/change-the-static-password-of-the-network-device-enrollment-service-ndes/). Enable "CA certificate manager approval" in your certificate template.
