@@ -89,17 +89,17 @@ reg add HKLM\SYSTEM\Setup\LabConfig /v BypassCPUCheck /t REG_DWORD /d 1 /f
 reg add HKLM\SYSTEM\Setup\LabConfig /v BypassStorageCheck /t REG_DWORD /d 1 /f
 
 REM start setup with specific unattended config if available
-if exist I:\%PRESEED_DIR%\%serial%.xml (
-	echo Starting setup with config file: I:\\%PRESEED_DIR%\\%serial%.xml ...
-	I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%serial%.xml %*
+if exist "I:\%PRESEED_DIR%\%serial%.xml" (
+	echo Starting setup with config file: I:\%PRESEED_DIR%\%serial%.xml ...
+	I:\%SETUP_EXE% /unattend:"I:\%PRESEED_DIR%\%serial%.xml" %*
 ) else (
-	if exist I:\%PRESEED_DIR%\%uuid%.xml (
-		echo Starting setup with config file: I:\\%PRESEED_DIR%\\%uuid%.xml ...
-		I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%uuid%.xml %*
+	if exist "I:\%PRESEED_DIR%\%uuid%.xml" (
+		echo Starting setup with config file: I:\%PRESEED_DIR%\%uuid%.xml ...
+		I:\%SETUP_EXE% /unattend:"I:\%PRESEED_DIR%\%uuid%.xml" %*
 	) else (
-		if exist I:\%PRESEED_DIR%\%mac%.xml (
-			echo Starting setup with config file: I:\\%PRESEED_DIR%\\%mac%.xml ...
-			I:\%SETUP_EXE% /unattend:I:\%PRESEED_DIR%\%mac%.xml %*
+		if exist "I:\%PRESEED_DIR%\%mac%.xml" (
+			echo Starting setup with config file: I:\%PRESEED_DIR%\%mac%.xml ...
+			I:\%SETUP_EXE% /unattend:"I:\%PRESEED_DIR%\%mac%.xml" %*
 		) else (
 			echo Could not find an unattended installation answer file. We recommend a Linux installation instead.
 			I:\%SETUP_EXE% %*
