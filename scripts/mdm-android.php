@@ -34,6 +34,26 @@ try {
 				$ade->apiCall('POST', $ade::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/devices/'.urlencode($argv[2]).':issueCommand', json_encode($argv[3]))
 			);
 
+		case 'generate-enrollment-token':
+			echo(
+				$ade->generateEnrollmentToken($argv[2])
+			);
+			die();
+
+		case 'delete-enrollment-token':
+			$enterpriseName = $ade->getEnterprise()['name'];
+			var_dump(
+				$ade->apiCall('DELETE', $ade::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/enrollmentTokens/'.urlencode($argv[2]), null)
+			);
+			die();
+
+		case 'enrollment-tokens':
+			$enterpriseName = $ade->getEnterprise()['name'];
+			var_dump(
+				$ade->apiCall('GET', $ade::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/enrollmentTokens', null)
+			);
+			die();
+
 		default:
 			throw new Exception('unknown command');
 

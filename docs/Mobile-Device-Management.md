@@ -118,8 +118,23 @@ Next, you need to buy something in ABM/ASM (even if the desired apps are free). 
 #### Classic Enrollment via QR code
 You can now add Android devices into OCO by clicking "New Android Device" on the "Mobile Devices" page. Tap 6 times on Android welcome screen of a factory-resetted device, then scan the QR code displayed by OCO. The QR code is valid only for 1 hour.
 
-#### Zero-Touch Enrollment
+#### Google Zero-Touch Enrollment
 // TODO
+
+#### Samsung Knox Zero-Touch Enrollment
+(theory, not tested yet)
+
+If you want to enroll your Samsung devices automatically to OCO MDM, you can configure a Knox enrollment profile on the [Knox Admin Portal](https://central.samsungknox.com).
+
+Set the following values in the profile:
+- EMM: Other
+- EMM agent APK: `https://play.google.com/managed/downloadManagingApp?identifier=setup`
+- EMM APK is privately hosted on an intranet server
+- Admin component name: `com.google.android.apps.work.clouddpc/.receivers.CloudDeviceAdminReceiver`
+- Admin package signature checksum: `I5YvS0O5hXY46mb01BlRjq4oJJGs2kuUcHvVkAPEXlg`
+- EMM app name: `Google EMM`
+- DPC extras: `{"com.google.android.apps.work.clouddpc.EXTRA_ENROLLMENT_TOKEN": "<enrollment-token>"}`
+  - replace &lt;enrollment-token&gt; with an one year valid token generated on command line via `php scripts/mdm-android.php generate-enrollment-token 31536000`
 
 ### General/Configuration Management
 First, ceate a policy (JSON format) in the corresponding "Profiles and Policies" section in the OCO sidebar. See the [Android policy reference](https://developers.google.com/android/management/reference/rest/v1/enterprises.policies#Policy) for possible configuration values. After creating a policy, assign it to mobile device groups.

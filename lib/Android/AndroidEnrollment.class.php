@@ -197,7 +197,7 @@ class AndroidEnrollment {
 		}
 	}
 
-	function generateEnrollmentToken() {
+	function generateEnrollmentToken(int $validSeconds=2400) {
 		$enterpriseName = $this->getEnterprise()['name'];
 
 		// create dummy policy since a policy is mandatory
@@ -206,7 +206,8 @@ class AndroidEnrollment {
 		]);
 
 		$response = $this->apiCall('POST', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/enrollmentTokens', json_encode([
-			'policyName' => $enterpriseName.'/policies/default'
+			'policyName' => $enterpriseName.'/policies/default',
+			'duration' => $validSeconds.'s',
 		]));
 		if(empty($response['qrCode']))
 			throw new \RuntimeException('Unexpected server response: '.json_encode($response));
