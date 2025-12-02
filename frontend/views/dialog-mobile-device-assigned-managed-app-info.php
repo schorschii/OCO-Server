@@ -55,10 +55,21 @@ try {
 	</tr>
 	<?php } elseif($managedApp->type == Models\ManagedApp::TYPE_ANDROID) { ?>
 	<tr>
-
 		<th><?php echo LANG('installation'); ?></th>
 		<td>
 			<?php echo LANG(Models\ManagedApp::ANDROID_INSTALL_TYPES[$managedApp->install_type] ?? ''); ?>
+		</td>
+	</tr>
+	<tr>
+		<th><?php echo LANG('delegated_scopes'); ?></th>
+		<td>
+			<ul>
+			<?php
+			foreach(explode("\n", $managedApp->delegated_scopes) as $scope)
+				if(!empty($scope))
+					echo '<li>'.LANG(Models\ManagedApp::ANDROID_DELEGATED_SCOPES[$scope]).'</li>';
+			?>
+			</ul>
 		</td>
 	</tr>
 	<?php } ?>

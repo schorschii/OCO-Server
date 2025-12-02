@@ -719,6 +719,16 @@ return [
 	'configurations' => 'Konfigurationen',
 	'configuration_deleted' => 'Konfiguration gelöscht',
 	'charging' => 'lädt',
+	'delegated_scopes' => 'Delegierte Berechtigungen',
+	'cert_installation' => 'Zertifikatinstallation',
+	'cert_selection' => 'Zertifikatauswahl',
+	'managed_config' => 'Verwaltete Konfiguration',
+	'block_uninstall' => 'Deinstallation blockieren',
+	'permission_policy_and_grant_state' => 'Berechtigungen und Status',
+	'package_access' => 'Paketzugriff-Status',
+	'enable_system_apps' => 'System-Apps aktivieren',
+	'access_network_activity_logs' => 'Netzwerkaktivitäts-Logs',
+	'access_security_logs' => 'Sicherheits-Logs',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

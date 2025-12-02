@@ -50,7 +50,8 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['remove_from_group_id']) && !empty($_POST['remove_from_group_mobile_device_id']) && is_array($_POST['remove_from_group_mobile_device_id'])) {
+	if(!empty($_POST['remove_from_group_id'])
+	&& !empty($_POST['remove_from_group_mobile_device_id']) && is_array($_POST['remove_from_group_mobile_device_id'])) {
 		foreach($_POST['remove_from_group_mobile_device_id'] as $cid) {
 			$cl->removeMobileDeviceFromGroup($cid, $_POST['remove_from_group_id']);
 		}
@@ -192,7 +193,8 @@ try {
 		}
 	}
 
-	if(isset($_POST['add_to_group_id']) && is_array($_POST['add_to_group_id']) && isset($_POST['add_to_group_profile_id']) && is_array($_POST['add_to_group_profile_id'])) {
+	if(isset($_POST['add_to_group_id']) && is_array($_POST['add_to_group_id'])
+	&& isset($_POST['add_to_group_profile_id']) && is_array($_POST['add_to_group_profile_id'])) {
 		foreach($_POST['add_to_group_profile_id'] as $pid) {
 			foreach($_POST['add_to_group_id'] as $gid) {
 				$cl->assignProfileToMobileDeviceGroup($pid, $gid);
@@ -201,7 +203,8 @@ try {
 		die();
 	}
 
-	if(isset($_POST['remove_from_group_id']) && is_array($_POST['remove_from_group_id']) && isset($_POST['remove_from_group_profile_id']) && is_array($_POST['remove_from_group_profile_id'])) {
+	if(isset($_POST['remove_from_group_id']) && is_array($_POST['remove_from_group_id'])
+	&& isset($_POST['remove_from_group_profile_id']) && is_array($_POST['remove_from_group_profile_id'])) {
 		foreach($_POST['remove_from_group_profile_id'] as $pid) {
 			foreach($_POST['remove_from_group_id'] as $gid) {
 				$cl->removeProfileFromMobileDeviceGroup($pid, $gid);
@@ -210,7 +213,8 @@ try {
 		die();
 	}
 
-	if(isset($_POST['add_to_group_id']) && is_array($_POST['add_to_group_id']) && isset($_POST['add_to_group_managed_app_id']) && is_array($_POST['add_to_group_managed_app_id'])) {
+	if(isset($_POST['add_to_group_id']) && is_array($_POST['add_to_group_id'])
+	&& isset($_POST['add_to_group_managed_app_id']) && is_array($_POST['add_to_group_managed_app_id'])) {
 		foreach($_POST['add_to_group_managed_app_id'] as $pid) {
 			foreach($_POST['add_to_group_id'] as $gid) {
 				$cl->assignManagedAppToMobileDeviceGroup($pid, $gid,
@@ -220,13 +224,15 @@ try {
 					empty($_POST['install_type']) ? null : $_POST['install_type'],
 					$_POST['config_id'] ?? null,
 					$_POST['config'] ?? null,
+					$_POST['delegated_scopes'] ?? [],
 				);
 			}
 		}
 		die();
 	}
 
-	if(isset($_POST['remove_from_group_id']) && is_array($_POST['remove_from_group_id']) && isset($_POST['remove_from_group_managed_app_id']) && is_array($_POST['remove_from_group_managed_app_id'])) {
+	if(isset($_POST['remove_from_group_id']) && is_array($_POST['remove_from_group_id'])
+	&& isset($_POST['remove_from_group_managed_app_id']) && is_array($_POST['remove_from_group_managed_app_id'])) {
 		foreach($_POST['remove_from_group_managed_app_id'] as $pid) {
 			foreach($_POST['remove_from_group_id'] as $gid) {
 				$cl->removeManagedAppFromMobileDeviceGroup($pid, $gid);

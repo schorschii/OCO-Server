@@ -397,7 +397,7 @@ class DatabaseController {
 	}
 	public function selectAllManagedAppByMobileDeviceGroupId($mobile_device_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT ma.*, mdgma.removable, mdgma.disable_cloud_backup, mdgma.remove_on_mdm_remove, mdgma.install_type, mdgma.config_id, mdgma.config
+			'SELECT ma.*, mdgma.removable, mdgma.disable_cloud_backup, mdgma.remove_on_mdm_remove, mdgma.install_type, mdgma.config_id, mdgma.config, mdgma.delegated_scopes
 			FROM managed_app ma
 			INNER JOIN mobile_device_group_managed_app mdgma ON mdgma.managed_app_id = ma.id
 			WHERE mdgma.mobile_device_group_id = :mobile_device_group_id
@@ -443,11 +443,11 @@ class DatabaseController {
 			return $this->dbh->lastInsertId();
 		}
 	}
-	public function insertMobileDeviceGroupManagedApp($mobile_device_group_id, $managed_app_id, $removable, $disable_cloud_backup, $remove_on_mdm_remove, $install_type, $config_id, $config) {
+	public function insertMobileDeviceGroupManagedApp($mobile_device_group_id, $managed_app_id, $removable, $disable_cloud_backup, $remove_on_mdm_remove, $install_type, $config_id, $config, $delegated_scopes) {
 		$this->deleteMobileDeviceGroupManagedApp($mobile_device_group_id, $managed_app_id);
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO mobile_device_group_managed_app (mobile_device_group_id, managed_app_id, removable, disable_cloud_backup, remove_on_mdm_remove, install_type, config_id, config)
-			VALUES (:mobile_device_group_id, :managed_app_id, :removable, :disable_cloud_backup, :remove_on_mdm_remove, :install_type, :config_id, :config)'
+			'INSERT INTO mobile_device_group_managed_app (mobile_device_group_id, managed_app_id, removable, disable_cloud_backup, remove_on_mdm_remove, install_type, config_id, config, delegated_scopes)
+			VALUES (:mobile_device_group_id, :managed_app_id, :removable, :disable_cloud_backup, :remove_on_mdm_remove, :install_type, :config_id, :config, :delegated_scopes)'
 		);
 		$this->stmt->execute([
 			':mobile_device_group_id' => $mobile_device_group_id,
@@ -458,6 +458,7 @@ class DatabaseController {
 			':install_type' => $install_type,
 			':config_id' => $config_id,
 			':config' => $config,
+			':delegated_scopes' => $delegated_scopes,
 		]);
 		return $this->dbh->lastInsertId();
 	}

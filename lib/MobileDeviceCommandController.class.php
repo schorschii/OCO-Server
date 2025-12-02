@@ -45,6 +45,7 @@ class MobileDeviceCommandController {
 			$appConfig = [
 				'packageName' => $app->identifier,
 				'installType' => $app->install_type,
+				'delegatedScopes' => empty($app->delegated_scopes) ? [] : explode("\n", $app->delegated_scopes),
 			];
 			if(empty($app->config_id)) {
 				$appConfig['managedConfiguration'] = json_decode($app->config, true);

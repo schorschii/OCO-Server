@@ -604,6 +604,16 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		/*** 1.1.12 ***/
+		if(!$this->getTableColumnInfo('mobile_device_group_managed_app', 'delegated_scopes')) {
+			if($this->debug) echo 'Upgrading to 1.1.12... (add delegated_scopes column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device_group_managed_app` ADD `delegated_scopes` text DEFAULT NULL AFTER `config`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

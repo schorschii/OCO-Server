@@ -258,7 +258,7 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.mobile_device_group.delete', json_encode($ma));
 		return $result;
 	}
-	public function assignManagedAppToMobileDeviceGroup($maId, $groupId, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $configId, $config) {
+	public function assignManagedAppToMobileDeviceGroup($maId, $groupId, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $configId, $config, array $delegatedScopes) {
 		$ma = $this->db->selectManagedApp($maId);
 		if(empty($ma)) throw new NotFoundException();
 		$mdGroup = $this->db->selectMobileDeviceGroup($groupId);
@@ -277,7 +277,9 @@ class CoreLogic {
 				throw new InvalidArgumentException('Invalid JSON config');
 		}
 
-		$this->db->insertMobileDeviceGroupManagedApp($mdGroup->id, $ma->id, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $configId, $config);
+		$strDelegatedScopes = implode("\n", $delegatedScopes);
+
+		$this->db->insertMobileDeviceGroupManagedApp($mdGroup->id, $ma->id, $removable, $disableCloudBackup, $removeOnMdmRemove, $installType, $configId, $config, $strDelegatedScopes);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $ma->id, 'oco.managed_app.assign', [
 			'mobile_device_group_id'=>$mdGroup->id,
 			'managed_app_id'=>$maId,
@@ -287,6 +289,7 @@ class CoreLogic {
 			'install_type'=>$installType,
 			'config_id'=>$configId,
 			'config'=>$config,
+			'delegatedScopes'=>$strDelegatedScopes,
 		]);
 
 		$mdcc = new MobileDeviceCommandController($this->db);

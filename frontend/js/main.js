@@ -1510,7 +1510,7 @@ function showDialogAssignManagedAppToGroup(ids) {
 	});
 	showDialogAjax(LANG['assign'], 'views/dialog-managed-app-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
-function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, installType, configId, config) {
+function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, installType, configId, config, delegatedScopes) {
 	if(groupId === false) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
@@ -1525,6 +1525,9 @@ function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudB
 	params.push({'key':'install_type', 'value':installType});
 	params.push({'key':'config_id', 'value':configId});
 	params.push({'key':'config', 'value':config});
+	delegatedScopes.forEach(function(entry) {
+		params.push({'key':'delegated_scopes[]', 'value':entry});
+	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
 		hideDialog();

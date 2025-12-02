@@ -933,6 +933,7 @@ CREATE TABLE `mobile_device_group_managed_app` (
   `install_type` TINYTEXT NULL DEFAULT NULL,
   `config_id` BIGINT UNSIGNED NULL DEFAULT NULL,
   `config` text DEFAULT NULL,
+  `delegated_scopes` text DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_mobile_device_group_managed_app_1` (`mobile_device_group_id`),
   KEY `fk_mobile_device_group_managed_app_2` (`managed_app_id`),

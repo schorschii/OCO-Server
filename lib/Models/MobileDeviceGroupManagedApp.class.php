@@ -13,6 +13,7 @@ class MobileDeviceGroupManagedApp {
 	public $install_type;
 	public $config_id;
 	public $config;
+	public $delegated_scopes;
 
 	// joined attributes
 	public $identifier;

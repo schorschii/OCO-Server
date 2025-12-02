@@ -44,6 +44,16 @@ try {
 			<?php } ?>
 		</td>
 	</tr>
+	<?php if($ma->type == Models\ManagedApp::TYPE_ANDROID) { ?>
+		<tr>
+			<th><?php echo LANG('delegated_scopes'); ?></th>
+			<td>
+				<?php foreach(Models\ManagedApp::ANDROID_DELEGATED_SCOPES as $scope => $name) { ?>
+					<label class='block'><input type='checkbox' name='delegated_scopes[]' value='<?php echo htmlspecialchars($scope,ENT_QUOTES); ?>'><?php echo LANG($name); ?></label>
+				<?php } ?>
+			</td>
+		</tr>
+	<?php } ?>
 	<?php if($configs) { ?>
 	<tr>
 		<th><?php echo LANG('app_config'); ?></th>
@@ -75,6 +85,7 @@ try {
 		typeof chkRemoveOnMdmRemove !== "undefined" && chkRemoveOnMdmRemove.checked ? 1 : 0,
 		typeof sltInstallType !== "undefined" ? sltInstallType.value : "",
 		typeof sltManagedAppConfig !== "undefined" ? sltManagedAppConfig.value : "",
-		txtManagedAppConfig.value
+		txtManagedAppConfig.value,
+		getSelectedCheckBoxValues("delegated_scopes[]")
 	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 </div>

@@ -15,6 +15,17 @@ class ManagedApp {
 		'REQUIRED_FOR_SETUP' => 'required_for_setup',
 		'KIOSK' => 'kiosk_mode',
 	];
+	const ANDROID_DELEGATED_SCOPES = [
+		'CERT_INSTALL' => 'cert_installation',
+		'CERT_SELECTION' => 'cert_selection',
+		'MANAGED_CONFIGURATIONS' => 'managed_config',
+		'BLOCK_UNINSTALL' => 'block_uninstall',
+		'PERMISSION_GRANT' => 'permission_policy_and_grant_state',
+		'PACKAGE_ACCESS' => 'package_access',
+		'ENABLE_SYSTEM_APP' => 'enable_system_apps',
+		'NETWORK_ACTIVITY_LOGS' => 'access_network_activity_logs',
+		'SECURITY_LOGS' => 'access_security_logs',
+	];
 
 	public $id;
 	public $identifier;
