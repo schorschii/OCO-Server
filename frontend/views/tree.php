@@ -94,12 +94,12 @@ require_once('../session.inc.php');
 </div>
 <?php } ?>
 
-<div id='divNodeProfiles' class='node'>
-	<a <?php echo Html::explorerLink('views/profiles.php'); ?>><img src='img/profile.dyn.svg'><?php echo LANG('profiles_and_policies'); ?></a>
-</div>
-
 <div id='divNodeManagedApps' class='node'>
 	<a <?php echo Html::explorerLink('views/managed-apps.php'); ?>><img src='img/store.dyn.svg'><?php echo LANG('managed_apps'); ?></a>
+</div>
+
+<div id='divNodeProfiles' class='node'>
+	<a <?php echo Html::explorerLink('views/profiles.php'); ?>><img src='img/profile.dyn.svg'><?php echo LANG('profiles_and_policies'); ?></a>
 </div>
 
 <hr/>
