@@ -15,6 +15,7 @@ class MobileDeviceCommandController {
 	}
 
 	function mdmCron(array|null $deviceIds=null) {
+		$success = true;
 		$mds = $this->db->selectAllMobileDevice();
 		foreach($mds as $md) {
 			if(!empty($deviceIds) && !in_array($md->id, $deviceIds)) continue;
@@ -28,10 +29,13 @@ class MobileDeviceCommandController {
 			} elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) {
 				$appPolicy = $this->androidAppInstalls($md);
 				$generalPolicy = $this->androidPolicies($md);
-				$this->androidPoliciesPatch($md, array_merge($appPolicy, $generalPolicy));
+				if(!$this->androidPoliciesPatch($md, array_merge($appPolicy, $generalPolicy))) {
+					$success = false;
+				}
 			}
 		}
 		$this->iosPush();
+		return $success;
 	}
 
 	private function androidAppInstalls(Models\MobileDevice $md) {
@@ -77,6 +81,7 @@ class MobileDeviceCommandController {
 	}
 
 	private function androidPoliciesPatch(Models\MobileDevice $md, array $policyValues) {
+		$success = true;
 		$appCount = count($policyValues['applications']??[]);
 		$policyCount = count($policyValues);
 		$newPolicy = json_encode($policyValues);
@@ -93,9 +98,12 @@ class MobileDeviceCommandController {
 					$md->info, $newPolicy, $md->notes, $md->force_update
 				);
 			} catch(Exception $e) {
+				// if it fails, continue execution for other devices
 				echo('Error updating policy for device '.$md->udid.': '.$e->getMessage()."\n");
+				$success = false;
 			}
 		}
+		return $success;
 	}
 
 	private function iosProfiles(Models\MobileDevice $md) {

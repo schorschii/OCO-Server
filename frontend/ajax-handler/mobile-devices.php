@@ -290,7 +290,9 @@ try {
 		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_MOBILE_DEVICE_SYNC);
 		try {
 			$mdcc = new MobileDeviceCommandController($db, true);
-			$mdcc->mdmCron();
+			if(!$mdcc->mdmCron()) {
+				header('HTTP/1.1 520 Some Policies Failed');
+			}
 		} catch(Exception $e) {
 			header('HTTP/1.1 500 Internal Server Error');
 			die($e->getMessage());

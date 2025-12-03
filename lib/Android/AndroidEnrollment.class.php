@@ -132,11 +132,18 @@ class AndroidEnrollment {
 		$response = curl_exec($ch);
 		$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
-		
-		if($expectedStatusCode && $statusCode !== $expectedStatusCode)
-			throw new \Exception('Unexpected status code '.$statusCode.' '.$response);
 
-		return json_decode($response, true);
+		$json = json_decode($response, true);
+
+		if($expectedStatusCode && $statusCode !== $expectedStatusCode) {
+			$errorMessage = $response;
+			if(!empty($json) && !empty($json['error']['message'])
+			&& is_string($json['error']['message']))
+				$errorMessage = $json['error']['message'];
+			throw new \Exception('Unexpected status code '.$statusCode.': '.$errorMessage);
+		}
+
+		return $json;
 	}
 
 	function generateSignupUrl() {
