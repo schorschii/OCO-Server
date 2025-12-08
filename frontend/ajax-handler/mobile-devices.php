@@ -31,8 +31,15 @@ try {
 		// update record
 		$cl->editMobileDevice($md->id, $md->device_name, $md->notes, $forceUpdate);
 		// instant apps & policy installation + metadata update jobs for iOS for this device
-		$mdcc = new MobileDeviceCommandController($db, true);
-		$mdcc->mdmCron([$md->id]);
+		try {
+			$mdcc = new MobileDeviceCommandController($db, true);
+			if(!$mdcc->mdmCron([$md->id])) {
+				header('HTTP/1.1 520 Some Policies Failed');
+			}
+		} catch(Exception $e) {
+			header('HTTP/1.1 500 Internal Server Error');
+			die($e->getMessage());
+		}
 		die();
 	}
 
