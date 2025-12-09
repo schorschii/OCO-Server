@@ -686,7 +686,9 @@ class DatabaseController {
 		if(!$external_id) {
 			// do not create command twice if the same command already exists pending!
 			$this->stmt = $this->dbh->prepare(
-				'SELECT id FROM mobile_device_command WHERE mobile_device_id = :mobile_device_id AND name = :name AND parameter = :parameter AND state = '.Models\MobileDeviceCommand::STATE_QUEUED.' LIMIT 1'
+				'SELECT id FROM mobile_device_command WHERE mobile_device_id = :mobile_device_id AND name = :name AND parameter = :parameter'
+				.' AND (state = '.Models\MobileDeviceCommand::STATE_QUEUED.' OR state = '.Models\MobileDeviceCommand::STATE_SENT.')'
+				.' LIMIT 1'
 			);
 			if(!$this->stmt->execute([':mobile_device_id' => $mobile_device_id, ':name' => $name, ':parameter' => $parameter])) return false;
 			foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceCommand') as $row) {
