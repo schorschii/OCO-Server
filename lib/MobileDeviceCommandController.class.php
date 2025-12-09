@@ -65,7 +65,7 @@ class MobileDeviceCommandController {
 	}
 
 	private function androidPolicies(Models\MobileDevice $md) {
-		// check if every assigned policy is applied, otherwise add to policy
+		// check if every assigned policy is applied, otherwise add it to device policy
 		$policy = [];
 		foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
 			if($p->type != Models\Profile::TYPE_ANDROID) continue;
@@ -107,13 +107,15 @@ class MobileDeviceCommandController {
 	}
 
 	private function iosProfiles(Models\MobileDevice $md) {
-		// check if every assigned profile is installed, otherwise create command
 		$changed = false;
+		// check if every assigned profile is installed, otherwise create command to install it
+		$handlesProfileUuids = [];
 		$installedProfileUuids = $this->db->selectAllMobileDeviceProfileUuidByMobileDeviceId($md->id);
 		foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
 			if($p->type != Models\Profile::TYPE_IOS) continue;
 			$uuid = $p->getUuid();
 			if(!$uuid) continue;
+			if(in_array($uuid, $handlesProfileUuids)) continue; // handle 1 profile only once if assigned via 2 groups
 			if(!array_key_exists($uuid, $installedProfileUuids)) {
 				$result = $this->db->insertMobileDeviceCommand($md->id, 'InstallProfile', json_encode([
 					'RequestType' => 'InstallProfile',
@@ -125,8 +127,11 @@ class MobileDeviceCommandController {
 					echo('Created command for installing profile '.$uuid.' on device '.$md->id."\n");
 				}
 			}
+			// remove it from array - so we can determine which profiles needs to be removed in the next step
 			unset($installedProfileUuids[$uuid]);
+			$handlesProfileUuids[] = $uuid;
 		}
+		// remove all left installed profiles
 		foreach($installedProfileUuids as $uuid => $profile) {
 			$requestPlist = new CFPropertyList\CFPropertyList();
 			$requestPlist->parse($profile->content);
@@ -150,8 +155,8 @@ class MobileDeviceCommandController {
 	}
 
 	private function iosAppInstalls(Models\MobileDevice $md) {
-		// check if every assigned app is installed, otherwise create job
 		$changed = false;
+		// check if every assigned app is installed, otherwise create job
 		$installedApps = $this->db->selectAllMobileDeviceAppIdentifierByMobileDeviceId($md->id);
 		foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
 			if($app->type != Models\ManagedApp::TYPE_IOS) continue;
