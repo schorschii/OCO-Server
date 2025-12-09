@@ -109,13 +109,13 @@ class MobileDeviceCommandController {
 	private function iosProfiles(Models\MobileDevice $md) {
 		$changed = false;
 		// check if every assigned profile is installed, otherwise create command to install it
-		$handlesProfileUuids = [];
+		$handledProfileUuids = [];
 		$installedProfileUuids = $this->db->selectAllMobileDeviceProfileUuidByMobileDeviceId($md->id);
 		foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
 			if($p->type != Models\Profile::TYPE_IOS) continue;
 			$uuid = $p->getUuid();
 			if(!$uuid) continue;
-			if(in_array($uuid, $handlesProfileUuids)) continue; // handle 1 profile only once if assigned via 2 groups
+			if(in_array($uuid, $handledProfileUuids)) continue; // handle 1 profile only once if assigned via 2 groups
 			if(!array_key_exists($uuid, $installedProfileUuids)) {
 				$result = $this->db->insertMobileDeviceCommand($md->id, 'InstallProfile', json_encode([
 					'RequestType' => 'InstallProfile',
@@ -129,7 +129,7 @@ class MobileDeviceCommandController {
 			}
 			// remove it from array - so we can determine which profiles needs to be removed in the next step
 			unset($installedProfileUuids[$uuid]);
-			$handlesProfileUuids[] = $uuid;
+			$handledProfileUuids[] = $uuid;
 		}
 		// remove all left installed profiles
 		foreach($installedProfileUuids as $uuid => $profile) {
