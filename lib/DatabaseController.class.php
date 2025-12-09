@@ -587,10 +587,14 @@ class DatabaseController {
 	}
 	public function selectAllMobileDeviceGroupByParentMobileDeviceGroupId($parent_id) {
 		if($parent_id === null) {
-			$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group WHERE parent_mobile_device_group_id IS NULL');
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM mobile_device_group WHERE parent_mobile_device_group_id IS NULL ORDER BY name'
+			);
 			$this->stmt->execute();
 		} else {
-			$this->stmt = $this->dbh->prepare('SELECT * FROM mobile_device_group WHERE parent_mobile_device_group_id = :parent_id');
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM mobile_device_group WHERE parent_mobile_device_group_id = :parent_id ORDER BY name'
+			);
 			$this->stmt->execute([':parent_id' => $parent_id]);
 		}
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
