@@ -1,5 +1,7 @@
 # OCO: Permissions
-Every OCO system user has one role assigned. The role defines which actions he is allowed to do. Roles are described as a JSON object in the database table `system_user_role`. By default, there is one role called "Superadmin" which allows everything.
+Every OCO system user has one role assigned. The role defines which actions he is allowed to do. Roles are described as a JSON object in the database table `system_user_role`.
+
+By default, there is one role called "Superadmin" which allows everything. Please do not delete or change the ID of it. Database migration in future updates may update this role identified by ID `1`.
 
 This page describes the role architecture for system users. For domain user (self service) roles, please have a look at the [Self Service](Self-Service.md) page.
 
