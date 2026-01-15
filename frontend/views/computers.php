@@ -6,10 +6,12 @@ require_once('../session.inc.php');
 $group = null;
 $computers = [];
 $subGroups = [];
+$policyObjects = [];
 try {
 	if(!empty($_GET['id'])) {
 		$group = $cl->getComputerGroup($_GET['id']);
 		$computers = $cl->getComputers($group);
+		$policyObjects = $db->selectAllPolicyObjectByComputerGroup($group->id);
 	} else {
 		$computers = $cl->getComputers();
 	}
@@ -61,6 +63,14 @@ try {
 	<?php } ?>
 	<?php foreach($subGroups as $g) { ?>
 		<a class='box' <?php echo Html::explorerLink('views/computers.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
+	<?php } ?>
+</div>
+<?php } ?>
+
+<?php if(!empty($policyObjects)) { ?>
+<div class='controls subfolders'>
+	<?php foreach($policyObjects as $po) { ?>
+		<a class='box' <?php echo Html::explorerLink('views/policy-object.php?id='.$po->id); ?>><img src='img/policy.dyn.svg'>&nbsp;<?php echo htmlspecialchars($po->name); ?></a>
 	<?php } ?>
 </div>
 <?php } ?>

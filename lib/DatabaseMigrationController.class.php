@@ -613,6 +613,100 @@ class DatabaseMigrationController {
 
 			$upgraded = true;
 		}
+		if(!$this->getTableColumnInfo('policy_definition_group', 'id')) {
+			if($this->debug) echo 'Upgrading to 1.1.12... (add policy_definition_group)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `policy_definition_group` (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `parent_policy_definition_group_id` INT NULL DEFAULT NULL,
+				  `name` text NOT NULL,
+				  `display_name` text NOT NULL,
+				  `description` text DEFAULT NULL,
+				  PRIMARY KEY (`id`),
+				  CONSTRAINT `fk_parent_policy_definition_group` FOREIGN KEY (`parent_policy_definition_group_id`) REFERENCES `policy_definition_group`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.12... (add policy_definition)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `policy_definition` (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `policy_definition_group_id` int(11) NOT NULL,
+				  `parent_policy_definition_id` INT NULL DEFAULT NULL,
+				  `name` text NOT NULL,
+				  `display_name` mediumtext NOT NULL,
+				  `description` longtext NOT NULL,
+				  `class` tinyint(4) NOT NULL,
+				  `options` text NOT NULL,
+				  `manifestation_linux` text DEFAULT NULL,
+				  `manifestation_macos` text DEFAULT NULL,
+				  `manifestation_windows` text DEFAULT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `fk_policy_definition_1` (`policy_definition_group_id`),
+				  CONSTRAINT `fk_policy_definition_1` FOREIGN KEY (`policy_definition_group_id`) REFERENCES `policy_definition_group` (`id`),
+				  CONSTRAINT `fk_policy_definition_2` FOREIGN KEY (`parent_policy_definition_id`) REFERENCES `policy_definition`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.12... (add policy_object)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `policy_object` (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `name` text NOT NULL,
+				  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				  `created_by_system_user_id` INT NULL,
+				  `updated` DATETIME NULL DEFAULT NULL,
+				  `updated_by_system_user_id` INT NULL,
+				  PRIMARY KEY (`id`)
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.12... (add policy_object_item)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `policy_object_item` (
+				  `policy_object_id` int(11) NOT NULL,
+				  `policy_definition_id` int(11) NOT NULL,
+				  `value` text NOT NULL,
+				  `description` text NOT NULL,
+				  PRIMARY KEY (`policy_object_id`,`policy_definition_id`),
+				  KEY `fk_policy_object_item_1` (`policy_definition_id`),
+				  CONSTRAINT `fk_policy_object_item_1` FOREIGN KEY (`policy_definition_id`) REFERENCES `policy_definition` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+				  CONSTRAINT `fk_policy_object_item_2` FOREIGN KEY (`policy_object_id`) REFERENCES `policy_object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.12... (add policy_translation)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `policy_translation` (
+				  `language` varchar(5) NOT NULL,
+				  `name` varchar(100) NOT NULL,
+				  `translation` text NOT NULL,
+				  PRIMARY KEY (`language`,`name`)
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.12... (add computer_group_policy_object)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `computer_group_policy_object` (
+				  `computer_group_id` int(11) NOT NULL,
+				  `policy_object_id` int(11) NOT NULL,
+				  `sequence` INT NOT NULL DEFAULT '0',
+				  PRIMARY KEY(`computer_group_id`, `policy_object_id`),
+				  KEY `fk_computer_group_policy_object_1` (`computer_group_id`),
+				  KEY `fk_computer_group_policy_object_2` (`policy_object_id`),
+				  CONSTRAINT `fk_computer_group_policy_object_1` FOREIGN KEY (`computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+				  CONSTRAINT `fk_computer_group_policy_object_2` FOREIGN KEY (`policy_object_id`) REFERENCES `policy_object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.12... (granting policy_object permission to superadmin)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE system_user_role SET permissions = JSON_SET(permissions, "$.Models\\\\\\\\PolicyObject", JSON_OBJECT("*", JSON_OBJECT("read",true,"write",true,"delete",true,"deploy",true), "create", true))
+				WHERE id = 1');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
 
 		return $upgraded;
 	}

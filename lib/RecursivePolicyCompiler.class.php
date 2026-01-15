@@ -1,0 +1,79 @@
+<?php
+
+class RecursivePolicyCompiler {
+
+	const MANIFESTATION_LINUX   = 'manifestation_linux';
+	const MANIFESTATION_MACOS   = 'manifestation_macos';
+	const MANIFESTATION_WINDOWS = 'manifestation_windows';
+
+	private $db;
+
+	function __construct(\DatabaseController $db) {
+		$this->db = $db;
+	}
+
+	function getManifestationTypeByComputer(Models\Computer $computer) {
+		$manifestationType = null;
+		if($computer->getOsType() == Models\Computer::OS_TYPE_LINUX)
+			$manifestationType = self::MANIFESTATION_LINUX;
+		elseif($computer->getOsType() == Models\Computer::OS_TYPE_MACOS)
+			$manifestationType = self::MANIFESTATION_MACOS;
+		elseif($computer->getOsType() == Models\Computer::OS_TYPE_WINDOWS)
+			$manifestationType = self::MANIFESTATION_WINDOWS;
+		else
+			throw new \RuntimeException('Unknown OS type!');
+		return $manifestationType;
+	}
+
+	function getPoliciesForComputer(Models\Computer $computer) {
+		$manifestationType = $this->getManifestationTypeByComputer($computer);
+		$policies = [];
+		foreach($this->db->selectAllComputerGroupByComputerId($computer->id) as $cg) {
+			$policies = array_merge(
+				$policies,
+				$this->getPoliciesForGroup($cg, Models\PolicyDefinition::CLASS_MACHINE, $manifestationType)
+			);
+		}
+		return $policies;
+	}
+
+	function getPoliciesForDomainUser(Models\Computer $computer, Models\DomainUser $du) {
+		$manifestationType = $this->getManifestationTypeByComputer($computer);
+		$policies = [];
+		foreach($this->db->selectAllDomainUserGroupByDomainUser($du->id) as $dug) {
+			$policies = array_merge(
+				$policies,
+				$this->getPoliciesForGroup($dug, Models\PolicyDefinition::CLASS_USER, $manifestationType)
+			);
+		}
+		return $policies;
+	}
+
+	function getPoliciesForGroup(Models\HierarchicalGroup $group, int $classMask, string $manifestationType) {
+		$policies = [];
+		$currentGroup = $group;
+		$currentGroupId = $group->getId();
+		while($currentGroupId) {
+			$currentGroup = call_user_func([$this->db, $currentGroup::GET_OBJECT_FUNCTION], $currentGroupId);
+			if(!$currentGroup instanceof Models\IHierarchicalGroup)
+				throw new \Exception('Group object does not conform to IHierarchicalGroup');
+
+			if($group instanceof Models\ComputerGroup)
+				$items = $this->db->selectAllPolicyObjectItemByComputerGroup($currentGroupId, $classMask);
+			elseif($group instanceof Models\DomainUserGroup)
+				$items = $this->db->selectAllPolicyObjectItemByDomainUserGroup($currentGroupId, $classMask);
+			foreach($items as $policy) {
+				if(empty($policy->$manifestationType)) continue;
+				foreach(explode("\n", $policy->$manifestationType) as $manifestation) {
+					// do not override policy with policy from a parent group!
+					if(!array_key_exists($manifestation, $policies))
+						$policies[$manifestation] = $policy->value;
+				}
+			}
+
+			$currentGroupId = $currentGroup->getParentId();
+		}
+		return $policies;
+	}
+
+}

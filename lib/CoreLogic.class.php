@@ -2515,4 +2515,54 @@ class CoreLogic {
 		return $insertId;
 	}
 
+	/*** Policy Operations ***/
+	public function getPolicyObjects() {
+		$policyObjects = [];
+		foreach($this->db->selectAllPolicyObject() as $po) {
+			if($this->checkPermission($po, PermissionManager::METHOD_READ, false))
+				$policyObjects[] = $po;
+		}
+		return $policyObjects;
+	}
+	public function getPolicyObject($id) {
+		$policyObject = $this->db->selectPolicyObject($id);
+		if(empty($policyObject)) throw new NotFoundException();
+		$this->checkPermission($policyObject, PermissionManager::METHOD_READ);
+		return $policyObject;
+	}
+	public function createPolicyObject($name) {
+		$this->checkPermission(new Models\PolicyObject(), PermissionManager::METHOD_CREATE);
+
+		if(empty(trim($name)))
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+
+		$insertId = $this->db->insertPolicyObject($name);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.policy_object.create', [
+			'name'=>$name,
+		]);
+		return $insertId;
+	}
+	public function editPolicyObject($id, $name) {
+		$policyObject = $this->db->selectPolicyObject($id);
+		if(empty($policyObject)) throw new NotFoundException();
+		$this->checkPermission($policyObject, PermissionManager::METHOD_WRITE);
+
+		if(empty(trim($name)))
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+
+		$this->db->updatePolicyObject($id, $name);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.policy_object.update', [
+			'name'=>$name,
+		]);
+	}
+	public function removePolicyObject($id) {
+		$policyObject = $this->db->selectPolicyObject($id);
+		if(empty($policyObject)) throw new NotFoundException();
+		$this->checkPermission($policyObject, PermissionManager::METHOD_DELETE);
+
+		$this->db->deletePolicyObject($id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.policy_object.delete', json_encode($policyObject));
+	}
+
 }

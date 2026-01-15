@@ -3555,4 +3555,201 @@ class DatabaseController {
 		return $this->stmt->execute([':key' => $key]);
 	}
 
+	// Policy Operations
+	public function selectAllPolicyDefinitionGroup() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM policy_definition_group ORDER BY `name`'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyDefinitionGroup');
+	}
+	public function selectAllPolicyDefinitionGroupByParentPolicyDefinitionGroup($group_id) {
+		if($group_id === null) {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM policy_definition_group WHERE parent_policy_definition_group_id IS NULL ORDER BY `name`'
+			);
+			$this->stmt->execute();
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM policy_definition_group WHERE parent_policy_definition_group_id = :group_id ORDER BY `name`'
+			);
+			$this->stmt->execute([':group_id' => $group_id]);
+		}
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyDefinitionGroup');
+	}
+	public function insertPolicyDefinitionGroup($parent_policy_definition_group_id, $name, $display_name) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO policy_definition_group (parent_policy_definition_group_id, name, display_name) VALUES (:parent_policy_definition_group_id, :name, :display_name)'
+		);
+		$this->stmt->execute([
+			':parent_policy_definition_group_id' => $parent_policy_definition_group_id,
+			':name' => $name,
+			':display_name' => $display_name,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function selectAllPolicyDefinition() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM policy_definition ORDER BY `name`'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyDefinition');
+	}
+	public function selectAllPolicyByPolicyObjectAndParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($policy_object_id, $parent_policy_definition_id, $group_id, $class_mask) {
+		$sql = 'SELECT pd.id, pd.parent_policy_definition_id, pd.name, pd.display_name, pd.description, pd.class, pd.options, poi.value FROM policy_definition pd '
+			.' LEFT JOIN (SELECT * FROM policy_object_item WHERE policy_object_id = :policy_object_id) poi ON poi.policy_definition_id = pd.id'
+			.' WHERE class & :class_mask'
+			.' AND '.(($group_id===null) ? 'policy_definition_group_id IS NULL' : 'policy_definition_group_id = :group_id')
+			.' AND '.(($parent_policy_definition_id===null) ? 'parent_policy_definition_id IS NULL' : 'parent_policy_definition_id = :parent_policy_definition_id');
+		$this->stmt = $this->dbh->prepare($sql);
+		$params = [':policy_object_id' => $policy_object_id, ':class_mask' => $class_mask];
+		if($group_id !== null)
+			$params[':group_id'] = $group_id;
+		if($parent_policy_definition_id !== null)
+			$params[':parent_policy_definition_id'] = $parent_policy_definition_id;
+		$this->stmt->execute($params);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyDefinition');
+	}
+	public function insertPolicyDefinition($policy_definition_group_id, $parent_policy_definition_id, $name, $display_name, $description, $class, $options, $manifestation_linux, $manifestation_macos, $manifestation_windows) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO policy_definition (policy_definition_group_id, parent_policy_definition_id, name, display_name, description, class, options, manifestation_linux, manifestation_macos, manifestation_windows)
+			VALUES (:policy_definition_group_id, :parent_policy_definition_id, :name, :display_name, :description, :class, :options, :manifestation_linux, :manifestation_macos, :manifestation_windows)'
+		);
+		$this->stmt->execute([
+			':policy_definition_group_id' => $policy_definition_group_id,
+			':parent_policy_definition_id' => $parent_policy_definition_id,
+			':name' => $name,
+			':display_name' => $display_name,
+			':description' => $description,
+			':class' => $class,
+			':options' => $options,
+			':manifestation_linux' => $manifestation_linux,
+			':manifestation_macos' => $manifestation_macos,
+			':manifestation_windows' => $manifestation_windows,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function replacePolicyTranslation($language, $name, $translation) {
+		$this->stmt = $this->dbh->prepare(
+			'REPLACE INTO policy_translation (language, name, translation) VALUES (:language, :name, :translation)'
+		);
+		$this->stmt->execute([
+			':language' => $language,
+			':name' => $name, ':translation' => $translation
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function selectAllPolicyTranslationByLanguage($language) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT name, translation FROM policy_translation WHERE language LIKE :language'
+		);
+		$this->stmt->execute([':language' => $language.'%']);
+		$translations = [];
+		foreach($this->stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+			$translations[$row['name']] = $row['translation'];
+		}
+		return $translations;
+	}
+	public function selectAllPolicyObject() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM policy_object ORDER BY `name`'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject');
+	}
+	public function selectAllPolicyObjectByComputerGroup($computer_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT po.* FROM policy_object po INNER JOIN computer_group_policy_object cgpo ON cgpo.policy_object_id = po.id
+			WHERE cgpo.computer_group_id = :computer_group_id ORDER BY `name`'
+		);
+		$this->stmt->execute([':computer_group_id' => $computer_group_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject');
+	}
+	public function selectAllComputerGroupByPolicyObject($policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cg.* FROM computer_group cg INNER JOIN computer_group_policy_object cgpo ON cgpo.computer_group_id = cg.id
+			WHERE cgpo.policy_object_id = :policy_object_id ORDER BY `name`'
+		);
+		$this->stmt->execute([':policy_object_id' => $policy_object_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
+	}
+	public function selectAllPolicyObjectItemByComputerGroup($computer_group_id, $class_mask) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, poi.value
+			FROM policy_object_item poi
+			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
+			INNER JOIN policy_object po ON poi.policy_object_id = po.id
+			INNER JOIN computer_group_policy_object cgpo ON cgpo.policy_object_id = po.id
+			WHERE cgpo.computer_group_id = :computer_group_id
+			AND pd.class & :class_mask'
+		);
+		$this->stmt->execute([':computer_group_id' => $computer_group_id, ':class_mask' => $class_mask]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObjectItem');
+	}
+	public function selectPolicyObject($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM policy_object WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject') as $row) {
+			return $row;
+		}
+	}
+	public function insertPolicyObject($name) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO policy_object (name) VALUES (:name)'
+		);
+		$this->stmt->execute([':name' => $name]);
+		return $this->dbh->lastInsertId();
+	}
+	public function updatePolicyObject($id, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE policy_object SET name = :name WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':name' => $name]);
+	}
+	public function deletePolicyObject($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM policy_object WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
+	}
+	public function deletePolicyObjectItemByPolicyObject($policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM policy_object_item WHERE policy_object_id = :policy_object_id'
+		);
+		return $this->stmt->execute([':policy_object_id' => $policy_object_id]);
+	}
+	public function insertPolicyObjectItem($policy_object_id, $policy_definition_id, $value, $description) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO policy_object_item (policy_object_id, policy_definition_id, value, description)
+			VALUES (:policy_object_id, :policy_definition_id, :value, :description)'
+		);
+		$this->stmt->execute([
+			':policy_object_id' => $policy_object_id,
+			':policy_definition_id' => $policy_definition_id,
+			':value' => $value,
+			':description' => $description,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function insertComputerGroupPolicyObject($computer_group_id, $policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_group_policy_object (computer_group_id, policy_object_id) VALUES (:computer_group_id, :policy_object_id)'
+		);
+		return $this->stmt->execute([
+			':computer_group_id' => $computer_group_id,
+			':policy_object_id' => $policy_object_id,
+		]);
+	}
+	public function deleteComputerGroupPolicyObject($computer_group_id, $policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_group_policy_object WHERE computer_group_id=:computer_group_id, policy_object_id=:policy_object_id'
+		);
+		return $this->stmt->execute([
+			':computer_group_id' => $computer_group_id,
+			':policy_object_id' => $policy_object_id,
+		]);
+	}
+
 }

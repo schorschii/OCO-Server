@@ -15,8 +15,11 @@ body, html {
 	height: 100%;
 	margin: 0px;
 }
-html {
-	background: white;
+html,
+#explorer-content,
+#login-form,
+.controls.sticky {
+	background-color: #FAFAFA;
 }
 body {
 	font-family: "Quicksand", sans-serif;
@@ -171,7 +174,6 @@ h3 {
 	flex-direction: column;
 	align-items: center;
 	justify-content: space-around;
-	background-color: #FAFAFA;
 	min-width: 350px;
 	max-width: 500px;
 	width: 30%;
@@ -342,7 +344,6 @@ h3 {
 }
 #explorer-content {
 	position: relative;
-	background-color: #FAFAFA;
 	flex-basis: 80%;
 	padding: 20px;
 	box-sizing: border-box;
@@ -674,6 +675,10 @@ tfoot .controls {
 	align-items: center;
 	text-decoration: none;
 }
+.controls.sticky {
+	position: sticky;
+	top: -20px;
+}
 .fillwidth {
 	flex-grow: 1;
 }
@@ -1003,6 +1008,14 @@ table.list.actioncolumn tbody tr td:last-child {
 	text-align: right;
 	white-space: nowrap;
 }
+table.list.policies tr td {
+	padding-top: 10px;
+	padding-bottom: 10px;
+	vertical-align: top;
+}
+table.list.policies tr td:nth-child(2) {
+	text-align: center;
+}
 table.metadata tr th:first-child {
 	width: 40%;
 }
@@ -1104,6 +1117,9 @@ table.fixed {
 
 .subbuttons {
 	white-space: nowrap;
+}
+.subbuttons.wrap {
+	white-space: normal;
 }
 .subbuttons > button {
 	opacity: 0;
@@ -1548,6 +1564,22 @@ div.stickytable > table.list tfoot {
 	display: flex;
 }
 
+ul.tree, ul.tree ul {
+	padding: 0;
+	list-style-type: none;
+}
+ul.tree ul {
+	padding-left: 20px;
+	border-left: 1px dashed rgb(150,150,150,0.4);
+}
+ul.tree button.expander {
+	width: 100%;
+	text-align: start;
+	text-transform: none;
+	border: none;
+	background-color: none;
+}
+
 .alert {
 	border-radius: 2px;
 	margin-top: 10px;
@@ -1662,7 +1694,9 @@ div.stickytable > table.list tfoot {
 }
 
 @media (prefers-color-scheme: dark) {
-	html, #explorer-content {
+	html,
+	#explorer-content,
+	.controls.sticky {
 		background-color: #0d1117;
 	}
 	#explorer-tree, #login-form, #dialog-container #dialog-box, #header #search-results {

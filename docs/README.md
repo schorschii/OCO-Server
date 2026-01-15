@@ -28,6 +28,7 @@ Please refer to the [README.md in the OCO Agent repo](https://github.com/schorsc
 - [Packages](Packages.md)
 - [Deployment](Deploy-Install-Uninstall.md)
 - [Automated OS Installation](OS-Installation.md)
+- [Policies](Policies.md)
 - [Reports](Reports.md)
 - [Web Application ("OCO Client")](WebApplication.md)
 - [Permissions](Permissions.md)
