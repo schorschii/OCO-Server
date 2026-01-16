@@ -3680,10 +3680,12 @@ class DatabaseController {
 			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
 			INNER JOIN policy_object po ON poi.policy_object_id = po.id
 			INNER JOIN computer_group_policy_object cgpo ON cgpo.policy_object_id = po.id
-			WHERE cgpo.computer_group_id = :computer_group_id
-			AND pd.class & :class_mask'
+			WHERE pd.class & :class_mask
+			AND '.($computer_group_id===null ? 'cgpo.computer_group_id IS NULL' : 'cgpo.computer_group_id = :computer_group_id')
 		);
-		$this->stmt->execute([':computer_group_id' => $computer_group_id, ':class_mask' => $class_mask]);
+		$params = [':class_mask' => $class_mask];
+		if($computer_group_id !== null) $params[':computer_group_id'] = $computer_group_id;
+		$this->stmt->execute($params);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObjectItem');
 	}
 	public function selectPolicyObject($id) {

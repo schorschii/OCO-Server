@@ -26,24 +26,42 @@ class RecursivePolicyCompiler {
 	}
 
 	function getPoliciesForComputer(Models\Computer $computer) {
+		$classMask = Models\PolicyDefinition::CLASS_MACHINE;
 		$manifestationType = $this->getManifestationTypeByComputer($computer);
 		$policies = [];
+
+		// process default domain policy
+		foreach($this->db->selectAllPolicyObjectItemByComputerGroup(null, $classMask) as $policy) {
+			if(empty($policy->$manifestationType)) continue;
+			$policies = $this->parseManifestation($policies, $policy->$manifestationType, $policy->value);
+		}
+
+		// process computer group assigned policies
 		foreach($this->db->selectAllComputerGroupByComputerId($computer->id) as $cg) {
 			$policies = array_merge(
 				$policies,
-				$this->getPoliciesForGroup($cg, Models\PolicyDefinition::CLASS_MACHINE, $manifestationType)
+				$this->getPoliciesForGroup($cg, $classMask, $manifestationType)
 			);
 		}
 		return $policies;
 	}
 
-	function getPoliciesForDomainUser(Models\Computer $computer, Models\DomainUser $du) {
+	function getPoliciesForDomainUser(Models\DomainUser $du, Models\Computer $computer) {
+		$classMask = Models\PolicyDefinition::CLASS_USER;
 		$manifestationType = $this->getManifestationTypeByComputer($computer);
 		$policies = [];
+
+		// process default domain policy
+		foreach($this->db->selectAllPolicyObjectItemByDomainUserGroup(null, $classMask) as $policy) {
+			if(empty($policy->$manifestationType)) continue;
+			$policies = $this->parseManifestation($policies, $policy->$manifestationType, $policy->value);
+		}
+
+		// process user group assigned policies
 		foreach($this->db->selectAllDomainUserGroupByDomainUser($du->id) as $dug) {
 			$policies = array_merge(
 				$policies,
-				$this->getPoliciesForGroup($dug, Models\PolicyDefinition::CLASS_USER, $manifestationType)
+				$this->getPoliciesForGroup($dug, $classMask, $manifestationType)
 			);
 		}
 		return $policies;
@@ -64,14 +82,20 @@ class RecursivePolicyCompiler {
 				$items = $this->db->selectAllPolicyObjectItemByDomainUserGroup($currentGroupId, $classMask);
 			foreach($items as $policy) {
 				if(empty($policy->$manifestationType)) continue;
-				foreach(explode("\n", $policy->$manifestationType) as $manifestation) {
-					// do not override policy with policy from a parent group!
-					if(!array_key_exists($manifestation, $policies))
-						$policies[$manifestation] = $policy->value;
-				}
+				$policies = $this->parseManifestation($policies, $policy->$manifestationType, $policy->value);
 			}
 
 			$currentGroupId = $currentGroup->getParentId();
+		}
+		return $policies;
+	}
+
+	private function parseManifestation($existingPolicies, $newManifestation, $newValue) {
+		$policies = [];
+		foreach(explode("\n", $newManifestation) as $manifestation) {
+			// do not override policy with policy from a parent group!
+			if(!array_key_exists($manifestation, $policies))
+				$policies[$manifestation] = $newValue;
 		}
 		return $policies;
 	}

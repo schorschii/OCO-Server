@@ -50,7 +50,7 @@ try {
 		foreach($_POST['add_to_group_id'] as $group_id) {
 			foreach($_POST['add_to_group_policy_object_id'] as $policy_object_id) {
 				// TODO CoreLogic permission check
-				$db->insertComputerGroupPolicyObject($group_id, $policy_object_id);
+				$db->insertComputerGroupPolicyObject(empty($group_id) ? null : $group_id, $policy_object_id);
 			}
 		}
 		die();

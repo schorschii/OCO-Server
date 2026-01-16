@@ -1111,10 +1111,11 @@ CREATE TABLE `policy_translation` (
 --
 
 CREATE TABLE `computer_group_policy_object` (
-  `computer_group_id` int(11) NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `computer_group_id` int(11) NULL,
   `policy_object_id` int(11) NOT NULL,
   `sequence` INT NOT NULL DEFAULT '0',
-  PRIMARY KEY(`computer_group_id`, `policy_object_id`),
+  PRIMARY KEY (`id`),
   KEY `fk_computer_group_policy_object_1` (`computer_group_id`),
   KEY `fk_computer_group_policy_object_2` (`policy_object_id`),
   CONSTRAINT `fk_computer_group_policy_object_1` FOREIGN KEY (`computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,

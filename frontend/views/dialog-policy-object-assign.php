@@ -16,6 +16,7 @@ try {
 	<tr>
 		<td>
 			<select id='txtComputerGroups' class='fullwidth' size='10' multiple='true' autofocus='true'>
+				<option value=''><?php echo LANG('default_domain_policy'); ?></option>
 				<?php Html::buildGroupOptions($cl, new Models\ComputerGroup()); ?>
 			</select>
 		</td>
@@ -37,7 +38,7 @@ btnDoAssignPolicyObject.addEventListener('click', function(e){
 	ajaxRequestPost('ajax-handler/policy-objects.php', paramString, null, function() {
 		hideDialog();
 		refreshContent();
-		emitMessage(LANG['assigned'], '', MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 });
 </script>
