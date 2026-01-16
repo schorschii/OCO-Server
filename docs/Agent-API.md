@@ -15,7 +15,7 @@ Before the first agent request, the `agent-key` should be set to the global or i
 
 The agent now authenticates by adding a signature as HTTP header `x-oco-agent-signature` to the request. The signature is a hexadecimal SHA256 HMAC calculated over the HTTP (JSON) body using the agent key in the local agent configuration.
 
-The `server-key` is empty by default (in the server database and the agent config file). Now, on the first request, the server will generate new random keys and send it to the agent during the `agent_hello` response.
+The `server-key` is empty by default (in the server database and the agent config file). Now, on the first request, the server will generate new random keys and send it to the agent during the `oco.agent.hello` response.
 
 The agent then saves the keys into its config file (TOFU principle). On the next request, the agent only trusts the server if it can validate the `x-oco-server-signature` HTTP header. This is again a SHA256 HMAC calculated over the HTTP response body, but this time the previously saved server key is used for the HMAC calculation.
 
@@ -25,13 +25,21 @@ Every server-agent communcation should be encrypted via HTTPS as mentioned in th
 
 # JSON-REST-API Methods
 ## `oco.agent.hello` - Agent Contact Approach
-### Parameters
+### Agent Request Parameters
 - `agent_version`: the agent version
 - `networks`: network interface information (array of objects)
 - `services`: status output of service checks
 - `uptime`: uptime in seconds
 - `battery_level`: battery level (0-1 or false if no battery installed)
 - `battery_status`: battery status (1 if power supply attached, false if no battery installed)
+### Server Response Parameters
+- `server-key`: the new server key to store in the agent config (only if empty)
+- `agent-key`: the new agent key to store in the agent config (only if empty)
+- `update`: whether to send all inventory information with a next request
+- `logins-since`: send user login information since this date
+- `software-jobs`: software jobs to execute
+- `events`: event query rules (info what to filter from logs and should be sent to the server)
+- `update-passwords`: info to update local admin password(s) (based on password rotation rules)
 ### Example
 ```
 {
@@ -106,7 +114,7 @@ Every server-agent communcation should be encrypted via HTTPS as mentioned in th
 ```
 
 ## `oco.agent.update` - Update Agent Inventory Values
-### Parameters
+### Agent Request Parameters
 - `os`: operating system
 - `os_version`: operating system version (including build number)
 - `os_license`: operating system activation status (0, 1 or "-" if not applicable)
@@ -134,6 +142,10 @@ Every server-agent communcation should be encrypted via HTTPS as mentioned in th
 - `software`: installed software (array of objects)
 - `logins`: user logins since `logins-since` (array of objects)
 - `devices`: attached devices information (array of objects)
+### Server Response Parameters
+- `policies`: policies to apply on the managed computer
+  - `machine`: system-wide policies
+  - `<uid>`: policies for user with this ID
 ### Example
 ```
 {
@@ -243,18 +255,29 @@ Every server-agent communcation should be encrypted via HTTPS as mentioned in th
 	"error": null,
 	"result": {
 		"success": true,
-		"params": {}
+		"params": {
+			"policies": {
+				"machine": {
+					"REGISTRY:Software\\Policies\\Microsoft\\Windows:some_dword": 1
+				},
+				"00000000-0000-0000-0000-000000000000": {
+					"REGISTRY:Software\\Policies\\Microsoft\\Windows:some_string": "hello."
+				}
+			}
+		}
 	}
 }
 ```
 
 ## `oco.agent.update_job_state` - Update Job Deployment Status
-### Parameters
+### Agent Request Parameters
 - `job-id`: ID of the job to update (static job: `<job_id>`, dynamic job: `dynamic-<job_id>`)
 - `download-progress` (optional): download progress in percent
 - `state`: state of the job, e.g. downloading, executing, finished (integer) - see const definitions in 'Job' class
 - `return-code`: procedure command return code
 - `message`: procedure command output (stdout & stderr)
+### Server Response Parameters
+- `job-succeeded`: boolean indicating if the job was successful (based on return code and success return codes in the server database), so that the client knows if it may should abort following jobs of the same container (determined by "sequence-mode")
 ### Example
 ```
 {
@@ -289,7 +312,7 @@ Every server-agent communcation should be encrypted via HTTPS as mentioned in th
 ```
 
 ## `oco.agent.events` - Send Events To The Server
-### Parameters
+### Agent Request Parameters
 - `events`: the events to store
 ### Example
 ```
@@ -326,7 +349,7 @@ Every server-agent communcation should be encrypted via HTTPS as mentioned in th
 ```
 
 ## `oco.agent.passwords` - Store New Rotated Password On The Server
-### Parameters
+### Agent Request Parameters
 - `passwords`: the passwords to store
 ### Example
 ```
@@ -361,7 +384,7 @@ Every server-agent communcation should be encrypted via HTTPS as mentioned in th
 ```
 
 ## `oco.agent.download` - Download Software Package
-### Parameters
+### Agent Request Parameters
 - `package-id`: the package id to download
 ### Example
 ```

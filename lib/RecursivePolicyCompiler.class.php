@@ -33,7 +33,7 @@ class RecursivePolicyCompiler {
 		// process default domain policy
 		foreach($this->db->selectAllPolicyObjectItemByComputerGroup(null, $classMask) as $policy) {
 			if(empty($policy->$manifestationType)) continue;
-			$policies = $this->parseManifestation($policies, $policy->$manifestationType, $policy->value);
+			$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
 		}
 
 		// process computer group assigned policies
@@ -46,7 +46,7 @@ class RecursivePolicyCompiler {
 		return $policies;
 	}
 
-	function getPoliciesForDomainUser(Models\DomainUser $du, Models\Computer $computer) {
+	function getPoliciesForDomainUserOnComputer(Models\DomainUser $du, Models\Computer $computer) {
 		$classMask = Models\PolicyDefinition::CLASS_USER;
 		$manifestationType = $this->getManifestationTypeByComputer($computer);
 		$policies = [];
@@ -54,7 +54,7 @@ class RecursivePolicyCompiler {
 		// process default domain policy
 		foreach($this->db->selectAllPolicyObjectItemByDomainUserGroup(null, $classMask) as $policy) {
 			if(empty($policy->$manifestationType)) continue;
-			$policies = $this->parseManifestation($policies, $policy->$manifestationType, $policy->value);
+			$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
 		}
 
 		// process user group assigned policies
@@ -82,7 +82,7 @@ class RecursivePolicyCompiler {
 				$items = $this->db->selectAllPolicyObjectItemByDomainUserGroup($currentGroupId, $classMask);
 			foreach($items as $policy) {
 				if(empty($policy->$manifestationType)) continue;
-				$policies = $this->parseManifestation($policies, $policy->$manifestationType, $policy->value);
+				$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
 			}
 
 			$currentGroupId = $currentGroup->getParentId();
@@ -90,12 +90,17 @@ class RecursivePolicyCompiler {
 		return $policies;
 	}
 
-	private function parseManifestation($existingPolicies, $newManifestation, $newValue) {
+	private function compileManifestation($existingPolicies, $newManifestation, $newOptions, $newValue) {
 		$policies = [];
 		foreach(explode("\n", $newManifestation) as $manifestation) {
 			// do not override policy with policy from a parent group!
-			if(!array_key_exists($manifestation, $policies))
-				$policies[$manifestation] = $newValue;
+			if(array_key_exists($manifestation, $policies)) continue;
+			// determine data type (int vs. string)
+			if(is_numeric($newValue)
+			&& (substr($newOptions, 0, 3) == 'INT' || in_array($newValue, json_decode($newOptions, true) ?? [])))
+				$policies[$manifestation] = intval($newValue);
+			else
+				$policies[$manifestation] = strval($newValue);
 		}
 		return $policies;
 	}

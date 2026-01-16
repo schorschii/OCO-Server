@@ -3675,7 +3675,7 @@ class DatabaseController {
 	}
 	public function selectAllPolicyObjectItemByComputerGroup($computer_group_id, $class_mask) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, poi.value
+			'SELECT pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, pd.options, poi.value
 			FROM policy_object_item poi
 			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
 			INNER JOIN policy_object po ON poi.policy_object_id = po.id
