@@ -700,6 +700,45 @@ class DatabaseMigrationController {
 				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
+			if($this->debug) echo 'Upgrading to 1.1.12... (add domain_user_group)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `domain_user_group` (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `parent_domain_user_group_id` int(11) NOT NULL,
+				  `name` text NOT NULL,
+				  PRIMARY KEY (`id`)
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.12... (add domain_user_group_policy_object)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `domain_user_group_policy_object` (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `domain_user_group_id` int(11) NULL,
+				  `policy_object_id` int(11) NOT NULL,
+				  `sequence` int(11) NOT NULL DEFAULT 0,
+				  PRIMARY KEY (`id`),
+				  KEY `fk_domain_user_group_policy_object_1` (`domain_user_group_id`),
+				  KEY `fk_domain_user_group_policy_object_2` (`policy_object_id`),
+				  CONSTRAINT `fk_domain_user_group_policy_object_1` FOREIGN KEY (`domain_user_group_id`) REFERENCES `domain_user_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+				  CONSTRAINT `fk_domain_user_group_policy_object_2` FOREIGN KEY (`policy_object_id`) REFERENCES `policy_object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.1.12... (add domain_user_group_member)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"CREATE TABLE `domain_user_group_member` (
+				  `id` int(11) NOT NULL AUTO_INCREMENT,
+				  `domain_user_id` int(11) NOT NULL,
+				  `domain_user_group_id` int(11) NOT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `fk_domain_user_group_member_1` (`domain_user_id`),
+				  KEY `fk_domain_user_group_member_2` (`domain_user_group_id`),
+				  CONSTRAINT `fk_domain_user_group_member_1` FOREIGN KEY (`domain_user_id`) REFERENCES `domain_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+				  CONSTRAINT `fk_domain_user_group_member_2` FOREIGN KEY (`domain_user_group_id`) REFERENCES `domain_user_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
 			if($this->debug) echo 'Upgrading to 1.1.12... (granting policy_object permission to superadmin)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				'UPDATE system_user_role SET permissions = JSON_SET(permissions, "$.Models\\\\\\\\PolicyObject", JSON_OBJECT("*", JSON_OBJECT("read",true,"write",true,"delete",true,"deploy",true), "create", true))

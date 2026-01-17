@@ -2960,6 +2960,40 @@ class DatabaseController {
 			return $row;
 		}
 	}
+	public function selectDomainUserGroup($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM domain_user_group WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup', [$this]) as $row) {
+			return $row;
+		}
+	}
+	public function selectAllDomainUserGroupByParentDomainUserGroupId($parent_domain_user_group_id=null) {
+		if($parent_domain_user_group_id === null) {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM domain_user_group WHERE parent_domain_user_group_id IS NULL ORDER BY name'
+			);
+			$this->stmt->execute();
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM domain_user_group WHERE parent_domain_user_group_id = :parent_domain_user_group_id ORDER BY name'
+			);
+			$this->stmt->execute([':parent_domain_user_group_id' => $parent_domain_user_group_id]);
+		}
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup', [$this]);
+	}
+	public function selectAllDomainUserGroupByDomainUserId($domain_user_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT dug.id AS "id", dug.name AS "name", dug.parent_domain_user_group_id AS "parent_domain_user_group_id"
+			FROM domain_user_group_member dugm
+			INNER JOIN domain_user_group dug ON dug.id = dugm.domain_user_group_id
+			WHERE dugm.domain_user_id = :domain_user_id
+			ORDER BY dug.name'
+		);
+		$this->stmt->execute([':domain_user_id' => $domain_user_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup', [$this]);
+	}
 	private function insertOrUpdateDomainUserLogon($computer_id, $did, $console, $timestamp) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE domain_user_logon SET id = LAST_INSERT_ID(id)
@@ -3020,7 +3054,7 @@ class DatabaseController {
 	}
 	public function selectAllDomainUserLogonByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT du.id AS "domain_user_id", du.username AS "domain_user_username", du.display_name AS "domain_user_display_name", COUNT(du.username) AS "logon_amount",
+			'SELECT du.id AS "domain_user_id", du.uid AS "domain_user_uid", du.username AS "domain_user_username", du.display_name AS "domain_user_display_name", COUNT(du.username) AS "logon_amount",
 			(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domain_user_id = dl.domain_user_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
 			FROM domain_user_logon dl
 			INNER JOIN domain_user du ON dl.domain_user_id = du.id
@@ -3673,7 +3707,7 @@ class DatabaseController {
 		$this->stmt->execute([':policy_object_id' => $policy_object_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
 	}
-	public function selectAllPolicyObjectItemByComputerGroup($computer_group_id, $class_mask) {
+	public function selectAllPolicyObjectItemByComputerGroup($computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, pd.options, poi.value
 			FROM policy_object_item poi
@@ -3683,8 +3717,23 @@ class DatabaseController {
 			WHERE pd.class & :class_mask
 			AND '.($computer_group_id===null ? 'cgpo.computer_group_id IS NULL' : 'cgpo.computer_group_id = :computer_group_id')
 		);
-		$params = [':class_mask' => $class_mask];
+		$params = [':class_mask' => Models\PolicyDefinition::CLASS_MACHINE];
 		if($computer_group_id !== null) $params[':computer_group_id'] = $computer_group_id;
+		$this->stmt->execute($params);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObjectItem');
+	}
+	public function selectAllPolicyObjectItemByDomainUserGroup($domain_user_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, pd.options, poi.value
+			FROM policy_object_item poi
+			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
+			INNER JOIN policy_object po ON poi.policy_object_id = po.id
+			INNER JOIN domain_user_group_policy_object dugpo ON dugpo.policy_object_id = po.id
+			WHERE pd.class & :class_mask
+			AND '.($domain_user_group_id===null ? 'dugpo.domain_user_group_id IS NULL' : 'dugpo.domain_user_group_id = :domain_user_group_id')
+		);
+		$params = [':class_mask' => Models\PolicyDefinition::CLASS_USER];
+		if($domain_user_group_id !== null) $params[':domain_user_group_id'] = $domain_user_group_id;
 		$this->stmt->execute($params);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObjectItem');
 	}
@@ -3750,6 +3799,24 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([
 			':computer_group_id' => $computer_group_id,
+			':policy_object_id' => $policy_object_id,
+		]);
+	}
+	public function insertDomainUserGroupPolicyObject($domain_user_group_id, $policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO domain_user_group_policy_object (domain_user_group_id, policy_object_id) VALUES (:domain_user_group_id, :policy_object_id)'
+		);
+		return $this->stmt->execute([
+			':domain_user_group_id' => $domain_user_group_id,
+			':policy_object_id' => $policy_object_id,
+		]);
+	}
+	public function deleteDomainUserPolicyObject($domain_user_group_id, $policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM domain_user_group_policy_object WHERE domain_user_group_id=:domain_user_group_id, policy_object_id=:policy_object_id'
+		);
+		return $this->stmt->execute([
+			':domain_user_group_id' => $domain_user_group_id,
 			':policy_object_id' => $policy_object_id,
 		]);
 	}

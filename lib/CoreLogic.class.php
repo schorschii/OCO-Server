@@ -2073,6 +2073,14 @@ class CoreLogic {
 		if(empty($domainUserRole)) throw new NotFoundException();
 		return $domainUserRole;
 	}
+	public function getDomainUserGroups($parentId=null) {
+		$domainUserGroupsFiltered = [];
+		foreach($this->db->selectAllDomainUserGroupByParentDomainUserGroupId($parentId) as $domainUserGroup) {
+			if($this->checkPermission($domainUserGroup, PermissionManager::METHOD_READ, false))
+				$domainUserGroupsFiltered[] = $domainUserGroup;
+		}
+		return $domainUserGroupsFiltered;
+	}
 	public function createDomainUserRole($name, $permissions) {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 

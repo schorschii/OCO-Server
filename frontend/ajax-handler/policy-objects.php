@@ -43,14 +43,18 @@ try {
 	}
 
 	// ----- assign policy object if requested -----
-	if(!empty($_POST['add_to_group_id'])
-	&& is_array($_POST['add_to_group_id'])
-	&& !empty($_POST['add_to_group_policy_object_id'])
-	&& is_array($_POST['add_to_group_policy_object_id'])) {
-		foreach($_POST['add_to_group_id'] as $group_id) {
-			foreach($_POST['add_to_group_policy_object_id'] as $policy_object_id) {
-				// TODO CoreLogic permission check
+	if(
+		((!empty($_POST['add_to_computer_group_id']) && is_array($_POST['add_to_computer_group_id']))
+		|| (!empty($_POST['add_to_domain_user_group_id']) && is_array($_POST['add_to_domain_user_group_id'])))
+	&& !empty($_POST['policy_object_id'])
+	&& is_array($_POST['policy_object_id'])) {
+// TODO CoreLogic permission check
+		foreach($_POST['policy_object_id'] as $policy_object_id) {
+			foreach($_POST['add_to_computer_group_id'] ?? [] as $group_id) {
 				$db->insertComputerGroupPolicyObject(empty($group_id) ? null : $group_id, $policy_object_id);
+			}
+			foreach($_POST['add_to_domain_user_group_id'] ?? [] as $group_id) {
+				$db->insertDomainUserGroupPolicyObject(empty($group_id) ? null : $group_id, $policy_object_id);
 			}
 		}
 		die();

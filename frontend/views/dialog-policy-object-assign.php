@@ -14,10 +14,20 @@ try {
 <input type='hidden' id='txtPolicyObjects' value='<?php echo htmlspecialchars(implode(',',$_GET['id'])); ?>'></input>
 <table class='fullwidth aligned'>
 	<tr>
+		<th><?php echo LANG('computer_groups'); ?></th>
+		<th><?php echo LANG('domain_user_groups'); ?></th>
+	</tr>
+	<tr>
 		<td>
 			<select id='txtComputerGroups' class='fullwidth' size='10' multiple='true' autofocus='true'>
 				<option value=''><?php echo LANG('default_domain_policy'); ?></option>
 				<?php Html::buildGroupOptions($cl, new Models\ComputerGroup()); ?>
+			</select>
+		</td>
+		<td>
+			<select id='txtDomainUserGroups' class='fullwidth' size='10' multiple='true' autofocus='true'>
+				<option value=''><?php echo LANG('default_domain_policy'); ?></option>
+				<?php Html::buildGroupOptions($cl, new Models\DomainUserGroup()); ?>
 			</select>
 		</td>
 	</tr>
@@ -26,13 +36,17 @@ try {
 <script>
 btnDoAssignPolicyObject.addEventListener('click', function(e){
 	var params = [];
-	let groupIds = getSelectedSelectBoxValues('txtComputerGroups', true);
-	if(!groupIds) return;
-	groupIds.forEach(function(entry) {
-		params.push({'key':'add_to_group_id[]', 'value':entry});
+	let computerGroupIds = getSelectedSelectBoxValues('txtComputerGroups', false);
+	let domainUserGroupIds = getSelectedSelectBoxValues('txtDomainUserGroups', false);
+	if(!computerGroupIds && !domainUserGroupIds) return;
+	computerGroupIds.forEach(function(entry) {
+		params.push({'key':'add_to_computer_group_id[]', 'value':entry});
+	});
+	domainUserGroupIds.forEach(function(entry) {
+		params.push({'key':'add_to_domain_user_group_id[]', 'value':entry});
 	});
 	txtPolicyObjects.value.split(',').forEach(function(entry) {
-		params.push({'key':'add_to_group_policy_object_id[]', 'value':entry});
+		params.push({'key':'policy_object_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/policy-objects.php', paramString, null, function() {

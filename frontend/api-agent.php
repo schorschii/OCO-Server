@@ -379,10 +379,10 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			$policies = [
 				'machine' => $rpc->getPoliciesForComputer($computer),
 			];
-			foreach($data['users'] ?? [] as $user) {
-				$du = $db->selectDomainUserByUid($user['uid']);
+			foreach($db->selectAllDomainUserLogonByComputerId($computer->id) as $logon) {
+				$du = $db->selectDomainUserByUid($logon->domain_user_uid);
 				if(!$du || empty($du->uid)) continue;
-				#$policies[$du->uuid] = $rpc->getPoliciesForDomainUserOnComputer($du, $computer);
+				$policies[$du->uid] = $rpc->getPoliciesForDomainUserOnComputer($du, $computer);
 			}
 
 			$resdata['error'] = null;

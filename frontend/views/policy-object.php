@@ -158,7 +158,6 @@ function getPolicyInput($pd) {
 		</div>
 
 		<div name='user' class='<?php if($tab=='user') echo 'active'; ?>'>
-			<div class='alert warning'>User policies can be configured here but are not yet implemened for deployment.</div>
 			<ul class='tree'>
 				<?php $content = getContents(null, Models\PolicyDefinition::CLASS_USER); ?>
 				<?php if(empty($content)) { ?>

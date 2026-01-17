@@ -26,12 +26,11 @@ class RecursivePolicyCompiler {
 	}
 
 	function getPoliciesForComputer(Models\Computer $computer) {
-		$classMask = Models\PolicyDefinition::CLASS_MACHINE;
 		$manifestationType = $this->getManifestationTypeByComputer($computer);
 		$policies = [];
 
 		// process default domain policy
-		foreach($this->db->selectAllPolicyObjectItemByComputerGroup(null, $classMask) as $policy) {
+		foreach($this->db->selectAllPolicyObjectItemByComputerGroup(null) as $policy) {
 			if(empty($policy->$manifestationType)) continue;
 			$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
 		}
@@ -40,34 +39,33 @@ class RecursivePolicyCompiler {
 		foreach($this->db->selectAllComputerGroupByComputerId($computer->id) as $cg) {
 			$policies = array_merge(
 				$policies,
-				$this->getPoliciesForGroup($cg, $classMask, $manifestationType)
+				$this->getPoliciesForGroup($cg, $manifestationType)
 			);
 		}
 		return $policies;
 	}
 
 	function getPoliciesForDomainUserOnComputer(Models\DomainUser $du, Models\Computer $computer) {
-		$classMask = Models\PolicyDefinition::CLASS_USER;
 		$manifestationType = $this->getManifestationTypeByComputer($computer);
 		$policies = [];
 
 		// process default domain policy
-		foreach($this->db->selectAllPolicyObjectItemByDomainUserGroup(null, $classMask) as $policy) {
+		foreach($this->db->selectAllPolicyObjectItemByDomainUserGroup(null) as $policy) {
 			if(empty($policy->$manifestationType)) continue;
 			$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
 		}
 
 		// process user group assigned policies
-		foreach($this->db->selectAllDomainUserGroupByDomainUser($du->id) as $dug) {
+		foreach($this->db->selectAllDomainUserGroupByDomainUserId($du->id) as $dug) {
 			$policies = array_merge(
 				$policies,
-				$this->getPoliciesForGroup($dug, $classMask, $manifestationType)
+				$this->getPoliciesForGroup($dug, $manifestationType)
 			);
 		}
 		return $policies;
 	}
 
-	function getPoliciesForGroup(Models\HierarchicalGroup $group, int $classMask, string $manifestationType) {
+	function getPoliciesForGroup(Models\HierarchicalGroup $group, string $manifestationType) {
 		$policies = [];
 		$currentGroup = $group;
 		$currentGroupId = $group->getId();
@@ -77,9 +75,9 @@ class RecursivePolicyCompiler {
 				throw new \Exception('Group object does not conform to IHierarchicalGroup');
 
 			if($group instanceof Models\ComputerGroup)
-				$items = $this->db->selectAllPolicyObjectItemByComputerGroup($currentGroupId, $classMask);
+				$items = $this->db->selectAllPolicyObjectItemByComputerGroup($currentGroupId);
 			elseif($group instanceof Models\DomainUserGroup)
-				$items = $this->db->selectAllPolicyObjectItemByDomainUserGroup($currentGroupId, $classMask);
+				$items = $this->db->selectAllPolicyObjectItemByDomainUserGroup($currentGroupId);
 			foreach($items as $policy) {
 				if(empty($policy->$manifestationType)) continue;
 				$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
