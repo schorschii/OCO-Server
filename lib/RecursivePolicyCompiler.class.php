@@ -89,18 +89,17 @@ class RecursivePolicyCompiler {
 	}
 
 	private function compileManifestation($existingPolicies, $newManifestation, $newOptions, $newValue) {
-		$policies = [];
 		foreach(explode("\n", $newManifestation) as $manifestation) {
 			// do not override policy with policy from a parent group!
-			if(array_key_exists($manifestation, $policies)) continue;
+			if(array_key_exists($manifestation, $existingPolicies)) continue;
 			// determine data type (int vs. string)
 			if(is_numeric($newValue)
 			&& (substr($newOptions, 0, 3) == 'INT' || in_array($newValue, json_decode($newOptions, true) ?? [])))
-				$policies[$manifestation] = intval($newValue);
+				$existingPolicies[$manifestation] = intval($newValue);
 			else
-				$policies[$manifestation] = strval($newValue);
+				$existingPolicies[$manifestation] = strval($newValue);
 		}
-		return $policies;
+		return $existingPolicies;
 	}
 
 }
