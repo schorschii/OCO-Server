@@ -35,7 +35,9 @@ foreach($files as $admxFile) {
 			$parent = explode(':', $parent)[1];
 
 		$catName = strval($c->attributes()->name);
-		$catDisplayName = empty($c->attributes()->displayName) ? $catName : stringKeyExtract(strval($c->attributes()->displayName));
+		$catDisplayName = empty($c->attributes()->displayName)
+			? '{'.$admxFileName.'}'.$catName
+			: '{'.$admxFileName.'}'.stringKeyExtract(strval($c->attributes()->displayName));
 
 		// avoid endless loops, e.g. in CredentialProviders.admx (logon:Logon), grouppolicy-server.admx (grouppolicy:PolicyPolicies)
 		if($catName == $parent) continue;
@@ -48,6 +50,7 @@ foreach($files as $admxFile) {
 
 // 2nd run: import translations, presentations and policy templates
 $presentations = [];
+$foundPresentationStrings = [];
 foreach($files as $admxFile) {
 	if(!is_file($path.'/'.$admxFile) || substr($admxFile, -5) != '.admx') continue;
 	$admxFileName = substr($admxFile, 0, -5);
@@ -77,7 +80,8 @@ foreach($files as $admxFile) {
 		if(property_exists($adml, 'resources')
 		&& property_exists($adml->resources, 'stringTable')) {
 			foreach($adml->resources->stringTable->string as $s) {
-				$db->replacePolicyTranslation(strtolower($dir), strval($s->attributes()->id), strval($s));
+				$stringName = '{'.$admxFileName.'}'.strval($s->attributes()->id);
+				$db->replacePolicyTranslation(strtolower($dir), $stringName, strval($s));
 				$transCounter ++;
 			}
 		}
@@ -90,7 +94,9 @@ foreach($files as $admxFile) {
 					if(!empty($child->label)) $text = strval($child->label);
 					else $text = strval($child);
 					if(!empty($text)) {
-						$db->replacePolicyTranslation(strtolower($dir), 'p-'.strval($child->attributes()->refId), $text);
+						$presentationStringName = '{P:'.$admxFileName.'}-'.strval($child->attributes()->refId);
+						$foundPresentationStrings[] = $presentationStringName;
+						$db->replacePolicyTranslation(strtolower($dir), $presentationStringName, $text);
 						$transCounter ++;
 					}
 				}
@@ -111,6 +117,9 @@ foreach($files as $admxFile) {
 		$description = stringKeyExtract(strval($p->attributes()->explainText));
 		$key = strval($p->attributes()->key);
 		$policyValueName = strval($p->attributes()->valueName);
+
+		if($groupName && strpos($groupName, ':') !== false)
+			$groupName = explode(':', $groupName)[1];
 
 		// determine class (1=Machine, 2=User, 3=Both)
 		$class = 0;
@@ -156,7 +165,7 @@ foreach($files as $admxFile) {
 		$info = '';
 		foreach($manifestation1 as $pm) {
 			list($options, $optionKey, $optionValueName) = $pm;
-			if($options === 'DICT') {
+			if($options === 'DICT' || $options === 'LIST') {
 				$manifestations[] = 'REGISTRY:'.($optionKey ? $optionKey : $key);
 			} else {
 				if(!empty($policyValueName)) {
@@ -175,7 +184,7 @@ foreach($files as $admxFile) {
 		$insertId = null;
 		$insertId = $db->insertPolicyDefinition(
 			$groupId, null,
-			$name, $displayName, $description,
+			$name, '{'.$admxFileName.'}'.$displayName, '{'.$admxFileName.'}'.$description,
 			$class, empty($manifestations) ? '' : ($options ?? ''),
 			null, null, empty($manifestations) ? null : implode("\n", $manifestations)
 		);
@@ -186,7 +195,7 @@ foreach($files as $admxFile) {
 			$options = null;
 			list($options, $optionKey, $optionValueName, $optionId) = $sm;
 			$manifestations = [];
-			if($options === 'DICT') {
+			if($options === 'DICT' || $options === 'LIST') {
 				$manifestations[] = 'REGISTRY:'.($optionKey ? $optionKey : $key);
 			} else {
 				if(!empty($policyValueName)) { // inherit from parent <policy>
@@ -199,9 +208,13 @@ foreach($files as $admxFile) {
 				}
 			}
 			// insert manifestation
+			$displayName = ''; // sub items may have no description
+			$potentialDisplayName = '{P:'.$admxFileName.'}-'.$optionId;
+			if(in_array($potentialDisplayName, $foundPresentationStrings))
+				$displayName = $potentialDisplayName;
 			$db->insertPolicyDefinition(
 				$groupId, $insertId,
-				$name.'-'.$optionId, 'p-'.$optionId, '',
+				$name.'-'.$optionId, $displayName, '',
 				$class, empty($manifestations) ? '' : ($options ?? ''),
 				null, null, empty($manifestations) ? null : implode("\n", $manifestations)
 			);
@@ -212,7 +225,7 @@ foreach($files as $admxFile) {
 
 
 function getGroupId($groupName, $groupDisplayName) {
-	global $db, $policyDefintionGroups, $fileCategories;
+	global $db, $policyDefintionGroups, $fileCategories, $admxFileName;
 
 	if($groupName && strpos($groupName, ':') !== false)
 		$groupName = explode(':', $groupName)[1];
@@ -315,24 +328,27 @@ function optionsExtract($xmlElement) {
 				}
 				$manifestation2[] = [
 					json_encode($options),
-					null,
+					property_exists($element->attributes(), 'key') ? strval($element->attributes()->key) : null,
 					strval($element->attributes()->valueName),
 					strval($element->attributes()->id),
 				];
 			}
 			elseif($element->getName() == 'list') {
-				// dict (list) type does not have a valueName since multiple values are created based on user input
+				$type = 'LIST';
+				if(property_exists($element->attributes(), 'explicitValue')
+				&& strtolower($element->attributes()->explicitValue) === 'true')
+					$type = 'DICT';
 				$manifestation2[] = [
-					'DICT',
-					null,
-					false,
+					$type,
+					property_exists($element->attributes(), 'key') ? strval($element->attributes()->key) : null,
+					false, // dicts/lists do not have a valueName since multiple values are created based on user input
 					strval($element->attributes()->id),
 				];
 			}
 			elseif($element->getName() == 'text') {
 				$manifestation2[] = [
 					'TEXT',
-					null,
+					property_exists($element->attributes(), 'key') ? strval($element->attributes()->key) : null,
 					strval($element->attributes()->valueName),
 					strval($element->attributes()->id),
 				];
@@ -340,7 +356,7 @@ function optionsExtract($xmlElement) {
 			elseif($element->getName() == 'multiText') {
 				$manifestation2[] = [
 					'TEXT-MULTILINE',
-					null,
+					property_exists($element->attributes(), 'key') ? strval($element->attributes()->key) : null,
 					strval($element->attributes()->valueName),
 					strval($element->attributes()->id),
 				];
@@ -353,7 +369,7 @@ function optionsExtract($xmlElement) {
 					$max = intval($element->attributes()->maxValue);
 				$manifestation2[] = [
 					'INT:'.$min.':'.$max,
-					null,
+					property_exists($element->attributes(), 'key') ? strval($element->attributes()->key) : null,
 					strval($element->attributes()->valueName),
 					strval($element->attributes()->id),
 				];
@@ -365,7 +381,7 @@ function optionsExtract($xmlElement) {
 				];
 				$manifestation2[] = [
 					json_encode($options),
-					null,
+					property_exists($element->attributes(), 'key') ? strval($element->attributes()->key) : null,
 					strval($element->attributes()->valueName),
 					strval($element->attributes()->id),
 				];

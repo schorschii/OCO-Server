@@ -1099,7 +1099,7 @@ CREATE TABLE `policy_object_item` (
 
 CREATE TABLE `policy_translation` (
   `language` varchar(5) NOT NULL,
-  `name` varchar(100) NOT NULL,
+  `name` varchar(120) NOT NULL,
   `translation` text NOT NULL,
   PRIMARY KEY (`language`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -105,6 +105,12 @@ function getPolicyInput($pd) {
 		$min = $splitter[1] ?? '';
 		$max = $splitter[2] ?? '';
 		$html .= "<input type='number' class='fullwidth' policy_definition_id='".$pd->id."' min='".$min."' max='".$max."' value='".htmlspecialchars($pd->value??'',ENT_QUOTES)."' />";
+	} elseif($pd->options == 'DICT' || $pd->options == 'LIST') {
+		$html .= "<div class='spread'>";
+		$html .= "<input type='text' class='fullwidth multiple' policy_definition_id='".$pd->id."' value='".htmlspecialchars($pd->value??'',ENT_QUOTES)."' />";
+		$html .= "<button class='addValue small'><img src='img/add.dyn.svg'></button>";
+		$html .= "<button class='removeValue small hidden'><img src='img/remove.dyn.svg'></button>";
+		$html .= "</div>";
 	} elseif($options = json_decode($pd->options)) {
 		$html .= "<select class='fullwidth' policy_definition_id='".$pd->id."'>";
 		foreach($options as $option => $value) {
@@ -189,6 +195,20 @@ for(let i=0; i<helpButtons.length; i++) {
 		showDialog(parent.querySelectorAll('span')[0].innerText, parent.getAttribute('description'), DIALOG_BUTTONS_CLOSE, false, true);
 	});
 }
+// init multivalue add buttons
+let addButtons = tabControlPolicyObject.querySelectorAll('button.addValue');
+for(let i=0; i<addButtons.length; i++) {
+	addButtons[i].addEventListener('click', (e) => {
+		let parent = e.srcElement.parentNode;
+		let clone = parent.cloneNode(true);
+		clone.querySelectorAll('button.addValue')[0].remove();
+		clone.querySelectorAll('button.removeValue')[0].classList.remove('hidden');
+		clone.querySelectorAll('button.removeValue')[0].addEventListener('click', (e2) => {
+			e2.srcElement.parentElement.remove();
+		});
+		parent.parentNode.appendChild(clone);
+	});
+}
 // init configured checkboxes
 let configuredCheckBoxes = tabControlPolicyObject.querySelectorAll('input[type=checkbox].configured');
 for(let i=0; i<configuredCheckBoxes.length; i++) {
@@ -204,11 +224,27 @@ btnSave.addEventListener('click', (e) => {
 	for(let i=0; i<policyRows.length; i++) {
 		let policyConfiguredCheckbox = policyRows[i].querySelectorAll('input[type=checkbox].configured')[0];
 		if(policyConfiguredCheckbox.checked) {
-			let policyValueInputs = policyRows[i].querySelectorAll('td:nth-child(3) > input, td:nth-child(3) > textarea, td:nth-child(3) > select');
+			let policyValueInputs = policyRows[i].querySelectorAll('td:nth-child(3) input, td:nth-child(3) textarea, td:nth-child(3) select');
 			for(let n=0; n<policyValueInputs.length; n++) {
-				policyData[policyValueInputs[n].getAttribute('policy_definition_id')] = policyValueInputs[n].value;
+				let policyDefinitionId = policyValueInputs[n].getAttribute('policy_definition_id');
+				if(policyValueInputs[n].classList.contains('multiple')) {
+					// multiple values - create an array
+					console.log(policyValueInputs[n]);
+					if(policyDefinitionId in policyData) {
+						policyData[policyDefinitionId].push(policyValueInputs[n].value);
+					} else {
+						policyData[policyDefinitionId] = [policyValueInputs[n].value];
+					}
+				} else {
+					policyData[policyDefinitionId] = policyValueInputs[n].value;
+				}
 			}
 		}
+	}
+	// convert arrays to JSON string
+	for(const [key, value] of Object.entries(policyData)) {
+		if(value.constructor === Array)
+			policyData[key] = JSON.stringify(value);
 	}
 	ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeObject(policyData), null, function() {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);

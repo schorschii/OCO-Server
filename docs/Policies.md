@@ -8,19 +8,20 @@ A good first step is to import existing Windows group policies from .admx and .a
 
 You can do this step again with the [Google Chrome](https://dl.google.com/dl/edgedl/chrome/policy/policy_templates.zip) and [Mozilla Firefox](https://github.com/mozilla/policy-templates/releases) group policy templates.
 
-Now, you have a set of working policy templates for Windows. To make them work on Linux and macOS, you need to fill the columns `manifestation_linux` and `manifestation_macos` in the `policy_definition` table.
+Now, you have a set of working policy templates for Windows. To make them work on Linux and macOS, you need to fill the columns `manifestation_linux` and `manifestation_macos` in the `policy_definition` table. For Chrome/Chromium and Firefox policies, you can execute the script `scripts/chrome-firefox-policies.php` to automatically fill the Linux/macOS manifestation based on the Windows manifestation.
 
+### Manually Writing Manifestations
 A `manifestation_*` column in the database can be NULL or contain one or multiple lines of the following items:
 - `REGISTRY:<key>:<valueName>` (only available on Windows)
    - if the policy is set, OCO will create this registry key and valueName with the value provided in OCO web console "policy object"
    - `<key>` should not contain `HKLM\` or `HKCU\`
-   - `<valueName>` must be omitted for policies of type `DICT`
-- `JSON:<filePath>:<objectPath>`
+   - `<valueName>` must be omitted for policies of type `DICT` and `LIST`
+- `JSON:<filePath>:<key>`
   - if the policy is set, OCO will create this JSON file or add additional values to it if it exists
-  - `<objectPath>` defines the place in the JSON structure, where to write the value provided in OCO web console "policy object"
-- `XML:<filePath>:<objectPath>`
+  - `<key>` defines the place in the JSON structure, where to write the value provided in OCO web console "policy object"
+- `XML:<filePath>:<key>`
   - if the policy is set, OCO will create this XML file or add additional values to it if it exists
-  - `<objectPath>` defines the place in the XML structure, where to write the value provided in OCO web console "policy object"
+  - `<key>` defines the place in the XML structure, where to write the value provided in OCO web console "policy object"
 
 The `options` column can be one of the following:
 - `TEXT`: the admin can enter a single-line string
@@ -28,6 +29,7 @@ The `options` column can be one of the following:
 - `TEXT-MULTILINE`: the admin can enter a multi-line string
 - `INT`: the admin can enter a integer number
   - optionally, min and max values can be set using `INT:0:100`
+- `LIST`: the admin can enter a list of strings
 - `DICT`: the admin can enter a dictionary (key-value combination)
 - a JSON string in form `{"Enabled":1, "Disabled":0}` providing pre-defined options for a select box
   - the array key is the display name for the admin
