@@ -32,13 +32,7 @@ try {
 
 	// ----- update policy object items if requested -----
 	if(!empty($_POST['edit_policy_object_id'])) {
-// TODO transaction
-// TODO CoreLogic permission check
-		$db->deletePolicyObjectItemByPolicyObject($_POST['edit_policy_object_id']);
-		foreach($_POST as $key => $value) {
-			if(!is_numeric($key)) continue;
-			$db->insertPolicyObjectItem($_POST['edit_policy_object_id'], $key, $value, '');
-		}
+		$cl->editPolicyObjectItems($_POST['edit_policy_object_id'], $_POST);
 		die();
 	}
 
@@ -48,15 +42,30 @@ try {
 		|| (!empty($_POST['add_to_domain_user_group_id']) && is_array($_POST['add_to_domain_user_group_id'])))
 	&& !empty($_POST['policy_object_id'])
 	&& is_array($_POST['policy_object_id'])) {
-// TODO CoreLogic permission check
 		foreach($_POST['policy_object_id'] as $policy_object_id) {
 			foreach($_POST['add_to_computer_group_id'] ?? [] as $group_id) {
-				$db->insertComputerGroupPolicyObject(empty($group_id) ? null : $group_id, $policy_object_id);
+				$cl->assignPolicyObjectToComputerGroup($policy_object_id, $group_id);
 			}
 			foreach($_POST['add_to_domain_user_group_id'] ?? [] as $group_id) {
-				$db->insertDomainUserGroupPolicyObject(empty($group_id) ? null : $group_id, $policy_object_id);
+				$cl->assignPolicyObjectToDomainUserGroup($policy_object_id, $group_id);
 			}
 		}
+		die();
+	}
+	if(!empty($_POST['policy_object_id'])
+	&& isset($_POST['remove_from_computer_group_id'])) {
+		$cl->removePolicyObjectFromComputerGroup(
+			$_POST['policy_object_id'],
+			empty($_POST['remove_from_computer_group_id']) ? null : $_POST['remove_from_computer_group_id']
+		);
+		die();
+	}
+	if(!empty($_POST['policy_object_id'])
+	&& isset($_POST['remove_from_domain_user_group_id'])) {
+		$cl->removePolicyObjectFromDomainUserGroup(
+			$_POST['policy_object_id'],
+			empty($_POST['remove_from_domain_user_group_id']) ? null : $_POST['remove_from_domain_user_group_id']
+		);
 		die();
 	}
 

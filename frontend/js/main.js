@@ -11,6 +11,16 @@ function toClipboard(text, info=null) {
 function getChildIndex(node) {
 	return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
 }
+function isInsideParentWithClass(node, wantedParentClass) {
+	let parent = node.parentNode;
+	while(parent) {
+		if('classList' in parent
+		&& parent.classList.contains(wantedParentClass))
+			return true;
+		parent = parent.parentNode;
+	}
+	return false;
+}
 function getCheckedRadioValue(name) {
 	// return the LAST checked element (so we can define default via hidden elements)
 	var found = null;

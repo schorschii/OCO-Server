@@ -155,7 +155,7 @@ function getPolicyInput($pd) {
 	<div class='tabcontents'>
 
 		<div name='machine' class='<?php if($tab=='machine') echo 'active'; ?>'>
-			<ul class='tree'>
+			<ul class='tree machine'>
 				<?php $content = getContents(null, Models\PolicyDefinition::CLASS_MACHINE); ?>
 				<?php if(empty($content)) { ?>
 					<div class='alert info'><?php echo LANG('import_policy_definitions_first'); ?></div>
@@ -164,7 +164,7 @@ function getPolicyInput($pd) {
 		</div>
 
 		<div name='user' class='<?php if($tab=='user') echo 'active'; ?>'>
-			<ul class='tree'>
+			<ul class='tree user'>
 				<?php $content = getContents(null, Models\PolicyDefinition::CLASS_USER); ?>
 				<?php if(empty($content)) { ?>
 					<div class='alert info'><?php echo LANG('import_policy_definitions_first'); ?></div>
@@ -226,10 +226,10 @@ btnSave.addEventListener('click', (e) => {
 		if(policyConfiguredCheckbox.checked) {
 			let policyValueInputs = policyRows[i].querySelectorAll('td:nth-child(3) input, td:nth-child(3) textarea, td:nth-child(3) select');
 			for(let n=0; n<policyValueInputs.length; n++) {
-				let policyDefinitionId = policyValueInputs[n].getAttribute('policy_definition_id');
+				let policyClassPrefix = isInsideParentWithClass(policyValueInputs[n], 'user') ? 'user' : 'machine';
+				let policyDefinitionId = policyClassPrefix+':'+policyValueInputs[n].getAttribute('policy_definition_id');
 				if(policyValueInputs[n].classList.contains('multiple')) {
 					// multiple values - create an array
-					console.log(policyValueInputs[n]);
 					if(policyDefinitionId in policyData) {
 						policyData[policyDefinitionId].push(policyValueInputs[n].value);
 					} else {

@@ -3631,8 +3631,8 @@ class DatabaseController {
 	}
 	public function selectAllPolicyByPolicyObjectAndParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($policy_object_id, $parent_policy_definition_id, $group_id, $class_mask) {
 		$sql = 'SELECT pd.id, pd.parent_policy_definition_id, pd.name, pd.display_name, pd.description, pd.class, pd.options, poi.value FROM policy_definition pd '
-			.' LEFT JOIN (SELECT * FROM policy_object_item WHERE policy_object_id = :policy_object_id) poi ON poi.policy_definition_id = pd.id'
-			.' WHERE class & :class_mask'
+			.' LEFT JOIN (SELECT poi.* FROM policy_object_item poi WHERE poi.policy_object_id = :policy_object_id AND poi.class & :class_mask) poi ON poi.policy_definition_id = pd.id'
+			.' WHERE pd.class & :class_mask'
 			.' AND '.(($group_id===null) ? 'policy_definition_group_id IS NULL' : 'policy_definition_group_id = :group_id')
 			.' AND '.(($parent_policy_definition_id===null) ? 'parent_policy_definition_id IS NULL' : 'parent_policy_definition_id = :parent_policy_definition_id');
 		$this->stmt = $this->dbh->prepare($sql);
@@ -3686,7 +3686,10 @@ class DatabaseController {
 	}
 	public function selectAllPolicyObject() {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT * FROM policy_object ORDER BY `name`'
+			'SELECT po.*, su_created.username AS "created_by_system_user_username", su_updated.username AS "updated_by_system_user_username" FROM policy_object po
+			LEFT JOIN system_user su_created ON su_created.id = po.created_by_system_user_id
+			LEFT JOIN system_user su_updated ON su_updated.id = po.updated_by_system_user_id
+			ORDER BY `name`'
 		);
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject');
@@ -3701,11 +3704,19 @@ class DatabaseController {
 	}
 	public function selectAllComputerGroupByPolicyObject($policy_object_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT cg.* FROM computer_group cg INNER JOIN computer_group_policy_object cgpo ON cgpo.computer_group_id = cg.id
+			'SELECT cg.* FROM computer_group_policy_object cgpo LEFT JOIN computer_group cg ON cgpo.computer_group_id = cg.id
 			WHERE cgpo.policy_object_id = :policy_object_id ORDER BY `name`'
 		);
 		$this->stmt->execute([':policy_object_id' => $policy_object_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
+	}
+	public function selectAllDomainUserGroupByPolicyObject($policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT dug.* FROM domain_user_group_policy_object dugpo LEFT JOIN domain_user_group dug ON dugpo.domain_user_group_id = dug.id
+			WHERE dugpo.policy_object_id = :policy_object_id ORDER BY `name`'
+		);
+		$this->stmt->execute([':policy_object_id' => $policy_object_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup');
 	}
 	public function selectAllPolicyObjectItemByComputerGroup($computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
@@ -3746,18 +3757,18 @@ class DatabaseController {
 			return $row;
 		}
 	}
-	public function insertPolicyObject($name) {
+	public function insertPolicyObject($name, $created_by_system_user_id) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO policy_object (name) VALUES (:name)'
+			'INSERT INTO policy_object (name, created_by_system_user_id) VALUES (:name, :created_by_system_user_id)'
 		);
-		$this->stmt->execute([':name' => $name]);
+		$this->stmt->execute([':name' => $name, ':created_by_system_user_id' => $created_by_system_user_id]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePolicyObject($id, $name) {
+	public function updatePolicyObject($id, $name, $updated_by_system_user_id) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE policy_object SET name = :name WHERE id = :id'
+			'UPDATE policy_object SET name = :name, updated = CURRENT_TIMESTAMP, updated_by_system_user_id = :updated_by_system_user_id WHERE id = :id'
 		);
-		return $this->stmt->execute([':id' => $id, ':name' => $name]);
+		return $this->stmt->execute([':id' => $id, ':name' => $name, ':updated_by_system_user_id' => $updated_by_system_user_id]);
 	}
 	public function deletePolicyObject($id) {
 		$this->stmt = $this->dbh->prepare(
@@ -3771,14 +3782,15 @@ class DatabaseController {
 		);
 		return $this->stmt->execute([':policy_object_id' => $policy_object_id]);
 	}
-	public function insertPolicyObjectItem($policy_object_id, $policy_definition_id, $value, $description) {
+	public function insertPolicyObjectItem($policy_object_id, $policy_definition_id, $class, $value, $description) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO policy_object_item (policy_object_id, policy_definition_id, value, description)
-			VALUES (:policy_object_id, :policy_definition_id, :value, :description)'
+			'INSERT INTO policy_object_item (policy_object_id, policy_definition_id, class, value, description)
+			VALUES (:policy_object_id, :policy_definition_id, :class, :value, :description)'
 		);
 		$this->stmt->execute([
 			':policy_object_id' => $policy_object_id,
 			':policy_definition_id' => $policy_definition_id,
+			':class' => $class,
 			':value' => $value,
 			':description' => $description,
 		]);
@@ -3795,12 +3807,12 @@ class DatabaseController {
 	}
 	public function deleteComputerGroupPolicyObject($computer_group_id, $policy_object_id) {
 		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM computer_group_policy_object WHERE computer_group_id=:computer_group_id, policy_object_id=:policy_object_id'
+			'DELETE FROM computer_group_policy_object WHERE policy_object_id=:policy_object_id'
+			.' AND '.($computer_group_id===null ? 'computer_group_id IS NULL' : 'computer_group_id=:computer_group_id')
 		);
-		return $this->stmt->execute([
-			':computer_group_id' => $computer_group_id,
-			':policy_object_id' => $policy_object_id,
-		]);
+		$params = [':policy_object_id' => $policy_object_id];
+		if($computer_group_id !== null) $params[':computer_group_id'] = $computer_group_id;
+		return $this->stmt->execute($params);
 	}
 	public function insertDomainUserGroupPolicyObject($domain_user_group_id, $policy_object_id) {
 		$this->stmt = $this->dbh->prepare(
@@ -3811,14 +3823,14 @@ class DatabaseController {
 			':policy_object_id' => $policy_object_id,
 		]);
 	}
-	public function deleteDomainUserPolicyObject($domain_user_group_id, $policy_object_id) {
+	public function deleteDomainUserGroupPolicyObject($domain_user_group_id, $policy_object_id) {
 		$this->stmt = $this->dbh->prepare(
-			'DELETE FROM domain_user_group_policy_object WHERE domain_user_group_id=:domain_user_group_id, policy_object_id=:policy_object_id'
+			'DELETE FROM domain_user_group_policy_object WHERE policy_object_id=:policy_object_id'
+			.' AND '.($domain_user_group_id===null ? 'domain_user_group_id IS NULL' : 'domain_user_group_id=:domain_user_group_id')
 		);
-		return $this->stmt->execute([
-			':domain_user_group_id' => $domain_user_group_id,
-			':policy_object_id' => $policy_object_id,
-		]);
+		$params = [':policy_object_id' => $policy_object_id];
+		if($domain_user_group_id !== null) $params[':domain_user_group_id'] = $domain_user_group_id;
+		return $this->stmt->execute($params);
 	}
 
 }

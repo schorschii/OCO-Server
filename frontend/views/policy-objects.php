@@ -31,15 +31,25 @@ try {
 				<th><input type='checkbox' class='toggleAllChecked'></th>
 				<th class='searchable sortable'><?php echo LANG('name'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+				<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
 		<?php
 		foreach($policyObjects as $p) {
-			$groupLinks = [];
+			$computerGroupLinks = [];
 			foreach($db->selectAllComputerGroupByPolicyObject($p->id) as $group)
-				$groupLinks[] = "<a ".Html::explorerLink('views/computers.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
+				$computerGroupLinks[] = "<a class='subbuttons' ".Html::explorerLink('views/computers.php?id='.$group->id).">"
+					.Html::wrapInSpanIfNotEmpty($group->name??LANG('default_domain_policy'))
+					."<button class='removeFromComputerGroup' policy_object_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+					."</a>";
+			$domainUserGroupLinks = [];
+			foreach($db->selectAllDomainUserGroupByPolicyObject($p->id) as $group)
+				$domainUserGroupLinks[] = "<a class='subbuttons' ".Html::explorerLink('views/domain-users.php?id='.$group->id).">"
+					.Html::wrapInSpanIfNotEmpty($group->name??LANG('default_domain_policy'))
+					."<button class='removeFromDomainUserGroup' policy_object_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+					."</a>";
 		?>
 			<tr>
 				<td><input type='checkbox' name='policy_object_id[]' value='<?php echo $p->id; ?>'></td>
@@ -48,8 +58,16 @@ try {
 						<?php echo htmlspecialchars($p->name); ?>
 					</a>
 				</td>
-				<td><?php echo htmlspecialchars($p->created); ?></td>
-				<td><?php echo implode("<br>", $groupLinks); ?></td>
+				<td><?php echo htmlspecialchars($p->created.(empty($p->created_by_system_user_username) ? '' : ' ('.$p->created_by_system_user_username.')')); ?></td>
+				<td><?php echo htmlspecialchars($p->updated.(empty($p->updated_by_system_user_username) ? '' : ' ('.$p->updated_by_system_user_username.')')); ?></td>
+				<td>
+					<?php
+					echo implode('<br>', $computerGroupLinks);
+					if(!empty($computerGroupLinks) && !empty($domainUserGroupLinks))
+						echo '<hr>';
+					echo implode('<br>', $domainUserGroupLinks);
+					?>
+				</td>
 			</tr>
 		<?php } ?>
 		</tbody>
@@ -75,6 +93,37 @@ try {
 </div>
 
 <script>
+// init remove from group buttons
+let removeButtons = tblPolicyData.querySelectorAll('button.removeFromComputerGroup');
+for(let i=0; i<removeButtons.length; i++) {
+	removeButtons[i].addEventListener('click', (e) => {
+		e.preventDefault(); e.stopPropagation();
+		if(!confirm(LANG['are_you_sure'])) return;
+		var params = [];
+		params.push({'key':'remove_from_computer_group_id', 'value':e.srcElement.getAttribute('group_id')});
+		params.push({'key':'policy_object_id', 'value':e.srcElement.getAttribute('policy_object_id')});
+		var paramString = urlencodeArray(params);
+		ajaxRequestPost('ajax-handler/policy-objects.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+		});
+	});
+}
+let removeButtons2 = tblPolicyData.querySelectorAll('button.removeFromDomainUserGroup');
+for(let i=0; i<removeButtons2.length; i++) {
+	removeButtons2[i].addEventListener('click', (e) => {
+		e.preventDefault(); e.stopPropagation();
+		if(!confirm(LANG['are_you_sure'])) return;
+		var params = [];
+		params.push({'key':'remove_from_domain_user_group_id', 'value':e.srcElement.getAttribute('group_id')});
+		params.push({'key':'policy_object_id', 'value':e.srcElement.getAttribute('policy_object_id')});
+		var paramString = urlencodeArray(params);
+		ajaxRequestPost('ajax-handler/policy-objects.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+		});
+	});
+}
 btnAssignPolicyObject.addEventListener('click', function(e) {
 	let params = [];
 	let values = getSelectedCheckBoxValues('policy_object_id[]', null, true);

@@ -657,7 +657,9 @@ class DatabaseMigrationController {
 				  `created_by_system_user_id` INT NULL,
 				  `updated` DATETIME NULL DEFAULT NULL,
 				  `updated_by_system_user_id` INT NULL,
-				  PRIMARY KEY (`id`)
+				  PRIMARY KEY (`id`),
+				  CONSTRAINT `fk_policy_object_1` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+				  CONSTRAINT `fk_policy_object_2` FOREIGN KEY (`updated_by_system_user_id`) REFERENCES `system_user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
@@ -666,9 +668,10 @@ class DatabaseMigrationController {
 				"CREATE TABLE `policy_object_item` (
 				  `policy_object_id` int(11) NOT NULL,
 				  `policy_definition_id` int(11) NOT NULL,
+				  `class` tinyint(4) NOT NULL,
 				  `value` text NOT NULL,
 				  `description` text NOT NULL,
-				  PRIMARY KEY (`policy_object_id`,`policy_definition_id`),
+				  PRIMARY KEY (`policy_object_id`, `policy_definition_id`, `class`),
 				  KEY `fk_policy_object_item_1` (`policy_definition_id`),
 				  CONSTRAINT `fk_policy_object_item_1` FOREIGN KEY (`policy_definition_id`) REFERENCES `policy_definition` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
 				  CONSTRAINT `fk_policy_object_item_2` FOREIGN KEY (`policy_object_id`) REFERENCES `policy_object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE

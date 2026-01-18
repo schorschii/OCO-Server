@@ -8,6 +8,8 @@ A good first step is to import existing Windows group policies from .admx and .a
 
 You can do this step again with the [Google Chrome](https://dl.google.com/dl/edgedl/chrome/policy/policy_templates.zip) and [Mozilla Firefox](https://github.com/mozilla/policy-templates/releases) group policy templates.
 
+Note: you can execute the ADMX import script anytime again, e.g. with templates from newer Windows versions to get new setting to configure in OCO. Existing policy templates will **not** be updated or deleted in the database.
+
 Now, you have a set of working policy templates for Windows. To make them work on Linux and macOS, you need to fill the columns `manifestation_linux` and `manifestation_macos` in the `policy_definition` table. For Chrome/Chromium and Firefox policies, you can execute the script `scripts/chrome-firefox-policies.php` to automatically fill the Linux/macOS manifestation based on the Windows manifestation.
 
 ### Manually Writing Manifestations

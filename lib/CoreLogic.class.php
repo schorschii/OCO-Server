@@ -2544,7 +2544,7 @@ class CoreLogic {
 		if(empty(trim($name)))
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 
-		$insertId = $this->db->insertPolicyObject($name);
+		$insertId = $this->db->insertPolicyObject($name, $this->su->id);
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.policy_object.create', [
 			'name'=>$name,
@@ -2559,9 +2559,102 @@ class CoreLogic {
 		if(empty(trim($name)))
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 
-		$this->db->updatePolicyObject($id, $name);
+		$this->db->updatePolicyObject($id, $name, $this->su->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.policy_object.update', [
 			'name'=>$name,
+		]);
+	}
+	public function editPolicyObjectItems($id, $items) {
+		$policyObject = $this->db->selectPolicyObject($id);
+		if(empty($policyObject)) throw new NotFoundException();
+		$this->checkPermission($policyObject, PermissionManager::METHOD_WRITE);
+
+		$this->db->getDbHandle()->beginTransaction();
+		$this->db->deletePolicyObjectItemByPolicyObject($policyObject->id);
+		$logItems = [];
+		foreach($items as $key => $value) {
+			$splitter = explode(':', $key);
+			if(count($splitter) != 2 || !is_numeric($splitter[1])
+			|| !in_array($splitter[0], ['machine', 'user'])) continue;
+			$class = $splitter[0]=='machine' ? Models\PolicyDefinition::CLASS_MACHINE : Models\PolicyDefinition::CLASS_USER;
+			$this->db->insertPolicyObjectItem($policyObject->id, $splitter[1], $class, $value, '');
+			$logItems[] = [
+				'policy_definition_id' => $splitter[1],
+				'class' => $class,
+				'value' => $value,
+			];
+		}
+		$this->db->updatePolicyObject($policyObject->id, $policyObject->name, $this->su->id);
+		$this->db->getDbHandle()->commit();
+
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.policy_object_item.update', $logItems);
+	}
+	public function assignPolicyObjectToComputerGroup($id, $computerGroupId) {
+		$policyObject = $this->db->selectPolicyObject($id);
+		if(empty($policyObject)) throw new NotFoundException();
+		$this->checkPermission($policyObject, PermissionManager::METHOD_WRITE);
+
+		if(!empty($computerGroupId)) {
+			$computerGroup = $this->db->selectComputerGroup($computerGroupId);
+			if(empty($computerGroup)) throw new NotFoundException();
+			$this->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
+		}
+
+		$this->db->insertComputerGroupPolicyObject(empty($computerGroupId) ? null : $computerGroupId, $policyObject->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.policy_object_computer_group.create', [
+			'policy_object_id' => $policyObject->id,
+			'computer_group_id' => $computerGroupId,
+		]);
+	}
+	public function assignPolicyObjectToDomainUserGroup($id, $domainUserGroupId) {
+		$policyObject = $this->db->selectPolicyObject($id);
+		if(empty($policyObject)) throw new NotFoundException();
+		$this->checkPermission($policyObject, PermissionManager::METHOD_WRITE);
+
+		if(!empty($domainUserGroupId)) {
+			$domainUserGroup = $this->db->selectDomainUserGroup($domainUserGroupId);
+			if(empty($domainUserGroup)) throw new NotFoundException();
+			$this->checkPermission($domainUserGroup, PermissionManager::METHOD_WRITE);
+		}
+
+		$this->db->insertDomainUserGroupPolicyObject(empty($domainUserGroupId) ? null : $domainUserGroupId, $policyObject->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.policy_object_domain_user_group.create', [
+			'policy_object_id' => $policyObject->id,
+			'domain_user_group_id' => $domainUserGroupId,
+		]);
+	}
+	public function removePolicyObjectFromComputerGroup($id, $computerGroupId) {
+		$policyObject = $this->db->selectPolicyObject($id);
+		if(empty($policyObject)) throw new NotFoundException();
+		$this->checkPermission($policyObject, PermissionManager::METHOD_WRITE);
+
+		if(!empty($computerGroupId)) {
+			$computerGroup = $this->db->selectComputerGroup($computerGroupId);
+			if(empty($computerGroup)) throw new NotFoundException();
+			$this->checkPermission($computerGroup, PermissionManager::METHOD_WRITE);
+		}
+
+		$this->db->deleteComputerGroupPolicyObject(empty($computerGroupId) ? null : $computerGroupId, $policyObject->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.policy_object_computer_group.remove', [
+			'policy_object_id' => $policyObject->id,
+			'computer_group_id' => $computerGroupId,
+		]);
+	}
+	public function removePolicyObjectFromDomainUserGroup($id, $domainUserGroupId) {
+		$policyObject = $this->db->selectPolicyObject($id);
+		if(empty($policyObject)) throw new NotFoundException();
+		$this->checkPermission($policyObject, PermissionManager::METHOD_WRITE);
+
+		if(!empty($domainUserGroupId)) {
+			$domainUserGroup = $this->db->selectDomainUserGroup($domainUserGroupId);
+			if(empty($domainUserGroup)) throw new NotFoundException();
+			$this->checkPermission($domainUserGroup, PermissionManager::METHOD_WRITE);
+		}
+
+		$this->db->deleteDomainUserGroupPolicyObject(empty($domainUserGroupId) ? null : $domainUserGroupId, $policyObject->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $id, 'oco.policy_object_domain_user_group.delete', [
+			'policy_object_id' => $policyObject->id,
+			'domain_user_group_id' => $domainUserGroupId,
 		]);
 	}
 	public function removePolicyObject($id) {
