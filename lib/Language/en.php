@@ -734,6 +734,15 @@ return [
 	'enable_system_apps' => 'Enable system apps',
 	'access_network_activity_logs' => 'Network activity logs',
 	'access_security_logs' => 'Security logs',
+	'policies' => 'Policies',
+	'configured' => 'Configured',
+	'option' => 'Option',
+	'computer_policies' => 'Computer Policies',
+	'user_policies' => 'User Policies',
+	'windows_components' => 'Windows Components',
+	'import_policy_definitions_first' => 'You first need to create/import policy definitions (templates).',
+	'default_domain_policy' => '* Default Domain Policy *',
+	'domain_user_groups' => 'Domain User Groups',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

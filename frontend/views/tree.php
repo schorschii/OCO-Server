@@ -74,6 +74,10 @@ require_once('../session.inc.php');
 	</div>
 </div>
 
+<div id='divNodePolicies' class='node'>
+	<a <?php echo Html::explorerLink('views/policy-objects.php'); ?>><img src='img/policy.dyn.svg'><?php echo LANG('policies'); ?><span class='badge'>BETA</span></a>
+</div>
+
 <hr/>
 
 <?php $mobileDeviceGroupsHtml = getMobileDeviceGroupsHtml($cl); ?>

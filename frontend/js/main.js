@@ -11,6 +11,16 @@ function toClipboard(text, info=null) {
 function getChildIndex(node) {
 	return Array.prototype.indexOf.call(node.parentNode.childNodes, node);
 }
+function isInsideParentWithClass(node, wantedParentClass) {
+	let parent = node.parentNode;
+	while(parent) {
+		if('classList' in parent
+		&& parent.classList.contains(wantedParentClass))
+			return true;
+		parent = parent.parentNode;
+	}
+	return false;
+}
 function getCheckedRadioValue(name) {
 	// return the LAST checked element (so we can define default via hidden elements)
 	var found = null;
@@ -184,6 +194,12 @@ function showDialogAjax(title='', url='', controls=false, size=false, callback=n
 	};
 	ajaxRequest(url, null, function(text) {
 		showDialogHTML(title, text, controls, size, false);
+		// execute inline scripts
+		var scripts = obj('dialog-text').getElementsByTagName('script');
+		for(var i = 0; i < scripts.length; i++) {
+			eval(scripts[i].innerHTML);
+		}
+		// exec custom callback
 		if(callback && typeof callback == 'function') {
 			callback(this.responseText);
 		}
@@ -211,6 +227,10 @@ function showDialogHTML(title='', text='', controls=false, size=false, monospace
 	} else {
 		obj('dialog-text').classList.remove('monospace');
 	}
+	// close action
+	obj('dialog-text').querySelectorAll('button.closeDialog').forEach(function(btn){
+		btn.addEventListener('click', hideDialog);
+	});
 	// loading animation
 	if(loading) {
 		var img = document.createElement('img');
@@ -655,6 +675,26 @@ function emitMessage(title, text, type='info', timeout=8000) {
 	messageBox.appendChild(messageBoxClose);
 	obj('message-container').prepend(messageBox);
 	if(timeout != null) setTimeout(dismissMessage, timeout);
+}
+
+// ======== GENERAL OPERATIONS ========
+function confirmRemoveObject(ids, paramName, apiEndpoint, event=null, infoText='', redirect=null) {
+	if(!ids) return;
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':paramName+'[]', 'value':entry});
+	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
+	var paramString = urlencodeArray(params);
+	if(confirm(LANG['confirm_delete'])) {
+		ajaxRequestPost(apiEndpoint, paramString, null, function() {
+			if(redirect != null) currentExplorerContentUrl = redirect;
+			refreshContentExplorer(currentExplorerContentUrl);
+			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
+		});
+	}
 }
 
 // ======== PACKAGE OPERATIONS ========
@@ -1867,7 +1907,7 @@ function confirmRemoveProfile(ids, event=null, infoText='', redirect=null) {
 		params.push({'key':'force', 'value':'1'});
 	}
 	var paramString = urlencodeArray(params);
-	if(confirm(LANG['confirm_delete_profile'])) {
+	if(confirm(LANG['confirm_delete'])) {
 		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);
@@ -2232,6 +2272,31 @@ function renewFailedDynamicJobs(id, jobId) {
 		refreshSidebar(); refreshContent();
 		emitMessage(LANG['jobs_renewed'], '', MESSAGE_TYPE_SUCCESS);
 	});
+}
+
+// ======== POLICY OPERATIONS ========
+function showDialogEditPolicyObject(id=-1, name='') {
+	let newName = prompt(LANG['name'], name);
+	if(newName) {
+		if(id > 0) {
+			var params = [
+				{'key':'edit_policy_object_id', 'value':id},
+				{'key':'name', 'value':newName},
+			];
+			ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeArray(params), null, function(response) {
+				refreshContent();
+				emitMessage(LANG['saved'], newName, MESSAGE_TYPE_SUCCESS);
+			});
+		} else {
+			var params = [
+				{'key':'create_policy_object', 'value':newName},
+			];
+			ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeArray(params), null, function(response) {
+				refreshContentExplorer('views/policy-objects.php?id='+parseInt(response));
+				emitMessage(LANG['saved'], newName, MESSAGE_TYPE_SUCCESS);
+			});
+		}
+	}
 }
 
 // ======== DOMAIN USER OPERATIONS ========

@@ -729,6 +729,15 @@ return [
 	'enable_system_apps' => 'System-Apps aktivieren',
 	'access_network_activity_logs' => 'Netzwerkaktivitäts-Logs',
 	'access_security_logs' => 'Sicherheits-Logs',
+	'policies' => 'Richtlinien',
+	'configured' => 'Konfiguriert',
+	'option' => 'Option',
+	'computer_policies' => 'Computerrichtlinien',
+	'user_policies' => 'Benutzerrichtlinien',
+	'windows_components' => 'Windows-Komponenten',
+	'import_policy_definitions_first' => 'Sie müssen zuerst Richtliniendefinitionen (Vorlagen) erstellen/importieren.',
+	'default_domain_policy' => '* Standarddomänen-Richtlinie *',
+	'domain_user_groups' => 'Domänenbenutzergruppen',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

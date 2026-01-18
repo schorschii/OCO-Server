@@ -1018,6 +1018,161 @@ CREATE TABLE `computer_user` (
   CONSTRAINT `fk_computer_user_1` FOREIGN KEY (`computer_id`) REFERENCES `computer` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `policy_definition_group`
+--
+
+CREATE TABLE `policy_definition_group` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_policy_definition_group_id` INT NULL DEFAULT NULL,
+  `name` text NOT NULL,
+  `display_name` text NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_parent_policy_definition_group` FOREIGN KEY (`parent_policy_definition_group_id`) REFERENCES `policy_definition_group`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `policy_definition`
+--
+
+CREATE TABLE `policy_definition` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `policy_definition_group_id` int(11) NOT NULL,
+  `parent_policy_definition_id` INT NULL DEFAULT NULL,
+  `name` text NOT NULL,
+  `display_name` mediumtext NOT NULL,
+  `description` longtext NOT NULL,
+  `class` tinyint(4) NOT NULL,
+  `options` text NOT NULL,
+  `manifestation_linux` text DEFAULT NULL,
+  `manifestation_macos` text DEFAULT NULL,
+  `manifestation_windows` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_policy_definition_1` (`policy_definition_group_id`),
+  CONSTRAINT `fk_policy_definition_1` FOREIGN KEY (`policy_definition_group_id`) REFERENCES `policy_definition_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_policy_definition_2` FOREIGN KEY (`parent_policy_definition_id`) REFERENCES `policy_definition`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `policy_object`
+--
+
+CREATE TABLE `policy_object` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` text NOT NULL,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_by_system_user_id` INT NULL,
+  `updated` DATETIME NULL DEFAULT NULL,
+  `updated_by_system_user_id` INT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_policy_object_1` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_policy_object_2` FOREIGN KEY (`updated_by_system_user_id`) REFERENCES `system_user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `policy_object_item`
+--
+
+CREATE TABLE `policy_object_item` (
+  `policy_object_id` int(11) NOT NULL,
+  `policy_definition_id` int(11) NOT NULL,
+  `class` tinyint(4) NOT NULL,
+  `value` text NOT NULL,
+  `description` text NOT NULL,
+  PRIMARY KEY (`policy_object_id`, `policy_definition_id`, `class`),
+  KEY `fk_policy_object_item_1` (`policy_definition_id`),
+  CONSTRAINT `fk_policy_object_item_1` FOREIGN KEY (`policy_definition_id`) REFERENCES `policy_definition` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_policy_object_item_2` FOREIGN KEY (`policy_object_id`) REFERENCES `policy_object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `policy_translation`
+--
+
+CREATE TABLE `policy_translation` (
+  `language` varchar(5) NOT NULL,
+  `name` varchar(120) NOT NULL,
+  `translation` text NOT NULL,
+  PRIMARY KEY (`language`,`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `computer_group_policy_object`
+--
+
+CREATE TABLE `computer_group_policy_object` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `computer_group_id` int(11) NULL,
+  `policy_object_id` int(11) NOT NULL,
+  `sequence` INT NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `fk_computer_group_policy_object_1` (`computer_group_id`),
+  KEY `fk_computer_group_policy_object_2` (`policy_object_id`),
+  CONSTRAINT `fk_computer_group_policy_object_1` FOREIGN KEY (`computer_group_id`) REFERENCES `computer_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_computer_group_policy_object_2` FOREIGN KEY (`policy_object_id`) REFERENCES `policy_object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `domain_user_group`
+--
+
+CREATE TABLE `domain_user_group` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_domain_user_group_id` int(11) NOT NULL,
+  `name` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `domain_user_group_policy_object`
+--
+
+CREATE TABLE `domain_user_group_policy_object` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `domain_user_group_id` int(11) NULL,
+  `policy_object_id` int(11) NOT NULL,
+  `sequence` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  KEY `fk_domain_user_group_policy_object_1` (`domain_user_group_id`),
+  KEY `fk_domain_user_group_policy_object_2` (`policy_object_id`),
+  CONSTRAINT `fk_domain_user_group_policy_object_1` FOREIGN KEY (`domain_user_group_id`) REFERENCES `domain_user_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_domain_user_group_policy_object_2` FOREIGN KEY (`policy_object_id`) REFERENCES `policy_object` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `domain_user_group_policy_object`
+--
+
+CREATE TABLE `domain_user_group_member` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `domain_user_id` int(11) NOT NULL,
+  `domain_user_group_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_domain_user_group_member_1` (`domain_user_id`),
+  KEY `fk_domain_user_group_member_2` (`domain_user_group_id`),
+  CONSTRAINT `fk_domain_user_group_member_1` FOREIGN KEY (`domain_user_id`) REFERENCES `domain_user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_domain_user_group_member_2` FOREIGN KEY (`domain_user_group_id`) REFERENCES `domain_user_group` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -269,13 +269,13 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			$resdata['result'] = [
 				'success' => $success,
 				'params' => [ // tell the agent...
-					'server-key' => $updateServerKey,// ...our server key, so it can validate the server
-					'agent-key' => $updateAgentKey,  // ...that it should save a new agent key for further requests
-					'update' => $update,             // ...that it should update the inventory data
-					'logins-since' => $loginsSince,  // ...to only send logins since the last login date
-					'software-jobs' => $jobs,        // ...all pending software jobs
-					'events' => $events,             // ...to send specific events from local log files
-					'update-passwords' => $passwords // ...to update local admin passwords
+					'server-key' => $updateServerKey, // ...our server key, so it can validate the server
+					'agent-key' => $updateAgentKey,   // ...that it should save a new agent key for further requests
+					'update' => $update,              // ...that it should send its inventory data
+					'logins-since' => $loginsSince,   // ...to only send logins since the last known date
+					'software-jobs' => $jobs,         // ...all pending software jobs
+					'events' => $events,              // ...to send specific events from local log files
+					'update-passwords' => $passwords, // ...to update local admin passwords
 				]
 			];
 			break;
@@ -288,7 +288,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			$computer = checkAuth($params);
 			$data = $params['data'];
 		
-			// execute update
+			// execute inventory data update
 			$success = false;
 			$db->updateComputerPing($computer->id);
 			if((time() - strtotime($computer->last_update??'') > intval($db->settings->get('agent-update-interval')) || !empty($computer->force_update))
@@ -305,7 +305,6 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 						$logins[$key]['timestamp'] = utcTimeToLocal($login['timestamp']);
 					} catch(Exception $e) {}
 				}
-				// update inventory data now
 				$success = $db->updateComputerInventoryValues(
 					$computer->id,
 					$params['uid'] ?? null,
@@ -374,11 +373,24 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			} else {
 				throw new InvalidRequestException('Update not necessary', Models\Log::ACTION_AGENT_API_UPDATE, $params['hostname'], $computer->id);
 			}
-		
+
+			// deploy policies for machine and the specific users on the machine only
+			$rpc = new RecursivePolicyCompiler($db);
+			$policies = [
+				'machine' => $rpc->getPoliciesForComputer($computer),
+			];
+			foreach($db->selectAllDomainUserLogonByComputerId($computer->id) as $logon) {
+				$du = $db->selectDomainUserByUid($logon->domain_user_uid);
+				if(!$du || empty($du->uid)) continue;
+				$policies[$du->uid] = $rpc->getPoliciesForDomainUserOnComputer($du, $computer);
+			}
+
 			$resdata['error'] = null;
 			$resdata['result'] = [
 				'success' => $success,
-				'params' => []
+				'params' => [
+					'policies' => $policies,
+				]
 			];
 			break;
 

@@ -2960,6 +2960,40 @@ class DatabaseController {
 			return $row;
 		}
 	}
+	public function selectDomainUserGroup($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM domain_user_group WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup', [$this]) as $row) {
+			return $row;
+		}
+	}
+	public function selectAllDomainUserGroupByParentDomainUserGroupId($parent_domain_user_group_id=null) {
+		if($parent_domain_user_group_id === null) {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM domain_user_group WHERE parent_domain_user_group_id IS NULL ORDER BY name'
+			);
+			$this->stmt->execute();
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM domain_user_group WHERE parent_domain_user_group_id = :parent_domain_user_group_id ORDER BY name'
+			);
+			$this->stmt->execute([':parent_domain_user_group_id' => $parent_domain_user_group_id]);
+		}
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup', [$this]);
+	}
+	public function selectAllDomainUserGroupByDomainUserId($domain_user_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT dug.id AS "id", dug.name AS "name", dug.parent_domain_user_group_id AS "parent_domain_user_group_id"
+			FROM domain_user_group_member dugm
+			INNER JOIN domain_user_group dug ON dug.id = dugm.domain_user_group_id
+			WHERE dugm.domain_user_id = :domain_user_id
+			ORDER BY dug.name'
+		);
+		$this->stmt->execute([':domain_user_id' => $domain_user_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup', [$this]);
+	}
 	private function insertOrUpdateDomainUserLogon($computer_id, $did, $console, $timestamp) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE domain_user_logon SET id = LAST_INSERT_ID(id)
@@ -3020,7 +3054,7 @@ class DatabaseController {
 	}
 	public function selectAllDomainUserLogonByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT du.id AS "domain_user_id", du.username AS "domain_user_username", du.display_name AS "domain_user_display_name", COUNT(du.username) AS "logon_amount",
+			'SELECT du.id AS "domain_user_id", du.uid AS "domain_user_uid", du.username AS "domain_user_username", du.display_name AS "domain_user_display_name", COUNT(du.username) AS "logon_amount",
 			(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.computer_id = dl.computer_id AND dl2.domain_user_id = dl.domain_user_id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
 			FROM domain_user_logon dl
 			INNER JOIN domain_user du ON dl.domain_user_id = du.id
@@ -3553,6 +3587,250 @@ class DatabaseController {
 			'DELETE FROM setting WHERE `key` = :key'
 		);
 		return $this->stmt->execute([':key' => $key]);
+	}
+
+	// Policy Operations
+	public function selectAllPolicyDefinitionGroup() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM policy_definition_group ORDER BY `name`'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyDefinitionGroup');
+	}
+	public function selectAllPolicyDefinitionGroupByParentPolicyDefinitionGroup($group_id) {
+		if($group_id === null) {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM policy_definition_group WHERE parent_policy_definition_group_id IS NULL ORDER BY `name`'
+			);
+			$this->stmt->execute();
+		} else {
+			$this->stmt = $this->dbh->prepare(
+				'SELECT * FROM policy_definition_group WHERE parent_policy_definition_group_id = :group_id ORDER BY `name`'
+			);
+			$this->stmt->execute([':group_id' => $group_id]);
+		}
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyDefinitionGroup');
+	}
+	public function insertPolicyDefinitionGroup($parent_policy_definition_group_id, $name, $display_name) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO policy_definition_group (parent_policy_definition_group_id, name, display_name) VALUES (:parent_policy_definition_group_id, :name, :display_name)'
+		);
+		$this->stmt->execute([
+			':parent_policy_definition_group_id' => $parent_policy_definition_group_id,
+			':name' => $name,
+			':display_name' => $display_name,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function selectAllPolicyDefinition() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM policy_definition ORDER BY `name`'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyDefinition');
+	}
+	public function selectAllPolicyByPolicyObjectAndParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($policy_object_id, $parent_policy_definition_id, $group_id, $class_mask) {
+		$sql = 'SELECT pd.id, pd.parent_policy_definition_id, pd.name, pd.display_name, pd.description, pd.class, pd.options, poi.value FROM policy_definition pd '
+			.' LEFT JOIN (SELECT poi.* FROM policy_object_item poi WHERE poi.policy_object_id = :policy_object_id AND poi.class & :class_mask) poi ON poi.policy_definition_id = pd.id'
+			.' WHERE pd.class & :class_mask'
+			.' AND '.(($group_id===null) ? 'policy_definition_group_id IS NULL' : 'policy_definition_group_id = :group_id')
+			.' AND '.(($parent_policy_definition_id===null) ? 'parent_policy_definition_id IS NULL' : 'parent_policy_definition_id = :parent_policy_definition_id');
+		$this->stmt = $this->dbh->prepare($sql);
+		$params = [':policy_object_id' => $policy_object_id, ':class_mask' => $class_mask];
+		if($group_id !== null)
+			$params[':group_id'] = $group_id;
+		if($parent_policy_definition_id !== null)
+			$params[':parent_policy_definition_id'] = $parent_policy_definition_id;
+		$this->stmt->execute($params);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyDefinition');
+	}
+	public function insertPolicyDefinition($policy_definition_group_id, $parent_policy_definition_id, $name, $display_name, $description, $class, $options, $manifestation_linux, $manifestation_macos, $manifestation_windows) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO policy_definition (policy_definition_group_id, parent_policy_definition_id, name, display_name, description, class, options, manifestation_linux, manifestation_macos, manifestation_windows)
+			VALUES (:policy_definition_group_id, :parent_policy_definition_id, :name, :display_name, :description, :class, :options, :manifestation_linux, :manifestation_macos, :manifestation_windows)'
+		);
+		$this->stmt->execute([
+			':policy_definition_group_id' => $policy_definition_group_id,
+			':parent_policy_definition_id' => $parent_policy_definition_id,
+			':name' => $name,
+			':display_name' => $display_name,
+			':description' => $description,
+			':class' => $class,
+			':options' => $options,
+			':manifestation_linux' => $manifestation_linux,
+			':manifestation_macos' => $manifestation_macos,
+			':manifestation_windows' => $manifestation_windows,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function replacePolicyTranslation($language, $name, $translation) {
+		$this->stmt = $this->dbh->prepare(
+			'REPLACE INTO policy_translation (language, name, translation) VALUES (:language, :name, :translation)'
+		);
+		$this->stmt->execute([
+			':language' => $language,
+			':name' => $name, ':translation' => $translation
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function selectAllPolicyTranslationByLanguage($language) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT name, translation FROM policy_translation WHERE language LIKE :language'
+		);
+		$this->stmt->execute([':language' => $language.'%']);
+		$translations = [];
+		foreach($this->stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+			$translations[$row['name']] = $row['translation'];
+		}
+		return $translations;
+	}
+	public function selectAllPolicyObject() {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT po.*, su_created.username AS "created_by_system_user_username", su_updated.username AS "updated_by_system_user_username" FROM policy_object po
+			LEFT JOIN system_user su_created ON su_created.id = po.created_by_system_user_id
+			LEFT JOIN system_user su_updated ON su_updated.id = po.updated_by_system_user_id
+			ORDER BY `name`'
+		);
+		$this->stmt->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject');
+	}
+	public function selectAllPolicyObjectByComputerGroup($computer_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT po.* FROM policy_object po INNER JOIN computer_group_policy_object cgpo ON cgpo.policy_object_id = po.id
+			WHERE cgpo.computer_group_id = :computer_group_id ORDER BY `name`'
+		);
+		$this->stmt->execute([':computer_group_id' => $computer_group_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject');
+	}
+	public function selectAllComputerGroupByPolicyObject($policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT cg.* FROM computer_group_policy_object cgpo LEFT JOIN computer_group cg ON cgpo.computer_group_id = cg.id
+			WHERE cgpo.policy_object_id = :policy_object_id ORDER BY `name`'
+		);
+		$this->stmt->execute([':policy_object_id' => $policy_object_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
+	}
+	public function selectAllDomainUserGroupByPolicyObject($policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT dug.* FROM domain_user_group_policy_object dugpo LEFT JOIN domain_user_group dug ON dugpo.domain_user_group_id = dug.id
+			WHERE dugpo.policy_object_id = :policy_object_id ORDER BY `name`'
+		);
+		$this->stmt->execute([':policy_object_id' => $policy_object_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup');
+	}
+	public function selectAllPolicyObjectItemByComputerGroup($computer_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, pd.options, poi.value
+			FROM policy_object_item poi
+			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
+			INNER JOIN policy_object po ON poi.policy_object_id = po.id
+			INNER JOIN computer_group_policy_object cgpo ON cgpo.policy_object_id = po.id
+			WHERE pd.class & :class_mask
+			AND '.($computer_group_id===null ? 'cgpo.computer_group_id IS NULL' : 'cgpo.computer_group_id = :computer_group_id')
+		);
+		$params = [':class_mask' => Models\PolicyDefinition::CLASS_MACHINE];
+		if($computer_group_id !== null) $params[':computer_group_id'] = $computer_group_id;
+		$this->stmt->execute($params);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObjectItem');
+	}
+	public function selectAllPolicyObjectItemByDomainUserGroup($domain_user_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, pd.options, poi.value
+			FROM policy_object_item poi
+			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
+			INNER JOIN policy_object po ON poi.policy_object_id = po.id
+			INNER JOIN domain_user_group_policy_object dugpo ON dugpo.policy_object_id = po.id
+			WHERE pd.class & :class_mask
+			AND '.($domain_user_group_id===null ? 'dugpo.domain_user_group_id IS NULL' : 'dugpo.domain_user_group_id = :domain_user_group_id')
+		);
+		$params = [':class_mask' => Models\PolicyDefinition::CLASS_USER];
+		if($domain_user_group_id !== null) $params[':domain_user_group_id'] = $domain_user_group_id;
+		$this->stmt->execute($params);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObjectItem');
+	}
+	public function selectPolicyObject($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM policy_object WHERE id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject') as $row) {
+			return $row;
+		}
+	}
+	public function insertPolicyObject($name, $created_by_system_user_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO policy_object (name, created_by_system_user_id) VALUES (:name, :created_by_system_user_id)'
+		);
+		$this->stmt->execute([':name' => $name, ':created_by_system_user_id' => $created_by_system_user_id]);
+		return $this->dbh->lastInsertId();
+	}
+	public function updatePolicyObject($id, $name, $updated_by_system_user_id) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE policy_object SET name = :name, updated = CURRENT_TIMESTAMP, updated_by_system_user_id = :updated_by_system_user_id WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':name' => $name, ':updated_by_system_user_id' => $updated_by_system_user_id]);
+	}
+	public function deletePolicyObject($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM policy_object WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id]);
+	}
+	public function deletePolicyObjectItemByPolicyObject($policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM policy_object_item WHERE policy_object_id = :policy_object_id'
+		);
+		return $this->stmt->execute([':policy_object_id' => $policy_object_id]);
+	}
+	public function insertPolicyObjectItem($policy_object_id, $policy_definition_id, $class, $value, $description) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO policy_object_item (policy_object_id, policy_definition_id, class, value, description)
+			VALUES (:policy_object_id, :policy_definition_id, :class, :value, :description)'
+		);
+		$this->stmt->execute([
+			':policy_object_id' => $policy_object_id,
+			':policy_definition_id' => $policy_definition_id,
+			':class' => $class,
+			':value' => $value,
+			':description' => $description,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function insertComputerGroupPolicyObject($computer_group_id, $policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO computer_group_policy_object (computer_group_id, policy_object_id) VALUES (:computer_group_id, :policy_object_id)'
+		);
+		return $this->stmt->execute([
+			':computer_group_id' => $computer_group_id,
+			':policy_object_id' => $policy_object_id,
+		]);
+	}
+	public function deleteComputerGroupPolicyObject($computer_group_id, $policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM computer_group_policy_object WHERE policy_object_id=:policy_object_id'
+			.' AND '.($computer_group_id===null ? 'computer_group_id IS NULL' : 'computer_group_id=:computer_group_id')
+		);
+		$params = [':policy_object_id' => $policy_object_id];
+		if($computer_group_id !== null) $params[':computer_group_id'] = $computer_group_id;
+		return $this->stmt->execute($params);
+	}
+	public function insertDomainUserGroupPolicyObject($domain_user_group_id, $policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO domain_user_group_policy_object (domain_user_group_id, policy_object_id) VALUES (:domain_user_group_id, :policy_object_id)'
+		);
+		return $this->stmt->execute([
+			':domain_user_group_id' => $domain_user_group_id,
+			':policy_object_id' => $policy_object_id,
+		]);
+	}
+	public function deleteDomainUserGroupPolicyObject($domain_user_group_id, $policy_object_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM domain_user_group_policy_object WHERE policy_object_id=:policy_object_id'
+			.' AND '.($domain_user_group_id===null ? 'domain_user_group_id IS NULL' : 'domain_user_group_id=:domain_user_group_id')
+		);
+		$params = [':policy_object_id' => $policy_object_id];
+		if($domain_user_group_id !== null) $params[':domain_user_group_id'] = $domain_user_group_id;
+		return $this->stmt->execute($params);
 	}
 
 }
