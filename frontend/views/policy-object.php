@@ -34,8 +34,6 @@ function getContents($group_id, $classMask) {
 	// get sub groups/categories
 	$groups = $db->selectAllPolicyDefinitionGroupByParentPolicyDefinitionGroup($group_id);
 	foreach($groups as $group) {
-		if($group->display_name == 'WindowsComponents')
-			$group->display_name = 'windows_components'; // special translation
 		$group->display_name = translatePolicy($group->display_name);
 		$group->description = translatePolicy($group->description);
 	}
@@ -110,8 +108,8 @@ function getPolicyInput($pd) {
 		foreach(json_decode($pd->value, true) ?? [1=>''] as $key => $value) {
 			$html .= "<div class='spread'>";
 			$html .= "<input type='text' class='fullwidth multiple' policy_definition_id='".$pd->id."' value='".htmlspecialchars($value,ENT_QUOTES)."' />";
-			$html .= "<button class='addValue small ".($counter ? 'hidden' : '')."'><img src='img/add.dyn.svg'></button>";
-			$html .= "<button class='removeValue small ".($counter ? '' : 'hidden')."'><img src='img/remove.dyn.svg'></button>";
+			$html .= "<button class='addValue small ".($counter ? 'hidden' : '')."' title='".LANG('add')."'><img src='img/add.dyn.svg'></button>";
+			$html .= "<button class='removeValue small ".($counter ? '' : 'hidden')."' title='".LANG('remove')."'><img src='img/remove.dyn.svg'></button>";
 			$html .= "</div>";
 			$counter ++;
 		}
