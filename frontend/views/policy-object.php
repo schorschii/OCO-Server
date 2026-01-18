@@ -106,11 +106,15 @@ function getPolicyInput($pd) {
 		$max = $splitter[2] ?? '';
 		$html .= "<input type='number' class='fullwidth' policy_definition_id='".$pd->id."' min='".$min."' max='".$max."' value='".htmlspecialchars($pd->value??'',ENT_QUOTES)."' />";
 	} elseif($pd->options == 'DICT' || $pd->options == 'LIST') {
-		$html .= "<div class='spread'>";
-		$html .= "<input type='text' class='fullwidth multiple' policy_definition_id='".$pd->id."' value='".htmlspecialchars($pd->value??'',ENT_QUOTES)."' />";
-		$html .= "<button class='addValue small'><img src='img/add.dyn.svg'></button>";
-		$html .= "<button class='removeValue small hidden'><img src='img/remove.dyn.svg'></button>";
-		$html .= "</div>";
+		$counter = 0;
+		foreach(json_decode($pd->value, true) ?? [1=>''] as $key => $value) {
+			$html .= "<div class='spread'>";
+			$html .= "<input type='text' class='fullwidth multiple' policy_definition_id='".$pd->id."' value='".htmlspecialchars($value,ENT_QUOTES)."' />";
+			$html .= "<button class='addValue small ".($counter ? 'hidden' : '')."'><img src='img/add.dyn.svg'></button>";
+			$html .= "<button class='removeValue small ".($counter ? '' : 'hidden')."'><img src='img/remove.dyn.svg'></button>";
+			$html .= "</div>";
+			$counter ++;
+		}
 	} elseif($options = json_decode($pd->options)) {
 		$html .= "<select class='fullwidth' policy_definition_id='".$pd->id."'>";
 		foreach($options as $option => $value) {
@@ -207,6 +211,12 @@ for(let i=0; i<addButtons.length; i++) {
 			e2.srcElement.parentElement.remove();
 		});
 		parent.parentNode.appendChild(clone);
+	});
+}
+let removeButtons = tabControlPolicyObject.querySelectorAll('button.removeValue');
+for(let i=0; i<removeButtons.length; i++) {
+	removeButtons[i].addEventListener('click', (e) => {
+		e.srcElement.parentElement.remove();
 	});
 }
 // init configured checkboxes
