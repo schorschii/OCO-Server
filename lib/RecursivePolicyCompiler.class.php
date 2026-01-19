@@ -92,8 +92,10 @@ class RecursivePolicyCompiler {
 		foreach(explode("\n", $newManifestation) as $manifestation) {
 			// do not override policy with policy from a parent group!
 			if(array_key_exists($manifestation, $existingPolicies)) continue;
-			// determine data type (int vs. string)
-			if(is_numeric($newValue)
+			// determine data type to return (string, int, list/array, dict)
+			if($newOptions == 'LIST' || $newOptions == 'DICT')
+				$existingPolicies[$manifestation] = json_decode($newValue, true);
+			else if(is_numeric($newValue)
 			&& (substr($newOptions, 0, 3) == 'INT' || in_array($newValue, json_decode($newOptions, true) ?? [])))
 				$existingPolicies[$manifestation] = intval($newValue);
 			else
