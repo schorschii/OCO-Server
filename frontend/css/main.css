@@ -1013,9 +1013,15 @@ table.list.policies tr td {
 	padding-top: 10px;
 	padding-bottom: 10px;
 	vertical-align: top;
+	table-layout: fixed;
+}
+table.list.policies tr td:nth-child(1),
+table.list.policies tr td:nth-child(2) {
+	width: 40%;
 }
 table.list.policies tr td:nth-child(2) {
 	text-align: center;
+	width: 1%;
 }
 table.metadata tr th:first-child {
 	width: 40%;

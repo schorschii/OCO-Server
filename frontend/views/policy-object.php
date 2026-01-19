@@ -107,6 +107,9 @@ function getPolicyInput($pd) {
 		$counter = 0;
 		foreach(json_decode($pd->value, true) ?? [1=>''] as $key => $value) {
 			$html .= "<div class='spread'>";
+			if($pd->options == 'DICT') {
+				$html .= "<input type='text' class='fullwidth multipleKey' policy_definition_id='".$pd->id."' value='".htmlspecialchars($key,ENT_QUOTES)."' />";
+			}
 			$html .= "<input type='text' class='fullwidth multiple' policy_definition_id='".$pd->id."' value='".htmlspecialchars($value,ENT_QUOTES)."' />";
 			$html .= "<button class='addValue small ".($counter ? 'hidden' : '')."' title='".LANG('add')."'><img src='img/add.dyn.svg'></button>";
 			$html .= "<button class='removeValue small ".($counter ? '' : 'hidden')."' title='".LANG('remove')."'><img src='img/remove.dyn.svg'></button>";
@@ -232,18 +235,30 @@ btnSave.addEventListener('click', (e) => {
 	for(let i=0; i<policyRows.length; i++) {
 		let policyConfiguredCheckbox = policyRows[i].querySelectorAll('input[type=checkbox].configured')[0];
 		if(policyConfiguredCheckbox.checked) {
-			let policyValueInputs = policyRows[i].querySelectorAll('td:nth-child(3) input, td:nth-child(3) textarea, td:nth-child(3) select');
+			let policyValueInputs = policyRows[i].querySelectorAll(
+				'td:nth-child(3) input:not(.multipleKey), td:nth-child(3) textarea, td:nth-child(3) select'
+			);
 			for(let n=0; n<policyValueInputs.length; n++) {
 				let policyClassPrefix = isInsideParentWithClass(policyValueInputs[n], 'user') ? 'user' : 'machine';
 				let policyDefinitionId = policyClassPrefix+':'+policyValueInputs[n].getAttribute('policy_definition_id');
 				if(policyValueInputs[n].classList.contains('multiple')) {
-					// multiple values - create an array
-					if(policyDefinitionId in policyData) {
-						policyData[policyDefinitionId].push(policyValueInputs[n].value);
+					// multiple values - create an array or dict
+					let policyValueKeys = policyValueInputs[n].parentNode.querySelectorAll('input.multipleKey');
+					if(policyValueKeys.length > 1) {
+						console.warn('More than 1 input.multipleKey found, sus!');
+					} else if(policyValueKeys.length == 1) {
+						if(!(policyDefinitionId in policyData))
+							policyData[policyDefinitionId] = {}
+						policyData[policyDefinitionId][policyValueKeys[0].value] = policyValueInputs[n].value;
 					} else {
-						policyData[policyDefinitionId] = [policyValueInputs[n].value];
+						if(policyDefinitionId in policyData) {
+							policyData[policyDefinitionId].push(policyValueInputs[n].value);
+						} else {
+							policyData[policyDefinitionId] = [policyValueInputs[n].value];
+						}
 					}
 				} else {
+					// single value
 					policyData[policyDefinitionId] = policyValueInputs[n].value;
 				}
 			}
@@ -251,7 +266,7 @@ btnSave.addEventListener('click', (e) => {
 	}
 	// convert arrays to JSON string
 	for(const [key, value] of Object.entries(policyData)) {
-		if(value.constructor === Array)
+		if(value.constructor === Array || value.constructor === Object)
 			policyData[key] = JSON.stringify(value);
 	}
 	ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeObject(policyData), null, function() {
