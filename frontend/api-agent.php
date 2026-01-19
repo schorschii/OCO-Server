@@ -60,9 +60,10 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			}
 
 			$data = $params['data'] ?? [];
+			$update = empty($data['force_update']) ? 0 : 1;
 
 			$computer = $db->selectComputerByHostname($params['hostname']);
-			$jobs = []; $update = 0; $success = false;
+			$jobs = []; $success = false;
 			$updateServerKey = null;
 			$updateAgentKey = null;
 
@@ -288,91 +289,93 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			$computer = checkAuth($params);
 			$data = $params['data'];
 		
-			// execute inventory data update
-			$success = false;
+			// since this operation produces some load, we accept it only 25s after the last request
+			// Windows agents dynamically update when new user logs in, so we cannot use the setting 'agent-update-interval' for this check
 			$db->updateComputerPing($computer->id);
-			if((time() - strtotime($computer->last_update??'') > intval($db->settings->get('agent-update-interval')) || !empty($computer->force_update))
-			&& !empty($data)) {
-				// convert login timestamps to local time,
-				// because other timestamps in the database are also in local time
-				$logins = [];
-				if(!empty($data['logins'])) {
-					$logins = $data['logins'];
-				}
-				foreach($logins as $key => $login) {
-					try {
-						if(empty($login['timestamp'])) continue;
-						$logins[$key]['timestamp'] = utcTimeToLocal($login['timestamp']);
-					} catch(Exception $e) {}
-				}
-				$success = $db->updateComputerInventoryValues(
-					$computer->id,
-					$params['uid'] ?? null,
-					$params['hostname'],
-					$data['os'] ?? '',
-					$data['os_version'] ?? '',
-					$data['os_license'] ?? '-',
-					$data['os_language'] ?? '-',
-					$data['kernel_version'] ?? '',
-					$data['architecture'] ?? '',
-					$data['cpu'] ?? '',
-					$data['gpu'] ?? '',
-					$data['ram'] ?? '',
-					$data['agent_version'] ?? '?',
-					$remoteAddr,
-					$data['serial'] ?? '',
-					$data['manufacturer'] ?? '',
-					$data['model'] ?? '',
-					$data['bios_version'] ?? '',
-					$data['battery_level'] ?? null,
-					$data['battery_status'] ?? null,
-					intval($data['uptime'] ?? 0),
-					$data['boot_type'] ?? '',
-					$data['secure_boot'] ?? '',
-					$data['domain'] ?? '',
-					$data['networks'] ?? [],
-					$data['screens'] ?? [],
-					$data['printers'] ?? [],
-					$data['partitions'] ?? [],
-					$data['software'] ?? [],
-					$logins,
-					$data['users'] ?? [],
-					$data['devices'] ?? [],
+			if((time() - strtotime($computer->last_update??'') < 25 && !empty($computer->force_update))
+			|| empty($data)) {
+				throw new InvalidRequestException(
+					'Update refused (too often or invalid data)', Models\Log::ACTION_AGENT_API_UPDATE, $params['hostname'], $computer->id
 				);
-				$db->insertLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE, [
-					'hostname' => $params['hostname'],
-					'os' => $data['os'] ?? '',
-					'os_version' => $data['os_version'] ?? '',
-					'os_license' => $data['os_license'] ?? '-',
-					'os_language' => $data['os_language'] ?? '-',
-					'kernel_version' => $data['kernel_version'] ?? '',
-					'architecture' => $data['architecture'] ?? '',
-					'cpu' => $data['cpu'] ?? '',
-					'gpu' => $data['gpu'] ?? '',
-					'ram' => $data['ram'] ?? '',
-					'agent_version' => $data['agent_version'] ?? '?',
-					'serial' => $data['serial'] ?? '',
-					'manufacturer' => $data['manufacturer'] ?? '',
-					'model' => $data['model'] ?? '',
-					'bios_version' => $data['bios_version'] ?? '',
-					'battery_level' => $data['battery_level']??null,
-					'battery_status' => $data['battery_status']??null,
-					'uptime' => intval($data['uptime'] ?? 0),
-					'boot_type' => $data['boot_type'] ?? '',
-					'secure_boot' => $data['secure_boot'] ?? '',
-					'domain' => $data['domain'] ?? '',
-					'network' => $data['networks'] ?? [],
-					'screens' => $data['screens'] ?? [],
-					'printers' => $data['printers'] ?? [],
-					'partitions' => $data['partitions'] ?? [],
-					'software' => $data['software'] ?? [],
-					'logins' => $logins,
-					'users' => $data['users'] ?? [],
-					'devices' => $data['devices'] ?? [],
-				]);
-			} else {
-				throw new InvalidRequestException('Update not necessary', Models\Log::ACTION_AGENT_API_UPDATE, $params['hostname'], $computer->id);
 			}
+
+			// convert login timestamps to local time,
+			// because other timestamps in the database are also in local time
+			$logins = [];
+			if(!empty($data['logins'])) {
+				$logins = $data['logins'];
+			}
+			foreach($logins as $key => $login) {
+				try {
+					if(empty($login['timestamp'])) continue;
+					$logins[$key]['timestamp'] = utcTimeToLocal($login['timestamp']);
+				} catch(Exception $e) {}
+			}
+			$success = $db->updateComputerInventoryValues(
+				$computer->id,
+				$params['uid'] ?? null,
+				$params['hostname'],
+				$data['os'] ?? '',
+				$data['os_version'] ?? '',
+				$data['os_license'] ?? '-',
+				$data['os_language'] ?? '-',
+				$data['kernel_version'] ?? '',
+				$data['architecture'] ?? '',
+				$data['cpu'] ?? '',
+				$data['gpu'] ?? '',
+				$data['ram'] ?? '',
+				$data['agent_version'] ?? '?',
+				$remoteAddr,
+				$data['serial'] ?? '',
+				$data['manufacturer'] ?? '',
+				$data['model'] ?? '',
+				$data['bios_version'] ?? '',
+				$data['battery_level'] ?? null,
+				$data['battery_status'] ?? null,
+				intval($data['uptime'] ?? 0),
+				$data['boot_type'] ?? '',
+				$data['secure_boot'] ?? '',
+				$data['domain'] ?? '',
+				$data['networks'] ?? [],
+				$data['screens'] ?? [],
+				$data['printers'] ?? [],
+				$data['partitions'] ?? [],
+				$data['software'] ?? [],
+				$logins,
+				$data['users'] ?? [],
+				$data['devices'] ?? [],
+			);
+			$db->insertLogEntry(Models\Log::LEVEL_INFO, $params['hostname'], $computer->id, Models\Log::ACTION_AGENT_API_UPDATE, [
+				'hostname' => $params['hostname'],
+				'os' => $data['os'] ?? '',
+				'os_version' => $data['os_version'] ?? '',
+				'os_license' => $data['os_license'] ?? '-',
+				'os_language' => $data['os_language'] ?? '-',
+				'kernel_version' => $data['kernel_version'] ?? '',
+				'architecture' => $data['architecture'] ?? '',
+				'cpu' => $data['cpu'] ?? '',
+				'gpu' => $data['gpu'] ?? '',
+				'ram' => $data['ram'] ?? '',
+				'agent_version' => $data['agent_version'] ?? '?',
+				'serial' => $data['serial'] ?? '',
+				'manufacturer' => $data['manufacturer'] ?? '',
+				'model' => $data['model'] ?? '',
+				'bios_version' => $data['bios_version'] ?? '',
+				'battery_level' => $data['battery_level']??null,
+				'battery_status' => $data['battery_status']??null,
+				'uptime' => intval($data['uptime'] ?? 0),
+				'boot_type' => $data['boot_type'] ?? '',
+				'secure_boot' => $data['secure_boot'] ?? '',
+				'domain' => $data['domain'] ?? '',
+				'network' => $data['networks'] ?? [],
+				'screens' => $data['screens'] ?? [],
+				'printers' => $data['printers'] ?? [],
+				'partitions' => $data['partitions'] ?? [],
+				'software' => $data['software'] ?? [],
+				'logins' => $logins,
+				'users' => $data['users'] ?? [],
+				'devices' => $data['devices'] ?? [],
+			]);
 
 			// deploy policies for machine and the specific users on the machine only
 			$rpc = new RecursivePolicyCompiler($db);
