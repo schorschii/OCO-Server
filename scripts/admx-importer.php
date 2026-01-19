@@ -36,8 +36,8 @@ foreach($files as $admxFile) {
 
 		$catName = strval($c->attributes()->name);
 		$catDisplayName = empty($c->attributes()->displayName)
-			? '{'.$admxFileName.'}'.$catName
-			: '{'.$admxFileName.'}'.stringKeyExtract(strval($c->attributes()->displayName));
+			? $admxFileName.'|'.$catName
+			: $admxFileName.'|'.stringKeyExtract(strval($c->attributes()->displayName));
 
 		// avoid endless loops, e.g. in CredentialProviders.admx (logon:Logon), grouppolicy-server.admx (grouppolicy:PolicyPolicies)
 		if($catName == $parent) continue;
@@ -80,7 +80,7 @@ foreach($files as $admxFile) {
 		if(property_exists($adml, 'resources')
 		&& property_exists($adml->resources, 'stringTable')) {
 			foreach($adml->resources->stringTable->string as $s) {
-				$stringName = '{'.$admxFileName.'}'.strval($s->attributes()->id);
+				$stringName = $admxFileName.'|'.strval($s->attributes()->id);
 				$db->replacePolicyTranslation(strtolower($dir), $stringName, strval($s));
 				$transCounter ++;
 			}
@@ -94,7 +94,7 @@ foreach($files as $admxFile) {
 					if(!empty($child->label)) $text = strval($child->label);
 					else $text = strval($child);
 					if(!empty($text)) {
-						$presentationStringName = '{P:'.$admxFileName.'}-'.strval($child->attributes()->refId);
+						$presentationStringName = $admxFileName.'|P|'.strval($child->attributes()->refId);
 						$foundPresentationStrings[] = $presentationStringName;
 						$db->replacePolicyTranslation(strtolower($dir), $presentationStringName, $text);
 						$transCounter ++;
@@ -154,7 +154,7 @@ foreach($files as $admxFile) {
 		}
 
 		// determine value type and its options if applicable
-		list($manifestation1, $manifestation2) = optionsExtract($p);
+		list($manifestation1, $manifestation2) = optionsExtract($p, $admxFileName);
 		if(empty($manifestation1) && empty($manifestation2)) {
 			echo 'WARN: no options found for '.$name."\n";
 			continue;
@@ -184,7 +184,7 @@ foreach($files as $admxFile) {
 		$insertId = null;
 		$insertId = $db->insertPolicyDefinition(
 			$groupId, null,
-			$name, '{'.$admxFileName.'}'.$displayName, '{'.$admxFileName.'}'.$description,
+			$name, $admxFileName.'|'.$displayName, $admxFileName.'|'.$description,
 			$class, empty($manifestations) ? '' : ($options ?? ''),
 			null, null, empty($manifestations) ? null : implode("\n", $manifestations)
 		);
@@ -209,7 +209,7 @@ foreach($files as $admxFile) {
 			}
 			// insert manifestation
 			$displayName = ''; // sub items may have no description
-			$potentialDisplayName = '{P:'.$admxFileName.'}-'.$optionId;
+			$potentialDisplayName = $admxFileName.'|P|'.$optionId;
 			if(in_array($potentialDisplayName, $foundPresentationStrings))
 				$displayName = $potentialDisplayName;
 			$db->insertPolicyDefinition(
@@ -261,7 +261,7 @@ function stringKeyExtract($stringVar) {
 	if(!empty($matches[1])) return $matches[1];
 	return $stringVar; // fallback
 }
-function optionsExtract($xmlElement) {
+function optionsExtract($xmlElement, $admxFileName) {
 	$manifestation1 = [];
 	$manifestation2 = [];
 	if(property_exists($xmlElement, 'enabledValue')
@@ -323,7 +323,7 @@ function optionsExtract($xmlElement) {
 				foreach($element->item as $item) {
 					if(property_exists($item, 'value')) {
 						$stringKey = stringKeyExtract($item->attributes()->displayName);
-						$options[$stringKey] = optionValueExtract($item->value);
+						$options[$admxFileName.'|'.$stringKey] = optionValueExtract($item->value);
 					}
 				}
 				$manifestation2[] = [
