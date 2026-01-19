@@ -3725,7 +3725,7 @@ class DatabaseController {
 			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
 			INNER JOIN policy_object po ON poi.policy_object_id = po.id
 			INNER JOIN computer_group_policy_object cgpo ON cgpo.policy_object_id = po.id
-			WHERE pd.class & :class_mask
+			WHERE pd.class & :class_mask AND poi.class & :class_mask
 			AND '.($computer_group_id===null ? 'cgpo.computer_group_id IS NULL' : 'cgpo.computer_group_id = :computer_group_id')
 		);
 		$params = [':class_mask' => Models\PolicyDefinition::CLASS_MACHINE];
@@ -3740,7 +3740,7 @@ class DatabaseController {
 			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
 			INNER JOIN policy_object po ON poi.policy_object_id = po.id
 			INNER JOIN domain_user_group_policy_object dugpo ON dugpo.policy_object_id = po.id
-			WHERE pd.class & :class_mask
+			WHERE pd.class & :class_mask AND poi.class & :class_mask
 			AND '.($domain_user_group_id===null ? 'dugpo.domain_user_group_id IS NULL' : 'dugpo.domain_user_group_id = :domain_user_group_id')
 		);
 		$params = [':class_mask' => Models\PolicyDefinition::CLASS_USER];
