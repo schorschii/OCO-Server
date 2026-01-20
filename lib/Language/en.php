@@ -739,7 +739,6 @@ return [
 	'option' => 'Option',
 	'computer_policies' => 'Computer Policies',
 	'user_policies' => 'User Policies',
-	'windows_components' => 'Windows Components',
 	'import_policy_definitions_first' => 'You first need to create/import policy definitions (templates).',
 	'default_domain_policy' => '* Default Domain Policy *',
 	'domain_user_groups' => 'Domain User Groups',

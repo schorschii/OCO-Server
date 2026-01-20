@@ -734,7 +734,6 @@ return [
 	'option' => 'Option',
 	'computer_policies' => 'Computerrichtlinien',
 	'user_policies' => 'Benutzerrichtlinien',
-	'windows_components' => 'Windows-Komponenten',
 	'import_policy_definitions_first' => 'Sie müssen zuerst Richtliniendefinitionen (Vorlagen) erstellen/importieren.',
 	'default_domain_policy' => '* Standarddomänen-Richtlinie *',
 	'domain_user_groups' => 'Domänenbenutzergruppen',
