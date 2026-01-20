@@ -15,8 +15,8 @@ $path = $argv[1];
 $files = scandir($path);
 
 // 1st run: import all categories (they are referenced across .admx files internally)
-echo "\n".'=== Processing categories'."\n";
-$fileCategories = [];
+echo "\n".'=== Processing categories & namespaces'."\n";
+$allCategories = [];
 foreach($files as $admxFile) {
 	if(!is_file($path.'/'.$admxFile) || substr($admxFile, -5) != '.admx') continue;
 	$admxFileName = substr($admxFile, 0, -5);
@@ -28,25 +28,30 @@ foreach($files as $admxFile) {
 		continue;
 	}
 
+	// parse namespaces
+	$currentNamespace = '?'; $fileNamespaces = [];
+	if($admx->policyNamespaces) foreach($admx->policyNamespaces->target as $t) {
+		$currentNamespace = strval($t->attributes()->namespace);
+		$fileNamespaces[strval($t->attributes()->prefix)] = strval($t->attributes()->namespace);
+	}
+	if($admx->policyNamespaces) foreach($admx->policyNamespaces->using as $u) {
+		$fileNamespaces[strval($u->attributes()->prefix)] = strval($u->attributes()->namespace);
+	}
+
 	$tmpCount = 0;
 	if($admx->categories) foreach($admx->categories->category as $c) {
-		$parent = $c->parentCategory ? strval($c->parentCategory->attributes()->ref) : null;
-		if($parent && strpos($parent, ':') !== false)
-			$parent = explode(':', $parent)[1];
+		$parentName = $c->parentCategory ? getGroupName(strval($c->parentCategory->attributes()->ref), $fileNamespaces, $currentNamespace) : null;
 
-		$catName = strval($c->attributes()->name);
+		$catName = getGroupName(strval($c->attributes()->name), $fileNamespaces, $currentNamespace);
 		$catDisplayName = empty($c->attributes()->displayName)
 			? $admxFileName.'|'.$catName
 			: $admxFileName.'|'.stringKeyExtract(strval($c->attributes()->displayName));
 
-		// avoid endless loops, e.g. in CredentialProviders.admx (logon:Logon), grouppolicy-server.admx (grouppolicy:PolicyPolicies)
-		if($catName == $parent) continue;
-		$fileCategories[$catName] = [$parent, $catDisplayName];
+		$allCategories[$catName] = [$parentName, $catDisplayName];
 		$tmpCount ++;
 	}
 	echo $tmpCount.' categories'."\n";
 }
-
 
 // 2nd run: import translations, presentations and policy templates
 $presentations = [];
@@ -68,15 +73,7 @@ foreach($files as $admxFile) {
 		$admlFile = $path.'/'.$dir.'/'.$admxFileName.'.adml';
 		if(!is_dir($path.'/'.$dir)) continue;
 		if(!file_exists($admlFile)) {
-			// check if same name but different case exists
-			$alternative = null;
-			foreach(scandir($path.'/'.$dir) as $potentialAdmlFile) {
-				if(substr($potentialAdmlFile, -5) == '.adml'
-				&& strtolower(substr($potentialAdmlFile, 0, -5)) == strtolower($admxFileName)) {
-					$alternative = $potentialAdmlFile;
-					break;
-				}
-			}
+			$alternative = getFirstCaseInsensitiveMatch($path.'/'.$dir, $admxFileName);
 			if(!$alternative) continue;
 			$admlFile = $path.'/'.$dir.'/'.$alternative;
 		}
@@ -118,21 +115,28 @@ foreach($files as $admxFile) {
 	}
 	echo 'Stored '.$transCounter.' translations'."\n";
 
+	// parse namespaces
+	$currentNamespace = '?'; $fileNamespaces = [];
+	if($admx->policyNamespaces) foreach($admx->policyNamespaces->target as $t) {
+		$currentNamespace = strval($t->attributes()->namespace);
+		$fileNamespaces[strval($t->attributes()->prefix)] = strval($t->attributes()->namespace);
+	}
+	if($admx->policyNamespaces) foreach($admx->policyNamespaces->using as $u) {
+		$fileNamespaces[strval($u->attributes()->prefix)] = strval($u->attributes()->namespace);
+	}
+
 	// create policy definitions
 	if(empty($admx->policies->policy)) {
 		echo 'WARN: no policies found in '.$admxFile."\n";
 		continue;
 	}
 	foreach($admx->policies->policy as $p) {
-		$groupName = strval($p->parentCategory->attributes()->ref);
+		$groupName = getGroupName(strval($p->parentCategory->attributes()->ref), $fileNamespaces, $currentNamespace);
 		$name = strval($p->attributes()->name);
 		$displayName = stringKeyExtract(strval($p->attributes()->displayName));
 		$description = stringKeyExtract(strval($p->attributes()->explainText));
 		$key = strval($p->attributes()->key);
 		$policyValueName = strval($p->attributes()->valueName);
-
-		if($groupName && strpos($groupName, ':') !== false)
-			$groupName = explode(':', $groupName)[1];
 
 		// determine class (1=Machine, 2=User, 3=Both)
 		$class = 0;
@@ -150,7 +154,7 @@ foreach($files as $admxFile) {
 		}
 
 		// determine group id (maybe create a new one)
-		$groupDisplayName = empty($fileCategories[$groupName][1]) ? null : $fileCategories[$groupName][1];
+		$groupDisplayName = empty($allCategories[$groupName][1]) ? null : $allCategories[$groupName][1];
 		$groupId = getGroupId($groupName, $groupDisplayName);
 		if(!$groupId) {
 			echo 'ERROR: no group found for '.$groupName.', skipping '.$name."\n";
@@ -237,11 +241,32 @@ foreach($files as $admxFile) {
 }
 
 
+function getFirstCaseInsensitiveMatch($dir, $fileName, $suffix='.adml') {
+	// check if same name but different case exists
+	$alternative = null;
+	foreach(scandir($dir) as $potentialAdmlFile) {
+		if(substr($potentialAdmlFile, -5) == $suffix
+		&& strtolower(substr($potentialAdmlFile, 0, -5)) == strtolower($fileName)) {
+			$alternative = $potentialAdmlFile;
+			break;
+		}
+	}
+	return $alternative;
+}
+function getGroupName($groupName, $namespaceMap, $currentNamespace) {
+	if($groupName && strpos($groupName, ':') !== false) {
+		$splitter = explode(':', $groupName);
+		if(isset($namespaceMap[$splitter[0]]))
+			$groupName = $namespaceMap[$splitter[0]].'|'.$splitter[1];
+		else
+			throw new Exception('Namespace '.$splitter[0].' not found!');
+	} else {
+		$groupName = $currentNamespace.'|'.$groupName;
+	}
+	return $groupName;
+}
 function getGroupId($groupName, $groupDisplayName) {
-	global $db, $policyDefintionGroups, $fileCategories, $admxFileName;
-
-	if($groupName && strpos($groupName, ':') !== false)
-		$groupName = explode(':', $groupName)[1];
+	global $db, $policyDefintionGroups, $allCategories, $admxFileName;
 
 	$groupId = null;
 	foreach($policyDefintionGroups as $pdg) {
@@ -252,12 +277,12 @@ function getGroupId($groupName, $groupDisplayName) {
 	}
 	if(!$groupId) {
 		$parent = null;
-		foreach($fileCategories as $catName => list($catParentName, $catDisplayName)) {
+		foreach($allCategories as $catName => list($catParentName, $catDisplayName)) {
 			if($catName != $groupName) continue;
 			if(!$catParentName) {
 				$groupId = $db->insertPolicyDefinitionGroup(null, $groupName, $groupDisplayName ? $groupDisplayName : $groupName);
 			} else {
-				$catParentDisplayName = empty($fileCategories[$catParentName][1]) ? $catParentName : $fileCategories[$catParentName][1];
+				$catParentDisplayName = empty($allCategories[$catParentName][1]) ? $catParentName : $allCategories[$catParentName][1];
 				$parentGroupId = getGroupId($catParentName, $catParentDisplayName);
 				$groupId = $db->insertPolicyDefinitionGroup($parentGroupId, $groupName, $groupDisplayName ? $groupDisplayName : $groupName);
 			}
