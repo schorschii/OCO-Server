@@ -66,7 +66,20 @@ foreach($files as $admxFile) {
 	$transCounter = 0;
 	foreach($files as $dir) {
 		$admlFile = $path.'/'.$dir.'/'.$admxFileName.'.adml';
-		if(!is_dir($path.'/'.$dir) || !file_exists($admlFile)) continue;
+		if(!is_dir($path.'/'.$dir)) continue;
+		if(!file_exists($admlFile)) {
+			// check if same name but different case exists
+			$alternative = null;
+			foreach(scandir($path.'/'.$dir) as $potentialAdmlFile) {
+				if(substr($potentialAdmlFile, -5) == '.adml'
+				&& strtolower(substr($potentialAdmlFile, 0, -5)) == strtolower($admxFileName)) {
+					$alternative = $potentialAdmlFile;
+					break;
+				}
+			}
+			if(!$alternative) continue;
+			$admlFile = $path.'/'.$dir.'/'.$alternative;
+		}
 		if(strlen($dir) != 5) {
 			echo 'ERROR: skipping invalid translation dir '.$dir."\n";
 			continue;
