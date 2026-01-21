@@ -61,7 +61,7 @@ if(!empty($_GET['view'])) {
 			<span class='separator noprint'></span>
 			<button id='btnSettings' class='noprint' onclick='refreshContentExplorer("views/settings.php")' title='<?php echo LANG('settings'); ?>'><img src='img/settings.light.svg'></button>
 			<span class='separator noprint'></span>
-			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog-about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'><img src='img/info.light.svg'></button>
+			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog/about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'><img src='img/info.light.svg'></button>
 			<span class='separator noprint'></span>
 			<button id='btnHelp' class='noprint' onclick='refreshContentExplorer("views/docs.php")' title='<?php echo LANG('help'); ?>'><img src='img/help.light.svg'></button>
 			<span class='separator noprint'></span>

@@ -824,7 +824,7 @@ function removePackageFamilyIcon(id) {
 	});
 }
 function showDialogEditPackageFamily(id, name, license_count, notes) {
-	showDialogAjax(LANG['edit_package_family'], 'views/dialog-package-family-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(LANG['edit_package_family'], 'views/dialog/package-family-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditPackageFamilyId.value = id;
 		txtEditPackageFamilyName.value = name;
 		if(license_count >= 0) {
@@ -845,7 +845,7 @@ function editPackageFamily(id, name, license_count, notes) {
 	});
 }
 function showDialogEditPackage(id) {
-	showDialogAjax(LANG['edit_package'], 'views/dialog-package-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['edit_package'], 'views/dialog/package-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, compatible_architecture, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	let req = new XMLHttpRequest();
@@ -1085,7 +1085,7 @@ function addPackageToGroup(packageId, groupId) {
 }
 function showDialogAddPackageToGroup(id) {
 	if(!id) return;
-	showDialogAjax(LANG['package_groups'], 'views/dialog-package-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(LANG['package_groups'], 'views/dialog/package-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditPackageId.value = id;
 	});
 }
@@ -1352,13 +1352,13 @@ function searchItems(container, search) {
 
 // ======== MOBILE DEVICE OPERATIONS ========
 function showDialogCreateMobileDeviceIos() {
-	showDialogAjax(LANG['new_ios_device'], 'views/dialog-mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['new_ios_device'], 'views/dialog/mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function showDialogCreateMobileDeviceAndroid() {
-	showDialogAjax(LANG['new_android_device'], 'views/dialog-mobile-device-create-android.php', DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['new_android_device'], 'views/dialog/mobile-device-create-android.php', DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
 }
 function showDialogEditMobileDevice(id) {
-	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog-mobile-device-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog/mobile-device-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function createMobileDeviceIos(name, serial, notes) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
@@ -1367,7 +1367,7 @@ function createMobileDeviceIos(name, serial, notes) {
 		refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 		hideDialog();showLoader(false);showLoader2(false);
-		window.open('views/dialog-mobile-device-create-ios.php?download_profile='+encodeURIComponent(response), '_blank')
+		window.open('views/dialog/mobile-device-create-ios.php?download_profile='+encodeURIComponent(response), '_blank')
 	});
 }
 function editMobileDevice(id, deviceName, notes) {
@@ -1456,7 +1456,7 @@ function confirmRemoveMobileDeviceGroup(ids, event=null, infoText='') {
 }
 function showDialogAddMobileDeviceToGroup(id) {
 	if(!id) return;
-	showDialogAjax(LANG['mobile_device_groups'], 'views/dialog-mobile-device-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(LANG['mobile_device_groups'], 'views/dialog/mobile-device-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditMobileDeviceId.value = id;
 	});
 }
@@ -1478,7 +1478,7 @@ function addMobileDeviceToGroup(mobileDeviceId, groupId) {
 }
 function showDialogAssignProfileToGroup(id) {
 	if(!id) return;
-	showDialogAjax(LANG['assign'], 'views/dialog-profile-assign.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(LANG['assign'], 'views/dialog/profile-assign.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtProfileId.value = id;
 	});
 }
@@ -1519,7 +1519,7 @@ function showDialogAssignManagedAppToGroup(ids) {
 	ids.forEach(function(entry) {
 		params.push({'key':'id[]', 'value':entry});
 	});
-	showDialogAjax(LANG['assign'], 'views/dialog-managed-app-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['assign'], 'views/dialog/managed-app-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, installType, configId, config, delegatedScopes) {
 	if(groupId === false) return;
@@ -1590,7 +1590,7 @@ function removeMobileDeviceFromGroup(ids, groupId) {
 
 // ======== COMPUTER OPERATIONS ========
 function showDialogCreateComputer() {
-	showDialogAjax(LANG['create_computer'], 'views/dialog-computer-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['create_computer'], 'views/dialog/computer-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function createComputer(hostname, notes, agentKey, serverKey) {
 	var params = [];
@@ -1606,7 +1606,7 @@ function createComputer(hostname, notes, agentKey, serverKey) {
 	});
 }
 function showDialogEditComputer(id, hostname, notes) {
-	showDialogAjax(LANG['edit_computer'], 'views/dialog-computer-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(LANG['edit_computer'], 'views/dialog/computer-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditComputerId.value = id;
 		txtEditComputerHostname.value = hostname;
 		txtEditComputerNotes.value = notes;
@@ -1780,14 +1780,14 @@ function addComputerToGroup(computerId, groupId) {
 }
 function showDialogAddComputerToGroup(id) {
 	if(!id) return;
-	showDialogAjax(LANG['computer_groups'], 'views/dialog-computer-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(LANG['computer_groups'], 'views/dialog/computer-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditComputerId.value = id;
 	});
 }
 
 // ======== JOB OPERATIONS ========
 function showDialogMobileDeviceCommand(mobile_device_id) {
-	showDialogAjax(LANG['send_command'], 'views/dialog-mobile-device-command.php?id='+encodeURIComponent(mobile_device_id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['send_command'], 'views/dialog/mobile-device-command.php?id='+encodeURIComponent(mobile_device_id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function showMobileDeviceCommandParameter(option) {
 	let param = option.getAttribute('parameter');
@@ -1817,7 +1817,7 @@ function showDialogEditProfile(type, id=-1) {
 	if(id == -1) {
 		title = type=='android' ? LANG['new_android_policy'] : LANG['new_ios_profile'];
 	}
-	showDialogAjax(title, 'views/dialog-profile-edit.php?id='+encodeURIComponent(id)+'&type='+encodeURIComponent(type), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/profile-edit.php?id='+encodeURIComponent(id)+'&type='+encodeURIComponent(type), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editProfile(id, type, name, payload, notes) {
 	let req = new XMLHttpRequest();
@@ -1894,7 +1894,7 @@ function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, compu
 		title = LANG['new_deployment_rule'];
 		buttonText = LANG['create'];
 	}
-	showDialogAjax(title, 'views/dialog-deployment-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(title, 'views/dialog/deployment-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditDeploymentRuleId.value = id;
 		txtEditDeploymentRuleName.value = name;
 		txtEditDeploymentRuleNotes.value = notes;
@@ -1968,7 +1968,7 @@ function confirmRemoveDeploymentRule(ids, infoText='') {
 }
 function showDialogMoveStaticJobToJobContainer(id) {
 	if(!id) return;
-	showDialogAjax(LANG['job_container'], 'views/dialog-jobs-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(LANG['job_container'], 'views/dialog/jobs-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditJobId.value = id;
 	});
 }
@@ -2049,7 +2049,7 @@ function confirmRemoveJob(ids) {
 	}
 }
 function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
-	showDialogAjax(LANG['edit_job_container'], 'views/dialog-job-container-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(LANG['edit_job_container'], 'views/dialog/job-container-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditJobContainerId.value = id;
 		txtEditJobContainerName.value = name;
 		chkEditJobContainerEnabled.checked = enabled=='1';
@@ -2148,7 +2148,7 @@ function deploy(title, start, end, description, computers, computerGroups, compu
 	};
 }
 function showDialogUninstall() {
-	showDialogAjax(LANG['uninstall_packages'], 'views/dialog-uninstall.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['uninstall_packages'], 'views/dialog/uninstall.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function uninstall(checkboxName, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, restartTimeout, priority) {
 	var ids = [];
@@ -2205,7 +2205,7 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 }
 function showDialogRenewFailedStaticJobs(id, defaultName, jobIds) {
 	if(!jobIds) return;
-	showDialogAjax(LANG['renew_failed_jobs'], 'views/dialog-jobs-renew.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(LANG['renew_failed_jobs'], 'views/dialog/jobs-renew.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtRenewJobContainerId.value = id;
 		txtRenewJobContainerName.value = defaultName;
 		txtRenewJobContainerJobId.value = jobIds;
@@ -2274,7 +2274,7 @@ function showDialogEditPolicyObject(id=-1, name='') {
 function showDialogEditDomainUserRole(id=-1) {
 	title = LANG['edit_domain_user_role'];
 	if(id == -1) title = LANG['create_domain_user_role'];
-	showDialogAjax(title, 'views/dialog-domain-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/domain-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editDomainUserRole(id, name, permissions) {
 	var params = [];
@@ -2312,7 +2312,7 @@ function confirmRemoveSelectedDomainUserRole(checkboxName) {
 function showDialogEditDomainUser(id=-1) {
 	title = LANG['edit_domain_user'];
 	if(id == -1) title = LANG['create_domain_user'];
-	showDialogAjax(title, 'views/dialog-domain-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/domain-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editDomainUser(id, username, password, roleId) {
 	var params = [];
@@ -2386,7 +2386,7 @@ function confirmRemoveReportGroup(ids, event=null, infoText='') {
 	}
 }
 function showDialogCreateReport(group_id=0) {
-	showDialogAjax(LANG['create_report'], 'views/dialog-report-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(LANG['create_report'], 'views/dialog/report-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtCreateReportGroup.value = group_id
 	});
 }
@@ -2404,7 +2404,7 @@ function createReport(name, notes, query, group_id=0) {
 	});
 }
 function showDialogEditReport(id, name, notes, query) {
-	showDialogAjax(LANG['edit_report'], 'views/dialog-report-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(LANG['edit_report'], 'views/dialog/report-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditReportId.value = id;
 		txtEditReportName.value = name;
 		txtEditReportNotes.value = notes;
@@ -2470,7 +2470,7 @@ function moveReportToGroup(reportId, groupId) {
 }
 function showDialogMoveReportToGroup(id) {
 	if(!id) return;
-	showDialogAjax(LANG['report_groups'], 'views/dialog-report-group-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
+	showDialogAjax(LANG['report_groups'], 'views/dialog/report-group-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
 		txtEditReportId.value = id;
 	});
 }
@@ -2542,7 +2542,7 @@ function unlockSelectedSystemUser(checkboxName) {
 	});
 }
 function showDialogEditOwnSystemUserPassword() {
-	showDialogAjax(LANG['change_password'], 'views/dialog-system-user-edit-own-password.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['change_password'], 'views/dialog/system-user-edit-own-password.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editOwnSystemUserPassword(oldPassword, newPassword) {
 	var params = [];
@@ -2558,7 +2558,7 @@ function editOwnSystemUserPassword(oldPassword, newPassword) {
 function showDialogEditSystemUser(id=-1) {
 	title = LANG['edit_system_user'];
 	if(id == -1) title = LANG['create_system_user'];
-	showDialogAjax(title, 'views/dialog-system-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/system-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editSystemUser(id, username, displayName, description, password, roleId) {
 	var params = [];
@@ -2578,7 +2578,7 @@ function editSystemUser(id, username, displayName, description, password, roleId
 function showDialogEditSystemUserRole(id=-1) {
 	title = LANG['edit_system_user_role'];
 	if(id == -1) title = LANG['create_system_user_role'];
-	showDialogAjax(title, 'views/dialog-system-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/system-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editSystemUserRole(id, name, permissions) {
 	var params = [];
@@ -2622,7 +2622,7 @@ function showDialogEditEventQueryRule(id=-1, log='', query='') {
 		title = LANG['create'];
 		buttonText = LANG['create'];
 	}
-	showDialogAjax(title, 'views/dialog-event-query-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(title, 'views/dialog/event-query-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditEventQueryRuleId.value = id;
 		txtEditEventQueryRuleLog.value = log;
 		txtEditEventQueryRuleQuery.value = query;
@@ -2670,7 +2670,7 @@ function showDialogEditPasswordRotationRule(id=-1, computer_group_id='', usernam
 		title = LANG['create'];
 		buttonText = LANG['create'];
 	}
-	showDialogAjax(title, 'views/dialog-password-rotation-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(title, 'views/dialog/password-rotation-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		txtEditPasswordRotationRuleId.value = id;
 		sltEditPasswordRotationRuleComputerGroupId.value = computer_group_id;
 		txtEditPasswordRotationRuleUsername.value = username;
@@ -2722,7 +2722,7 @@ function confirmRemoveSelectedPasswordRotationRule(checkboxName) {
 }
 
 function showDialogEditGeneralConfig() {
-	showDialogAjax(LANG['oco_configuration'], 'views/dialog-general-config-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['oco_configuration'], 'views/dialog/general-config-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnabled, agentRegistrationKey, assumeComputerOfflineAfter, wolShutdownExpiry, agentUpdateInterval, purgeSucceededJobsAfter, purgeFailedJobsAfter, purgeDomainUserLogonsAfter, purgeEventsAfter, logLevel, purgeLogsAfter, keepInactiveScreens, selfServiceEnabled) {
 	let req = new XMLHttpRequest();
@@ -2757,7 +2757,7 @@ function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnab
 	req.send(formData);
 }
 function showDialogEditLdapConfigSystemUsers() {
-	showDialogAjax(LANG['ldap_config'], 'views/dialog-system-user-ldap-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['ldap_config'], 'views/dialog/system-user-ldap-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editLdapConfigSystemUsers(jsonConfig) {
 	let req = new XMLHttpRequest();
@@ -2777,7 +2777,7 @@ function editLdapConfigSystemUsers(jsonConfig) {
 	req.send(formData);
 }
 function showDialogEditLdapConfigDomainUsers() {
-	showDialogAjax(LANG['ldap_config'], 'views/dialog-domain-user-ldap-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['ldap_config'], 'views/dialog/domain-user-ldap-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editLdapConfigDomainUsers(jsonConfig) {
 	let req = new XMLHttpRequest();
@@ -2833,7 +2833,7 @@ function ldapSyncDomainUsers(btn) {
 	});
 }
 function showDialogEditWolSatellites() {
-	showDialogAjax(LANG['wol_satellites'], 'views/dialog-wol-satellites-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['wol_satellites'], 'views/dialog/wol-satellites-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 }
 function editWolSatellites(jsonConfig) {
 	let req = new XMLHttpRequest();
@@ -2859,7 +2859,7 @@ function showDialogEditSetting(key='', file=false, warning=true, keyHidden=false
 			title = LANG['create_setting'];
 		}
 	}
-	showDialogAjax(title, 'views/dialog-setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
+	showDialogAjax(title, 'views/dialog/setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
 		if(file) {
 			fleEditSettingValue.classList.remove('hidden');
 			txtEditSettingValue.classList.add('hidden');
@@ -3138,10 +3138,10 @@ function syncAndroidDevices(btn) {
 	});
 }
 function showDialogAssignedProfileInfo(groupId, profileId) {
-	showDialogAjax(LANG['managed_app'], 'views/dialog-mobile-device-assigned-profile-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&profile_id='+encodeURIComponent(profileId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['managed_app'], 'views/dialog/mobile-device-assigned-profile-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&profile_id='+encodeURIComponent(profileId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
 }
 function showDialogAssignedManagedAppInfo(groupId, managedAppId) {
-	showDialogAjax(LANG['managed_app'], 'views/dialog-mobile-device-assigned-managed-app-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&managed_app_id='+encodeURIComponent(managedAppId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['managed_app'], 'views/dialog/mobile-device-assigned-managed-app-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&managed_app_id='+encodeURIComponent(managedAppId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
 }
 
 function checkUpdate() {
