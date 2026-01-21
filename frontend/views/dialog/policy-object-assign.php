@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../loader.inc.php');
-require_once('../session.inc.php');
+require_once('../../../loader.inc.php');
+require_once('../../session.inc.php');
 
 try {
 	if(empty($_GET['id']) || !is_array($_GET['id']))

@@ -131,7 +131,7 @@ btnAssignPolicyObject.addEventListener('click', function(e) {
 		values.forEach(function(entry) {
 			params.push({'key':'id[]', 'value':entry});
 		});
-		showDialogAjax(LANG['assign'], 'views/dialog-policy-object-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+		showDialogAjax(LANG['assign'], 'views/dialog/policy-object-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
 	}
 });
 btnRemovePolicyObject.addEventListener('click', function(e) {
