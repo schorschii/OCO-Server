@@ -1089,35 +1089,6 @@ function showDialogAddPackageToGroup(id) {
 		txtEditPackageId.value = id;
 	});
 }
-function showDialogAddPackageDependency(id) {
-	showDialogAjax(LANG['add_dependency'], 'views/dialog-package-dependency-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtEditPackageId.value = id;
-	});
-}
-function showDialogAddDependentPackage(id) {
-	showDialogAjax(LANG['add_dependent_package'], 'views/dialog-package-dependency-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtSetAsDependentPackage.value = '1';
-		txtEditPackageId.value = id;
-	});
-}
-function addPackageDependency(packageId, dependencyPackageId) {
-	if(packageId.length == 0 || dependencyPackageId.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	for(var i = 0; i < packageId.length; i++) {
-		for(var n = 0; n < dependencyPackageId.length; n++) {
-			var params = [];
-			params.push({'key':'edit_package_id', 'value':packageId[i]});
-			params.push({'key':'add_dependend_package_id', 'value':dependencyPackageId[n]});
-			ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
-				hideDialog();
-				refreshContent();
-				emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
-			});
-		}
-	}
-}
 function removeSelectedPackageDependency(checkboxName, packageId) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {

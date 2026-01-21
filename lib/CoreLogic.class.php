@@ -580,6 +580,21 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $computer->id, 'oco.computer.update', ['hostname'=>$finalHostname]);
 		return $result;
 	}
+	public function addComputerPackage($computerId, $packageId) {
+		$computer = $this->db->selectComputer($computerId);
+		if(empty($computer)) throw new NotFoundException();
+		$this->checkPermission($computer, PermissionManager::METHOD_WRITE);
+		$this->checkPermission($computer, PermissionManager::METHOD_DEPLOY);
+
+		$package = $this->db->selectPackage($packageId);
+		if(empty($package)) throw new NotFoundException();
+		$this->checkPermission($package, PermissionManager::METHOD_DEPLOY);
+
+		$result = $this->db->insertComputerPackage($package->id, $computer->id, $this->su->id, null, 'MANUAL');
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $computer->id, 'oco.computer_package.create', ['package_id'=>$package->id, 'computer_id'=>$computer->id]);
+		return $result;
+	}
 	public function editComputerForceUpdate($id, $newValue) {
 		$computer = $this->db->selectComputer($id);
 		if(empty($computer)) throw new NotFoundException();

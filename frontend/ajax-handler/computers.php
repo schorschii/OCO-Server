@@ -82,6 +82,13 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['edit_computer_id'])
+	&& !empty($_POST['add_package_id']) && is_array($_POST['add_package_id'])) {
+		foreach($_POST['add_package_id'] as $p)
+			$cl->addComputerPackage($_POST['edit_computer_id'], $p);
+		die();
+	}
+
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
 	die(LANG('permission_denied'));

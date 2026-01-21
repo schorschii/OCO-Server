@@ -75,7 +75,7 @@ return [
 	'new_group' => 'Nouveau Groupe',
 	'new_subgroup' => 'Nouveau sous-groupe',
 	'new_computer' => 'Nouvel ordinateur',
-	'all_computer' => 'Tous les ordinateurs',
+	'all_computers' => 'Tous les ordinateurs',
 	'deploy_for_all' => 'Déployer pour tous',
 	'delete_group' => 'Supprimer le groupe',
 	'general' => 'Général',

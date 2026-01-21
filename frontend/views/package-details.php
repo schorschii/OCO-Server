@@ -44,14 +44,18 @@ try {
 }
 ?>
 
+<div id='metadata'
+	packageId='<?php echo htmlspecialchars($package->id,ENT_QUOTES); ?>'
+	packageFamilyName='<?php echo htmlspecialchars($package->package_family_name,ENT_QUOTES); ?>'>
+</div>
 <div class='details-header'>
 	<h1><img src='<?php echo $package->getIcon(); ?>'><span id='page-title'><?php echo htmlspecialchars($package->getFullName()); ?></span><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->package_family_name); ?></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentDeploy({"id":<?php echo $package->id; ?>,"name":obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+		<button onclick='refreshContentDeploy({"id":metadata.getAttribute("packageId"),"name":obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 		<button onclick='window.open("views/package-details.php?download=1&id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
-		<button onclick='showDialogEditPackage(<?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
-		<button onclick='showDialogAddPackageToGroup("<?php echo $package->id; ?>")' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
-		<button onclick='confirmRemovePackage([<?php echo $package->id; ?>], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")", "views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>"), <?php echo count($db->selectAllComputerPackageByPackageId($package->id)); ?>)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+		<button onclick='showDialogEditPackage(metadata.getAttribute("packageId"))' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='showDialogAddPackageToGroup(metadata.getAttribute("packageId"))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+		<button onclick='confirmRemovePackage([metadata.getAttribute("packageId")], event, spnPackageFamilyName.innerText+" ("+spnPackageVersion.innerText+")", "views/packages.php?package_family_id="+encodeURIComponent("<?php echo $package->package_family_id; ?>"), <?php echo count($db->selectAllComputerPackageByPackageId($package->id)); ?>)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 		<span class='filler'></span>
 	</div>
 </div>
@@ -308,7 +312,7 @@ try {
 					<div class='controls heading'>
 						<h2><?php echo LANG('depends_on'); ?></h2>
 						<div class='filler invisible'></div>
-						<button onclick='showDialogAddPackageDependency("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+						<button id='btnAddPackageDependency' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 					</div>
 					<table id='tblDependencyPackageData' class='list sortable savesort'>
 						<thead>
@@ -338,7 +342,7 @@ try {
 											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='removeSelectedPackageDependency("dependency_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG('remove_assignment'); ?></button>
+											<button onclick='removeSelectedPackageDependency("dependency_package_id[]", metadata.getAttribute("packageId"))' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG('remove_assignment'); ?></button>
 										</div>
 									</div>
 								</td>
@@ -350,7 +354,7 @@ try {
 					<div class='controls heading'>
 						<h2><?php echo LANG('dependent_packages'); ?></h2>
 						<div class='filler invisible'></div>
-						<button onclick='showDialogAddDependentPackage("<?php echo $package->id; ?>")' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+						<button id='btnAddDependentPackage' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 					</div>
 					<table id='tblDependentPackageData' class='list sortable savesort'>
 						<thead>
@@ -380,7 +384,7 @@ try {
 											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='removeSelectedDependentPackages("dependent_package_id[]", <?php echo $package->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG('remove_assignment'); ?></button>
+											<button onclick='removeSelectedDependentPackages("dependent_package_id[]", metadata.getAttribute("packageId"))' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG('remove_assignment'); ?></button>
 										</div>
 									</div>
 								</td>
@@ -448,7 +452,11 @@ try {
 		<div name='computers' class='<?php if($tab=='computers') echo 'active'; ?>'>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<h2><?php echo LANG('installed_on'); ?></h2>
+					<div class='controls heading'>
+						<h2><?php echo LANG('installed_on'); ?></h2>
+						<div class='filler invisible'></div>
+						<button id='btnAddPackageComputer'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+					</div>
 					<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>
 						<thead>
 							<tr>
@@ -479,10 +487,10 @@ try {
 											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 										</div>
 										<div class='controls'>
-											<button onclick='deploySelectedComputer("package_id[]", "computer_id");' title='<?php echo LANG('deploy',ENT_QUOTES); ?>'><img src='img/deploy.dyn.svg'></button>
+											<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+											<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
 											<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("package_id[]", "computer_id", true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'><img src='img/folder-insert-into.dyn.svg'></button>
 											<button onclick='confirmRemovePackageComputerAssignment("package_id[]")' title='<?php echo LANG('remove_assignment',ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/remove.dyn.svg'></button>
-											<button onclick='showDialogUninstall()' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
 										</div>
 									</div>
 								</td>
@@ -585,3 +593,33 @@ try {
 
 	</div>
 </div>
+
+<script>
+btnAddPackageDependency.addEventListener('click', (e)=>{
+	showDialogAjax(LANG['add_dependency'],
+		'views/dialog/package-select.php?'+urlencodeObject({
+			'action': 'add_package_dependency',
+			'subject': metadata.getAttribute('packageId')
+		}),
+		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO
+	);
+});
+btnAddDependentPackage.addEventListener('click', (e)=>{
+	showDialogAjax(LANG['add_dependent_package'],
+		'views/dialog/package-select.php?'+urlencodeObject({
+			'action': 'add_dependant_package',
+			'subject': metadata.getAttribute('packageId')
+		}),
+		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO
+	);
+});
+btnAddPackageComputer.addEventListener('click', (e)=>{
+	showDialogAjax(LANG['add'],
+		'views/dialog/computer-select.php?'+urlencodeObject({
+			'action': 'add_package_computer',
+			'subject': metadata.getAttribute('packageId')
+		}),
+		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO
+	);
+});
+</script>

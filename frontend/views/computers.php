@@ -29,7 +29,7 @@ try {
 	$permissionCreateComputer = $cl->checkPermission(new Models\Computer(), PermissionManager::METHOD_CREATE, false);
 	$permissionCreateGroup    = $cl->checkPermission(new Models\ComputerGroup(), PermissionManager::METHOD_CREATE, false);
 ?>
-	<h1><img src='img/computer.dyn.svg'><span id='page-title'><?php echo LANG('all_computer'); ?></span></h1>
+	<h1><img src='img/computer.dyn.svg'><span id='page-title'><?php echo LANG('all_computers'); ?></span></h1>
 	<div class='controls'>
 		<button onclick='showDialogCreateComputer()' <?php if(!$permissionCreateComputer) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_computer'); ?></button>
 		<button onclick='createComputerGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
@@ -56,7 +56,7 @@ try {
 <div class='controls subfolders'>
 	<?php if($group != null) { ?>
 		<?php if($group->parent_computer_group_id == null) { ?>
-			<a class='box' <?php echo Html::explorerLink('views/computers.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_computer'); ?></a>
+			<a class='box' <?php echo Html::explorerLink('views/computers.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_computers'); ?></a>
 		<?php } else { $subGroup = $cl->getComputerGroup($group->parent_computer_group_id); ?>
 			<a class='box' <?php echo Html::explorerLink('views/computers.php?id='.$group->parent_computer_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
 		<?php } ?>

@@ -121,7 +121,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 				<input type='search' id='txtDeploySearchComputers' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divComputerList, this.value)'>
 			</div>
 			<div id='divComputerList' class='box listSearchList withContextButton'>
-				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1);return false'><?php echo LANG('all_computer'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1);return false'><?php echo LANG('all_computers'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG('computer_groups'); ?>
 					<div class='filler'></div>
@@ -134,7 +134,7 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 				<?php echoTargetComputerReportOptions(); ?>
 			</div>
 			<div id='divComputerListHome' class='box listSearchList hidden'>
-				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1);return false'><?php echo LANG('all_computer'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
+				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1);return false'><?php echo LANG('all_computers'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
 				<div class='headline bold'>
 					<?php echo LANG('computer_groups'); ?>
 					<div class='filler'></div>

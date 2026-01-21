@@ -38,8 +38,23 @@ try {
 	}
 
 	if(!empty($_POST['edit_package_id'])
-	&& !empty($_POST['add_dependend_package_id'])) {
-		$cl->addPackageDependency($_POST['edit_package_id'], $_POST['add_dependend_package_id']);
+	&& !empty($_POST['add_computer_id']) && is_array($_POST['add_computer_id'])) {
+		foreach($_POST['add_computer_id'] as $c)
+			$cl->addComputerPackage($c, $_POST['edit_package_id']);
+		die();
+	}
+
+	if(!empty($_POST['edit_package_id'])
+	&& !empty($_POST['add_package_dependency_id']) && is_array($_POST['add_package_dependency_id'])) {
+		foreach($_POST['add_package_dependency_id'] as $p)
+			$cl->addPackageDependency($_POST['edit_package_id'], $p);
+		die();
+	}
+
+	if(!empty($_POST['edit_package_id'])
+	&& !empty($_POST['add_dependant_package_id']) && is_array($_POST['add_dependant_package_id'])) {
+		foreach($_POST['add_dependant_package_id'] as $p)
+			$cl->addPackageDependency($p, $_POST['edit_package_id']);
 		die();
 	}
 
