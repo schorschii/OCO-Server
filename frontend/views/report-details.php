@@ -88,6 +88,9 @@ try {
 				} elseif($key == 'package_id') {
 					$hasPackageIds = true;
 					echo "<td><a ".Html::explorerLink('views/package-details.php?id='.intval($value)).">".htmlspecialchars($value)."</a></td>";
+				} elseif($key == 'package_family_id') {
+					$hasPackageIds = true;
+					echo "<td><a ".Html::explorerLink('views/packages.php?package_family_id='.intval($value)).">".htmlspecialchars($value)."</a></td>";
 				} elseif($key == 'software_id') {
 					echo "<td><a ".Html::explorerLink('views/software.php?id='.intval($value)).">".htmlspecialchars($value)."</a></td>";
 				} elseif($key == 'domain_user_id') {
