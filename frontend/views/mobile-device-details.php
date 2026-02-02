@@ -422,7 +422,7 @@ try {
 				<div>
 					<h2><?php echo LANG('commands'); ?></h2>
 					<div class='stickytable'>
-						<table id='tblMobileDeviceProfileData' class='list searchable sortable savesort margintop fullwidth'>
+						<table id='tblMobileDeviceCommandData' class='list searchable sortable savesort margintop fullwidth'>
 							<thead>
 								<tr>
 									<th class='searchable sortable'><?php echo LANG('state'); ?></th>
