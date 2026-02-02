@@ -751,6 +751,16 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		/*** 1.1.13 ***/
+		if(strtolower($this->getTableColumnInfo('mobile_device_command', 'message')['DATA_TYPE']) != 'mediumtext') {
+			if($this->debug) echo 'Upgrading to 1.1.13... (modify message column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `mobile_device_command` CHANGE `message` `message` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

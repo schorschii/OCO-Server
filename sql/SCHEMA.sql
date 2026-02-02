@@ -769,7 +769,7 @@ CREATE TABLE `mobile_device_command` (
   `name` text NOT NULL,
   `parameter` text NOT NULL,
   `state` int(11) NOT NULL DEFAULT 0,
-  `message` text DEFAULT NULL,
+  `message` MEDIUMTEXT DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `finished` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
