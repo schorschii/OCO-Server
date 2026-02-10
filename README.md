@@ -1,11 +1,11 @@
 <img align="right" style="width:180px" src="frontend/img/logo.dyn.svg">
 
 # Open Computer Orchestration
-**Self Hosted / On Premise Desktop and Server Inventory, Management & Software Deployment**
+**Self Hosted (On Premise) Desktop and Server Inventory, Software Deployment & Mobile Device Management**
 
-The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines plus Android and iOS (Mobile Device Management) using a comfortable web interface. It provides software deployment features, a user-computer logon overview, policy management, lists software packages installed on each computer ("recognised software/apps") and features a fine-grained permission/role system.
+The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines plus Android and iOS (Mobile Device Management / Enterprise Mobility Management) using a comfortable web interface. It provides software deployment features, a user-computer logon overview, policy management, lists software packages installed on each computer ("recognised software/apps") and features a fine-grained permission/role system.
 
-It focuses on easy usability (UI/UX), simplicity (assessable code with minimal external dependencies) and performance (manage many devices with minimal server resources).
+It focuses on easy usability (UI/UX), simplicity (assessable code with minimal external dependencies) and performance (manage many devices with minimal server resources). The self hosted (on premise) approach and open source code base ensures a digital sovereign operation without vendor lock-in.
 
 These features allow you to roll out any new software or updates (patch management) - just create an OCO package and distribute it to your clients. You can track progress and view the results (exit code and command output) of every software job. Custom reports let you to get even more out of your data.
 
