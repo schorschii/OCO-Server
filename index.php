@@ -22,7 +22,7 @@
 
 			<div class="testimonial">
 				<div>
-				The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines plus Android and iOS (Mobile Device Management) using a comfortable web interface.
+				The Open Computer Orchestration (OCO) project enables IT administrators to centrally manage Linux, macOS and Windows machines plus Android and iOS (Mobile Device Management / Enterprise Mobility Management) using a comfortable web interface.
 				</div>
 				<a href="img/computers.png" class="gallery"><img src="img/computers.png" alt="OCO computer list"></a>
 			</div>
@@ -45,7 +45,7 @@
 				<a href="img/jobs.png" class="gallery"><img src="img/jobs.png" alt="OCO job list"></a>
 				<div>
 					<p>
-						As an on premise (self hosted) solution, OCO ensures that only you have the full control over your data and managed computers. Use the power of Open Source, clone the <a href="https://github.com/schorschii/oco-server">GitHub repo</a> and set up your own OCO server today!
+						The self hosted (on premise) approach and open source code base ensures a digital sovereign operation without vendor lock-in. Use the power of Open Source, clone the <a href="https://github.com/schorschii/oco-server">GitHub repo</a> and set up your own OCO server today!
 					</p>
 					<p>
 						GitHub stars, contributions and feedback is highly appreciated. If you want to improve OCO, e.g. by translating into your native language, don't hesitate to create a pull request on the <a href="https://github.com/schorschii/oco-server">GitHub repo</a>. If you need help setting up or integrating OCO into your environment, or if you like to commission a new feature development, you can get commercial support directly from the developer. If you like, <a href="https://georg-sieber.de/?page=contact">get in touch</a> for an offer.
