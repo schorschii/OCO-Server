@@ -91,6 +91,9 @@ try {
 	if(!empty($_POST['edit_system_user_role_id'])
 	&& isset($_POST['name'])
 	&& isset($_POST['permissions'])) {
+		$decoded = json_decode($_POST['permissions']);
+		if(!$decoded)
+			throw new InvalidRequestException(LANG('json_syntax_error'));
 		if($_POST['edit_system_user_role_id'] == '-1') {
 			die($cl->createSystemUserRole(
 				$_POST['name'],
@@ -126,6 +129,9 @@ try {
 	if(!empty($_POST['edit_domain_user_role_id'])
 	&& isset($_POST['name'])
 	&& isset($_POST['permissions'])) {
+		$decoded = json_decode($_POST['permissions']);
+		if(!$decoded)
+			throw new InvalidRequestException(LANG('json_syntax_error'));
 		if($_POST['edit_domain_user_role_id'] == '-1') {
 			die($cl->createDomainUserRole(
 				$_POST['name'],
@@ -247,10 +253,6 @@ try {
 		}
 		die();
 	}
-	if(!empty($_POST['edit_wol_satellites'])) {
-		$cl->editWolSatellites($_POST['edit_wol_satellites']);
-		die();
-	}
 	if(!empty($_POST['edit_setting'])) {
 		$key = $_POST['edit_setting'];
 		if(isset($_POST['value'])) {
@@ -275,6 +277,13 @@ try {
 				$as->storeKeyId($_POST['value']);
 				die();
 			}
+			// check JSON syntax
+			if(in_array($key, ['wol-satellites', 'system-user-ldapsync', 'domain-user-ldapsync'])) {
+				$decoded = json_decode($_POST['value']);
+				if(!$decoded)
+					throw new InvalidRequestException(LANG('json_syntax_error'));
+			}
+			// update value
 			$cl->editSetting($key, $_POST['value']);
 			die();
 		} elseif(isset($_FILES['value'])) {
@@ -302,6 +311,7 @@ try {
 			if($key == 'apple-mdm-vendor-cert') { // ('apple-mdm-apn-cert' file is already pem encoded)
 				$value = Apple\Util\PemDerConverter::der2pem($value);
 			}
+			// update value
 			$cl->editSetting($key, $value);
 			die();
 		}
@@ -310,15 +320,6 @@ try {
 		foreach($_POST['remove_setting'] as $setting) {
 			$cl->removeSetting($setting);
 		}
-		die();
-	}
-
-	if(!empty($_POST['edit_system_user_ldap_sync'])) {
-		$cl->editSystemUserLdapSync($_POST['edit_system_user_ldap_sync']);
-		die();
-	}
-	if(!empty($_POST['edit_domain_user_ldap_sync'])) {
-		$cl->editDomainUserLdapSync($_POST['edit_domain_user_ldap_sync']);
 		die();
 	}
 

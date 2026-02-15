@@ -10,12 +10,12 @@ try {
 }
 ?>
 
-<input type='hidden' id='txtMobileDeviceId' value='<?php echo htmlspecialchars($md->id); ?>'></input>
+<input type='hidden' name='id' value='<?php echo htmlspecialchars($md->id); ?>'></input>
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('command'); ?></th>
 		<td>
-			<select id='sltMobileDeviceCommand' class='fullwidth' onchange='showMobileDeviceCommandParameter(this.selectedOptions[0])'>
+			<select name='command' class='fullwidth'>
 				<option value='' selected disabled><?php echo LANG('please_select_placeholder'); ?></option>
 
 				<?php if($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) { ?>
@@ -54,20 +54,13 @@ try {
 			</select>
 		</td>
 	</tr>
-	<tr id='trCommandParameter' style='display:none'>
-		<th id='thCommandParameterName'><?php echo LANG('name'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtMobileDeviceCommandParameter' name='parameter'></input></td>
+	<tr class='parameter' style='display:none'>
+		<th class='parameterName'><?php echo LANG('name'); ?></th>
+		<td><input type='text' class='fullwidth parameter' autocomplete='new-password' name=''></input></td>
 	</tr>
 </table>
 
 <div class='controls right'>
-	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button id='btnUpdateDeploymentRule' class='primary' onclick='
-	let params = {};
-	params[txtMobileDeviceCommandParameter.name] = txtMobileDeviceCommandParameter.value;
-	sendMobileDeviceCommand(
-		txtMobileDeviceId.value,
-		sltMobileDeviceCommand.value,
-		params
-	)'><img src='img/send.white.svg'>&nbsp;<span id='spnBtnUpdateDeploymentRule'><?php echo LANG('send'); ?></span></button>
+	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='primary' name='send'><img src='img/send.white.svg'>&nbsp;<span><?php echo LANG('send'); ?></span></button>
 </div>

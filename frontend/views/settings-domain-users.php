@@ -36,7 +36,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 				<div class='stickytable'>
 					<div class='controls'>
 						<span class='filler'></span>
-						<button onclick='showDialogEditLdapConfigDomainUsers()'><img src='img/ldap-directory.dyn.svg'>&nbsp;<?php echo LANG('ldap_config'); ?></button>
+						<button onclick='showDialogEditSetting("domain-user-ldapsync",false,"configuration_json_docs",true,LANG["ldap_config"])'><img src='img/ldap-directory.dyn.svg'>&nbsp;<?php echo LANG('ldap_config'); ?></button>
 						<button onclick='ldapSyncDomainUsers(this)' <?php if(!$ldapActive) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
 					</div>
 					<p><?php echo LANG('domain_user_self_service_management_hint'); ?>

@@ -37,7 +37,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 					<div class='controls'>
 						<button onclick='showDialogEditSystemUser()'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('create_system_user'); ?></button>
 						<span class='filler'></span>
-						<button onclick='showDialogEditLdapConfigSystemUsers()'><img src='img/ldap-directory.dyn.svg'>&nbsp;<?php echo LANG('ldap_config'); ?></button>
+						<button onclick='showDialogEditSetting("system-user-ldapsync",false,"configuration_json_docs",true,LANG["ldap_config"])'><img src='img/ldap-directory.dyn.svg'>&nbsp;<?php echo LANG('ldap_config'); ?></button>
 						<button onclick='ldapSyncSystemUsers(this)' <?php if(!$ldapActive) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('ldap_sync'); ?></button>
 					</div>
 					<table id='tblSystemUserData' class='list searchable sortable savesort actioncolumn'>
@@ -70,7 +70,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 						echo "<td>".htmlspecialchars($u->system_user_role_name)."</td>";
 						echo "<td>".htmlspecialchars($u->last_login??'')."</td>";
 						echo "<td>".htmlspecialchars($u->created)."</td>";
-						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUser(".$u->id.")'><img src='img/edit.dyn.svg'></button></td>";
+						echo "<td><button title='".LANG('edit')."' onclick='showDialogEditSystemUser(".$u->id.")' ".($u->ldap?'disabled':'')."><img src='img/edit.dyn.svg'></button></td>";
 						echo "</tr>";
 					}
 					?>

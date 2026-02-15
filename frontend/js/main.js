@@ -166,10 +166,6 @@ window.onkeydown = function(event) {
 		refreshContent();
 		refreshSidebar();
 	}
-	// ESC - hide dialog
-	if((event.which || event.keyCode) == 27) {
-		hideDialog();
-	}
 };
 
 // ======== DIALOG ========
@@ -178,96 +174,106 @@ const DIALOG_BUTTONS_CLOSE  = 1;
 const DIALOG_SIZE_LARGE     = 0;
 const DIALOG_SIZE_SMALL     = 1;
 const DIALOG_SIZE_AUTO      = 2;
+function newDialog() {
+	let dialogContainer = divDialogTemplate.cloneNode(true);
+	divDialogTemplate.parentNode.insertBefore(dialogContainer, divDialogTemplate.nextSibling)
+	return dialogContainer;
+}
 function showDialog(title='', text='', controls=false, size=false, monospace=false, loading=false) {
-	showDialogHTML(title, escapeHTML(text), controls, size, monospace, loading);
+	return showDialogHTML(title, escapeHTML(text), controls, size, monospace, loading);
 }
 function showDialogAjax(title='', url='', controls=false, size=false, callback=null) {
+	let dialogContainer = newDialog();
+	let dialogText = dialogContainer.querySelectorAll('.dialogText')[0];
 	// show dark background while waiting for response
-	obj('dialog-container').classList.add('loading');
+	dialogContainer.classList.add('loading');
 	// show loader if request took a little longer (would be annoying if shown directly)
-	dialogLoaderTimer = setTimeout(function(){ obj('dialog-container').classList.add('loading2') }, 100);
+	dialogLoaderTimer = setTimeout(function(){ dialogContainer.classList.add('loading2') }, 100);
 	// start ajax request
 	let finalAction = function() {
-		obj('dialog-container').classList.remove('loading');
-		obj('dialog-container').classList.remove('loading2');
+		dialogContainer.classList.remove('loading');
+		dialogContainer.classList.remove('loading2');
 		clearTimeout(dialogLoaderTimer);
 	};
 	ajaxRequest(url, null, function(text) {
-		showDialogHTML(title, text, controls, size, false);
+		showDialogHTML(title, text, controls, size, false, false, dialogContainer);
 		// execute inline scripts
-		var scripts = obj('dialog-text').getElementsByTagName('script');
+		var scripts = dialogText.getElementsByTagName('script');
 		for(var i = 0; i < scripts.length; i++) {
 			eval(scripts[i].innerHTML);
 		}
 		// exec custom callback
 		if(callback && typeof callback == 'function') {
-			callback(this.responseText);
+			callback(dialogContainer);
 		}
 		finalAction();
 	}, false, false, finalAction);
 }
-function showDialogHTML(title='', text='', controls=false, size=false, monospace=false, loading=false) {
-	obj('dialog-title').innerText = title;
-	obj('dialog-text').innerHTML = text;
+function showDialogHTML(title='', text='', controls=false, size=false, monospace=false, loading=false, dialogContainer=null) {
+	if(!dialogContainer)
+		dialogContainer = newDialog();
+
+	let dialogBox   = dialogContainer.querySelectorAll('.dialogBox')[0];
+	let dialogTitle = dialogContainer.querySelectorAll('.dialogTitle')[0];
+	let dialogText  = dialogContainer.querySelectorAll('.dialogText')[0];
+	let dialogClose = dialogContainer.querySelectorAll('.dialogBox > button.dialogClose')[0];
+
+	dialogContainer.close = function(e) {
+		let animation = dialogBox.animate(
+			[ {transform:'scale(100%)'}, {transform:'scale(98%)'} ],
+			{ duration: 150, iterations: 1, easing:'linear' }
+		);
+		animation.onfinish = (event) => {
+			dialogContainer.remove();
+		};
+	};
+
+	// add events
+	dialogBox.addEventListener('keydown', (event) => {
+		// ESC - hide dialog
+		if((event.which || event.keyCode) == 27)
+			dialogContainer.close();
+	});
+	// set text
+	dialogTitle.innerText = title;
+	dialogText.innerHTML = text;
 	// buttons
-	obj('btnDialogClose').style.visibility = 'collapse';
-	if(controls == DIALOG_BUTTONS_CLOSE) {
-		obj('btnDialogClose').style.visibility = 'visible';
-	}
+	dialogClose.style.visibility = 'collapse';
+	if(controls == DIALOG_BUTTONS_CLOSE)
+		dialogClose.style.visibility = 'visible';
 	// size
-	obj('dialog-box').className = '';
-	if(size == DIALOG_SIZE_LARGE) {
-		obj('dialog-box').classList.add('large');
-	} else if(size == DIALOG_SIZE_SMALL) {
-		obj('dialog-box').classList.add('small');
-	}
+	if(size == DIALOG_SIZE_LARGE)
+		dialogBox.classList.add('large');
+	else if(size == DIALOG_SIZE_SMALL)
+		dialogBox.classList.add('small');
 	// font
-	if(monospace) {
-		obj('dialog-text').classList.add('monospace');
-	} else {
-		obj('dialog-text').classList.remove('monospace');
-	}
+	if(monospace)
+		dialogText.classList.add('monospace');
+	else
+		dialogText.classList.remove('monospace');
 	// close action
-	obj('dialog-text').querySelectorAll('button.closeDialog').forEach(function(btn){
-		btn.addEventListener('click', hideDialog);
+	dialogBox.querySelectorAll('button.dialogClose').forEach(function(btn){
+		btn.addEventListener('click', dialogContainer.close);
 	});
 	// loading animation
 	if(loading) {
 		var img = document.createElement('img');
 		img.src = 'img/loader-dots.svg';
 		img.style = 'display:block';
-		obj('dialog-text').appendChild(img);
+		dialogText.appendChild(img);
 	}
 	// make dialog visible
-	obj('dialog-container').classList.add('active');
-	let animation = obj('dialog-box').animate(
+	dialogContainer.classList.add('active');
+	let animation = dialogBox.animate(
 		[ {transform:'scale(102%)'}, {transform:'scale(100%)'} ],
-		{ duration: 200, iterations: 1, easing:'ease' }
+		{ duration: 250, iterations: 1, easing:'ease' }
 	);
 	// set focus
 	animation.onfinish = (event) => {
-		setAutofocus(obj('dialog-text'));
+		if(!setAutofocus(dialogText))
+			dialogClose.focus();
 	};
-}
-function hideDialog() {
-	let animation = obj('dialog-box').animate(
-		[ {transform:'scale(100%)'}, {transform:'scale(98%)'} ],
-		{ duration: 100, iterations: 1, easing:'linear' }
-	);
-	animation.onfinish = (event) => {
-		obj('dialog-container').classList.remove('active');
-		obj('dialog-title').innerText = '';
-		obj('dialog-text').innerHTML = '';
-	};
-}
-function setAutofocus(container) {
-	var childs = container.querySelectorAll('*');
-	for(var i = 0; i < childs.length; i++) {
-		if(childs[i].getAttribute('autofocus')) {
-			childs[i].focus();
-			break;
-		}
-	}
+	return dialogContainer;
 }
 function escapeHTML(unsafe) {
 	return unsafe
@@ -383,6 +389,16 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 	xhttp.send(body);
 	return xhttp;
 }
+function setAutofocus(container) {
+	var childs = container.querySelectorAll('*');
+	for(var i = 0; i < childs.length; i++) {
+		if(childs[i].getAttribute('autofocus')) {
+			childs[i].focus();
+			return true;
+		}
+	}
+	return false;
+}
 function urlencodeObject(srcjson) {
 	if(typeof srcjson !== 'object') return null;
 	var urljson = '';
@@ -485,12 +501,13 @@ function getAllCheckBoxValues(checkboxName, attributeName=null, warnIfEmpty=fals
 	}
 	return values;
 }
-function getSelectedSelectBoxValues(selectBoxId, warnIfEmpty=false) {
+function getSelectedSelectBoxValues(selectBox, warnIfEmpty=false) {
 	var selected = [];
-	var items = document.getElementById(selectBoxId);
-	for(var i = 0; i < items.length; i++) {
-		if(items[i].selected) {
-			selected.push(items[i].value);
+	if(typeof selectBox === 'string' || selectBox instanceof String)
+		selectBox = document.getElementById(selectBox);
+	for(var i = 0; i < selectBox.length; i++) {
+		if(selectBox[i].selected) {
+			selected.push(selectBox[i].value);
 		}
 	}
 	if(warnIfEmpty && selected.length == 0) {
@@ -678,7 +695,7 @@ function emitMessage(title, text, type='info', timeout=8000) {
 }
 
 // ======== GENERAL OPERATIONS ========
-function confirmRemoveObject(ids, paramName, apiEndpoint, event=null, infoText='', redirect=null) {
+function confirmRemoveObject(ids, paramName, apiEndpoint, event=null, confirmText=LANG['confirm_delete'], successText='', redirect=null) {
 	if(!ids) return;
 	var params = [];
 	ids.forEach(function(entry) {
@@ -688,11 +705,11 @@ function confirmRemoveObject(ids, paramName, apiEndpoint, event=null, infoText='
 		params.push({'key':'force', 'value':'1'});
 	}
 	var paramString = urlencodeArray(params);
-	if(confirm(LANG['confirm_delete'])) {
+	if(confirm(confirmText)) {
 		ajaxRequestPost(apiEndpoint, paramString, null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);
-			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
+			emitMessage(LANG['object_deleted'], successText, MESSAGE_TYPE_SUCCESS);
 		});
 	}
 }
@@ -823,31 +840,74 @@ function removePackageFamilyIcon(id) {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditPackageFamily(id, name, license_count, notes) {
-	showDialogAjax(LANG['edit_package_family'], 'views/dialog/package-family-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditPackageFamilyId.value = id;
-		txtEditPackageFamilyName.value = name;
-		if(license_count >= 0) {
-			txtEditPackageFamilyLicenseCount.value = license_count;
-		}
-		txtEditPackageFamilyNotes.value = notes;
+function showDialogEditPackageFamily(id) {
+	showDialogAjax(LANG['edit_package_family'], 'views/dialog/package-family-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			let txtLicenseCount = dialogContainer.querySelectorAll('input[name=license_count]')[0];
+			editPackageFamily(
+				dialogContainer,
+				dialogContainer.querySelectorAll('input[name=id]')[0].value,
+				dialogContainer.querySelectorAll('input[name=name]')[0].value,
+				txtLicenseCount.value=='' ? -1 : txtLicenseCount.value,
+				dialogContainer.querySelectorAll('textarea[name=notes]')[0].value,
+			);
+		});
 	});
 }
-function editPackageFamily(id, name, license_count, notes) {
+function editPackageFamily(dialogContainer, id, name, license_count, notes) {
 	ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({
 		'edit_package_family_id':id,
 		'name':name,
 		'license_count':license_count,
 		'notes':notes
 	}), null, function() {
-		hideDialog(); refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
 function showDialogEditPackage(id) {
-	showDialogAjax(LANG['edit_package'], 'views/dialog/package-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['edit_package'], 'views/dialog/package-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let chkReplaceArchive = dialogContainer.querySelectorAll('input[name=replace_archive]')[0];
+		let fleArchive = dialogContainer.querySelectorAll('input[name=archive]')[0];
+		// add events
+		chkReplaceArchive.addEventListener('click', (e)=>{
+			fleArchive.disabled = !e.srcElement.checked;
+		});
+		dialogContainer.querySelectorAll('button.toggleDirectoryUpload')[0].addEventListener('click', (e)=>{
+			toggleInputDirectory(fleArchive, e.srcElement);
+		});
+		let toggles = dialogContainer.querySelectorAll('.toggleMultiline');
+		for(let i=0; i<toggles.length; i++) {
+			toggles[i].querySelectorAll('button.toggle')[0].addEventListener('click', (e)=>{
+				let textBox = toggles[i].querySelectorAll('input, textarea')[0];
+				toggleTextBoxMultiLine(textBox);
+			});
+		}
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editPackage(
+				dialogContainer,
+				dialogContainer.querySelectorAll('input[name=id]')[0].value,
+				dialogContainer.querySelectorAll('select[name=package_family_id]')[0].value,
+				dialogContainer.querySelectorAll('input[name=version]')[0].value,
+				dialogContainer.querySelectorAll('select[name=compatible_os]')[0].value,
+				dialogContainer.querySelectorAll('select[name=compatible_os_version]')[0].value,
+				dialogContainer.querySelectorAll('select[name=compatible_architecture]')[0].value,
+				dialogContainer.querySelectorAll('input[name=license_count]')[0].value,
+				dialogContainer.querySelectorAll('textarea[name=notes]')[0].value,
+				chkReplaceArchive.checked ? fleArchive.files : null,
+				dialogContainer.querySelectorAll('input[name=install_procedure], textarea[name=install_procedure]')[0].value,
+				dialogContainer.querySelectorAll('input[name=install_procedure_success_return_codes]')[0].value,
+				getSelectedCheckBoxValues('install_procedure_post_action', null, false, dialogContainer),
+				getSelectedCheckBoxValues('upgrade_behavior', null, false, dialogContainer),
+				dialogContainer.querySelectorAll('input[name=uninstall_procedure], textarea[name=uninstall_procedure]')[0].value,
+				dialogContainer.querySelectorAll('input[name=uninstall_procedure_success_return_codes]')[0].value,
+				getSelectedCheckBoxValues('uninstall_procedure_post_action', null, false, dialogContainer),
+				dialogContainer.querySelectorAll('input[name=download_for_uninstall]')[0].checked ? 1 : 0,
+			);
+		});
+	});
 }
-function editPackage(id, package_family_id, version, compatible_os, compatible_os_version, compatible_architecture, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+function editPackage(dialogContainer, id, package_family_id, version, compatible_os, compatible_os_version, compatible_architecture, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 
@@ -863,7 +923,11 @@ function editPackage(id, package_family_id, version, compatible_os, compatible_o
 		formData.append('update_archive', '1');
 	}
 
-	setInputsDisabled(frmEditPackage, true);
+	let btnEditPackage = dialogContainer.querySelectorAll('button[name=edit]')[0];
+	let btnCloseDialog = dialogContainer.querySelectorAll('button.dialogClose')[0];
+	let prgPackageUpload = dialogContainer.querySelectorAll('.progressbar-container')[0];
+	let prgPackageUploadText = dialogContainer.querySelectorAll('.progressbar-container > .progresstext')[0];
+	setInputsDisabled(dialogContainer, true);
 	btnEditPackage.classList.add('hidden');
 	btnCloseDialog.classList.add('hidden');
 	prgPackageUpload.classList.remove('hidden');
@@ -907,11 +971,11 @@ function editPackage(id, package_family_id, version, compatible_os, compatible_o
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
 			if(this.status == 200) {
-				hideDialog(); refreshContent();
+				dialogContainer.close(); refreshContent();
 				emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 			} else {
 				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
-				setInputsDisabled(frmEditPackage, false);
+				setInputsDisabled(dialogContainer, false);
 				btnEditPackage.classList.remove('hidden');
 				btnCloseDialog.classList.remove('hidden');
 				prgPackageUpload.classList.add('hidden');
@@ -1032,6 +1096,72 @@ function deploySelectedPackage(checkboxName, attributeName=null) {
 		refreshContentDeploy(JSON.parse(text));
 	});
 }
+function showDialogAddPackageDependency(packageId, reverse=false) {
+	showDialogAjax(LANG['computer_groups'], 'views/dialog/package-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
+			if(reverse) {
+				addDependantPackage(
+					dialogContainer,
+					packageId,
+					getSelectedCheckBoxValues('packages', null, true, dialogContainer),
+				);
+			} else {
+				addPackageDependency(
+					dialogContainer,
+					packageId,
+					getSelectedCheckBoxValues('packages', null, true, dialogContainer),
+				);
+			}
+		});
+	});
+}
+function addPackageDependency(dialogContainer, packageId, packageIds) {
+	if(!packageIds) return;
+	let params = [];
+	params.push({'key':'edit_package_id', 'value':packageId});
+	for(var i = 0; i < packageIds.length; i++) {
+		params.push({'key':'add_package_dependency_id[]', 'value':packageIds[i]});
+	}
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
+		dialogContainer.close(); refreshContent();
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function addDependantPackage(dialogContainer, packageId, packageIds) {
+	if(!packageIds) return;
+	let params = [];
+	params.push({'key':'edit_package_id', 'value':packageId});
+	for(var i = 0; i < packageIds.length; i++) {
+		params.push({'key':'add_dependant_package_id[]', 'value':packageIds[i]});
+	}
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
+		dialogContainer.close(); refreshContent();
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
+function showDialogAssignPackageComputer(packageId) {
+	showDialogAjax(LANG['computer_groups'], 'views/dialog/computer-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
+			assignPackageComputer(
+				dialogContainer,
+				packageId,
+				getSelectedCheckBoxValues('computers', null, true, dialogContainer),
+			);
+		});
+	});
+}
+function assignPackageComputer(dialogContainer, packageId, computerIds) {
+	if(!computerIds) return;
+	var params = [];
+	params.push({'key':'edit_package_id', 'value':packageId});
+	for(var i = 0; i < computerIds.length; i++) {
+		params.push({'key':'add_computer_id[]', 'value':computerIds[i]});
+	}
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
+		dialogContainer.close(); refreshContent();
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
 function createPackageGroup(parent_id=null) {
 	var newName = prompt(LANG['enter_name']);
 	if(newName != null) {
@@ -1067,7 +1197,21 @@ function confirmRemovePackageGroup(ids, event=null, infoText='') {
 		});
 	}
 }
-function addPackageToGroup(packageId, groupId) {
+function showDialogAddPackageToGroup(id) {
+	if(!id) return;
+	showDialogAjax(LANG['package_groups'], 'views/dialog/package-group-add.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer) {
+		let txtPackageId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let sltPackageGroup = dialogContainer.querySelectorAll('select[name=group]')[0];
+		dialogContainer.querySelectorAll('button[name=add]')[0].addEventListener('click', (e)=>{
+			addPackageToGroup(
+				dialogContainer,
+				txtPackageId.value,
+				getSelectedSelectBoxValues(sltPackageGroup, true)
+			);
+		});
+	});
+}
+function addPackageToGroup(dialogContainer, packageId, groupId) {
 	if(groupId === false) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
@@ -1078,15 +1222,8 @@ function addPackageToGroup(packageId, groupId) {
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['packages_added'], '', MESSAGE_TYPE_SUCCESS);
-	});
-}
-function showDialogAddPackageToGroup(id) {
-	if(!id) return;
-	showDialogAjax(LANG['package_groups'], 'views/dialog/package-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtEditPackageId.value = id;
 	});
 }
 function removeSelectedPackageDependency(checkboxName, packageId) {
@@ -1201,7 +1338,7 @@ function refreshDeployPackageCount() {
 }
 function getSelectedNodes(root, name=null, warnIfEmpty=false) {
 	var items = [];
-	var elements = root.getElementsByTagName('input')
+	var elements = root.getElementsByTagName('input');
 	for(var i = 0; i < elements.length; i++) {
 		if(name == null || name == elements[i].name) {
 			if(elements[i].checked) {
@@ -1351,33 +1488,56 @@ function searchItems(container, search) {
 }
 
 // ======== MOBILE DEVICE OPERATIONS ========
-function showDialogCreateMobileDeviceIos() {
-	showDialogAjax(LANG['new_ios_device'], 'views/dialog/mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
-}
 function showDialogCreateMobileDeviceAndroid() {
 	showDialogAjax(LANG['new_android_device'], 'views/dialog/mobile-device-create-android.php', DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
 }
-function showDialogEditMobileDevice(id) {
-	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog/mobile-device-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+function showDialogCreateMobileDeviceIos() {
+	showDialogAjax(LANG['new_ios_device'], 'views/dialog/mobile-device-create-ios.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=create]')[0].addEventListener('click', (e)=>{
+			let txtMobileDeviceName = dialogContainer.querySelectorAll('input[name=name]')[0];
+			let txtMobileDeviceSerial = dialogContainer.querySelectorAll('input[name=serial]')[0];
+			let txtMobileDeviceNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+			createMobileDeviceIos(
+				dialogContainer,
+				txtMobileDeviceName.value,
+				txtMobileDeviceSerial.value,
+				txtMobileDeviceNotes.value
+			);
+		});
+	});
 }
-function createMobileDeviceIos(name, serial, notes) {
+function createMobileDeviceIos(dialogContainer, name, serial, notes) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
 		'create_mobile_device':name, 'notes':notes, 'serial':serial, 'type':'ios'
 	}), null, function(response) {
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
-		hideDialog();showLoader(false);showLoader2(false);
 		window.open('views/dialog/mobile-device-create-ios.php?download_profile='+encodeURIComponent(response), '_blank')
 	});
 }
-function editMobileDevice(id, deviceName, notes) {
+function showDialogEditMobileDevice(id) {
+	showDialogAjax(LANG['edit_mobile_device'], 'views/dialog/mobile-device-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtEditMobileDeviceId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let txtEditMobileDeviceName = dialogContainer.querySelectorAll('input[name=name]')[0];
+		let txtEditMobileDeviceNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editMobileDevice(
+				dialogContainer,
+				txtEditMobileDeviceId.value,
+				txtEditMobileDeviceName.value,
+				txtEditMobileDeviceNotes.value
+			);
+		});
+	});
+}
+function editMobileDevice(dialogContainer, id, deviceName, notes) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
 		'edit_mobile_device_id':id,
 		'device_name':deviceName,
 		'notes':notes
 	}), null, function() {
-		refreshContent(); hideDialog();
-		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+		dialogContainer.close(); refreshContent();
+		emitMessage(LANG['saved'], deviceName, MESSAGE_TYPE_SUCCESS);
 	});
 }
 function setMobileDeviceForceUpdate(id, value) {
@@ -1456,11 +1616,19 @@ function confirmRemoveMobileDeviceGroup(ids, event=null, infoText='') {
 }
 function showDialogAddMobileDeviceToGroup(id) {
 	if(!id) return;
-	showDialogAjax(LANG['mobile_device_groups'], 'views/dialog/mobile-device-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtEditMobileDeviceId.value = id;
+	showDialogAjax(LANG['mobile_device_groups'], 'views/dialog/mobile-device-group-add.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer) {
+		let txtMobileDeviceId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let sltMobileDeviceGroup = dialogContainer.querySelectorAll('select[name=mobile_device_group_id]')[0];
+		dialogContainer.querySelectorAll('button[name=add]')[0].addEventListener('click', (e)=>{
+			addMobileDeviceToGroup(
+				dialogContainer,
+				txtMobileDeviceId.value,
+				getSelectedSelectBoxValues(sltMobileDeviceGroup, true)
+			);
+		});
 	});
 }
-function addMobileDeviceToGroup(mobileDeviceId, groupId) {
+function addMobileDeviceToGroup(dialogContainer, mobileDeviceId, groupId) {
 	if(groupId === false) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
@@ -1471,18 +1639,29 @@ function addMobileDeviceToGroup(mobileDeviceId, groupId) {
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['mobile_device_added'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogAssignProfileToGroup(id) {
-	if(!id) return;
-	showDialogAjax(LANG['assign'], 'views/dialog/profile-assign.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtProfileId.value = id;
+function showDialogAssignProfileToGroup(ids) {
+	if(!ids) return;
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'id[]', 'value':entry});
+	});
+	showDialogAjax(LANG['assign'], 'views/dialog/profile-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer) {
+		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
+			let txtIds = dialogContainer.querySelectorAll('input[name=ids]')[0];
+			let sltMobileDeviceGroup = dialogContainer.querySelectorAll('select[name=mobile_device_group_id]')[0];
+			assignProfileToGroup(
+				dialogContainer,
+				txtIds.value,
+				getSelectedSelectBoxValues(sltMobileDeviceGroup, true)
+			);
+		});
 	});
 }
-function assignProfileToGroup(profileId, groupId) {
+function assignProfileToGroup(dialogContainer, profileId, groupId) {
 	if(groupId === false) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
@@ -1493,35 +1672,43 @@ function assignProfileToGroup(profileId, groupId) {
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
-		hideDialog();
+		dialogContainer.close();
 		refreshContent();
 		emitMessage(LANG['profile_assigned'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function removeProfileFromGroup(ids, groupId) {
-	if(!confirm(LANG['are_you_sure'])) return;
-	hideDialog();
-	var params = [];
-	groupId.toString().split(',').forEach(function(entry) {
-		params.push({'key':'remove_from_group_id[]', 'value':entry});
-	});
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_from_group_profile_id[]', 'value':entry});
-	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
-		refreshContent();
-		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
-	});
-}
 function showDialogAssignManagedAppToGroup(ids) {
+	if(!ids) return;
 	var params = [];
 	ids.forEach(function(entry) {
 		params.push({'key':'id[]', 'value':entry});
 	});
-	showDialogAjax(LANG['assign'], 'views/dialog/managed-app-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['assign'], 'views/dialog/managed-app-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
+			let txtIds = dialogContainer.querySelectorAll('input[name=ids]')[0];
+			let sltMobileDeviceGroup = dialogContainer.querySelectorAll('select[name=mobile_device_group_id]')[0];
+			let chkRemovable = dialogContainer.querySelectorAll('input[name=removable]')[0];
+			let chkDisableCloudBackup = dialogContainer.querySelectorAll('input[name=disable_cloud_backup]')[0];
+			let chkRemoveOnMdmRemove = dialogContainer.querySelectorAll('input[name=remove_on_mdm_remove]')[0];
+			let sltInstallType = dialogContainer.querySelectorAll('select[name=install_type]')[0];
+			let sltManagedAppConfig = dialogContainer.querySelectorAll('select[name=managed_app_config_id]')[0];
+			let txtManagedAppConfig = dialogContainer.querySelectorAll('textarea[name=managed_app_config_json]')[0];
+			assignManagedAppToGroup(
+				dialogContainer,
+				txtIds.value,
+				getSelectedSelectBoxValues(sltMobileDeviceGroup, true),
+				typeof chkRemovable !== 'undefined' && chkRemovable.checked ? 1 : 0,
+				typeof chkDisableCloudBackup !== 'undefined' && chkDisableCloudBackup.checked ? 1 : 0,
+				typeof chkRemoveOnMdmRemove !== 'undefined' && chkRemoveOnMdmRemove.checked ? 1 : 0,
+				typeof sltInstallType !== 'undefined' ? sltInstallType.value : '',
+				typeof sltManagedAppConfig !== 'undefined' ? sltManagedAppConfig.value : '',
+				txtManagedAppConfig.value,
+				getSelectedCheckBoxValues('delegated_scopes[]', null, false, dialogContainer)
+			);
+		});
+	});
 }
-function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, installType, configId, config, delegatedScopes) {
+function assignManagedAppToGroup(dialogContainer, managedAppId, groupId, removable, disableCloudBackup, removeOnMdmRemove, installType, configId, config, delegatedScopes) {
 	if(groupId === false) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
@@ -1541,25 +1728,8 @@ function assignManagedAppToGroup(managedAppId, groupId, removable, disableCloudB
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['apps_assigned'], '', MESSAGE_TYPE_SUCCESS);
-	});
-}
-function removeManagedAppFromGroup(ids, groupId) {
-	if(!confirm(LANG['are_you_sure'])) return;
-	hideDialog();
-	var params = [];
-	groupId.toString().split(',').forEach(function(entry) {
-		params.push({'key':'remove_from_group_id[]', 'value':entry});
-	});
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_from_group_managed_app_id[]', 'value':entry});
-	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
-		refreshContent();
-		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
 function removeSelectedMobileDeviceFromGroup(checkboxName, groupId) {
@@ -1590,9 +1760,23 @@ function removeMobileDeviceFromGroup(ids, groupId) {
 
 // ======== COMPUTER OPERATIONS ========
 function showDialogCreateComputer() {
-	showDialogAjax(LANG['create_computer'], 'views/dialog/computer-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['create_computer'], 'views/dialog/computer-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtComputerHostname = dialogContainer.querySelectorAll('input[name=hostname]')[0];
+		let txtComputerNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+		let txtComputerAgentKey = dialogContainer.querySelectorAll('input[name=agent_key]')[0];
+		let txtComputerServerKey = dialogContainer.querySelectorAll('input[name=server_key]')[0];
+		dialogContainer.querySelectorAll('button[name=create]')[0].addEventListener('click', (e)=>{
+			createComputer(
+				dialogContainer,
+				txtComputerHostname.value,
+				txtComputerNotes.value,
+				txtComputerAgentKey.value,
+				txtComputerServerKey.value
+			);
+		});
+	});
 }
-function createComputer(hostname, notes, agentKey, serverKey) {
+function createComputer(dialogContainer, hostname, notes, agentKey, serverKey) {
 	var params = [];
 	params.push({'key':'create_computer', 'value':hostname});
 	params.push({'key':'notes', 'value':notes});
@@ -1600,27 +1784,34 @@ function createComputer(hostname, notes, agentKey, serverKey) {
 	params.push({'key':'server_key', 'value':serverKey});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
-		hideDialog();
+		dialogContainer.close();
 		refreshContentExplorer('views/computer-details.php?id='+parseInt(text));
 		emitMessage(LANG['computer_created'], hostname, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditComputer(id, hostname, notes) {
-	showDialogAjax(LANG['edit_computer'], 'views/dialog/computer-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditComputerId.value = id;
-		txtEditComputerHostname.value = hostname;
-		txtEditComputerNotes.value = notes;
+function showDialogEditComputer(id) {
+	showDialogAjax(LANG['edit_computer'], 'views/dialog/computer-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtComputerId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let txtComputerHostname = dialogContainer.querySelectorAll('input[name=hostname]')[0];
+		let txtComputerNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editComputer(
+				dialogContainer,
+				txtComputerId.value,
+				txtComputerHostname.value,
+				txtComputerNotes.value
+			);
+		});
 	});
 }
-function editComputer(id, hostname, notes) {
+function editComputer(dialogContainer, id, hostname, notes) {
 	var params = [];
 	params.push({'key':'edit_computer_id', 'value':id});
 	params.push({'key':'hostname', 'value':hostname});
 	params.push({'key':'notes', 'value':notes});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
-		hideDialog();
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], hostname, MESSAGE_TYPE_SUCCESS);
 	});
 }
@@ -1654,40 +1845,6 @@ function removeComputerFromGroup(ids, groupId) {
 		refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
-}
-function removeSelectedComputer(checkboxName, attributeName=null, event=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	confirmRemoveComputer(ids, event);
-}
-function confirmRemoveComputer(ids, event=null, infoText='', redirect=null) {
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_id[]', 'value':entry});
-	});
-	if(event != null && event.shiftKey) {
-		params.push({'key':'force', 'value':'1'});
-	}
-	var paramString = urlencodeArray(params);
-	if(confirm(LANG['confirm_delete_computer'])) {
-		ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
-			if(redirect != null) currentExplorerContentUrl = redirect;
-			refreshContentExplorer(currentExplorerContentUrl);
-			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
-		});
-	}
 }
 function deploySelectedComputer(checkboxName, attributeName=null) {
 	var ids = getSelectedCheckBoxValues(checkboxName, attributeName, true);
@@ -1762,7 +1919,21 @@ function confirmRemoveComputerGroup(ids, event=null, infoText='') {
 		});
 	}
 }
-function addComputerToGroup(computerId, groupId) {
+function showDialogAddComputerToGroup(id) {
+	if(!id) return;
+	showDialogAjax(LANG['computer_groups'], 'views/dialog/computer-group-add.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtComputerId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let sltComputerGroup = dialogContainer.querySelectorAll('select[name=group]')[0];
+		dialogContainer.querySelectorAll('button[name=add]')[0].addEventListener('click', (e)=>{
+			addComputerToGroup(
+				dialogContainer,
+				txtComputerId.value,
+				getSelectedSelectBoxValues(sltComputerGroup, true)
+			);
+		});
+	});
+}
+function addComputerToGroup(dialogContainer, computerId, groupId) {
 	if(groupId === false) return;
 	var params = [];
 	groupId.toString().split(',').forEach(function(entry) {
@@ -1773,33 +1944,69 @@ function addComputerToGroup(computerId, groupId) {
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['computer_added'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogAddComputerToGroup(id) {
-	if(!id) return;
-	showDialogAjax(LANG['computer_groups'], 'views/dialog/computer-group-add.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtEditComputerId.value = id;
+function showDialogAssignComputerPackage(computerId) {
+	showDialogAjax(LANG['computer_groups'], 'views/dialog/package-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
+			assignComputerPackage(
+				dialogContainer,
+				computerId,
+				getSelectedCheckBoxValues('packages', null, true, dialogContainer),
+			);
+		});
+	});
+}
+function assignComputerPackage(dialogContainer, computerId, packageIds) {
+	if(!packageIds) return;
+	let params = [];
+	params.push({'key':'edit_computer_id', 'value':computerId});
+	for(var i = 0; i < packageIds.length; i++) {
+		params.push({'key':'add_package_id[]', 'value':packageIds[i]});
+	}
+	ajaxRequestPost('ajax-handler/computers.php', urlencodeArray(params), null, function() {
+		dialogContainer.close(); refreshContent();
+		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
 
 // ======== JOB OPERATIONS ========
 function showDialogMobileDeviceCommand(mobile_device_id) {
-	showDialogAjax(LANG['send_command'], 'views/dialog/mobile-device-command.php?id='+encodeURIComponent(mobile_device_id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['send_command'], 'views/dialog/mobile-device-command.php?id='+encodeURIComponent(mobile_device_id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtMobileDeviceId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let sltCommand = dialogContainer.querySelectorAll('select[name=command]')[0];
+		let txtsParameter = dialogContainer.querySelectorAll('input.parameter');
+		let trParameter = dialogContainer.querySelectorAll('tr.parameter')[0];
+		let thParameterName = dialogContainer.querySelectorAll('th.parameterName')[0];
+		sltCommand.addEventListener('change', (e)=>{
+			let parameterName = e.srcElement.selectedOptions[0].getAttribute('parameter');
+			if(parameterName) {
+				txtsParameter[0].name = parameterName;
+				thParameterName.innerText = LANG[parameterName];
+				trParameter.style.display = 'table-row';
+			} else {
+				trParameter.style.display = 'none';
+			}
+		});
+		dialogContainer.querySelectorAll('button[name=send]')[0].addEventListener('click', (e)=>{
+			// in the future, there are maybe commands with multiple parameters
+			let params = {};
+			for(let i=0; i<txtsParameter.length; i++) {
+				if(txtsParameter[i].name)
+					params[txtsParameter[i].name] = txtsParameter[i].value;
+			}
+			sendMobileDeviceCommand(
+				dialogContainer,
+				txtMobileDeviceId.value,
+				sltCommand.value,
+				params
+			);
+		});
+	});
 }
-function showMobileDeviceCommandParameter(option) {
-	let param = option.getAttribute('parameter');
-	if(param) {
-		txtMobileDeviceCommandParameter.name = param;
-		thCommandParameterName.innerText = LANG[param];
-		trCommandParameter.style.display = 'table-row';
-	} else {
-		trCommandParameter.style.display = 'none';
-	}
-}
-function sendMobileDeviceCommand(mobile_device_id, name, parameter) {
+function sendMobileDeviceCommand(dialogContainer, mobile_device_id, name, parameter) {
 	var params = [];
 	params.push({'key':'send_command_to_mobile_device_id', 'value':mobile_device_id});
 	params.push({'key':'command', 'value':name});
@@ -1808,18 +2015,34 @@ function sendMobileDeviceCommand(mobile_device_id, name, parameter) {
 	}
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
-		hideDialog(); refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
 function showDialogEditProfile(type, id=-1) {
 	title = LANG['edit'];
-	if(id == -1) {
+	if(id == -1)
 		title = type=='android' ? LANG['new_android_policy'] : LANG['new_ios_profile'];
-	}
-	showDialogAjax(title, 'views/dialog/profile-edit.php?id='+encodeURIComponent(id)+'&type='+encodeURIComponent(type), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/profile-edit.php?id='+encodeURIComponent(id)+'&type='+encodeURIComponent(type), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let txtType = dialogContainer.querySelectorAll('input[name=type]')[0];
+		let txtName = dialogContainer.querySelectorAll('input[name=name]')[0];
+		let txtNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+		let flePayload = dialogContainer.querySelectorAll('input[name=payload]')[0];
+		let txtPayload = dialogContainer.querySelectorAll('textarea[name=payload]')[0];
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editProfile(
+				dialogContainer,
+				txtId.value,
+				txtType.value,
+				txtName.value,
+				txtPayload.value != '' ? txtPayload.value : flePayload.files,
+				txtNotes.value
+			);
+		});
+	});
 }
-function editProfile(id, type, name, payload, notes) {
+function editProfile(dialogContainer, id, type, name, payload, notes) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 
@@ -1841,7 +2064,7 @@ function editProfile(id, type, name, payload, notes) {
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
 			if(this.status == 200) {
-				hideDialog(); refreshContent();
+				dialogContainer.close(); refreshContent();
 				emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 			} else {
 				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
@@ -1887,26 +2110,41 @@ function confirmRemoveProfile(ids, event=null, infoText='', redirect=null) {
 	}
 }
 
-function showDialogEditDeploymentRule(id=-1, name='', notes='', enabled=0, computerGroupId=-1, packageGroupId=-1, priority=0) {
+function showDialogEditDeploymentRule(id=-1) {
 	title = LANG['edit_deployment_rule'];
-	buttonText = LANG['change'];
 	if(id == -1) {
 		title = LANG['new_deployment_rule'];
-		buttonText = LANG['create'];
 	}
-	showDialogAjax(title, 'views/dialog/deployment-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditDeploymentRuleId.value = id;
-		txtEditDeploymentRuleName.value = name;
-		txtEditDeploymentRuleNotes.value = notes;
-		chkEditDeploymentRuleEnabled.checked = enabled=='1';
-		sltEditDeploymentRuleComputerGroupId.value = computerGroupId;
-		sltEditDeploymentRulePackageGroupId.value = packageGroupId;
-		sldEditDeploymentRulePriority.value = priority;
-		lblEditDeploymentRulePriorityPreview.innerText = priority;
-		spnBtnUpdateDeploymentRule.innerText = buttonText;
+	showDialogAjax(title, 'views/dialog/deployment-rule-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtDeploymentRuleId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let txtDeploymentRuleName = dialogContainer.querySelectorAll('input[name=name]')[0];
+		let txtDeploymentRuleNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+		let chkDeploymentRuleEnabled = dialogContainer.querySelectorAll('input[name=enabled]')[0];
+		let sltDeploymentRuleComputerGroupId = dialogContainer.querySelectorAll('select[name=computer_group_id]')[0];
+		let sltDeploymentRulePackageGroupId = dialogContainer.querySelectorAll('select[name=package_group_id]')[0];
+		let sldDeploymentRulePriority = dialogContainer.querySelectorAll('input[name=priority]')[0];
+		let lblDeploymentRulePriorityPreview = dialogContainer.querySelectorAll('div.priorityPreview')[0];
+		sldDeploymentRulePriority.addEventListener('input', (e)=>{
+			lblDeploymentRulePriorityPreview.innerText = sldDeploymentRulePriority.value;
+		});
+		sldDeploymentRulePriority.addEventListener('change', (e)=>{
+			lblDeploymentRulePriorityPreview.innerText = sldDeploymentRulePriority.value;
+		});
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editDeploymentRule(
+				dialogContainer,
+				txtDeploymentRuleId.value,
+				txtDeploymentRuleName.value,
+				txtDeploymentRuleNotes.value,
+				chkDeploymentRuleEnabled.checked,
+				sltDeploymentRuleComputerGroupId.value,
+				sltDeploymentRulePackageGroupId.value,
+				sldDeploymentRulePriority.value,
+			);
+		});
 	});
 }
-function editDeploymentRule(id, name, notes, enabled, computerGroupId, packageGroupId, priority) {
+function editDeploymentRule(dialogContainer, id, name, notes, enabled, computerGroupId, packageGroupId, priority) {
 	var params = [];
 	params.push({'key':'edit_deployment_rule_id', 'value':id});
 	params.push({'key':'name', 'value':name});
@@ -1916,7 +2154,7 @@ function editDeploymentRule(id, name, notes, enabled, computerGroupId, packageGr
 	params.push({'key':'package_group_id', 'value':packageGroupId});
 	params.push({'key':'priority', 'value':priority});
 	ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeArray(params), null, function(response) {
-		hideDialog();
+		dialogContainer.close();
 		if(id == '-1') {
 			refreshContentExplorer('views/deployment-rules.php?id='+parseInt(response));
 			refreshSidebar();
@@ -1966,25 +2204,32 @@ function confirmRemoveDeploymentRule(ids, infoText='') {
 		});
 	}
 }
-function showDialogMoveStaticJobToJobContainer(id) {
-	if(!id) return;
-	showDialogAjax(LANG['job_container'], 'views/dialog/jobs-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtEditJobId.value = id;
+function showDialogMoveStaticJobToJobContainer(ids) {
+	if(!ids) return;
+	showDialogAjax(LANG['job_container'], 'views/dialog/jobs-move.php?job_ids='+encodeURIComponent(ids), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer) {
+		let txtJobIds = dialogContainer.querySelectorAll('input[name=job_ids]')[0];
+		let sltNewJobContainerId = dialogContainer.querySelectorAll('select[name=new_job_container_id]')[0];
+		dialogContainer.querySelectorAll('button[name=move]')[0].addEventListener('click', (e)=>{
+			moveStaticJobToJobContainer(
+				dialogContainer,
+				txtJobIds.value,
+				sltNewJobContainerId.value,
+			);
+		});
 	});
 }
-function moveStaticJobToJobContainer(jobId, containerId) {
-	if(containerId === false) return;
+function moveStaticJobToJobContainer(dialogContainer, jobIds, containerIds) {
+	if(containerIds === false) return;
 	var params = [];
-	containerId.toString().split(',').forEach(function(entry) {
+	containerIds.toString().split(',').forEach(function(entry) {
 		params.push({'key':'move_to_container_id[]', 'value':entry});
 	});
-	jobId.toString().split(',').forEach(function(entry) {
+	jobIds.toString().split(',').forEach(function(entry) {
 		params.push({'key':'move_to_container_job_id[]', 'value':entry});
 	});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
@@ -2048,47 +2293,68 @@ function confirmRemoveJob(ids) {
 		});
 	}
 }
-function showDialogEditJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
-	showDialogAjax(LANG['edit_job_container'], 'views/dialog/job-container-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditJobContainerId.value = id;
-		txtEditJobContainerName.value = name;
-		chkEditJobContainerEnabled.checked = enabled=='1';
-		try {
-			let parts = start.split(' ');
-			if(parts.length == 2) {
-				dteEditJobContainerStart.value = parts[0];
-				tmeEditJobContainerStart.value = parts[1];
-			}
-		} catch(ignored) {}
-		try {
-			let parts = end.split(' ');
-			if(parts.length == 2) {
-				dteEditJobContainerEnd.value = parts[0];
-				tmeEditJobContainerEnd.value = parts[1];
-			}
-		} catch(ignored) {}
-		chkEditJobContainerSequenceMode.checked = sequence_mode=='1';
-		sldEditJobContainerPriority.value = priority;
-		lblEditJobContainerPriorityPreview.innerText = priority;
-		txtEditJobContainerAgentIpRanges.value = agent_ip_ranges;
-		txtEditJobContainerTimeFrames.value = time_frames;
-		txtEditJobContainerNotes.value = notes;
+function showDialogEditJobContainer(id) {
+	showDialogAjax(LANG['edit_job_container'], 'views/dialog/job-container-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtJobContainerId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let txtJobContainerName = dialogContainer.querySelectorAll('input[name=name]')[0];
+		let chkJobContainerEnabled = dialogContainer.querySelectorAll('input[name=enabled]')[0];
+		let txtJobContainerStartDate = dialogContainer.querySelectorAll('input[name=start_date]')[0];
+		let txtJobContainerStartTime = dialogContainer.querySelectorAll('input[name=start_time]')[0];
+		let txtJobContainerEndDate = dialogContainer.querySelectorAll('input[name=end_date]')[0];
+		let txtJobContainerEndTime = dialogContainer.querySelectorAll('input[name=end_time]')[0];
+		let chkJobContainerSequenceMode = dialogContainer.querySelectorAll('input[name=sequence_mode]')[0];
+		let txtJobContainerPriority = dialogContainer.querySelectorAll('input[name=priority]')[0];
+		let txtJobContainerAgentIpRanges = dialogContainer.querySelectorAll('input[name=agent_ip_ranges]')[0];
+		let txtJobContainerTimeFrames = dialogContainer.querySelectorAll('input[name=time_frames]')[0];
+		let txtJobContainerNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+		txtJobContainerPriority.addEventListener('input', (e)=>{
+			e.srcElement.parentElement.querySelectorAll('div.priority_preview')[0].innerText = e.srcElement.value;
+		});
+		txtJobContainerPriority.addEventListener('change', (e)=>{
+			e.srcElement.parentElement.querySelectorAll('div.priority_preview')[0].innerText = e.srcElement.value;
+		});
+		let btnsClear = dialogContainer.querySelectorAll('td.dualInput > button');
+		for(let i=0; i<btnsClear.length; i++) {
+			btnsClear[i].addEventListener('click', (e)=>{
+				let inputs = e.srcElement.parentElement.querySelectorAll('input');
+				for(let n=0; n<inputs.length; n++) {
+					inputs[n].value = '';
+				}
+			});
+		}
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editJobContainer(
+				dialogContainer,
+				txtJobContainerId.value,
+				txtJobContainerName.value,
+				chkJobContainerEnabled.checked ? 1 : 0,
+				txtJobContainerStartDate.value+' '+txtJobContainerStartTime.value,
+				txtJobContainerEndDate.value!='' && txtJobContainerEndTime.value!=''
+					? txtJobContainerEndDate.value+' '+txtJobContainerEndTime.value : '',
+				chkJobContainerSequenceMode.checked ? 1 : 0,
+				txtJobContainerPriority.value,
+				txtJobContainerAgentIpRanges.value,
+				txtJobContainerTimeFrames.value,
+				txtJobContainerNotes.value,
+			);
+		});
 	});
 }
-function editJobContainer(id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
-	var params = [];
-	params.push({'key':'edit_job_container_id', 'value':id});
-	params.push({'key':'name', 'value':name});
-	params.push({'key':'enabled', 'value':enabled?'1':'0'});
-	params.push({'key':'start', 'value':start});
-	params.push({'key':'end', 'value':end});
-	params.push({'key':'sequence_mode', 'value':sequence_mode?'1':'0'});
-	params.push({'key':'priority', 'value':priority});
-	params.push({'key':'agent_ip_ranges', 'value':agent_ip_ranges});
-	params.push({'key':'time_frames', 'value':time_frames});
-	params.push({'key':'notes', 'value':notes});
+function editJobContainer(dialogContainer, id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
+	var params = [
+		{'key':'edit_job_container_id', 'value':id},
+		{'key':'name', 'value':name},
+		{'key':'enabled', 'value':enabled},
+		{'key':'start', 'value':start},
+		{'key':'end', 'value':end},
+		{'key':'sequence_mode', 'value':sequence_mode},
+		{'key':'priority', 'value':priority},
+		{'key':'agent_ip_ranges', 'value':agent_ip_ranges},
+		{'key':'time_frames', 'value':time_frames},
+		{'key':'notes', 'value':notes},
+	];
 	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
-		hideDialog();
+		dialogContainer.close();
 		refreshContent(); refreshSidebar();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 	});
@@ -2148,9 +2414,50 @@ function deploy(title, start, end, description, computers, computerGroups, compu
 	};
 }
 function showDialogUninstall() {
-	showDialogAjax(LANG['uninstall_packages'], 'views/dialog/uninstall.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['uninstall_packages'], 'views/dialog/uninstall.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtName = dialogContainer.querySelectorAll('input[name=name]')[0];
+		let txtNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+		let txtStartDate = dialogContainer.querySelectorAll('input[name=start_date]')[0];
+		let txtStartTime = dialogContainer.querySelectorAll('input[name=start_time]')[0];
+		let chkWol = dialogContainer.querySelectorAll('input[name=wol]')[0];
+		let chkShutdownWaked = dialogContainer.querySelectorAll('input[name=shutdown_waked]')[0];
+		let txtEndDate = dialogContainer.querySelectorAll('input[name=end_date]')[0];
+		let txtEndTime = dialogContainer.querySelectorAll('input[name=end_time]')[0];
+		let sldPriority = dialogContainer.querySelectorAll('input[name=priority]')[0];
+		let lblPriorityPreview = dialogContainer.querySelectorAll('.priorityPreview')[0];
+		let txtRestartTimeout = dialogContainer.querySelectorAll('input[name=restart_timeout]')[0];
+		// add events
+		chkWol.addEventListener('click', (e)=>{
+			if(e.srcElement.checked) {
+				chkShutdownWaked.disabled = false;
+			} else {
+				chkShutdownWaked.checked = false;
+				chkShutdownWaked.disabled=true;
+			}
+		});
+		sldPriority.addEventListener('input', (e)=>{
+			lblPriorityPreview.innerText = e.srcElement.value;
+		});
+		sldPriority.addEventListener('change', (e)=>{
+			lblPriorityPreview.innerText = e.srcElement.value;
+		});
+		dialogContainer.querySelectorAll('button[name=uninstall]')[0].addEventListener('click', (e)=>{
+			uninstall(
+				dialogContainer,
+				'package_id[]',
+				txtName.value,
+				txtNotes.value,
+				txtStartDate.value+' '+txtStartTime.value,
+				(txtEndDate.value+' '+txtEndTime.value).trim(),
+				chkWol.checked,
+				chkShutdownWaked.checked,
+				txtRestartTimeout.value,
+				sldPriority.value
+			);
+		});
+	});
 }
-function uninstall(checkboxName, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, restartTimeout, priority) {
+function uninstall(dialogContainer, checkboxName, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, restartTimeout, priority) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -2175,7 +2482,7 @@ function uninstall(checkboxName, name, notes, startTime, endTime, useWol, shutdo
 	params.push({'key':'priority', 'value':priority});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
-		hideDialog();
+		dialogContainer.close();
 		refreshSidebar(); refreshContent();
 		emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
 	});
@@ -2203,18 +2510,61 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 		});
 	}
 }
-function showDialogRenewFailedStaticJobs(id, defaultName, jobIds) {
+function showDialogRenewFailedStaticJobs(containerId, jobIds) {
 	if(!jobIds) return;
-	showDialogAjax(LANG['renew_failed_jobs'], 'views/dialog/jobs-renew.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtRenewJobContainerId.value = id;
-		txtRenewJobContainerName.value = defaultName;
-		txtRenewJobContainerJobId.value = jobIds;
+	showDialogAjax(LANG['renew_failed_jobs'], 'views/dialog/jobs-renew.php?job_container_id='+encodeURIComponent(containerId)+'&job_ids='+encodeURIComponent(jobIds), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer) {
+		let txtJobContainerId = dialogContainer.querySelectorAll('input[name=job_container_id]')[0];
+		let txtJobIds = dialogContainer.querySelectorAll('input[name=job_ids]')[0];
+		let chkCreateNewJobContainer = dialogContainer.querySelectorAll('input[name=create_new_job_container]')[0];
+		let tbNewJobContainer = dialogContainer.querySelectorAll('tbody.newJobContainer')[0];
+		let txtName = dialogContainer.querySelectorAll('input[name=name]')[0];
+		let txtNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+		let txtStartDate = dialogContainer.querySelectorAll('input[name=start_date]')[0];
+		let txtStartTime = dialogContainer.querySelectorAll('input[name=start_time]')[0];
+		let txtEndDate = dialogContainer.querySelectorAll('input[name=end_date]')[0];
+		let txtEndTime = dialogContainer.querySelectorAll('input[name=end_time]')[0];
+		let chkWol = dialogContainer.querySelectorAll('input[name=wol]')[0];
+		let chkShutdownWakedAfterCompletion = dialogContainer.querySelectorAll('input[name=shutdown_waked_after_completion]')[0];
+		let sldPriority = dialogContainer.querySelectorAll('input[name=priority]')[0];
+		let lblPriorityPreview = dialogContainer.querySelectorAll('span.priority_preview')[0];
+		sldPriority.addEventListener('input', (e)=>{
+			lblPriorityPreview.innerText = sldPriority.value;
+		});
+		sldPriority.addEventListener('change', (e)=>{
+			lblPriorityPreview.innerText = sldPriority.value;
+		});
+		chkCreateNewJobContainer.addEventListener('click', (e)=>{
+			if(e.srcElement.checked) tbNewJobContainer.style.display = 'table-row-group';
+			else tbNewJobContainer.style.display = 'none';
+		});
+		chkWol.addEventListener('click', (e)=>{
+			if(e.srcElement.checked) {
+				chkShutdownWakedAfterCompletion.disabled = false;
+			} else {
+				chkShutdownWakedAfterCompletion.checked = false; chkShutdownWakedAfterCompletion.disabled = true;
+			}
+		});
+		dialogContainer.querySelectorAll('button[name=renew]')[0].addEventListener('click', (e)=>{
+			renewFailedStaticJobs(
+				dialogContainer,
+				txtJobContainerId.value,
+				txtJobIds.value,
+				chkCreateNewJobContainer.checked,
+				txtName.value,
+				txtNotes.value,
+				txtStartDate.value+' '+txtStartTime.value,
+				(txtEndDate.value+' '+txtEndTime.value).trim(),
+				chkWol.checked,
+				chkShutdownWakedAfterCompletion.checked,
+				sldPriority.value
+			);
+		});
 	});
 }
-function renewFailedStaticJobs(id, jobId, createNewJobContainer, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
+function renewFailedStaticJobs(dialogContainer, jobContainerId, jobIds, createNewJobContainer, name, notes, startTime, endTime, useWol, shutdownWakedAfterCompletion, priority) {
 	var params = [];
-	params.push({'key':'renew_job_container', 'value':id});
-	jobId.toString().split(',').forEach(function(entry) {
+	params.push({'key':'renew_job_container', 'value':jobContainerId});
+	jobIds.toString().split(',').forEach(function(entry) {
 		if(entry.trim() != '') params.push({'key':'job_id[]', 'value':entry});
 	});
 	params.push({'key':'create_new_job_container', 'value':createNewJobContainer ? 1 : 0});
@@ -2227,7 +2577,7 @@ function renewFailedStaticJobs(id, jobId, createNewJobContainer, name, notes, st
 	params.push({'key':'priority', 'value':priority});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
-		hideDialog(); refreshSidebar(); refreshContent();
+		dialogContainer.close(); refreshSidebar(); refreshContent();
 		emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
 	});
 }
@@ -2269,20 +2619,63 @@ function showDialogEditPolicyObject(id=-1, name='') {
 		}
 	}
 }
+function showDialogAssignPolicyObject(policyObjectIds) {
+	let params = [];
+	if(policyObjectIds) {
+		policyObjectIds.forEach(function(entry) {
+			params.push({'key':'id[]', 'value':entry});
+		});
+		showDialogAjax(LANG['assign'], 'views/dialog/policy-object-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+			dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
+				var params = [];
+				let policyObjectIds = dialogContainer.querySelectorAll('input[name=ids]')[0].value.split(',');
+				let computerGroupIds = getSelectedSelectBoxValues(dialogContainer.querySelectorAll('select[name=computer_group_id]')[0], false);
+				let domainUserGroupIds = getSelectedSelectBoxValues(dialogContainer.querySelectorAll('select[name=domain_user_group_id]')[0], false);
+				if(!computerGroupIds && !domainUserGroupIds) return;
+				computerGroupIds.forEach(function(entry) {
+					params.push({'key':'add_to_computer_group_id[]', 'value':entry});
+				});
+				domainUserGroupIds.forEach(function(entry) {
+					params.push({'key':'add_to_domain_user_group_id[]', 'value':entry});
+				});
+				policyObjectIds.forEach(function(entry) {
+					params.push({'key':'policy_object_id[]', 'value':entry});
+				});
+				var paramString = urlencodeArray(params);
+				ajaxRequestPost('ajax-handler/policy-objects.php', paramString, null, function() {
+					dialogContainer.close(); refreshContent();
+					emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+				});
+			});
+		});
+	}
+}
 
 // ======== DOMAIN USER OPERATIONS ========
 function showDialogEditDomainUserRole(id=-1) {
 	title = LANG['edit_domain_user_role'];
 	if(id == -1) title = LANG['create_domain_user_role'];
-	showDialogAjax(title, 'views/dialog/domain-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/domain-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtDomainUserRoleId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let txtDomainUserRoleName = dialogContainer.querySelectorAll('input[name=name]')[0];
+		let txtDomainUserRolePermissions = dialogContainer.querySelectorAll('textarea[name=permissions]')[0];
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editDomainUserRole(
+				dialogContainer,
+				txtDomainUserRoleId.value,
+				txtDomainUserRoleName.value,
+				txtDomainUserRolePermissions.value
+			);
+		});
+	});
 }
-function editDomainUserRole(id, name, permissions) {
+function editDomainUserRole(dialogContainer, id, name, permissions) {
 	var params = [];
 	params.push({'key':'edit_domain_user_role_id', 'value':id});
 	params.push({'key':'name', 'value':name});
 	params.push({'key':'permissions', 'value':permissions});
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
-		hideDialog(); refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 	});
 }
@@ -2312,16 +2705,35 @@ function confirmRemoveSelectedDomainUserRole(checkboxName) {
 function showDialogEditDomainUser(id=-1) {
 	title = LANG['edit_domain_user'];
 	if(id == -1) title = LANG['create_domain_user'];
-	showDialogAjax(title, 'views/dialog/domain-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/domain-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtDomainUserId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let txtDomainUserUsername = dialogContainer.querySelectorAll('input[name=username]')[0];
+		let sltDomainUserRoleId = dialogContainer.querySelectorAll('select[name=domain_user_role_id]')[0];
+		let txtDomainUserPassword = dialogContainer.querySelectorAll('input[name=password]')[0];
+		let txtDomainUserPasswordConfirm = dialogContainer.querySelectorAll('input[name=password_confirm]')[0];
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			if(txtDomainUserPassword.value != txtDomainUserPasswordConfirm.value) {
+				emitMessage(LANG['passwords_do_not_match'], '', MESSAGE_TYPE_WARNING);
+				return false;
+			}
+			editDomainUser(
+				dialogContainer,
+				txtDomainUserId.value,
+				txtDomainUserUsername.value,
+				txtDomainUserPassword.value,
+				sltDomainUserRoleId.value
+			);
+		});
+	});
 }
-function editDomainUser(id, username, password, roleId) {
+function editDomainUser(dialogContainer, id, username, password, roleId) {
 	var params = [];
 	params.push({'key':'edit_domain_user_id', 'value':id});
 	params.push({'key':'password', 'value':password});
 	params.push({'key':'domain_user_role_id', 'value':roleId});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
-		hideDialog(); refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
 	});
 }
@@ -2385,43 +2797,40 @@ function confirmRemoveReportGroup(ids, event=null, infoText='') {
 		});
 	}
 }
-function showDialogCreateReport(group_id=0) {
-	showDialogAjax(LANG['create_report'], 'views/dialog/report-create.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtCreateReportGroup.value = group_id
+function showDialogEditReport(id=-1, reportGroupId=-1) {
+	showDialogAjax(id>0 ? LANG['edit_report'] : LANG['create_report'], 'views/dialog/report-edit.php?id='+encodeURIComponent(id)+'&report_group_id='+encodeURIComponent(reportGroupId), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editReport(
+				dialogContainer,
+				dialogContainer.querySelectorAll('input[name=id]')[0].value,
+				dialogContainer.querySelectorAll('select[name=report_group_id]')[0].value,
+				dialogContainer.querySelectorAll('input[name=name]')[0].value,
+				dialogContainer.querySelectorAll('textarea[name=notes]')[0].value,
+				dialogContainer.querySelectorAll('textarea[name=query]')[0].value,
+			);
+		});
 	});
 }
-function createReport(name, notes, query, group_id=0) {
-	var params = [];
-	params.push({'key':'create_report', 'value':name});
-	params.push({'key':'notes', 'value':notes});
-	params.push({'key':'query', 'value':query});
-	params.push({'key':'group_id', 'value':group_id});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/reports.php', paramString, null, function(text) {
-		hideDialog();
-		refreshContentExplorer('views/report-details.php?id='+parseInt(text));
-		emitMessage(LANG['report_created'], name, MESSAGE_TYPE_SUCCESS);
-	});
-}
-function showDialogEditReport(id, name, notes, query) {
-	showDialogAjax(LANG['edit_report'], 'views/dialog/report-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditReportId.value = id;
-		txtEditReportName.value = name;
-		txtEditReportNotes.value = notes;
-		txtEditReportQuery.value = query;
-	});
-}
-function editReport(id, name, notes, query) {
-	var params = [];
-	params.push({'key':'edit_report_id', 'value':id});
-	params.push({'key':'name', 'value':name});
-	params.push({'key':'notes', 'value':notes});
-	params.push({'key':'query', 'value':query});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/reports.php', paramString, null, function(text) {
-		hideDialog();
-		refreshContent();
-		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
+function editReport(dialogContainer, id, reportGroupId, name, notes, query) {
+	var params = [
+		{'key':'report_group_id', 'value':reportGroupId},
+		{'key':'name', 'value':name},
+		{'key':'notes', 'value':notes},
+		{'key':'query', 'value':query},
+	];
+	if(id > 0)
+		params.push({'key':'edit_report_id', 'value':id});
+	else
+		params.push({'key':'create_report', 'value':name});
+	ajaxRequestPost('ajax-handler/reports.php', urlencodeArray(params), null, function(text) {
+		dialogContainer.close();
+		if(id > 0) {
+			refreshContent();
+			emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
+		} else {
+			refreshContentExplorer('views/report-details.php?id='+parseInt(text));
+			emitMessage(LANG['report_created'], name, MESSAGE_TYPE_SUCCESS);
+		}
 	});
 }
 function removeSelectedReport(checkboxName, attributeName=null) {
@@ -2454,25 +2863,6 @@ function confirmRemoveReport(ids, infoText='', redirect=null) {
 			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
 		});
 	}
-}
-function moveReportToGroup(reportId, groupId) {
-	var params = [];
-	params.push({'key':'move_to_group_id', 'value':groupId});
-	reportId.split(',').forEach(function(entry) {
-		params.push({'key':'move_to_group_report_id[]', 'value':entry});
-	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/reports.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
-		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
-	});
-}
-function showDialogMoveReportToGroup(id) {
-	if(!id) return;
-	showDialogAjax(LANG['report_groups'], 'views/dialog/report-group-move.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function() {
-		txtEditReportId.value = id;
-	});
 }
 
 // ======== SYSTEM USER OPERATIONS ========
@@ -2542,51 +2932,102 @@ function unlockSelectedSystemUser(checkboxName) {
 	});
 }
 function showDialogEditOwnSystemUserPassword() {
-	showDialogAjax(LANG['change_password'], 'views/dialog/system-user-edit-own-password.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['change_password'], 'views/dialog/system-user-edit-own-password.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			let txtOldPassword = dialogContainer.querySelectorAll('input[name=old_password]')[0];
+			let txtNewPassword = dialogContainer.querySelectorAll('input[name=new_password]')[0];
+			let txtNewPasswordConfirm = dialogContainer.querySelectorAll('input[name=new_password_confirm]')[0];
+			if(txtNewPassword.value != txtNewPasswordConfirm.value) {
+				emitMessage(LANG['passwords_do_not_match'], '', MESSAGE_TYPE_WARNING);
+				return false;
+			}
+			editOwnSystemUserPassword(
+				dialogContainer,
+				txtOldPassword.value,
+				txtNewPassword.value
+			);
+		});
+	});
 }
-function editOwnSystemUserPassword(oldPassword, newPassword) {
-	var params = [];
-	params.push({'key':'edit_own_system_user_password', 'value':newPassword});
-	params.push({'key':'old_password', 'value':oldPassword});
+function editOwnSystemUserPassword(dialogContainer, oldPassword, newPassword) {
+	var params = [
+		{'key':'edit_own_system_user_password', 'value':newPassword},
+		{'key':'old_password', 'value':oldPassword},
+	];
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
 function showDialogEditSystemUser(id=-1) {
 	title = LANG['edit_system_user'];
 	if(id == -1) title = LANG['create_system_user'];
-	showDialogAjax(title, 'views/dialog/system-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/system-user-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			let txtId = dialogContainer.querySelectorAll('input[name=id]')[0];
+			let txtUsername = dialogContainer.querySelectorAll('input[name=username]')[0];
+			let txtDisplayName = dialogContainer.querySelectorAll('input[name=display_name]')[0];
+			let txtDescription = dialogContainer.querySelectorAll('textarea[name=description]')[0];
+			let txtNewPassword = dialogContainer.querySelectorAll('input[name=new_password]')[0];
+			let txtNewPasswordConfirm = dialogContainer.querySelectorAll('input[name=new_password_confirm]')[0];
+			let sltRole = dialogContainer.querySelectorAll('select[name=system_user_role_id]')[0];
+			if(txtNewPassword.value != txtNewPasswordConfirm.value) {
+				emitMessage(LANG['passwords_do_not_match'], '', MESSAGE_TYPE_WARNING);
+				return false;
+			}
+			editSystemUser(
+				dialogContainer,
+				txtId.value,
+				txtUsername.value,
+				txtDisplayName.value,
+				txtDescription.value,
+				txtNewPassword.value,
+				sltRole.value
+			);
+		});
+	});
 }
-function editSystemUser(id, username, displayName, description, password, roleId) {
-	var params = [];
-	params.push({'key':'edit_system_user_id', 'value':id});
-	params.push({'key':'username', 'value':username});
-	params.push({'key':'display_name', 'value':displayName});
-	params.push({'key':'description', 'value':description});
-	params.push({'key':'password', 'value':password});
-	params.push({'key':'system_user_role_id', 'value':roleId});
+function editSystemUser(dialogContainer, id, username, displayName, description, password, roleId) {
+	var params = [
+		{'key':'edit_system_user_id', 'value':id},
+		{'key':'username', 'value':username},
+		{'key':'display_name', 'value':displayName},
+		{'key':'description', 'value':description},
+		{'key':'password', 'value':password},
+		{'key':'system_user_role_id', 'value':roleId},
+	];
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
 	});
 }
 function showDialogEditSystemUserRole(id=-1) {
 	title = LANG['edit_system_user_role'];
 	if(id == -1) title = LANG['create_system_user_role'];
-	showDialogAjax(title, 'views/dialog/system-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(title, 'views/dialog/system-user-role-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			let txtId = dialogContainer.querySelectorAll('input[name=id]')[0];
+			let txtName = dialogContainer.querySelectorAll('input[name=name]')[0];
+			let txtPermissions = dialogContainer.querySelectorAll('textarea[name=permissions]')[0];
+			editSystemUserRole(
+				dialogContainer,
+				txtId.value,
+				txtName.value,
+				txtPermissions.value,
+			)
+		});
+	});
 }
-function editSystemUserRole(id, name, permissions) {
-	var params = [];
-	params.push({'key':'edit_system_user_role_id', 'value':id});
-	params.push({'key':'name', 'value':name});
-	params.push({'key':'permissions', 'value':permissions});
+function editSystemUserRole(dialogContainer, id, name, permissions) {
+	var params = [
+		{'key':'edit_system_user_role_id', 'value':id},
+		{'key':'name', 'value':name},
+		{'key':'permissions', 'value':permissions},
+	];
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
-		hideDialog(); refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 	});
 }
@@ -2615,27 +3056,31 @@ function confirmRemoveSelectedSystemUserRole(checkboxName) {
 }
 
 // ======== SETTINGS OPERATIONS ========
-function showDialogEditEventQueryRule(id=-1, log='', query='') {
+function showDialogEditEventQueryRule(id=-1) {
 	title = LANG['change'];
-	buttonText = LANG['change'];
-	if(id == -1) {
-		title = LANG['create'];
-		buttonText = LANG['create'];
-	}
-	showDialogAjax(title, 'views/dialog/event-query-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditEventQueryRuleId.value = id;
-		txtEditEventQueryRuleLog.value = log;
-		txtEditEventQueryRuleQuery.value = query;
-		spnBtnUpdateEventQueryRule.innerText = buttonText;
+	if(id == -1) title = LANG['create'];
+	showDialogAjax(title, 'views/dialog/event-query-rule-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtEventQueryRuleId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let txtEventQueryRuleLog = dialogContainer.querySelectorAll('input[name=log]')[0];
+		let txtEventQueryRuleQuery = dialogContainer.querySelectorAll('textarea[name=query]')[0];
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editEventQueryRule(
+				dialogContainer,
+				txtEventQueryRuleId.value,
+				txtEventQueryRuleLog.value,
+				txtEventQueryRuleQuery.value
+			);
+		});
 	});
 }
-function editEventQueryRule(id, log, query) {
-	var params = [];
-	params.push({'key':'edit_event_query_rule_id', 'value':id});
-	params.push({'key':'log', 'value':log});
-	params.push({'key':'query', 'value':query});
+function editEventQueryRule(dialogContainer, id, log, query) {
+	var params = [
+		{'key':'edit_event_query_rule_id', 'value':id},
+		{'key':'log', 'value':log},
+		{'key':'query', 'value':query},
+	];
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
-		hideDialog(); refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], log, MESSAGE_TYPE_SUCCESS);
 	});
 }
@@ -2663,26 +3108,24 @@ function confirmRemoveSelectedEventQueryRule(checkboxName) {
 	}
 }
 
-function showDialogEditPasswordRotationRule(id=-1, computer_group_id='', username='administrator', alphabet='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-_+*.#=!', length=15, validSeconds=2592000, history=5, default_password='') {
-	title = LANG['change'];
-	buttonText = LANG['change'];
-	if(id == -1) {
-		title = LANG['create'];
-		buttonText = LANG['create'];
-	}
-	showDialogAjax(title, 'views/dialog/password-rotation-rule-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		txtEditPasswordRotationRuleId.value = id;
-		sltEditPasswordRotationRuleComputerGroupId.value = computer_group_id;
-		txtEditPasswordRotationRuleUsername.value = username;
-		txtEditPasswordRotationRuleAlphabet.value = alphabet;
-		txtEditPasswordRotationRuleLength.value = length;
-		txtEditPasswordRotationRuleValidSeconds.value = validSeconds;
-		txtEditPasswordRotationRuleHistory.value = history;
-		txtEditPasswordRotationRuleDefaultPassword.value = default_password;
-		spnBtnUpdatePasswordRotationRule.innerText = buttonText;
+function showDialogEditPasswordRotationRule(id=-1) {
+	showDialogAjax('', 'views/dialog/password-rotation-rule-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editPasswordRotationRule(
+				dialogContainer,
+				dialogContainer.querySelectorAll('input[name=id]')[0].value,
+				dialogContainer.querySelectorAll('select[name=computer_group_id]')[0].value,
+				dialogContainer.querySelectorAll('input[name=username]')[0].value,
+				dialogContainer.querySelectorAll('input[name=alphabet]')[0].value,
+				dialogContainer.querySelectorAll('input[name=length]')[0].value,
+				dialogContainer.querySelectorAll('input[name=valid_seconds]')[0].value,
+				dialogContainer.querySelectorAll('input[name=history]')[0].value,
+				dialogContainer.querySelectorAll('input[name=default_password]')[0].value,
+			);
+		});
 	});
 }
-function editPasswordRotationRule(id, computer_group_id, username, alphabet, length, valid_seconds, history, default_password) {
+function editPasswordRotationRule(dialogContainer, id, computer_group_id, username, alphabet, length, valid_seconds, history, default_password) {
 	var params = [];
 	params.push({'key':'edit_password_rotation_rule_id', 'value':id});
 	params.push({'key':'computer_group_id', 'value':computer_group_id});
@@ -2693,7 +3136,7 @@ function editPasswordRotationRule(id, computer_group_id, username, alphabet, len
 	params.push({'key':'history', 'value':history});
 	params.push({'key':'default_password', 'value':default_password});
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
-		hideDialog(); refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
 	});
 }
@@ -2722,79 +3165,52 @@ function confirmRemoveSelectedPasswordRotationRule(checkboxName) {
 }
 
 function showDialogEditGeneralConfig() {
-	showDialogAjax(LANG['oco_configuration'], 'views/dialog/general-config-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['oco_configuration'], 'views/dialog/general-config-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+			editGeneralConfig(
+				dialogContainer,
+				dialogContainer.querySelectorAll('input[name=client-api-enabled]')[0].checked ? 1 : 0,
+				dialogContainer.querySelectorAll('input[name=client-api-key]')[0].value,
+				dialogContainer.querySelectorAll('input[name=agent-registration-enabled]')[0].checked ? 1 : 0,
+				dialogContainer.querySelectorAll('input[name=agent-registration-key]')[0].value,
+				dialogContainer.querySelectorAll('input[name=assume-computer-offline-after]')[0].value,
+				dialogContainer.querySelectorAll('input[name=wol-shutdown-expiry]')[0].value,
+				dialogContainer.querySelectorAll('input[name=agent-update-interval]')[0].value,
+				dialogContainer.querySelectorAll('input[name=purge-succeeded-jobs-after]')[0].value,
+				dialogContainer.querySelectorAll('input[name=purge-failed-jobs-after]')[0].value,
+				dialogContainer.querySelectorAll('input[name=purge-domain-user-logons-after]')[0].value,
+				dialogContainer.querySelectorAll('input[name=purge-events-after]')[0].value,
+				dialogContainer.querySelectorAll('select[name=log-level]')[0].value,
+				dialogContainer.querySelectorAll('input[name=purge-logs-after]')[0].value,
+				dialogContainer.querySelectorAll('input[name=computer-keep-inactive-screens]')[0].checked ? 1 : 0,
+				dialogContainer.querySelectorAll('input[name=self-service-enabled]')[0].checked ? 1 : 0,
+			);
+		});
+	});
 }
-function editGeneralConfig(clientApiEnabled, clientApiKey, agentRegistrationEnabled, agentRegistrationKey, assumeComputerOfflineAfter, wolShutdownExpiry, agentUpdateInterval, purgeSucceededJobsAfter, purgeFailedJobsAfter, purgeDomainUserLogonsAfter, purgeEventsAfter, logLevel, purgeLogsAfter, keepInactiveScreens, selfServiceEnabled) {
-	let req = new XMLHttpRequest();
-	let formData = new FormData();
-	formData.append('edit_general_config', 1);
-	formData.append('client_api_enabled', clientApiEnabled);
-	formData.append('client_api_key', clientApiKey);
-	formData.append('agent_registration_enabled', agentRegistrationEnabled);
-	formData.append('agent_registration_key', agentRegistrationKey);
-	formData.append('assume_computer_offline_after', assumeComputerOfflineAfter);
-	formData.append('wol_shutdown_expiry', wolShutdownExpiry);
-	formData.append('agent_update_interval', agentUpdateInterval);
-	formData.append('purge_succeeded_jobs_after', purgeSucceededJobsAfter);
-	formData.append('purge_failed_jobs_after', purgeFailedJobsAfter);
-	formData.append('purge_domain_user_logons_after', purgeDomainUserLogonsAfter);
-	formData.append('purge_events_after', purgeEventsAfter);
-	formData.append('log_level', logLevel);
-	formData.append('purge_logs_after', purgeLogsAfter);
-	formData.append('computer_keep_inactive_screens', keepInactiveScreens);
-	formData.append('self_service_enabled', selfServiceEnabled);
-	req.onreadystatechange = function() {
-		if(this.readyState == 4) {
-			if(this.status == 200) {
-				hideDialog(); refreshContent();
-				emitMessage(LANG['saved'], LANG['oco_configuration'], MESSAGE_TYPE_SUCCESS);
-			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
-			}
-		}
-	};
-	req.open('POST', 'ajax-handler/settings.php');
-	req.send(formData);
-}
-function showDialogEditLdapConfigSystemUsers() {
-	showDialogAjax(LANG['ldap_config'], 'views/dialog/system-user-ldap-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
-}
-function editLdapConfigSystemUsers(jsonConfig) {
-	let req = new XMLHttpRequest();
-	let formData = new FormData();
-	formData.append('edit_system_user_ldap_sync', jsonConfig);
-	req.onreadystatechange = function() {
-		if(this.readyState == 4) {
-			if(this.status == 200) {
-				hideDialog(); refreshContent();
-				emitMessage(LANG['saved'], LANG['ldap_config'], MESSAGE_TYPE_SUCCESS);
-			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
-			}
-		}
-	};
-	req.open('POST', 'ajax-handler/settings.php');
-	req.send(formData);
-}
-function showDialogEditLdapConfigDomainUsers() {
-	showDialogAjax(LANG['ldap_config'], 'views/dialog/domain-user-ldap-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
-}
-function editLdapConfigDomainUsers(jsonConfig) {
-	let req = new XMLHttpRequest();
-	let formData = new FormData();
-	formData.append('edit_domain_user_ldap_sync', jsonConfig);
-	req.onreadystatechange = function() {
-		if(this.readyState == 4) {
-			if(this.status == 200) {
-				hideDialog(); refreshContent();
-				emitMessage(LANG['saved'], LANG['ldap_config'], MESSAGE_TYPE_SUCCESS);
-			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
-			}
-		}
-	};
-	req.open('POST', 'ajax-handler/settings.php');
-	req.send(formData);
+function editGeneralConfig(dialogContainer, clientApiEnabled, clientApiKey, agentRegistrationEnabled, agentRegistrationKey, assumeComputerOfflineAfter, wolShutdownExpiry, agentUpdateInterval, purgeSucceededJobsAfter, purgeFailedJobsAfter, purgeDomainUserLogonsAfter, purgeEventsAfter, logLevel, purgeLogsAfter, keepInactiveScreens, selfServiceEnabled) {
+	var params = [
+		{'key':'edit_general_config', 'value':1},
+		{'key':'client_api_enabled', 'value':clientApiEnabled},
+		{'key':'client_api_key', 'value':clientApiKey},
+		{'key':'agent_registration_enabled', 'value':agentRegistrationEnabled},
+		{'key':'agent_registration_key', 'value':agentRegistrationKey},
+		{'key':'assume_computer_offline_after', 'value':assumeComputerOfflineAfter},
+		{'key':'wol_shutdown_expiry', 'value':wolShutdownExpiry},
+		{'key':'agent_update_interval', 'value':agentUpdateInterval},
+		{'key':'purge_succeeded_jobs_after', 'value':purgeSucceededJobsAfter},
+		{'key':'purge_failed_jobs_after', 'value':purgeFailedJobsAfter},
+		{'key':'purge_domain_user_logons_after', 'value':purgeDomainUserLogonsAfter},
+		{'key':'purge_events_after', 'value':purgeEventsAfter},
+		{'key':'log_level', 'value':logLevel},
+		{'key':'purge_logs_after', 'value':purgeLogsAfter},
+		{'key':'computer_keep_inactive_screens', 'value':keepInactiveScreens},
+		{'key':'self_service_enabled', 'value':selfServiceEnabled},
+	];
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(text) {
+		dialogContainer.close(); refreshContent();
+		emitMessage(LANG['saved'], LANG['oco_configuration'], MESSAGE_TYPE_SUCCESS);
+	});
 }
 function enableDisableButton(btn, state) {
 	var btnImg = btn.querySelectorAll('img')[0];
@@ -2832,53 +3248,30 @@ function ldapSyncDomainUsers(btn) {
 		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
-function showDialogEditWolSatellites() {
-	showDialogAjax(LANG['wol_satellites'], 'views/dialog/wol-satellites-edit.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
-}
-function editWolSatellites(jsonConfig) {
-	let req = new XMLHttpRequest();
-	let formData = new FormData();
-	formData.append('edit_wol_satellites', jsonConfig);
-	req.onreadystatechange = function() {
-		if(this.readyState == 4) {
-			if(this.status == 200) {
-				hideDialog(); refreshContent();
-				emitMessage(LANG['saved'], LANG['wol_satellites'], MESSAGE_TYPE_SUCCESS);
-			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
-			}
-		}
-	};
-	req.open('POST', 'ajax-handler/settings.php');
-	req.send(formData);
-}
-function showDialogEditSetting(key='', file=false, warning=true, keyHidden=false, title=null) {
+function showDialogEditSetting(key='', file=false, warning='be_careful_when_manual_editing_settings', hideKey=false, title=null) {
 	if(title == null) {
 		title = LANG['edit_setting'];
-		if(key == '') {
+		if(key == '')
 			title = LANG['create_setting'];
-		}
 	}
-	showDialogAjax(title, 'views/dialog/setting-edit.php?key='+encodeURIComponent(key), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(){
-		if(file) {
-			fleEditSettingValue.classList.remove('hidden');
-			txtEditSettingValue.classList.add('hidden');
-			if(typeof file === 'string' || file instanceof String) {
-				fleEditSettingValue.accept = file;
-			}
-			if(keyHidden) window.setTimeout(() => fleEditSettingValue.focus(), 0);
-		} else {
-			if(keyHidden) window.setTimeout(() => txtEditSettingValue.focus(), 0);
+	showDialogAjax(title,
+		'views/dialog/setting-edit.php?key='+encodeURIComponent(key)+'&file='+encodeURIComponent(file?file:0)+'&warning='+encodeURIComponent(warning?warning:0)+'&hideKey='+(hideKey?1:0),
+		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO,
+		function(dialogContainer){
+			dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+				let txtSettingKey = dialogContainer.querySelectorAll('input[name=key]')[0];
+				let txtSettingValue = dialogContainer.querySelectorAll('textarea[name=value]')[0];
+				let fleSettingValue = dialogContainer.querySelectorAll('input[name=value]')[0];
+				editSetting(
+					dialogContainer,
+					txtSettingKey.value,
+					fleSettingValue.files.length ? readFileInputBlob(fleSettingValue.files[0]) : txtSettingValue.value
+				);
+			});
 		}
-		if(!warning) {
-			trSettingsManualChangesWarning.classList.add('hidden');
-		}
-		if(keyHidden) {
-			txtEditSettingKey.classList.add('hidden');
-		}
-	});
+	);
 }
-function editSetting(key, value) {
+function editSetting(dialogContainer, key, value) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('edit_setting', key);
@@ -2886,7 +3279,7 @@ function editSetting(key, value) {
 	req.onreadystatechange = function() {
 		if(this.readyState == 4) {
 			if(this.status == 200) {
-				hideDialog(); refreshContent();
+				dialogContainer.close(); refreshContent();
 				emitMessage(LANG['saved'], key, MESSAGE_TYPE_SUCCESS);
 				if(key == 'license') {
 					emitMessage(LANG['thank_you_for_support'], '', MESSAGE_TYPE_INFO);
@@ -2995,12 +3388,13 @@ function showDialogManagedPlayStore() {
 		script.src = 'https://apis.google.com/js/api.js';
 		script.onload = function() {
 			// show the OCO dialog
-			showDialog(LANG['manage_android_apps'], '', DIALOG_BUTTONS_CLOSE);
+			let dialogContainer = showDialog(LANG['manage_android_apps'], '', DIALOG_BUTTONS_CLOSE);
+			let dialogText  = dialogContainer.querySelectorAll('.dialogText')[0];
 			// embed the Play Store iframe into the dialog
 			gapi.load('gapi.iframes', function() {
 				var options = {
 					'url': 'https://play.google.com/work/embedded/search?token='+encodeURIComponent(token)+'&mode=SELECT',
-					'where': obj('dialog-text'),
+					'where': dialogText,
 					'attributes': { style:'height:100%; display:block', scrolling:'yes'}
 				};
 				var iframe = gapi.iframes.getContext().openChild(options);
@@ -3035,12 +3429,13 @@ function showDialogAndroidZeroTouch() {
 		script.src = 'https://apis.google.com/js/api.js';
 		script.onload = function() {
 			// show the OCO dialog
-			showDialog(LANG['manage_zero_touch_enrollment'], '', DIALOG_BUTTONS_CLOSE);
+			let dialogContainer = showDialog(LANG['manage_zero_touch_enrollment'], '', DIALOG_BUTTONS_CLOSE);
+			let dialogText = dialogContainer.querySelectorAll('.dialogText')[0];
 			// embed the Play Store iframe into the dialog
 			gapi.load('gapi.iframes', function() {
 				var options = {
 					'url': 'https://enterprise.google.com/android/zero-touch/embedded/companyhome?token='+encodeURIComponent(token)+'&dpcId=com.google.android.apps.work.clouddpc',
-					'where': obj('dialog-text'),
+					'where': dialogText,
 					'attributes': { style:'height:100%; display:block', scrolling:'yes'}
 				};
 				var iframe = gapi.iframes.getContext().openChild(options);
@@ -3060,12 +3455,13 @@ function showDialogManagedPlayStoreConfig(packageName, managedAppId, configId=nu
 		script.src = 'https://apis.google.com/js/api.js';
 		script.onload = function() {
 			// show the OCO dialog
-			showDialog(packageName, '', DIALOG_BUTTONS_CLOSE);
+			let dialogContainer = showDialog(packageName, '', DIALOG_BUTTONS_CLOSE);
+			let dialogText = dialogContainer.querySelectorAll('.dialogText')[0];
 			// embed the Play Store iframe into the dialog
 			gapi.load('gapi.iframes', function() {
 				var options = {
 					'url': 'https://play.google.com/managed/mcm?token='+encodeURIComponent(token)+'&packageName='+encodeURIComponent(packageName)+(configId ? '&mcmId='+encodeURIComponent(configId)+'&canDelete=TRUE' : ''),
-					'where': obj('dialog-text'),
+					'where': dialogText,
 					'attributes': { style:'height:100%; display:block', scrolling:'yes'}
 				};
 				var iframe = gapi.iframes.getContext().openChild(options);
@@ -3077,8 +3473,7 @@ function showDialogManagedPlayStoreConfig(packageName, managedAppId, configId=nu
 					]);
 					ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
 						emitMessage(LANG['saved'], event.name, MESSAGE_TYPE_SUCCESS);
-						refreshContent();
-						hideDialog();
+						dialogContainer.close(); refreshContent();
 					});
 				}, gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER);
 				iframe.register('onconfigdeleted', function(event) {
@@ -3088,8 +3483,7 @@ function showDialogManagedPlayStoreConfig(packageName, managedAppId, configId=nu
 					]);
 					ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
 						emitMessage(LANG['configuration_deleted'], '', MESSAGE_TYPE_SUCCESS);
-						refreshContent();
-						hideDialog();
+						dialogContainer.close(); refreshContent();
 					});
 				}, gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER);
 			});
@@ -3138,10 +3532,48 @@ function syncAndroidDevices(btn) {
 	});
 }
 function showDialogAssignedProfileInfo(groupId, profileId) {
-	showDialogAjax(LANG['managed_app'], 'views/dialog/mobile-device-assigned-profile-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&profile_id='+encodeURIComponent(profileId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['managed_app'], 'views/dialog/mobile-device-assigned-profile-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&profile_id='+encodeURIComponent(profileId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=remove]')[0].addEventListener('click', (e)=>{
+			removeProfileFromGroup(dialogContainer, [profileId], groupId);
+		});
+	});
+}
+function removeProfileFromGroup(dialogContainer, ids, groupId) {
+	if(!confirm(LANG['are_you_sure'])) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'remove_from_group_id[]', 'value':entry});
+	});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_from_group_profile_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		dialogContainer.close(); refreshContent();
+		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 function showDialogAssignedManagedAppInfo(groupId, managedAppId) {
-	showDialogAjax(LANG['managed_app'], 'views/dialog/mobile-device-assigned-managed-app-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&managed_app_id='+encodeURIComponent(managedAppId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+	showDialogAjax(LANG['managed_app'], 'views/dialog/mobile-device-assigned-managed-app-info.php?mobile_device_group_id='+encodeURIComponent(groupId)+'&managed_app_id='+encodeURIComponent(managedAppId), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		dialogContainer.querySelectorAll('button[name=remove]')[0].addEventListener('click', (e)=>{
+			removeManagedAppFromGroup(dialogContainer, [managedAppId], groupId);
+		});
+	});
+}
+function removeManagedAppFromGroup(dialogContainer, ids, groupId) {
+	if(!confirm(LANG['are_you_sure'])) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'remove_from_group_id[]', 'value':entry});
+	});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_from_group_managed_app_id[]', 'value':entry});
+	});
+	var paramString = urlencodeArray(params);
+	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		dialogContainer.close(); refreshContent();
+		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	});
 }
 
 function checkUpdate() {

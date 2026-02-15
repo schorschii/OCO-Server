@@ -8,17 +8,18 @@ try {
 	if(!empty($_POST['edit_report_id'])
 	&& isset($_POST['name'])
 	&& isset($_POST['notes'])
-	&& isset($_POST['query'])) {
-		$cl->editReport($_POST['edit_report_id'], $_POST['name'], $_POST['notes'], $_POST['query']);
+	&& isset($_POST['query'])
+	&& isset($_POST['report_group_id'])) {
+		$cl->editReport($_POST['edit_report_id'], $_POST['name'], $_POST['notes'], $_POST['query'], $_POST['report_group_id']);
 		die();
 	}
 
 	if(!empty($_POST['create_report'])
 	&& isset($_POST['notes'])
 	&& isset($_POST['query'])
-	&& isset($_POST['group_id'])) {
+	&& isset($_POST['report_group_id'])) {
 		die(strval(intval(
-			$cl->createReport($_POST['create_report'], $_POST['notes'], $_POST['query'], $_POST['group_id'])
+			$cl->createReport($_POST['create_report'], $_POST['notes'], $_POST['query'], $_POST['report_group_id'])
 		)));
 	}
 
@@ -43,13 +44,6 @@ try {
 	if(!empty($_POST['remove_group_id']) && is_array($_POST['remove_group_id'])) {
 		foreach($_POST['remove_group_id'] as $id) {
 			$cl->removeReportGroup($id, !empty($_POST['force']));
-		}
-		die();
-	}
-
-	if(isset($_POST['move_to_group_id']) && isset($_POST['move_to_group_report_id']) && is_array($_POST['move_to_group_report_id'])) {
-		foreach($_POST['move_to_group_report_id'] as $rid) {
-			$cl->moveReportToGroup($rid, intval($_POST['move_to_group_id']));
 		}
 		die();
 	}

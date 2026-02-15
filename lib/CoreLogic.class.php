@@ -2002,7 +2002,7 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.report.create', ['name'=>$name, 'notes'=>$notes, 'query'=>$query, 'report_group_id'=>$groupId]);
 		return $insertId;
 	}
-	public function editReport($id, $name, $notes, $query) {
+	public function editReport($id, $name, $notes, $query, $groupId) {
 		$report = $this->db->selectReport($id);
 		if(empty($report)) throw new NotFoundException();
 		$this->checkPermission($report, PermissionManager::METHOD_WRITE);
@@ -2010,19 +2010,13 @@ class CoreLogic {
 		if(empty(trim($name)) || empty(trim($query))) {
 			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
 		}
-		$this->db->updateReport($report->id, $report->report_group_id, $name, $notes, $query);
+		if($report->report_group_id != $groupId) {
+			$reportGroup = $this->db->selectReportGroup($groupId);
+			if(empty($reportGroup)) throw new NotFoundException();
+			$this->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
+		}
+		$this->db->updateReport($report->id, $groupId, $name, $notes, $query);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $report->id, 'oco.report.update', ['name'=>$name, 'notes'=>$notes, 'query'=>$query]);
-	}
-	public function moveReportToGroup($reportId, $groupId) {
-		$report = $this->db->selectReport($reportId);
-		if(empty($report)) throw new ENotFoundxception();
-		$reportGroup = $this->db->selectReportGroup($groupId);
-		if(empty($reportGroup)) throw new NotFoundException();
-		$this->checkPermission($report, PermissionManager::METHOD_WRITE);
-		$this->checkPermission($reportGroup, PermissionManager::METHOD_WRITE);
-
-		$this->db->updateReport($report->id, intval($groupId), $report->name, $report->notes, $report->query);
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $report->id, 'oco.report.move', ['group_id'=>$reportGroup->id]);
 	}
 	public function removeReport($id) {
 		$report = $this->db->selectReport($id);
@@ -2482,58 +2476,6 @@ class CoreLogic {
 		if(!$insertId) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.delete', [
 			$key,
-		]);
-		return $insertId;
-	}
-	public function editLicense($license) {
-		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
-
-		$insertId = $this->db->insertOrUpdateSettingByKey('license', $license);
-		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
-			'license'=>$license,
-		]);
-		return $insertId;
-	}
-	public function editWolSatellites($jsonConfig) {
-		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
-
-		$decoded = json_decode($jsonConfig);
-		if(!$decoded) {
-			throw new InvalidRequestException(LANG('json_syntax_error'));
-		}
-		$insertId = $this->db->insertOrUpdateSettingByKey('wol-satellites', json_encode($decoded, JSON_PRETTY_PRINT));
-		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
-			'wol-satellites'=>$jsonConfig,
-		]);
-		return $insertId;
-	}
-	public function editSystemUserLdapSync($jsonConfig) {
-		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
-
-		$decoded = json_decode($jsonConfig);
-		if(!$decoded) {
-			throw new InvalidRequestException(LANG('json_syntax_error'));
-		}
-		$insertId = $this->db->insertOrUpdateSettingByKey('system-user-ldapsync', json_encode($decoded, JSON_PRETTY_PRINT));
-		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
-			'system-user-ldapsync'=>$jsonConfig,
-		]);
-		return $insertId;
-	}
-	public function editDomainUserLdapSync($jsonConfig) {
-		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
-
-		$decoded = json_decode($jsonConfig);
-		if(!$decoded) {
-			throw new InvalidRequestException(LANG('json_syntax_error'));
-		}
-		$insertId = $this->db->insertOrUpdateSettingByKey('domain-user-ldapsync', json_encode($decoded, JSON_PRETTY_PRINT));
-		if(!$insertId) throw new Exception(LANG('unknown_error'));
-		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.setting.update', [
-			'domain-user-ldapsync'=>$jsonConfig,
 		]);
 		return $insertId;
 	}

@@ -59,7 +59,7 @@ try {
 	<h1><img src='<?php echo $family->getIcon(); ?>'><span id='page-title'><span id='spnPackageFamilyName'><?php echo htmlspecialchars($family->name); ?></span></span></h1>
 	<div class='controls'>
 		<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
-		<button onclick='showDialogEditPackageFamily(<?php echo $family->id; ?>, spnPackageFamilyName.innerText, <?php echo $family->license_count===null?-1:$family->license_count; ?>, spnPackageFamilyNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+		<button onclick='showDialogEditPackageFamily(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		<button class='<?php echo (!empty($family->icon)?'nomarginright':''); ?>' onclick='fleIcon.click()' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-add.dyn.svg'>&nbsp;<?php echo LANG('change_icon'); ?></button>
 		<?php if(!empty($family->icon)) { ?>
 			<button onclick='removePackageFamilyIcon(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-remove.dyn.svg'>&nbsp;<?php echo LANG('remove_icon'); ?></button>
@@ -69,11 +69,9 @@ try {
 		<span><a <?php echo Html::explorerLink('views/package-families.php'); ?>><?php echo LANG('package_families'); ?></a></span>
 	</div>
 	<input type='file' id='fleIcon' style='display:none' onchange='editPackageFamilyIcon(<?php echo $family->id; ?>, this.files[0])'></input>
-	<span id='spnPackageFamilyNotes'>
 	<?php if(!empty($family->notes)) { ?>
 		<p class='quote'><?php echo nl2br(htmlspecialchars($family->notes)); ?></p>
 	<?php } ?>
-	</span>
 	<?php if($family->license_count !== null && $family->license_count >= 0) {
 		$licenseUsed = $family->install_count;
 		$licensePercent = $family->license_count==0 ? 100 : $licenseUsed * 100 / $family->license_count;

@@ -34,7 +34,7 @@ if(!empty($_GET['id'])) {
 	<div class='details-header'>
 		<h1><img src='img/<?php echo $icon; ?>.dyn.svg' class='<?php echo($container->enabled ? 'online' : 'offline'); ?>'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 		<div class='controls'>
-			<button onclick='showDialogEditJobContainer(<?php echo $container->id; ?>, spnJobContainerName.innerText, spnJobContainerEnabled.innerText, spnJobContainerStartTime.innerText, spnJobContainerEndTime.innerText, spnJobContainerSequenceMode.innerText, spnJobContainerPriority.innerText, spnJobContainerAgentIpRanges.innerText, spnJobContainerTimeFrames.innerText, spnJobContainerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<button onclick='showDialogEditJobContainer(<?php echo $container->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 			<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 			<span class='filler'></span>
 		</div>
@@ -52,7 +52,6 @@ if(!empty($_GET['id'])) {
 				<th><?php echo LANG('enabled'); ?></th>
 				<td>
 					<?php if($container->enabled=='1') echo LANG('yes'); else echo LANG('no'); ?>
-					<span id='spnJobContainerEnabled' class='rawvalue'><?php echo htmlspecialchars($container->enabled); ?></span>
 				</td>
 			</tr>
 			<tr>
@@ -68,7 +67,7 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG('start'); ?></th>
 				<td>
-					<span id='spnJobContainerStartTime'><?php echo htmlspecialchars($container->start_time); ?></span>
+					<span><?php echo htmlspecialchars($container->start_time); ?></span>
 					<?php if($container->wol_sent >= 0) echo ' ('.LANG('wol').')'; if($container->shutdown_waked_after_completion > 0) echo ' ('.LANG('shutdown_waked_computers').')'; ?>
 				</td>
 			</tr>
@@ -76,13 +75,11 @@ if(!empty($_GET['id'])) {
 				<th><?php echo LANG('end'); ?></th>
 				<td>
 					<?php echo htmlspecialchars($container->end_time ?? "-"); ?>
-					<span id='spnJobContainerEndTime' class='rawvalue'><?php echo htmlspecialchars($container->end_time ?? ""); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('sequence_mode'); ?></th>
 				<td>
-					<span id='spnJobContainerSequenceMode' class='rawvalue'><?php echo htmlspecialchars($container->sequence_mode); ?></span>
 					<?php switch($container->sequence_mode) {
 						case(Models\JobContainer::SEQUENCE_MODE_IGNORE_FAILED): echo LANG('ignore_failed'); break;
 						case(Models\JobContainer::SEQUENCE_MODE_ABORT_AFTER_FAILED): echo LANG('abort_after_failed'); break;
@@ -93,25 +90,25 @@ if(!empty($_GET['id'])) {
 			<tr>
 				<th><?php echo LANG('priority'); ?></th>
 				<td>
-					<span id='spnJobContainerPriority'><?php echo htmlspecialchars($container->priority); ?></span>
+					<span><?php echo htmlspecialchars($container->priority); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('agent_ip_range'); ?></th>
 				<td>
-					<span id='spnJobContainerAgentIpRanges'><?php echo htmlspecialchars($container->agent_ip_ranges??''); ?></span>
+					<span><?php echo htmlspecialchars($container->agent_ip_ranges??''); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('time_frame'); ?></th>
 				<td>
-					<span id='spnJobContainerTimeFrames'><?php echo htmlspecialchars($container->time_frames??''); ?></span>
+					<span><?php echo htmlspecialchars($container->time_frames??''); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('description'); ?></th>
 				<td>
-					<span id='spnJobContainerNotes'><?php echo nl2br(htmlspecialchars($container->notes)); ?></span>
+					<span><?php echo nl2br(htmlspecialchars($container->notes)); ?></span>
 				</td>
 			</tr>
 		</table>
@@ -248,7 +245,7 @@ if(!empty($_GET['id'])) {
 							<div class='controls'>
 								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 								<button onclick='showDialogMoveStaticJobToJobContainer(getSelectedCheckBoxValues("job_id[]", null, true))' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/move.dyn.svg'>&nbsp;<?php echo LANG('move'); ?></button>
-								<button onclick='showDialogRenewFailedStaticJobs(<?php echo $container->id; ?>, spnJobContainerName.innerText+" - <?php echo LANG('renew'); ?>", getSelectedCheckBoxValues("job_id[]", null))' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('renew_failed'); ?></button>
+								<button onclick='showDialogRenewFailedStaticJobs(<?php echo $container->id; ?>, getSelectedCheckBoxValues("job_id[]", null))' <?php if($failed==0 || !$permissionCreate || !$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('renew_failed'); ?></button>
 								<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>

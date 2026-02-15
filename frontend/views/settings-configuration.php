@@ -146,7 +146,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 		<div class='controls heading'>
 			<h2><?php echo LANG('wol_satellites'); ?></h2>
 			<div class='filler invisible'></div>
-			<button onclick='showDialogEditWolSatellites()' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+			<button onclick='showDialogEditSetting("wol-satellites",false,"configuration_json_docs",true,LANG["wol_satellites"])' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 		</div>
 		<?php $satelliteWolServer = json_decode($db->settings->get('wol-satellites')??'', true);
 		if(!is_array($satelliteWolServer) || count($satelliteWolServer) === 0) { ?>

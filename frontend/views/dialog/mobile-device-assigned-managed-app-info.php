@@ -11,12 +11,15 @@ try {
 			$managedApp = $ma;
 	}
 	if(!$managedApp) throw new NotFoundException();
-} catch(NotFoundException $e) {
-	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
-	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
+	http_response_code(403);
+	die(LANG('not_found'));
+} catch(NotFoundException $e) {
+	http_response_code(404);
+	die(LANG('permission_denied'));
 } catch(InvalidRequestException $e) {
-	die("<div class='alert error'>".$e->getMessage()."</div>");
+	http_response_code(400);
+	die($e->getMessage());
 }
 ?>
 
@@ -89,5 +92,5 @@ try {
 </table>
 
 <div class='controls right'>
-	<button onclick='removeManagedAppFromGroup([<?php echo $managedApp->id; ?>],<?php echo $group->id; ?>)'><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG('remove_assignment'); ?></button>
+	<button name='remove'><img src='img/remove.dyn.svg'>&nbsp;<?php echo LANG('remove_assignment'); ?></button>
 </div>

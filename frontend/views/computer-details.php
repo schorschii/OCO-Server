@@ -36,18 +36,41 @@ foreach($services as $s) {
 }
 ?>
 
-<div id='metadata'
-	computerId='<?php echo htmlspecialchars($computer->id,ENT_QUOTES); ?>'
-	computerHostname='<?php echo htmlspecialchars($computer->hostname,ENT_QUOTES); ?>'>
-</div>
 <div class='details-header'>
 	<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($isOnline ? 'online' : 'offline'); ?>' title='<?php echo($isOnline ? LANG('online') : LANG('offline')); ?>'><span id='page-title'><?php echo htmlspecialchars($computer->hostname); ?></span></h1>
 	<div class='controls'>
-		<button onclick='refreshContentDeploy([],[],{"id":metadata.getAttribute("computerId"),"name":metadata.getAttribute("computerHostname")});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
-		<button onclick='confirmWolComputer([metadata.getAttribute("computerId")])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
-		<button onclick='showDialogEditComputer(metadata.getAttribute("computerId"), metadata.getAttribute("computerHostname"), spnComputerNotes.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
-		<button onclick='showDialogAddComputerToGroup(metadata.getAttribute("computerId"))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
-		<button onclick='confirmRemoveComputer([metadata.getAttribute("computerId")], event, metadata.getAttribute("computerHostname"), "views/computers.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+		<button onclick='refreshContentDeploy(
+			[],
+			[],
+			{"id":metadata.getAttribute("computerId"),"name":metadata.getAttribute("computerHostname")}
+			);' <?php if(!$permissionDeploy) echo 'disabled'; ?>>
+			<img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?>
+		</button>
+		<button onclick='confirmWolComputer(
+			[metadata.getAttribute("computerId")]
+			)' <?php if(!$permissionWol) echo 'disabled'; ?>>
+			<img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?>
+		</button>
+		<button onclick='showDialogEditComputer(
+			metadata.getAttribute("computerId")
+			)' <?php if(!$permissionWrite) echo 'disabled'; ?>>
+			<img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?>
+		</button>
+		<button onclick='showDialogAddComputerToGroup(
+			metadata.getAttribute("computerId")
+			)' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>>
+			<img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?>
+		</button>
+		<button onclick='confirmRemoveObject(
+			[metadata.getAttribute("computerId")],
+			"remove_id", "ajax-handler/computers.php",
+			event,
+			LANG["confirm_delete_computer"],
+			metadata.getAttribute("computerHostname"),
+			"views/computers.php"
+			)' <?php if(!$permissionDelete) echo 'disabled'; ?>>
+			<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
+		</button>
 		<span class='filler'></span>
 		<?php
 		foreach($commands as $command) {
@@ -216,7 +239,7 @@ foreach($services as $s) {
 						<tr>
 							<th><?php echo LANG('notes'); ?></th>
 							<td>
-								<span id='spnComputerNotes'><?php echo nl2br(htmlspecialchars(LANG($computer->notes))); ?></span>
+								<?php echo nl2br(htmlspecialchars(LANG($computer->notes))); ?>
 							</td>
 						</tr>
 					</table>
@@ -456,7 +479,7 @@ foreach($services as $s) {
 					<div class='controls heading'>
 						<h2><?php echo LANG('installed_packages'); ?></h2>
 						<div class='filler invisible'></div>
-						<button id='btnAddComputerPackage'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+						<button onclick='showDialogAssignComputerPackage(metadata.getAttribute("computerId"))'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 					</div>
 					<table id='tblInstalledPackageData' class='list searchable sortable savesort'>
 						<thead>
@@ -784,14 +807,7 @@ foreach($services as $s) {
 	</div>
 </div>
 
-<script>
-btnAddComputerPackage.addEventListener('click', (e)=>{
-	showDialogAjax(LANG['add'],
-		'views/dialog/package-select.php?'+urlencodeObject({
-			'action': 'add_computer_package',
-			'subject': metadata.getAttribute('computerId')
-		}),
-		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO
-	);
-});
-</script>
+<div id='metadata'
+	computerId='<?php echo htmlspecialchars($computer->id,ENT_QUOTES); ?>'
+	computerHostname='<?php echo htmlspecialchars($computer->hostname,ENT_QUOTES); ?>'>
+</div>

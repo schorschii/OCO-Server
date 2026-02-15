@@ -1672,6 +1672,17 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PasswordRotationRule');
 	}
+	public function selectPasswordRotationRule($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT prr.*, cg.name AS "computer_group_name" FROM password_rotation_rule prr
+			LEFT JOIN computer_group cg ON cg.id = prr.computer_group_id
+			WHERE prr.id = :id'
+		);
+		$this->stmt->execute([':id' => $id]);
+		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PasswordRotationRule') as $row) {
+			return $row;
+		}
+	}
 	public function selectAllPasswordRotationRuleByComputerId($computer_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT prr.* FROM password_rotation_rule prr

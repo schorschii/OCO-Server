@@ -311,7 +311,7 @@ try {
 										</div>
 										<div class='controls'>
 											<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
-											<button onclick='showDialogUninstall()'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
+											<button onclick='showDialogUninstallSelfService()'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
 										</div>
 									</div>
 								</td>

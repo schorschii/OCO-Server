@@ -9,15 +9,15 @@ try {
 } catch(Exception $ignored) {}
 ?>
 
-<input type='hidden' id='txtEditSystemUserRoleId' value='<?php echo $systemUserRole->id??-1; ?>'></input>
+<input type='hidden' name='id' value='<?php echo $systemUserRole->id??-1; ?>'></input>
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('name'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtEditSystemUserRoleName' autofocus='true' value='<?php echo $systemUserRole->name??''; ?>'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' name='name' autofocus='true' value='<?php echo $systemUserRole->name??''; ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('permission_json'); ?></th>
-		<td><textarea class='fullwidth monospace' autocomplete='new-password' id='txtEditSystemUserRolePermissions' rows='8'><?php echo $systemUserRole->permissions??''; ?></textarea></td>
+		<td><textarea class='fullwidth monospace' autocomplete='new-password' name='permissions' rows='8'><?php echo htmlspecialchars($systemUserRole->permissions??''); ?></textarea></td>
 	</tr>
 	<tr>
 		<th></th>
@@ -30,10 +30,6 @@ try {
 </table>
 
 <div class='controls right'>
-	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button id='btnUpdateSystemUserRole' class='primary' onclick='editSystemUserRole(
-		txtEditSystemUserRoleId.value,
-		txtEditSystemUserRoleName.value,
-		txtEditSystemUserRolePermissions.value,
-	)'><img src='img/send.white.svg'>&nbsp;<span id='spnBtnUpdateSystemUserRole'><?php echo $systemUserRole ? LANG('change') : LANG('create'); ?></span></button>
+	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='primary' name='edit'><img src='img/send.white.svg'>&nbsp;<?php echo $systemUserRole ? LANG('change') : LANG('create'); ?></button>
 </div>

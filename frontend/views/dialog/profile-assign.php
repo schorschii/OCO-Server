@@ -4,16 +4,16 @@ require_once('../../../loader.inc.php');
 require_once('../../session.inc.php');
 ?>
 
-<input type='hidden' id='txtProfileId'></input>
+<input type='hidden' name='ids' value='<?php echo htmlspecialchars(implode(',',$_GET['id'])); ?>'></input>
 <div class='gallery'>
 	<div>
-		<select id='sltNewMobileDeviceGroup' class='resizeVertical' size='10' multiple='true'>
+		<select name='mobile_device_group_id' class='resizeVertical' size='10' multiple='true'>
 			<?php Html::buildGroupOptions($cl, new Models\MobileDeviceGroup()); ?>
 		</select>
 	</div>
 </div>
 
 <div class='controls right'>
-	<button onclick='hideDialog()'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button class='primary' onclick='assignProfileToGroup(txtProfileId.value, getSelectedSelectBoxValues("sltNewMobileDeviceGroup",true))'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='primary' name='assign'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 </div>

@@ -42,14 +42,14 @@ try {
 				foreach($db->selectAllPasswordRotationRule() as $r) {
 					echo "<tr>";
 					echo "<td><input type='checkbox' name='password_rotation_rule_id[]' value='".$r->id."'></td>";
-					echo "<td id='spnPasswordRotationRuleComputerGroup".$r->id."' value='".htmlspecialchars($r->computer_group_id??'')."'>".htmlspecialchars($r->computer_group_name??'-')."</td>";
-					echo "<td id='spnPasswordRotationRuleUsername".$r->id."'>".htmlspecialchars($r->username)."</td>";
-					echo "<td id='spnPasswordRotationRuleAlphabet".$r->id."'>".htmlspecialchars($r->alphabet)."</td>";
-					echo "<td id='spnPasswordRotationRuleLength".$r->id."'>".htmlspecialchars($r->length)."</td>";
-					echo "<td id='spnPasswordRotationRuleValidSeconds".$r->id."' value='".htmlspecialchars($r->valid_seconds,ENT_QUOTES)."'>".niceTime($r->valid_seconds)."</td>";
-					echo "<td id='spnPasswordRotationRuleHistory".$r->id."'>".htmlspecialchars($r->history)."</td>";
-					echo "<td id='spnPasswordRotationRuleDefaultPassword".$r->id."' class='mask monospace' tabindex='0'><div class='maskValue'>".htmlspecialchars($r->default_password)."</div></td>";
-					echo "<td><button onclick='showDialogEditPasswordRotationRule(".$r->id.", spnPasswordRotationRuleComputerGroup".$r->id.".getAttribute(\"value\"), spnPasswordRotationRuleUsername".$r->id.".innerText, spnPasswordRotationRuleAlphabet".$r->id.".innerText, spnPasswordRotationRuleLength".$r->id.".innerText, spnPasswordRotationRuleValidSeconds".$r->id.".getAttribute(\"value\"), spnPasswordRotationRuleHistory".$r->id.".innerText, spnPasswordRotationRuleDefaultPassword".$r->id.".innerText)' title='".LANG('edit')."'><img src='img/edit.dyn.svg'></button></td>";
+					echo "<td>".htmlspecialchars($r->computer_group_name??'-')."</td>";
+					echo "<td>".htmlspecialchars($r->username)."</td>";
+					echo "<td>".htmlspecialchars($r->alphabet)."</td>";
+					echo "<td>".htmlspecialchars($r->length)."</td>";
+					echo "<td>".niceTime($r->valid_seconds)."</td>";
+					echo "<td>".htmlspecialchars($r->history)."</td>";
+					echo "<td class='mask monospace' tabindex='0'><div class='maskValue'>".htmlspecialchars($r->default_password)."</div></td>";
+					echo "<td><button onclick='showDialogEditPasswordRotationRule(".$r->id.")' title='".LANG('edit')."'><img src='img/edit.dyn.svg'></button></td>";
 					echo "</tr>";
 				}
 				?>

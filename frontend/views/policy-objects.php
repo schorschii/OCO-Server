@@ -81,7 +81,7 @@ try {
 						</div>
 						<div class='controls'>
 							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-							<button id='btnAssignPolicyObject'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
+							<button onclick='showDialogAssignPolicyObject(getSelectedCheckBoxValues("policy_object_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
 							<button id='btnRemovePolicyObject'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
@@ -124,21 +124,11 @@ for(let i=0; i<removeButtons2.length; i++) {
 		});
 	});
 }
-btnAssignPolicyObject.addEventListener('click', function(e) {
-	let params = [];
-	let values = getSelectedCheckBoxValues('policy_object_id[]', null, true);
-	if(values) {
-		values.forEach(function(entry) {
-			params.push({'key':'id[]', 'value':entry});
-		});
-		showDialogAjax(LANG['assign'], 'views/dialog/policy-object-assign.php?'+urlencodeArray(params), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO);
-	}
-});
 btnRemovePolicyObject.addEventListener('click', function(e) {
 	confirmRemoveObject(
 		getSelectedCheckBoxValues('policy_object_id[]', null, true),
 		'remove_policy_object_id', 'ajax-handler/policy-objects.php',
-		event
+		e
 	);
 });
 </script>

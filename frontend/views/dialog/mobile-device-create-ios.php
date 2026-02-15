@@ -20,19 +20,19 @@ if(!empty($_GET['download_profile'])) {
 	<tr>
 		<th><?php echo LANG('name'); ?></th>
 		<td>
-			<input type='text' class='fullwidth' id='txtCreateMobileDeviceName' autofocus='true'>
+			<input type='text' class='fullwidth' name='name' autofocus='true'>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('serial_no'); ?></th>
 		<td>
-			<input type='text' class='fullwidth' id='txtCreateMobileDeviceSerial'>
+			<input type='text' class='fullwidth' name='serial'>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('notes'); ?></th>
 		<td>
-			<textarea class='fullwidth' id='txtCreateMobileDeviceNotes'></textarea>
+			<textarea class='fullwidth' name='notes'></textarea>
 		</td>
 	</tr>
 	<tr>
@@ -45,10 +45,6 @@ if(!empty($_GET['download_profile'])) {
 </table>
 
 <div class='controls right'>
-	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button id='btnCreateMobileDevice' class='primary' onclick='createMobileDeviceIos(
-		txtCreateMobileDeviceName.value,
-		txtCreateMobileDeviceSerial.value,
-		txtCreateMobileDeviceNotes.value
-	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create'); ?></button>
+	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='primary' name='create'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create'); ?></button>
 </div>

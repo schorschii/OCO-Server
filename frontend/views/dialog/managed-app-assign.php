@@ -12,16 +12,17 @@ try {
 		$configs = $ma->getConfigurations();
 	}
 } catch(Exception $e) {
+	http_response_code(500);
 	die($e->getMessage());
 }
 ?>
 
-<input type='hidden' id='txtManagedAppId' value='<?php echo htmlspecialchars(implode(',',$_GET['id'])); ?>'></input>
+<input type='hidden' name='ids' value='<?php echo htmlspecialchars(implode(',',$_GET['id'])); ?>'></input>
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('groups'); ?></th>
 		<td>
-			<select id='sltNewMobileDeviceGroup' class='fullwidth' size='5' multiple='true' autofocus='true'>
+			<select name='mobile_device_group_id' class='fullwidth' size='5' multiple='true' autofocus='true'>
 				<?php Html::buildGroupOptions($cl, new Models\MobileDeviceGroup()); ?>
 			</select>
 		</td>
@@ -30,13 +31,13 @@ try {
 		<th><?php echo LANG('options'); ?></th>
 		<td>
 			<?php if($ma->type == Models\ManagedApp::TYPE_IOS) { ?>
-				<label><input type='checkbox' id='chkRemovable' checked='true'></input><?php echo LANG('removable'); ?></label>
+				<label><input type='checkbox' name='removable' checked='true'></input><?php echo LANG('removable'); ?></label>
 				<br>
-				<label><input type='checkbox' id='chkDisableCloudBackup'></input><?php echo LANG('disable_cloud_backup'); ?></label>
+				<label><input type='checkbox' name='disable_cloud_backup'></input><?php echo LANG('disable_cloud_backup'); ?></label>
 				<br>
-				<label><input type='checkbox' id='chkRemoveOnMdmRemove' checked='true'></input><?php echo LANG('remove_when_leaving_mdm'); ?></label>
+				<label><input type='checkbox' name='remove_on_mdm_remove' checked='true'></input><?php echo LANG('remove_when_leaving_mdm'); ?></label>
 			<?php } elseif($ma->type == Models\ManagedApp::TYPE_ANDROID) { ?>
-				<select id='sltInstallType' class='fullwidth'>
+				<select name='install_type' class='fullwidth'>
 					<?php foreach(Models\ManagedApp::ANDROID_INSTALL_TYPES as $key => $title) { ?>
 						<option value='<?php echo htmlspecialchars($key,ENT_QUOTES); ?>'><?php echo LANG($title); ?></option>
 					<?php } ?>
@@ -58,7 +59,7 @@ try {
 	<tr>
 		<th><?php echo LANG('app_config'); ?></th>
 		<td>
-			<select id='sltManagedAppConfig' class='fullwidth'>
+			<select name='managed_app_config_id' class='fullwidth'>
 				<option value=''>-</option>
 				<?php foreach($configs as $cId => $cName) { ?>
 					<option value='<?php echo htmlspecialchars($cId,ENT_QUOTES); ?>'><?php echo htmlspecialchars($cName); ?></option>
@@ -70,22 +71,12 @@ try {
 	<tr>
 		<th><?php echo LANG('app_config_json'); ?></th>
 		<td>
-			<textarea id='txtManagedAppConfig' class='fullwidth' placeholder='<?php echo LANG('optional_hint'); ?>'></textarea>
+			<textarea name='managed_app_config_json' class='fullwidth' placeholder='<?php echo LANG('optional_hint'); ?>'></textarea>
 		</td>
 	</tr>
 </table>
 
 <div class='controls right'>
-	<button onclick='hideDialog()'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button class='primary' onclick='assignManagedAppToGroup(
-		txtManagedAppId.value,
-		getSelectedSelectBoxValues("sltNewMobileDeviceGroup",true),
-		typeof chkRemovable !== "undefined" && chkRemovable.checked ? 1 : 0,
-		typeof chkDisableCloudBackup !== "undefined" && chkDisableCloudBackup.checked ? 1 : 0,
-		typeof chkRemoveOnMdmRemove !== "undefined" && chkRemoveOnMdmRemove.checked ? 1 : 0,
-		typeof sltInstallType !== "undefined" ? sltInstallType.value : "",
-		typeof sltManagedAppConfig !== "undefined" ? sltManagedAppConfig.value : "",
-		txtManagedAppConfig.value,
-		getSelectedCheckBoxValues("delegated_scopes[]")
-	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='primary' name='assign'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 </div>

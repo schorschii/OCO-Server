@@ -11,7 +11,7 @@ try {
 }
 ?>
 
-<input type='hidden' id='txtPolicyObjects' value='<?php echo htmlspecialchars(implode(',',$_GET['id'])); ?>'></input>
+<input type='hidden' name='ids' value='<?php echo htmlspecialchars(implode(',',$_GET['id'])); ?>'></input>
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('computer_groups'); ?></th>
@@ -19,13 +19,13 @@ try {
 	</tr>
 	<tr>
 		<td>
-			<select id='txtComputerGroups' class='fullwidth' size='10' multiple='true' autofocus='true'>
+			<select name='computer_group_id' class='fullwidth' size='10' multiple='true' autofocus='true'>
 				<option value=''><?php echo LANG('default_domain_policy'); ?></option>
 				<?php Html::buildGroupOptions($cl, new Models\ComputerGroup()); ?>
 			</select>
 		</td>
 		<td>
-			<select id='txtDomainUserGroups' class='fullwidth' size='10' multiple='true' autofocus='true'>
+			<select name='domain_user_group_id' class='fullwidth' size='10' multiple='true' autofocus='true'>
 				<option value=''><?php echo LANG('default_domain_policy'); ?></option>
 				<?php Html::buildGroupOptions($cl, new Models\DomainUserGroup()); ?>
 			</select>
@@ -33,31 +33,7 @@ try {
 	</tr>
 </table>
 
-<script>
-btnDoAssignPolicyObject.addEventListener('click', function(e){
-	var params = [];
-	let computerGroupIds = getSelectedSelectBoxValues('txtComputerGroups', false);
-	let domainUserGroupIds = getSelectedSelectBoxValues('txtDomainUserGroups', false);
-	if(!computerGroupIds && !domainUserGroupIds) return;
-	computerGroupIds.forEach(function(entry) {
-		params.push({'key':'add_to_computer_group_id[]', 'value':entry});
-	});
-	domainUserGroupIds.forEach(function(entry) {
-		params.push({'key':'add_to_domain_user_group_id[]', 'value':entry});
-	});
-	txtPolicyObjects.value.split(',').forEach(function(entry) {
-		params.push({'key':'policy_object_id[]', 'value':entry});
-	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/policy-objects.php', paramString, null, function() {
-		hideDialog();
-		refreshContent();
-		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
-	});
-});
-</script>
-
 <div class='controls right'>
-	<button class='closeDialog'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button class='primary' id='btnDoAssignPolicyObject'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='primary' name='assign'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 </div>

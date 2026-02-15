@@ -392,7 +392,7 @@ h3 {
 	background-color: transparent;
 }
 
-#dialog-container {
+.dialogContainer {
 	display: none;
 	position: fixed;
 	top: 0px;
@@ -401,27 +401,27 @@ h3 {
 	bottom: 0px;
 	z-index: 999;
 }
-#dialog-container.active,
-#dialog-container.loading {
+.dialogContainer.active,
+.dialogContainer.loading {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	background-color: rgba(0,0,0,0.3);
 }
-#dialog-container > img {
+.dialogContainer > img {
 	display: none;
 	position: absolute;
 	top: calc(50% - 45px);
 	left: calc(50% - 45px);
 }
-#dialog-container.loading > #dialog-box,
-#dialog-container.loading2 > #dialog-box {
+.dialogContainer.loading > .dialogBox,
+.dialogContainer.loading2 > .dialogBox {
 	display: none;
 }
-#dialog-container.loading2 > img {
+.dialogContainer.loading2 > img {
 	display: inline-block;
 }
-#dialog-container #dialog-box {
+.dialogContainer .dialogBox {
 	position: relative;
 	box-sizing: border-box;
 	display: flex;
@@ -436,28 +436,28 @@ h3 {
 	z-index: 999;
 	box-shadow: 0px 0px 25px rgba(0,0,0,0.2);
 }
-#dialog-container #dialog-box.large {
+.dialogContainer .dialogBox.large {
 	width: 75%;
 	height: 75%;
 }
-#dialog-container #dialog-box.small {
+.dialogContainer .dialogBox.small {
 	width: 55%;
 	height: 55%;
 }
-#dialog-container #dialog-box #dialog-title {
+.dialogContainer .dialogBox .dialogTitle {
 	margin: 0px;
 }
-#dialog-container #dialog-box #dialog-text {
+.dialogContainer .dialogBox .dialogText {
 	flex-grow: 1;
 	overflow: auto;
 	margin-top: 15px;
 }
-#dialog-container #dialog-box #dialog-text.monospace {
+.dialogContainer .dialogBox .dialogText.monospace {
 	white-space: pre-wrap;
 	border-left: 2px solid rgb(200,200,200);
 	padding: 10px;
 }
-#dialog-container #dialog-box #btnDialogClose {
+.dialogContainer .dialogBox > button.dialogClose {
 	position: absolute;
 	top: -16px; right: -16px;
 	border-radius: 999px;
@@ -1706,7 +1706,7 @@ ul.tree button.expander {
 	.controls.sticky {
 		background-color: #0d1117;
 	}
-	#explorer-tree, #login-form, #dialog-container #dialog-box, #header #search-results {
+	#explorer-tree, #login-form, .dialogContainer .dialogBox, #header #search-results {
 		background-color: #161b22;
 		border-color: rgba(255,255,255,0.1);
 	}
@@ -1722,7 +1722,7 @@ ul.tree button.expander {
 	.filler {
 		background-color: rgb(255,255,255,0.1);
 	}
-	#dialog-container.active {
+	.dialogContainer.active {
 		background-color: rgba(0,0,0,0.45);
 	}
 	#message-container .message {

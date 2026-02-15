@@ -5,24 +5,27 @@ require_once('../../session.inc.php');
 
 try {
 	$package = $cl->getPackage($_GET['id'] ?? -1);
-} catch(NotFoundException $e) {
-	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
-	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
+	http_response_code(403);
+	die(LANG('not_found'));
+} catch(NotFoundException $e) {
+	http_response_code(404);
+	die(LANG('permission_denied'));
 } catch(InvalidRequestException $e) {
-	die("<div class='alert error'>".$e->getMessage()."</div>");
+	http_response_code(400);
+	die($e->getMessage());
 }
 ?>
 
-<input type='hidden' id='txtEditPackageId' value='<?php echo htmlspecialchars($package->id); ?>'></input>
-<table id='frmEditPackage' class='fullwidth aligned form'>
+<input type='hidden' name='id' value='<?php echo htmlspecialchars($package->id); ?>'></input>
+<table class='fullwidth aligned form'>
 	<tr>
 		<th colspan='2'><h2 class='first'><?php echo LANG('general'); ?></h2></td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('package_family_name'); ?></th>
 		<td>
-			<select id='sltEditPackagePackageFamily'>
+			<select name='package_family_id'>
 				<?php foreach($cl->getPackageFamilies() as $family) { ?>
 					<option value='<?php echo $family->id; ?>' <?php if($package->package_family_id==$family->id) echo 'selected'; ?>><?php echo htmlspecialchars($family->name); ?></option>
 				<?php } ?>
@@ -32,13 +35,13 @@ try {
 	<tr class='nospace'>
 		<th><?php echo LANG('version'); ?></th>
 		<td>
-			<input type='text' autocomplete='new-password' id='txtEditPackageVersion' autofocus='true' value='<?php echo htmlspecialchars($package->version,ENT_QUOTES); ?>'></input>
+			<input type='text' autocomplete='new-password' name='version' autofocus='true' value='<?php echo htmlspecialchars($package->version,ENT_QUOTES); ?>'></input>
 		</td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os'); ?></th>
 		<td>
-			<select id='sltCompatibleOs' title='<?php echo LANG('optional_hint'); ?>' multiple>
+			<select name='compatible_os' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
 			$values = array_map('trim', explode("\n", $package->compatible_os));
 			foreach(array_filter(array_unique(array_merge($db->selectAllComputerAttribute('os'), $values))) as $v) {
@@ -51,7 +54,7 @@ try {
 	<tr class='nospace'>
 		<th><?php echo LANG('compatible_os_version'); ?></th>
 		<td>
-			<select id='sltCompatibleOsVersion' title='<?php echo LANG('optional_hint'); ?>' multiple>
+			<select name='compatible_os_version' title='<?php echo LANG('optional_hint'); ?>' multiple>
 			<?php
 			$values = array_map('trim', explode("\n", $package->compatible_os_version));
 			foreach(array_filter(array_unique(array_merge($db->selectAllComputerAttribute('os_version'), $values))) as $v) {
@@ -64,7 +67,7 @@ try {
 	<tr>
 		<th><?php echo LANG('compatible_architecture'); ?></th>
 		<td>
-			<select id='sltCompatibleArchitecture' title='<?php echo LANG('optional_hint'); ?>' size='2' multiple>
+			<select name='compatible_architecture' title='<?php echo LANG('optional_hint'); ?>' size='2' multiple>
 			<?php
 			$values = array_map('trim', explode("\n",  $package->compatible_architecture));
 			foreach(array_filter(array_unique(array_merge($db->selectAllComputerAttribute('architecture'), $values))) as $v) {
@@ -77,22 +80,22 @@ try {
 	<tr>
 		<th><?php echo LANG('licenses'); ?></th>
 		<td>
-			<input type='number' class='fullwidth' autocomplete='new-password' id='txtEditPackageLicenseCount' placeholder='<?php echo LANG('optional_hint'); ?>' min='0' value='<?php echo htmlspecialchars($package->license_count??'',ENT_QUOTES); ?>'></input>
+			<input type='number' class='fullwidth' autocomplete='new-password' name='license_count' placeholder='<?php echo LANG('optional_hint'); ?>' min='0' value='<?php echo htmlspecialchars($package->license_count??'',ENT_QUOTES); ?>'></input>
 		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
 		<td>
-			<textarea autocomplete='new-password' id='txtEditPackageNotes'><?php echo htmlspecialchars($package->notes); ?></textarea>
+			<textarea autocomplete='new-password' name='notes'><?php echo htmlspecialchars($package->notes); ?></textarea>
 		</td>
 	</tr>
 
 	<tr><td colspan='2'><h2><?php echo LANG('package_content'); ?></h2></td></tr>
 	<tr>
-		<th><label><input type='checkbox' id='chkReplaceArchive' onclick='fleArchive.disabled=!this.checked'>&nbsp;<?php echo LANG('replace_zip_archive'); ?></label></th>
+		<th><label><input type='checkbox' name='replace_archive'>&nbsp;<?php echo LANG('replace_zip_archive'); ?></label></th>
 		<td colspan='3' class='fileinputwithbutton'>
-			<input type='file' id='fleArchive' multiple='true' onchange='updatePackageProcedureTemplates()' disabled='true'>
-			<button onclick='toggleInputDirectory(fleArchive,this)' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/files.dyn.svg'></button>
+			<input type='file' name='archive' multiple='true' onchange='updatePackageProcedureTemplates()' disabled='true'>
+			<button class='toggleDirectoryUpload' title='<?php echo LANG('toggle_directory_upload'); ?>'><img src='img/files.dyn.svg'></button>
 		</td>
 	</tr>
 
@@ -101,19 +104,19 @@ try {
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('procedure'); ?></th>
-		<td class='inputwithbutton'>
+		<td class='inputwithbutton toggleMultiline'>
 			<?php if(strpos($package->install_procedure, "\n") === false) { ?>
-				<input class='fullwidth monospace' autocomplete='new-password' id='txtEditPackageInstallProcedure' value='<?php echo htmlspecialchars($package->install_procedure,ENT_QUOTES); ?>'></input>
+				<input class='fullwidth monospace' autocomplete='new-password' name='install_procedure' value='<?php echo htmlspecialchars($package->install_procedure,ENT_QUOTES); ?>'></input>
 			<?php } else { ?>
-				<textarea class='fullwidth monospace' id='txtEditPackageInstallProcedure'><?php echo htmlspecialchars($package->install_procedure); ?></textarea>
+				<textarea class='fullwidth monospace' name='install_procedure'><?php echo htmlspecialchars($package->install_procedure); ?></textarea>
 			<?php } ?>
-			<button onclick='toggleTextBoxMultiLine(txtEditPackageInstallProcedure)' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button>
+			<button class='toggle' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button>
 		</td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('success_return_codes'); ?></th>
 		<td>
-			<input autocomplete='new-password' id='txtEditPackageInstallProcedureSuccessReturnCodes' title='<?php echo LANG('success_return_codes_comma_separated'); ?>' value='<?php echo htmlspecialchars($package->install_procedure_success_return_codes,ENT_QUOTES); ?>'></input>
+			<input autocomplete='new-password' name='install_procedure_success_return_codes' title='<?php echo LANG('success_return_codes_comma_separated'); ?>' value='<?php echo htmlspecialchars($package->install_procedure_success_return_codes,ENT_QUOTES); ?>'></input>
 		</td>
 	</tr>
 	<tr>
@@ -126,7 +129,7 @@ try {
 				Models\Package::POST_ACTION_EXIT => LANG('restart_agent'),
 			] as $action => $title) { ?>
 				<label>
-					<input type='radio' name='edit_package_install_procedure_post_action' value='<?php echo $action; ?>' <?php if($package->install_procedure_post_action==$action) echo 'checked'; ?>>&nbsp;<?php echo $title; ?>
+					<input type='radio' name='install_procedure_post_action' value='<?php echo $action; ?>' <?php if($package->install_procedure_post_action==$action) echo 'checked'; ?>>&nbsp;<?php echo $title; ?>
 				</label>
 			<?php } ?>
 		</td>
@@ -151,19 +154,19 @@ try {
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('procedure'); ?></th>
-		<td class='inputwithbutton'>
+		<td class='inputwithbutton toggleMultiline'>
 			<?php if(strpos($package->uninstall_procedure, "\n") === false) { ?>
-				<input class='fullwidth monospace' autocomplete='new-password' id='txtEditPackageUninstallProcedure' placeholder='<?php echo LANG('optional_hint'); ?>' value='<?php echo htmlspecialchars($package->uninstall_procedure,ENT_QUOTES); ?>'></input>
+				<input class='fullwidth monospace' autocomplete='new-password' name='uninstall_procedure' placeholder='<?php echo LANG('optional_hint'); ?>' value='<?php echo htmlspecialchars($package->uninstall_procedure,ENT_QUOTES); ?>'></input>
 			<?php } else { ?>
-				<textarea class='fullwidth monospace' id='txtEditPackageUninstallProcedure'><?php echo htmlspecialchars($package->uninstall_procedure); ?></textarea>
+				<textarea class='fullwidth monospace' name='uninstall_procedure'><?php echo htmlspecialchars($package->uninstall_procedure); ?></textarea>
 			<?php } ?>
-			<button onclick='toggleTextBoxMultiLine(txtEditPackageUninstallProcedure)' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button>
+			<button class='toggle' title='<?php echo LANG('toggle_multi_line'); ?>'><img src='img/textbox.dyn.svg'></button>
 		</td>
 	</tr>
 	<tr class='nospace'>
 		<th><?php echo LANG('success_return_codes'); ?></th>
 		<td>
-			<input autocomplete='new-password' id='txtEditPackageUninstallProcedureSuccessReturnCodes' title='<?php echo LANG('success_return_codes_comma_separated'); ?>' value='<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes,ENT_QUOTES); ?>'></input>
+			<input autocomplete='new-password' name='uninstall_procedure_success_return_codes' title='<?php echo LANG('success_return_codes_comma_separated'); ?>' value='<?php echo htmlspecialchars($package->uninstall_procedure_success_return_codes,ENT_QUOTES); ?>'></input>
 		</td>
 	</tr>
 	<tr class='nospace'>
@@ -175,7 +178,7 @@ try {
 				Models\Package::POST_ACTION_SHUTDOWN => LANG('shutdown'),
 			] as $action => $title) { ?>
 				<label>
-					<input type='radio' name='edit_package_uninstall_procedure_post_action' value='<?php echo $action; ?>' <?php if($package->uninstall_procedure_post_action==$action) echo 'checked'; ?>>&nbsp;<?php echo $title; ?>
+					<input type='radio' name='uninstall_procedure_post_action' value='<?php echo $action; ?>' <?php if($package->uninstall_procedure_post_action==$action) echo 'checked'; ?>>&nbsp;<?php echo $title; ?>
 				</label>
 			<?php } ?>
 		</td>
@@ -184,32 +187,14 @@ try {
 		<th><?php echo LANG('options'); ?></th>
 		<td>
 			<label>
-				<input type='checkbox' id='chkEditPackageDownloadForUninstall' <?php if($package->download_for_uninstall) echo 'checked'; ?> />&nbsp;<?php echo LANG('download_for_uninstall'); ?>
+				<input type='checkbox' name='download_for_uninstall' <?php if($package->download_for_uninstall) echo 'checked'; ?> />&nbsp;<?php echo LANG('download_for_uninstall'); ?>
 			</label>
 		</td>
 	</tr>
 </table>
 
 <div class='controls right'>
-	<button id='btnCloseDialog' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
 	<?php echo Html::progressBar(0, 'prgPackageUpload', 'prgPackageUploadText', 'hidden big'); ?>
-	<button id='btnEditPackage' class='primary' onclick='editPackage(
-		txtEditPackageId.value,
-		sltEditPackagePackageFamily.value,
-		txtEditPackageVersion.value,
-		getSelectedSelectBoxValues("sltCompatibleOs").join("\n"),
-		getSelectedSelectBoxValues("sltCompatibleOsVersion").join("\n"),
-		getSelectedSelectBoxValues("sltCompatibleArchitecture").join("\n"),
-		txtEditPackageLicenseCount.value=="" ? -1 : txtEditPackageLicenseCount.value,
-		txtEditPackageNotes.value,
-		chkReplaceArchive.checked ? fleArchive.files : null,
-		txtEditPackageInstallProcedure.value,
-		txtEditPackageInstallProcedureSuccessReturnCodes.value,
-		getCheckedRadioValue("edit_package_install_procedure_post_action"),
-		getCheckedRadioValue("upgrade_behavior"),
-		txtEditPackageUninstallProcedure.value,
-		txtEditPackageUninstallProcedureSuccessReturnCodes.value,
-		getCheckedRadioValue("edit_package_uninstall_procedure_post_action"),
-		chkEditPackageDownloadForUninstall.checked,
-	)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('change'); ?></button>
+	<button class='primary' name='edit'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('change'); ?></button>
 </div>

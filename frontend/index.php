@@ -79,12 +79,12 @@ if(!empty($_GET['view'])) {
 		</div>
 	</div>
 
-	<div id='dialog-container' role='complementary'>
+	<div id='divDialogTemplate' class='dialogContainer' role='complementary'>
 		<img src='img/loader.svg'>
-		<div id='dialog-box'>
-			<h2 id='dialog-title'></h2>
-			<div id='dialog-text'></div>
-			<button id='btnDialogClose' title='<?php echo LANG('close'); ?>' onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'></button>
+		<div class='dialogBox'>
+			<h2 class='dialogTitle'></h2>
+			<div class='dialogText'></div>
+			<button class='dialogClose' title='<?php echo LANG('close'); ?>'><img src='img/close.dyn.svg'></button>
 		</div>
 	</div>
 

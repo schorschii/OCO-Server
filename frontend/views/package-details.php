@@ -44,10 +44,6 @@ try {
 }
 ?>
 
-<div id='metadata'
-	packageId='<?php echo htmlspecialchars($package->id,ENT_QUOTES); ?>'
-	packageFamilyName='<?php echo htmlspecialchars($package->package_family_name,ENT_QUOTES); ?>'>
-</div>
 <div class='details-header'>
 	<h1><img src='<?php echo $package->getIcon(); ?>'><span id='page-title'><?php echo htmlspecialchars($package->getFullName()); ?></span><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->package_family_name); ?></span></h1>
 	<div class='controls'>
@@ -312,7 +308,7 @@ try {
 					<div class='controls heading'>
 						<h2><?php echo LANG('depends_on'); ?></h2>
 						<div class='filler invisible'></div>
-						<button id='btnAddPackageDependency' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+						<button onclick='showDialogAddPackageDependency(metadata.getAttribute("packageId"),false)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 					</div>
 					<table id='tblDependencyPackageData' class='list sortable savesort'>
 						<thead>
@@ -354,7 +350,7 @@ try {
 					<div class='controls heading'>
 						<h2><?php echo LANG('dependent_packages'); ?></h2>
 						<div class='filler invisible'></div>
-						<button id='btnAddDependentPackage' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+						<button onclick='showDialogAddPackageDependency(metadata.getAttribute("packageId"),true)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 					</div>
 					<table id='tblDependentPackageData' class='list sortable savesort'>
 						<thead>
@@ -455,7 +451,7 @@ try {
 					<div class='controls heading'>
 						<h2><?php echo LANG('installed_on'); ?></h2>
 						<div class='filler invisible'></div>
-						<button id='btnAddPackageComputer'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+						<button onclick='showDialogAssignPackageComputer(metadata.getAttribute("packageId"))'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
 					</div>
 					<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>
 						<thead>
@@ -594,32 +590,7 @@ try {
 	</div>
 </div>
 
-<script>
-btnAddPackageDependency.addEventListener('click', (e)=>{
-	showDialogAjax(LANG['add_dependency'],
-		'views/dialog/package-select.php?'+urlencodeObject({
-			'action': 'add_package_dependency',
-			'subject': metadata.getAttribute('packageId')
-		}),
-		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO
-	);
-});
-btnAddDependentPackage.addEventListener('click', (e)=>{
-	showDialogAjax(LANG['add_dependent_package'],
-		'views/dialog/package-select.php?'+urlencodeObject({
-			'action': 'add_dependant_package',
-			'subject': metadata.getAttribute('packageId')
-		}),
-		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO
-	);
-});
-btnAddPackageComputer.addEventListener('click', (e)=>{
-	showDialogAjax(LANG['add'],
-		'views/dialog/computer-select.php?'+urlencodeObject({
-			'action': 'add_package_computer',
-			'subject': metadata.getAttribute('packageId')
-		}),
-		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO
-	);
-});
-</script>
+<div id='metadata'
+	packageId='<?php echo htmlspecialchars($package->id,ENT_QUOTES); ?>'
+	packageFamilyName='<?php echo htmlspecialchars($package->package_family_name,ENT_QUOTES); ?>'>
+</div>

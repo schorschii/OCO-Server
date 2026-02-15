@@ -31,7 +31,33 @@ function deploySelfService(title, computers, packages, useWol, shutdownWakedAfte
 		}
 	};
 }
-function uninstallSelfService(checkboxName, name, useWol, shutdownWakedAfterCompletion) {
+
+function showDialogUninstallSelfService() {
+	showDialogAjax(LANG['uninstall_packages'], 'views/dialog/uninstall.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtName = dialogContainer.querySelectorAll('input[name=name]')[0];
+		let chkWol = dialogContainer.querySelectorAll('input[name=wol]')[0];
+		let chkShutdownWaked = dialogContainer.querySelectorAll('input[name=shutdown_waked]')[0];
+		// add events
+		chkWol.addEventListener('click', (e)=>{
+			if(e.srcElement.checked) {
+				chkShutdownWaked.disabled = false;
+			} else {
+				chkShutdownWaked.checked = false;
+				chkShutdownWaked.disabled=true;
+			}
+		});
+		dialogContainer.querySelectorAll('button[name=uninstall]')[0].addEventListener('click', (e)=>{
+			uninstallSelfService(
+				dialogContainer,
+				'package_id[]',
+				txtName.value,
+				chkWol.checked,
+				chkShutdownWaked.checked,
+			);
+		});
+	});
+}
+function uninstallSelfService(dialogContainer, checkboxName, name, useWol, shutdownWakedAfterCompletion) {
 	var ids = [];
 	document.getElementsByName(checkboxName).forEach(function(entry) {
 		if(entry.checked) {
@@ -51,7 +77,7 @@ function uninstallSelfService(checkboxName, name, useWol, shutdownWakedAfterComp
 	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
 	var paramString = urlencodeArray(params);
 	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
-		hideDialog();
+		dialogContainer.close();
 		refreshSidebar(); refreshContent();
 		emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
 	});

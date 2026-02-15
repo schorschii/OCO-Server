@@ -4,11 +4,12 @@ require_once('../../../loader.inc.php');
 require_once('../../session.inc.php');
 ?>
 
-<input type='hidden' id='txtCreateComputerId'></input>
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('hostname'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtCreateComputerHostname' autofocus='true'></input></td>
+		<td>
+			<input type='text' name='hostname' class='fullwidth' autocomplete='new-password' autofocus='true'></input>
+		</td>
 	</tr>
 	<tr>
 		<th></th>
@@ -20,24 +21,25 @@ require_once('../../session.inc.php');
 	</tr>
 	<tr>
 		<th><?php echo LANG('notes'); ?></th>
-		<td><textarea class='fullwidth' autocomplete='new-password' id='txtCreateComputerNotes' rows='5'></textarea></td>
+		<td>
+			<textarea name='notes' class='fullwidth' autocomplete='new-password' rows='5'></textarea>
+		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('individual_agent_key'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtCreateComputerAgentKey' placeholder='<?php echo LANG('optional'); ?>'></input></td>
+		<td>
+			<input type='text' name='agent_key' class='fullwidth' autocomplete='new-password' placeholder='<?php echo LANG('optional'); ?>'></input>
+		</td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('individual_server_key'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' id='txtCreateComputerServerKey' placeholder='<?php echo LANG('optional'); ?>'></input></td>
+		<td>
+			<input type='text' name='server_key' class='fullwidth' autocomplete='new-password' placeholder='<?php echo LANG('optional'); ?>'></input>
+		</td>
 	</tr>
 </table>
 
 <div class='controls right'>
-	<button onclick='hideDialog();showLoader(false);showLoader2(false);'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button id='btnCreateComputer' class='primary' onclick='createComputer(
-		txtCreateComputerHostname.value,
-		txtCreateComputerNotes.value,
-		txtCreateComputerAgentKey.value,
-		txtCreateComputerServerKey.value
-		)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create'); ?></button>
+	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='primary' name='create'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create'); ?></button>
 </div>

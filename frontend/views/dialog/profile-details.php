@@ -14,12 +14,15 @@ try {
 		if($payloadData === null)
 			throw new InvalidRequestException('Payload is no valid XML or JSON');
 	}
-} catch(NotFoundException $e) {
-	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
-	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
+	http_response_code(403);
+	die(LANG('not_found'));
+} catch(NotFoundException $e) {
+	http_response_code(404);
+	die(LANG('permission_denied'));
 } catch(InvalidRequestException $e) {
-	die("<div class='alert error'>".$e->getMessage()."</div>");
+	http_response_code(400);
+	die($e->getMessage());
 }
 
 Html::dictTable($payloadData);

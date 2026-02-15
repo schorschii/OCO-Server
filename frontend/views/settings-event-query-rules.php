@@ -39,9 +39,9 @@ try {
 				foreach($db->selectAllEventQueryRule() as $r) {
 					echo "<tr>";
 					echo "<td><input type='checkbox' name='event_query_rule_id[]' value='".$r->id."'></td>";
-					echo "<td id='spnEventQueryRuleLog".$r->id."'>".htmlspecialchars($r->log)."</td>";
-					echo "<td id='spnEventQueryRuleQuery".$r->id."' class='monospace'>".htmlspecialchars($r->query)."</td>";
-					echo "<td><button onclick='showDialogEditEventQueryRule(".$r->id.", spnEventQueryRuleLog".$r->id.".innerText, spnEventQueryRuleQuery".$r->id.".innerText)' title='".LANG('edit')."'><img src='img/edit.dyn.svg'></button></td>";
+					echo "<td>".htmlspecialchars($r->log)."</td>";
+					echo "<td class='monospace'>".htmlspecialchars($r->query)."</td>";
+					echo "<td><button onclick='showDialogEditEventQueryRule(".$r->id.")' title='".LANG('edit')."'><img src='img/edit.dyn.svg'></button></td>";
 					echo "</tr>";
 				}
 				?>
