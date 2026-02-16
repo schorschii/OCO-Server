@@ -121,6 +121,7 @@ if(!empty($_GET['id'])) {
 } else {
 	try {
 		$domainUsers = $cl->getDomainUsers();
+		$policyObjects = $db->selectAllPolicyObjectByDomainUserGroup(null);
 	} catch(NotFoundException $e) {
 		die("<div class='alert warning'>".LANG('not_found')."</div>");
 	} catch(PermissionException $e) {
@@ -134,6 +135,15 @@ if(!empty($_GET['id'])) {
 <div class='details-header'>
 	<h1><img src='img/users.dyn.svg'><span id='page-title'><?php echo LANG('all_domain_user'); ?></span></h1>
 </div>
+
+<?php if(!empty($policyObjects)) { ?>
+<div class='controls subfolders'>
+	<?php foreach($policyObjects as $po) { ?>
+		<a class='box' <?php echo Html::explorerLink('views/policy-object.php?id='.$po->id); ?>><img src='img/policy.dyn.svg'>&nbsp;<?php echo htmlspecialchars($po->name); ?></a>
+	<?php } ?>
+</div>
+<?php } ?>
+
 <div class='details-abreast margintop'>
 	<div class='stickytable'>
 		<table id='tblDomainUserData' class='list searchable sortable savesort'>

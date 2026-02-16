@@ -11,11 +11,11 @@ try {
 	if(!empty($_GET['id'])) {
 		$group = $cl->getComputerGroup($_GET['id']);
 		$computers = $cl->getComputers($group);
-		$policyObjects = $db->selectAllPolicyObjectByComputerGroup($group->id);
 	} else {
 		$computers = $cl->getComputers();
 	}
-	$subGroups = $cl->getComputerGroups(empty($group) ? null : $group->id);
+	$subGroups = $cl->getComputerGroups($group ? $group->id : null);
+	$policyObjects = $db->selectAllPolicyObjectByComputerGroup($group ? $group->id : null);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {

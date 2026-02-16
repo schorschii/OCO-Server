@@ -3708,9 +3708,17 @@ class DatabaseController {
 	public function selectAllPolicyObjectByComputerGroup($computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT po.* FROM policy_object po INNER JOIN computer_group_policy_object cgpo ON cgpo.policy_object_id = po.id
-			WHERE cgpo.computer_group_id = :computer_group_id ORDER BY `name`'
+			WHERE cgpo.computer_group_id <=> :computer_group_id ORDER BY `name`'
 		);
 		$this->stmt->execute([':computer_group_id' => $computer_group_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject');
+	}
+	public function selectAllPolicyObjectByDomainUserGroup($domain_user_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT po.* FROM policy_object po INNER JOIN domain_user_group_policy_object dugpo ON dugpo.policy_object_id = po.id
+			WHERE dugpo.domain_user_group_id <=> :domain_user_group_id ORDER BY `name`'
+		);
+		$this->stmt->execute([':domain_user_group_id' => $domain_user_group_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject');
 	}
 	public function selectAllComputerGroupByPolicyObject($policy_object_id) {
@@ -3719,7 +3727,7 @@ class DatabaseController {
 			WHERE cgpo.policy_object_id = :policy_object_id ORDER BY `name`'
 		);
 		$this->stmt->execute([':policy_object_id' => $policy_object_id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\ComputerGroup', [$this]);
 	}
 	public function selectAllDomainUserGroupByPolicyObject($policy_object_id) {
 		$this->stmt = $this->dbh->prepare(
@@ -3727,7 +3735,7 @@ class DatabaseController {
 			WHERE dugpo.policy_object_id = :policy_object_id ORDER BY `name`'
 		);
 		$this->stmt->execute([':policy_object_id' => $policy_object_id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUserGroup', [$this]);
 	}
 	public function selectAllPolicyObjectItemByComputerGroup($computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
