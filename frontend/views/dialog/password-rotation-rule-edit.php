@@ -24,7 +24,7 @@ try {
 		<th><?php echo LANG('computer_group'); ?></th>
 		<td>
 			<select class='fullwidth' name='computer_group_id'>
-				<option value=''>-</option>
+				<option value=''><?php echo htmlspecialchars('* '.LANG('all_computers').' *'); ?></option>
 				<?php Html::buildGroupOptions($cl, new Models\ComputerGroup(), 0, $prr->computer_group_id??-1); ?>
 			</select>
 		</td>

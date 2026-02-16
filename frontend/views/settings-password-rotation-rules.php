@@ -42,7 +42,7 @@ try {
 				foreach($db->selectAllPasswordRotationRule() as $r) {
 					echo "<tr>";
 					echo "<td><input type='checkbox' name='password_rotation_rule_id[]' value='".$r->id."'></td>";
-					echo "<td>".htmlspecialchars($r->computer_group_name??'-')."</td>";
+					echo "<td>".htmlspecialchars($r->computer_group_name ?? '* '.LANG('all_computers').' *')."</td>";
 					echo "<td>".htmlspecialchars($r->username)."</td>";
 					echo "<td>".htmlspecialchars($r->alphabet)."</td>";
 					echo "<td>".htmlspecialchars($r->length)."</td>";
