@@ -1106,6 +1106,23 @@ table.list .eventlevel.verbose {
 	color: rgba(25,25,25);
 }
 
+table.list ul {
+	margin: 0;
+	padding-left: 14px;
+}
+table.list ul li.subbuttons {
+	position: relative;
+	padding-left: 2px;
+}
+table.list ul li.subbuttons > button {
+	position: absolute;
+	top: 2px;
+	left: -16px;
+}
+table.list ul li.subbuttons:hover {
+	list-style-type: none;
+}
+
 img.small,
 .stats img,
 table tr th img,

@@ -217,23 +217,25 @@ foreach($services as $s) {
 							<td class='subbuttons'>
 								<?php echo htmlspecialchars($computer->last_update.($computer->force_update ? ' ('.LANG('force_update').')' : '')); ?>
 								<?php if($permissionWrite) { ?>
-									<button onclick='event.stopPropagation();setComputerForceUpdate(metadata.getAttribute("computerId"), 1);return false' title='<?php echo LANG('force_update',ENT_QUOTES); ?>'><img class='small' src='img/force-update.dyn.svg'></button>
+									<button onclick='setComputerForceUpdate(metadata.getAttribute("computerId"), 1);return false' title='<?php echo LANG('force_update',ENT_QUOTES); ?>'><img class='small' src='img/force-update.dyn.svg'></button>
 								<?php } ?>
 							</td>
 						</tr>
 						<tr>
 							<th><?php echo LANG('assigned_groups'); ?></th>
 							<td>
+								<ul>
 								<?php
 								$res = $db->selectAllComputerGroupByComputerId($computer->id);
 								$i = 0;
 								foreach($res as $group) {
-									echo "<a class='subbuttons' ".Html::explorerLink('views/computers.php?id='.$group->id).">".Html::wrapInSpanIfNotEmpty($group->getBreadcrumbString());
-									echo "<button onclick='event.stopPropagation();removeComputerFromGroup([".$computer->id."], ".$group->id.");return false' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
-									echo "</a>";
-									if(++$i != count($res)) { echo "<br>"; }
+									echo "<li class='subbuttons'>";
+									echo "<a ".Html::explorerLink('views/computers.php?id='.$group->id).">".Html::wrapInSpanIfNotEmpty($group->getBreadcrumbString())."</a>";
+									echo "<button onclick='removeComputerFromGroup([".$computer->id."], ".$group->id.");return false' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
+									echo "</li>";
 								}
 								?>
+								</ul>
 							</td>
 						</tr>
 						<tr>

@@ -38,18 +38,8 @@ try {
 		<tbody>
 		<?php
 		foreach($policyObjects as $p) {
-			$computerGroupLinks = [];
-			foreach($db->selectAllComputerGroupByPolicyObject($p->id) as $group)
-				$computerGroupLinks[] = "<a class='subbuttons' ".Html::explorerLink('views/computers.php?id='.$group->id).">"
-					.Html::wrapInSpanIfNotEmpty($group->name??LANG('default_domain_policy'))
-					."<button class='removeFromComputerGroup' policy_object_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
-					."</a>";
-			$domainUserGroupLinks = [];
-			foreach($db->selectAllDomainUserGroupByPolicyObject($p->id) as $group)
-				$domainUserGroupLinks[] = "<a class='subbuttons' ".Html::explorerLink('views/domain-users.php?id='.$group->id).">"
-					.Html::wrapInSpanIfNotEmpty($group->name??LANG('default_domain_policy'))
-					."<button class='removeFromDomainUserGroup' policy_object_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
-					."</a>";
+			$computerGroups = $db->selectAllComputerGroupByPolicyObject($p->id);
+			$domainUserGroups = $db->selectAllDomainUserGroupByPolicyObject($p->id);
 		?>
 			<tr>
 				<td><input type='checkbox' name='policy_object_id[]' value='<?php echo $p->id; ?>'></td>
@@ -61,12 +51,29 @@ try {
 				<td><?php echo htmlspecialchars($p->created.(empty($p->created_by_system_user_username) ? '' : ' ('.$p->created_by_system_user_username.')')); ?></td>
 				<td><?php echo htmlspecialchars($p->updated.(empty($p->updated_by_system_user_username) ? '' : ' ('.$p->updated_by_system_user_username.')')); ?></td>
 				<td>
+					<ul>
 					<?php
-					echo implode('<br>', $computerGroupLinks);
-					if(!empty($computerGroupLinks) && !empty($domainUserGroupLinks))
-						echo '<hr>';
-					echo implode('<br>', $domainUserGroupLinks);
+					foreach($computerGroups as $group) {
+						echo "<li class='subbuttons'>";
+						echo "<a ".Html::explorerLink('views/computers.php?id='.$group->id).">"
+						.Html::wrapInSpanIfNotEmpty($group->id?$group->getBreadcrumbString():LANG('default_domain_policy'))."</a>";
+						echo "<button class='removeFromComputerGroup' policy_object_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
+						echo "</li>";
+					}
 					?>
+					</ul>
+					<?php if(!empty($computerGroups) && !empty($domainUserGroups)) { ?><hr><?php } ?>
+					<ul>
+					<?php
+					foreach($domainUserGroups as $group) {
+						echo "<li class='subbuttons'>";
+						echo "<a ".Html::explorerLink('views/domain-users.php?id='.$group->id).">"
+							.Html::wrapInSpanIfNotEmpty($group->id?$group->getBreadcrumbString():LANG('default_domain_policy'))."</a>";
+						echo "<button class='removeFromDomainUserGroup' policy_object_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
+						echo "</li>";
+					}
+					?>
+					</ul>
 				</td>
 			</tr>
 		<?php } ?>

@@ -142,16 +142,18 @@ try {
 						<tr>
 							<th><?php echo LANG('assigned_groups'); ?></th>
 							<td>
+								<ul>
 								<?php
 								$res = $db->selectAllPackageGroupByPackageId($package->id);
 								$i = 0;
 								foreach($res as $group) {
-									echo "<a class='subbuttons' ".Html::explorerLink('views/packages.php?id='.$group->id).">".Html::wrapInSpanIfNotEmpty($group->getBreadcrumbString());
-									echo "<button onclick='event.stopPropagation();removePackageFromGroup([".$package->id."], ".$group->id.");return false' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
-									echo "</a>";
-									if(++$i != count($res)) { echo "<br>"; }
+									echo "<li class='subbuttons'>";
+									echo "<a ".Html::explorerLink('views/packages.php?id='.$group->id).">".Html::wrapInSpanIfNotEmpty($group->getBreadcrumbString())."</a>";
+									echo "<button onclick='removePackageFromGroup([".$package->id."], ".$group->id.");return false' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
+									echo "</li>";
 								}
 								?>
+								</ul>
 							</td>
 						</tr>
 						<tr>
