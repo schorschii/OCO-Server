@@ -652,6 +652,7 @@ return [
 	'clear_app_data' => 'Clear App Data',
 	'enable_lost_mode' => 'Enable Lost Mode',
 	'play_lost_mode_sound' => 'Play Lost Mode Sound',
+	'device_location' => 'Query Device Location',
 	'disable_lost_mode' => 'Disable Lost Mode',
 	'erase_device' => 'Erase Device',
 	'waiting' => 'Waiting',

@@ -647,6 +647,7 @@ return [
 	'clear_app_data' => 'App-Daten entfernen',
 	'enable_lost_mode' => 'Verloren-Modus aktivieren',
 	'play_lost_mode_sound' => 'Spiele Verloren-Modus-Sound',
+	'device_location' => 'Gerätestandort abfragen',
 	'disable_lost_mode' => 'Verloren-Modus deaktivieren',
 	'erase_device' => 'Gerät löschen',
 	'waiting' => 'Wartet',

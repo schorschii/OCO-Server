@@ -30,6 +30,7 @@ try {
 				<option value='' disabled>──────────</option>
 				<option value='EnableLostMode' parameter='message'><?php echo LANG('enable_lost_mode'); ?></option>
 				<option value='PlayLostModeSound' parameter=''><?php echo LANG('play_lost_mode_sound'); ?></option>
+				<option value='DeviceLocation' parameter=''><?php echo LANG('device_location'); ?></option>
 				<option value='DisableLostMode' parameter=''><?php echo LANG('disable_lost_mode'); ?></option>
 				<option value='' disabled>──────────</option>
 				<option value='RestartDevice' parameter=''><?php echo LANG('reboot'); ?></option>

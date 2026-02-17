@@ -93,7 +93,7 @@ try {
 			if(!in_array($_POST['command'], [
 				'ScheduleOSUpdateScan', 'AvailableOSUpdates', 'ScheduleOSUpdate', 'OSUpdateStatus',
 				'DeviceLock', 'EraseDevice', 'ClearPasscode',
-				'EnableLostMode', 'PlayLostModeSound', 'DisableLostMode',
+				'EnableLostMode', 'PlayLostModeSound', 'DeviceLocation', 'DisableLostMode',
 				'ShutDownDevice', 'RestartDevice'
 			])) throw new InvalidRequestException('Unknown command');
 			$parameter = [
