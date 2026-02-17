@@ -77,7 +77,7 @@ try {
 					</ul>
 				</td>
 				<td>
-					<button title='<?php echo LANG('overview'); ?>' onclick='showDialogPolicyObjectOverview(<?php echo $p->id; ?>)'><img src='img/eye.dyn.svg'></button>
+					<button title='<?php echo LANG('show_content'); ?>' dialog_title='<?php echo htmlspecialchars($p->name); ?>' onclick='showDialogPolicyObjectOverview(<?php echo $p->id; ?>, this.getAttribute("dialog_title"))'><img src='img/eye.dyn.svg'></button>
 				</td>
 			</tr>
 		<?php } ?>

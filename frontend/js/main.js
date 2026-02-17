@@ -2615,8 +2615,8 @@ function showDialogAssignPolicyObject(policyObjectIds) {
 		});
 	}
 }
-function showDialogPolicyObjectOverview(id) {
-	showDialogAjax(LANG['overview'], 'views/dialog/policy-object-overview.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE);
+function showDialogPolicyObjectOverview(id, title='') {
+	showDialogAjax(title, 'views/dialog/policy-object-overview.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE);
 }
 
 // ======== DOMAIN USER OPERATIONS ========
