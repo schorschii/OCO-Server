@@ -93,7 +93,7 @@ try {
 						<div class='controls'>
 							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
 							<button onclick='showDialogAssignPolicyObject(getSelectedCheckBoxValues("policy_object_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
-							<button id='btnRemovePolicyObject'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+							<button onclick='confirmRemoveObject(getSelectedCheckBoxValues("policy_object_id[]",null,true), "remove_policy_object_id", "ajax-handler/policy-objects.php", e)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>
@@ -135,11 +135,4 @@ for(let i=0; i<removeButtons2.length; i++) {
 		});
 	});
 }
-btnRemovePolicyObject.addEventListener('click', function(e) {
-	confirmRemoveObject(
-		getSelectedCheckBoxValues('policy_object_id[]', null, true),
-		'remove_policy_object_id', 'ajax-handler/policy-objects.php',
-		e
-	);
-});
 </script>

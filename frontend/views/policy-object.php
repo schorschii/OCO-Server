@@ -142,7 +142,7 @@ function getPolicyInput($pd) {
 	<button onclick='showDialogEditPolicyObject(spnPolicyObjectId.innerText, obj("page-title").innerText)' <?php if(!$permissionEdit) echo 'disabled'; ?>>
 		<img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?>
 	</button>
-	<button onclick='confirmRemovePolicyObject([spnPolicyObjectId.innerText])' <?php if(!$permissionDelete) echo 'disabled'; ?>>
+	<button onclick='confirmRemoveObject([spnPolicyObjectId.innerText], "remove_policy_object_id", "ajax-handler/policy-objects.php", event)' <?php if(!$permissionDelete) echo 'disabled'; ?>>
 		<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 	</button>
 	<span class='filler'></span>
@@ -163,7 +163,7 @@ function getPolicyInput($pd) {
 		<div name='machine' class='<?php if($tab=='machine') echo 'active'; ?>'>
 			<?php $content = getContents(null, Models\PolicyDefinition::CLASS_MACHINE); ?>
 			<?php if(empty($content)) { ?>
-				<div class='alert info'><?php echo LANG('import_policy_definitions_first'); ?></div>
+				<div class='alert warning'><?php echo LANG('import_policy_definitions_first'); ?></div>
 			<?php } else { ?>
 				<ul class='tree machine'>
 					<?php echo $content; ?>
@@ -174,7 +174,7 @@ function getPolicyInput($pd) {
 		<div name='user' class='<?php if($tab=='user') echo 'active'; ?>'>
 			<?php $content = getContents(null, Models\PolicyDefinition::CLASS_USER); ?>
 			<?php if(empty($content)) { ?>
-				<div class='alert info'><?php echo LANG('import_policy_definitions_first'); ?></div>
+				<div class='alert warning'><?php echo LANG('import_policy_definitions_first'); ?></div>
 			<?php } else { ?>
 				<ul class='tree user'>
 					<?php echo $content; ?>
