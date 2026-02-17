@@ -33,23 +33,26 @@ class Html {
 			.'</span>';
 	}
 
-	static function dictTable($value, array $exclude=[]) {
-		if($value === true) echo '<img title="'.LANG('yes').'" src="img/success.dyn.svg">';
-		elseif($value === false) echo '<img title="'.LANG('no').'" src="img/close.opacity.svg">';
+	static function dictTable($value, array $exclude=[], $return=false) {
+		$html = '';
+		if($value === true) $html .= '<img title="'.LANG('yes').'" src="img/success.dyn.svg">';
+		elseif($value === false) $html .= '<img title="'.LANG('no').'" src="img/close.opacity.svg">';
 		elseif(is_array($value)) {
-			echo '<table class="list metadata"><tbody>';
+			$html .= '<table class="list metadata"><tbody>';
 			foreach($value as $subkey => $subvalue) {
 				if(in_array($subkey, $exclude)) continue;
-				echo '<tr>'
+				$html .= '<tr>'
 					.'<th>'.htmlspecialchars(LANG($subkey)).'</th>'
 					.'<td>';
-				self::dictTable($subvalue);
-				echo '</td>'
+				$html .= self::dictTable($subvalue, $exclude, true);
+				$html .= '</td>'
 					.'</tr>';
 			}
-			echo '</tbody></table>';
+			$html .= '</tbody></table>';
 		}
-		else echo htmlspecialchars($value);
+		else $html .= htmlspecialchars($value);
+		if($return) return $html;
+		else echo $html;
 	}
 
 	static function commandButton($c, $target, $link=false) {

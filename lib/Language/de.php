@@ -737,6 +737,8 @@ return [
 	'import_policy_definitions_first' => 'Sie müssen zuerst Richtliniendefinitionen (Vorlagen) erstellen/importieren.',
 	'default_domain_policy' => '* Standarddomänen-Richtlinie *',
 	'domain_user_groups' => 'Domänenbenutzergruppen',
+	'no_policies_defined' => 'Keine Richtlinien definiert',
+	'overview' => 'Übersicht',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

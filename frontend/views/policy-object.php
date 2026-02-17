@@ -71,8 +71,9 @@ function getContents($group_id, $classMask) {
 	foreach($policies as $pd) {
 		$html .= "<tr>";
 		$html .= "	<td class='subbuttons wrap' description='".htmlspecialchars($pd->description,ENT_QUOTES)."'>"
-			."<span>".htmlspecialchars($pd->display_name)."</span>"
-			.($pd->description ? "<br><a href='#' class='help hint'>".LANG('help')."</a>" : "")
+			.($pd->description ? "<a href='#' class='help'>" : "")
+			.htmlspecialchars($pd->display_name)
+			.($pd->description ? "</a>" : "")
 			."</td>";
 		$html .= "	<td><input type='checkbox' class='configured' ".($pd->value!==null ? 'checked' : '')."></td>";
 		$html .= "	<td>";
@@ -160,21 +161,25 @@ function getPolicyInput($pd) {
 	<div class='tabcontents'>
 
 		<div name='machine' class='<?php if($tab=='machine') echo 'active'; ?>'>
-			<ul class='tree machine'>
-				<?php $content = getContents(null, Models\PolicyDefinition::CLASS_MACHINE); ?>
-				<?php if(empty($content)) { ?>
-					<div class='alert info'><?php echo LANG('import_policy_definitions_first'); ?></div>
-				<?php } else echo $content; ?>
-			</ul>
+			<?php $content = getContents(null, Models\PolicyDefinition::CLASS_MACHINE); ?>
+			<?php if(empty($content)) { ?>
+				<div class='alert info'><?php echo LANG('import_policy_definitions_first'); ?></div>
+			<?php } else { ?>
+				<ul class='tree machine'>
+					<?php echo $content; ?>
+				</ul>
+			<?php } ?>
 		</div>
 
 		<div name='user' class='<?php if($tab=='user') echo 'active'; ?>'>
-			<ul class='tree user'>
-				<?php $content = getContents(null, Models\PolicyDefinition::CLASS_USER); ?>
-				<?php if(empty($content)) { ?>
-					<div class='alert info'><?php echo LANG('import_policy_definitions_first'); ?></div>
-				<?php } else echo $content; ?>
-			</ul>
+			<?php $content = getContents(null, Models\PolicyDefinition::CLASS_USER); ?>
+			<?php if(empty($content)) { ?>
+				<div class='alert info'><?php echo LANG('import_policy_definitions_first'); ?></div>
+			<?php } else { ?>
+				<ul class='tree user'>
+					<?php echo $content; ?>
+				</ul>
+			<?php } ?>
 		</div>
 
 	</div>
@@ -197,7 +202,7 @@ let helpButtons = tabControlPolicyObject.querySelectorAll('a.help');
 for(let i=0; i<helpButtons.length; i++) {
 	helpButtons[i].addEventListener('click', (e) => {
 		let parent = e.srcElement.parentNode;
-		showDialog(parent.querySelectorAll('span')[0].innerText, parent.getAttribute('description'), DIALOG_BUTTONS_CLOSE, false, true);
+		showDialog(parent.innerText, parent.getAttribute('description'), DIALOG_BUTTONS_CLOSE, false, true);
 	});
 }
 // init multivalue add buttons

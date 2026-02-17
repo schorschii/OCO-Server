@@ -3640,12 +3640,13 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyDefinition');
 	}
-	public function selectAllPolicyByPolicyObjectAndParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($policy_object_id, $parent_policy_definition_id, $group_id, $class_mask) {
+	public function selectAllPolicyByPolicyObjectAndParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($policy_object_id, $parent_policy_definition_id, $group_id, $class_mask, $activeOnly=false) {
 		$sql = 'SELECT pd.id, pd.parent_policy_definition_id, pd.name, pd.display_name, pd.description, pd.class, pd.options, poi.value FROM policy_definition pd '
 			.' LEFT JOIN (SELECT poi.* FROM policy_object_item poi WHERE poi.policy_object_id = :policy_object_id AND poi.class & :class_mask) poi ON poi.policy_definition_id = pd.id'
 			.' WHERE pd.class & :class_mask'
 			.' AND '.(($group_id===null) ? 'policy_definition_group_id IS NULL' : 'policy_definition_group_id = :group_id')
-			.' AND '.(($parent_policy_definition_id===null) ? 'parent_policy_definition_id IS NULL' : 'parent_policy_definition_id = :parent_policy_definition_id');
+			.' AND '.(($parent_policy_definition_id===null) ? 'parent_policy_definition_id IS NULL' : 'parent_policy_definition_id = :parent_policy_definition_id')
+			.($activeOnly ? ' AND poi.value IS NOT NULL' : '');
 		$this->stmt = $this->dbh->prepare($sql);
 		$params = [':policy_object_id' => $policy_object_id, ':class_mask' => $class_mask];
 		if($group_id !== null)

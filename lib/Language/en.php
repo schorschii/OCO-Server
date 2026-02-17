@@ -742,6 +742,8 @@ return [
 	'import_policy_definitions_first' => 'You first need to create/import policy definitions (templates).',
 	'default_domain_policy' => '* Default Domain Policy *',
 	'domain_user_groups' => 'Domain User Groups',
+	'no_policies_defined' => 'No policies defined',
+	'overview' => 'Overview',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

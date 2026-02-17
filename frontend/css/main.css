@@ -970,7 +970,11 @@ table.list {
 	border-spacing: 0;
 	background-color: white;
 }
-table.list tr th, table.list tr td {
+table.list td > table {
+	margin-left: 25px;
+	width: calc(100% - 25px);
+}
+table.list tr > th, table.list tr:not(.nobottom) > td {
 	border-bottom: 1px solid rgba(0,0,0,0.2);
 }
 table.list tr .middle > *, table.list tr .middle > * {
@@ -1116,7 +1120,7 @@ table.list ul li.subbuttons {
 }
 table.list ul li.subbuttons > button {
 	position: absolute;
-	top: 2px;
+	top: 4px;
 	left: -16px;
 }
 table.list ul li.subbuttons:hover {
@@ -1795,7 +1799,7 @@ ul.tree button.expander {
 	div.stickytable > table.list tfoot {
 		background-color: #161b22;
 	}
-	table.list tr th, table.list tr td {
+	table.list tr > th, table.list tr:not(.nobottom) > td {
 		border-bottom: 1px solid rgba(255,255,255,0.1);
 	}
 	table.list tr:first-child th,

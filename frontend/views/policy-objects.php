@@ -25,7 +25,7 @@ try {
 
 <div class='details-abreast'>
 	<div class='stickytable'>
-		<table id='tblPolicyData' class='list searchable sortable savesort'>
+		<table id='tblPolicyData' class='list searchable sortable savesort actioncolumn'>
 		<thead>
 			<tr>
 				<th><input type='checkbox' class='toggleAllChecked'></th>
@@ -33,6 +33,7 @@ try {
 				<th class='searchable sortable'><?php echo LANG('created'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
 				<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
+				<th class=''><?php echo LANG('action'); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -74,6 +75,9 @@ try {
 					}
 					?>
 					</ul>
+				</td>
+				<td>
+					<button title='<?php echo LANG('overview'); ?>' onclick='showDialogPolicyObjectOverview(<?php echo $p->id; ?>)'><img src='img/eye.dyn.svg'></button>
 				</td>
 			</tr>
 		<?php } ?>
