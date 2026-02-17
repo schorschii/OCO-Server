@@ -11,11 +11,14 @@ try {
 		)
 	);
 } catch(PermissionException $e) {
-	header('HTTP/1.1 403 Forbidden');
+	http_response_code(403);
 	die(LANG('permission_denied'));
-} catch(Exception $e) {
-	header('HTTP/1.1 400 Invalid Request');
-	die(htmlspecialchars($e->getMessage()));
+} catch(NotFoundException $e) {
+	http_response_code(404);
+	die(LANG('not_found'));
+} catch(InvalidRequestException $e) {
+	http_response_code(400);
+	die($e->getMessage());
 }
 ?>
 

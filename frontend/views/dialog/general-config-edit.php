@@ -6,7 +6,7 @@ require_once('../../session.inc.php');
 try {
 	$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 } catch(PermissionException $e) {
-	http_response_code(404);
+	http_response_code(403);
 	die(LANG('permission_denied'));
 } catch(InvalidRequestException $e) {
 	http_response_code(400);

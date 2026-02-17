@@ -10,10 +10,10 @@ try {
 		throw new InvalidRequestException(LANG('ldap_accounts_cannot_be_modified'));
 } catch(PermissionException $e) {
 	http_response_code(403);
-	die(LANG('not_found'));
+	die(LANG('permission_denied'));
 } catch(NotFoundException $e) {
 	http_response_code(404);
-	die(LANG('permission_denied'));
+	die(LANG('not_found'));
 } catch(InvalidRequestException $e) {
 	http_response_code(400);
 	die($e->getMessage());

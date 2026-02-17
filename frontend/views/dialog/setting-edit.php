@@ -10,14 +10,14 @@ try {
 	$hideKey = $_GET['hideKey'] ?? false;
 	$file = $_GET['file'] ?? '';
 	$warning = $_GET['warning'] ?? 'be_careful_when_manual_editing_settings';
-} catch(NotFoundException $e) {
-	http_response_code(400);
-	die(LANG('not_found'));
 } catch(PermissionException $e) {
-	http_response_code(404);
+	http_response_code(403);
 	die(LANG('permission_denied'));
+} catch(NotFoundException $e) {
+	http_response_code(404);
+	die(LANG('not_found'));
 } catch(InvalidRequestException $e) {
-	http_response_code(500);
+	http_response_code(400);
 	die($e->getMessage());
 }
 ?>
