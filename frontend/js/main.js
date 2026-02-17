@@ -987,12 +987,11 @@ function editPackage(dialogContainer, id, package_family_id, version, compatible
 	req.send(formData);
 }
 function reorderPackageInGroup(groupId, oldPos, newPos) {
-	var params = [];
-	params.push({'key':'move_in_group_id', 'value':groupId});
-	params.push({'key':'move_from_pos', 'value':oldPos});
-	params.push({'key':'move_to_pos', 'value':newPos});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/packages.php', paramString, null, refreshContent);
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({
+		'move_in_group_id': groupId,
+		'move_from_pos': oldPos,
+		'move_to_pos': newPos,
+	}), null, refreshContent);
 }
 function removeSelectedPackage(checkboxName, attributeName=null, event=null) {
 	var ids = [];
@@ -1019,9 +1018,8 @@ function confirmRemovePackage(ids, event=null, infoText='', redirect=null, insta
 	if(event != null && event.shiftKey) {
 		params.push({'key':'force', 'value':'1'});
 	}
-	var paramString = urlencodeArray(params);
 	if(confirm( (installedOnComputers != null ? LANG['package_is_installed_on_computers'].replace('%1',installedOnComputers)+' ' : '') + LANG['confirm_delete_package']) ) {
-		ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
@@ -1047,8 +1045,7 @@ function removePackageFromGroup(ids, groupId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_package_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 		refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -1075,9 +1072,8 @@ function confirmRemovePackageFamily(ids, infoText='', redirect=null) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_package_family_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
@@ -1189,9 +1185,8 @@ function confirmRemovePackageGroup(ids, event=null, infoText='') {
 	if(event != null && event.shiftKey) {
 		params.push({'key':'force', 'value':'1'});
 	}
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete_group'])) {
-		ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 			refreshContentExplorer('views/packages.php'); refreshSidebar();
 			emitMessage(LANG['group_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
 		});
@@ -1220,8 +1215,7 @@ function addPackageToGroup(dialogContainer, packageId, groupId) {
 	packageId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_package_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['packages_added'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -1245,8 +1239,7 @@ function removePackageDependency(ids, packageId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_dependency_package_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 		refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -1270,8 +1263,7 @@ function removeDependentPackages(ids, packageId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_dependent_package_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/packages.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 		refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -1571,9 +1563,8 @@ function confirmRemoveMobileDevice(ids, event=null, infoText='', redirect=null) 
 	if(event != null && event.shiftKey) {
 		params.push({'key':'force', 'value':'1'});
 	}
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete_mobile_device'])) {
-		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
@@ -1606,9 +1597,8 @@ function confirmRemoveMobileDeviceGroup(ids, event=null, infoText='') {
 	if(event != null && event.shiftKey) {
 		params.push({'key':'force', 'value':'1'});
 	}
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete_group'])) {
-		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 			refreshContentExplorer('views/mobile-devices.php'); refreshSidebar();
 			emitMessage(LANG['group_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
 		});
@@ -1637,8 +1627,7 @@ function addMobileDeviceToGroup(dialogContainer, mobileDeviceId, groupId) {
 	mobileDeviceId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_mobile_device_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['mobile_device_added'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -1670,8 +1659,7 @@ function assignProfileToGroup(dialogContainer, profileId, groupId) {
 	profileId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_profile_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close();
 		refreshContent();
 		emitMessage(LANG['profile_assigned'], '', MESSAGE_TYPE_SUCCESS);
@@ -1726,8 +1714,7 @@ function assignManagedAppToGroup(dialogContainer, managedAppId, groupId, removab
 	delegatedScopes.forEach(function(entry) {
 		params.push({'key':'delegated_scopes[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['apps_assigned'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -1751,8 +1738,7 @@ function removeMobileDeviceFromGroup(ids, groupId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_mobile_device_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -1777,13 +1763,12 @@ function showDialogCreateComputer() {
 	});
 }
 function createComputer(dialogContainer, hostname, notes, agentKey, serverKey) {
-	var params = [];
-	params.push({'key':'create_computer', 'value':hostname});
-	params.push({'key':'notes', 'value':notes});
-	params.push({'key':'agent_key', 'value':agentKey});
-	params.push({'key':'server_key', 'value':serverKey});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({
+		'create_computer': hostname,
+		'notes': notes,
+		'agent_key': agentKey,
+		'server_key': serverKey,
+	}), null, function(text) {
 		dialogContainer.close();
 		refreshContentExplorer('views/computer-details.php?id='+parseInt(text));
 		emitMessage(LANG['computer_created'], hostname, MESSAGE_TYPE_SUCCESS);
@@ -1805,12 +1790,11 @@ function showDialogEditComputer(id) {
 	});
 }
 function editComputer(dialogContainer, id, hostname, notes) {
-	var params = [];
-	params.push({'key':'edit_computer_id', 'value':id});
-	params.push({'key':'hostname', 'value':hostname});
-	params.push({'key':'notes', 'value':notes});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({
+		'edit_computer_id': id,
+		'hostname': hostname,
+		'notes': notes,
+	}), null, function(text) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], hostname, MESSAGE_TYPE_SUCCESS);
 	});
@@ -1840,8 +1824,7 @@ function removeComputerFromGroup(ids, groupId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_computer_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/computers.php', urlencodeArray(params), null, function() {
 		refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -1880,8 +1863,7 @@ function confirmWolComputer(ids) {
 	ids.forEach(function(entry) {
 		params.push({'key':'wol_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/computers.php', urlencodeArray(params), null, function() {
 		emitMessage(LANG['wol_packet_sent'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
@@ -1911,9 +1893,8 @@ function confirmRemoveComputerGroup(ids, event=null, infoText='') {
 	if(event != null && event.shiftKey) {
 		params.push({'key':'force', 'value':'1'});
 	}
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete_group'])) {
-		ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/computers.php', urlencodeArray(params), null, function() {
 			refreshContentExplorer('views/computers.php'); refreshSidebar();
 			emitMessage(LANG['group_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
 		});
@@ -1942,8 +1923,7 @@ function addComputerToGroup(dialogContainer, computerId, groupId) {
 	computerId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_computer_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/computers.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/computers.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['computer_added'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -2013,8 +1993,7 @@ function sendMobileDeviceCommand(dialogContainer, mobile_device_id, name, parame
 	for(const [key, value] of Object.entries(parameter)) {
 		params.push({'key':key, 'value':value});
 	}
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -2100,9 +2079,8 @@ function confirmRemoveProfile(ids, event=null, infoText='', redirect=null) {
 	if(event != null && event.shiftKey) {
 		params.push({'key':'force', 'value':'1'});
 	}
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
@@ -2145,15 +2123,15 @@ function showDialogEditDeploymentRule(id=-1) {
 	});
 }
 function editDeploymentRule(dialogContainer, id, name, notes, enabled, computerGroupId, packageGroupId, priority) {
-	var params = [];
-	params.push({'key':'edit_deployment_rule_id', 'value':id});
-	params.push({'key':'name', 'value':name});
-	params.push({'key':'notes', 'value':notes});
-	params.push({'key':'enabled', 'value':enabled?'1':'0'});
-	params.push({'key':'computer_group_id', 'value':computerGroupId});
-	params.push({'key':'package_group_id', 'value':packageGroupId});
-	params.push({'key':'priority', 'value':priority});
-	ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeArray(params), null, function(response) {
+	ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeObject({
+		'edit_deployment_rule_id':id,
+		'name':name,
+		'notes':notes,
+		'enabled':enabled?'1':'0',
+		'computer_group_id':computerGroupId,
+		'package_group_id':packageGroupId,
+		'priority':priority,
+	}), null, function(response) {
 		dialogContainer.close();
 		if(id == '-1') {
 			refreshContentExplorer('views/deployment-rules.php?id='+parseInt(response));
@@ -2166,10 +2144,9 @@ function editDeploymentRule(dialogContainer, id, name, notes, enabled, computerG
 	});
 }
 function reevaluateDeploymentRule(deploymentRuleId) {
-	var params = [];
-	params.push({'key':'evaluate_deployment_rule_id', 'value':deploymentRuleId});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/deployment-rules.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeObject({
+		'evaluate_deployment_rule_id': deploymentRuleId
+	}), null, function() {
 		refreshContent();
 		emitMessage(LANG['reevaluated'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -2196,9 +2173,8 @@ function confirmRemoveDeploymentRule(ids, infoText='') {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_deployment_rule_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete_deployment_rule'])) {
-		ajaxRequestPost('ajax-handler/deployment-rules.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeArray(params), null, function() {
 			refreshContentExplorer('views/deployment-rules.php'); refreshSidebar();
 			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
 		});
@@ -2227,8 +2203,7 @@ function moveStaticJobToJobContainer(dialogContainer, jobIds, containerIds) {
 	jobIds.toString().split(',').forEach(function(entry) {
 		params.push({'key':'move_to_container_job_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -2255,9 +2230,8 @@ function confirmRemoveJobContainer(ids, infoText='') {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_container_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete_job_container'])) {
-		ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 			refreshContentExplorer('views/job-containers.php'); refreshSidebar();
 			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
 		});
@@ -2285,9 +2259,8 @@ function confirmRemoveJob(ids) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_job_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete_job'])) {
-		ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 			refreshContent(); refreshSidebar();
 			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
 		});
@@ -2341,19 +2314,18 @@ function showDialogEditJobContainer(id) {
 	});
 }
 function editJobContainer(dialogContainer, id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
-	var params = [
-		{'key':'edit_job_container_id', 'value':id},
-		{'key':'name', 'value':name},
-		{'key':'enabled', 'value':enabled},
-		{'key':'start', 'value':start},
-		{'key':'end', 'value':end},
-		{'key':'sequence_mode', 'value':sequence_mode},
-		{'key':'priority', 'value':priority},
-		{'key':'agent_ip_ranges', 'value':agent_ip_ranges},
-		{'key':'time_frames', 'value':time_frames},
-		{'key':'notes', 'value':notes},
-	];
-	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
+	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({
+		'edit_job_container_id':id,
+		'name':name,
+		'enabled':enabled,
+		'start':start,
+		'end':end,
+		'sequence_mode':sequence_mode,
+		'priority':priority,
+		'agent_ip_ranges':agent_ip_ranges,
+		'time_frames':time_frames,
+		'notes':notes,
+	}), null, function() {
 		dialogContainer.close();
 		refreshContent(); refreshSidebar();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
@@ -2480,8 +2452,7 @@ function uninstall(dialogContainer, checkboxName, name, notes, startTime, endTim
 	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
 	params.push({'key':'restart_timeout', 'value':restartTimeout});
 	params.push({'key':'priority', 'value':priority});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 		dialogContainer.close();
 		refreshSidebar(); refreshContent();
 		emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
@@ -2502,9 +2473,8 @@ function confirmRemovePackageComputerAssignment(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_package_assignment_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_remove_package_assignment'])) {
-		ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 			refreshContent();
 			emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 		});
@@ -2575,8 +2545,7 @@ function renewFailedStaticJobs(dialogContainer, jobContainerId, jobIds, createNe
 	params.push({'key':'use_wol', 'value':useWol ? 1 : 0});
 	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
 	params.push({'key':'priority', 'value':priority});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshSidebar(); refreshContent();
 		emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
 	});
@@ -2588,8 +2557,7 @@ function renewFailedDynamicJobs(id, jobId) {
 	jobId.toString().split(',').forEach(function(entry) {
 		if(entry.trim() != '') params.push({'key':'job_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/deployment-rules.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeArray(params), null, function() {
 		refreshSidebar(); refreshContent();
 		emitMessage(LANG['jobs_renewed'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -2600,19 +2568,17 @@ function showDialogEditPolicyObject(id=-1, name='') {
 	let newName = prompt(LANG['name'], name);
 	if(newName) {
 		if(id > 0) {
-			var params = [
-				{'key':'edit_policy_object_id', 'value':id},
-				{'key':'name', 'value':newName},
-			];
-			ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeArray(params), null, function(response) {
+			ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeObject({
+				'edit_policy_object_id':id,
+				'name':newName,
+			}), null, function(response) {
 				refreshContent();
 				emitMessage(LANG['saved'], newName, MESSAGE_TYPE_SUCCESS);
 			});
 		} else {
-			var params = [
-				{'key':'create_policy_object', 'value':newName},
-			];
-			ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeArray(params), null, function(response) {
+			ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeObject({
+				'create_policy_object':newName,
+			}), null, function(response) {
 				refreshContentExplorer('views/policy-objects.php?id='+parseInt(response));
 				emitMessage(LANG['saved'], newName, MESSAGE_TYPE_SUCCESS);
 			});
@@ -2641,8 +2607,7 @@ function showDialogAssignPolicyObject(policyObjectIds) {
 				policyObjectIds.forEach(function(entry) {
 					params.push({'key':'policy_object_id[]', 'value':entry});
 				});
-				var paramString = urlencodeArray(params);
-				ajaxRequestPost('ajax-handler/policy-objects.php', paramString, null, function() {
+				ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeArray(params), null, function() {
 					dialogContainer.close(); refreshContent();
 					emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 				});
@@ -2673,11 +2638,11 @@ function showDialogEditDomainUserRole(id=-1) {
 	});
 }
 function editDomainUserRole(dialogContainer, id, name, permissions) {
-	var params = [];
-	params.push({'key':'edit_domain_user_role_id', 'value':id});
-	params.push({'key':'name', 'value':name});
-	params.push({'key':'permissions', 'value':permissions});
-	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
+		'edit_domain_user_role_id':id,
+		'name':name,
+		'permissions':permissions,
+	}), null, function(response) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 	});
@@ -2697,9 +2662,8 @@ function confirmRemoveSelectedDomainUserRole(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_domain_user_role_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function() {
 			refreshContent();
 			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
 		});
@@ -2730,12 +2694,11 @@ function showDialogEditDomainUser(id=-1) {
 	});
 }
 function editDomainUser(dialogContainer, id, username, password, roleId) {
-	var params = [];
-	params.push({'key':'edit_domain_user_id', 'value':id});
-	params.push({'key':'password', 'value':password});
-	params.push({'key':'domain_user_role_id', 'value':roleId});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
+		'edit_domain_user_id':id,
+		'password':password,
+		'domain_user_role_id':roleId,
+	}), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
 	});
@@ -2755,9 +2718,8 @@ function confirmRemoveSelectedDomainUser(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/domain-users.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/domain-users.php', urlencodeArray(params), null, function() {
 			refreshContent();
 			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
 		});
@@ -2792,9 +2754,8 @@ function confirmRemoveReportGroup(ids, event=null, infoText='') {
 	if(event != null && event.shiftKey) {
 		params.push({'key':'force', 'value':'1'});
 	}
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete_group'])) {
-		ajaxRequestPost('ajax-handler/reports.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/reports.php', urlencodeArray(params), null, function() {
 			refreshContentExplorer('views/reports.php'); refreshSidebar();
 			emitMessage(LANG['group_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
 		});
@@ -2858,9 +2819,8 @@ function confirmRemoveReport(ids, infoText='', redirect=null) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/reports.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/reports.php', urlencodeArray(params), null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
@@ -2884,9 +2844,8 @@ function confirmRemoveSelectedSystemUser(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_system_user_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function() {
 			refreshContent();
 			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
 		});
@@ -2907,8 +2866,7 @@ function lockSelectedSystemUser(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'lock_system_user_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function() {
 		refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -2928,8 +2886,7 @@ function unlockSelectedSystemUser(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'unlock_system_user_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function() {
 		refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -2953,12 +2910,10 @@ function showDialogEditOwnSystemUserPassword() {
 	});
 }
 function editOwnSystemUserPassword(dialogContainer, oldPassword, newPassword) {
-	var params = [
-		{'key':'edit_own_system_user_password', 'value':newPassword},
-		{'key':'old_password', 'value':oldPassword},
-	];
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
+		'edit_own_system_user_password':newPassword,
+		'old_password':oldPassword,
+	}), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -2992,16 +2947,14 @@ function showDialogEditSystemUser(id=-1) {
 	});
 }
 function editSystemUser(dialogContainer, id, username, displayName, description, password, roleId) {
-	var params = [
-		{'key':'edit_system_user_id', 'value':id},
-		{'key':'username', 'value':username},
-		{'key':'display_name', 'value':displayName},
-		{'key':'description', 'value':description},
-		{'key':'password', 'value':password},
-		{'key':'system_user_role_id', 'value':roleId},
-	];
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
+		'edit_system_user_id':id,
+		'username':username,
+		'display_name':displayName,
+		'description':description,
+		'password':password,
+		'system_user_role_id':roleId,
+	}), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
 	});
@@ -3024,12 +2977,11 @@ function showDialogEditSystemUserRole(id=-1) {
 	});
 }
 function editSystemUserRole(dialogContainer, id, name, permissions) {
-	var params = [
-		{'key':'edit_system_user_role_id', 'value':id},
-		{'key':'name', 'value':name},
-		{'key':'permissions', 'value':permissions},
-	];
-	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
+		'edit_system_user_role_id':id,
+		'name':name,
+		'permissions':permissions,
+	}), null, function(response) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 	});
@@ -3049,9 +3001,8 @@ function confirmRemoveSelectedSystemUserRole(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_system_user_role_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function() {
 			refreshContent();
 			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
 		});
@@ -3077,12 +3028,11 @@ function showDialogEditEventQueryRule(id=-1) {
 	});
 }
 function editEventQueryRule(dialogContainer, id, log, query) {
-	var params = [
-		{'key':'edit_event_query_rule_id', 'value':id},
-		{'key':'log', 'value':log},
-		{'key':'query', 'value':query},
-	];
-	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
+		'edit_event_query_rule_id':id,
+		'log':log,
+		'query':query,
+	}), null, function(response) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], log, MESSAGE_TYPE_SUCCESS);
 	});
@@ -3102,9 +3052,8 @@ function confirmRemoveSelectedEventQueryRule(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_event_query_rule_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function() {
 			refreshContent();
 			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
 		});
@@ -3129,16 +3078,16 @@ function showDialogEditPasswordRotationRule(id=-1) {
 	});
 }
 function editPasswordRotationRule(dialogContainer, id, computer_group_id, username, alphabet, length, valid_seconds, history, default_password) {
-	var params = [];
-	params.push({'key':'edit_password_rotation_rule_id', 'value':id});
-	params.push({'key':'computer_group_id', 'value':computer_group_id});
-	params.push({'key':'username', 'value':username});
-	params.push({'key':'alphabet', 'value':alphabet});
-	params.push({'key':'length', 'value':length});
-	params.push({'key':'valid_seconds', 'value':valid_seconds});
-	params.push({'key':'history', 'value':history});
-	params.push({'key':'default_password', 'value':default_password});
-	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(response) {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
+		'edit_password_rotation_rule_id':id,
+		'computer_group_id':computer_group_id,
+		'username':username,
+		'alphabet':alphabet,
+		'length':length,
+		'valid_seconds':valid_seconds,
+		'history':history,
+		'default_password':default_password,
+	}), null, function(response) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
 	});
@@ -3158,9 +3107,8 @@ function confirmRemoveSelectedPasswordRotationRule(checkboxName) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_password_rotation_rule_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function() {
 			refreshContent();
 			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
 		});
@@ -3192,25 +3140,24 @@ function showDialogEditGeneralConfig() {
 	});
 }
 function editGeneralConfig(dialogContainer, clientApiEnabled, clientApiKey, agentRegistrationEnabled, agentRegistrationKey, assumeComputerOfflineAfter, wolShutdownExpiry, agentUpdateInterval, purgeSucceededJobsAfter, purgeFailedJobsAfter, purgeDomainUserLogonsAfter, purgeEventsAfter, logLevel, purgeLogsAfter, keepInactiveScreens, selfServiceEnabled) {
-	var params = [
-		{'key':'edit_general_config', 'value':1},
-		{'key':'client_api_enabled', 'value':clientApiEnabled},
-		{'key':'client_api_key', 'value':clientApiKey},
-		{'key':'agent_registration_enabled', 'value':agentRegistrationEnabled},
-		{'key':'agent_registration_key', 'value':agentRegistrationKey},
-		{'key':'assume_computer_offline_after', 'value':assumeComputerOfflineAfter},
-		{'key':'wol_shutdown_expiry', 'value':wolShutdownExpiry},
-		{'key':'agent_update_interval', 'value':agentUpdateInterval},
-		{'key':'purge_succeeded_jobs_after', 'value':purgeSucceededJobsAfter},
-		{'key':'purge_failed_jobs_after', 'value':purgeFailedJobsAfter},
-		{'key':'purge_domain_user_logons_after', 'value':purgeDomainUserLogonsAfter},
-		{'key':'purge_events_after', 'value':purgeEventsAfter},
-		{'key':'log_level', 'value':logLevel},
-		{'key':'purge_logs_after', 'value':purgeLogsAfter},
-		{'key':'computer_keep_inactive_screens', 'value':keepInactiveScreens},
-		{'key':'self_service_enabled', 'value':selfServiceEnabled},
-	];
-	ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function(text) {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
+		'edit_general_config':1,
+		'client_api_enabled':clientApiEnabled,
+		'client_api_key':clientApiKey,
+		'agent_registration_enabled':agentRegistrationEnabled,
+		'agent_registration_key':agentRegistrationKey,
+		'assume_computer_offline_after':assumeComputerOfflineAfter,
+		'wol_shutdown_expiry':wolShutdownExpiry,
+		'agent_update_interval':agentUpdateInterval,
+		'purge_succeeded_jobs_after':purgeSucceededJobsAfter,
+		'purge_failed_jobs_after':purgeFailedJobsAfter,
+		'purge_domain_user_logons_after':purgeDomainUserLogonsAfter,
+		'purge_events_after':purgeEventsAfter,
+		'log_level':logLevel,
+		'purge_logs_after':purgeLogsAfter,
+		'computer_keep_inactive_screens':keepInactiveScreens,
+		'self_service_enabled':selfServiceEnabled,
+	}), null, function(text) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], LANG['oco_configuration'], MESSAGE_TYPE_SUCCESS);
 	});
@@ -3227,10 +3174,7 @@ function enableDisableButton(btn, state) {
 }
 function ldapSyncSystemUsers(btn) {
 	enableDisableButton(btn, false);
-	var params = [];
-	params.push({'key':'ldap_sync_system_users', 'value':1});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({'ldap_sync_system_users':1}), null, function(text) {
 		refreshContent();
 		emitMessage(LANG['ldap_sync'], text, MESSAGE_TYPE_SUCCESS);
 	}, function(status, statusText, responseText){
@@ -3240,10 +3184,7 @@ function ldapSyncSystemUsers(btn) {
 }
 function ldapSyncDomainUsers(btn) {
 	enableDisableButton(btn, false);
-	var params = [];
-	params.push({'key':'ldap_sync_domain_users', 'value':1});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/settings.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({'ldap_sync_domain_users':1}), null, function(text) {
 		refreshContent();
 		emitMessage(LANG['ldap_sync'], text, MESSAGE_TYPE_SUCCESS);
 	}, function(status, statusText, responseText){
@@ -3315,9 +3256,8 @@ function removeSelectedSetting(checkboxName, attributeName=null) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_setting[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['really_delete'])) {
-		ajaxRequestPost('ajax-handler/settings.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function() {
 			emitMessage(LANG['object_deleted'], ids.join(', '), MESSAGE_TYPE_SUCCESS);
 			refreshContent();
 		});
@@ -3340,11 +3280,8 @@ function readFileInputBlob(file) {
 }
 
 function syncAppsProfiles(btn) {
-	var params = [];
-	params.push({'key':'sync_apps_profiles', 'value':1});
-	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'sync_apps_profiles':1}), null, function(text) {
 		emitMessage(LANG['apps_profiles_policies_synced'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){
@@ -3354,11 +3291,8 @@ function syncAppsProfiles(btn) {
 }
 
 function syncAppleDevices(btn) {
-	var params = [];
-	params.push({'key':'sync_apple_devices', 'value':1});
-	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'sync_apple_devices':1}), null, function(text) {
 		emitMessage(LANG['sync_apple_devices'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){
@@ -3367,11 +3301,8 @@ function syncAppleDevices(btn) {
 	});
 }
 function syncAppleAssets(btn) {
-	var params = [];
-	params.push({'key':'sync_apple_assets', 'value':1});
-	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'sync_apple_assets':1}), null, function(text) {
 		emitMessage(LANG['sync_apple_vpp'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){
@@ -3382,10 +3313,7 @@ function syncAppleAssets(btn) {
 
 function showDialogManagedPlayStore() {
 	// get the token for the Play Store iframe
-	var paramString = urlencodeArray([
-		{'key':'get_playstore_token', 'value':1}
-	]);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(token) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'get_playstore_token':1}), null, function(token) {
 		// load the Google JS
 		var script = document.createElement('script');
 		script.src = 'https://apis.google.com/js/api.js';
@@ -3404,13 +3332,12 @@ function showDialogManagedPlayStore() {
 				iframe.register('onproductselect', function(event) {
 					var displayName = prompt(LANG['display_name']);
 					if(displayName) {
-						var paramString = urlencodeArray([
-							{'key':'playstore_onproductselect', 'value':event.action},
-							{'key':'package_name', 'value':event.packageName},
-							{'key':'product_id', 'value':event.productId},
-							{'key':'app_name', 'value':displayName},
-						]);
-						ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
+						ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
+							'playstore_onproductselect':event.action,
+							'package_name':event.packageName,
+							'product_id':event.productId,
+							'app_name':displayName,
+						}), null, function(response) {
 							emitMessage(LANG['saved'], event.packageName, MESSAGE_TYPE_SUCCESS);
 							refreshContent();
 						});
@@ -3423,10 +3350,7 @@ function showDialogManagedPlayStore() {
 }
 function showDialogAndroidZeroTouch() {
 	// get the token for the Play Store iframe
-	var params = [];
-	params.push({'key':'get_playstore_token', 'value':1});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(token) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'get_playstore_token':1}), null, function(token) {
 		// load the Google JS
 		var script = document.createElement('script');
 		script.src = 'https://apis.google.com/js/api.js';
@@ -3449,10 +3373,7 @@ function showDialogAndroidZeroTouch() {
 }
 function showDialogManagedPlayStoreConfig(packageName, managedAppId, configId=null) {
 	// get the token for the Play Store iframe
-	var params = [];
-	params.push({'key':'get_playstore_token', 'value':1});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(token) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'get_playstore_token':1}), null, function(token) {
 		// load the Google JS
 		var script = document.createElement('script');
 		script.src = 'https://apis.google.com/js/api.js';
@@ -3469,22 +3390,20 @@ function showDialogManagedPlayStoreConfig(packageName, managedAppId, configId=nu
 				};
 				var iframe = gapi.iframes.getContext().openChild(options);
 				iframe.register('onconfigupdated', function(event) {
-					var paramString = urlencodeArray([
-						{'key':'playstore_onconfigupdated', 'value':event.mcmId},
-						{'key':'name', 'value':event.name},
-						{'key':'managed_app_id', 'value':managedAppId},
-					]);
-					ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
+					ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
+						'playstore_onconfigupdated':event.mcmId,
+						'name':event.name,
+						'managed_app_id':managedAppId,
+					}), null, function(response) {
 						emitMessage(LANG['saved'], event.name, MESSAGE_TYPE_SUCCESS);
 						dialogContainer.close(); refreshContent();
 					});
 				}, gapi.iframes.CROSS_ORIGIN_IFRAMES_FILTER);
 				iframe.register('onconfigdeleted', function(event) {
-					var paramString = urlencodeArray([
-						{'key':'playstore_onconfigdeleted', 'value':event.mcmId},
-						{'key':'managed_app_id', 'value':managedAppId},
-					]);
-					ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(response) {
+					ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
+						'playstore_onconfigdeleted':event.mcmId,
+						'managed_app_id':managedAppId,
+					}), null, function(response) {
 						emitMessage(LANG['configuration_deleted'], '', MESSAGE_TYPE_SUCCESS);
 						dialogContainer.close(); refreshContent();
 					});
@@ -3513,20 +3432,16 @@ function removeSelectedManagedApp(checkboxName, attributeName=null) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_managed_app_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
 	if(confirm(LANG['really_delete'])) {
-		ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 			emitMessage(LANG['object_deleted'], null, MESSAGE_TYPE_SUCCESS);
 			refreshContent();
 		});
 	}
 }
 function syncAndroidDevices(btn) {
-	var params = [];
-	params.push({'key':'sync_android_devices', 'value':1});
-	var paramString = urlencodeArray(params);
 	enableDisableButton(btn, false);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function(text) {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'sync_android_devices':1}), null, function(text) {
 		emitMessage(LANG['sync_android_devices'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
 	}, function(status, statusText, responseText){
@@ -3550,8 +3465,7 @@ function removeProfileFromGroup(dialogContainer, ids, groupId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_profile_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
@@ -3572,8 +3486,7 @@ function removeManagedAppFromGroup(dialogContainer, ids, groupId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_managed_app_id[]', 'value':entry});
 	});
-	var paramString = urlencodeArray(params);
-	ajaxRequestPost('ajax-handler/mobile-devices.php', paramString, null, function() {
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
