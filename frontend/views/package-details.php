@@ -441,7 +441,7 @@ try {
 						</tfoot>
 					</table>
 					<?php } else { ?>
-						<div class='alert warning margintop'><?php echo LANG('this_is_an_empty_package_without_archive'); ?></div>
+						<div class='alert info margintop'><?php echo LANG('this_is_an_empty_package_without_archive'); ?></div>
 					<?php } ?>
 				</div>
 			</div>
