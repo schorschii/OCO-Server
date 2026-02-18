@@ -739,6 +739,9 @@ return [
 	'default_domain_policy' => '* Standarddomänen-Richtlinie *',
 	'domain_user_groups' => 'Domänenbenutzergruppen',
 	'no_policies_defined' => 'Keine Richtlinien definiert',
+	'generate_result_set' => 'Ergebnissatz generieren',
+	'domain_user_selection' => 'Domänenbenutzer-Auswahl',
+	'manual_computer_package_assignment_confirmation' => 'Computer-Paketzuordnung werden normalerweise automatisch zugewiesen, sobald ein Softwarejob erfolgreich abgeschlossen wurde. Sind Sie sicher, dass die Zuweisungen manuell durchführen möchten?',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

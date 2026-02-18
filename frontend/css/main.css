@@ -974,7 +974,7 @@ table.list td > table {
 	margin-left: 25px;
 	width: calc(100% - 25px);
 }
-table.list tr > th, table.list tr:not(.nobottom) > td {
+table.list tr:not(.nobottom) > th, table.list tr:not(.nobottom) > td {
 	border-bottom: 1px solid rgba(0,0,0,0.2);
 }
 table.list tr .middle > *, table.list tr .middle > * {
@@ -1517,7 +1517,7 @@ div.stickytable > table.list tfoot {
 	border-top-left-radius: 0px;
 	border-top-right-radius: 0px;
 }
-.box.listSearchList {
+.box.listItems {
 	resize: vertical;
 	min-height: 100px;
 	height: 155px;
@@ -1529,24 +1529,24 @@ div.stickytable > table.list tfoot {
 	border-top-right-radius: 0px;
 	border-top-width: 0px;
 }
-.box.listSearchList.withContextButton {
+.box.listItems.withContextButton {
 	/* for button below */
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
 	border-bottom-width: 0px;
 }
-.box.listSearchList .blockListItem {
+.box.listItems .blockListItem {
 	padding-left: 7px;
 	padding-right: 15px; /* for .dragicon */
 }
-.box.listSearchList .blockListItem.big {
+.box.listItems .blockListItem.big {
 	padding-top: 10px;
 	padding-bottom: 10px;
 }
-.box.listSearchList .blockListItem > input[type=checkbox] {
+.box.listItems .blockListItem > input[type=checkbox] {
 	margin: 2px 5px 0px 0px;
 }
-.box.listSearchList .headline {
+.box.listItems .headline {
 	display: flex;
 	align-items: center;
 	padding: 7px;
@@ -1799,7 +1799,7 @@ ul.tree button.expander {
 	div.stickytable > table.list tfoot {
 		background-color: #161b22;
 	}
-	table.list tr > th, table.list tr:not(.nobottom) > td {
+	table.list tr:not(.nobottom) > th, table.list tr:not(.nobottom) > td {
 		border-bottom: 1px solid rgba(255,255,255,0.1);
 	}
 	table.list tr:first-child th,

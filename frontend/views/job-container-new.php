@@ -114,96 +114,36 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 	</div>
 
 	<div class='gallery margintop'>
-		<div>
-			<h2><img src='img/computer.dyn.svg'><div><?php echo LANG('computer_selection'); ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</div></h2>
-			<div class='listSearch'>
-				<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divComputerList, this.checked);refreshDeployComputerCount()'>
-				<input type='search' id='txtDeploySearchComputers' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divComputerList, this.value)'>
-			</div>
-			<div id='divComputerList' class='box listSearchList withContextButton'>
-				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1);return false'><?php echo LANG('all_computers'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
-				<div class='headline bold'>
-					<?php echo LANG('computer_groups'); ?>
-					<div class='filler'></div>
-				</div>
-				<?php echoTargetComputerGroupOptions(); ?>
-				<div class='headline bold'>
-					<?php echo LANG('reports'); ?>
-					<div class='filler'></div>
-				</div>
-				<?php echoTargetComputerReportOptions(); ?>
-			</div>
-			<div id='divComputerListHome' class='box listSearchList hidden'>
-				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployComputerList(-1);return false'><?php echo LANG('all_computers'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
-				<div class='headline bold'>
-					<?php echo LANG('computer_groups'); ?>
-					<div class='filler'></div>
-				</div>
-				<?php echoTargetComputerGroupOptions(); ?>
-				<div class='headline bold'>
-					<?php echo LANG('reports'); ?>
-					<div class='filler'></div>
-				</div>
-				<?php echoTargetComputerReportOptions(); ?>
-			</div>
-			<button class='small listSearchButton' onclick='addSelectedComputersToDeployTarget()'><?php echo LANG('add_selected'); ?>&nbsp;<img src='img/add2.dyn.svg'></button>
+		<div id='divComputerSelection'>
+			<?php $CONTAINER_SELECTION=true; require('partial/computer-selection.php'); ?>
+			<button class='small listSearchButton' onclick='addSelectedComputersToDeployTarget(divComputerSelection)'><?php echo LANG('add_selected'); ?>&nbsp;<img src='img/add2.dyn.svg'></button>
 		</div>
 		<img src='img/arrow-right.dyn.svg'>
 		<div>
-			<h2><div><?php echo LANG('target_computer'); ?> (<span id='spnTotalTargetComputers'>0</span>)</div></h2>
+			<h3><div><?php echo LANG('target_computer'); ?> (<span id='spnTotalTargetComputers'>0</span>)</div></h3>
 			<div class='listSearch'>
 				<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divTargetComputerList, this.checked)'>
 				<input type='search' id='txtDeploySearchTargetComputers' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divTargetComputerList, this.value)'>
 			</div>
-			<div id='divTargetComputerList' class='box listSearchList withContextButton'>
+			<div id='divTargetComputerList' class='box listItems withContextButton'>
 				<!-- filled by user -->
 			</div>
 			<button class='small listSearchButton' onclick='removeSelectedTargets(divTargetComputerList)'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('remove_selected'); ?></button>
 		</div>
 	</div>
 	<div class='gallery margintop'>
-		<div>
-			<h2><img src='img/package.dyn.svg'><div><?php echo LANG('package_selection'); ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</div></h2>
-			<div class='listSearch'>
-				<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked);refreshDeployPackageCount()'>
-				<input type='search' id='txtDeploySearchPackages' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divPackageList, this.value)'>
-			</div>
-			<div id='divPackageList' class='box listSearchList withContextButton'>
-				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1);return false'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
-				<div class='headline bold'>
-					<?php echo LANG('package_groups'); ?>
-					<div class='filler'></div>
-				</div>
-				<?php echoTargetPackageGroupOptions(); ?>
-				<div class='headline bold'>
-					<?php echo LANG('reports'); ?>
-					<div class='filler'></div>
-				</div>
-				<?php echoTargetPackageReportOptions(); ?>
-			</div>
-			<div id='divPackageListHome' class='box listSearchList hidden'>
-				<a href='#' class='blockListItem noSearch big' onclick='refreshDeployPackageList(-1);return false'><?php echo LANG('all_packages'); ?><img src='img/eye.dyn.svg' class='dragicon'></a>
-				<div class='headline bold'>
-					<?php echo LANG('package_groups'); ?>
-					<div class='filler'></div>
-				</div>
-				<?php echoTargetPackageGroupOptions(); ?>
-				<div class='headline bold'>
-					<?php echo LANG('reports'); ?>
-					<div class='filler'></div>
-				</div>
-				<?php echoTargetPackageReportOptions(); ?>
-			</div>
-			<button class='small listSearchButton' onclick='addSelectedPackagesToDeployTarget()'><?php echo LANG('add_selected'); ?>&nbsp;<img src='img/add2.dyn.svg'></button>
+		<div id='divPackageSelection'>
+			<?php $CONTAINER_SELECTION=true; require('partial/package-selection.php'); ?>
+			<button class='small listSearchButton' onclick='addSelectedPackagesToDeployTarget(divPackageSelection)'><?php echo LANG('add_selected'); ?>&nbsp;<img src='img/add2.dyn.svg'></button>
 		</div>
 		<img src='img/arrow-right.dyn.svg'>
 		<div>
-			<h2><div><?php echo LANG('packages_to_deploy'); ?> (<span id='spnTotalTargetPackages'>0</span>)</div></h2>
+			<h3><div><?php echo LANG('packages_to_deploy'); ?> (<span id='spnTotalTargetPackages'>0</span>)</div></h3>
 			<div class='listSearch'>
 				<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divTargetPackageList, this.checked)'>
 				<input type='search' id='txtDeploySearchTargetPackages' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divTargetPackageList, this.value)'>
 			</div>
-			<div id='divTargetPackageList' class='box listSearchList withContextButton'>
+			<div id='divTargetPackageList' class='box listItems withContextButton'>
 				<!-- filled by user -->
 			</div>
 			<button class='small listSearchButton' onclick='removeSelectedTargets(divTargetPackageList)'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('remove_selected'); ?></button>
@@ -211,6 +151,11 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 	</div>
 
 </div>
+
+<script>
+	initSelectionBox(divComputerSelection, divTargetComputerList, 'target_computers');
+	initSelectionBox(divPackageSelection, divTargetPackageList, 'target_packages');
+</script>
 
 <div class='content-foot'>
 	<div class='filler'></div>
@@ -235,71 +180,3 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 			txtConstraintIpRange.value,
 			txtConstraintTimeRange.value)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 </div>
-
-<?php
-function echoTargetComputerGroupOptions($parent=null) {
-	global $db;
-	global $cl;
-
-	foreach($db->selectAllComputerGroupByParentComputerGroupId($parent) as $cg) {
-		if(!$cl->checkPermission($cg, PermissionManager::METHOD_READ, false)
-		&& !$cl->checkPermission($cg, PermissionManager::METHOD_DEPLOY, false)) continue;
-
-		echo "<label class='blockListItem' onclick='refreshDeployComputerList(".$cg->id.");return false'>";
-		echo "<input type='checkbox' name='computer_groups' value='".$cg->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' onkeypress='if(event.key==\"Enter\"){this.parentNode.click()}' />";
-		echo htmlspecialchars($cg->name);
-		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
-		echo "</label>";
-		echo "<div class='subgroup'>";
-		echoTargetComputerGroupOptions($cg->id);
-		echo "</div>";
-	}
-}
-function echoTargetComputerReportOptions($parent=null) {
-	global $db;
-	global $cl;
-
-	foreach($db->selectAllReport($parent) as $r) {
-		if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
-
-		$displayName = LANG($r->name);
-		echo "<label class='blockListItem' onclick='refreshDeployComputerList(null, ".$r->id.");return false'>";
-		echo "<input type='checkbox' name='computer_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployComputerCount()' onkeypress='if(event.key==\"Enter\"){this.parentNode.click()}' />";
-		echo htmlspecialchars($displayName);
-		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
-		echo "</label>";
-	}
-}
-function echoTargetPackageGroupOptions($parent=null) {
-	global $db;
-	global $cl;
-
-	foreach($db->selectAllPackageGroupByParentPackageGroupId($parent) as $pg) {
-		if(!$cl->checkPermission($pg, PermissionManager::METHOD_READ, false)
-		&& !$cl->checkPermission($pg, PermissionManager::METHOD_DEPLOY, false)) continue;
-
-		echo "<label class='blockListItem' onclick='refreshDeployPackageList(".$pg->id.");return false'>";
-		echo "<input type='checkbox' name='package_groups' value='".$pg->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' onkeypress='if(event.key==\"Enter\"){this.parentNode.click()}' />";
-		echo htmlspecialchars($pg->name);
-		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
-		echo "</label>";
-		echo "<div class='subgroup'>";
-		echoTargetPackageGroupOptions($pg->id);
-		echo "</div>";
-	}
-}
-function echoTargetPackageReportOptions($parent=null) {
-	global $db;
-	global $cl;
-
-	foreach($db->selectAllReport($parent) as $r) {
-		if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
-
-		$displayName = LANG($r->name);
-		echo "<label class='blockListItem' onclick='refreshDeployPackageList(null, ".$r->id.");return false'>";
-		echo "<input type='checkbox' name='package_reports' value='".$r->id."' onclick='event.stopPropagation();refreshDeployPackageCount()' onkeypress='if(event.key==\"Enter\"){this.parentNode.click()}' />";
-		echo htmlspecialchars($displayName);
-		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
-		echo "</label>";
-	}
-}

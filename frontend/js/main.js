@@ -298,11 +298,11 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 	var xhttp = new XMLHttpRequest();
 	xhttp.userCancelled = false;
 	xhttp.onreadystatechange = function() {
-		if(this.readyState != 4) {
-			return;
-		}
+		if(this.readyState != 4) return;
 		if(this.status == 200) {
-			var object = obj(objID);
+			var object = objID;
+			if(typeof objID === 'string' || objID instanceof String)
+				object = obj(objID);
 			if(object != null) {
 				if(objID == 'explorer-tree') {
 					// only update content if new content differs to avoid page jumps
@@ -470,7 +470,8 @@ function toggleCheckboxesInContainer(container, checked) {
 function getSelectedCheckBoxValues(checkboxName, attributeName=null, warnIfEmpty=false, root=document) {
 	var values = [];
 	root.querySelectorAll('input').forEach(function(entry) {
-		if(entry.name == checkboxName && entry.checked) {
+		if((entry.name == checkboxName || checkboxName === null)
+		&& entry.checked) {
 			if(attributeName == null) {
 				values.push(entry.value);
 			} else {
@@ -487,7 +488,7 @@ function getSelectedCheckBoxValues(checkboxName, attributeName=null, warnIfEmpty
 function getAllCheckBoxValues(checkboxName, attributeName=null, warnIfEmpty=false, root=document) {
 	var values = [];
 	root.querySelectorAll('input').forEach(function(entry) {
-		if(entry.name == checkboxName) {
+		if(entry.name == checkboxName || checkboxName === null) {
 			if(attributeName == null) {
 				values.push(entry.value);
 			} else {
@@ -1094,6 +1095,7 @@ function deploySelectedPackage(checkboxName, attributeName=null) {
 }
 function showDialogAddPackageDependency(packageId, reverse=false) {
 	showDialogAjax(LANG['computer_groups'], 'views/dialog/package-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		initSelectionBox(dialogContainer.querySelectorAll('.packageSelection')[0]);
 		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
 			if(reverse) {
 				addDependantPackage(
@@ -1136,7 +1138,10 @@ function addDependantPackage(dialogContainer, packageId, packageIds) {
 	});
 }
 function showDialogAssignPackageComputer(packageId) {
+	if(!confirm(LANG['manual_computer_package_assignment_confirmation']))
+		return;
 	showDialogAjax(LANG['computer_groups'], 'views/dialog/computer-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		initSelectionBox(dialogContainer.querySelectorAll('.computerSelection')[0]);
 		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
 			assignPackageComputer(
 				dialogContainer,
@@ -1268,65 +1273,60 @@ function removeDependentPackages(ids, packageId) {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function refreshDeployComputerList(groupId=null, reportId=null) {
-	txtDeploySearchComputers.value = '';
-	var params = [];
-	if(groupId != null) {
-		params.push({'key':'get_computer_group_members', 'value':groupId});
-		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divComputerList', function(){
-			txtDeploySearchComputers.focus();
-			refreshDeployComputerCount();
+function initSelectionBox(itemBox, targetBox=null, targetInputName=null) {
+	let txtSearch = itemBox.querySelectorAll('input.searchItems')[0];
+	let homeContent = itemBox.querySelectorAll('.listHome')[0];
+	let listContent = itemBox.querySelectorAll('.listItems')[0];
+	let subListButtons = itemBox.querySelectorAll('label.loadSubList');
+	for(let i=0; i<subListButtons.length; i++) {
+		subListButtons[i].addEventListener('click', (e)=>{
+			e.preventDefault();
+			let target = subListButtons[i].getAttribute('target');
+			if(!target) {
+				listContent.innerHTML = homeContent.innerHTML;
+				initSelectionBox(itemBox, targetBox, targetInputName);
+			} else {
+				ajaxRequest(target, listContent, function(text){
+					initSelectionBox(itemBox, targetBox, targetInputName);
+				});
+			}
+			txtSearch.focus();
+			txtSearch.value = '';
 		});
 	}
-	else if(reportId != null) {
-		params.push({'key':'get_computer_report_results', 'value':reportId});
-		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divComputerList', function(){
-			txtDeploySearchComputers.focus();
-			refreshDeployComputerCount();
-		});
-	} else {
-		divComputerList.innerHTML = divComputerListHome.innerHTML;
-		txtDeploySearchComputers.focus();
-		refreshDeployComputerCount();
+
+	if(targetBox) {
+		let itemButtons = itemBox.querySelectorAll('label.item');
+		for(let i=0; i<itemButtons.length; i++) {
+			itemButtons[i].addEventListener('dblclick', (e)=>{
+				addToDeployTarget(
+					{'id':e.srcElement.getAttribute('item_id'), 'name':e.srcElement.getAttribute('item_name')},
+					targetBox,
+					targetInputName
+				);
+			});
+		}
 	}
-}
-function refreshDeployComputerCount() {
-	spnTotalComputers.innerText = getAllCheckBoxValues('computer_groups', null, false, divComputerList).length
-		+ getAllCheckBoxValues('computer_reports', null, false, divComputerList).length
-		+ getAllCheckBoxValues('computers', null, false, divComputerList).length;
-	spnSelectedComputers.innerText = getSelectedCheckBoxValues('computer_groups', null, false, divComputerList).length
-		+ getSelectedCheckBoxValues('computer_reports', null, false, divComputerList).length
-		+ getSelectedCheckBoxValues('computers', null, false, divComputerList).length;
-}
-function refreshDeployPackageList(groupId=null, reportId=null) {
-	txtDeploySearchPackages.value = '';
-	var params = [];
-	if(groupId != null) {
-		params.push({'key':'get_package_group_members', 'value':groupId});
-		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divPackageList', function(){
-			txtDeploySearchPackages.focus();
-			refreshDeployPackageCount();
+
+	let checkBoxes = listContent.querySelectorAll('input[type=checkbox]');
+	let spnSelectedItems = itemBox.querySelectorAll('.selectedItems')[0];
+	let spnTotalItems = itemBox.querySelectorAll('.totalItems')[0];
+	spnSelectedItems.innerText = '0';
+	spnTotalItems.innerText = checkBoxes.length;
+	for(let i=0; i<checkBoxes.length; i++) {
+		checkBoxes[i].addEventListener('click', (e)=>{
+			spnSelectedItems.innerText = getSelectedCheckBoxValues(null, null, false, listContent).length;
 		});
 	}
-	else if(reportId != null) {
-		params.push({'key':'get_package_report_results', 'value':reportId});
-		ajaxRequest('ajax-handler/job-containers.php?'+urlencodeArray(params), 'divPackageList', function(){
-			txtDeploySearchPackages.focus();
-			refreshDeployPackageCount();
-		});
-	} else {
-		divPackageList.innerHTML = divPackageListHome.innerHTML;
-		txtDeploySearchPackages.focus();
-		refreshDeployPackageCount();
-	}
-}
-function refreshDeployPackageCount() {
-	spnTotalPackages.innerHTML = getAllCheckBoxValues('package_groups', null, false, divPackageList).length
-		+ getAllCheckBoxValues('package_reports', null, false, divPackageList).length
-		+ getAllCheckBoxValues('packages', null, false, divPackageList).length;
-	spnSelectedPackages.innerHTML = getSelectedCheckBoxValues('package_groups', null, false, divPackageList).length
-		+ getSelectedCheckBoxValues('package_reports', null, false, divPackageList).length
-		+ getSelectedCheckBoxValues('packages', null, false, divPackageList).length;
+
+	itemBox.querySelectorAll('input[type=checkbox].toggleAll')[0].onclick = function(e){
+		toggleCheckboxesInContainer(listContent, e.srcElement.checked);
+		spnSelectedItems.innerText = getSelectedCheckBoxValues(null, null, false, listContent).length;
+	};
+
+	itemBox.querySelectorAll('input.searchItems')[0].oninput = function(e){
+		searchItems(listContent, e.srcElement.value)
+	};
 }
 function getSelectedNodes(root, name=null, warnIfEmpty=false) {
 	var items = [];
@@ -1344,10 +1344,10 @@ function getSelectedNodes(root, name=null, warnIfEmpty=false) {
 	}
 	return items;
 }
-function addSelectedComputersToDeployTarget() {
-	groupItems = getSelectedNodes(divComputerList, 'computer_groups');
-	reportItems = getSelectedNodes(divComputerList, 'computer_reports');
-	itemItems = getSelectedNodes(divComputerList, 'computers');
+function addSelectedComputersToDeployTarget(itemBox) {
+	groupItems = getSelectedNodes(itemBox, 'computer_groups');
+	reportItems = getSelectedNodes(itemBox, 'computer_reports');
+	itemItems = getSelectedNodes(itemBox, 'computers');
 	if(groupItems.length + reportItems.length + itemItems.length == 0) {
 		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
 	} else {
@@ -1356,10 +1356,10 @@ function addSelectedComputersToDeployTarget() {
 		addToDeployTarget(itemItems, divTargetComputerList, 'target_computers');
 	}
 }
-function addSelectedPackagesToDeployTarget() {
-	groupItems = getSelectedNodes(divPackageList, 'package_groups');
-	reportItems = getSelectedNodes(divPackageList, 'package_reports');
-	itemItems = getSelectedNodes(divPackageList, 'packages');
+function addSelectedPackagesToDeployTarget(itemBox) {
+	groupItems = getSelectedNodes(itemBox, 'package_groups');
+	reportItems = getSelectedNodes(itemBox, 'package_reports');
+	itemItems = getSelectedNodes(itemBox, 'packages');
 	if(groupItems.length + reportItems.length + itemItems.length == 0) {
 		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
 	} else {
@@ -1929,7 +1929,10 @@ function addComputerToGroup(dialogContainer, computerId, groupId) {
 	});
 }
 function showDialogAssignComputerPackage(computerId) {
+	if(!confirm(LANG['manual_computer_package_assignment_confirmation']))
+		return;
 	showDialogAjax(LANG['computer_groups'], 'views/dialog/package-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		initSelectionBox(dialogContainer.querySelectorAll('.packageSelection')[0]);
 		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
 			assignComputerPackage(
 				dialogContainer,
@@ -2617,6 +2620,14 @@ function showDialogAssignPolicyObject(policyObjectIds) {
 }
 function showDialogPolicyObjectOverview(id, title='') {
 	showDialogAjax(title, 'views/dialog/policy-object-overview.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE);
+}
+function showDialogPolicyResults() {
+	showDialogAjax(LANG['generate_result_set'], 'views/dialog/policy-results.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let computerSelection = dialogContainer.querySelectorAll('.computerSelection')[0];
+		let domainUserSelection = dialogContainer.querySelectorAll('.domainUserSelection')[0];
+		initSelectionBox(computerSelection);
+		initSelectionBox(domainUserSelection);
+	});
 }
 
 // ======== DOMAIN USER OPERATIONS ========

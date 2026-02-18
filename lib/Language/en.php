@@ -744,6 +744,9 @@ return [
 	'default_domain_policy' => '* Default Domain Policy *',
 	'domain_user_groups' => 'Domain User Groups',
 	'no_policies_defined' => 'No policies defined',
+	'generate_result_set' => 'Generate Result Set',
+	'domain_user_selection' => 'Domain User Selection',
+	'manual_computer_package_assignment_confirmation' => 'Computer-Package assignments are normally created automatically after a software job has completed successfully. Are you sure you want to perform the assignment manually?',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.

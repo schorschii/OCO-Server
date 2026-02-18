@@ -29,47 +29,47 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 </table>
 
 <div class='gallery margintop'>
-	<div>
-		<h2><img src='img/computer.dyn.svg'><div><?php echo LANG('computer_selection'); ?> (<span id='spnSelectedComputers'>0</span>/<span id='spnTotalComputers'>0</span>)</div></h2>
+	<div id='divComputerSelection'>
+		<h2><img src='img/computer.dyn.svg'><div><?php echo LANG('computer_selection'); ?> (<span class='selectedItems'>0</span>/<span class='totalItems'>0</span>)</div></h2>
 		<div class='listSearch'>
-			<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divComputerList, this.checked);refreshDeployComputerCount()'>
-			<input type='search' id='txtDeploySearchComputers' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divComputerList, this.value)'>
+			<input type='checkbox' class='toggleAll' title='<?php echo LANG('select_all'); ?>'>
+			<input type='search' class='searchItems' placeholder='<?php echo LANG('search_placeholder'); ?>'>
 		</div>
-		<div id='divComputerList' class='box listSearchList withContextButton'>
+		<div id='divComputerList' class='box listItems withContextButton'>
 			<?php foreach($db->selectAllComputer() as $c) {
 				if(!$cl->checkPermission($c, SelfService\PermissionManager::METHOD_DEPLOY, false)) continue;
-				echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$c->id.",\"name\":this.innerText}, divTargetComputerList, \"target_computers\")'><input type='checkbox' name='computers' onclick='refreshDeployComputerCount()' value='".$c->id."' />".htmlspecialchars($c->hostname)."</label>";
+				echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$c->id.",\"name\":this.innerText}, divTargetComputerList, \"target_computers\")'><input type='checkbox' name='computers' value='".$c->id."' />".htmlspecialchars($c->hostname)."</label>";
 			} ?>
 		</div>
-		<button class='small listSearchButton' onclick='addSelectedComputersToDeployTarget()'><?php echo LANG('add_selected'); ?>&nbsp;<img src='img/add2.dyn.svg'></button>
+		<button class='small listSearchButton' onclick='addSelectedComputersToDeployTarget(divComputerSelection)'><?php echo LANG('add_selected'); ?>&nbsp;<img src='img/add2.dyn.svg'></button>
 	</div>
 	<img src='img/arrow-right.dyn.svg'>
 	<div>
 		<h2><div><?php echo LANG('target_computer'); ?> (<span id='spnTotalTargetComputers'>0</span>)</div></h2>
 		<div class='listSearch'>
 			<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divTargetComputerList, this.checked)'>
-			<input type='search' id='txtDeploySearchTargetComputers' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divTargetComputerList, this.value)'>
+			<input type='search' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divTargetComputerList, this.value)'>
 		</div>
-		<div id='divTargetComputerList' class='box listSearchList withContextButton'>
+		<div id='divTargetComputerList' class='box listItems withContextButton'>
 			<!-- filled by user -->
 		</div>
 		<button class='small listSearchButton' onclick='removeSelectedTargets(divTargetComputerList)'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('remove_selected'); ?></button>
 	</div>
 </div>
 <div class='gallery margintop'>
-	<div>
-		<h2><img src='img/package.dyn.svg'><div><?php echo LANG('package_selection'); ?> (<span id='spnSelectedPackages'>0</span>/<span id='spnTotalPackages'>0</span>)</div></h2>
+	<div id='divPackageSelection'>
+		<h2><img src='img/package.dyn.svg'><div><?php echo LANG('package_selection'); ?> (<span class='selectedItems'>0</span>/<span class='totalItems'>0</span>)</div></h2>
 		<div class='listSearch'>
-			<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divPackageList, this.checked);refreshDeployPackageCount()'>
-			<input type='search' id='txtDeploySearchPackages' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divPackageList, this.value)'>
+			<input type='checkbox' class='toggleAll' title='<?php echo LANG('select_all'); ?>'>
+			<input type='search' class='searchItems' placeholder='<?php echo LANG('search_placeholder'); ?>'>
 		</div>
-		<div id='divPackageList' class='box listSearchList withContextButton'>
+		<div id='divPackageList' class='box listItems withContextButton'>
 			<?php foreach($db->selectAllPackage() as $p) {
 				if(!$cl->checkPermission($p, SelfService\PermissionManager::METHOD_DEPLOY, false)) continue;
-				echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$p->id.",\"name\":this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' onclick='refreshDeployPackageCount()' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
+				echo "<label class='blockListItem' ondblclick='addToDeployTarget({\"id\":".$p->id.",\"name\":this.innerText}, divTargetPackageList, \"target_packages\")'><input type='checkbox' name='packages' value='".$p->id."' />".htmlspecialchars($p->getFullName())."</label>";
 			} ?>
 		</div>
-		<button class='small listSearchButton' onclick='addSelectedPackagesToDeployTarget()'><?php echo LANG('add_selected'); ?>&nbsp;<img src='img/add2.dyn.svg'></button>
+		<button class='small listSearchButton' onclick='addSelectedPackagesToDeployTarget(divPackageSelection)'><?php echo LANG('add_selected'); ?>&nbsp;<img src='img/add2.dyn.svg'></button>
 	</div>
 	<img src='img/arrow-right.dyn.svg'>
 	<div>
@@ -78,12 +78,17 @@ $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');
 			<input type='checkbox' title='<?php echo LANG('select_all'); ?>' onchange='toggleCheckboxesInContainer(divTargetPackageList, this.checked)'>
 			<input type='search' id='txtDeploySearchTargetPackages' placeholder='<?php echo LANG('search_placeholder'); ?>' oninput='searchItems(divTargetPackageList, this.value)'>
 		</div>
-		<div id='divTargetPackageList' class='box listSearchList withContextButton'>
+		<div id='divTargetPackageList' class='box listItems withContextButton'>
 			<!-- filled by user -->
 		</div>
 		<button class='small listSearchButton' onclick='removeSelectedTargets(divTargetPackageList)'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('remove_selected'); ?></button>
 	</div>
 </div>
+
+<script>
+	initSelectionBox(divComputerSelection, divTargetComputerList, 'target_computers');
+	initSelectionBox(divPackageSelection, divTargetPackageList, 'target_packages');
+</script>
 
 <div class='content-foot'>
 	<div class='filler'></div>
