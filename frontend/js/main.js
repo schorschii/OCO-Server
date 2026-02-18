@@ -366,7 +366,9 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
 		if(this.readyState == 4 && this.status == 200) {
-			var object = obj(objID);
+			var object = objID;
+			if(typeof objID === 'string' || objID instanceof String)
+				object = obj(objID);
 			if(object != null) {
 				object.innerHTML = this.responseText;
 				if(objID == 'explorer-content') {
@@ -705,9 +707,8 @@ function confirmRemoveObject(ids, paramName, apiEndpoint, event=null, confirmTex
 	if(event != null && event.shiftKey) {
 		params.push({'key':'force', 'value':'1'});
 	}
-	var paramString = urlencodeArray(params);
 	if(confirm(confirmText)) {
-		ajaxRequestPost(apiEndpoint, paramString, null, function() {
+		ajaxRequestPost(apiEndpoint, urlencodeArray(params), null, function() {
 			if(redirect != null) currentExplorerContentUrl = redirect;
 			refreshContentExplorer(currentExplorerContentUrl);
 			emitMessage(LANG['object_deleted'], successText, MESSAGE_TYPE_SUCCESS);
@@ -2621,12 +2622,31 @@ function showDialogAssignPolicyObject(policyObjectIds) {
 function showDialogPolicyObjectOverview(id, title='') {
 	showDialogAjax(title, 'views/dialog/policy-object-overview.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE);
 }
-function showDialogPolicyResults() {
+function showDialogPolicyResultSet() {
 	showDialogAjax(LANG['generate_result_set'], 'views/dialog/policy-results.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
 		let computerSelection = dialogContainer.querySelectorAll('.computerSelection')[0];
 		let domainUserSelection = dialogContainer.querySelectorAll('.domainUserSelection')[0];
 		initSelectionBox(computerSelection);
 		initSelectionBox(domainUserSelection);
+		dialogContainer.querySelectorAll('button[name=generate]')[0].addEventListener('click', (e)=>{
+			var params = [];
+			let selectedComputers = computerSelection.querySelectorAll('input[type=checkbox]');
+			for(let i=0; i<selectedComputers.length; i++) {
+				if(selectedComputers[i].checked)
+					params.push({key:'computer_id[]', value:selectedComputers[i].value});
+			}
+			let selectedDomainUsers = domainUserSelection.querySelectorAll('input[type=checkbox]');
+			for(let i=0; i<selectedDomainUsers.length; i++) {
+				if(selectedDomainUsers[i].checked)
+					params.push({key:'domain_user_id[]', value:selectedDomainUsers[i].value});
+			}
+			if(params.length == 0) {
+				emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+				return;
+			}
+			showDialogAjax(LANG['generate_result_set'], 'views/dialog/policy-results.php?'+urlencodeArray(params), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+			dialogContainer.close();
+		});
 	});
 }
 

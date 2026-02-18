@@ -25,47 +25,79 @@ class RecursivePolicyCompiler {
 		return $manifestationType;
 	}
 
-	function getPoliciesForComputer(Models\Computer $computer) {
+	function getManifestationsForComputer(Models\Computer $computer) {
 		$manifestationType = $this->getManifestationTypeByComputer($computer);
 		$policies = [];
-
 		// process default domain policy
 		foreach($this->db->selectAllPolicyObjectItemByComputerGroup(null) as $policy) {
 			if(empty($policy->$manifestationType)) continue;
 			$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
 		}
-
 		// process computer group assigned policies
 		foreach($this->db->selectAllComputerGroupByComputerId($computer->id) as $cg) {
 			$policies = array_merge(
 				$policies,
-				$this->getPoliciesForGroup($cg, $manifestationType)
+				$this->getPoliciesForGroup($cg, true, $manifestationType)
+			);
+		}
+		return $policies;
+	}
+	function getPoliciesForComputer(Models\Computer $computer) {
+		$manifestationType = $this->getManifestationTypeByComputer($computer);
+		$policies = [];
+		// process default domain policy
+		foreach($this->db->selectAllPolicyObjectItemByComputerGroup(null) as $policy) {
+			if(empty($policy->$manifestationType))
+				$policy->incompatible = true;
+			$policies[':'.$policy->id] = $policy;
+		}
+		// process computer group assigned policies
+		foreach($this->db->selectAllComputerGroupByComputerId($computer->id) as $cg) {
+			$policies = array_merge(
+				$policies,
+				$this->getPoliciesForGroup($cg, false, $manifestationType)
 			);
 		}
 		return $policies;
 	}
 
-	function getPoliciesForDomainUserOnComputer(Models\DomainUser $du, Models\Computer $computer) {
+	function getManifestationsForDomainUserOnComputer(Models\DomainUser $du, Models\Computer $computer) {
 		$manifestationType = $this->getManifestationTypeByComputer($computer);
 		$policies = [];
-
 		// process default domain policy
 		foreach($this->db->selectAllPolicyObjectItemByDomainUserGroup(null) as $policy) {
 			if(empty($policy->$manifestationType)) continue;
 			$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
 		}
-
 		// process user group assigned policies
 		foreach($this->db->selectAllDomainUserGroupByDomainUserId($du->id) as $dug) {
 			$policies = array_merge(
 				$policies,
-				$this->getPoliciesForGroup($dug, $manifestationType)
+				$this->getPoliciesForGroup($dug, true, $manifestationType)
+			);
+		}
+		return $policies;
+	}
+	function getPoliciesForDomainUserOnComputer(Models\DomainUser $du, Models\Computer $computer) {
+		$manifestationType = $this->getManifestationTypeByComputer($computer);
+		$policies = [];
+		// process default domain policy
+		foreach($this->db->selectAllPolicyObjectItemByDomainUserGroup(null) as $policy) {
+			if(empty($policy->$manifestationType))
+				$policy->incompatible = true;
+			$policies[':'.$policy->id] = $policy;
+		}
+		// process user group assigned policies
+		foreach($this->db->selectAllDomainUserGroupByDomainUserId($du->id) as $dug) {
+			$policies = array_merge(
+				$policies,
+				$this->getPoliciesForGroup($dug, false, $manifestationType)
 			);
 		}
 		return $policies;
 	}
 
-	function getPoliciesForGroup(Models\HierarchicalGroup $group, string $manifestationType) {
+	function getPoliciesForGroup(Models\HierarchicalGroup $group, bool $manifestation, string $manifestationType) {
 		$policies = [];
 		$currentGroup = $group;
 		$currentGroupId = $group->getId();
@@ -79,8 +111,12 @@ class RecursivePolicyCompiler {
 			elseif($group instanceof Models\DomainUserGroup)
 				$items = $this->db->selectAllPolicyObjectItemByDomainUserGroup($currentGroupId);
 			foreach($items as $policy) {
-				if(empty($policy->$manifestationType)) continue;
-				$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
+				if($manifestation) {
+					if(empty($policy->$manifestationType)) continue;
+					$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
+				} else {
+					$policies[':'.$policy->id] = $policy;
+				}
 			}
 
 			$currentGroupId = $currentGroup->getParentId();

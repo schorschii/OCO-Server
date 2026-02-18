@@ -47,16 +47,17 @@ function getContents($group_id, $classMask) {
 		$html .= "</li>\n";
 	}
 
-	// get policies of this group/category and sort by translated strings
+	// get policies of this group/category
 	$policies = $db->selectAllPolicyByPolicyObjectAndParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($policyObject->id, null, $group_id, $classMask);
+	// if there are no polcies in here, return empty string
+	if(!$policies) return $html;
+
+	// sort by translated strings
 	foreach($policies as $policy) {
 		$policy->display_name = translatePolicy($policy->display_name);
 		$policy->description = translatePolicy($policy->description);
 	}
 	usort($policies, function($a, $b){ return $a->display_name <=> $b->display_name; });
-
-	// if there are no polcies in here, return empty string
-	if(!$policies) return $html;
 
 	// build policy table
 	$html .= "<table class='list sortable fullwidth margintop policies'>";

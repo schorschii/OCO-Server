@@ -20,6 +20,9 @@ try {
 	<button onclick='showDialogEditPolicyObject()' <?php if(!$permissionCreate) echo 'disabled'; ?>>
 		<img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?>
 	</button>
+	<button onclick='showDialogPolicyResultSet()'>
+		<img src='img/report.dyn.svg'>&nbsp;<?php echo LANG('generate_result_set'); ?>
+	</button>
 	<span class='filler'></span>
 </div>
 

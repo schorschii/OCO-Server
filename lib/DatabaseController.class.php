@@ -3747,7 +3747,7 @@ class DatabaseController {
 	}
 	public function selectAllPolicyObjectItemByComputerGroup($computer_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, pd.options, poi.value
+			'SELECT pd.id, pd.parent_policy_definition_id, pd.policy_definition_group_id, pd.display_name, pd.description, pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, pd.options, poi.value, po.name
 			FROM policy_object_item poi
 			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
 			INNER JOIN policy_object po ON poi.policy_object_id = po.id
@@ -3762,7 +3762,7 @@ class DatabaseController {
 	}
 	public function selectAllPolicyObjectItemByDomainUserGroup($domain_user_group_id) {
 		$this->stmt = $this->dbh->prepare(
-			'SELECT pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, pd.options, poi.value
+			'SELECT pd.id, pd.parent_policy_definition_id, pd.policy_definition_group_id, pd.display_name, pd.description, pd.manifestation_linux, pd.manifestation_macos, pd.manifestation_windows, pd.options, poi.value, po.name
 			FROM policy_object_item poi
 			INNER JOIN policy_definition pd ON poi.policy_definition_id = pd.id
 			INNER JOIN policy_object po ON poi.policy_object_id = po.id

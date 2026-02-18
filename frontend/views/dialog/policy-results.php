@@ -3,8 +3,19 @@ $SUBVIEW = 1;
 require_once('../../../loader.inc.php');
 require_once('../../session.inc.php');
 
+$computerPolicies = null;
+$domainUserPolicies = null;
 try {
-	$policyObject = $cl->getPolicyObject($_GET['id'] ?? -1);
+	if((!empty($_GET['computer_id']) && is_array($_GET['computer_id']))) {
+		$computer = $cl->getComputer($_GET['computer_id'][0]);
+		$rpc = new RecursivePolicyCompiler($db);
+		$computerPolicies = $rpc->getPoliciesForComputer($computer);
+
+		if((!empty($_GET['domain_user_id']) && is_array($_GET['domain_user_id']))) {
+			$domainUser = $cl->getDomainUser($_GET['domain_user_id'][0]);
+			$domainUserPolicies = $rpc->getPoliciesForDomainUserOnComputer($domainUser, $computer);
+		}
+	}
 } catch(PermissionException $e) {
 	http_response_code(403);
 	die(LANG('permission_denied'));
@@ -19,7 +30,16 @@ try {
 	die($e->getMessage());
 }
 
-$translations = $db->selectAllPolicyTranslationByLanguage(LanguageController::getSingleton()->getCurrentLangCode());
+function getAllPolicyByParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($parentPolicyDefinitionId, $groupId, $classMask) {
+	global $computerPolicies, $domainUserPolicies;
+	$policies = [];
+	foreach($classMask==Models\PolicyDefinition::CLASS_USER ? $domainUserPolicies : $computerPolicies as $id => $policy) {
+		if($policy->parent_policy_definition_id == $parentPolicyDefinitionId
+		&& $policy->policy_definition_group_id == $groupId)
+			$policies[$id] = $policy;
+	}
+	return $policies;
+}
 function translatePolicy($name) {
 	global $translations;
 	if(isset($translations[$name]))
@@ -48,7 +68,7 @@ function getContents($group_id, $classMask) {
 	}
 
 	// get policies of this group/category
-	$policies = $db->selectAllPolicyByPolicyObjectAndParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($policyObject->id, null, $group_id, $classMask, true);
+	$policies = getAllPolicyByParentPolicyDefinitionAndPolicyDefinitionGroupAndClass(null, $group_id, $classMask, true);
 	// if there are no polcies in here, return empty string
 	if(!$policies) return $html;
 
@@ -63,11 +83,12 @@ function getContents($group_id, $classMask) {
 	$html .= "<table class='list fullwidth margintop'>";
 	$html .= "<tbody>";
 	foreach($policies as $pd) {
-		$subPolicies = $db->selectAllPolicyByPolicyObjectAndParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($policyObject->id, $pd->id, $group_id, $classMask, true);
+		$subPolicies = getAllPolicyByParentPolicyDefinitionAndPolicyDefinitionGroupAndClass($pd->id, $group_id, $classMask, true);
 
 		$html .= "<tr class='".($subPolicies?'nobottom':'')."'>";
 		$html .= "	<th class='subbuttons wrap'>".htmlspecialchars($pd->display_name)."</th>";
 		$html .= "	<td>".getPolicyValue($pd)."</td>";
+		$html .= "	<td><i>".htmlspecialchars($pd->name)."</i></td>";
 		$html .= "</tr>";
 
 		if($subPolicies) {
@@ -104,22 +125,58 @@ function getPolicyValue($pd) {
 }
 ?>
 
-<h2>Computer</h2>
-<?php $content = getContents(null, Models\PolicyDefinition::CLASS_MACHINE); ?>
-<?php if(empty($content)) { ?>
-	<div class='alert info'><?php echo LANG('no_policies_defined'); ?></div>
-<?php } else { ?>
-	<ul class='tree machine'>
-		<?php echo $content; ?>
-	</ul>
-<?php } ?>
+<?php if($computerPolicies !== null || $domainUserPolicies !== null) {
+	$translations = $db->selectAllPolicyTranslationByLanguage(LanguageController::getSingleton()->getCurrentLangCode());
+?>
 
-<h2>Benutzer</h2>
-<?php $content = getContents(null, Models\PolicyDefinition::CLASS_USER); ?>
-<?php if(empty($content)) { ?>
-	<div class='alert info'><?php echo LANG('no_policies_defined'); ?></div>
+	<?php if($computer) { ?>
+		<h3><?php echo htmlspecialchars($computer->hostname); ?></h3>
+		<?php $content = getContents(null, Models\PolicyDefinition::CLASS_MACHINE); ?>
+		<?php if(empty($content)) { ?>
+			<div class='alert info'><?php echo LANG('no_policies_defined'); ?></div>
+		<?php } else { ?>
+			<ul class='tree machine'>
+				<?php echo $content; ?>
+			</ul>
+		<?php } ?>
+	<?php } ?>
+
+	<?php if($domainUser) { ?>
+		<h3><?php echo htmlspecialchars($domainUser->displayNameWithUsername()); ?></h3>
+		<?php $content = getContents(null, Models\PolicyDefinition::CLASS_USER); ?>
+		<?php if(empty($content)) { ?>
+			<div class='alert info'><?php echo LANG('no_policies_defined'); ?></div>
+		<?php } else { ?>
+			<ul class='tree user'>
+				<?php echo $content; ?>
+			</ul>
+		<?php } ?>
+	<?php } ?>
+
 <?php } else { ?>
-	<ul class='tree user'>
-		<?php echo $content; ?>
-	</ul>
+
+<table class='fullwidth aligned'>
+	<tr>
+		<td>
+			<div class='gallery computerSelection'>
+				<div>
+					<?php require('../partial/computer-selection.php'); ?>
+				</div>
+			</div>
+		</td>
+		<td>
+			<div class='gallery domainUserSelection'>
+				<div>
+					<?php require('../partial/domain-user-selection.php'); ?>
+				</div>
+			</div>
+		</td>
+	</tr>
+</table>
+
+<div class='controls right'>
+	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+	<button class='primary' name='generate'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('generate'); ?></button>
+</div>
+
 <?php } ?>
