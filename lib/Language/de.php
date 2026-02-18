@@ -434,6 +434,7 @@ return [
 	'toggle_multi_line' => 'Mehrzeiliges Textfeld umschalten',
 	'toggle_directory_upload' => 'Zwischen Verzeichnis- und Datei-Upload umschalten',
 	'initiator' => 'Initiator',
+	'report_group' => 'Reportgruppe',
 	'report_groups' => 'Reportgruppen',
 	'expand_or_collapse_tree' => '(Doppel-)Klicken, um Baum aus- oder einzuklappen',
 	'create_package' => 'Paket erstellen',
@@ -741,6 +742,7 @@ return [
 	'no_policies_defined' => 'Keine Richtlinien definiert',
 	'generate_result_set' => 'Ergebnissatz generieren',
 	'domain_user_selection' => 'Domänenbenutzer-Auswahl',
+	'policy_object' => 'Richtlinienobjekt',
 	'manual_computer_package_assignment_confirmation' => 'Computer-Paketzuordnung werden normalerweise automatisch zugewiesen, sobald ein Softwarejob erfolgreich abgeschlossen wurde. Sind Sie sicher, dass die Zuweisungen manuell durchführen möchten?',
 	'package_creation_notes' => '
 		<p>

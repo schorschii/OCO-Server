@@ -439,6 +439,7 @@ return [
 	'toggle_multi_line' => 'Toggle multi line text field',
 	'toggle_directory_upload' => 'Toggle between directory and file upload',
 	'initiator' => 'Initiator',
+	'report_groups' => 'Report Group',
 	'report_groups' => 'Report Groups',
 	'expand_or_collapse_tree' => '(Double) click to exapnd or collapse tree',
 	'create_package' => 'Create Package',
@@ -746,6 +747,7 @@ return [
 	'no_policies_defined' => 'No policies defined',
 	'generate_result_set' => 'Generate Result Set',
 	'domain_user_selection' => 'Domain User Selection',
+	'policy_object' => 'Policy Object',
 	'manual_computer_package_assignment_confirmation' => 'Computer-Package assignments are normally created automatically after a software job has completed successfully. Are you sure you want to perform the assignment manually?',
 	'package_creation_notes' => '
 		<p>

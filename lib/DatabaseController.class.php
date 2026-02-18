@@ -3696,6 +3696,13 @@ class DatabaseController {
 		}
 		return $translations;
 	}
+	public function searchAllPolicyObject($search, $limit=null) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT * FROM policy_object WHERE name LIKE :search ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
+		);
+		$this->stmt->execute([':search' => '%'.$search.'%']);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice');
+	}
 	public function selectAllPolicyObject() {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT po.*, su_created.username AS "created_by_system_user_username", su_updated.username AS "updated_by_system_user_username" FROM policy_object po

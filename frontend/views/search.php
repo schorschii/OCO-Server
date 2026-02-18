@@ -93,6 +93,13 @@ foreach($db->searchAllReportGroup($_GET['query']) as $r) {
 	if($counter > $maxResults) { $moreAvail = true; break; }
 	$items[] = new Models\SearchResult($r->name, LANG('report_group'), 'views/reports.php?id='.$r->id, 'img/folder.dyn.svg');
 }
+$counter = 0;
+foreach($db->searchAllPolicyObject($_GET['query']) as $r) {
+	$counter ++;
+	if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
+	if($counter > $maxResults) { $moreAvail = true; break; }
+	$items[] = new Models\SearchResult($r->name, LANG('policy_object'), 'views/policy-object.php?id='.$r->id, 'img/policy.dyn.svg');
+}
 // extension search
 foreach($ext->getAggregatedConf('frontend-search-function') as $func) {
 	$counter = 0;
