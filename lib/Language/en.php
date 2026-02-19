@@ -613,7 +613,7 @@ return [
 	'profiles_and_commands' => 'Profiles and Commands',
 	'installed_profiles' => 'Installed Profiles',
 	'installed_apps' => 'Installed Apps',
-	'profiles_and_policies' => 'Profiles and Policies',
+	'profiles_and_policies' => 'Profiles & Policies',
 	'profile_policy' => 'Profile/Policy',
 	'new_ios_profile' => 'New iOS Profile',
 	'new_android_policy' => 'New Android Policy',

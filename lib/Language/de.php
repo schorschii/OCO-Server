@@ -608,7 +608,7 @@ return [
 	'profiles_and_commands' => 'Profile und Kommandos',
 	'installed_profiles' => 'Installierte Profile',
 	'installed_apps' => 'Installierte Apps',
-	'profiles_and_policies' => 'Profile und Richtlinien',
+	'profiles_and_policies' => 'Profile & Richtlinien',
 	'profile_policy' => 'Profil/Richtlinie',
 	'new_ios_profile' => 'Neues iOS-Profil',
 	'new_android_policy' => 'Neue Android-Richtlinie',
