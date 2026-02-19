@@ -61,14 +61,7 @@ foreach($services as $s) {
 			)' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>' <?php if(!$permissionWrite) echo 'disabled'; ?>>
 			<img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?>
 		</button>
-		<button onclick='confirmRemoveObject(
-			[metadata.getAttribute("computerId")],
-			"remove_id", "ajax-handler/computers.php",
-			event,
-			LANG["confirm_delete_computer"],
-			metadata.getAttribute("computerHostname"),
-			"views/computers.php"
-			)' <?php if(!$permissionDelete) echo 'disabled'; ?>>
+		<button onclick='removeSelectedComputer([metadata.getAttribute("computerId")], event, metadata.getAttribute("computerHostname"), "views/computers.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>>
 			<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 		</button>
 		<span class='filler'></span>

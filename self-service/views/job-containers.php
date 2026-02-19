@@ -57,7 +57,7 @@ try {
 	<div class='details-header'>
 		<h1><img src='img/<?php echo $icon; ?>.dyn.svg' class='<?php echo($container->enabled ? 'online' : 'offline'); ?>'><span id='page-title'><span id='spnJobContainerName'><?php echo htmlspecialchars($container->name); ?></span></span></h1>
 		<div class='controls'>
-			<button onclick='confirmRemoveJobContainer([<?php echo $container->id; ?>], spnJobContainerName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+			<button onclick='removeSelectedJobContainer([<?php echo $container->id; ?>], event, spnJobContainerName.innerText, "views/job-containers.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 			<span class='filler'></span>
 		</div>
 	</div>

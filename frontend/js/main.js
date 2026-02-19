@@ -995,38 +995,12 @@ function reorderPackageInGroup(groupId, oldPos, newPos) {
 		'move_to_pos': newPos,
 	}), null, refreshContent);
 }
-function removeSelectedPackage(checkboxName, attributeName=null, event=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	confirmRemovePackage(ids, event);
-}
-function confirmRemovePackage(ids, event=null, infoText='', redirect=null, installedOnComputers=null) {
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_id[]', 'value':entry});
-	});
-	if(event != null && event.shiftKey) {
-		params.push({'key':'force', 'value':'1'});
-	}
-	if(confirm( (installedOnComputers != null ? LANG['package_is_installed_on_computers'].replace('%1',installedOnComputers)+' ' : '') + LANG['confirm_delete_package']) ) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
-			if(redirect != null) currentExplorerContentUrl = redirect;
-			refreshContentExplorer(currentExplorerContentUrl);
-			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function removeSelectedPackage(ids, event=null, successText='', redirect=null, installedOnComputers=null) {
+	confirmRemoveObject(ids,
+		'remove_id', 'ajax-handler/packages.php', event,
+		(installedOnComputers != null ? LANG['package_is_installed_on_computers'].replace('%1',installedOnComputers)+' ' : '') + LANG['confirm_delete_package'],
+		successText, redirect
+	);
 }
 function removeSelectedPackageFromGroup(checkboxName, groupId) {
 	var ids = [];
@@ -1052,35 +1026,12 @@ function removePackageFromGroup(ids, groupId) {
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function removeSelectedPackageFamily(checkboxName, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	confirmRemovePackageFamily(ids);
-}
-function confirmRemovePackageFamily(ids, infoText='', redirect=null) {
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_package_family_id[]', 'value':entry});
-	});
-	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
-			if(redirect != null) currentExplorerContentUrl = redirect;
-			refreshContentExplorer(currentExplorerContentUrl);
-			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function removeSelectedPackageFamily(ids, event=null, successText='', redirect=null) {
+	confirmRemoveObject(ids,
+		'remove_package_family_id', 'ajax-handler/packages.php', event,
+		LANG['confirm_delete'],
+		successText, redirect
+	);
 }
 function deploySelectedPackage(checkboxName, attributeName=null) {
 	var ids = getSelectedCheckBoxValues(checkboxName, attributeName, true);
@@ -1539,38 +1490,12 @@ function setMobileDeviceForceUpdate(id, value) {
 		emitMessage(LANG['force_update'], responseText, MESSAGE_TYPE_SUCCESS);
 	});
 }
-function removeSelectedMobileDevice(checkboxName, attributeName=null, event=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	confirmRemoveMobileDevice(ids, event);
-}
-function confirmRemoveMobileDevice(ids, event=null, infoText='', redirect=null) {
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_id[]', 'value':entry});
-	});
-	if(event != null && event.shiftKey) {
-		params.push({'key':'force', 'value':'1'});
-	}
-	if(confirm(LANG['confirm_delete_mobile_device'])) {
-		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
-			if(redirect != null) currentExplorerContentUrl = redirect;
-			refreshContentExplorer(currentExplorerContentUrl);
-			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function removeSelectedMobileDevice(ids, event=null, successText='', redirect=null) {
+	confirmRemoveObject(ids,
+		'remove_id', 'ajax-handler/mobile-devices.php', event,
+		LANG['confirm_delete_mobile_device'],
+		successText, redirect
+	);
 }
 function createMobileDeviceGroup(parent_id=null) {
 	var newName = prompt(LANG['enter_name']);
@@ -1805,6 +1730,13 @@ function setComputerForceUpdate(id, value) {
 		refreshContent();
 		emitMessage(LANG['force_update'], responseText, MESSAGE_TYPE_SUCCESS);
 	});
+}
+function removeSelectedComputer(ids, event=null, successText='', redirect=null) {
+	confirmRemoveObject(ids,
+		'remove_id', 'ajax-handler/computers.php', event,
+		LANG['confirm_delete_computer'],
+		successText, redirect
+	);
 }
 function removeSelectedComputerFromGroup(checkboxName, groupId) {
 	var ids = [];
@@ -2058,38 +1990,12 @@ function editProfile(dialogContainer, id, type, name, payload, notes) {
 	req.open('POST', 'ajax-handler/mobile-devices.php');
 	req.send(formData);
 }
-function removeSelectedProfile(checkboxName, attributeName=null, event=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	confirmRemoveProfile(ids, event);
-}
-function confirmRemoveProfile(ids, event=null, infoText='', redirect=null) {
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_profile_id[]', 'value':entry});
-	});
-	if(event != null && event.shiftKey) {
-		params.push({'key':'force', 'value':'1'});
-	}
-	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
-			if(redirect != null) currentExplorerContentUrl = redirect;
-			refreshContentExplorer(currentExplorerContentUrl);
-			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function removeSelectedProfile(ids, event=null, successText='', redirect=null) {
+	confirmRemoveObject(ids,
+		'remove_profile_id', 'ajax-handler/mobile-devices.php', event,
+		LANG['confirm_delete'],
+		successText, redirect
+	);
 }
 
 function showDialogEditDeploymentRule(id=-1) {
@@ -2155,34 +2061,12 @@ function reevaluateDeploymentRule(deploymentRuleId) {
 		emitMessage(LANG['reevaluated'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function removeSelectedDeploymentRule(checkboxName, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	confirmRemoveDeploymentRule(ids);
-}
-function confirmRemoveDeploymentRule(ids, infoText='') {
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_deployment_rule_id[]', 'value':entry});
-	});
-	if(confirm(LANG['confirm_delete_deployment_rule'])) {
-		ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeArray(params), null, function() {
-			refreshContentExplorer('views/deployment-rules.php'); refreshSidebar();
-			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function removeSelectedDeploymentRule(ids, event=null, successText='', redirect=null) {
+	confirmRemoveObject(ids,
+		'remove_deployment_rule_id', 'ajax-handler/deployment-rules.php', event,
+		LANG['confirm_delete_deployment_rule'],
+		successText, redirect
+	);
 }
 function showDialogMoveStaticJobToJobContainer(ids) {
 	if(!ids) return;
@@ -2212,63 +2096,19 @@ function moveStaticJobToJobContainer(dialogContainer, jobIds, containerIds) {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function removeSelectedJobContainer(checkboxName, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	confirmRemoveJobContainer(ids);
+function removeSelectedJobContainer(ids, event=null, successText='', redirect=null) {
+	confirmRemoveObject(ids,
+		'remove_container_id', 'ajax-handler/job-containers.php', event,
+		LANG['confirm_delete_job_container'],
+		successText, redirect
+	);
 }
-function confirmRemoveJobContainer(ids, infoText='') {
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_container_id[]', 'value':entry});
-	});
-	if(confirm(LANG['confirm_delete_job_container'])) {
-		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
-			refreshContentExplorer('views/job-containers.php'); refreshSidebar();
-			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
-		});
-	}
-}
-function removeSelectedJob(checkboxName, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	confirmRemoveJob(ids);
-}
-function confirmRemoveJob(ids) {
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_job_id[]', 'value':entry});
-	});
-	if(confirm(LANG['confirm_delete_job'])) {
-		ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
-			refreshContent(); refreshSidebar();
-			emitMessage(LANG['object_deleted'], '', MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function removeSelectedJob(ids, event=null, successText='', redirect=null) {
+	confirmRemoveObject(ids,
+		'remove_job_id', 'ajax-handler/job-containers.php', event,
+		LANG['confirm_delete_job'],
+		successText, redirect
+	);
 }
 function showDialogEditJobContainer(id) {
 	showDialogAjax(LANG['edit_job_container'], 'views/dialog/job-container-edit.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
@@ -2828,35 +2668,12 @@ function editReport(dialogContainer, id, reportGroupId, name, notes, query) {
 		}
 	});
 }
-function removeSelectedReport(checkboxName, attributeName=null) {
-	var ids = [];
-	document.getElementsByName(checkboxName).forEach(function(entry) {
-		if(entry.checked) {
-			if(attributeName == null) {
-				ids.push(entry.value);
-			} else {
-				ids.push(entry.getAttribute(attributeName));
-			}
-		}
-	});
-	if(ids.length == 0) {
-		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
-		return;
-	}
-	confirmRemoveReport(ids);
-}
-function confirmRemoveReport(ids, infoText='', redirect=null) {
-	var params = [];
-	ids.forEach(function(entry) {
-		params.push({'key':'remove_id[]', 'value':entry});
-	});
-	if(confirm(LANG['confirm_delete'])) {
-		ajaxRequestPost('ajax-handler/reports.php', urlencodeArray(params), null, function() {
-			if(redirect != null) currentExplorerContentUrl = redirect;
-			refreshContentExplorer(currentExplorerContentUrl);
-			emitMessage(LANG['object_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
-		});
-	}
+function removeSelectedReport(ids, event=null, successText='', redirect=null) {
+	confirmRemoveObject(ids,
+		'remove_id', 'ajax-handler/reports.php', event,
+		LANG['confirm_delete'],
+		successText, redirect
+	);
 }
 
 // ======== SYSTEM USER OPERATIONS ========

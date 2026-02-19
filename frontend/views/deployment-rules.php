@@ -38,7 +38,7 @@ if(!empty($_GET['id'])) {
 		<div class='controls'>
 			<button onclick='showDialogEditDeploymentRule(<?php echo $container->id; ?>, spnDeploymentRuleName.innerText, spnDeploymentRuleNotes.innerText, spnDeploymentRuleEnabled.innerText, spnDeploymentRuleComputerGroupId.innerText, spnDeploymentRulePackageGroupId.innerText, spnDeploymentRulePriority.innerText)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 			<button onclick='reevaluateDeploymentRule(<?php echo $container->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('reevaluate'); ?></button>
-			<button onclick='confirmRemoveDeploymentRule([<?php echo $container->id; ?>], spnDeploymentRuleName.innerText)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+			<button onclick='removeSelectedDeploymentRule([<?php echo $container->id; ?>], event, spnDeploymentRuleName.innerText, "views/deployment-rules.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 			<span class='filler'></span>
 		</div>
 	</div>
@@ -260,7 +260,7 @@ if(!empty($_GET['id'])) {
 							</div>
 							<div class='controls'>
 								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-								<button onclick='removeSelectedDeploymentRule("deployment_rule_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+								<button onclick='removeSelectedDeploymentRule(getSelectedCheckBoxValues("deployment_rule_id[]",null,true), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 							</div>
 						</div>
 					</td>

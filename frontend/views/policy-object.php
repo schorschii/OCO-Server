@@ -143,7 +143,7 @@ function getPolicyInput($pd) {
 	<button onclick='showDialogEditPolicyObject(spnPolicyObjectId.innerText, obj("page-title").innerText)' <?php if(!$permissionEdit) echo 'disabled'; ?>>
 		<img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?>
 	</button>
-	<button onclick='confirmRemoveObject([spnPolicyObjectId.innerText], "remove_policy_object_id", "ajax-handler/policy-objects.php", event)' <?php if(!$permissionDelete) echo 'disabled'; ?>>
+	<button onclick='confirmRemoveObject([spnPolicyObjectId.innerText], "remove_policy_object_id", "ajax-handler/policy-objects.php", event, LANG["confirm_delete"], "", "views/policy-objects.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>>
 		<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 	</button>
 	<span class='filler'></span>
@@ -202,6 +202,7 @@ for(let i=0; i<expandButtons.length; i++) {
 let helpButtons = tabControlPolicyObject.querySelectorAll('a.help');
 for(let i=0; i<helpButtons.length; i++) {
 	helpButtons[i].addEventListener('click', (e) => {
+		e.preventDefault();
 		let parent = e.srcElement.parentNode;
 		showDialog(parent.innerText, parent.getAttribute('description'), DIALOG_BUTTONS_CLOSE, false, true);
 	});

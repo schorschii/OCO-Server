@@ -143,7 +143,7 @@ try {
 							<?php if($group !== null) { ?>
 								<button onclick='removeSelectedMobileDeviceFromGroup("mobile_device_id[]", <?php echo $group->id; ?>)' title='<?php echo LANG('remove_from_group',ENT_QUOTES); ?>'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG('remove'); ?></button>
 							<?php } ?>
-							<button onclick='removeSelectedMobileDevice("mobile_device_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+							<button onclick='removeSelectedMobileDevice(getSelectedCheckBoxValues("mobile_device_id[]",null,true), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>

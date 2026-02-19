@@ -81,7 +81,7 @@ try {
 						</div>
 						<div class='controls'>
 							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-							<button onclick='removeSelectedPackageFamily("package_family_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+							<button onclick='removeSelectedPackageFamily(getSelectedCheckBoxValues("package_family_id[]",null,true), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>

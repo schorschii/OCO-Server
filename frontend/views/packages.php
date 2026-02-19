@@ -64,7 +64,7 @@ try {
 		<?php if(!empty($family->icon)) { ?>
 			<button onclick='removePackageFamilyIcon(<?php echo $family->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>><img src='img/image-remove.dyn.svg'>&nbsp;<?php echo LANG('remove_icon'); ?></button>
 		<?php } ?>
-		<button onclick='confirmRemovePackageFamily([<?php echo htmlspecialchars($family->id,ENT_QUOTES); ?>], spnPackageFamilyName.innerText, "views/package-families.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_package_family'); ?></button>
+		<button onclick='removeSelectedPackageFamily([<?php echo htmlspecialchars($family->id,ENT_QUOTES); ?>], event, spnPackageFamilyName.innerText, "views/package-families.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_package_family'); ?></button>
 		<span class='filler'></span>
 		<span><a <?php echo Html::explorerLink('views/package-families.php'); ?>><?php echo LANG('package_families'); ?></a></span>
 	</div>
@@ -169,7 +169,7 @@ try {
 							<?php if($group !== null) { ?>
 								<button onclick='removeSelectedPackageFromGroup("package_id[]", <?php echo $group->id; ?>)' title='<?php echo LANG('remove_from_group',ENT_QUOTES); ?>'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG('remove'); ?></button>
 							<?php } ?>
-							<button onclick='removeSelectedPackage("package_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+							<button onclick='removeSelectedPackage(getSelectedCheckBoxValues("package_id[]",null,true), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>

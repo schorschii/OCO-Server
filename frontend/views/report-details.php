@@ -31,7 +31,7 @@ try {
 		<button onclick='showDialogEditReport(<?php echo $report->id; ?>)' <?php if(!$permissionWrite) echo 'disabled'; ?>>
 			<img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?>
 		</button>
-		<button onclick='confirmRemoveReport([<?php echo $report->id; ?>],spnReportName.innerText,"views/reports.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>>
+		<button onclick='removeSelectedReport([<?php echo $report->id; ?>], event, spnReportName.innerText, "views/reports.php")' <?php if(!$permissionDelete) echo 'disabled'; ?>>
 			<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 		</button>
 		<span class='filler'></span>
@@ -133,13 +133,10 @@ try {
 									<button onclick='wolSelectedComputer("id[]", "computer_id")'>
 										<img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?>
 									</button>
-									<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]", "computer_id", true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'>
+									<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]","computer_id",true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'>
 										<img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?>
 									</button>
-									<button onclick='confirmRemoveObject(
-										getSelectedCheckBoxValues("id[]", "computer_id", true),
-										"remove_id", "ajax-handler/computers.php",
-										event)'>
+									<button onclick='removeSelectedComputer(getSelectedCheckBoxValues("id[]","computer_id",true), event)'>
 										<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 									</button>
 								<?php } ?>
@@ -147,10 +144,10 @@ try {
 									<button onclick='deploySelectedPackage("id[]", "package_id")'>
 										<img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?>
 									</button>
-									<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]", "package_id", true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'>
+									<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]","package_id",true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'>
 										<img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?>
 									</button>
-									<button onclick='removeSelectedPackage("id[]", "package_id", event)'>
+									<button onclick='removeSelectedPackage(getSelectedCheckBoxValues("id[]","package_id",true), event)'>
 										<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 									</button>
 								<?php } ?>
@@ -175,13 +172,10 @@ try {
 									<button onclick='wolSelectedComputer("id[]", "computer_id")'>
 										<img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?>
 									</button>
-									<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]", "computer_id", true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'>
+									<button onclick='showDialogAddComputerToGroup(getSelectedCheckBoxValues("id[]","computer_id",true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'>
 										<img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?>
 									</button>
-									<button onclick='confirmRemoveObject(
-										getSelectedCheckBoxValues("id[]", "computer_id", true),
-										"remove_id", "ajax-handler/computers.php",
-										event)'>
+									<button onclick='removeSelectedComputer(getSelectedCheckBoxValues("id[]","computer_id",true), event)'>
 										<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 									</button>
 								</div>
@@ -200,10 +194,10 @@ try {
 									<button onclick='deploySelectedPackage("id[]", "package_id")'>
 										<img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?>
 									</button>
-									<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]", "package_id", true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'>
+									<button onclick='showDialogAddPackageToGroup(getSelectedCheckBoxValues("id[]","package_id",true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'>
 										<img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?>
 									</button>
-									<button onclick='removeSelectedPackage("id[]", "package_id", event)'>
+									<button onclick='removeSelectedPackage(getSelectedCheckBoxValues("id[]","package_id",true), event)'>
 										<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 									</button>
 								</div>

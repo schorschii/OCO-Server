@@ -174,10 +174,7 @@ try {
 							<?php if($group !== null) { ?>
 								<button onclick='removeSelectedComputerFromGroup("computer_id[]", <?php echo $group->id; ?>)' title='<?php echo LANG('remove_from_group',ENT_QUOTES); ?>'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG('remove'); ?></button>
 							<?php } ?>
-							<button onclick='confirmRemoveObject(
-								getSelectedCheckBoxValues("computer_id[]", null, true),
-								"remove_id", "ajax-handler/computers.php",
-								event)'>
+							<button onclick='removeSelectedComputer(getSelectedCheckBoxValues("computer_id[]",null,true), event)'>
 								<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 							</button>
 						</div>

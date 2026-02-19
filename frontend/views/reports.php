@@ -94,7 +94,7 @@ try {
 						</div>
 						<div class='controls'>
 							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-							<button onclick='removeSelectedReport("report_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+							<button onclick='removeSelectedReport(getSelectedCheckBoxValues("report_id[]",null,true), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>

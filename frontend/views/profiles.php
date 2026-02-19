@@ -65,8 +65,8 @@ try {
 						</div>
 						<div class='controls'>
 							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-							<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
-							<button onclick='removeSelectedProfile("profile_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+							<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosProfileData))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
+							<button onclick='removeSelectedProfile(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosProfileData), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>
@@ -116,8 +116,8 @@ try {
 						</div>
 						<div class='controls'>
 							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-							<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
-							<button onclick='removeSelectedProfile("profile_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+							<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]",null,true,tblAndroidProfileData))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
+							<button onclick='removeSelectedProfile(getSelectedCheckBoxValues("profile_id[]",null,true,tblAndroidProfileData), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>
