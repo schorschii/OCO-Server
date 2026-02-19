@@ -19,7 +19,7 @@ try {
 	<tr>
 		<th><?php echo LANG('state'); ?></th>
 		<td>
-			<label><input type='checkbox' name='enabled' <?php if($dr->enabled) echo 'checked'; ?>></input>&nbsp;<?php echo LANG('enabled'); ?></label>
+			<label><input type='checkbox' name='enabled' <?php if($dr->enabled??false) echo 'checked'; ?>></input>&nbsp;<?php echo LANG('enabled'); ?></label>
 		</td>
 	</tr>
 	<tr>
