@@ -1121,7 +1121,7 @@ table.list ul li.subbuttons {
 table.list ul li.subbuttons > button {
 	position: absolute;
 	top: 4px;
-	left: -16px;
+	left: -18px;
 }
 table.list ul li.subbuttons:hover {
 	list-style-type: none;
@@ -1343,16 +1343,11 @@ div.stickytable > table.list tfoot {
 	inset-block-end: -20px;
 }
 
-.offline {
+.offline:not(tr),
+table:not(.actioncolumn) tr.offline > td,
+table.actioncolumn tr.offline > td:not(:last-child) {
 	opacity: 0.4;
 }
-.inactive {
-	color: rgba(7,7,7,0.4);
-}
-.inactive a, .inactive img {
-	opacity: 0.4;
-}
-
 .fullwidth {
 	width: 100%;
 }
@@ -1784,9 +1779,6 @@ ul.tree button.expander {
 	}
 	.infohover::after {
 		background-color: black;
-	}
-	.inactive {
-		color: rgba(233,236,239,0.4);
 	}
 	code {
 		background-color: rgba(22, 27, 34, 0.6);

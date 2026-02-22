@@ -57,7 +57,7 @@ if(!empty($ldapServers) && is_array($ldapServers)) $ldapActive = true;
 					<tbody>
 					<?php
 					foreach($cl->getDomainUsers() as $u) {
-						echo "<tr class='".($u->domain_user_role_id==null?'inactive':'')."'>";
+						echo "<tr class='".($u->domain_user_role_id==null?'offline':'')."'>";
 						echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."'></td>";
 						echo "<td>".htmlspecialchars($u->id)."</td>";
 						echo "<td>".htmlspecialchars($u->uid??'-')."</td>";

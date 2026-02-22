@@ -510,7 +510,7 @@ try {
 						<tbody>
 							<?php
 							foreach($db->selectAllPendingJobByPackageId($package->id) as $j) {
-								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
+								echo '<tr class="'.(!$j->isEnabled()?'offline':'').'">';
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
 								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";

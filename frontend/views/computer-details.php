@@ -281,7 +281,7 @@ foreach($services as $s) {
 						</thead>
 						<tbody>
 							<?php foreach($db->selectAllComputerUserWithPasswordByComputerId($computer->id) as $u) { ?>
-								<tr class='<?php echo empty($u->disabled)?'':'inactive'; ?>'>
+								<tr class='<?php echo empty($u->disabled)?'':'offline'; ?>'>
 								<td class='subbuttons'>
 									<?php echo htmlspecialchars($u->username); ?>
 									<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->username,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
@@ -359,7 +359,7 @@ foreach($services as $s) {
 						<tbody>
 							<?php
 							foreach($db->selectAllComputerScreenByComputerId($computer->id) as $s) {
-								echo '<tr class="'.(empty($s->active)?'inactive':'').'">';
+								echo '<tr class="'.(empty($s->active)?'offline':'').'">';
 								echo '<td>'.htmlspecialchars($s->name).'</a></td>';
 								echo '<td>'.htmlspecialchars($s->manufacturer).'</td>';
 								echo '<td>'.htmlspecialchars($s->type).'</td>';
@@ -531,7 +531,7 @@ foreach($services as $s) {
 						<tbody>
 							<?php
 							foreach($db->selectAllPendingJobByComputerId($computer->id) as $j) {
-								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
+								echo '<tr class="'.(!$j->isEnabled()?'offline':'').'">';
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
 								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";

@@ -251,7 +251,7 @@ $commands = Models\Computer::getCommands($ext);
 						<tbody>
 							<?php
 							foreach($db->selectAllComputerScreenByComputerId($computer->id) as $s) {
-								echo '<tr class="'.(empty($s->active)?'inactive':'').'">';
+								echo '<tr class="'.(empty($s->active)?'offline':'').'">';
 								echo '<td>'.htmlspecialchars($s->name).'</a></td>';
 								echo '<td>'.htmlspecialchars($s->manufacturer).'</td>';
 								echo '<td>'.htmlspecialchars($s->type).'</td>';
@@ -385,7 +385,7 @@ $commands = Models\Computer::getCommands($ext);
 							<?php
 							foreach($db->selectAllPendingJobByComputerId($computer->id) as $j) {
 								if(!$cl->checkPermission($db->selectPackage($j->package_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
-								echo '<tr class="'.(!$j->isEnabled()?'inactive':'').'">';
+								echo '<tr class="'.(!$j->isEnabled()?'offline':'').'">';
 								echo '<td>';
 								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
 								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
