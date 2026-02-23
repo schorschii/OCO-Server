@@ -1274,6 +1274,14 @@ class CoreLogic {
 		$jobIds = [];
 		foreach($this->db->selectAllDynamicJobByDeploymentRuleId($container->id) as $job) {
 			if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
+			// check compatibility
+			$package = $this->db->selectPackage($job->package_id);
+			$computer = $this->db->selectComputer($job->computer_id);
+			if(!CoreLogic::isAttributeCompatible($computer, 'os', $package->compatible_os)
+			|| !CoreLogic::isAttributeCompatible($computer, 'os_version', $package->compatible_os_version)
+			|| !CoreLogic::isAttributeCompatible($computer, 'architecture', $package->compatible_architecture)) {
+				continue;
+			}
 			if($job->isFailed()) $jobIds[] = $job->id;
 		}
 		if(!$this->db->updateDynamicJob($jobIds, Models\Job::STATE_WAITING_FOR_AGENT, null/*download_progress*/, null/*return_code*/, ''/*messgae*/))
@@ -1448,10 +1456,10 @@ class CoreLogic {
 
 					$targetJobState = Models\Job::STATE_WAITING_FOR_AGENT;
 
-					// check OS compatibility   // TODO test
-					if(!$this->isAttributeCompatible($tmpComputer, 'os', $package['compatible_os'])
-					|| !$this->isAttributeCompatible($tmpComputer, 'os_version', $package['compatible_os_version'])
-					|| !$this->isAttributeCompatible($tmpComputer, 'architecture', $package['compatible_architecture'])) {
+					// check compatibility
+					if(!self::isAttributeCompatible($tmpComputer, 'os', $package['compatible_os'])
+					|| !self::isAttributeCompatible($tmpComputer, 'os_version', $package['compatible_os_version'])
+					|| !self::isAttributeCompatible($tmpComputer, 'architecture', $package['compatible_architecture'])) {
 						// create failed job
 						if($this->db->insertStaticJob($jcid, $computer_id,
 							$pid, $package['procedure'], $package['success_return_codes'],
@@ -1518,7 +1526,7 @@ class CoreLogic {
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username??'SYSTEM', $jcid, 'oco.job_container.create', ['name'=>$name, 'jobs'=>$jobs]);
 		return $jcid;
 	}
-	private function isAttributeCompatible(Models\Computer $computer, string $attribute, string|null $compatible) {
+	static function isAttributeCompatible(Models\Computer $computer, string $attribute, string|null $compatible) {
 		if(empty($compatible) || empty($computer->$attribute)) {
 			return true;
 		} else {
@@ -1713,22 +1721,31 @@ class CoreLogic {
 		if(!$container) throw new NotFoundException();
 		$this->checkPermission($container, PermissionManager::METHOD_WRITE);
 
+		$affectedJobs = 0;
 		$this->db->getDbHandle()->beginTransaction();
 		if(empty($createNewJobContainer)) {
 
 			foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 				if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
-				if($job->isFailed()) {
-					// use the current package procedure, return codes, post action
-					$package = $this->db->selectPackage($job->package_id);
-					$this->db->renewStaticJob($job->id,
-						empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure,
-						empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes,
-						$package->upgrade_behavior,
-						$package->getFilePath() ? 1 : 0,
-						empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action
-					);
+				if(!$job->isFailed()) continue;
+				// use the current (updated) package procedure, return codes, post action, os/version/architecture
+				$package = $this->db->selectPackage($job->package_id);
+				$computer = $this->db->selectComputer($job->computer_id);
+				$state = Models\Job::STATE_WAITING_FOR_AGENT;
+				if(!self::isAttributeCompatible($computer, 'os', $package->compatible_os)
+				|| !self::isAttributeCompatible($computer, 'os_version', $package->compatible_os_version)
+				|| !self::isAttributeCompatible($computer, 'architecture', $package->compatible_architecture)) {
+					$state = Models\Job::STATE_OS_INCOMPATIBLE;
 				}
+				if($this->db->renewStaticJob($job->id,
+					empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure,
+					empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes,
+					$package->upgrade_behavior,
+					$package->getFilePath() ? 1 : 0,
+					empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action,
+					$state
+				))
+					$affectedJobs ++;
 			}
 
 		} else {
@@ -1793,34 +1810,44 @@ class CoreLogic {
 			)) {
 				foreach($this->db->selectAllStaticJobByJobContainer($container->id) as $job) {
 					if(!empty($renewJobIds) && !in_array($job->id, $renewJobIds)) continue;
-					if($job->isFailed()) {
+					if(!$job->isFailed()) continue;
 
-						// use the current package procedure, return codes, post action
-						$package = $this->db->selectPackage($job->package_id);
-						$newJob = new Models\StaticJob();
-						$newJob->job_container_id = $jcid;
-						$newJob->computer_id = $job->computer_id;
-						$newJob->package_id = $job->package_id;
-						$newJob->procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
-						$newJob->success_return_codes = empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes;
-						$newJob->upgrade_behavior = $package->upgrade_behavior;
-						$newJob->is_uninstall = $job->is_uninstall;
-						$newJob->download = $package->getFilePath() ? 1 : 0;
-						$newJob->post_action = empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action;
-						$newJob->post_action_timeout = $job->post_action_timeout;
-						$newJob->sequence = $job->sequence;
-
-						if($this->db->insertStaticJob($newJob->job_container_id,
-							$newJob->computer_id, $newJob->package_id,
-							$newJob->procedure, $newJob->success_return_codes,
-							$newJob->upgrade_behavior, $newJob->is_uninstall, $newJob->download,
-							$newJob->post_action, $newJob->post_action_timeout,
-							$newJob->sequence
-						)) {
-							$jobs[] = $newJob;
-							$this->db->deleteStaticJob($job->id);
-						}
+					// use the current (updated) package procedure, return codes, post action
+					$package = $this->db->selectPackage($job->package_id);
+					$computer = $this->db->selectComputer($job->computer_id);
+					$state = Models\Job::STATE_WAITING_FOR_AGENT;
+					if(!self::isAttributeCompatible($computer, 'os', $package->compatible_os)
+					|| !self::isAttributeCompatible($computer, 'os_version', $package->compatible_os_version)
+					|| !self::isAttributeCompatible($computer, 'architecture', $package->compatible_architecture)) {
+						continue;
 					}
+
+					$newJob = new Models\StaticJob();
+					$newJob->job_container_id = $jcid;
+					$newJob->computer_id = $job->computer_id;
+					$newJob->package_id = $job->package_id;
+					$newJob->procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
+					$newJob->success_return_codes = empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes;
+					$newJob->upgrade_behavior = $package->upgrade_behavior;
+					$newJob->is_uninstall = $job->is_uninstall;
+					$newJob->download = $package->getFilePath() ? 1 : 0;
+					$newJob->post_action = empty($job->is_uninstall) ? $package->install_procedure_post_action : $package->uninstall_procedure_post_action;
+					$newJob->post_action_timeout = $job->post_action_timeout;
+					$newJob->sequence = $job->sequence;
+					$newJob->state = $state;
+
+					if($this->db->insertStaticJob($newJob->job_container_id,
+						$newJob->computer_id, $newJob->package_id,
+						$newJob->procedure, $newJob->success_return_codes,
+						$newJob->upgrade_behavior, $newJob->is_uninstall, $newJob->download,
+						$newJob->post_action, $newJob->post_action_timeout,
+						$newJob->sequence,
+						$newJob->state
+					)) {
+						$jobs[] = $newJob;
+						$this->db->deleteStaticJob($job->id);
+					}
+					$affectedJobs ++;
 				}
 
 				// check if there are any computer & packages
@@ -1837,6 +1864,10 @@ class CoreLogic {
 				$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username??'SYSTEM', $jcid, 'oco.job_container.create', ['name'>=$name, 'jobs'=>$jobs]);
 			}
 
+		}
+
+		if(!$affectedJobs) {
+			throw new InvalidRequestException(LANG('no_failed_jobs'));
 		}
 		$this->db->getDbHandle()->commit();
 

@@ -2512,18 +2512,26 @@ class DatabaseController {
 			$sequence = 1;
 			foreach($this->selectAllPackageByPackageGroupId($deployment_rule->package_group_id) as $package) {
 				$state = Models\Job::STATE_WAITING_FOR_AGENT;
-				$isInstalled = false;
+				// check compatibility
+				if(!CoreLogic::isAttributeCompatible($computer, 'os', $package->compatible_os)
+				|| !CoreLogic::isAttributeCompatible($computer, 'os_version', $package->compatible_os_version)
+				|| !CoreLogic::isAttributeCompatible($computer, 'architecture', $package->compatible_architecture)) {
+					$state = Models\Job::STATE_OS_INCOMPATIBLE;
+				}
 				// check if already installed
-				foreach($computer_packages as $cp) {
-					if($cp->computer_id == $computer->id && $cp->package_id == $package->id) {
-						$state = Models\Job::STATE_ALREADY_INSTALLED;
-						$isInstalled = true;
-						break;
+				if($state != Models\Job::STATE_OS_INCOMPATIBLE) {
+					foreach($computer_packages as $cp) {
+						if($cp->computer_id == $computer->id && $cp->package_id == $package->id) {
+							$state = Models\Job::STATE_ALREADY_INSTALLED;
+							break;
+						}
 					}
 				}
 				// check if we need to uninstall older versions
 				if($package->upgrade_behavior == Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS
-				&& $state != Models\Job::STATE_ALREADY_INSTALLED && $state != Models\Job::STATE_OS_INCOMPATIBLE && $state != Models\Job::STATE_PACKAGE_CONFLICT) {
+				&& $state != Models\Job::STATE_ALREADY_INSTALLED
+				&& $state != Models\Job::STATE_OS_INCOMPATIBLE
+				&& $state != Models\Job::STATE_PACKAGE_CONFLICT) {
 					$dynamic_jobs = array_merge(
 						$dynamic_jobs,
 						$this->compileDynamicUninstallJobs($deployment_rule, $package->package_family_id, $this->selectAllComputerPackageByComputerId($computer->id), $created_uninstall_jobs, $sequence)
@@ -2654,21 +2662,23 @@ class DatabaseController {
 			':post_action' => $post_action,
 		])) return false;
 	}
-	public function renewStaticJob($id, $procedure, $success_return_codes, $upgrade_behavior, $download, $post_action) {
+	public function renewStaticJob($id, $procedure, $success_return_codes, $upgrade_behavior, $download, $post_action, $state=0) {
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE job_container_job
-			SET state = 0, download_progress = NULL, return_code = NULL, message = "", download_started = NULL, execution_started = NULL, execution_finished = NULL,
+			SET state = :state, download_progress = NULL, return_code = NULL, message = "", download_started = NULL, execution_started = NULL, execution_finished = NULL,
 			`procedure` = :procedure, success_return_codes = :success_return_codes, upgrade_behavior = :upgrade_behavior, download = :download, post_action = :post_action
 			WHERE id = :id'
 		);
-		return $this->stmt->execute([
+		$this->stmt->execute([
 			':id' => $id,
 			':procedure' => $procedure,
 			':success_return_codes' => $success_return_codes,
 			':upgrade_behavior' => $upgrade_behavior,
 			':download' => $download,
 			':post_action' => $post_action,
+			':state' => $state,
 		]);
+		return $this->stmt->rowCount() == 1;
 	}
 	public function updateJobExecutionState($job) {
 		if($job instanceof Models\StaticJob) {
