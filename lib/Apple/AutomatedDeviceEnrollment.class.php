@@ -49,7 +49,7 @@ class AutomatedDeviceEnrollment {
 		// check if Apple API accepts the profile
 		$json = json_decode($jsonValue);
 		if(!$json)
-			throw new \RuntimeException('Invalid JSON');
+			throw new \RuntimeException(LANG('json_syntax_error'));
 
 		$createResult = $this->createProfile($jsonValue);
 		if(!$createResult)
