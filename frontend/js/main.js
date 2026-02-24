@@ -340,13 +340,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 			let currentUrl = new URL(window.location.href);
 			window.location.href = 'login.php?redirect='+encodeURIComponent(currentUrl.pathname+currentUrl.search);
 		} else {
-			if(!this.userCancelled) {
-				if(this.status == 0) {
-					emitMessage(LANG['no_connection_to_server'], LANG['please_check_network'], MESSAGE_TYPE_ERROR);
-				} else {
-					emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
-				}
-			}
+			ajaxErrorHandler(this);
 			if(errorCallback != undefined && typeof errorCallback == 'function') {
 				errorCallback(this.responseText);
 			}
@@ -379,10 +373,9 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 				callback(this.responseText);
 			}
 		} else if(this.readyState == 4) {
+			ajaxErrorHandler(this);
 			if(errorCallback != undefined && typeof errorCallback == 'function') {
 				errorCallback(this.status, this.statusText, this.responseText);
-			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
 			}
 		}
 	};
@@ -390,6 +383,15 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 	xhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 	xhttp.send(body);
 	return xhttp;
+}
+function ajaxErrorHandler(xmlhttp) {
+	if(!xmlhttp.userCancelled) {
+		if(xmlhttp.status == 0) {
+			emitMessage(LANG['no_connection_to_server'], LANG['please_check_network'], MESSAGE_TYPE_ERROR);
+		} else {
+			emitMessage(xmlhttp.statusText+' ('+xmlhttp.status+')', xmlhttp.responseText, MESSAGE_TYPE_ERROR);
+		}
+	}
 }
 function setAutofocus(container) {
 	var childs = container.querySelectorAll('*');
@@ -799,7 +801,7 @@ function createPackage(name, version, license_count, notes, archive, install_pro
 					emitMessage(LANG['congratulations_package_placeholder'].replace('%',newPackageId), '', MESSAGE_TYPE_INFO);
 				}
 			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+				ajaxErrorHandler(this);
 				setInputsDisabled(frmNewPackage, false);
 				btnCreatePackage.classList.remove('hidden');
 				prgPackageUpload.classList.add('hidden');
@@ -827,7 +829,7 @@ function editPackageFamilyIcon(id, file) {
 				refreshContent();
 				emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR);
+				ajaxErrorHandler(this);
 			}
 		}
 	};
@@ -857,14 +859,17 @@ function showDialogEditPackageFamily(id) {
 	});
 }
 function editPackageFamily(dialogContainer, id, name, license_count, notes) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/packages.php', urlencodeObject({
 		'edit_package_family_id':id,
 		'name':name,
 		'license_count':license_count,
 		'notes':notes
-	}), null, function() {
+	}), null, function(){
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	}, function(){
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogEditPackage(id) {
@@ -976,7 +981,7 @@ function editPackage(dialogContainer, id, package_family_id, version, compatible
 				dialogContainer.close(); refreshContent();
 				emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+				ajaxErrorHandler(this);
 				setInputsDisabled(dialogContainer, false);
 				btnEditPackage.classList.remove('hidden');
 				btnCloseDialog.classList.remove('hidden');
@@ -1072,9 +1077,12 @@ function addPackageDependency(dialogContainer, packageId, packageIds) {
 	for(var i = 0; i < packageIds.length; i++) {
 		params.push({'key':'add_package_dependency_id[]', 'value':packageIds[i]});
 	}
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function addDependantPackage(dialogContainer, packageId, packageIds) {
@@ -1084,9 +1092,12 @@ function addDependantPackage(dialogContainer, packageId, packageIds) {
 	for(var i = 0; i < packageIds.length; i++) {
 		params.push({'key':'add_dependant_package_id[]', 'value':packageIds[i]});
 	}
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogAssignPackageComputer(packageId) {
@@ -1110,9 +1121,12 @@ function assignPackageComputer(dialogContainer, packageId, computerIds) {
 	for(var i = 0; i < computerIds.length; i++) {
 		params.push({'key':'add_computer_id[]', 'value':computerIds[i]});
 	}
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function createPackageGroup(parent_id=null) {
@@ -1172,9 +1186,12 @@ function addPackageToGroup(dialogContainer, packageId, groupId) {
 	packageId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_package_id[]', 'value':entry});
 	});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/packages.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['packages_added'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function removeSelectedPackageDependency(checkboxName, packageId) {
@@ -1451,12 +1468,15 @@ function showDialogCreateMobileDeviceIos() {
 	});
 }
 function createMobileDeviceIos(dialogContainer, name, serial, notes) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
 		'create_mobile_device':name, 'notes':notes, 'serial':serial, 'type':'ios'
 	}), null, function(response) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 		window.open('views/dialog/mobile-device-create-ios.php?download_profile='+encodeURIComponent(response), '_blank')
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogEditMobileDevice(id) {
@@ -1475,6 +1495,7 @@ function showDialogEditMobileDevice(id) {
 	});
 }
 function editMobileDevice(dialogContainer, id, deviceName, notes) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({
 		'edit_mobile_device_id':id,
 		'device_name':deviceName,
@@ -1482,6 +1503,8 @@ function editMobileDevice(dialogContainer, id, deviceName, notes) {
 	}), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], deviceName, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function setMobileDeviceForceUpdate(id, value) {
@@ -1553,9 +1576,12 @@ function addMobileDeviceToGroup(dialogContainer, mobileDeviceId, groupId) {
 	mobileDeviceId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_mobile_device_id[]', 'value':entry});
 	});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['mobile_device_added'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogAssignProfileToGroup(ids) {
@@ -1585,10 +1611,12 @@ function assignProfileToGroup(dialogContainer, profileId, groupId) {
 	profileId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_profile_id[]', 'value':entry});
 	});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
-		dialogContainer.close();
-		refreshContent();
+		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['profile_assigned'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogAssignManagedAppToGroup(ids) {
@@ -1640,9 +1668,12 @@ function assignManagedAppToGroup(dialogContainer, managedAppId, groupId, removab
 	delegatedScopes.forEach(function(entry) {
 		params.push({'key':'delegated_scopes[]', 'value':entry});
 	});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['apps_assigned'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function removeSelectedMobileDeviceFromGroup(checkboxName, groupId) {
@@ -1689,6 +1720,7 @@ function showDialogCreateComputer() {
 	});
 }
 function createComputer(dialogContainer, hostname, notes, agentKey, serverKey) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({
 		'create_computer': hostname,
 		'notes': notes,
@@ -1698,6 +1730,8 @@ function createComputer(dialogContainer, hostname, notes, agentKey, serverKey) {
 		dialogContainer.close();
 		refreshContentExplorer('views/computer-details.php?id='+parseInt(text));
 		emitMessage(LANG['computer_created'], hostname, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogEditComputer(id) {
@@ -1716,6 +1750,7 @@ function showDialogEditComputer(id) {
 	});
 }
 function editComputer(dialogContainer, id, hostname, notes) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/computers.php', urlencodeObject({
 		'edit_computer_id': id,
 		'hostname': hostname,
@@ -1723,6 +1758,8 @@ function editComputer(dialogContainer, id, hostname, notes) {
 	}), null, function(text) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], hostname, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function setComputerForceUpdate(id, value) {
@@ -1856,9 +1893,12 @@ function addComputerToGroup(dialogContainer, computerId, groupId) {
 	computerId.toString().split(',').forEach(function(entry) {
 		params.push({'key':'add_to_group_computer_id[]', 'value':entry});
 	});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/computers.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['computer_added'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogAssignComputerPackage(computerId) {
@@ -1882,9 +1922,12 @@ function assignComputerPackage(dialogContainer, computerId, packageIds) {
 	for(var i = 0; i < packageIds.length; i++) {
 		params.push({'key':'add_package_id[]', 'value':packageIds[i]});
 	}
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/computers.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 
@@ -1929,9 +1972,12 @@ function sendMobileDeviceCommand(dialogContainer, mobile_device_id, name, parame
 	for(const [key, value] of Object.entries(parameter)) {
 		params.push({'key':key, 'value':value});
 	}
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogEditProfile(type, id=-1) {
@@ -1982,7 +2028,7 @@ function editProfile(dialogContainer, id, type, name, payload, notes) {
 				dialogContainer.close(); refreshContent();
 				emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+				ajaxErrorHandler(this);
 			}
 		}
 	};
@@ -2033,6 +2079,7 @@ function showDialogEditDeploymentRule(id=-1) {
 	});
 }
 function editDeploymentRule(dialogContainer, id, name, notes, enabled, computerGroupId, packageGroupId, priority) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/deployment-rules.php', urlencodeObject({
 		'edit_deployment_rule_id':id,
 		'name':name,
@@ -2051,6 +2098,8 @@ function editDeploymentRule(dialogContainer, id, name, notes, enabled, computerG
 			refreshContent(); refreshSidebar();
 			emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
 		}
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function reevaluateDeploymentRule(deploymentRuleId) {
@@ -2091,9 +2140,12 @@ function moveStaticJobToJobContainer(dialogContainer, jobIds, containerIds) {
 	jobIds.toString().split(',').forEach(function(entry) {
 		params.push({'key':'move_to_container_job_id[]', 'value':entry});
 	});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function removeSelectedJobContainer(ids, event=null, successText='', redirect=null) {
@@ -2158,6 +2210,7 @@ function showDialogEditJobContainer(id) {
 	});
 }
 function editJobContainer(dialogContainer, id, name, enabled, start, end, sequence_mode, priority, agent_ip_ranges, time_frames, notes) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeObject({
 		'edit_job_container_id':id,
 		'name':name,
@@ -2173,6 +2226,8 @@ function editJobContainer(dialogContainer, id, name, enabled, start, end, sequen
 		dialogContainer.close();
 		refreshContent(); refreshSidebar();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function deploy(title, start, end, description, computers, computerGroups, computerReports, packages, packageGroups, packageReports, useWol, shutdownWakedAfterCompletion, forceInstallSameVersion, restartTimeout, sequenceMode, priority, agentIpRanges, timeFrames) {
@@ -2221,7 +2276,7 @@ function deploy(title, start, end, description, computers, computerGroups, compu
 				refreshSidebar();
 				emitMessage(LANG['jobs_created'], title, MESSAGE_TYPE_SUCCESS);
 			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+				ajaxErrorHandler(this);
 				setInputsDisabled(tabControlDeploy, false);
 				btnDeploy.classList.remove('hidden');
 				prgDeploy.classList.add('hidden');
@@ -2296,10 +2351,13 @@ function uninstall(dialogContainer, checkboxName, name, notes, startTime, endTim
 	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
 	params.push({'key':'restart_timeout', 'value':restartTimeout});
 	params.push({'key':'priority', 'value':priority});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 		dialogContainer.close();
 		refreshSidebar(); refreshContent();
 		emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function confirmRemovePackageComputerAssignment(checkboxName) {
@@ -2389,9 +2447,12 @@ function renewFailedStaticJobs(dialogContainer, jobContainerId, jobIds, createNe
 	params.push({'key':'use_wol', 'value':useWol ? 1 : 0});
 	params.push({'key':'shutdown_waked_after_completion', 'value':shutdownWakedAfterCompletion ? 1 : 0});
 	params.push({'key':'priority', 'value':priority});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/job-containers.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshSidebar(); refreshContent();
 		emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function renewFailedDynamicJobs(id, jobId) {
@@ -2451,9 +2512,12 @@ function showDialogAssignPolicyObject(policyObjectIds) {
 				policyObjectIds.forEach(function(entry) {
 					params.push({'key':'policy_object_id[]', 'value':entry});
 				});
+				setInputsDisabled(dialogContainer, true);
 				ajaxRequestPost('ajax-handler/policy-objects.php', urlencodeArray(params), null, function() {
 					dialogContainer.close(); refreshContent();
 					emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+				}, function() {
+					setInputsDisabled(dialogContainer, false);
 				});
 			});
 		});
@@ -2509,6 +2573,7 @@ function showDialogEditDomainUserRole(id=-1) {
 	});
 }
 function editDomainUserRole(dialogContainer, id, name, permissions) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
 		'edit_domain_user_role_id':id,
 		'name':name,
@@ -2516,6 +2581,8 @@ function editDomainUserRole(dialogContainer, id, name, permissions) {
 	}), null, function(response) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function confirmRemoveSelectedDomainUserRole(checkboxName) {
@@ -2565,6 +2632,7 @@ function showDialogEditDomainUser(id=-1) {
 	});
 }
 function editDomainUser(dialogContainer, id, username, password, roleId) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
 		'edit_domain_user_id':id,
 		'password':password,
@@ -2572,6 +2640,8 @@ function editDomainUser(dialogContainer, id, username, password, roleId) {
 	}), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function confirmRemoveSelectedDomainUser(checkboxName) {
@@ -2657,6 +2727,7 @@ function editReport(dialogContainer, id, reportGroupId, name, notes, query) {
 		params.push({'key':'edit_report_id', 'value':id});
 	else
 		params.push({'key':'create_report', 'value':name});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/reports.php', urlencodeArray(params), null, function(text) {
 		dialogContainer.close();
 		if(id > 0) {
@@ -2666,6 +2737,8 @@ function editReport(dialogContainer, id, reportGroupId, name, notes, query) {
 			refreshContentExplorer('views/report-details.php?id='+parseInt(text));
 			emitMessage(LANG['report_created'], name, MESSAGE_TYPE_SUCCESS);
 		}
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function removeSelectedReport(ids, event=null, successText='', redirect=null) {
@@ -2758,12 +2831,15 @@ function showDialogEditOwnSystemUserPassword() {
 	});
 }
 function editOwnSystemUserPassword(dialogContainer, oldPassword, newPassword) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
 		'edit_own_system_user_password':newPassword,
 		'old_password':oldPassword,
 	}), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogEditSystemUser(id=-1) {
@@ -2795,6 +2871,7 @@ function showDialogEditSystemUser(id=-1) {
 	});
 }
 function editSystemUser(dialogContainer, id, username, displayName, description, password, roleId) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
 		'edit_system_user_id':id,
 		'username':username,
@@ -2805,6 +2882,8 @@ function editSystemUser(dialogContainer, id, username, displayName, description,
 	}), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogEditSystemUserRole(id=-1) {
@@ -2825,6 +2904,7 @@ function showDialogEditSystemUserRole(id=-1) {
 	});
 }
 function editSystemUserRole(dialogContainer, id, name, permissions) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
 		'edit_system_user_role_id':id,
 		'name':name,
@@ -2832,6 +2912,8 @@ function editSystemUserRole(dialogContainer, id, name, permissions) {
 	}), null, function(response) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], name, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function confirmRemoveSelectedSystemUserRole(checkboxName) {
@@ -2876,6 +2958,7 @@ function showDialogEditEventQueryRule(id=-1) {
 	});
 }
 function editEventQueryRule(dialogContainer, id, log, query) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
 		'edit_event_query_rule_id':id,
 		'log':log,
@@ -2883,6 +2966,8 @@ function editEventQueryRule(dialogContainer, id, log, query) {
 	}), null, function(response) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], log, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function confirmRemoveSelectedEventQueryRule(checkboxName) {
@@ -2926,6 +3011,7 @@ function showDialogEditPasswordRotationRule(id=-1) {
 	});
 }
 function editPasswordRotationRule(dialogContainer, id, computer_group_id, username, alphabet, length, valid_seconds, history, default_password) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
 		'edit_password_rotation_rule_id':id,
 		'computer_group_id':computer_group_id,
@@ -2938,6 +3024,8 @@ function editPasswordRotationRule(dialogContainer, id, computer_group_id, userna
 	}), null, function(response) {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], username, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function confirmRemoveSelectedPasswordRotationRule(checkboxName) {
@@ -2988,6 +3076,7 @@ function showDialogEditGeneralConfig() {
 	});
 }
 function editGeneralConfig(dialogContainer, clientApiEnabled, clientApiKey, agentRegistrationEnabled, agentRegistrationKey, assumeComputerOfflineAfter, wolShutdownExpiry, agentUpdateInterval, purgeSucceededJobsAfter, purgeFailedJobsAfter, purgeDomainUserLogonsAfter, purgeEventsAfter, logLevel, purgeLogsAfter, keepInactiveScreens, selfServiceEnabled) {
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({
 		'edit_general_config':1,
 		'client_api_enabled':clientApiEnabled,
@@ -3005,9 +3094,11 @@ function editGeneralConfig(dialogContainer, clientApiEnabled, clientApiKey, agen
 		'purge_logs_after':purgeLogsAfter,
 		'computer_keep_inactive_screens':keepInactiveScreens,
 		'self_service_enabled':selfServiceEnabled,
-	}), null, function(text) {
+	}), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['saved'], LANG['oco_configuration'], MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function enableDisableButton(btn, state) {
@@ -3025,9 +3116,8 @@ function ldapSyncSystemUsers(btn) {
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({'ldap_sync_system_users':1}), null, function(text) {
 		refreshContent();
 		emitMessage(LANG['ldap_sync'], text, MESSAGE_TYPE_SUCCESS);
-	}, function(status, statusText, responseText){
+	}, function() {
 		enableDisableButton(btn, true);
-		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
 function ldapSyncDomainUsers(btn) {
@@ -3035,9 +3125,8 @@ function ldapSyncDomainUsers(btn) {
 	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({'ldap_sync_domain_users':1}), null, function(text) {
 		refreshContent();
 		emitMessage(LANG['ldap_sync'], text, MESSAGE_TYPE_SUCCESS);
-	}, function(status, statusText, responseText){
+	}, function() {
 		enableDisableButton(btn, true);
-		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
 function showDialogEditSetting(key='', file=false, warning='be_careful_when_manual_editing_settings', hideKey=false, title=null) {
@@ -3064,6 +3153,7 @@ function showDialogEditSetting(key='', file=false, warning='be_careful_when_manu
 	);
 }
 function editSetting(dialogContainer, key, value) {
+	setInputsDisabled(dialogContainer, true);
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('edit_setting', key);
@@ -3078,7 +3168,8 @@ function editSetting(dialogContainer, key, value) {
 					sideConfetti();
 				}
 			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
+				setInputsDisabled(dialogContainer, false);
+				ajaxErrorHandler(this);
 			}
 		}
 	};
@@ -3132,9 +3223,8 @@ function syncAppsProfiles(btn) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'sync_apps_profiles':1}), null, function(text) {
 		emitMessage(LANG['apps_profiles_policies_synced'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
-	}, function(status, statusText, responseText){
+	}, function() {
 		enableDisableButton(btn, true);
-		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
 
@@ -3143,9 +3233,8 @@ function syncAppleDevices(btn) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'sync_apple_devices':1}), null, function(text) {
 		emitMessage(LANG['sync_apple_devices'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
-	}, function(status, statusText, responseText){
+	}, function() {
 		enableDisableButton(btn, true);
-		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
 function syncAppleAssets(btn) {
@@ -3153,9 +3242,8 @@ function syncAppleAssets(btn) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'sync_apple_assets':1}), null, function(text) {
 		emitMessage(LANG['sync_apple_vpp'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
-	}, function(status, statusText, responseText){
+	}, function() {
 		enableDisableButton(btn, true);
-		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
 
@@ -3292,9 +3380,8 @@ function syncAndroidDevices(btn) {
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject({'sync_android_devices':1}), null, function(text) {
 		emitMessage(LANG['sync_android_devices'], text, MESSAGE_TYPE_SUCCESS);
 		refreshContent();
-	}, function(status, statusText, responseText){
+	}, function() {
 		enableDisableButton(btn, true);
-		emitMessage(LANG['error']+' '+status+' '+statusText, responseText, MESSAGE_TYPE_ERROR, null);
 	});
 }
 function showDialogAssignedProfileInfo(groupId, profileId) {
@@ -3313,9 +3400,12 @@ function removeProfileFromGroup(dialogContainer, ids, groupId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_profile_id[]', 'value':entry});
 	});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogAssignedManagedAppInfo(groupId, managedAppId) {
@@ -3334,9 +3424,12 @@ function removeManagedAppFromGroup(dialogContainer, ids, groupId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_managed_app_id[]', 'value':entry});
 	});
+	setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		dialogContainer.close(); refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
 	});
 }
 
