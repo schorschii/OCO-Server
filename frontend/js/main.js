@@ -754,7 +754,6 @@ function createPackage(name, version, notes, archive, install_procedure, install
 	let formData = new FormData();
 	formData.append('create_package', name);
 	formData.append('version', version);
-	
 	formData.append('notes', notes);
 	for(i = 0; i <= archive.length; i++) {
 		formData.append('archive[]', archive[i]);
