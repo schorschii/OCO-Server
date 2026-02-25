@@ -127,6 +127,10 @@ require_once('../session.inc.php');
 		</td>
 	</tr>
 	<tr class='nospace'>
+		<th><?php echo LANG('replace_line_endings'); ?></th>
+		<td><input type='text' id='txtLineEndings' title='<?php echo LANG('replace_line_endings_help'); ?>' value='<?php echo htmlspecialchars($_GET['line_endings']??'',ENT_QUOTES); ?>'></td>
+	</tr>
+	<tr class='nospace'>
 		<th><?php echo LANG('success_return_codes'); ?></th>
 		<td><input type='text' id='txtInstallProcedureSuccessReturnCodes' title='<?php echo LANG('success_return_codes_comma_separated'); ?>' value='<?php echo htmlspecialchars($_GET['install_procedure_success_return_codes']??'0',ENT_QUOTES); ?>'></td>
 	</tr>
@@ -186,7 +190,6 @@ require_once('../session.inc.php');
 			<button id='btnCreatePackage' type='button' class='primary' onclick='createPackage(
 				txtName.value,
 				txtVersion.value,
-				txtLicenseCount.value=="" ? -1 : txtLicenseCount.value,
 				txtNotes.value,
 				fleArchive.files,
 				txtInstallProcedure.value,
@@ -197,10 +200,12 @@ require_once('../session.inc.php');
 				txtUninstallProcedureSuccessReturnCodes.value,
 				chkDownloadForUninstall.checked,
 				getCheckedRadioValue("uninstall_post_action"),
+				txtLineEndings.value,
 				getSelectedSelectBoxValues("sltCompatibleOs").join("\n"),
 				getSelectedSelectBoxValues("sltCompatibleOsVersion").join("\n"),
-				getSelectedSelectBoxValues("sltCompatibleArchitecture").join("\n"))
-			'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create_package'); ?></button>
+				getSelectedSelectBoxValues("sltCompatibleArchitecture").join("\n"),
+				txtLicenseCount.value=="" ? -1 : txtLicenseCount.value
+			)'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('create_package'); ?></button>
 		</div>
 		</td>
 	</tr>

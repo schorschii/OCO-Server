@@ -758,6 +758,11 @@ class DatabaseMigrationController {
 				"ALTER TABLE `mobile_device_command` CHANGE `message` `message` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL");
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
+			if($this->debug) echo 'Upgrading to 1.1.13... (add line_endings column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				"ALTER TABLE `package` ADD `line_endings` TEXT NULL DEFAULT NULL AFTER `uninstall_procedure_post_action`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
 			$upgraded = true;
 		}
 

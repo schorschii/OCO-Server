@@ -114,6 +114,12 @@ try {
 		</td>
 	</tr>
 	<tr class='nospace'>
+		<th><?php echo LANG('replace_line_endings'); ?></th>
+		<td>
+			<input autocomplete='new-password' name='line_endings' title='<?php echo LANG('replace_line_endings_help'); ?>' value='<?php echo htmlspecialchars($package->line_endings,ENT_QUOTES); ?>'></input>
+		</td>
+	</tr>
+	<tr class='nospace'>
 		<th><?php echo LANG('success_return_codes'); ?></th>
 		<td>
 			<input autocomplete='new-password' name='install_procedure_success_return_codes' title='<?php echo LANG('success_return_codes_comma_separated'); ?>' value='<?php echo htmlspecialchars($package->install_procedure_success_return_codes,ENT_QUOTES); ?>'></input>

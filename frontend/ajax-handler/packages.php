@@ -89,7 +89,8 @@ try {
 	&& isset($_POST['uninstall_procedure'])
 	&& isset($_POST['uninstall_procedure_success_return_codes'])
 	&& isset($_POST['uninstall_procedure_post_action'])
-	&& isset($_POST['download_for_uninstall'])) {
+	&& isset($_POST['download_for_uninstall'])
+	&& isset($_POST['line_endings'])) {
 		// no archive change by default
 		$tmpFiles = null;
 		if(!empty($_POST['update_archive'])) {
@@ -113,10 +114,6 @@ try {
 		$cl->editPackage($_POST['edit_package_id'],
 			$_POST['package_family_id'],
 			$_POST['version'],
-			$_POST['compatible_os'],
-			$_POST['compatible_os_version'],
-			$_POST['compatible_architecture'],
-			$_POST['license_count'],
 			$_POST['notes'],
 			$_POST['install_procedure'],
 			$_POST['install_procedure_success_return_codes'],
@@ -124,8 +121,13 @@ try {
 			$_POST['upgrade_behavior'],
 			$_POST['uninstall_procedure'],
 			$_POST['uninstall_procedure_success_return_codes'],
-			$_POST['uninstall_procedure_post_action'],
 			$_POST['download_for_uninstall'],
+			$_POST['uninstall_procedure_post_action'],
+			$_POST['line_endings'],
+			$_POST['compatible_os'],
+			$_POST['compatible_os_version'],
+			$_POST['compatible_architecture'],
+			$_POST['license_count'],
 			$tmpFiles
 		);
 		die();
@@ -203,11 +205,22 @@ try {
 			}
 		}
 		// create package
-		$insertId = $cl->createPackage(
-			$_POST['create_package'], $_POST['version'], $_POST['license_count'] ?? null, $_POST['notes'] ?? '',
-			$_POST['install_procedure'], $_POST['install_procedure_success_return_codes'] ?? '', $_POST['install_procedure_post_action'] ?? null, $_POST['upgrade_behavior'] ?? 0,
-			$_POST['uninstall_procedure'] ?? '', $_POST['uninstall_procedure_success_return_codes'] ?? '', $_POST['download_for_uninstall'] ?? 0, $_POST['uninstall_procedure_post_action'] ?? null,
-			$_POST['compatible_os'] ?? null, $_POST['compatible_os_version'] ?? null, $_POST['compatible_architecture'] ?? null,
+		$insertId = $cl->createPackage($_POST['create_package'],
+			$_POST['version'],
+			$_POST['notes'] ?? '',
+			$_POST['install_procedure'],
+			$_POST['install_procedure_success_return_codes'] ?? '',
+			$_POST['install_procedure_post_action'] ?? null,
+			$_POST['upgrade_behavior'] ?? 0,
+			$_POST['uninstall_procedure'] ?? '',
+			$_POST['uninstall_procedure_success_return_codes'] ?? '',
+			$_POST['download_for_uninstall'] ?? 0,
+			$_POST['uninstall_procedure_post_action'] ?? null,
+			$_POST['line_endings'] ?? null,
+			$_POST['compatible_os'] ?? null,
+			$_POST['compatible_os_version'] ?? null,
+			$_POST['compatible_architecture'] ?? null,
+			$_POST['license_count'] ?? null,
 			$tmpFiles
 		);
 		die(strval(intval($insertId)));

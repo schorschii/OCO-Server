@@ -143,6 +143,7 @@ CREATE TABLE IF NOT EXISTS `package` (
   `uninstall_procedure_success_return_codes` text NOT NULL,
   `download_for_uninstall` tinyint(4) NOT NULL DEFAULT 0,
   `uninstall_procedure_post_action` tinyint(4) NOT NULL DEFAULT 0,
+  `line_endings` TEXT NULL DEFAULT NULL,
   `compatible_os` text DEFAULT NULL,
   `compatible_os_version` text DEFAULT NULL,
   `compatible_architecture` text DEFAULT NULL,

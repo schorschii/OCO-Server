@@ -168,7 +168,7 @@ try {
 					<div class='controls heading'>
 						<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
 						<div class='filler invisible'></div>
-						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, <?php echo $package->license_count===null?-1:$package->license_count; ?>, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageDownloadForUninstall.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, spnPackageCompatibleArchitecture.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
+						<button onclick='refreshContentPackageNew(spnPackageFamilyName.innerText, spnPackageVersion.innerText, <?php echo $package->license_count===null?-1:$package->license_count; ?>, spnPackageNotes.innerText, spnPackageInstallProcedure.innerText, spnPackageInstallProcedureSuccessReturnCodes.innerText, spnPackageInstallProcedurePostAction.innerText, spnUpgradeBehavior.innerText, spnPackageUninstallProcedure.innerText, spnPackageUninstallProcedureSuccessReturnCodes.innerText, spnPackageDownloadForUninstall.innerText, spnPackageUninstallProcedurePostAction.innerText, spnPackageLineEndings.innerText, spnPackageCompatibleOs.innerText, spnPackageCompatibleOsVersion.innerText, spnPackageCompatibleArchitecture.innerText)' <?php if(!$permissionCreate) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_version'); ?></button>
 						<button onclick='refreshContentExplorer("views/packages.php?package_family_id=<?php echo $packageFamily->id; ?>")'><img src='img/list.dyn.svg'>&nbsp;<?php echo LANG('details'); ?></button>
 					</div>
 					<?php if(!empty($packageFamily->notes)) { ?>
@@ -225,6 +225,12 @@ try {
 							<th><?php echo LANG('install_procedure'); ?></th>
 							<td>
 								<span id='spnPackageInstallProcedure' class='monospace'><?php echo nl2br(htmlspecialchars($package->install_procedure)); ?></span>
+							</td>
+						</tr>
+						<tr>
+							<th><?php echo LANG('replace_line_endings'); ?></th>
+							<td>
+								<span id='spnPackageLineEndings'><?php echo htmlspecialchars($package->line_endings); ?></span>
 							</td>
 						</tr>
 						<tr>

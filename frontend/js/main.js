@@ -630,7 +630,7 @@ function toggleAutoRefresh(force=null) {
 function refreshContentExplorer(url) {
 	ajaxRequest(url, 'explorer-content');
 }
-function refreshContentPackageNew(name=null, version=null, license_count=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, upgrade_behavior=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, uninstall_procedure_post_action=null, download_for_uninstall=null, compatible_os=null, compatible_os_version=null, compatible_architecture=null) {
+function refreshContentPackageNew(name=null, version=null, license_count=null, description=null, install_procedure=null, install_procedure_success_return_codes=null, install_procedure_post_action=null, upgrade_behavior=null, uninstall_procedure=null, uninstall_procedure_success_return_codes=null, download_for_uninstall=null, uninstall_procedure_post_action=null, line_endings=null, compatible_os=null, compatible_os_version=null, compatible_architecture=null) {
 	toggleAutoRefresh(false);
 	ajaxRequest('views/package-new.php?' +
 		(name ? '&name='+encodeURIComponent(name) : '') +
@@ -645,6 +645,7 @@ function refreshContentPackageNew(name=null, version=null, license_count=null, d
 		(uninstall_procedure_success_return_codes ? '&uninstall_procedure_success_return_codes='+encodeURIComponent(uninstall_procedure_success_return_codes) : '') +
 		(uninstall_procedure_post_action ? '&uninstall_procedure_post_action='+encodeURIComponent(uninstall_procedure_post_action) : '') +
 		(download_for_uninstall ? '&download_for_uninstall='+encodeURIComponent(download_for_uninstall) : '') +
+		(line_endings ? '&line_endings='+encodeURIComponent(line_endings) : '') +
 		(compatible_os ? '&compatible_os='+encodeURIComponent(compatible_os) : '') +
 		(compatible_os_version ? '&compatible_os_version='+encodeURIComponent(compatible_os_version) : '') +
 		(compatible_architecture ? '&compatible_architecture='+encodeURIComponent(compatible_architecture) : ''),
@@ -739,7 +740,7 @@ function updatePackageProcedureTemplates() {
 		lstUninstallProcedures.innerHTML = newOptions2;
 	}
 }
-function createPackage(name, version, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version, compatible_architecture) {
+function createPackage(name, version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, line_endings, compatible_os, compatible_os_version, compatible_architecture, license_count) {
 	if(typeof archive === 'undefined' || archive.length == 0) {
 		if(!confirm(LANG['confirm_create_empty_package'])) {
 			return;
@@ -749,12 +750,11 @@ function createPackage(name, version, license_count, notes, archive, install_pro
 	setInputsDisabled(frmNewPackage, true);
 	btnCreatePackage.classList.add('hidden');
 	prgPackageUpload.classList.remove('hidden');
-
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 	formData.append('create_package', name);
 	formData.append('version', version);
-	formData.append('license_count', license_count);
+	
 	formData.append('notes', notes);
 	for(i = 0; i <= archive.length; i++) {
 		formData.append('archive[]', archive[i]);
@@ -767,9 +767,11 @@ function createPackage(name, version, license_count, notes, archive, install_pro
 	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
 	formData.append('download_for_uninstall', download_for_uninstall ? '1' : '0');
 	formData.append('uninstall_procedure_post_action', uninstall_procedure_post_action);
+	formData.append('line_endings', line_endings);
 	formData.append('compatible_os', compatible_os);
 	formData.append('compatible_os_version', compatible_os_version);
 	formData.append('compatible_architecture', compatible_architecture);
+	formData.append('license_count', license_count);
 
 	req.upload.onprogress = function(evt) {
 		if(evt.lengthComputable) {
@@ -896,10 +898,6 @@ function showDialogEditPackage(id) {
 				dialogContainer.querySelectorAll('input[name=id]')[0].value,
 				dialogContainer.querySelectorAll('select[name=package_family_id]')[0].value,
 				dialogContainer.querySelectorAll('input[name=version]')[0].value,
-				dialogContainer.querySelectorAll('select[name=compatible_os]')[0].value,
-				dialogContainer.querySelectorAll('select[name=compatible_os_version]')[0].value,
-				dialogContainer.querySelectorAll('select[name=compatible_architecture]')[0].value,
-				dialogContainer.querySelectorAll('input[name=license_count]')[0].value,
 				dialogContainer.querySelectorAll('textarea[name=notes]')[0].value,
 				chkReplaceArchive.checked ? fleArchive.files : null,
 				dialogContainer.querySelectorAll('input[name=install_procedure], textarea[name=install_procedure]')[0].value,
@@ -908,13 +906,18 @@ function showDialogEditPackage(id) {
 				getSelectedCheckBoxValues('upgrade_behavior', null, false, dialogContainer),
 				dialogContainer.querySelectorAll('input[name=uninstall_procedure], textarea[name=uninstall_procedure]')[0].value,
 				dialogContainer.querySelectorAll('input[name=uninstall_procedure_success_return_codes]')[0].value,
-				getSelectedCheckBoxValues('uninstall_procedure_post_action', null, false, dialogContainer),
 				dialogContainer.querySelectorAll('input[name=download_for_uninstall]')[0].checked ? 1 : 0,
+				getSelectedCheckBoxValues('uninstall_procedure_post_action', null, false, dialogContainer),
+				dialogContainer.querySelectorAll('input[name=line_endings]')[0].value,
+				dialogContainer.querySelectorAll('select[name=compatible_os]')[0].value,
+				dialogContainer.querySelectorAll('select[name=compatible_os_version]')[0].value,
+				dialogContainer.querySelectorAll('select[name=compatible_architecture]')[0].value,
+				dialogContainer.querySelectorAll('input[name=license_count]')[0].value,
 			);
 		});
 	});
 }
-function editPackage(dialogContainer, id, package_family_id, version, compatible_os, compatible_os_version, compatible_architecture, license_count, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, uninstall_procedure_post_action, download_for_uninstall) {
+function editPackage(dialogContainer, id, package_family_id, version, notes, archive, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, line_endings, compatible_os, compatible_os_version, compatible_architecture, license_count) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 
@@ -942,10 +945,6 @@ function editPackage(dialogContainer, id, package_family_id, version, compatible
 	formData.append('edit_package_id', id);
 	formData.append('package_family_id', package_family_id);
 	formData.append('version', version);
-	formData.append('compatible_os', compatible_os);
-	formData.append('compatible_os_version', compatible_os_version);
-	formData.append('compatible_architecture', compatible_architecture);
-	formData.append('license_count', license_count);
 	formData.append('notes', notes);
 	formData.append('install_procedure', install_procedure);
 	formData.append('install_procedure_success_return_codes', install_procedure_success_return_codes);
@@ -955,6 +954,11 @@ function editPackage(dialogContainer, id, package_family_id, version, compatible
 	formData.append('uninstall_procedure_success_return_codes', uninstall_procedure_success_return_codes);
 	formData.append('uninstall_procedure_post_action', uninstall_procedure_post_action);
 	formData.append('download_for_uninstall', download_for_uninstall?'1':'0');
+	formData.append('line_endings', line_endings);
+	formData.append('compatible_os', compatible_os);
+	formData.append('compatible_os_version', compatible_os_version);
+	formData.append('compatible_architecture', compatible_architecture);
+	formData.append('license_count', license_count);
 
 	req.upload.onprogress = function(evt) {
 		if(evt.lengthComputable) {

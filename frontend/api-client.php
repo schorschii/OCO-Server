@@ -200,10 +200,12 @@ function handleJsonRequest($request) {
 				}
 				// insert into database
 				$insertId = $cl->createPackage(
-					$data['package_family_name'] ?? '', $data['version'] ?? '', $data['license_count'] ?? null, $data['description'] ?? '',
+					$data['package_family_name'] ?? '', $data['version'] ?? '', $data['description'] ?? '',
 					$data['install_procedure'] ?? '', $data['install_procedure_success_return_codes'] ?? '0', $data['install_procedure_post_action'] ?? 0, $data['upgrade_behavior'] ?? 0,
 					$data['uninstall_procedure'] ?? '', $data['uninstall_procedure_success_return_codes'] ?? '0', $data['download_for_uninstall'] ?? 0, $data['uninstall_procedure_post_action'] ?? 0,
+					$data['line_endings'] ?? null,
 					$data['compatible_os'] ?? '', $data['compatible_os_version'] ?? '', $data['compatible_architecture'] ?? '',
+					$data['license_count'] ?? null,
 					$tmpFiles
 				);
 				$response['result'] = [

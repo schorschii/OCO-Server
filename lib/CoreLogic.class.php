@@ -768,10 +768,10 @@ class CoreLogic {
 		$this->checkPermission($packageFamily, PermissionManager::METHOD_READ);
 		return $packageFamily;
 	}
-	public function createPackage($name, $version, $licenseCount, $description,
+	public function createPackage($name, $version, $notes,
 		$installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior,
 		$uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction,
-		$compatibleOs, $compatibleOsVersion, $compatibleArchitecture, $tmpFiles) {
+		$lineEndings, $compatibleOs, $compatibleOsVersion, $compatibleArchitecture, $licenseCount, $tmpFiles) {
 
 		// permission/input checks
 		$license = new LicenseCheck($this->db);
@@ -787,6 +787,9 @@ class CoreLogic {
 		}
 		if($licenseCount < 0) {
 			$licenseCount = null;
+		}
+		if(empty($lineEndings)) {
+			$lineEndings = null;
 		}
 
 		// decide what to do with uploaded files
@@ -831,12 +834,12 @@ class CoreLogic {
 				'installProcedure' => $installProcedure,
 				'uninstallProcedure' => $uninstallProcedure,
 				'version' => $version,
-				'description' => $description,
+				'description' => $notes,
 			]);
 			$installProcedure = $replaced['installProcedure'];
 			$uninstallProcedure = $replaced['uninstallProcedure'];
 			$version = $replaced['version'];
-			$description = $replaced['description'];
+			$notes = $replaced['description'];
 			if(empty($name) || empty($installProcedure) || empty($version)) {
 				throw new InvalidRequestException(LANG('please_fill_required_fields'));
 			}
@@ -858,8 +861,7 @@ class CoreLogic {
 			throw new Exception(LANG('database_error'));
 		}
 		$insertId = $this->db->insertPackage(
-			$packageFamilyId, $version, $licenseCount,
-			$this->su->id, $description,
+			$packageFamilyId, $version, $notes,
 			$installProcedure,
 			$installProcedureSuccessReturnCodes,
 			$installProcedurePostAction,
@@ -868,7 +870,10 @@ class CoreLogic {
 			$uninstallProcedureSuccessReturnCodes,
 			$downloadForUninstall,
 			$uninstallProcedurePostAction,
-			$compatibleOs, $compatibleOsVersion, $compatibleArchitecture
+			$lineEndings,
+			$compatibleOs, $compatibleOsVersion, $compatibleArchitecture,
+			$licenseCount,
+			$this->su->id
 		);
 		if(!$insertId) {
 			throw new Exception(LANG('database_error'));
@@ -1024,12 +1029,12 @@ class CoreLogic {
 		$this->db->deletePackageDependencyByPackageIdAndDependentPackageId($package->id, $dependentPackage->id);
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $package->id, 'oco.package.remove_dependency', ['dependent_package_id'=>$dependentPackage->id]);
 	}
-	public function editPackage($id, $package_family_id, $version, $compatibleOs, $compatibleOsVersion, $compatibleArchitecture, $licenseCount, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $uninstallProcedurePostAction, $downloadForUninstall, $tmpFiles) {
+	public function editPackage($id, $packageFamilyId, $version, $notes, $installProcedure, $installProcedureSuccessReturnCodes, $installProcedurePostAction, $upgradeBehavior, $uninstallProcedure, $uninstallProcedureSuccessReturnCodes, $downloadForUninstall, $uninstallProcedurePostAction, $lineEndings, $compatibleOs, $compatibleOsVersion, $compatibleArchitecture, $licenseCount, $tmpFiles) {
 		$package = $this->db->selectPackage($id);
 		if(empty($package)) throw new NotFoundException();
 		$this->checkPermission($package, PermissionManager::METHOD_WRITE);
 
-		$package_family = $this->db->selectPackageFamily($package_family_id);
+		$package_family = $this->db->selectPackageFamily($packageFamilyId);
 		if(empty($package_family)) throw new NotFoundException();
 		$this->checkPermission($package_family, PermissionManager::METHOD_WRITE);
 
@@ -1038,6 +1043,9 @@ class CoreLogic {
 		}
 		if($licenseCount < 0) {
 			$licenseCount = null;
+		}
+		if(empty($lineEndings)) {
+			$lineEndings = null;
 		}
 		if(!is_numeric($installProcedurePostAction)
 		|| !in_array($installProcedurePostAction, [Models\Package::POST_ACTION_NONE, Models\Package::POST_ACTION_RESTART, Models\Package::POST_ACTION_SHUTDOWN, Models\Package::POST_ACTION_EXIT])) {
@@ -1111,12 +1119,8 @@ class CoreLogic {
 
 		// update in database
 		$this->db->updatePackage($package->id,
-			$package_family_id,
+			$packageFamilyId,
 			$version,
-			$compatibleOs,
-			$compatibleOsVersion,
-			$compatibleArchitecture,
-			$licenseCount,
 			$notes,
 			$installProcedure,
 			$installProcedureSuccessReturnCodes,
@@ -1124,8 +1128,13 @@ class CoreLogic {
 			intval($upgradeBehavior),
 			$uninstallProcedure,
 			$uninstallProcedureSuccessReturnCodes,
-			intval($uninstallProcedurePostAction),
 			intval($downloadForUninstall),
+			intval($uninstallProcedurePostAction),
+			$lineEndings,
+			$compatibleOs,
+			$compatibleOsVersion,
+			$compatibleArchitecture,
+			$licenseCount,
 			$this->su->id,
 		);
 
@@ -1492,7 +1501,7 @@ class CoreLogic {
 							if($package['upgrade_behavior'] != Models\Package::UPGRADE_BEHAVIOR_EXPLICIT_UNINSTALL_JOBS) continue;
 							$createdUninstallJobs[] = $cp->id;
 							$this->db->insertStaticJob($jcid, $computer_id,
-								$cpp->id, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes,
+								$cpp->id, $cpp->compileUninstallProcedure(), $cpp->uninstall_procedure_success_return_codes,
 								0/*upgrade_behavior*/, 1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
 								$cpp->uninstall_procedure_post_action, $restartTimeout,
 								$sequence, Models\Job::STATE_WAITING_FOR_AGENT
@@ -1596,7 +1605,7 @@ class CoreLogic {
 		// note: PHP automatically treats string value $p->id as integer when using numeric strings as array key
 		$packages[$p->id] = [
 			'package_family_id' => $p->package_family_id,
-			'procedure' => $p->install_procedure,
+			'procedure' => $p->compileInstallProcedure(),
 			'success_return_codes' => $p->install_procedure_success_return_codes,
 			'install_procedure_post_action' => $p->install_procedure_post_action,
 			'upgrade_behavior' => $p->upgrade_behavior,
@@ -1686,7 +1695,7 @@ class CoreLogic {
 			if(!$this->checkPermission($p, PermissionManager::METHOD_DEPLOY, false)) continue;
 
 			$jid = $this->db->insertStaticJob($jcid, $ap->computer_id,
-				$ap->package_id, $p->uninstall_procedure, $p->uninstall_procedure_success_return_codes,
+				$ap->package_id, $p->compileUninstallProcedure(), $p->uninstall_procedure_success_return_codes,
 				0/*upgrade_behavior*/, 1/*is_uninstall*/, ($p->download_for_uninstall&&$p->getFilePath()) ? 1 : 0,
 				$p->uninstall_procedure_post_action, $restartTimeout,
 				0/*sequence*/
@@ -1826,7 +1835,7 @@ class CoreLogic {
 					$newJob->job_container_id = $jcid;
 					$newJob->computer_id = $job->computer_id;
 					$newJob->package_id = $job->package_id;
-					$newJob->procedure = empty($job->is_uninstall) ? $package->install_procedure : $package->uninstall_procedure;
+					$newJob->procedure = empty($job->is_uninstall) ? $package->compileInstallProcedure() : $package->compileUninstallProcedure();
 					$newJob->success_return_codes = empty($job->is_uninstall) ? $package->install_procedure_success_return_codes : $package->uninstall_procedure_success_return_codes;
 					$newJob->upgrade_behavior = $package->upgrade_behavior;
 					$newJob->is_uninstall = $job->is_uninstall;

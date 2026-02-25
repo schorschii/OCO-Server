@@ -12,9 +12,6 @@ class Package {
 	// attributes
 	public $id;
 	public $version;
-	public $compatible_os;
-	public $compatible_os_version;
-	public $compatible_architecture;
 	public $notes;
 	public $install_procedure;
 	public $install_procedure_success_return_codes;
@@ -24,6 +21,10 @@ class Package {
 	public $uninstall_procedure_success_return_codes;
 	public $download_for_uninstall;
 	public $uninstall_procedure_post_action;
+	public $line_endings;
+	public $compatible_os;
+	public $compatible_os_version;
+	public $compatible_architecture;
 	public $license_count;
 	public $created;
 	public $created_by_system_user_id;
@@ -63,6 +64,18 @@ class Package {
 			return 'data:image/png;base64,'.base64_encode($this->package_family_icon);
 		}
 		return 'img/package.dyn.svg';
+	}
+	function compileInstallProcedure() {
+		if(!empty($this->line_endings)) {
+			return str_replace("\r\n", $this->line_endings, $this->install_procedure);
+		}
+		return $this->install_procedure;
+	}
+	function compileUninstallProcedure() {
+		if(!empty($this->line_endings)) {
+			return str_replace("\r\n", $this->line_endings, $this->uninstall_procedure);
+		}
+		return $this->uninstall_procedure;
 	}
 	public function getFilePath() {
 		$path = PACKAGE_PATH.'/'.intval($this->id).'.zip';

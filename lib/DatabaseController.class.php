@@ -1770,10 +1770,10 @@ class DatabaseController {
 		$this->stmt->bindParam(':icon', $icon, PDO::PARAM_LOB);
 		return $this->stmt->execute();
 	}
-	public function insertPackage($package_family_id, $version, $license_count, $created_by_system_user_id, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $compatible_os, $compatible_os_version) {
+	public function insertPackage($package_family_id, $version, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $line_endings, $compatible_os, $compatible_os_version, $compatible_architecture, $license_count, $created_by_system_user_id) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO package (package_family_id, version, license_count, created_by_system_user_id, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, compatible_os, compatible_os_version)
-			VALUES (:package_family_id, :version, :license_count, :created_by_system_user_id, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :upgrade_behavior, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :compatible_os, :compatible_os_version)'
+			'INSERT INTO package (package_family_id, version, license_count, created_by_system_user_id, notes, install_procedure, install_procedure_success_return_codes, install_procedure_post_action, upgrade_behavior, uninstall_procedure, uninstall_procedure_success_return_codes, download_for_uninstall, uninstall_procedure_post_action, line_endings, compatible_os, compatible_os_version, compatible_architecture)
+			VALUES (:package_family_id, :version, :license_count, :created_by_system_user_id, :notes, :install_procedure, :install_procedure_success_return_codes, :install_procedure_post_action, :upgrade_behavior, :uninstall_procedure, :uninstall_procedure_success_return_codes, :download_for_uninstall, :uninstall_procedure_post_action, :line_endings, :compatible_os, :compatible_os_version, :compatible_architecture)'
 		);
 		$this->stmt->execute([
 			':package_family_id' => $package_family_id,
@@ -1789,14 +1789,16 @@ class DatabaseController {
 			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
 			':download_for_uninstall' => $download_for_uninstall,
 			':uninstall_procedure_post_action' => $uninstall_procedure_post_action,
+			':line_endings' => $line_endings,
 			':compatible_os' => $compatible_os,
 			':compatible_os_version' => $compatible_os_version,
+			':compatible_architecture' => $compatible_architecture,
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updatePackage($id, $package_family_id, $version, $compatible_os, $compatible_os_version, $compatible_architecture, $license_count, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $uninstall_procedure_post_action, $download_for_uninstall, $last_update_by_system_user_id=null) {
+	public function updatePackage($id, $package_family_id, $version, $notes, $install_procedure, $install_procedure_success_return_codes, $install_procedure_post_action, $upgrade_behavior, $uninstall_procedure, $uninstall_procedure_success_return_codes, $download_for_uninstall, $uninstall_procedure_post_action, $line_endings, $compatible_os, $compatible_os_version, $compatible_architecture, $license_count, $last_update_by_system_user_id=null) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, compatible_architecture = :compatible_architecture, license_count = :license_count, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, upgrade_behavior = :upgrade_behavior, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall, last_update_by_system_user_id = :last_update_by_system_user_id WHERE id = :id'
+			'UPDATE package SET last_update = CURRENT_TIMESTAMP, package_family_id = :package_family_id, version = :version, compatible_os = :compatible_os, compatible_os_version = :compatible_os_version, compatible_architecture = :compatible_architecture, license_count = :license_count, notes = :notes, install_procedure = :install_procedure, install_procedure_success_return_codes = :install_procedure_success_return_codes, install_procedure_post_action = :install_procedure_post_action, upgrade_behavior = :upgrade_behavior, uninstall_procedure = :uninstall_procedure, uninstall_procedure_success_return_codes = :uninstall_procedure_success_return_codes, uninstall_procedure_post_action = :uninstall_procedure_post_action, download_for_uninstall = :download_for_uninstall, line_endings = :line_endings, last_update_by_system_user_id = :last_update_by_system_user_id WHERE id = :id'
 		);
 		return $this->stmt->execute([
 			':id' => $id,
@@ -1815,6 +1817,7 @@ class DatabaseController {
 			':uninstall_procedure_success_return_codes' => $uninstall_procedure_success_return_codes,
 			':uninstall_procedure_post_action' => $uninstall_procedure_post_action,
 			':download_for_uninstall' => $download_for_uninstall,
+			':line_endings' => $line_endings,
 			':last_update_by_system_user_id' => $last_update_by_system_user_id,
 		]);
 	}
@@ -2541,7 +2544,7 @@ class DatabaseController {
 				$dynamic_jobs[] = Models\DynamicJob::__constructWithValues(
 					$deployment_rule->id, $deployment_rule->name, $deployment_rule->created_by_system_user_id, $deployment_rule->enabled, $deployment_rule->priority,
 					$computer->id, $computer->hostname,
-					$package->id, $package->version, $package->package_family_name, $package->install_procedure, $package->install_procedure_success_return_codes, $package->upgrade_behavior,
+					$package->id, $package->version, $package->package_family_name, $package->compileInstallProcedure(), $package->install_procedure_success_return_codes, $package->upgrade_behavior,
 					0/*is_uninstall*/, $package->getFilePath() ? 1 : 0,
 					$package->install_procedure_post_action, $deployment_rule->post_action_timeout,
 					$sequence,
@@ -2606,7 +2609,7 @@ class DatabaseController {
 				$dynamic_jobs[] = Models\DynamicJob::__constructWithValues(
 					$deployment_rule->id, $deployment_rule->name, $deployment_rule->created_by_system_user_id, $deployment_rule->enabled, $deployment_rule->priority,
 					$cp->computer_id, $cp->computer_hostname,
-					$cpp->id, $cpp->version, $cpp->package_family_name, $cpp->uninstall_procedure, $cpp->uninstall_procedure_success_return_codes, $cpp->upgrade_behavior,
+					$cpp->id, $cpp->version, $cpp->package_family_name, $cpp->compileUninstallProcedure(), $cpp->uninstall_procedure_success_return_codes, $cpp->upgrade_behavior,
 					1/*is_uninstall*/, ($cpp->download_for_uninstall&&$cpp->getFilePath()) ? 1 : 0,
 					$cpp->uninstall_procedure_post_action, $deployment_rule->post_action_timeout,
 					$sequence
