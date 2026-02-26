@@ -38,10 +38,37 @@ class MobileDeviceCommandController {
 		return $success;
 	}
 
+	private function getRessourceRecursiveByMobileDeviceId(Models\MobileDevice $md, $callable) {
+		$resources = [];
+		foreach($this->db->selectAllMobileDeviceGroupByMobileDeviceId($md->id) as $mdg) {
+			$currentGroup = $mdg;
+			$currentGroupId = $mdg->getId();
+			while($currentGroupId) {
+				$currentGroup = call_user_func([$this->db, $currentGroup::GET_OBJECT_FUNCTION], $currentGroupId);
+				if(!$currentGroup instanceof Models\IHierarchicalGroup)
+					throw new \Exception('Group object does not conform to IHierarchicalGroup');
+
+				$resources = array_merge(
+					$resources,
+					call_user_func($callable, $currentGroupId)
+				);
+
+				$currentGroupId = $currentGroup->getParentId();
+			}
+		}
+		return $resources;
+	}
+	function getManagedAppsByMobileDeviceId(Models\MobileDevice $md) {
+		return $this->getRessourceRecursiveByMobileDeviceId($md, [$this->db, 'selectAllManagedAppByMobileDeviceGroupId']);
+	}
+	function getProfilesByMobileDeviceId(Models\MobileDevice $md) {
+		return $this->getRessourceRecursiveByMobileDeviceId($md, [$this->db, 'selectAllProfileByMobileDeviceGroupId']);
+	}
+
 	private function androidAppInstalls(Models\MobileDevice $md) {
 		// check if every assigned app is installed, otherwise add to policy
 		$policy = [];
-		foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
+		foreach($this->getManagedAppsByMobileDeviceId($md->id) as $app) {
 			if($app->type != Models\ManagedApp::TYPE_ANDROID) continue;
 
 			if(empty($policy)) $policy['applications'] = [];
@@ -67,7 +94,7 @@ class MobileDeviceCommandController {
 	private function androidPolicies(Models\MobileDevice $md) {
 		// check if every assigned policy is applied, otherwise add it to device policy
 		$policy = [];
-		foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
+		foreach($this->getProfilesByMobileDeviceId($md->id) as $p) {
 			if($p->type != Models\Profile::TYPE_ANDROID) continue;
 
 			// check valid JSON
@@ -111,7 +138,7 @@ class MobileDeviceCommandController {
 		// check if every assigned profile is installed, otherwise create command to install it
 		$handledProfileUuids = [];
 		$installedProfileUuids = $this->db->selectAllMobileDeviceProfileUuidByMobileDeviceId($md->id);
-		foreach($this->db->selectAllProfileByMobileDeviceId($md->id) as $p) {
+		foreach($this->getProfilesByMobileDeviceId($md->id) as $p) {
 			if($p->type != Models\Profile::TYPE_IOS) continue;
 			$uuid = $p->getUuid();
 			if(!$uuid) continue;
@@ -158,7 +185,7 @@ class MobileDeviceCommandController {
 		$changed = false;
 		// check if every assigned app is installed, otherwise create job
 		$installedApps = $this->db->selectAllMobileDeviceAppIdentifierByMobileDeviceId($md->id);
-		foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
+		foreach($this->getManagedAppsByMobileDeviceId($md->id) as $app) {
 			if($app->type != Models\ManagedApp::TYPE_IOS) continue;
 			if(array_key_exists($app->identifier, $installedApps)) continue;
 

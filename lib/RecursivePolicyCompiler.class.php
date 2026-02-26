@@ -115,6 +115,7 @@ class RecursivePolicyCompiler {
 					if(empty($policy->$manifestationType)) continue;
 					$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
 				} else {
+					// ensure that array key is a string for array_merge logic!
 					$policies[':'.$policy->id] = $policy;
 				}
 			}

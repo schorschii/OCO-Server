@@ -203,17 +203,6 @@ class DatabaseController {
 		}
 		return $uuids;
 	}
-	public function selectAllManagedAppByMobileDeviceId($mobile_device_id) {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT mdgma.*, ma.* FROM managed_app ma
-			INNER JOIN mobile_device_group_managed_app mdgma ON mdgma.managed_app_id = ma.id
-			INNER JOIN mobile_device_group_member mdgm ON mdgm.mobile_device_group_id = mdgma.mobile_device_group_id
-			WHERE mdgm.mobile_device_id = :mobile_device_id
-			ORDER BY ma.name'
-		);
-		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroupManagedApp');
-	}
 	public function insertMobileDevice($udid, $state, $device_name, $serial, $vendor_description, $model, $os, $device_family, $color, $profile_uuid, $push_token, $push_magic, $push_sent, $unlock_token, $info, $notes, $force_update) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO mobile_device (udid, state, device_name, serial, vendor_description, model, os, device_family, color, profile_uuid, push_token, push_magic, push_sent, unlock_token, info, notes, force_update)
@@ -490,17 +479,6 @@ class DatabaseController {
 		foreach($this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile') as $row) {
 			return $row;
 		}
-	}
-	public function selectAllProfileByMobileDeviceId($mobile_device_id) {
-		$this->stmt = $this->dbh->prepare(
-			'SELECT p.* FROM profile p
-			INNER JOIN mobile_device_group_profile mdgp ON mdgp.profile_id = p.id
-			INNER JOIN mobile_device_group_member mdgm ON mdgm.mobile_device_group_id = mdgp.mobile_device_group_id
-			WHERE mdgm.mobile_device_id = :mobile_device_id
-			ORDER BY p.name'
-		);
-		$this->stmt->execute([':mobile_device_id' => $mobile_device_id]);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile');
 	}
 	public function selectAllProfileByMobileDeviceGroupId($mobile_device_group_id) {
 		$this->stmt = $this->dbh->prepare(
