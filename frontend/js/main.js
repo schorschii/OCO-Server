@@ -253,7 +253,7 @@ function showDialogHTML(title='', text='', controls=false, size=false, monospace
 		dialogText.classList.remove('monospace');
 	// close action
 	dialogBox.querySelectorAll('button.dialogClose').forEach(function(btn){
-		btn.addEventListener('click', dialogContainer.close);
+		btn.addEventListener('click', ()=>{ dialogContainer.close() });
 	});
 	// loading animation
 	if(loading) {
@@ -299,7 +299,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 	xhttp.userCancelled = false;
 	xhttp.onreadystatechange = function() {
 		if(this.readyState != 4) return;
-		if(this.status == 200) {
+		if(this.status >= 200 && this.status < 300) {
 			var object = objID;
 			if(typeof objID === 'string' || objID instanceof String)
 				object = obj(objID);
@@ -334,7 +334,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 				}
 			}
 			if(callback != undefined && typeof callback == 'function') {
-				callback(this.responseText);
+				callback(this.responseText, this.status);
 			}
 		} else if(this.status == 401) {
 			let currentUrl = new URL(window.location.href);
@@ -342,7 +342,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 		} else {
 			ajaxErrorHandler(this);
 			if(errorCallback != undefined && typeof errorCallback == 'function') {
-				errorCallback(this.responseText);
+				errorCallback(this.responseText, this.status);
 			}
 		}
 		// hide loaders
@@ -359,7 +359,8 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 	var xhttp = new XMLHttpRequest();
 	xhttp.onreadystatechange = function() {
-		if(this.readyState == 4 && this.status == 200) {
+		if(this.readyState != 4) return;
+		if(this.status >= 200 && this.status < 300) {
 			var object = objID;
 			if(typeof objID === 'string' || objID instanceof String)
 				object = obj(objID);
@@ -370,9 +371,9 @@ function ajaxRequestPost(url, body, objID, callback, errorCallback) {
 				}
 			}
 			if(callback != undefined && typeof callback == 'function') {
-				callback(this.responseText);
+				callback(this.responseText, this.status);
 			}
-		} else if(this.readyState == 4) {
+		} else {
 			ajaxErrorHandler(this);
 			if(errorCallback != undefined && typeof errorCallback == 'function') {
 				errorCallback(this.status, this.statusText, this.responseText);

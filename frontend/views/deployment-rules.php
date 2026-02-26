@@ -143,7 +143,8 @@ if(!empty($_GET['id'])) {
 						<?php if(empty($job->message)) { ?>
 							<?php echo htmlspecialchars($job->getStateString()); ?>
 						<?php } else { ?>
-							<a href='#' onclick='event.preventDefault();showDialog(this.getAttribute("summary"), this.getAttribute("message"), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE, true, <?php echo ($job->isRunning()?'true':'false'); ?>)'
+							<a href='#' class='jobOutput' jobId='<?php echo $job->id; ?>'
+								running='<?php echo ($job->isRunning()?'1':'0'); ?>'
 								summary='<?php echo htmlspecialchars($job->computer_hostname.' - '.$job->package_family_name.' ('.$job->package_version.'): '.$job->getStateString(), ENT_QUOTES); ?>'
 								message='<?php echo htmlspecialchars(str_replace(chr(0x00),'',trim($job->message)), ENT_QUOTES); ?>'>
 								<?php echo htmlspecialchars($job->getStateString()); ?>
@@ -182,6 +183,52 @@ if(!empty($_GET['id'])) {
 		</table>
 	</div>
 	</div>
+
+	<script>
+		let currentJobOutputRefreshTimeout = null;
+		let jobOutputLinks = tblDeploymentRuleJobData.querySelectorAll('a.jobOutput');
+		for(let i=0; i<jobOutputLinks.length; i++) {
+			jobOutputLinks[i].addEventListener('click', function(event){
+				event.preventDefault();
+				let isRunning = event.srcElement.getAttribute('running')=='1';
+				let jobId = event.srcElement.getAttribute('jobId');
+				let dialogContainer = showDialog(
+					event.srcElement.getAttribute('summary'),
+					event.srcElement.getAttribute('message'),
+					DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE,
+					true, isRunning
+				);
+				let dialogText = dialogContainer.querySelectorAll('.dialogText')[0];
+				if(isRunning) {
+					let refreshOutput = function() {
+						currentJobOutputRefreshTimeout = setTimeout(() => {
+							ajaxRequest(
+								'ajax-handler/deployment-rules.php?output_job_id='+encodeURIComponent(jobId),
+								null,
+								function(text, status){
+									dialogText.innerText = text;
+									if(status == 201) {
+										var img = document.createElement('img');
+										img.src = 'img/loader-dots.svg';
+										img.style = 'display:block';
+										dialogText.appendChild(img);
+										refreshOutput();
+									}
+								},
+								false, false
+							);
+						}, 2000);
+					};
+					let prevClose = dialogContainer.close;
+					dialogContainer.close = function(){
+						prevClose();
+						clearTimeout(currentJobOutputRefreshTimeout);
+					}
+					refreshOutput();
+				}
+			});
+		}
+	</script>
 
 <?php
 } else {

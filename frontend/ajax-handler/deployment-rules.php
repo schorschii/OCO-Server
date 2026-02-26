@@ -51,6 +51,16 @@ try {
 		die();
 	}
 
+	// ----- fetch current job output if requested -----
+	if(!empty($_GET['output_job_id'])) {
+		$job = $db->selectDynamicJob($_GET['output_job_id']);
+		if(!$job) throw new NotFoundException();
+		$cl->getDeploymentRule($job->deployment_rule_id); // permission check
+		if($job->state == Models\Job::STATE_EXECUTION_STARTED)
+			http_response_code(201);
+		die($job->message);
+	}
+
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
 	die(LANG('permission_denied'));
