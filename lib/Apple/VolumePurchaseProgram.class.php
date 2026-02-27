@@ -150,8 +150,9 @@ class VolumePurchaseProgram {
 		sleep(10);
 
 		// assign new
+		$mdcc = new \MobileDeviceCommandController($this->db);
 		foreach($mds as $md) {
-			foreach($this->db->selectAllManagedAppByMobileDeviceId($md->id) as $app) {
+			foreach($mdcc->getManagedAppsByMobileDeviceId($md->id) as $app) {
 				echo 'Assigning license for '.$app->store_id.' to '.$md->serial."\n";
 				if($app->vpp_amount) {
 					$this->associateAssets(
