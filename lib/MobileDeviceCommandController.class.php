@@ -38,9 +38,9 @@ class MobileDeviceCommandController {
 		return $success;
 	}
 
-	private function getRessourceRecursiveByMobileDeviceId(Models\MobileDevice $md, $callable) {
+	private function getRessourceRecursiveByMobileDeviceId($mdId, $callable) {
 		$resources = [];
-		foreach($this->db->selectAllMobileDeviceGroupByMobileDeviceId($md->id) as $mdg) {
+		foreach($this->db->selectAllMobileDeviceGroupByMobileDeviceId($mdId) as $mdg) {
 			$currentGroup = $mdg;
 			$currentGroupId = $mdg->getId();
 			while($currentGroupId) {
@@ -58,11 +58,11 @@ class MobileDeviceCommandController {
 		}
 		return $resources;
 	}
-	function getManagedAppsByMobileDeviceId(Models\MobileDevice $md) {
-		return $this->getRessourceRecursiveByMobileDeviceId($md, [$this->db, 'selectAllManagedAppByMobileDeviceGroupId']);
+	function getManagedAppsByMobileDeviceId($mdId) {
+		return $this->getRessourceRecursiveByMobileDeviceId($mdId, [$this->db, 'selectAllManagedAppByMobileDeviceGroupId']);
 	}
-	function getProfilesByMobileDeviceId(Models\MobileDevice $md) {
-		return $this->getRessourceRecursiveByMobileDeviceId($md, [$this->db, 'selectAllProfileByMobileDeviceGroupId']);
+	function getProfilesByMobileDeviceId($mdId) {
+		return $this->getRessourceRecursiveByMobileDeviceId($mdId, [$this->db, 'selectAllProfileByMobileDeviceGroupId']);
 	}
 
 	private function androidAppInstalls(Models\MobileDevice $md) {
