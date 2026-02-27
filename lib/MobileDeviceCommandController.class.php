@@ -41,6 +41,8 @@ class MobileDeviceCommandController {
 	private function getRessourceRecursiveByMobileDeviceId($mdId, $callable) {
 		$resources = [];
 		foreach($this->db->selectAllMobileDeviceGroupByMobileDeviceId($mdId) as $mdg) {
+			$newResources = [];
+
 			$currentGroup = $mdg;
 			$currentGroupId = $mdg->getId();
 			while($currentGroupId) {
@@ -48,13 +50,18 @@ class MobileDeviceCommandController {
 				if(!$currentGroup instanceof Models\IHierarchicalGroup)
 					throw new \Exception('Group object does not conform to IHierarchicalGroup');
 
-				$resources = array_merge(
-					$resources,
-					call_user_func($callable, $currentGroupId)
-				);
+				foreach(call_user_func($callable, $currentGroupId) as $newRessource) {
+					// ensure that array key is a string for array_merge logic!
+					$key = ':'.$newRessource->id;
+					// do not override ressources from parent groups!
+					if(!isset($newResources[$key]))
+						$newResources[$key] = $newRessource;
+				}
 
 				$currentGroupId = $currentGroup->getParentId();
 			}
+
+			$resources = array_merge($resources, $newResources);
 		}
 		return $resources;
 	}
