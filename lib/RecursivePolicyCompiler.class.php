@@ -20,84 +20,52 @@ class RecursivePolicyCompiler {
 			$manifestationType = self::MANIFESTATION_MACOS;
 		elseif($computer->getOsType() == Models\Computer::OS_TYPE_WINDOWS)
 			$manifestationType = self::MANIFESTATION_WINDOWS;
-		else
-			throw new \RuntimeException('Unknown OS type!');
 		return $manifestationType;
 	}
 
-	function getManifestationsForComputer(Models\Computer $computer) {
+	function getPoliciesForComputer(Models\Computer $computer, bool $manifestation) {
 		$manifestationType = $this->getManifestationTypeByComputer($computer);
+		if(!$manifestationType) return [];
 		$policies = [];
 		// process default domain policy
 		foreach($this->db->selectAllPolicyObjectItemByComputerGroup(null) as $policy) {
-			if(empty($policy->$manifestationType)) continue;
-			$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
-		}
-		// process computer group assigned policies
-		foreach($this->db->selectAllComputerGroupByComputerId($computer->id) as $cg) {
-			$policies = array_merge(
-				$policies,
-				$this->getPoliciesForGroup($cg, true, $manifestationType)
-			);
-		}
-		return $policies;
-	}
-	function getPoliciesForComputer(Models\Computer $computer) {
-		$manifestationType = $this->getManifestationTypeByComputer($computer);
-		$policies = [];
-		// process default domain policy
-		foreach($this->db->selectAllPolicyObjectItemByComputerGroup(null) as $policy) {
-			if(empty($policy->$manifestationType))
-				$policy->incompatible = true;
+			if(empty($policy->$manifestationType)) $policy->incompatible = true;
 			$policies[':'.$policy->id] = $policy;
 		}
 		// process computer group assigned policies
 		foreach($this->db->selectAllComputerGroupByComputerId($computer->id) as $cg) {
 			$policies = array_merge(
 				$policies,
-				$this->getPoliciesForGroup($cg, false, $manifestationType)
+				$this->getPoliciesForGroup($cg, $manifestationType)
 			);
 		}
+		if($manifestation)
+			return $this->compileManifestation($policies, $manifestationType);
 		return $policies;
 	}
 
-	function getManifestationsForDomainUserOnComputer(Models\DomainUser $du, Models\Computer $computer) {
+	function getPoliciesForDomainUserOnComputer(Models\DomainUser $du, Models\Computer $computer, bool $manifestation) {
 		$manifestationType = $this->getManifestationTypeByComputer($computer);
+		if(!$manifestationType) return [];
 		$policies = [];
 		// process default domain policy
 		foreach($this->db->selectAllPolicyObjectItemByDomainUserGroup(null) as $policy) {
-			if(empty($policy->$manifestationType)) continue;
-			$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
-		}
-		// process user group assigned policies
-		foreach($this->db->selectAllDomainUserGroupByDomainUserId($du->id) as $dug) {
-			$policies = array_merge(
-				$policies,
-				$this->getPoliciesForGroup($dug, true, $manifestationType)
-			);
-		}
-		return $policies;
-	}
-	function getPoliciesForDomainUserOnComputer(Models\DomainUser $du, Models\Computer $computer) {
-		$manifestationType = $this->getManifestationTypeByComputer($computer);
-		$policies = [];
-		// process default domain policy
-		foreach($this->db->selectAllPolicyObjectItemByDomainUserGroup(null) as $policy) {
-			if(empty($policy->$manifestationType))
-				$policy->incompatible = true;
+			if(empty($policy->$manifestationType)) $policy->incompatible = true;
 			$policies[':'.$policy->id] = $policy;
 		}
 		// process user group assigned policies
 		foreach($this->db->selectAllDomainUserGroupByDomainUserId($du->id) as $dug) {
 			$policies = array_merge(
 				$policies,
-				$this->getPoliciesForGroup($dug, false, $manifestationType)
+				$this->getPoliciesForGroup($dug, $manifestationType)
 			);
 		}
+		if($manifestation)
+			return $this->compileManifestation($policies, $manifestationType);
 		return $policies;
 	}
 
-	function getPoliciesForGroup(Models\HierarchicalGroup $group, bool $manifestation, string $manifestationType) {
+	private function getPoliciesForGroup(Models\HierarchicalGroup $group, string $manifestationType) {
 		$policies = [];
 		$currentGroup = $group;
 		$currentGroupId = $group->getId();
@@ -111,12 +79,14 @@ class RecursivePolicyCompiler {
 			elseif($group instanceof Models\DomainUserGroup)
 				$items = $this->db->selectAllPolicyObjectItemByDomainUserGroup($currentGroupId);
 			foreach($items as $policy) {
-				if($manifestation) {
-					if(empty($policy->$manifestationType)) continue;
-					$policies = $this->compileManifestation($policies, $policy->$manifestationType, $policy->options, $policy->value);
-				} else {
-					$policies[':'.$policy->id] = $policy;
-				}
+				// check compatibility
+				if(empty($policy->$manifestationType))
+					$policy->incompatible = true;
+				// ensure that array key is a string for array_merge logic!
+				$key = ':'.$policy->id;
+				// do not override policy with policy from a parent group!
+				if(!isset($policies[$key]))
+					$policies[$key] = $policy;
 			}
 
 			$currentGroupId = $currentGroup->getParentId();
@@ -124,20 +94,22 @@ class RecursivePolicyCompiler {
 		return $policies;
 	}
 
-	private function compileManifestation($existingPolicies, $newManifestation, $newOptions, $newValue) {
-		foreach(explode("\n", $newManifestation) as $manifestation) {
-			// do not override policy with policy from a parent group!
-			if(array_key_exists($manifestation, $existingPolicies)) continue;
-			// determine data type to return (string, int, list/array, dict)
-			if($newOptions == 'LIST' || $newOptions == 'DICT')
-				$existingPolicies[$manifestation] = json_decode($newValue, true);
-			else if(is_numeric($newValue)
-			&& (substr($newOptions, 0, 3) == 'INT' || in_array($newValue, json_decode($newOptions, true) ?? [])))
-				$existingPolicies[$manifestation] = intval($newValue);
-			else
-				$existingPolicies[$manifestation] = strval($newValue);
+	private function compileManifestation(array $policies, string $manifestationType) {
+		$manifestations = [];
+		foreach($policies as $policy) {
+			foreach(explode("\n", $policy->$manifestationType) as $manifestation) {
+				if(empty($manifestation)) continue;
+				// determine data type to return (string, int, list/array, dict)
+				if($policy->options == 'LIST' || $policy->options == 'DICT')
+					$manifestations[$manifestation] = json_decode($policy->value, true);
+				else if(is_numeric($policy->value)
+				&& (substr($policy->options, 0, 3) == 'INT' || in_array($policy->value, json_decode($policy->options, true) ?? [])))
+					$manifestations[$manifestation] = intval($policy->value);
+				else
+					$manifestations[$manifestation] = strval($policy->value);
+			}
 		}
-		return $existingPolicies;
+		return $manifestations;
 	}
 
 }

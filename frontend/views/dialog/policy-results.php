@@ -9,11 +9,11 @@ try {
 	if((!empty($_GET['computer_id']) && is_array($_GET['computer_id']))) {
 		$computer = $cl->getComputer($_GET['computer_id'][0]);
 		$rpc = new RecursivePolicyCompiler($db);
-		$computerPolicies = $rpc->getPoliciesForComputer($computer);
+		$computerPolicies = $rpc->getPoliciesForComputer($computer, false);
 
 		if((!empty($_GET['domain_user_id']) && is_array($_GET['domain_user_id']))) {
 			$domainUser = $cl->getDomainUser($_GET['domain_user_id'][0]);
-			$domainUserPolicies = $rpc->getPoliciesForDomainUserOnComputer($domainUser, $computer);
+			$domainUserPolicies = $rpc->getPoliciesForDomainUserOnComputer($domainUser, $computer, false);
 		}
 	}
 } catch(PermissionException $e) {
@@ -129,7 +129,7 @@ function getPolicyValue($pd) {
 	$translations = $db->selectAllPolicyTranslationByLanguage(LanguageController::getSingleton()->getCurrentLangCode());
 ?>
 
-	<?php if($computer) { ?>
+	<?php if($computer ?? null) { ?>
 		<h3><?php echo htmlspecialchars($computer->hostname); ?></h3>
 		<?php $content = getContents(null, Models\PolicyDefinition::CLASS_MACHINE); ?>
 		<?php if(empty($content)) { ?>
@@ -141,7 +141,7 @@ function getPolicyValue($pd) {
 		<?php } ?>
 	<?php } ?>
 
-	<?php if($domainUser) { ?>
+	<?php if($domainUser ?? null) { ?>
 		<h3><?php echo htmlspecialchars($domainUser->displayNameWithUsername()); ?></h3>
 		<?php $content = getContents(null, Models\PolicyDefinition::CLASS_USER); ?>
 		<?php if(empty($content)) { ?>

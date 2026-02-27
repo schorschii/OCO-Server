@@ -380,12 +380,12 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			// deploy policies for machine and the specific users on the machine only
 			$rpc = new RecursivePolicyCompiler($db);
 			$policies = [
-				'machine' => $rpc->getManifestationsForComputer($computer),
+				'machine' => $rpc->getPoliciesForComputer($computer, true),
 			];
 			foreach($db->selectAllDomainUserLogonByComputerId($computer->id) as $logon) {
 				$du = $db->selectDomainUserByUid($logon->domain_user_uid);
 				if(!$du || empty($du->uid)) continue;
-				$policies[$du->uid] = $rpc->getManifestationsForDomainUserOnComputer($du, $computer);
+				$policies[$du->uid] = $rpc->getPoliciesForDomainUserOnComputer($du, $computer, true);
 			}
 
 			$resdata['error'] = null;
