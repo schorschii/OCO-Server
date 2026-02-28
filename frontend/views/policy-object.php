@@ -147,6 +147,9 @@ function getPolicyInput($pd) {
 		<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?>
 	</button>
 	<span class='filler'></span>
+	<button onclick='showDialogPolicyObjectOverview(<?php echo $policyObject->id; ?>, obj("page-title").innerText)'>
+		<img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('show_content'); ?>
+	</button>
 </div>
 <span id='spnPolicyObjectId' class='hidden'><?php echo $policyObject->id; ?></span>
 
@@ -157,6 +160,9 @@ function getPolicyInput($pd) {
 		</a>
 		<a href='#' name='user' class='<?php if($tab=='user') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPolicyObject,this.getAttribute("name"))'>
 			<?php echo LANG('user_policies'); ?>
+		</a>
+		<a href='#' name='groups' class='<?php if($tab=='groups') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPolicyObject,this.getAttribute("name"))'>
+			<?php echo LANG('groups'); ?>
 		</a>
 	</div>
 	<div class='tabcontents'>
@@ -181,6 +187,40 @@ function getPolicyInput($pd) {
 					<?php echo $content; ?>
 				</ul>
 			<?php } ?>
+		</div>
+
+		<div name='groups' class='<?php if($tab=='groups') echo 'active'; ?>'>
+			<div class='details-abreast'>
+				<div>
+					<h2><?php echo LANG('computer_groups'); ?></h2>
+					<ul>
+					<?php
+					foreach($db->selectAllComputerGroupByPolicyObject($policyObject->id) as $group) {
+						echo "<li class='subbuttons'>";
+						echo "<a ".Html::explorerLink('views/computers.php?id='.$group->id).">"
+						.Html::wrapInSpanIfNotEmpty($group->id?$group->getBreadcrumbString():LANG('default_domain_policy'))."</a>";
+						echo "<button class='removeFromComputerGroup' policy_object_id='".$policyObject->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
+						echo "</li>";
+					}
+					?>
+					</ul>
+				</div>
+
+				<div>
+					<h2><?php echo LANG('package_groups'); ?></h2>
+					<ul>
+					<?php
+					foreach($db->selectAllDomainUserGroupByPolicyObject($policyObject->id) as $group) {
+						echo "<li class='subbuttons'>";
+						echo "<a ".Html::explorerLink('views/domain-users.php?id='.$group->id).">"
+							.Html::wrapInSpanIfNotEmpty($group->id?$group->getBreadcrumbString():LANG('default_domain_policy'))."</a>";
+						echo "<button class='removeFromDomainUserGroup' policy_object_id='".$policyObject->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>";
+						echo "</li>";
+					}
+					?>
+					</ul>
+				</div>
+			</div>
 		</div>
 
 	</div>
@@ -280,4 +320,36 @@ btnSave.addEventListener('click', (e) => {
 		emitMessage(LANG['saved'], '', MESSAGE_TYPE_SUCCESS);
 	});
 });
+
+// init remove from group buttons
+let removeButtonsComputerGroup = tabControlPolicyObject.querySelectorAll('button.removeFromComputerGroup');
+for(let i=0; i<removeButtonsComputerGroup.length; i++) {
+	removeButtonsComputerGroup[i].addEventListener('click', (e) => {
+		e.preventDefault(); e.stopPropagation();
+		if(!confirm(LANG['are_you_sure'])) return;
+		var params = [];
+		params.push({'key':'remove_from_computer_group_id', 'value':e.srcElement.getAttribute('group_id')});
+		params.push({'key':'policy_object_id', 'value':e.srcElement.getAttribute('policy_object_id')});
+		var paramString = urlencodeArray(params);
+		ajaxRequestPost('ajax-handler/policy-objects.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+		});
+	});
+}
+let removeButtonsDomainUserGroup = tabControlPolicyObject.querySelectorAll('button.removeFromDomainUserGroup');
+for(let i=0; i<removeButtonsDomainUserGroup.length; i++) {
+	removeButtonsDomainUserGroup[i].addEventListener('click', (e) => {
+		e.preventDefault(); e.stopPropagation();
+		if(!confirm(LANG['are_you_sure'])) return;
+		var params = [];
+		params.push({'key':'remove_from_domain_user_group_id', 'value':e.srcElement.getAttribute('group_id')});
+		params.push({'key':'policy_object_id', 'value':e.srcElement.getAttribute('policy_object_id')});
+		var paramString = urlencodeArray(params);
+		ajaxRequestPost('ajax-handler/policy-objects.php', paramString, null, function() {
+			refreshContent();
+			emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+		});
+	});
+}
 </script>

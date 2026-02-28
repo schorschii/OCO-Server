@@ -1114,16 +1114,16 @@ table.list ul {
 	margin: 0;
 	padding-left: 14px;
 }
-table.list ul li.subbuttons {
+ul li.subbuttons {
 	position: relative;
 	padding-left: 2px;
 }
-table.list ul li.subbuttons > button {
+ul li.subbuttons > button {
 	position: absolute;
 	top: 4px;
 	left: -18px;
 }
-table.list ul li.subbuttons:hover {
+ul li.subbuttons:hover {
 	list-style-type: none;
 }
 
