@@ -155,28 +155,22 @@ function getPolicyValue($pd) {
 
 <?php } else { ?>
 
-<table class='fullwidth aligned'>
-	<tr>
-		<td>
-			<div class='gallery computerSelection'>
-				<div>
-					<?php require('../partial/computer-selection.php'); ?>
-				</div>
-			</div>
-		</td>
-		<td>
-			<div class='gallery domainUserSelection'>
-				<div>
-					<?php require('../partial/domain-user-selection.php'); ?>
-				</div>
-			</div>
-		</td>
-	</tr>
-</table>
+<div class='dialogStretch'>
 
-<div class='controls right'>
-	<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
-	<button class='primary' name='generate'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('generate'); ?></button>
+	<div class='details-abreast'>
+		<div class='fillHeight computerSelection'>
+			<?php require('../partial/computer-selection.php'); ?>
+		</div>
+		<div class='fillHeight domainUserSelection'>
+			<?php require('../partial/domain-user-selection.php'); ?>
+		</div>
+	</div>
+
+	<div class='controls right'>
+		<button class='dialogClose'><img src='img/close.dyn.svg'>&nbsp;<?php echo LANG('close'); ?></button>
+		<button class='primary' name='generate'><img src='img/send.white.svg'>&nbsp;<?php echo LANG('generate'); ?></button>
+	</div>
+
 </div>
 
 <?php } ?>

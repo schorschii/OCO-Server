@@ -1055,7 +1055,7 @@ function deploySelectedPackage(checkboxName, attributeName=null) {
 	});
 }
 function showDialogAddPackageDependency(packageId, reverse=false) {
-	showDialogAjax(LANG['computer_groups'], 'views/dialog/package-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+	showDialogAjax(LANG['computer_groups'], 'views/dialog/package-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_LARGE, function(dialogContainer){
 		initSelectionBox(dialogContainer.querySelectorAll('.packageSelection')[0]);
 		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
 			if(reverse) {
@@ -1107,7 +1107,7 @@ function addDependantPackage(dialogContainer, packageId, packageIds) {
 function showDialogAssignPackageComputer(packageId) {
 	if(!confirm(LANG['manual_computer_package_assignment_confirmation']))
 		return;
-	showDialogAjax(LANG['computer_groups'], 'views/dialog/computer-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+	showDialogAjax(LANG['computer_groups'], 'views/dialog/computer-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_LARGE, function(dialogContainer){
 		initSelectionBox(dialogContainer.querySelectorAll('.computerSelection')[0]);
 		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
 			assignPackageComputer(
@@ -1908,7 +1908,7 @@ function addComputerToGroup(dialogContainer, computerId, groupId) {
 function showDialogAssignComputerPackage(computerId) {
 	if(!confirm(LANG['manual_computer_package_assignment_confirmation']))
 		return;
-	showDialogAjax(LANG['computer_groups'], 'views/dialog/package-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+	showDialogAjax(LANG['computer_groups'], 'views/dialog/package-select.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_LARGE, function(dialogContainer){
 		initSelectionBox(dialogContainer.querySelectorAll('.packageSelection')[0]);
 		dialogContainer.querySelectorAll('button[name=assign]')[0].addEventListener('click', (e)=>{
 			assignComputerPackage(
@@ -2531,7 +2531,7 @@ function showDialogPolicyObjectOverview(id, title='') {
 	showDialogAjax(title, 'views/dialog/policy-object-overview.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE);
 }
 function showDialogPolicyResultSet() {
-	showDialogAjax(LANG['generate_result_set'], 'views/dialog/policy-results.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+	showDialogAjax(LANG['generate_result_set'], 'views/dialog/policy-results.php', DIALOG_BUTTONS_NONE, DIALOG_SIZE_LARGE, function(dialogContainer){
 		let computerSelection = dialogContainer.querySelectorAll('.computerSelection')[0];
 		let domainUserSelection = dialogContainer.querySelectorAll('.domainUserSelection')[0];
 		initSelectionBox(computerSelection);
@@ -2552,7 +2552,7 @@ function showDialogPolicyResultSet() {
 				emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
 				return;
 			}
-			showDialogAjax(LANG['generate_result_set'], 'views/dialog/policy-results.php?'+urlencodeArray(params), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO);
+			showDialogAjax(LANG['generate_result_set'], 'views/dialog/policy-results.php?'+urlencodeArray(params), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE);
 			dialogContainer.close();
 		});
 	});

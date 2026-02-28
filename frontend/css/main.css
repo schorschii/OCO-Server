@@ -462,6 +462,31 @@ h3 {
 	top: -16px; right: -16px;
 	border-radius: 999px;
 }
+.dialogStretch {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	overflow-x: hidden;
+}
+.dialogStretch > * {
+	flex-grow: 1;
+	flex-basis: 100px;
+}
+.dialogStretch .fillHeight {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+.dialogStretch .fillHeight > * {
+	flex-grow: 0;
+}
+.dialogStretch .fillHeight > .listItems {
+	flex-grow: 1;
+}
+.dialogStretch > .controls {
+	flex-grow: 0;
+	flex-basis: 10px;
+}
 .first {
 	margin-top: 0px;
 }
