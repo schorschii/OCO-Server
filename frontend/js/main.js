@@ -3404,12 +3404,12 @@ function removeProfileFromGroup(dialogContainer, ids, groupId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_profile_id[]', 'value':entry});
 	});
-	setInputsDisabled(dialogContainer, true);
+	if(dialogContainer) setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
-		dialogContainer.close(); refreshContent();
+		if(dialogContainer) dialogContainer.close(); refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	}, function() {
-		setInputsDisabled(dialogContainer, false);
+		if(dialogContainer) setInputsDisabled(dialogContainer, false);
 	});
 }
 function showDialogAssignedManagedAppInfo(groupId, managedAppId) {
@@ -3428,12 +3428,12 @@ function removeManagedAppFromGroup(dialogContainer, ids, groupId) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_from_group_managed_app_id[]', 'value':entry});
 	});
-	setInputsDisabled(dialogContainer, true);
+	if(dialogContainer) setInputsDisabled(dialogContainer, true);
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
-		dialogContainer.close(); refreshContent();
+		if(dialogContainer) dialogContainer.close(); refreshContent();
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	}, function() {
-		setInputsDisabled(dialogContainer, false);
+		if(dialogContainer) setInputsDisabled(dialogContainer, false);
 	});
 }
 

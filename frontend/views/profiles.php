@@ -39,14 +39,17 @@ try {
 		<tbody>
 		<?php
 		foreach($profilesIos as $p) {
-			$groupLinks = [];
-			foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
-				$groupLinks[] = "<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
 			echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
 			echo "<td>".htmlspecialchars($p->created)."</td>";
-			echo "<td>".implode("<br>", $groupLinks)."</td>";
+			echo "<td><ul>";
+			foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
+				echo "<li class='subbuttons'>"
+					."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
+					."<button onclick='removeProfileFromGroup(null, [this.getAttribute(\"profile_id\")], this.getAttribute(\"group_id\"))' profile_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+					."</li>";
+			echo "</ul></td>";
 			echo "<td>"
 				."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText, \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
 				."<button class='small' title='".LANG('edit')."' onclick='showDialogEditProfile(\"".Models\Profile::TYPE_IOS."\", ".$p->id.")'><img src='img/edit.dyn.svg'></button>"
@@ -90,14 +93,17 @@ try {
 		<tbody>
 		<?php
 		foreach($profilesAndroid as $p) {
-			$groupLinks = [];
-			foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
-				$groupLinks[] = "<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
 			echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
 			echo "<td>".htmlspecialchars($p->created)."</td>";
-			echo "<td>".implode("<br>", $groupLinks)."</td>";
+			echo "<td><ul>";
+			foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
+				echo "<li class='subbuttons'>"
+					."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
+					."<button onclick='removeProfileFromGroup(null, [this.getAttribute(\"profile_id\")], this.getAttribute(\"group_id\"))' profile_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+					."</li>";
+			echo "</ul></td>";
 			echo "<td>"
 				."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText, \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
 				."<button class='small' title='".LANG('edit')."' onclick='showDialogEditProfile(\"".Models\Profile::TYPE_ANDROID."\", ".$p->id.")'><img src='img/edit.dyn.svg'></button>"

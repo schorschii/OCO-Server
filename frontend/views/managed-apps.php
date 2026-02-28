@@ -39,14 +39,17 @@ try {
 		<tbody>
 		<?php
 		foreach($iosApps as $a) {
-			$groupLinks = [];
-			foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
-				$groupLinks[] = "<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='managed_app_ios_id[]' value='".$a->id."'></td>";
 			echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";
 			echo "<td>".htmlspecialchars($a->vpp_amount??'-')."</td>";
-			echo "<td>".implode("<br>", $groupLinks)."</td>";
+			echo "<td><ul>";
+			foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
+				echo "<li class='subbuttons'>"
+					."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
+					."<button onclick='removeManagedAppFromGroup(null, [this.getAttribute(\"managed_app_id\")], this.getAttribute(\"group_id\"))' managed_app_id='".$a->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+					."</li>";
+			echo "</ul></td>";
 			echo "</tr>";
 		}
 		?>
@@ -85,9 +88,6 @@ try {
 		<tbody>
 		<?php
 		foreach($androidApps as $a) {
-			$groupLinks = [];
-			foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
-				$groupLinks[] = "<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->name)."</a>";
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='managed_app_android_id[]' value='".$a->id."'></td>";
 			echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";
@@ -96,7 +96,13 @@ try {
 			foreach($a->getConfigurations() as $cId => $cName) {
 				echo "<div><a href='#' onclick='event.preventDefault(); showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\", \"".htmlspecialchars($a->id)."\", \"".htmlspecialchars($cId)."\" )'>".htmlspecialchars($cName)."</a></div>";
 			}
-			echo "<td>".implode("<br>", $groupLinks)."</td>";
+			echo "<td><ul>";
+			foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
+				echo "<li class='subbuttons'>"
+					."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
+					."<button onclick='removeManagedAppFromGroup(null, [this.getAttribute(\"managed_app_id\")], this.getAttribute(\"group_id\"))' managed_app_id='".$a->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+					."</li>";
+			echo "</ul></td>";
 			echo "</td>";
 			echo "</tr>";
 		}
