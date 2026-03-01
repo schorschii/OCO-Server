@@ -9,7 +9,8 @@
 				<a href="https://github.com/schorschii/oco-server">Source Code on Github</a>
 				<a href="https://github.com/schorschii/oco-server/issues">Issue Tracker</a>
 				<a href="licenses.php">Enterprise Licenses</a>
-				<a href="https://georg-sieber.de/?page=contact">Commercial Support</a>
+				<a href="https://georg-sieber.de/contact">Commercial Support</a>
+				<a href="training.php">Training</a>
 			</div>
 			<div>
 				<div class="headline">More Open Source Software</div>
@@ -22,7 +23,7 @@
 			<div>
 				<div class="headline">About</div>
 				<a href="https://georg-sieber.de/">Developer Homepage</a>
-				<a href="https://georg-sieber.de/?page=impressum">Imprint</a>
+				<a href="https://georg-sieber.de/impressum">Imprint</a>
 			</div>
 		</div>
 		<div id="footerbottom">

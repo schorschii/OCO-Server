@@ -24,10 +24,10 @@ try {
 			$_GET['paypalresult'], $_GET['paymentId']??'', $_GET['PayerID']??'',
 			'Your OCO License File',
 			'Thank you for purchasing OCO licenses. You will find your license file in the attachment.'."\n"
-			. 'Please import this file into your OCO installation (Settings > License menu).'."\n"
+			. 'Please import this file into your OCO installation (Settings > Configuration overview > License).'."\n"
 		);
 		$info = 'Thank you for your order! You will receive the license file automatically by email in just a few minutes to '.$values['email'].'. '
-		. 'If you have any questions, please use the <a href="https://georg-sieber.de/?page=contact">contact form</a>.';
+		. 'If you have any questions, please use the <a href="https://georg-sieber.de/contact">contact form</a>.';
 		$infoclass = 'ok';
 	}
 } catch(PaymentCanceledException $ex) {
@@ -66,10 +66,10 @@ try {
 
 <h2>Purchase OCO Licenses</h2>
 <p>
-	OCO can be used free of charge for <?php echo OcoPurchase::FREE_OBJECTS; ?> managed devices. For additional devices, enterprise licenses are required, which you can purchase here directly via PayPal. Payment by SEPA bank transfer or individual conditions are possible upon request. In this case, please use the <a href='https://georg-sieber.de/?page=contact'>contact form</a>.
+	OCO can be used free of charge for <?php echo OcoPurchase::FREE_OBJECTS; ?> managed devices. For additional devices, enterprise licenses are required, which you can purchase here directly via PayPal. Payment by SEPA bank transfer or individual conditions are possible upon request. In this case, please <a href='https://georg-sieber.de/impressum'>contact sales</a>.
 </p>
 <p>
-	After completing the purchase, you will receive a license file by email, which you can import into your OCO installation in the menu "Settings" > "Configuration overview" > "License".
+	After completing the purchase, you will receive a license file by email, which you can import into your OCO installation.
 </p>
 <form method='POST'>
 	<input type='hidden' name='action' value='order'>

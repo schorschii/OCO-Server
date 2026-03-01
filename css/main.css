@@ -106,6 +106,18 @@ div.testimonial a {
 	flex-shrink: 0;
 	width: 40%;
 }
+div.prices {
+	display: grid;
+	justify-items: center;
+	align-items: center;
+	gap: 15px;
+	grid-template-columns: 2fr 1fr;
+}
+div.prices .price {
+	font-weight: bold;
+	font-size: 105%;
+	text-align: center;
+}
 
 img {
 	max-width: 100%;
