@@ -14,7 +14,7 @@
 	<div id="maincontent">
 		<div id="body">
 
-			<div id="downloads">
+			<div class="actionmenu">
 				<a href="https://github.com/schorschii/OCO-Server/releases">Download Server</a>
 				<a href="https://github.com/schorschii/OCO-Server/blob/master/docs/README.md">Documentation & Installation Guide</a>
 				<a href="https://github.com/schorschii/OCO-Agent/releases">Download Agent</a>

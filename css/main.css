@@ -81,9 +81,6 @@ h5 {
 a.gallery {
 	display: inline-flex;
 	padding: 6px !important;
-	transition: background-color 0.2s ease !important;
-	background-image: none !important;
-	background-color: rgb(250,250,250);
 }
 a.gallery img, a.gallery video {
 	width: 100%;
@@ -189,15 +186,62 @@ img {
 #menu > a:active {
 	opacity: 0.6;
 }
-#downloads {
-	text-align: center;
-	font-weight: bold;
-	font-size: 120%;
-	margin-bottom: 3em;
+
+a {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	text-decoration: none;
+	border-color: transparent;
+	color: #0079B8;
 }
-#downloads a {
+a:hover:not(.nostyle),
+a:focus:not(.nostyle),
+a:active:not(.nostyle) {
+	border-color: #0079B8;
+}
+.actionmenu {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	gap: 12px;
+	margin: 6px;
+}
+.actionmenu a {
+	flex-shrink: 1;
+	flex-grow: 0;
 	display: inline-block;
-	padding: 0px 8px;
+	padding: 6px 0px;
+	text-transform: uppercase;
+	border-bottom-width: 4px;
+	text-decoration: none;
+	letter-spacing: 0.2px;
+	font-size: 115%;
+}
+
+
+input:not([type=checkbox]), textarea, button {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+
+	font-family: inherit;
+	font-size: inherit;
+	color: inherit;
+	background-color: inherit;
+	border: none;
+	border-bottom: 4px solid rgb(200,200,200);
+	padding-bottom: 5px;
+	outline: none;
+}
+input:focus, input:active, textarea:focus, textarea:active,
+input[type=submit]:hover, button:hover {
+	border-color: #0079B8;
+}
+input[type=submit], button {
+	cursor: pointer;
+}
+button > * {
+	vertical-align: middle;
 }
 
 
@@ -300,11 +344,6 @@ table th {
 }
 
 
-.quote {
-	font-style: italic;
-	border-left: 1px solid #0F7C9D;
-	padding: 1% 4%;
-}
 code {
 	background-color: rgba(150,150,150,0.2);
 	border-radius: 4px;
@@ -316,51 +355,6 @@ code.block {
 	display: block;
 	overflow: auto;
 	max-height: 800px;
-}
-
-
-input:not([type=checkbox]), textarea, button {
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-
-	font-family: inherit;
-	font-size: inherit;
-	color: inherit;
-	background-color: inherit;
-	border: 1px solid rgb(200,200,200);
-	border-radius: 4px;
-	padding: 5px;
-	outline: none;
-}
-input:focus, input:active, textarea:focus, textarea:active {
-	border: 1px solid rgb(15,124,157);
-}
-
-a:not(.nostyle), button, input[type=submit] {
-	cursor: pointer;
-	border: 0px solid transparent;
-	padding: 0px 2px 0px 2px;
-	color: rgb(5,89,114);
-	background-color: transparent;
-	text-decoration: none;
-	background-image: linear-gradient(to bottom, rgb(15,124,157) 0%, rgb(15,124,157) 100%);
-	background-repeat: no-repeat;
-	background-size: calc(100% - 4px) 1px;
-	background-position: 2px 100%;
-	transition: background-size 0.25s ease, background-position 0.25s ease, color 0.25s ease;
-}
-button, input[type=submit] {
-	padding: 5px;
-}
-button > * {
-	vertical-align: middle;
-}
-a:not(.nostyle):hover, button:hover, input[type=submit]:hover {
-	border-radius: 2px;
-	color: white;
-	background-size: 100% 100%;
-	background-position: 0px 100%;
 }
 
 
@@ -447,10 +441,6 @@ a:not(.nostyle):hover, button:hover, input[type=submit]:hover {
 	}
 	#maincontent #body {
 		color: rgba(255,255,255,0.90);
-	}
-	a:not(.nostyle), button, input[type=submit] {
-		color: #2A85BA;
-		background-image: linear-gradient(to bottom, #2A85BA 0%, #2A85BA 100%);
 	}
 	#maincontent #header h1 {
 		color: #2A85BA;

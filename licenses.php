@@ -56,7 +56,7 @@ try {
 	<div id="maincontent">
 		<div id="body">
 
-			<div id="downloads">
+			<div class="actionmenu">
 				<a href="/">Homepage</a>
 			</div>
 
