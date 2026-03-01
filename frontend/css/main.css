@@ -1277,7 +1277,7 @@ a.subbuttons > button {
 	display: block;
 }
 .actionmenu a:hover,
-.actionemnu a:focus,
+.actionmenu a:focus,
 .actionmenu a:active,
 .tabbuttons a.active {
 	border-color: #0079B8;
