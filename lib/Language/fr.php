@@ -243,7 +243,7 @@ return [
 	'renew' => 'Relancer',
 	'jobs_renewed' => 'Tâches relancées',
 	'no_failed_jobs' => 'Aucune tâche en échec (dans votre sélection) n\'a été trouvée',
-	'default_motd' => 'La documentation ainsi que le bug tracker sont disponible ici <a href="https://github.com/schorschii/OCO-Server" target="_blank">Github</a> - Vos avis et demandes sont les bienvenues!<br>Si vous avez des questions vous pouvez aussi <a href="https://georg-sieber.de/?page=impressum" target="_blank">obtenir un support professionnel</a>.<br><br>Veuillez aussi consulter la nouvelle <a href="https://github.com/schorschii/oco-server/blob/master/docs/Client-API.md" target="_blank">JSON-RPC-API</a>.',
+	'default_motd' => 'La documentation ainsi que le bug tracker sont disponible ici <a href="https://github.com/schorschii/OCO-Server" target="_blank">Github</a> - Vos avis et demandes sont les bienvenues!<br>Si vous avez des questions vous pouvez aussi <a href="https://georg-sieber.de/impressum" target="_blank">obtenir un support professionnel</a>.<br><br>Veuillez aussi consulter la nouvelle <a href="https://github.com/schorschii/oco-server/blob/master/docs/Client-API.md" target="_blank">JSON-RPC-API</a>.',
 	'report_secureboot_disabled' => 'SecureBoot Désactivé',
 	'report_packages_without_installations' => 'Paquets sans installations',
 	'report_recognized_software_chrome' => 'Logiciels Chrome reconnus',
