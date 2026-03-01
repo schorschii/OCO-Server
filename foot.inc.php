@@ -6,7 +6,7 @@
 			</div>
 			<div>
 				<div class="headline">Support</div>
-				<a href="https://github.com/schorschii/oco-server">OCO Project on Github</a>
+				<a href="https://github.com/schorschii/oco-server">Source Code on Github</a>
 				<a href="https://github.com/schorschii/oco-server/issues">Issue Tracker</a>
 				<a href="licenses.php">Enterprise Licenses</a>
 				<a href="https://georg-sieber.de/?page=contact">Commercial Support</a>
@@ -17,7 +17,6 @@
 				<a href="https://github.com/schorschii/MASTERPLAN">MASTERPLAN</a>
 				<a href="https://github.com/schorschii/LAPS4LINUX">LAPS4LINUX</a>
 				<a href="https://github.com/slub/switchconfig">Switchconfig</a>
-				<a href="https://github.com/schorschii/Jabber4Linux">Jabber4Linux</a>
 				<a href="https://github.com/schorschii">... even more on the GitHub Profile</a>
 			</div>
 			<div>
