@@ -55,6 +55,8 @@ In the 'Procedure' fields, you define which commands should be executed when ins
 
 After that, you can enter the exit/return codes which should be considered as success (multiple return codes have to be separated by a comma `,`). If you leave the return code field blank, all return codes are considered as success (this is not recommended - keep `0` if you are unsure, this is normally the return code for success). But for example, MSI packages can also return `3010` if the installation succeeded but a reboot is required (see [list of MSI return codes](https://docs.microsoft.com/de-de/windows/win32/msi/error-codes)).
 
+You can also enter a char sequence wich should be used to replace line endings in the install/uninstall procedure (if it contains multiple lines). For Windows, you can use `&` (following commands will be executed in every case), `&&` (following commands will only be executed if the previous succeeded) or `||` (following commands will only be executed if the previous failed). For Linux/macOS shells, use `;`, `&&`, `||` accordingly.
+
 ### Upgrade Behavior
 Choose the correct upgrade behavior for your installation procedure.
 
