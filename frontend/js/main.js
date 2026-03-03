@@ -175,8 +175,9 @@ const DIALOG_SIZE_LARGE     = 0;
 const DIALOG_SIZE_SMALL     = 1;
 const DIALOG_SIZE_AUTO      = 2;
 function newDialog() {
-	let dialogContainer = divDialogTemplate.cloneNode(true);
-	divDialogTemplate.parentNode.insertBefore(dialogContainer, divDialogTemplate.nextSibling)
+	let dialogTemplate = document.getElementById('divDialogTemplate');
+	let dialogContainer = dialogTemplate.cloneNode(true);
+	dialogTemplate.parentNode.insertBefore(dialogContainer, dialogTemplate.nextSibling)
 	return dialogContainer;
 }
 function showDialog(title='', text='', controls=false, size=false, monospace=false, loading=false) {
