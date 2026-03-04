@@ -745,6 +745,7 @@ return [
 	'generate_result_set' => 'Ergebnissatz generieren',
 	'domain_user_selection' => 'Domänenbenutzer-Auswahl',
 	'policy_object' => 'Richtlinienobjekt',
+	'target_computer_required' => 'Es wird ein Zielcomputer benötigt',
 	'manual_computer_package_assignment_confirmation' => 'Computer-Paketzuordnung werden normalerweise automatisch zugewiesen, sobald ein Softwarejob erfolgreich abgeschlossen wurde. Sind Sie sicher, dass die Zuweisungen manuell durchführen möchten?',
 	'replace_line_endings' => 'Zeilumbrüche ersetzen',
 	'replace_line_endings_help' => 'Legen Sie fest, wie mehrere Befehlszeilen verkettet werden sollen:'."\n".'Linux/macOS:   ;   &&   ||'."\n".'Windows:   &   &&   ||',

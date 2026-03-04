@@ -6,13 +6,18 @@ require_once('../../session.inc.php');
 $computerPolicies = null;
 $domainUserPolicies = null;
 try {
+	if(!empty($_GET['domain_user_id']) && empty($_GET['computer_id']))
+		throw new InvalidRequestException(LANG('target_computer_required'));
+
 	if((!empty($_GET['computer_id']) && is_array($_GET['computer_id']))) {
 		$computer = $cl->getComputer($_GET['computer_id'][0]);
+		if(!$computer) throw new NotFoundException();
 		$rpc = new RecursivePolicyCompiler($db);
 		$computerPolicies = $rpc->getPoliciesForComputer($computer, false);
 
 		if((!empty($_GET['domain_user_id']) && is_array($_GET['domain_user_id']))) {
 			$domainUser = $cl->getDomainUser($_GET['domain_user_id'][0]);
+			if(!$domainUser) throw new NotFoundException();
 			$domainUserPolicies = $rpc->getPoliciesForDomainUserOnComputer($domainUser, $computer, false);
 		}
 	}

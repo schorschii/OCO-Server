@@ -750,6 +750,7 @@ return [
 	'generate_result_set' => 'Generate Result Set',
 	'domain_user_selection' => 'Domain User Selection',
 	'policy_object' => 'Policy Object',
+	'target_computer_required' => 'A target computer is required',
 	'manual_computer_package_assignment_confirmation' => 'Computer-Package assignments are normally created automatically after a software job has completed successfully. Are you sure you want to perform the assignment manually?',
 	'replace_line_endings' => 'Replace line endings',
 	'replace_line_endings_help' => 'Specify how multiple command lines should be chained together:'."\n".'Linux/macOS:   ;   &&   ||'."\n".'Windows:   &   &&   ||',
