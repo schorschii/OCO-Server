@@ -743,7 +743,7 @@ return [
 	'option' => 'Option',
 	'computer_policies' => 'Computer Policies',
 	'user_policies' => 'User Policies',
-	'import_policy_definitions_first' => 'You first need to create/import policy definitions (templates).',
+	'import_policy_definitions_first' => 'You first need to create or import policy definitions/templates (<a href="index.php?view=docs&page=Policies.md">Documentation</a>).',
 	'default_domain_policy' => '* Default Domain Policy *',
 	'domain_user_groups' => 'Domain User Groups',
 	'no_policies_defined' => 'No policies defined',

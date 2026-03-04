@@ -738,7 +738,7 @@ return [
 	'option' => 'Option',
 	'computer_policies' => 'Computerrichtlinien',
 	'user_policies' => 'Benutzerrichtlinien',
-	'import_policy_definitions_first' => 'Sie müssen zuerst Richtliniendefinitionen (Vorlagen) erstellen/importieren.',
+	'import_policy_definitions_first' => 'Sie müssen zuerst Richtliniendefinitionen (Vorlagen) erstellen bzw. importieren (<a href="index.php?view=docs&page=Policies.md">Dokumentation</a>).',
 	'default_domain_policy' => '* Standarddomänen-Richtlinie *',
 	'domain_user_groups' => 'Domänenbenutzergruppen',
 	'no_policies_defined' => 'Keine Richtlinien definiert',
