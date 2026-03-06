@@ -58,6 +58,7 @@ function toggleTextBoxMultiLine(element) {
 	if(element.tagName.toLowerCase() == 'input') newTagName = 'textarea';
 	var newElement = document.createElement(newTagName);
 	newElement.id = element.id;
+	newElement.name = element.name;
 	newElement.classList = element.classList;
 	newElement.value = element.value;
 	newElement.placeholder = element.placeholder;
