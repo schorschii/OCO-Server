@@ -99,12 +99,19 @@ class RecursivePolicyCompiler {
 		foreach($policies as $policy) {
 			foreach(explode("\n", $policy->$manifestationType) as $manifestation) {
 				if(empty($manifestation)) continue;
-				// determine data type to return (string, int, list/array, dict)
+				// determine data type
+				// return as list/dict
 				if($policy->options == 'LIST' || $policy->options == 'DICT')
 					$manifestations[$manifestation] = json_decode($policy->value, true);
+				// return as int
 				else if(is_numeric($policy->value)
 				&& (substr($policy->options, 0, 3) == 'INT' || in_array($policy->value, json_decode($policy->options, true) ?? [])))
 					$manifestations[$manifestation] = intval($policy->value);
+				// return as bool
+				else if(($policy->value === 'true' || $policy->value === 'false')
+				&& in_array($policy->value==='true', json_decode($policy->options, true) ?? [], true))
+					$manifestations[$manifestation] = $policy->value==='true';
+				// return as string
 				else
 					$manifestations[$manifestation] = strval($policy->value);
 			}

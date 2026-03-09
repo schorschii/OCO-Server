@@ -121,7 +121,10 @@ function getPolicyInput($pd) {
 	} elseif($options = json_decode($pd->options)) {
 		$html .= "<select class='fullwidth' policy_definition_id='".$pd->id."'>";
 		foreach($options as $option => $value) {
-			$html .= "<option value='".htmlspecialchars($value,ENT_QUOTES)."' ".(($pd->value!==null && $value==$pd->value) ? 'selected' : '').">"
+			$valueValue = $value;
+			if(is_bool($value))
+				$valueValue = $value ? 'true' : 'false';
+			$html .= "<option value='".htmlspecialchars($valueValue,ENT_QUOTES)."' ".(($pd->value!==null && $value==$pd->value) ? 'selected' : '').">"
 				.htmlspecialchars(translatePolicy($option))
 				."</option>";
 		}

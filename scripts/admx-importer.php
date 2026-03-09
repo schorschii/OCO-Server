@@ -352,7 +352,7 @@ function optionsExtract($xmlElement, $admxFileName) {
 			}
 		}
 	} else { // fallback
-		$manifestation1[] = [json_encode(['enabled' => 1, 'disabled' => 0]), null, null];
+		$manifestation1[] = [json_encode(['enabled' => true, 'disabled' => false]), null, null];
 	}
 	if(property_exists($xmlElement, 'elements')) {
 		foreach($xmlElement->elements->children() as $element) {
