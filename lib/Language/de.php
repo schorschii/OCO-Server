@@ -744,6 +744,8 @@ return [
 	'no_policies_defined' => 'Keine Richtlinien definiert',
 	'generate_result_set' => 'Ergebnissatz generieren',
 	'domain_user_selection' => 'Domänenbenutzer-Auswahl',
+	'all_domain_users' => 'Alle Domänenbenutzer',
+	'domain_user_added' => 'Domänenbenutzer hinzugefügt',
 	'policy_object' => 'Richtlinienobjekt',
 	'target_computer_required' => 'Es wird ein Zielcomputer benötigt',
 	'manual_computer_package_assignment_confirmation' => 'Computer-Paketzuordnung werden normalerweise automatisch zugewiesen, sobald ein Softwarejob erfolgreich abgeschlossen wurde. Sind Sie sicher, dass die Zuweisungen manuell durchführen möchten?',

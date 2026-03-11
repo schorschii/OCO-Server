@@ -2113,6 +2113,80 @@ class CoreLogic {
 	}
 
 	/*** Domain User Operations ***/
+	public function getDomainUserGroups($parentId=null) {
+		$domainUserGroupsFiltered = [];
+		foreach($this->db->selectAllDomainUserGroupByParentDomainUserGroupId($parentId) as $domainUserGroup) {
+			if($this->checkPermission($domainUserGroup, PermissionManager::METHOD_READ, false))
+				$domainUserGroupsFiltered[] = $domainUserGroup;
+		}
+		return $domainUserGroupsFiltered;
+	}
+	public function getDomainUserGroup($id) {
+		$group = $this->db->selectDomainUserGroup($id);
+		if(empty($group)) throw new NotFoundException();
+		$this->checkPermission($group, PermissionManager::METHOD_READ);
+		return $group;
+	}
+	public function createDomainUserGroup($name, $parentId=null) {
+		$this->checkPermission(new Models\DomainUserGroup(), PermissionManager::METHOD_CREATE);
+		if(empty(trim($name))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+
+		$insertId = $this->db->insertDomainUserGroup($name, $parentId);
+		if(!$insertId) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $insertId, 'oco.domain_user_group.create', [
+			'name'=>$name,
+			'parent_domain_user_group_id'=>$parentId,
+		]);
+		return $insertId;
+	}
+	public function renameDomainUserGroup($id, $newName) {
+		$group = $this->db->selectDomainUserGroup($id);
+		if(empty($group)) throw new NotFoundException();
+		$this->checkPermission($group, PermissionManager::METHOD_WRITE);
+
+		if(empty(trim($newName))) {
+			throw new InvalidRequestException(LANG('name_cannot_be_empty'));
+		}
+		$this->db->updateDomainUserGroup($group->id, $newName);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $group->id, 'oco.domain_user_group.update', ['name'=>$newName]);
+	}
+	public function removeDomainUserGroup($id) {
+		$group = $this->db->selectDomainUserGroup($id);
+		if(empty($group)) throw new NotFoundException();
+		$this->checkPermission($group, PermissionManager::METHOD_DELETE);
+
+		$result = $this->db->deleteDomainUserGroup($group->id);
+		if(!$result) throw new Exception(LANG('unknown_error'));
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $group->id, 'oco.domain_user_group.delete', json_encode($group));
+		return $result;
+	}
+	public function addDomainUserToGroup($id, $groupId) {
+		$domainUser = $this->db->selectDomainUser($id);
+		if(empty($domainUser)) throw new NotFoundException();
+		$group = $this->db->selectDomainUserGroup($groupId);
+		if(empty($group)) throw new NotFoundException();
+		//$this->checkPermission($domainUser, PermissionManager::METHOD_WRITE);
+		$this->checkPermission($group, PermissionManager::METHOD_WRITE);
+
+		if(count($this->db->selectAllDomainUserByIdAndDomainUserGroupId($domainUser->id, $group->id)) == 0) {
+			$this->db->insertDomainUserGroupMember($domainUser->id, $group->id);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $group->id, 'oco.domain_user_group.add_member', ['domain_user_id'=>$domainUser->id]);
+			$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $domainUser->id, 'oco.domain_user.add_to_group', ['domain_user_group_id'=>$group->id]);
+		}
+	}
+	public function removeDomainUserFromGroup($id, $groupId) {
+		$domainUser = $this->db->selectDomainUser($id);
+		if(empty($domainUser)) throw new NotFoundException();
+		$group = $this->db->selectDomainUserGroup($groupId);
+		if(empty($group)) throw new NotFoundException();
+		$this->checkPermission($group, PermissionManager::METHOD_WRITE);
+
+		$this->db->deleteDomainUserGroupMember($domainUser->id, $group->id);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $group->id, 'oco.domain_user_group.remove_member', ['domain_user_id'=>$domainUser->id]);
+		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $domainUser->id, 'oco.domain_user.remove_from_group', ['domain_user_group_id'=>$group->id]);
+	}
 	public function getDomainUserRoles() {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
 		return $this->db->selectAllDomainUserRole();
@@ -2122,14 +2196,6 @@ class CoreLogic {
 		$domainUserRole = $this->db->selectDomainUserRole($id);
 		if(empty($domainUserRole)) throw new NotFoundException();
 		return $domainUserRole;
-	}
-	public function getDomainUserGroups($parentId=null) {
-		$domainUserGroupsFiltered = [];
-		foreach($this->db->selectAllDomainUserGroupByParentDomainUserGroupId($parentId) as $domainUserGroup) {
-			if($this->checkPermission($domainUserGroup, PermissionManager::METHOD_READ, false))
-				$domainUserGroupsFiltered[] = $domainUserGroup;
-		}
-		return $domainUserGroupsFiltered;
 	}
 	public function createDomainUserRole($name, $permissions) {
 		$this->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_SYSTEM_USER_MANAGEMENT);
@@ -2188,6 +2254,11 @@ class CoreLogic {
 		if($filterRessource === null) {
 			$this->checkPermission(new Models\DomainUser(), PermissionManager::METHOD_READ);
 			return $this->db->selectAllDomainUser();
+		} elseif($filterRessource instanceof Models\DomainUserGroup) {
+			$group = $this->db->selectDomainUserGroup($filterRessource->id);
+			if(empty($group)) throw new NotFoundException();
+			$this->checkPermission($group, PermissionManager::METHOD_READ);
+			return $this->db->selectAllDomainUserByDomainUserGroup($group->id);
 		} else {
 			throw new InvalidArgumentException('Filter for this ressource type is not implemented');
 		}

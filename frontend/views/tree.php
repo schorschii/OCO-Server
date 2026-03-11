@@ -4,8 +4,12 @@ require_once('../../loader.inc.php');
 require_once('../session.inc.php');
 ?>
 
-<div id='divNodeDomainUsers' class='node'>
+<?php $domainUserGroupsHtml = getDomainUserGroupsHtml($cl); ?>
+<div id='divNodeDomainUsers' class='node <?php if($domainUserGroupsHtml) echo 'expandable'; ?>'>
 	<a <?php echo Html::explorerLink('views/domain-users.php'); ?>><img src='img/users.dyn.svg'><?php echo LANG('domain_users'); ?></a>
+	<div class='subitems'>
+		<?php echo $domainUserGroupsHtml; ?>
+	</div>
 </div>
 
 <?php $computerGroupsHtml = getComputerGroupsHtml($cl); ?>
@@ -124,6 +128,21 @@ foreach($ext->getAggregatedConf('frontend-tree') as $treeExtension) {
 ?>
 
 <?php
+function getDomainUserGroupsHtml(CoreLogic $cl, $parentId=null) {
+	$html = '';
+	$subgroups = $cl->getDomainUserGroups($parentId);
+	if(count($subgroups) == 0) return false;
+	foreach($subgroups as $group) {
+		$subHtml = getDomainUserGroupsHtml($cl, $group->id);
+		$html .= "<div id='divNodeDomainUserGroup".$group->id."' class='subnode ".(empty($subHtml) ? '' : 'expandable')."'>";
+		$html .= "<a ".Html::explorerLink('views/domain-users.php?id='.$group->id)."><img src='img/folder.dyn.svg'>".htmlspecialchars($group->name)."</a>";
+		$html .= "<div class='subitems'>";
+		$html .= $subHtml;
+		$html .= "</div>";
+		$html .= "</div>";
+	}
+	return $html;
+}
 function getComputerGroupsHtml(CoreLogic $cl, $parentId=null) {
 	$html = '';
 	$subgroups = $cl->getComputerGroups($parentId);

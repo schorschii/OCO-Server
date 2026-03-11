@@ -2923,6 +2923,19 @@ class DatabaseController {
 		$this->stmt->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser');
 	}
+	public function selectAllDomainUserByDomainUserGroup($id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT du.*,
+				(SELECT count(dl2.id) FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id) AS "logon_amount",
+				(SELECT count(DISTINCT dl2.computer_id) FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id) AS "computer_amount",
+				(SELECT dl2.timestamp FROM domain_user_logon dl2 WHERE dl2.domain_user_id = du.id ORDER BY timestamp DESC LIMIT 1) AS "timestamp"
+			FROM domain_user_group_member dugm LEFT JOIN domain_user du ON du.id = dugm.domain_user_id
+			WHERE dugm.domain_user_group_id = :id
+			ORDER BY username ASC'
+		);
+		$this->stmt->execute([':id' => $id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser');
+	}
 	public function searchAllDomainUser($name, $limit=null) {
 		$this->stmt = $this->dbh->prepare(
 			'SELECT * FROM domain_user WHERE username LIKE :username OR display_name LIKE :username ORDER BY username ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
@@ -3116,6 +3129,54 @@ class DatabaseController {
 		);
 		if(!$this->stmt->execute()) return false;
 		return $this->stmt->rowCount();
+	}
+	public function insertDomainUserGroup($name, $parent_domain_user_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO domain_user_group (parent_domain_user_group_id, name)
+			VALUES (:parent_domain_user_group_id, :name)'
+		);
+		$this->stmt->execute([
+			':parent_domain_user_group_id' => $parent_domain_user_group_id,
+			':name' => $name,
+		]);
+		return $this->dbh->lastInsertId();
+	}
+	public function updateDomainUserGroup($id, $name) {
+		$this->stmt = $this->dbh->prepare(
+			'UPDATE domain_user_group SET name = :name WHERE id = :id'
+		);
+		return $this->stmt->execute([':id' => $id, ':name' => $name]);
+	}
+	public function deleteDomainUserGroup($id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM domain_user_group WHERE id = :id'
+		);
+		if(!$this->stmt->execute([':id' => $id])) return false;
+		return $this->stmt->rowCount();
+	}
+	public function insertDomainUserGroupMember($domain_user_id, $domain_user_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO domain_user_group_member (domain_user_id, domain_user_group_id) VALUES (:domain_user_id, :domain_user_group_id)'
+		);
+		if(!$this->stmt->execute([':domain_user_id' => $domain_user_id, ':domain_user_group_id' => $domain_user_group_id])) return false;
+		return $this->dbh->lastInsertId();
+	}
+	public function deleteDomainUserGroupMember($domain_user_id, $domain_user_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM domain_user_group_member WHERE domain_user_id = :domain_user_id AND domain_user_group_id = :domain_user_group_id'
+		);
+		if(!$this->stmt->execute([':domain_user_id' => $domain_user_id, ':domain_user_group_id' => $domain_user_group_id])) return false;
+		if($this->stmt->rowCount() != 1) return false;
+		return true;
+	}
+	public function selectAllDomainUserByIdAndDomainUserGroupId($domain_user, $domain_user_group_id) {
+		$this->stmt = $this->dbh->prepare(
+			'SELECT du.* FROM domain_user_group_member dugm
+			INNER JOIN domain_user du ON du.id = dugm.domain_user_id
+			WHERE dugm.domain_user_id = :domain_user AND dugm.domain_user_group_id = :domain_user_group_id'
+		);
+		$this->stmt->execute([':domain_user' => $domain_user, ':domain_user_group_id' => $domain_user_group_id]);
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\DomainUser');
 	}
 
 	// System User Operations

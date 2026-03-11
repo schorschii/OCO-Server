@@ -260,7 +260,7 @@ foreach($services as $s) {
 								}
 								$counter ++;
 								echo "<tr>";
-								echo "<td><a ".Html::explorerLink('views/domain-users.php?id='.$logon->domain_user_id).">".htmlspecialchars($logon->domain_user_username)."</a></td>";
+								echo "<td><a ".Html::explorerLink('views/domain-user-details.php?id='.$logon->domain_user_id).">".htmlspecialchars($logon->domain_user_username)."</a></td>";
 								echo "<td>".htmlspecialchars($logon->domain_user_display_name)."</td>";
 								echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
 								echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";

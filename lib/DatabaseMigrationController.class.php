@@ -744,7 +744,7 @@ class DatabaseMigrationController {
 
 			if($this->debug) echo 'Upgrading to 1.1.12... (granting policy_object permission to superadmin)'."\n";
 			$this->stmt = $this->dbh->prepare(
-				'UPDATE system_user_role SET permissions = JSON_SET(permissions, "$.Models\\\\\\\\PolicyObject", JSON_OBJECT("*", JSON_OBJECT("read",true,"write",true,"delete",true,"deploy",true), "create", true))
+				'UPDATE system_user_role SET permissions = JSON_SET(permissions, "$.Models\\\\\\\\PolicyObject", JSON_OBJECT("*", JSON_OBJECT("read",true,"write",true,"delete",true,"deploy",true), "create",true))
 				WHERE id = 1');
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
@@ -764,6 +764,29 @@ class DatabaseMigrationController {
 			if($this->debug) echo 'Upgrading to 1.1.13... (add line_endings column)'."\n";
 			$this->stmt = $this->dbh->prepare(
 				"ALTER TABLE `package` ADD `line_endings` TEXT NULL DEFAULT NULL AFTER `uninstall_procedure_post_action`");
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
+		/*** 1.2.0 ***/
+		$this->stmt = $this->dbh->prepare("SELECT * FROM system_user_role WHERE id = 1 AND permissions NOT LIKE '%DomainUserGroup%'");
+		$this->stmt->execute();
+		foreach($this->stmt->fetchAll() as $row) {
+			if($this->debug) echo 'Upgrading to 1.2.0... (granting domain_user_group permission to superadmin)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'UPDATE system_user_role SET permissions = JSON_SET(permissions, "$.Models\\\\\\\\DomainUserGroup", JSON_OBJECT("*", JSON_OBJECT("read",true,"write",true,"create",true,"delete",true), "create",true))
+				WHERE id = 1');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.2.0... (adding domain_user_group fk)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'ALTER TABLE `domain_user_group` ADD CONSTRAINT `fk_domain_user_group_1` FOREIGN KEY (`parent_domain_user_group_id`) REFERENCES `domain_user_group`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.2.0... (allow domain_user_group parent NULL)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'ALTER TABLE `domain_user_group` CHANGE `parent_domain_user_group_id` `parent_domain_user_group_id` INT(11) NULL DEFAULT NULL');
 			if(!$this->stmt->execute()) throw new Exception('SQL error');
 
 			$upgraded = true;

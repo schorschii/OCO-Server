@@ -2561,6 +2561,94 @@ function showDialogPolicyResultSet() {
 }
 
 // ======== DOMAIN USER OPERATIONS ========
+function createDomainUserGroup(parent_id='') {
+	var newName = prompt(LANG['enter_name']);
+	if(newName != null) {
+		ajaxRequestPost('ajax-handler/domain-users.php', urlencodeObject({'create_group':newName, 'parent_id':parent_id}), null, function(text){
+			refreshSidebar(); refreshContentExplorer('views/domain-users.php?id='+parseInt(text));
+			emitMessage(LANG['group_created'], newName, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function renameDomainUserGroup(id, oldName) {
+	var newValue = prompt(LANG['enter_name'], oldName);
+	if(newValue != null) {
+		ajaxRequestPost('ajax-handler/domain-users.php', urlencodeObject({'rename_group_id':id, 'new_name':newValue}), null, function() {
+			refreshContent(); refreshSidebar();
+			emitMessage(LANG['group_renamed'], newValue, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function confirmRemoveDomainUserGroup(ids, event=null, infoText='') {
+	var params = [];
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_group_id[]', 'value':entry});
+	});
+	if(event != null && event.shiftKey) {
+		params.push({'key':'force', 'value':'1'});
+	}
+	if(confirm(LANG['confirm_delete_group'])) {
+		ajaxRequestPost('ajax-handler/domain-users.php', urlencodeArray(params), null, function() {
+			refreshContentExplorer('views/domain-users.php'); refreshSidebar();
+			emitMessage(LANG['group_deleted'], infoText, MESSAGE_TYPE_SUCCESS);
+		});
+	}
+}
+function showDialogAddDomainUserToGroup(id) {
+	if(!id) return;
+	showDialogAjax(LANG['domain_user_groups'], 'views/dialog/domain-user-group-add.php?id='+encodeURIComponent(id), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+		let txtDomainUserId = dialogContainer.querySelectorAll('input[name=id]')[0];
+		let sltDomainUserGroup = dialogContainer.querySelectorAll('select[name=group]')[0];
+		dialogContainer.querySelectorAll('button[name=add]')[0].addEventListener('click', (e)=>{
+			addDomainUserToGroup(
+				dialogContainer,
+				txtDomainUserId.value,
+				getSelectedSelectBoxValues(sltDomainUserGroup, true)
+			);
+		});
+	});
+}
+function addDomainUserToGroup(dialogContainer, domainUserId, groupId) {
+	if(groupId === false) return;
+	var params = [];
+	groupId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_id[]', 'value':entry});
+	});
+	domainUserId.toString().split(',').forEach(function(entry) {
+		params.push({'key':'add_to_group_domain_user_id[]', 'value':entry});
+	});
+	setInputsDisabled(dialogContainer, true);
+	ajaxRequestPost('ajax-handler/domain-users.php', urlencodeArray(params), null, function() {
+		dialogContainer.close(); refreshContent();
+		emitMessage(LANG['domain_user_added'], '', MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		setInputsDisabled(dialogContainer, false);
+	});
+}
+function removeSelectedDomainUserFromGroup(checkboxName, groupId) {
+	var ids = [];
+	document.getElementsByName(checkboxName).forEach(function(entry) {
+		if(entry.checked) {
+			ids.push(entry.value);
+		}
+	});
+	if(ids.length == 0) {
+		emitMessage(LANG['no_elements_selected'], '', MESSAGE_TYPE_WARNING);
+		return;
+	}
+	removeDomainUserFromGroup(ids, groupId);
+}
+function removeDomainUserFromGroup(ids, groupId) {
+	var params = [];
+	params.push({'key':'remove_from_group_id', 'value':groupId});
+	ids.forEach(function(entry) {
+		params.push({'key':'remove_from_group_domain_user_id[]', 'value':entry});
+	});
+	ajaxRequestPost('ajax-handler/domain-users.php', urlencodeArray(params), null, function() {
+		refreshContent();
+		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
+	});
+}
 function showDialogEditDomainUserRole(id=-1) {
 	title = LANG['edit_domain_user_role'];
 	if(id == -1) title = LANG['create_domain_user_role'];

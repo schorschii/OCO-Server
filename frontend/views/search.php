@@ -56,7 +56,7 @@ foreach($db->searchAllDomainUser($_GET['query']) as $u) {
 	$counter ++;
 	if(!$cl->checkPermission($u, PermissionManager::METHOD_READ, false)) continue;
 	if($counter > $maxResults) { $moreAvail = true; break; }
-	$items[] = new Models\SearchResult($u->displayNameWithUsername(), LANG('domain_user'), 'views/domain-users.php?id='.$u->id, 'img/user.dyn.svg');
+	$items[] = new Models\SearchResult($u->displayNameWithUsername(), LANG('domain_user'), 'views/domain-user-details.php?id='.$u->id, 'img/user.dyn.svg');
 }
 $counter = 0;
 foreach($db->searchAllReport($_GET['query']) as $r) {

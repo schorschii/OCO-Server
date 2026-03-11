@@ -2,139 +2,84 @@
 $SUBVIEW = 1;
 require_once('../../loader.inc.php');
 require_once('../session.inc.php');
-?>
 
-<?php
-if(!empty($_GET['id'])) {
-	try {
-		$domainUser = $cl->getDomainUser($_GET['id']);
-
-		$historyLimit = null;
-		$computerHistoryLimit = null;
-		$permissionEntry = $cl->getPermissionEntry(PermissionManager::SPECIAL_PERMISSION_DOMAIN_USER, PermissionManager::METHOD_READ);
-		if(isset($permissionEntry['history_limit'])) $historyLimit = intval($permissionEntry['history_limit']);
-		if(isset($permissionEntry['computer_history_limit'])) $computerHistoryLimit = intval($permissionEntry['computer_history_limit']);
-	} catch(NotFoundException $e) {
-		die("<div class='alert warning'>".LANG('not_found')."</div>");
-	} catch(PermissionException $e) {
-		die("<div class='alert warning'>".LANG('permission_denied')."</div>");
-	} catch(InvalidRequestException $e) {
-		die("<div class='alert error'>".$e->getMessage()."</div>");
-	}
-?>
-
-
-<div class='details-header'>
-	<h1><img src='img/user.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($domainUser->displayNameWithUsername()); ?></span></h1>
-</div>
-<div class='details-abreast'>
-	<div class='stickytable'>
-		<h2><?php echo LANG('aggregated_logins'); ?></h2>
-		<table id='tblDomainUserDetailData' class='list searchable sortable savesort'>
-			<thead>
-				<tr>
-					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('count'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('last_login'); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			$counter = 0;
-			foreach($db->selectAllAggregatedDomainUserLogonByDomainUserId($domainUser->id) as $logon) {
-				if(is_int($computerHistoryLimit) && $counter >= $computerHistoryLimit) {
-					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
-					break;
-				}
-				$counter ++;
-				echo "<tr>";
-				echo "<td><a ".Html::explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
-				echo "<td>".htmlspecialchars($logon->logon_amount)."</td>";
-				echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
-				echo "</tr>";
-			}
-			?>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan='999'>
-						<div class='spread'>
-							<div>
-								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
-							</div>
-							<div class='controls'>
-								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</tfoot>
-		</table>
-	</div>
-	<div class='stickytable'>
-		<h2><?php echo LANG('history'); ?></h2>
-		<table id='tblDomainUserHistoryData' class='list searchable sortable savesort'>
-			<thead>
-				<tr>
-					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('console'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			$counter = 0;
-			foreach($db->selectAllDomainUserLogonByDomainUserId($domainUser->id) as $logon) {
-				if(is_int($historyLimit) && $counter >= $historyLimit) {
-					echo "<tr><td colspan='999'><div class='alert warning'>".LANG('restricted_view')."</div></td></tr>";
-					break;
-				}
-				$counter ++;
-				echo "<tr>";
-				echo "<td><a ".Html::explorerLink('views/computer-details.php?id='.$logon->computer_id).">".htmlspecialchars($logon->computer_hostname)."</a></td>";
-				echo "<td>".htmlspecialchars($logon->console)."</td>";
-				echo "<td>".htmlspecialchars($cl->formatLoginDate($logon->timestamp))."</td>";
-				echo "</tr>";
-			}
-			?>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan='999'>
-						<div class='spread'>
-							<div>
-								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
-							</div>
-							<div class='controls'>
-								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</tfoot>
-		</table>
-	</div>
-</div>
-
-
-<?php
-} else {
-	try {
+$group = null;
+try {
+	if(!empty($_GET['id'])) {
+		$group = $cl->getDomainUserGroup($_GET['id']);
+		$domainUsers = $cl->getDomainUsers($group);
+	} else {
 		$domainUsers = $cl->getDomainUsers();
-		$policyObjects = $db->selectAllPolicyObjectByDomainUserGroup(null);
-	} catch(NotFoundException $e) {
-		die("<div class='alert warning'>".LANG('not_found')."</div>");
-	} catch(PermissionException $e) {
-		die("<div class='alert warning'>".LANG('permission_denied')."</div>");
-	} catch(InvalidRequestException $e) {
-		die("<div class='alert error'>".$e->getMessage()."</div>");
 	}
+	$subGroups = $cl->getDomainUserGroups($group ? $group->id : null);
+	$policyObjects = $db->selectAllPolicyObjectByDomainUserGroup($group ? $group->id : null);
+} catch(NotFoundException $e) {
+	die("<div class='alert warning'>".LANG('not_found')."</div>");
+} catch(PermissionException $e) {
+	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
+} catch(InvalidRequestException $e) {
+	die("<div class='alert error'>".$e->getMessage()."</div>");
+}
 ?>
 
+<?php if($group === null) {
+	$permissionCreateGroup = $cl->checkPermission(new Models\DomainUserGroup(), PermissionManager::METHOD_CREATE, false);
+?>
+	<div class='details-header'>
+		<h1><img src='img/users.dyn.svg'><span id='page-title'><?php echo LANG('all_domain_user'); ?></span></h1>
+	</div>
+	<div class='controls'>
+		<button onclick='createDomainUserGroup()' <?php if(!$permissionCreateGroup) echo 'disabled'; ?>><img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_group'); ?></button>
+		<span class='filler'></span>
+	</div>
+<?php } else {
+	$permissionCreate = $cl->checkPermission($group, PermissionManager::METHOD_CREATE, false);
+	$permissionWrite  = $cl->checkPermission($group, PermissionManager::METHOD_WRITE, false);
+	$permissionDelete = $cl->checkPermission($group, PermissionManager::METHOD_DELETE, false);
+?>
+	<h1><img src='img/folder.dyn.svg'><span id='page-title'><?php echo htmlspecialchars($group->getBreadcrumbString()); ?></span></h1>
+	<div class='controls'>
+		<button onclick='createDomainUserGroup(
+			<?php echo $group->id; ?>
+			)'
+			<?php if(!$permissionCreate) echo 'disabled'; ?>>
+			<img src='img/folder-new.dyn.svg'>&nbsp;<?php echo LANG('new_subgroup'); ?>
+		</button>
+		<button onclick='renameDomainUserGroup(
+			<?php echo $group->id; ?>,
+			this.getAttribute("oldName")
+			)'
+			oldName='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>'
+			<?php if(!$permissionWrite) echo 'disabled'; ?>>
+			<img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('rename_group'); ?>
+		</button>
+		<button onclick='confirmRemoveDomainUserGroup(
+			[<?php echo $group->id; ?>],
+			event,
+			this.getAttribute("name")
+			)'
+			name='<?php echo htmlspecialchars($group->name,ENT_QUOTES); ?>'
+			<?php if(!$permissionDelete) echo 'disabled'; ?>>
+			<img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete_group'); ?>
+		</button>
+		<span class='filler'></span>
+	</div>
+<?php } ?>
 
-<div class='details-header'>
-	<h1><img src='img/users.dyn.svg'><span id='page-title'><?php echo LANG('all_domain_user'); ?></span></h1>
+<?php if(!empty($subGroups) || $group != null) { ?>
+<div class='controls subfolders'>
+	<?php if($group != null) { ?>
+		<?php if($group->parent_domain_user_group_id == null) { ?>
+			<a class='box' <?php echo Html::explorerLink('views/domain-users.php'); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo LANG('all_domain_users'); ?></a>
+		<?php } else { $subGroup = $cl->getDomainUserGroup($group->parent_domain_user_group_id); ?>
+			<a class='box' <?php echo Html::explorerLink('views/domain-users.php?id='.$group->parent_domain_user_group_id); ?>><img src='img/layer-up.dyn.svg'>&nbsp;<?php echo htmlspecialchars($subGroup->name); ?></a>
+		<?php } ?>
+	<?php } ?>
+	<?php foreach($subGroups as $g) { ?>
+		<a class='box' <?php echo Html::explorerLink('views/domain-users.php?id='.$g->id); ?>><img src='img/folder.dyn.svg'>&nbsp;<?php echo htmlspecialchars($g->name); ?></a>
+	<?php } ?>
 </div>
+<?php } ?>
 
 <?php if(!empty($policyObjects)) { ?>
 <div class='controls subfolders'>
@@ -162,7 +107,7 @@ if(!empty($_GET['id'])) {
 		foreach($domainUsers as $u) {
 			echo "<tr>";
 			echo "<td><input type='checkbox' name='domain_user_id[]' value='".$u->id."'></td>";
-			echo "<td><a ".Html::explorerLink('views/domain-users.php?id='.$u->id).">".htmlspecialchars($u->username)."</a></td>";
+			echo "<td><a ".Html::explorerLink('views/domain-user-details.php?id='.$u->id).">".htmlspecialchars($u->username)."</a></td>";
 			echo "<td>".htmlspecialchars($u->display_name)."</td>";
 			echo "<td>".htmlspecialchars($u->logon_amount)."</td>";
 			echo "<td>".htmlspecialchars($u->computer_amount)."</td>";
@@ -181,6 +126,12 @@ if(!empty($_GET['id'])) {
 						</div>
 						<div class='controls'>
 							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+							<button onclick='showDialogAddDomainUserToGroup(getSelectedCheckBoxValues("domain_user_id[]", null, true))' title='<?php echo LANG('add_to_group',ENT_QUOTES); ?>'>
+								<img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('add'); ?>
+							</button>
+							<?php if($group !== null) { ?>
+								<button onclick='removeSelectedDomainUserFromGroup("domain_user_id[]", <?php echo $group->id; ?>)' title='<?php echo LANG('remove_from_group',ENT_QUOTES); ?>'><img src='img/folder-remove-from.dyn.svg'>&nbsp;<?php echo LANG('remove'); ?></button>
+							<?php } ?>
 							<button onclick='confirmRemoveSelectedDomainUser("domain_user_id[]")'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
@@ -190,6 +141,3 @@ if(!empty($_GET['id'])) {
 		</table>
 	</div>
 </div>
-
-
-<?php } ?>

@@ -1695,6 +1695,9 @@ ul.tree button.expander {
 		padding: 0px;
 		margin: 0px;
 	}
+	.dialogStretch .fillHeight {
+		height: auto;
+	}
 	.controls {
 		flex-wrap: wrap;
 	}

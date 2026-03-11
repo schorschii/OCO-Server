@@ -24,10 +24,10 @@ function echoTargetPackageGroupOptions($parent=null) {
 		echo "</div>";
 	}
 }
-function echoTargetPackageReportOptions($parent=null) {
+function echoTargetPackageReportOptions() {
 	global $db, $cl, $CONTAINER_SELECTION;
 
-	foreach($db->selectAllReport($parent) as $r) {
+	foreach($db->selectAllReport() as $r) {
 		if(!$cl->checkPermission($r, PermissionManager::METHOD_READ, false)) continue;
 
 		$displayName = LANG($r->name);

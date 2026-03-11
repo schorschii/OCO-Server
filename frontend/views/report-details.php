@@ -96,7 +96,7 @@ try {
 				} elseif($key == 'software_id') {
 					echo "<td><a ".Html::explorerLink('views/software.php?id='.intval($value)).">".htmlspecialchars($value)."</a></td>";
 				} elseif($key == 'domain_user_id') {
-					echo "<td><a ".Html::explorerLink('views/domain-users.php?id='.intval($value)).">".htmlspecialchars($value)."</a></td>";
+					echo "<td><a ".Html::explorerLink('views/domain-user-details.php?id='.intval($value)).">".htmlspecialchars($value)."</a></td>";
 				} elseif($key == 'job_container_id') {
 					echo "<td><a ".Html::explorerLink('views/job-containers.php?id='.intval($value)).">".htmlspecialchars($value)."</a></td>";
 				} elseif($key == 'mobile_device_id') {
