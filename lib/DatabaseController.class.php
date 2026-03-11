@@ -2898,7 +2898,7 @@ class DatabaseController {
 		if(empty($uid) || empty(trim($uid))) $uid = null;
 		$this->stmt = $this->dbh->prepare(
 			'UPDATE domain_user SET id = LAST_INSERT_ID(id), uid = IF(:uid IS NULL,uid,:uid), username = :username, display_name = :display_name
-			WHERE (uid IS NOT NULL AND uid = :uid) OR (username = :username AND display_name = :display_name) OR (username = :username AND display_name = "") LIMIT 1'
+			WHERE (uid IS NOT NULL AND uid = :uid) OR (uid IS NULL AND :uid IS NULL AND username = :username) LIMIT 1'
 		);
 		if(!$this->stmt->execute([':uid' => $uid, ':username' => $username, ':display_name' => $display_name])) return false;
 		if($this->dbh->lastInsertId()) return $this->dbh->lastInsertId();
