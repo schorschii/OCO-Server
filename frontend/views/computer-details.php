@@ -284,7 +284,7 @@ foreach($services as $s) {
 								<tr class='<?php echo empty($u->disabled)?'':'offline'; ?>'>
 								<td class='subbuttons'>
 									<?php echo htmlspecialchars($u->username); ?>
-									<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->username,ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+									<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->username,ENT_QUOTES); ?>' title='<?php echo LANG('copy'); ?>'><img class='small' src='img/copy.dyn.svg'></button>
 									<div class='hint'><?php echo htmlspecialchars($u->uid); ?></div>
 								</td>
 								<td><?php echo htmlspecialchars($u->display_name); ?></td>
@@ -292,7 +292,8 @@ foreach($services as $s) {
 									<?php if($u->password) { ?>
 									<div class='subbuttons mask monospace' tabindex='0'>
 										<div class='maskValue'><?php echo htmlspecialchars($u->password??''); ?></div>
-										<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->password??'',ENT_QUOTES); ?>'><img class='small' src='img/copy.dyn.svg' title='<?php echo LANG('copy'); ?>'></button>
+										<button onclick='toClipboard(this.getAttribute("value"))' value='<?php echo htmlspecialchars($u->password??'',ENT_QUOTES); ?>' title='<?php echo LANG('copy'); ?>'><img class='small' src='img/copy.dyn.svg'></button>
+										<button onclick='showDialogAjax(this.getAttribute("value"), "views/dialog/qr.php?c="+encodeURIComponent(this.getAttribute("value")), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_AUTO)' value='<?php echo htmlspecialchars($u->password??'',ENT_QUOTES); ?>' title='<?php echo LANG('qr_code'); ?>'><img class='small' src='img/qr.dyn.svg'></button>
 									</div>
 									<div class='hint'><?php echo htmlspecialchars($u->created??''); ?></div>
 									<?php } ?>

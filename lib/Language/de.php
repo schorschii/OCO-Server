@@ -751,6 +751,7 @@ return [
 	'manual_computer_package_assignment_confirmation' => 'Computer-Paketzuordnung werden normalerweise automatisch zugewiesen, sobald ein Softwarejob erfolgreich abgeschlossen wurde. Sind Sie sicher, dass die Zuweisungen manuell durchführen möchten?',
 	'replace_line_endings' => 'Zeilumbrüche ersetzen',
 	'replace_line_endings_help' => 'Legen Sie fest, wie mehrere Befehlszeilen verkettet werden sollen:'."\n".'Linux/macOS:   ;   &&   ||'."\n".'Windows:   &   &&   ||',
+	'qr_code' => 'QR-Code',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.
