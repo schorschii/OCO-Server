@@ -23,8 +23,26 @@ try {
 	<tr>
 		<th><?php echo LANG('profile_content'); ?></th>
 		<td>
-			<input type='file' class='fullwidth' name='payload' accept='.mobileconfig' style='<?php if(($profile->type??$_GET['type']??'') != Models\Profile::TYPE_IOS) echo 'display:none'; ?>'></input>
-			<textarea class='fullwidth monospace' name='payload' rows='12' cols='45'><?php echo htmlspecialchars($profile->payload??''); ?></textarea>
+			<div class='tabcontainer'>
+				<div class='tabbuttons marginbottom' style='<?php if(($profile->type??$_GET['type']??'') != Models\Profile::TYPE_IOS) echo 'display:none'; ?>'>
+					<a href='#' name='text' class='active' onclick='event.preventDefault();openTab(this.parentElement.parentElement,this.getAttribute("name"))'>
+						<?php echo LANG('text'); ?>
+					</a>
+					<a href='#' name='file' class='' onclick='event.preventDefault();openTab(this.parentElement.parentElement,this.getAttribute("name"))'>
+						<?php echo LANG('file'); ?>
+					</a>
+				</div>
+				<div class='tabcontents'>
+
+					<div name='text' class='active'>
+						<textarea class='fullwidth monospace' name='payload' rows='12' cols='45'><?php echo htmlspecialchars($profile->payload??''); ?></textarea>
+					</div>
+					<div name='file' class=''>
+						<input type='file' class='fullwidth' name='payload' accept='.mobileconfig'></input>
+					</div>
+
+				</div>
+			</div>
 		</td>
 	</tr>
 	<tr>

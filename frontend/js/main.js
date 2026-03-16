@@ -1997,13 +1997,14 @@ function showDialogEditProfile(type, id=-1) {
 		let txtNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
 		let flePayload = dialogContainer.querySelectorAll('input[name=payload]')[0];
 		let txtPayload = dialogContainer.querySelectorAll('textarea[name=payload]')[0];
+		let tabFile = dialogContainer.querySelectorAll('.tabcontainer .tabbuttons > a[name=file]')[0];
 		dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
 			editProfile(
 				dialogContainer,
 				txtId.value,
 				txtType.value,
 				txtName.value,
-				txtPayload.value != '' ? txtPayload.value : flePayload.files,
+				tabFile.classList.contains('active') ? flePayload.files : txtPayload.value,
 				txtNotes.value
 			);
 		});
