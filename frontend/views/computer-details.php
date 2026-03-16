@@ -220,7 +220,6 @@ foreach($services as $s) {
 								<ul>
 								<?php
 								$res = $db->selectAllComputerGroupByComputerId($computer->id);
-								$i = 0;
 								foreach($res as $group) {
 									echo "<li class='subbuttons'>";
 									echo "<a ".Html::explorerLink('views/computers.php?id='.$group->id).">".Html::wrapInSpanIfNotEmpty($group->getBreadcrumbString())."</a>";
