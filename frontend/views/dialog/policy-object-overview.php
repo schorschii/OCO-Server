@@ -95,8 +95,13 @@ function getPolicyValue($pd) {
 		return htmlspecialchars($pd->value??'',ENT_QUOTES);
 	} elseif($pd->options == 'DICT' || $pd->options == 'LIST') {
 		return Html::dictTable(json_decode($pd->value, true), [], true);
-	} elseif($options = json_decode($pd->options)) {
+	} elseif($options = json_decode($pd->options, true)) {
 		foreach($options as $option => $value) {
+			// convert bool
+			if(($pd->value === 'true' || $pd->value === 'false')
+			&& in_array($pd->value==='true', $options ?? [], true))
+				$pd->value = $pd->value==='true';
+			// show display name
 			if($pd->value!==null && $value==$pd->value)
 				return LANG(translatePolicy($option));
 		}
