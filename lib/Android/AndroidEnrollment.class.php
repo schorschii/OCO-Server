@@ -183,6 +183,13 @@ class AndroidEnrollment {
 			throw new \RuntimeException('Unexpected server response: '.json_encode($response));
 		$this->db->insertOrUpdateSettingByKey('google-enterprise', json_encode($response));
 	}
+	function renameEnterprise(string $newName) {
+		$response = $this->apiCall('PATCH', self::ANDROID_MANAGEMENT_API_URL.'/'.$this->getEnterprise()['name'], json_encode([
+			'enterpriseDisplayName' => $newName,
+		]));
+		if(empty($response['name']))
+			throw new \RuntimeException('Unexpected server response: '.json_encode($response));
+	}
 	function getEnterprise() {
 		$data = $this->db->settings->get('google-enterprise');
 		if(!$data) throw new \RuntimeException('No enterprise found');

@@ -277,6 +277,13 @@ try {
 				$as->storeKeyId($_POST['value']);
 				die();
 			}
+			if($key == 'google-company-name') {
+				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+				try {
+					$ae = new Android\AndroidEnrollment($db);
+					$ae->renameEnterprise($_POST['value']);
+				} catch(Exception $ignored) {}
+			}
 			// check JSON syntax
 			if(in_array($key, ['wol-satellites', 'system-user-ldapsync', 'domain-user-ldapsync'])) {
 				$decoded = json_decode($_POST['value']);
