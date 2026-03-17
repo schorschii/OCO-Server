@@ -79,14 +79,14 @@ require_once('../session.inc.php');
 </div>
 
 <div id='divNodePolicies' class='node'>
-	<a <?php echo Html::explorerLink('views/policy-objects.php'); ?>><img src='img/policy.dyn.svg'><?php echo LANG('policies'); ?><span class='badge'>BETA</span></a>
+	<a <?php echo Html::explorerLink('views/policy-objects.php'); ?>><img src='img/policy.dyn.svg'><?php echo LANG('policies'); ?></a>
 </div>
 
 <hr/>
 
 <?php $mobileDeviceGroupsHtml = getMobileDeviceGroupsHtml($cl); ?>
 <div id='divNodeMobileDevices' class='node <?php if($mobileDeviceGroupsHtml) echo 'expandable'; ?>'>
-	<a <?php echo Html::explorerLink('views/mobile-devices.php'); ?>><img src='img/mobile-device.dyn.svg'><?php echo LANG('mobile_devices'); ?><span class='badge'>BETA</span></a>
+	<a <?php echo Html::explorerLink('views/mobile-devices.php'); ?>><img src='img/mobile-device.dyn.svg'><?php echo LANG('mobile_devices'); ?></a>
 	<div class='subitems'>
 		<?php echo $mobileDeviceGroupsHtml; ?>
 	</div>
