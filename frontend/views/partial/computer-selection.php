@@ -21,7 +21,7 @@ function echoTargetComputerGroupOptions($parent=null) {
 		echo htmlspecialchars($cg->name);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</label>";
-		echo "<div class='subgroup'>";
+		echo "<div class='subitems'>";
 		echoTargetComputerGroupOptions($cg->id);
 		echo "</div>";
 	}

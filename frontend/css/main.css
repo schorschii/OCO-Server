@@ -329,13 +329,15 @@ h3 {
 	background-image: url('../img/collapse.dyn.svg');
 	background-size: 16px 16px;
 }
+.subitems {
+	margin-left: 12px;
+	padding-left: 8px;
+	border-left: 1px dashed rgb(150,150,150,0.4);
+}
 #explorer-tree .subitems {
 	display: none;
 	max-height: 0px;
 	overflow: hidden;
-	margin-left: 12px;
-	padding-left: 8px;
-	border-left: 1px dashed rgb(150,150,150,0.4);
 }
 #explorer-tree .expanded > .subitems {
 	display: block;
@@ -763,8 +765,8 @@ hr {
 .box > *:last-child {
 	margin-bottom: 0px;
 }
-.box .subgroup {
-	margin-left: 22px;
+.box .subitems {
+	margin-left: 8px;
 }
 .infohover {
 	position: relative;

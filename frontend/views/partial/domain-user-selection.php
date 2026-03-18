@@ -20,7 +20,7 @@ function echoTargetDomainUserGroupOptions($parent=null) {
 		echo htmlspecialchars($pg->name);
 		echo "<img src='img/eye.dyn.svg' class='dragicon'>";
 		echo "</label>";
-		echo "<div class='subgroup'>";
+		echo "<div class='subitems'>";
 		echoTargetDomainUserGroupOptions($pg->id);
 		echo "</div>";
 	}
