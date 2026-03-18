@@ -1283,7 +1283,7 @@ function initSelectionBox(itemBox, targetBox=null, targetInputName=null) {
 		}
 	}
 
-	let checkBoxes = listContent.querySelectorAll('input[type=checkbox]');
+	let checkBoxes = listContent.querySelectorAll('input[type=checkbox], input[type=radio]');
 	let spnSelectedItems = itemBox.querySelectorAll('.selectedItems')[0];
 	let spnTotalItems = itemBox.querySelectorAll('.totalItems')[0];
 	spnSelectedItems.innerText = '0';
@@ -1294,7 +1294,8 @@ function initSelectionBox(itemBox, targetBox=null, targetInputName=null) {
 		});
 	}
 
-	itemBox.querySelectorAll('input[type=checkbox].toggleAll')[0].onclick = function(e){
+	let chkToggleAll = itemBox.querySelectorAll('input[type=checkbox].toggleAll')[0];
+	if(chkToggleAll) chkToggleAll.onclick = function(e){
 		toggleCheckboxesInContainer(listContent, e.srcElement.checked);
 		spnSelectedItems.innerText = getSelectedCheckBoxValues(null, null, false, listContent).length;
 	};
@@ -2541,12 +2542,12 @@ function showDialogPolicyResultSet() {
 		initSelectionBox(domainUserSelection);
 		dialogContainer.querySelectorAll('button[name=generate]')[0].addEventListener('click', (e)=>{
 			var params = [];
-			let selectedComputers = computerSelection.querySelectorAll('input[type=checkbox]');
+			let selectedComputers = computerSelection.querySelectorAll('input[type=checkbox], input[type=radio]');
 			for(let i=0; i<selectedComputers.length; i++) {
 				if(selectedComputers[i].checked)
 					params.push({key:'computer_id[]', value:selectedComputers[i].value});
 			}
-			let selectedDomainUsers = domainUserSelection.querySelectorAll('input[type=checkbox]');
+			let selectedDomainUsers = domainUserSelection.querySelectorAll('input[type=checkbox], input[type=radio]');
 			for(let i=0; i<selectedDomainUsers.length; i++) {
 				if(selectedDomainUsers[i].checked)
 					params.push({key:'domain_user_id[]', value:selectedDomainUsers[i].value});

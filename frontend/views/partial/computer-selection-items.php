@@ -16,7 +16,7 @@ require_once(__DIR__.'/../../session.inc.php');
 		if(!$cl->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 	?>
 		<label class='blockListItem item' item_id='<?php echo htmlspecialchars($c->id,ENT_QUOTES); ?>' item_name='<?php echo htmlspecialchars($c->hostname,ENT_QUOTES); ?>'>
-			<input type='checkbox' name='computers' value='<?php echo htmlspecialchars($c->id,ENT_QUOTES); ?>' />
+			<input type='<?php echo empty($_GET['single']) ? 'checkbox' : 'radio'; ?>' name='computers' value='<?php echo htmlspecialchars($c->id,ENT_QUOTES); ?>' />
 			<?php echo htmlspecialchars($c->hostname); ?>
 		</label>
 	<?php
@@ -33,7 +33,7 @@ require_once(__DIR__.'/../../session.inc.php');
 		if(!$cl->checkPermission($c, PermissionManager::METHOD_DEPLOY, false)) continue;
 	?>
 		<label class='blockListItem item' item_id='<?php echo htmlspecialchars($c->id,ENT_QUOTES); ?>' item_name='<?php echo htmlspecialchars($c->hostname,ENT_QUOTES); ?>'>
-			<input type='checkbox' name='computers' value='<?php echo htmlspecialchars($c->id,ENT_QUOTES); ?>' />
+			<input type='<?php echo empty($_GET['single']) ? 'checkbox' : 'radio'; ?>' name='computers' value='<?php echo htmlspecialchars($c->id,ENT_QUOTES); ?>' />
 			<?php echo htmlspecialchars($c->hostname); ?>
 		</label>
 	<?php

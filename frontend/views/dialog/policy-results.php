@@ -172,10 +172,10 @@ function getPolicyValue($pd) {
 
 	<div class='details-abreast'>
 		<div class='fillHeight computerSelection'>
-			<?php require('../partial/computer-selection.php'); ?>
+			<?php $SINGLE_SELECTION=1; require('../partial/computer-selection.php'); ?>
 		</div>
 		<div class='fillHeight domainUserSelection'>
-			<?php require('../partial/domain-user-selection.php'); ?>
+			<?php $SINGLE_SELECTION=1; require('../partial/domain-user-selection.php'); ?>
 		</div>
 	</div>
 

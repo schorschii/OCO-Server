@@ -16,7 +16,7 @@ require_once(__DIR__.'/../../session.inc.php');
 		if(!$cl->checkPermission($du, PermissionManager::METHOD_READ, false)) continue;
 	?>
 		<label class='blockListItem item' item_id='<?php echo htmlspecialchars($du->id,ENT_QUOTES); ?>' item_name='<?php echo htmlspecialchars($du->displayNameWithUsername(),ENT_QUOTES); ?>'>
-			<input type='checkbox' name='domain_users' value='<?php echo htmlspecialchars($du->id,ENT_QUOTES); ?>' />
+			<input type='<?php echo empty($_GET['single']) ? 'checkbox' : 'radio'; ?>' name='domain_users' value='<?php echo htmlspecialchars($du->id,ENT_QUOTES); ?>' />
 			<?php echo htmlspecialchars($du->displayNameWithUsername()); ?>
 		</label>
 	<?php
@@ -33,7 +33,7 @@ require_once(__DIR__.'/../../session.inc.php');
 		if(!$cl->checkPermission($du, PermissionManager::METHOD_READ, false)) continue;
 	?>
 		<label class='blockListItem item' item_id='<?php echo htmlspecialchars($du->id,ENT_QUOTES); ?>' item_name='<?php echo htmlspecialchars($du->displayNameWithUsername(),ENT_QUOTES); ?>'>
-			<input type='checkbox' name='domain_users' value='<?php echo htmlspecialchars($du->id,ENT_QUOTES); ?>' />
+			<input type='<?php echo empty($_GET['single']) ? 'checkbox' : 'radio'; ?>' name='domain_users' value='<?php echo htmlspecialchars($du->id,ENT_QUOTES); ?>' />
 			<?php echo htmlspecialchars($du->displayNameWithUsername()); ?>
 		</label>
 	<?php
