@@ -911,9 +911,9 @@ function showDialogEditPackage(id) {
 				dialogContainer.querySelectorAll('input[name=download_for_uninstall]')[0].checked ? 1 : 0,
 				getSelectedCheckBoxValues('uninstall_procedure_post_action', null, false, dialogContainer),
 				dialogContainer.querySelectorAll('input[name=line_endings]')[0].value,
-				dialogContainer.querySelectorAll('select[name=compatible_os]')[0].value,
-				dialogContainer.querySelectorAll('select[name=compatible_os_version]')[0].value,
-				dialogContainer.querySelectorAll('select[name=compatible_architecture]')[0].value,
+				getSelectedSelectBoxValues(dialogContainer.querySelectorAll('select[name=compatible_os]')[0]).join("\n"),
+				getSelectedSelectBoxValues(dialogContainer.querySelectorAll('select[name=compatible_os_version]')[0]).join("\n"),
+				getSelectedSelectBoxValues(dialogContainer.querySelectorAll('select[name=compatible_architecture]')[0]).join("\n"),
 				dialogContainer.querySelectorAll('input[name=license_count]')[0].value,
 			);
 		});
