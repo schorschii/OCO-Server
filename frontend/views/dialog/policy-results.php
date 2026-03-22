@@ -100,8 +100,10 @@ function getContents($group_id, $classMask) {
 			$html .= "<tr><td colspan='999'>";
 			$html .= "<table class='list fullwidth'>";
 			foreach($subPolicies as $subPolicy) {
+				$subPolicyDisplayName = translatePolicy($subPolicy->display_name);
+				if(empty(trim($subPolicyDisplayName))) $subPolicyDisplayName = $pd->display_name;
 				$html .= "<tr>";
-				$html .= "<th>".htmlspecialchars(translatePolicy($pd->display_name))."</th>";
+				$html .= "<th>".htmlspecialchars($subPolicyDisplayName)."</th>";
 				$html .= "<td>".getPolicyValue($subPolicy)."</td>";
 				$html .= "</tr>";
 			}
