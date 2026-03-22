@@ -27,9 +27,9 @@ foreach($policyDefintions as $pd) {
 	} elseif(startsWith($mWindowsSplit[1], 'Software\Policies\Mozilla\Firefox')) {
 		$prefix = substr($mWindowsSplit[1], 33, 1) == '\\' ? substr($mWindowsSplit[1], 34) : ''; // cut first backslash!
 		if(!empty($prefix)) $prefix .= '\\';
-		$prefix = 'policies\\'.$prefix;
-		$mLinux = trim('JSON:/etc/firefox/policies/policies.json:'.$prefix.($mWindowsSplit[2] ?? ''), '\\');
-		$mMacOs = null;
+		$valueName = $prefix.($mWindowsSplit[2] ?? '');
+		$mLinux = trim('JSON:/etc/firefox/policies/policies.json:'.'policies\\'.$valueName, '\\');
+		$mMacOs = 'DEFAULTS:/Library/Preferences/org.mozilla.firefox:'.str_replace('\\', '__', $valueName);
 
 	} else {
 		// neither a Chrome or Firefox policy
