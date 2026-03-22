@@ -4,13 +4,15 @@ With OCO policies, you can configure your managed computers similar to Microsoft
 ## Import Policy Templates
 First, you need to set up policy templates for the settings you want to deploy to your clients. This must be done using the .admx group policy template import script or manually by inserting apporopriate rows into `policy_definition` table.
 
-A good first step is to import existing Windows group policies from .admx and .adml files. For this, copy the entire directory `C:\Windows\PolicyDefinitions` from a Windows domain controller server onto your OCO server (including translation subdirectories). Then, on the OCO server command line, execute `php scripts/admx-importer.php /path/to/PolicyDefinitions`.
+A good first step is to import existing Windows group policies from .admx and .adml files. For this, copy the entire directory `C:\Windows\PolicyDefinitions` from a Windows domain controller server onto your OCO server (including translation subdirectories). Then, on the OCO server command line, execute `php scripts/policies-admx-importer.php /path/to/PolicyDefinitions`.
 
 You can do this step again with the [Google Chrome](https://dl.google.com/dl/edgedl/chrome/policy/policy_templates.zip) and [Mozilla Firefox](https://github.com/mozilla/policy-templates/releases) group policy templates.
 
 Note: you can execute the ADMX import script anytime again, e.g. with templates from newer Windows versions to get new setting to configure in OCO. Existing policy templates will **not** be updated or deleted in the database.
 
-Now, you have a set of working policy templates for Windows. To make them work on Linux and macOS, you need to fill the columns `manifestation_linux` and `manifestation_macos` in the `policy_definition` table. For Chrome/Chromium and Firefox policies, you can execute the script `scripts/chrome-firefox-policies.php` to automatically fill the Linux/macOS manifestation based on the Windows manifestation. Please note that both browsers do not support user policies on Linux - policies can only be applied for all users on the computer/machine on Linux.
+Now, you have a set of working policy templates for Windows. To make them work on Linux and macOS, you need to fill the columns `manifestation_linux` and `manifestation_macos` in the `policy_definition` table. For Chrome/Chromium and Firefox policies, you can execute the script `scripts/policies-chrome-firefox.php` to automatically fill the Linux/macOS manifestation based on the Windows manifestation. Please note that both browsers do not support user policies on Linux - policies can only be applied for all users on the computer/machine on Linux.
+
+For Firefox on macOS, it is additionally necessary to execute `sudo defaults write /Library/Preferences/org.mozilla.firefox EnterprisePoliciesEnabled -bool TRUE` once, e.g. via a OCO package.
 
 ### Manually Writing Manifestations
 A `manifestation_*` column in the database can be NULL or contain one or multiple lines of the following items:
@@ -33,7 +35,7 @@ The `options` column can be one of the following:
   - optionally, min and max values can be set using `INT:0:100`
 - `LIST`: the admin can enter a list of strings
 - `DICT`: the admin can enter a dictionary (key-value combination)
-- a JSON string in form `{"Enabled":1, "Disabled":0}` providing pre-defined options for a select box
+- a JSON string in form `{"Enabled":true, "Disabled":false}` providing pre-defined options for a select box
   - the array key is the display name for the admin
   - the corresponding value is used in the manifestation on the managed computer
 
