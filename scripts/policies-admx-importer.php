@@ -414,8 +414,8 @@ function optionsExtract($xmlElement, $admxFileName) {
 			}
 			elseif($element->getName() == 'boolean') {
 				$options = [
-					'enabled' => optionValueExtract($xmlElement->trueValue), // ???
-					'disabled' => optionValueExtract($xmlElement->falseValue),
+					'enabled' => optionValueExtract($element->trueValue),
+					'disabled' => optionValueExtract($element->falseValue),
 				];
 				$manifestation2[] = [
 					json_encode($options),
