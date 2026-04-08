@@ -246,7 +246,8 @@ input:not([type=checkbox]), textarea, button {
 	outline: none;
 }
 input:focus, input:active, textarea:focus, textarea:active,
-input[type=submit]:hover, button:hover {
+input[type=submit]:hover, input[type=submit]:focus,
+button:hover, button:focus {
 	border-color: #0079B8;
 }
 input[type=submit], button {
