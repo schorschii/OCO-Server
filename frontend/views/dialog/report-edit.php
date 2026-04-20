@@ -26,9 +26,7 @@ try {
 		<td>
 			<select class='fullwidth' name='report_group_id'>
 				<option value=''>-</option>
-				<?php foreach($cl->getReportGroups() as $rg) { ?>
-					<option value='<?php echo $rg->id; ?>' <?php if(($report->report_group_id??$_GET['report_group_id']??null)==$rg->id) echo 'selected'; ?>><?php echo htmlspecialchars($rg->name); ?></option>
-				<?php } ?>
+				<?php Html::buildGroupOptions($cl, new Models\ReportGroup(), 0, ($report->report_group_id??$_GET['report_group_id']??null)); ?>
 			</select>
 		</td>
 	</tr>
