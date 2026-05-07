@@ -24,9 +24,17 @@ try {
 
 	if(!empty($_POST['edit_package_family_id'])
 	&& !empty($_FILES['icon']['tmp_name'])) {
-		if(!exif_imagetype($_FILES['icon']['tmp_name'])) {
+		// check if given file is an image
+		if(substr(mime_content_type($_FILES['icon']['tmp_name']), 0, 6) != 'image/')
 			throw new Exception(LANG('invalid_input'));
+		// check if image is valid by loading it in Imagick, if installed
+		if(class_exists('Imagick')) {
+			$img = new Imagick();
+			$img->readImage($_FILES['icon']['tmp_name']);
+			if(!is_array($img->getSize()))
+				throw new Exception(LANG('invalid_input'));
 		}
+
 		$cl->editPackageFamilyIcon($_POST['edit_package_family_id'], file_get_contents($_FILES['icon']['tmp_name']));
 		die();
 	}

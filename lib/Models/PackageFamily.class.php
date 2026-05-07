@@ -31,7 +31,10 @@ class PackageFamily {
 	// functions
 	function getIcon() {
 		if(!empty($this->icon)) {
-			return 'data:image/png;base64,'.base64_encode($this->icon);
+			$finfo = new \finfo(FILEINFO_MIME_TYPE);
+			$mimeType = $finfo->buffer($this->icon);
+			if($mimeType)
+				return 'data:'.$mimeType.';base64,'.base64_encode($this->icon);
 		}
 		return 'img/package-family.dyn.svg';
 	}

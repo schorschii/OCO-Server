@@ -61,7 +61,10 @@ class Package {
 	}
 	function getIcon() {
 		if(!empty($this->package_family_icon)) {
-			return 'data:image/png;base64,'.base64_encode($this->package_family_icon);
+			$finfo = new \finfo(FILEINFO_MIME_TYPE);
+			$mimeType = $finfo->buffer($this->package_family_icon);
+			if($mimeType)
+				return 'data:'.$mimeType.';base64,'.base64_encode($this->package_family_icon);
 		}
 		return 'img/package.dyn.svg';
 	}
