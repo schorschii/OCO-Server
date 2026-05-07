@@ -14,15 +14,15 @@ foreach($policyDefintions as $pd) {
 	$splitter = explode('\\', $mWindowsSplit[1]);
 	$valueName = $mWindowsSplit[2] ?? end($splitter);
 
-	if(startsWith($mWindowsSplit[1], 'Software\Policies\Google\Chrome')) {
-		$mLinux = 'JSON:/etc/opt/chrome/policies/managed/default.json:'.$valueName."\n"
-			.'JSON:/etc/chromium/policies/managed/default.json:'.$valueName;
-		$mMacOs = 'DEFAULTS:/Library/Preferences/com.google.Chrome:'.$valueName;
-
-	} elseif(startsWith($mWindowsSplit[1], 'Software\Policies\Google\Chrome\Recommended')) {
+	if(startsWith($mWindowsSplit[1], 'Software\Policies\Google\Chrome\Recommended')) {
 		$mLinux = 'JSON:/etc/opt/chrome/policies/recommended/default.json:'.$valueName."\n"
 			.'JSON:/etc/chromium/policies/recommended/default.json:'.$valueName;
 		$mMacOs = null;
+
+	} elseif(startsWith($mWindowsSplit[1], 'Software\Policies\Google\Chrome')) {
+		$mLinux = 'JSON:/etc/opt/chrome/policies/managed/default.json:'.$valueName."\n"
+			.'JSON:/etc/chromium/policies/managed/default.json:'.$valueName;
+		$mMacOs = 'DEFAULTS:/Library/Preferences/com.google.Chrome:'.$valueName;
 
 	} elseif(startsWith($mWindowsSplit[1], 'Software\Policies\Mozilla\Firefox')) {
 		$prefix = substr($mWindowsSplit[1], 33, 1) == '\\' ? substr($mWindowsSplit[1], 34) : ''; // cut first backslash!
