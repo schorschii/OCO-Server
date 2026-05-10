@@ -17,4 +17,5 @@ require_once('../session.inc.php');
 	<a <?php echo Html::explorerLink('views/settings-password-rotation-rules.php'); ?>>&rarr;&nbsp;<?php echo LANG('password_rotation_rules'); ?></a>
 	<a <?php echo Html::explorerLink('views/settings-mdm.php'); ?>>&rarr;&nbsp;<?php echo LANG('mobile_device_management'); ?></a>
 	<a <?php echo Html::explorerLink('views/settings-deleted-objects.php'); ?>>&rarr;&nbsp;<?php echo LANG('deleted_objects_history'); ?></a>
+	<a <?php echo Html::explorerLink('views/settings-database-cleanup.php'); ?>>&rarr;&nbsp;<?php echo LANG('database_cleanup'); ?></a>
 </div>

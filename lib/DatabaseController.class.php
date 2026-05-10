@@ -3912,4 +3912,22 @@ class DatabaseController {
 		return $this->stmt->execute($params);
 	}
 
+	// Cleanup Operations
+	public function cleanupRecognizedSoftware() {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM software WHERE id NOT IN ( SELECT software_id FROM computer_software )'
+		);
+		$this->stmt->execute();
+		return $this->stmt->rowCount();
+	}
+	public function cleanupDomainUsers() {
+		$this->stmt = $this->dbh->prepare(
+			'DELETE FROM domain_user WHERE id IN (
+				SELECT du.id FROM domain_user du LEFT JOIN domain_user_logon dul ON dul.domain_user_id = du.id GROUP BY du.id HAVING count(dul.domain_user_id) = 0
+			)'
+		);
+		$this->stmt->execute();
+		return $this->stmt->rowCount();
+	}
+
 }

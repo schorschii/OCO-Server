@@ -3225,6 +3225,24 @@ function ldapSyncDomainUsers(btn) {
 		enableDisableButton(btn, true);
 	});
 }
+function cleanupRecognizedSoftware(btn) {
+	enableDisableButton(btn, false);
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({'cleanup_recognized_software':1}), null, function(text) {
+		enableDisableButton(btn, true);
+		emitMessage(LANG['delete_recognized_software_without_installations'], text, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		enableDisableButton(btn, true);
+	});
+}
+function cleanupDomainUsers(btn) {
+	enableDisableButton(btn, false);
+	ajaxRequestPost('ajax-handler/settings.php', urlencodeObject({'cleanup_domain_users':1}), null, function(text) {
+		enableDisableButton(btn, true);
+		emitMessage(LANG['delete_domain_users_without_logons'], text, MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		enableDisableButton(btn, true);
+	});
+}
 function showDialogEditSetting(key='', file=false, warning='be_careful_when_manual_editing_settings', hideKey=false, title=null) {
 	if(title == null) {
 		title = LANG['edit_setting'];

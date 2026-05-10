@@ -330,6 +330,15 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['cleanup_recognized_software'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+		die( strval($db->cleanupRecognizedSoftware()) );
+	}
+	if(!empty($_POST['cleanup_domain_users'])) {
+		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
+		die( strval($db->cleanupDomainUsers()) );
+	}
+
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
 	die(LANG('permission_denied'));
