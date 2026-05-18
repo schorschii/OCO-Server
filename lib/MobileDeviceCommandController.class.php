@@ -250,13 +250,15 @@ class MobileDeviceCommandController {
 		// get which devices should be contacted via push
 		$wakeMdIds = [];
 		foreach($this->db->selectAllMobileDeviceCommand() as $mdc) {
-			if($mdc->state == Models\MobileDeviceCommand::STATE_QUEUED
-			&& !in_array($mdc->mobile_device_id, $wakeMdIds)) {
-				$md = $this->db->selectMobileDevice($mdc->mobile_device_id);
-				if($md->getOsType() != Models\MobileDevice::OS_TYPE_IOS) continue;
-				if(empty($md->push_sent) || time() - strtotime($md->push_sent) > 60*60) {
-					$wakeMdIds[] = $md->id;
-				}
+			if($mdc->state != Models\MobileDeviceCommand::STATE_QUEUED
+			&& $mdc->state != Models\MobileDeviceCommand::STATE_SENT)
+				continue;
+			if(in_array($mdc->mobile_device_id, $wakeMdIds))
+				continue;
+			$md = $this->db->selectMobileDevice($mdc->mobile_device_id);
+			if($md->getOsType() != Models\MobileDevice::OS_TYPE_IOS) continue;
+			if(empty($md->push_sent) || time() - strtotime($md->push_sent) > 60*60) {
+				$wakeMdIds[] = $md->id;
 			}
 		}
 		// send push notification to selected devices

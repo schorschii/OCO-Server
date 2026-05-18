@@ -282,7 +282,8 @@ if($path === '/profile') {
 	// send next queued command
 	// https://developer.apple.com/documentation/devicemanagement/commands_and_queries
 	foreach($db->selectAllMobileDeviceCommandByMobileDevice($md->id) as $mdc) {
-		if($mdc->state == Models\MobileDeviceCommand::STATE_QUEUED) {
+		if($mdc->state == Models\MobileDeviceCommand::STATE_QUEUED
+		|| $mdc->state == Models\MobileDeviceCommand::STATE_SENT) {
 			// encode data parameter
 			$parameter = json_decode($mdc->parameter, true);
 			if(isset($parameter['_data']) && is_array($parameter['_data'])) {
