@@ -146,7 +146,7 @@ Let's Encrypt Certificates are trusted by default in nearly all operating system
 3. Certificate will be renewed automatically (use `certbot --apache renew` for manual renewal).
 
 ## Monitoring
-If you are using CheckMK as monitoring system, you can enable the local check script by creating a symlink of `scripts/checkmk.php` in `/usr/lib/check_mk_agent/local/`. Tis will show MDM certs expiration, OCO license expiration and cron job status as service in CheckMK.
+If you are using CheckMK as monitoring system, you can enable the local check script by creating a symlink of `scripts/checkmk.php` in `/usr/lib/check_mk_agent/local/`. This will show MDM certs expiration, OCO license expiration and cron job status as service in CheckMK.
 
 ## Server Tuning
 On big setups with more than 200 active clients/agents, you may encounter errors like "Lock wait timeout exceeded; try restarting transaction" in your Apache log.
