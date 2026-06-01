@@ -109,7 +109,7 @@ if(!empty($_SESSION['oco_user_id'])) {
 			<a href='https://github.com/schorschii/oco-server' target='_blank'>
 				<img id='forkme' src='img/forkme.png'>
 			</a>
-			<div id='motd'><?php if(!empty($loginScreenQuotes)) echo $loginScreenQuotes[ rand(0, sizeof($loginScreenQuotes)-1) ]; ?></div>
+			<div id='motd'><?php if(!empty($loginScreenQuotes)) echo htmlspecialchars($loginScreenQuotes[ rand(0, sizeof($loginScreenQuotes)-1) ]); ?></div>
 		</div>
 	</div>
 
