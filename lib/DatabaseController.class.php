@@ -3562,7 +3562,7 @@ class DatabaseController {
 		if(!$report) return false;
 
 		// Only allow SELECT queries - in MySQL/MariaDB, DDL statements (DROP TABLE, CREATE TABLE, ALTER TABLE, TRUNCATE) implicitly commit the current transaction before executing, so rollBack() has no effect on them.
-		if(!preg_match('/^SELECT\b/i', ltrim($trimmed))) {
+		if(!preg_match('/^SELECT\b/i', ltrim($report->query))) {
 			throw new InvalidRequestException('Only SELECT queries are allowed in reports');
 		}
 
