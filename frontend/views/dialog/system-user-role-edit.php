@@ -13,7 +13,7 @@ try {
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('name'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' name='name' autofocus='true' value='<?php echo $systemUserRole->name??''; ?>'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' name='name' autofocus='true' value='<?php echo htmlspecialchars($systemUserRole->name??'',ENT_QUOTES); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('permission_json'); ?></th>

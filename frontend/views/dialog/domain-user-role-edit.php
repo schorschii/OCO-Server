@@ -13,11 +13,11 @@ try {
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('name'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' name='name' autofocus='true' value='<?php echo $domainUserRole->name??''; ?>'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' name='name' autofocus='true' value='<?php echo htmlspecialchars($domainUserRole->name??'',ENT_QUOTES); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('permission_json'); ?></th>
-		<td><textarea class='fullwidth monospace' autocomplete='new-password' name='permissions' rows='8'><?php echo htmlspecialchars($domainUserRole->permissions)??''; ?></textarea></td>
+		<td><textarea class='fullwidth monospace' autocomplete='new-password' name='permissions' rows='8'><?php echo htmlspecialchars($domainUserRole->permissions??''); ?></textarea></td>
 	</tr>
 	<tr>
 		<th></th>

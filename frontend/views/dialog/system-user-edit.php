@@ -24,19 +24,19 @@ try {
 <table class='fullwidth aligned'>
 	<tr>
 		<th><?php echo LANG('uid'); ?></th>
-		<td><input type='text' class='fullwidth' name='uid' disabled='true' value='<?php echo $systemUser->uid??''; ?>'></input></td>
+		<td><input type='text' class='fullwidth' name='uid' disabled='true' value='<?php echo htmlspecialchars($systemUser->uid??'',ENT_QUOTES); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('username'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' name='username' autofocus='true' value='<?php echo $systemUser->username??''; ?>'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' name='username' autofocus='true' value='<?php echo htmlspecialchars($systemUser->username??'',ENT_QUOTES); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('display_name'); ?></th>
-		<td><input type='text' class='fullwidth' autocomplete='new-password' name='display_name' value='<?php echo $systemUser->display_name??''; ?>'></input></td>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' name='display_name' value='<?php echo htmlspecialchars($systemUser->display_name??'',ENT_QUOTES); ?>'></input></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('description'); ?></th>
-		<td><textarea class='fullwidth' autocomplete='new-password' name='description'><?php echo $systemUser->description??''; ?></textarea></td>
+		<td><textarea class='fullwidth' autocomplete='new-password' name='description'><?php echo htmlspecialchars($systemUser->description??'',ENT_QUOTES); ?></textarea></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('role'); ?></th>
