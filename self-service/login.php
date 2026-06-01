@@ -23,9 +23,11 @@ if(isset($_POST['username']) && isset($_POST['password']) && $selfServiceEnabled
 		$_SESSION['oco_self_service_username'] = $user->username;
 		$_SESSION['oco_self_service_user_id'] = $user->id;
 
+		// only allow relative URLs beginning with '/', do not redirect to other websites!
 		$redirect = 'index.php';
 		if(!empty($_GET['redirect'])
-		&& startsWith($_GET['redirect'], '/')) { // only allow relative URLs beginning with '/', do not redirect to other websites!
+		&& startsWith($_GET['redirect'], '/')
+		&& !startsWith($_GET['redirect'], '//')) {
 			$redirect = $_GET['redirect'];
 		}
 		header('Location: '.$redirect);
