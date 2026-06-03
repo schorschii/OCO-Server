@@ -241,10 +241,6 @@ try {
 						$info = json_decode($md->info, true); ?>
 						<table class='list metadata'>
 							<tr>
-								<th><?php echo LANG('identifier'); ?></th>
-								<td><?php echo htmlspecialchars($info['name']??''); ?></td>
-							</tr>
-							<tr>
 								<th><?php echo LANG('management_mode'); ?></th>
 								<td><?php echo htmlspecialchars($info['managementMode']??''); ?></td>
 							</tr>
@@ -275,6 +271,10 @@ try {
 							<tr>
 								<th><?php echo LANG('bootloader_version'); ?></th>
 								<td><?php echo htmlspecialchars($info['softwareInfo']['bootloaderVersion']??''); ?></td>
+							</tr>
+							<tr>
+								<th><?php echo LANG('patch_level'); ?></th>
+								<td><?php echo htmlspecialchars($info['softwareInfo']['securityPatchLevel']??''); ?></td>
 							</tr>
 							<tr>
 								<th><?php echo LANG('system_update'); ?></th>

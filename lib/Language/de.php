@@ -693,6 +693,7 @@ return [
 	'ownership' => 'Eigentümerschaft',
 	'policy_compliant' => 'Richtlinienkonform',
 	'api_level' => 'API-Level',
+	'patch_level' => 'Patchlevel',
 	'device_policy_version' => 'Device-Policy-Version',
 	'bootloader_version' => 'Bootloader-Version',
 	'system_update' => 'Systemupdate',

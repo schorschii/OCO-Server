@@ -698,6 +698,7 @@ return [
 	'ownership' => 'Ownership',
 	'policy_compliant' => 'Policy Compliant',
 	'api_level' => 'API Level',
+	'patch_level' => 'Patch Level',
 	'device_policy_version' => 'Device Policy Version',
 	'bootloader_version' => 'Bootloader Version',
 	'system_update' => 'System Update',
