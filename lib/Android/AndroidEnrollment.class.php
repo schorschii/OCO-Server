@@ -229,11 +229,16 @@ class AndroidEnrollment {
 	}
 
 	function getDevices() {
+		$devices = []; $token = '';
 		$enterpriseName = $this->getEnterprise()['name'];
-		$response = $this->apiCall('GET', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/devices', null);
-		if(empty($response['devices']))
-			throw new \RuntimeException('Unexpected server response: '.json_encode($response));
-		return $response['devices'];
+		do {
+			$response = $this->apiCall('GET', self::ANDROID_MANAGEMENT_API_URL.'/'.$enterpriseName.'/devices?pageToken='.urlencode($token), null);
+			if(empty($response['devices']))
+				throw new \RuntimeException('Unexpected server response: '.json_encode($response));
+			$devices = array_merge($devices, $response['devices']);
+			$token = $response['nextPageToken'] ?? '';
+		} while($token);
+		return $devices;
 	}
 
 	function deleteDevice(string $deviceId) {
@@ -272,6 +277,7 @@ class AndroidEnrollment {
 	}
 
 	public function syncDevices() {
+		$serials = [];
 		foreach($this->getDevices() as $device) {
 			if(empty($device['hardwareInfo']['serialNumber'])) continue;
 			$serial = $device['hardwareInfo']['serialNumber'];
@@ -282,6 +288,11 @@ class AndroidEnrollment {
 			$os = 'Android';
 			if(!empty($device['softwareInfo']))
 				$os .= ' '.($device['softwareInfo']['androidVersion']??'').' '.($device['softwareInfo']['androidBuildNumber']??'');
+
+			// check for duplicates
+			if(in_array($serial, $serials))
+				echo 'DUPLICATE: '.$serial."\n";
+			$serials[] = $serial;
 
 			$md = $this->db->selectMobileDeviceBySerialNumber($serial);
 			if($md) {
@@ -325,15 +336,20 @@ class AndroidEnrollment {
 			if($mdc->state == \Models\MobileDeviceCommand::STATE_SUCCESS
 			|| $mdc->state == \Models\MobileDeviceCommand::STATE_FAILED) continue;
 
-			$op = $this->getOperation($md->udid, $mdc->external_id);
-			if(!empty($op['done'])) {
-				$state = null;
-				if(!empty($op['error']) || !empty($op['metadata']['errorCode'])) {
-					$state = \Models\MobileDeviceCommand::STATE_FAILED;
-				} else {
-					$state = \Models\MobileDeviceCommand::STATE_SUCCESS;
+			try {
+				$op = $this->getOperation($md->udid, $mdc->external_id);
+				if(!empty($op['done'])) {
+					$state = null;
+					if(!empty($op['error']) || !empty($op['metadata']['errorCode'])) {
+						$state = \Models\MobileDeviceCommand::STATE_FAILED;
+					} else {
+						$state = \Models\MobileDeviceCommand::STATE_SUCCESS;
+					}
+					$this->db->updateMobileDeviceCommand($mdc->id, $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $state, json_encode($op), date('Y-m-d H:i:s'));
 				}
-				$this->db->updateMobileDeviceCommand($mdc->id, $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $state, json_encode($op), date('Y-m-d H:i:s'));
+			} catch(\Exception $e) {
+				// e.g. "status code 404: Operation not found. Choose a valid operation id"
+				echo $mdc->external_id.': '.$e->getMessage()."\n";
 			}
 		}
 	}
