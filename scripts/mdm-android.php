@@ -14,6 +14,18 @@ try {
 
 	switch($argv[1]) {
 
+		case 'devices':
+			var_dump(
+				$ade->getDevices();
+			);
+			die();
+
+		case 'delete-device':
+			var_dump(
+				$ade->deleteDevice($argv[2])
+			);
+			die();
+
 		case 'enterprises':
 			var_dump(
 				$ade->apiCall('GET', $ade::ANDROID_MANAGEMENT_API_URL.'/enterprises?'.http_build_query([
