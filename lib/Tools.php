@@ -4,9 +4,28 @@ function LANG($key) {
 	return LanguageController::getMessageFromSingleton($key);
 }
 
-function startsWith( $haystack, $needle ) {
-	$length = strlen( $needle );
-	return substr( $haystack, 0, $length ) === $needle;
+function startsWith($haystack, $needle) {
+	$length = strlen($needle);
+	return substr($haystack, 0, $length) === $needle;
+}
+
+function randomString($length=30) {
+	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
+	$charactersLength = strlen($characters);
+	$randomString = '';
+	for($i = 0; $i < $length; $i++) {
+		$randomString .= $characters[rand(0, $charactersLength - 1)];
+	}
+	return $randomString;
+}
+
+function shorter($text, $charsLimit=40, $dots=true) {
+	if(mb_strlen($text) > $charsLimit) {
+		$new_text = trim(mb_substr($text, 0, $charsLimit));
+		return $new_text . ($dots ? '…' : '');
+	} else {
+		return $text;
+	}
 }
 
 function isIE() {
@@ -48,36 +67,6 @@ function niceTime($seconds) {
 	else return round($seconds/60/60/24).' '.LANG('days');
 }
 
-function randomString($length = 30) {
-	$characters = '0123456789abcdefghijklmnopqrstuvwxyz';
-	$charactersLength = strlen($characters);
-	$randomString = '';
-	for($i = 0; $i < $length; $i++) {
-		$randomString .= $characters[rand(0, $charactersLength - 1)];
-	}
-	return $randomString;
-}
-
-function shorter($text, $charsLimit=40, $dots=true) {
-	if(mb_strlen($text) > $charsLimit) {
-		$new_text = trim(mb_substr($text, 0, $charsLimit));
-		return $new_text . ($dots ? '…' : '');
-	} else {
-		return $text;
-	}
-}
-
-function localTimeToUtc($dateTimeString) {
-	$date = new DateTime($dateTimeString, new DateTimeZone(date_default_timezone_get()));
-	$date->setTimezone(new DateTimeZone('UTC'));
-	return $date->format('Y-m-d H:i:s');
-}
-function utcTimeToLocal($utcTimeString) {
-	$date = new DateTime($utcTimeString, new DateTimeZone('UTC'));
-	$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
-	return $date->format('Y-m-d H:i:s');
-}
-
 // converts IPv4 or v6 address to string with bits
 function ipAddressToBits($inet) {
 	$inet = inet_pton($inet);
@@ -103,7 +92,18 @@ function isIpInRange($ip, $range) {
 	return ($ipNetBits === $netBits);
 }
 
-// time range operations
+// time operations
+function localTimeToUtc($dateTimeString) {
+	$date = new DateTime($dateTimeString, new DateTimeZone(date_default_timezone_get()));
+	$date->setTimezone(new DateTimeZone('UTC'));
+	return $date->format('Y-m-d H:i:s');
+}
+function utcTimeToLocal($utcTimeString) {
+	$date = new DateTime($utcTimeString, new DateTimeZone('UTC'));
+	$date->setTimezone(new DateTimeZone(date_default_timezone_get()));
+	return $date->format('Y-m-d H:i:s');
+}
+
 function isTimeInRange($strRange, $time=null) {
 	if(!$time) $time = time();
 
