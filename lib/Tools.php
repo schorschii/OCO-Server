@@ -23,20 +23,20 @@ function prettyJson($json) {
 }
 
 function niceSize($value, $useBinary=true, $round=1, $echoZeroIfEmpty=false) {
-	if($value === 0 || ($echoZeroIfEmpty && empty($value))) return "0 B";
-	if(empty($value)) return "";
+	if($value === 0 || ($echoZeroIfEmpty && empty($value))) return '0 B';
+	if(empty($value)) return '';
 	if($useBinary) {
-		if($value < 1024) return $value . " B";
-		else if($value < 1024*1024) return round($value / 1024, $round) . " KiB";
-		else if($value < 1024*1024*1024) return round($value / 1024 / 1024, $round) . " MiB";
-		else if($value < 1024*1024*1024*1024) return round($value / 1024 / 1024 /1024, $round) . " GiB";
-		else return round($value / 1024 / 1024 / 1024 / 1024, $round) . " TiB";
+		if($value < 1024) return $value . ' B';
+		else if($value < 1024*1024) return round($value / 1024, $round) . ' KiB';
+		else if($value < 1024*1024*1024) return round($value / 1024 / 1024, $round) . ' MiB';
+		else if($value < 1024*1024*1024*1024) return round($value / 1024 / 1024 /1024, $round) . ' GiB';
+		else return round($value / 1024 / 1024 / 1024 / 1024, $round) . ' TiB';
 	} else {
-		if($value < 1000) return $value . " B";
-		else if($value < 1000*1000) return round($value / 1000, $round) . " KB";
-		else if($value < 1000*1000*1000) return round($value / 1000 / 1000, $round) . " MB";
-		else if($value < 1000*1000*1000*1000) return round($value / 1000 / 1000 / 1000, $round) . " GB";
-		else return round($value / 1000 / 1000 / 1000 / 1000, $round) . " TB";
+		if($value < 1000) return $value . ' B';
+		else if($value < 1000*1000) return round($value / 1000, $round) . ' KB';
+		else if($value < 1000*1000*1000) return round($value / 1000 / 1000, $round) . ' MB';
+		else if($value < 1000*1000*1000*1000) return round($value / 1000 / 1000 / 1000, $round) . ' GB';
+		else return round($value / 1000 / 1000 / 1000 / 1000, $round) . ' TB';
 	}
 }
 
