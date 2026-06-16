@@ -145,14 +145,21 @@ class CoreLogic {
 		if(empty($md)) throw new NotFoundException();
 		$this->checkPermission($md, PermissionManager::METHOD_DELETE);
 
-		if($md->getOsType() === Models\MobileDevice::OS_TYPE_IOS) {
-			$ade = new Apple\AutomatedDeviceEnrollment($this->db);
-			$ade->disownDevices([$md->serial]);
-		} elseif($md->getOsType() === Models\MobileDevice::OS_TYPE_ANDROID) {
-			$ae = new Android\AndroidEnrollment($this->db);
-			$ae->deleteDevice($md->udid);
-		} else {
-			throw new Exception('Unkown device type');
+		try {
+			if($md->getOsType() === Models\MobileDevice::OS_TYPE_IOS) {
+				$ade = new Apple\AutomatedDeviceEnrollment($this->db);
+				$ade->disownDevices([$md->serial]);
+			} elseif($md->getOsType() === Models\MobileDevice::OS_TYPE_ANDROID) {
+				$ae = new Android\AndroidEnrollment($this->db);
+				$ae->deleteDevice($md->udid);
+			} else {
+				throw new Exception('Unkown device type');
+			}
+		} catch(Exception $e) {
+			if($force)
+				echo $e->getMessage();
+			else
+				throw $e;
 		}
 
 		$result = $this->db->deleteMobileDevice($md->id);

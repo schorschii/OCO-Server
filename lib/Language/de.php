@@ -720,7 +720,7 @@ return [
 	'apps_profiles_policies_synced' => 'Apps, Profile, Richtlinien wurden synchronisiert',
 	'install_apps_profiles_policies_notes' => 'Verwaltete Apps, Profile, Richtlinien entsprechend der Gruppenzuweisungen installieren (wird in regelmäßigen Abständen via Cron ausgeführt)',
 	'ios_device_name_update_note' => 'Es wird ein Kommando gesendet, welches den Gerätenamen ändert. Der Name in OCO wird nach erfolgreicher Ausführung angepasst.',
-	'confirm_delete_mobile_device' => 'Sind Sie sicher, dass Sie das Mobilgerät bzw. die Mobilgeräte löschen möchten?'."\n\n".'iOS-Geräte werden auch aus der Organisation im Apple Business Manager entfernt.'."\n\n".'Android-Geräte werden auf Werkseinstellungen zurückgesetzt und aus der Organisation entfernt.',
+	'confirm_delete_mobile_device' => 'Sind Sie sicher, dass Sie das Mobilgerät bzw. die Mobilgeräte löschen möchten?'."\n\n".'iOS-Geräte werden auch aus der Organisation im Apple Business Manager entfernt.'."\n\n".'Android-Geräte werden auf Werkseinstellungen zurückgesetzt und aus der Organisation entfernt.'."\n\n".'Bei gedrückter Umschalt-Taste wird das Gerät aus der OCO-Datenbank gelöscht, auch wenn der MDM-Hersteller-API-Aufruf fehlschlägt.',
 	'configurations' => 'Konfigurationen',
 	'configuration_deleted' => 'Konfiguration gelöscht',
 	'charging' => 'lädt',
