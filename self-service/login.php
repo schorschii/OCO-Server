@@ -30,6 +30,7 @@ if(isset($_POST['username']) && isset($_POST['password']) && $selfServiceEnabled
 		&& !startsWith($_GET['redirect'], '//')) {
 			$redirect = $_GET['redirect'];
 		}
+		session_regenerate_id(true);
 		header('Location: '.$redirect);
 		die('Welcome to the enchanting world of OCO!');
 	} catch(AuthenticationException $e) {
