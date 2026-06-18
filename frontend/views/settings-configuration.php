@@ -45,7 +45,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 			</tr>
 			<tr>
 				<th><?php echo LANG('client_api_key'); ?>:</th>
-				<td><?php echo $permGeneral ? htmlspecialchars($db->settings->get('client-api-key')) : '<i>'.LANG('permission_denied').'</i>'; ?></td>
+				<td><?php echo $permGeneral ? '<span class="monospace">'.htmlspecialchars($db->settings->get('client-api-key')).'</span>' : '<i>'.LANG('permission_denied').'</i>'; ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('agent_registration_enabled'); ?>:</th>
@@ -53,7 +53,7 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 			</tr>
 			<tr>
 				<th><?php echo LANG('agent_registration_key'); ?>:</th>
-				<td><?php echo $permGeneral ? htmlspecialchars($db->settings->get('agent-registration-key')) : '<i>'.LANG('permission_denied').'</i>'; ?></td>
+				<td><?php echo $permGeneral ? '<span class="monospace">'.htmlspecialchars($db->settings->get('agent-registration-key')).'</span>' : '<i>'.LANG('permission_denied').'</i>'; ?></td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('package_depot_path'); ?>:</th>
@@ -211,9 +211,9 @@ $permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_
 				<?php foreach($db->selectAllSetting() as $s) { ?>
 				<tr>
 					<td><input type='checkbox' name='setting_id[]' value='<?php echo $s->key; ?>'></td>
-					<td><?php echo htmlspecialchars($s->key); ?></td>
-					<td><?php echo htmlspecialchars(shorter($s->value, 150)); ?></td>
-					<td><button setting='<?php echo htmlspecialchars($s->key); ?>' onclick='showDialogEditSetting(this.getAttribute("setting"))'><img src='img/edit.dyn.svg'></button></td>
+					<th><?php echo htmlspecialchars($s->key); ?></th>
+					<td class='monospace'><?php echo nl2br(htmlspecialchars(shorter($s->value, 150))); ?></td>
+					<td><button setting='<?php echo htmlspecialchars($s->key,ENT_QUOTES); ?>' onclick='showDialogEditSetting(this.getAttribute("setting"))'><img src='img/edit.dyn.svg'></button></td>
 				</tr>
 				<?php } ?>
 			</tbody>

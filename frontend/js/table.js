@@ -332,10 +332,10 @@ function tableSearch(table) {
 	trs = tbody[0].getElementsByTagName('tr');
 	for(var i = 0; i < trs.length; i++) {
 		var visible = true;
-		tds = trs[i].getElementsByTagName('td');
+		tds = trs[i].querySelectorAll('td, th');
 		if(!tds || tds.length == 0) continue;
 		for(var n = 0; n < tds.length; n++) {
-			txtValue = tds[n].textContent || tds[n].textContent;
+			txtValue = tds[n].textContent;
 			if(!active || !(n in conditions) || conditions[n] == ''
 				|| txtValue.toUpperCase().includes(conditions[n])
 			) {
