@@ -147,7 +147,7 @@ try {
 									<td class='monospace'><?php echo nl2br(htmlspecialchars($value)); ?></td>
 									<td>
 										<button class='small' onclick='showDialogEditParameter(<?php echo $md->id; ?>, this.getAttribute("key"))' key='<?php echo htmlspecialchars($key,ENT_QUOTES); ?>' title='<?php echo LANG('edit'); ?>'><img src='img/edit.dyn.svg'></button>
-										<button class='small' onclick='editParameter(null, <?php echo $md->id; ?>, this.getAttribute("key"), null)' key='<?php echo htmlspecialchars($key,ENT_QUOTES); ?>' title='<?php echo LANG('delete'); ?>'><img src='img/delete.dyn.svg'></button>
+										<button class='small' onclick='if(confirm(LANG["are_you_sure"])) editParameter(null, <?php echo $md->id; ?>, this.getAttribute("key"), null)' key='<?php echo htmlspecialchars($key,ENT_QUOTES); ?>' title='<?php echo LANG('delete'); ?>'><img src='img/delete.dyn.svg'></button>
 									</td>
 								</tr>
 							<?php } ?>

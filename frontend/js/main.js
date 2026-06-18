@@ -3340,7 +3340,7 @@ function removeSelectedSetting(checkboxName, attributeName=null) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_setting[]', 'value':entry});
 	});
-	if(confirm(LANG['really_delete'])) {
+	if(confirm(LANG['are_you_sure'])) {
 		ajaxRequestPost('ajax-handler/settings.php', urlencodeArray(params), null, function() {
 			emitMessage(LANG['object_deleted'], ids.join(', '), MESSAGE_TYPE_SUCCESS);
 			refreshContent();
@@ -3513,7 +3513,7 @@ function removeSelectedManagedApp(checkboxName, attributeName=null) {
 	ids.forEach(function(entry) {
 		params.push({'key':'remove_managed_app_id[]', 'value':entry});
 	});
-	if(confirm(LANG['really_delete'])) {
+	if(confirm(LANG['are_you_sure'])) {
 		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 			emitMessage(LANG['object_deleted'], null, MESSAGE_TYPE_SUCCESS);
 			refreshContent();
