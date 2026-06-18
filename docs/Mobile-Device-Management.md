@@ -68,7 +68,10 @@ Note that not all MDM commands/features are available when using this method (th
 
 Now, you can assign devices in ABM/ASM to your OCO server. Note that you can set OCO as default MDM server for every new device bought.
 
-### General/Configuration Management
+### General / Send Commands
+With the button "Send Command" on the device detail page, you can e.g. lock or erase a device.
+
+### Configuration Management
 First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles and Policies" section in the OCO sidebar. Such profiles can be created using Apple Configurator, but Apple Configurator only knows a subset of all possible config options. For example configuring an Exchange profile must be done manually. See the [configuration payload reference](https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys) for all possible configuration values. After creating a profile, assign it to mobile device groups.
 
 Common configuration profiles:
@@ -80,7 +83,9 @@ Common configuration profiles:
 
 After the device checked in into OCO MDM (via ADE or manual enrollment profile installation), you can add the device to mobile device groups. This will install the assigned configuration profiles.
 
-With the button "Send Command" on the device detail page, you can e.g. lock or erase a device.
+You can use parameters to customzize profiles per device. E.g. if you want to deploy a VPN configuration, you may want to directly set the username for the connection. To do this, add a placeholder `$$username$$` in the VPN profile. Then, add a parameter `username` on the device detail page. The placeholder will then be replaced accordingly when installing the profile.
+
+Important: if a profile contains placeholders, the profile will only be installed if all parameters are provided.
 
 ### Purchasing & Installing Apps
 ABM/ASM offers features for volume purchases of apps and books from the App Store. Before you can deploy apps through OCO, you first need to purchase them in ABM/ASM (even if they are free).

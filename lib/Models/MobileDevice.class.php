@@ -21,6 +21,7 @@ class MobileDevice {
 	public $unlock_token;
 	public $info;
 	public $policy;
+	public $parameters;
 	public $notes;
 	public $created;
 	public $last_update;

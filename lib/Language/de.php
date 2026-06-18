@@ -758,6 +758,7 @@ return [
 	'database_cleanup' => 'Datenbank-Frühjahrsputz',
 	'delete_recognized_software_without_installations' => 'Lösche erkannte Software ohne Installationen',
 	'delete_domain_users_without_logons' => 'Lösche Domänenbenutzer ohne Anmeldungen',
+	'parameters' => 'Parameter',
 	'package_creation_notes' => '
 		<p>
 			Ein Paket besteht aus einem ZIP-Archiv, welches bei der Bereitstellung in ein temporäres Verzeichnis entpackt wird. Anschließend wird ein Kommando (die Prozedur) ausgeführt, um die Installation zu starten. Längere Kommandos sollten in ein selbst geschriebenes Skript (.bat bzw. .sh) ausgelagert werden.

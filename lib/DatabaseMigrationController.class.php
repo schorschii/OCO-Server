@@ -792,6 +792,16 @@ class DatabaseMigrationController {
 			$upgraded = true;
 		}
 
+		/*** 1.2.1 ***/
+		if(!$this->getTableColumnInfo('mobile_device', 'parameters')) {
+			if($this->debug) echo 'Upgrading to 1.2.1... (column mobile_device parameters)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'ALTER TABLE `mobile_device` ADD `parameters` text NULL DEFAULT NULL AFTER `policy`');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
+
 		return $upgraded;
 	}
 

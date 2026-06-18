@@ -1707,6 +1707,37 @@ function removeMobileDeviceFromGroup(ids, groupId) {
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
+function showDialogEditParameter(id, key='', title=null) {
+	if(title == null) {
+		title = LANG['edit_parameter'];
+		if(key == '')
+			title = LANG['create_parameter'];
+	}
+	showDialogAjax(title,
+		'views/dialog/parameter-edit.php?key='+encodeURIComponent(key),
+		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO,
+		function(dialogContainer){
+			dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+				let txtKey = dialogContainer.querySelectorAll('input[name=key]')[0];
+				let txtValue = dialogContainer.querySelectorAll('textarea[name=value]')[0];
+				editParameter(
+					dialogContainer,
+					id,
+					txtKey.value,
+					txtValue.value
+				);
+			});
+		}
+	);
+}
+function editParameter(dialogContainer, id, key, value) {
+	let params = {'edit_mobile_device_id':id, 'parameter':key};
+	if(value !== null) params['value'] = value;
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeObject(params), null, function() {
+		if(dialogContainer) dialogContainer.close(); refreshContent();
+		emitMessage(LANG['saved'], key, MESSAGE_TYPE_SUCCESS);
+	});
+}
 
 // ======== COMPUTER OPERATIONS ========
 function showDialogCreateComputer() {

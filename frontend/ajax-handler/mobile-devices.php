@@ -43,6 +43,18 @@ try {
 		die();
 	}
 
+	if(!empty($_POST['edit_mobile_device_id'])
+	&& !empty($_POST['parameter'])) {
+		$md = $cl->getMobileDevice($_POST['edit_mobile_device_id']);
+		$parameters = json_decode($md->parameters, true) ?? [];
+		if(isset($_POST['value']))
+			$parameters = array_merge($parameters, [$_POST['parameter'] => $_POST['value']]);
+		elseif(array_key_exists($_POST['parameter'], $parameters))
+			unset($parameters[$_POST['parameter']]);
+		$cl->editMobileDevice($md->id, $md->device_name, $md->notes, $md->force_update, json_encode($parameters));
+		die();
+	}
+
 	if(!empty($_POST['remove_id']) && is_array($_POST['remove_id'])) {
 		foreach($_POST['remove_id'] as $id) {
 			$cl->removeMobileDevice($id, !empty($_POST['force']));

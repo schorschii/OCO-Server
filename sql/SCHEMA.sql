@@ -748,6 +748,7 @@ CREATE TABLE `mobile_device` (
   `unlock_token` blob DEFAULT NULL,
   `info` MEDIUMTEXT DEFAULT NULL,
   `policy` MEDIUMTEXT NULL DEFAULT NULL,
+  `parameters` text NULL DEFAULT NULL,
   `notes` text NOT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `last_update` timestamp NULL DEFAULT NULL,

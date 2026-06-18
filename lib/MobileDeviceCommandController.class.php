@@ -129,7 +129,7 @@ class MobileDeviceCommandController {
 					$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 					$md->model, $os??$md->os, $md->device_family, $md->color,
 					$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token,
-					$md->info, $newPolicy, $md->notes, $md->force_update
+					$md->info, $newPolicy, $md->parameters, $md->notes, $md->force_update
 				);
 			} catch(Exception $e) {
 				// if it fails, continue execution for other devices
@@ -138,6 +138,23 @@ class MobileDeviceCommandController {
 			}
 		}
 		return $success;
+	}
+
+	static function replaceParameters(string &$payload, array $parameters) {
+		preg_match_all('(\$\$.+\$\$)', $payload, $matches);
+		foreach($matches[0] as $paramToReplace) {
+			$found = false;
+			foreach($parameters as $key => $value) {
+				if($paramToReplace === '$$'.$key.'$$')
+					$found = true;
+			}
+			if(!$found) // exit if a required param is not defined
+				return false;
+		}
+		foreach($parameters as $key => $value) {
+			$payload = str_replace('$$'.$key.'$$', $value, $payload);
+		}
+		return true;
 	}
 
 	private function iosProfiles(Models\MobileDevice $md) {
@@ -151,6 +168,10 @@ class MobileDeviceCommandController {
 			if(!$uuid) continue;
 			if(in_array($uuid, $handledProfileUuids)) continue; // handle 1 profile only once if assigned via 2 groups
 			if(!array_key_exists($uuid, $installedProfileUuids)) {
+				if(!self::replaceParameters($p->payload, json_decode($md->parameters, true)??[])) {
+					echo('Cannot install profile '.$p->name.' because a parameter is missing'."\n");
+					continue;
+				}
 				$result = $this->db->insertMobileDeviceCommand($md->id, 'InstallProfile', json_encode([
 					'RequestType' => 'InstallProfile',
 					'Payload' => base64_encode($p->payload),
@@ -275,7 +296,7 @@ class MobileDeviceCommandController {
 					$md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 					$md->model, $os??$md->os, $md->device_family, $md->color,
 					$md->profile_uuid, $md->push_token, $md->push_magic, date('Y-m-d H:i:s'), $md->unlock_token,
-					$md->info, $md->policy, $md->notes, 0/*force_update*/
+					$md->info, $md->policy, $md->parameters, $md->notes, 0/*force_update*/
 				);
 			}
 		}

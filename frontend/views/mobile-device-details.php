@@ -126,6 +126,46 @@ try {
 							</td>
 						</tr>
 					</table>
+
+					<div class='controls heading'>
+						<h2><?php echo LANG('parameters'); ?></h2>
+						<div class='filler invisible'></div>
+						<button onclick='showDialogEditParameter(<?php echo $md->id; ?>)'><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('add'); ?></button>
+					</div>
+					<table id='tblMobileDeviceParameterData' class='list searchable sortable savesort margintop fullwidth actioncolumn'>
+						<thead>
+							<tr>
+								<th class='searchable sortable'><?php echo LANG('name'); ?></th>
+								<th class='searchable sortable'><?php echo LANG('value'); ?></th>
+								<th class=''><?php echo LANG('action'); ?></th>
+							</tr>
+						</thead>
+						<tbody>
+							<?php foreach(json_decode($md->parameters)??[] as $key => $value) { ?>
+								<tr>
+									<th><?php echo htmlspecialchars($key); ?></th>
+									<td class='monospace'><?php echo nl2br(htmlspecialchars($value)); ?></td>
+									<td>
+										<button class='small' onclick='showDialogEditParameter(<?php echo $md->id; ?>, this.getAttribute("key"))' key='<?php echo htmlspecialchars($key,ENT_QUOTES); ?>' title='<?php echo LANG('edit'); ?>'><img src='img/edit.dyn.svg'></button>
+										<button class='small' onclick='editParameter(null, <?php echo $md->id; ?>, this.getAttribute("key"), null)' key='<?php echo htmlspecialchars($key,ENT_QUOTES); ?>' title='<?php echo LANG('delete'); ?>'><img src='img/delete.dyn.svg'></button>
+									</td>
+								</tr>
+							<?php } ?>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td colspan='999'>
+									<div class='spread'>
+										<div>
+										</div>
+										<div class='controls'>
+											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+										</div>
+									</div>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
 				</div>
 				<div>
 					<h2><?php echo LANG('information'); ?></h2>

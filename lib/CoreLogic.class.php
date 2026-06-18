@@ -109,7 +109,7 @@ class CoreLogic {
 		]);
 		return $insertId;
 	}
-	public function editMobileDevice($id, $deviceName, $notes, $forceUpdate=null) {
+	public function editMobileDevice($id, $deviceName, $notes, $forceUpdate=null, $parameters=null) {
 		$md = $this->db->selectMobileDevice($id);
 		if(empty($md)) throw new NotFoundException();
 		$this->checkPermission($md, PermissionManager::METHOD_WRITE);
@@ -127,10 +127,11 @@ class CoreLogic {
 		}
 
 		if($forceUpdate === null) $forceUpdate = $md->force_update;
+		if($parameters === null) $parameters = $md->parameters;
 		$result = $this->db->updateMobileDevice($md->id,
 			$md->udid, $md->state, $deviceName, $md->serial, $md->vendor_description, $md->model, $md->os, $md->device_family, $md->color,
-			$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token, $md->info, $md->policy,
-			$notes, $forceUpdate, false/*update_last_update*/
+			$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent, $md->unlock_token, $md->info, $md->policy, $parameters,
+			$notes, $forceUpdate, false/*update last_update*/
 		);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $md->id, 'oco.mobile_device.update', [

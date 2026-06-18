@@ -763,6 +763,7 @@ return [
 	'database_cleanup' => 'Database Cleanup',
 	'delete_recognized_software_without_installations' => 'Delete recognized software without installations',
 	'delete_domain_users_without_logons' => 'Delete domain users without logons',
+	'parameters' => 'Parameters',
 	'package_creation_notes' => '
 		<p>
 			A package consists of a ZIP archive, which is unpacked into a temporary directory when it is made available. Then a command (the procedure) is executed to start the installation. Longer commands should be stored in a script (.bat or .sh) you have written yourself.
