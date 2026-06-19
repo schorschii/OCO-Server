@@ -141,7 +141,7 @@ try {
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach(json_decode($md->parameters)??[] as $key => $value) { ?>
+							<?php foreach(json_decode($md->parameters,true)??[] as $key => $value) { ?>
 								<tr>
 									<th><?php echo htmlspecialchars($key); ?></th>
 									<td class='monospace'><?php echo nl2br(htmlspecialchars($value)); ?></td>

@@ -1707,14 +1707,9 @@ function removeMobileDeviceFromGroup(ids, groupId) {
 		emitMessage(LANG['object_removed_from_group'], '', MESSAGE_TYPE_SUCCESS);
 	});
 }
-function showDialogEditParameter(id, key='', title=null) {
-	if(title == null) {
-		title = LANG['edit_parameter'];
-		if(key == '')
-			title = LANG['create_parameter'];
-	}
-	showDialogAjax(title,
-		'views/dialog/parameter-edit.php?key='+encodeURIComponent(key),
+function showDialogEditParameter(id, key='') {
+	showDialogAjax(LANG['parameter'],
+		'views/dialog/parameter-edit.php?id='+encodeURIComponent(id)+'&key='+encodeURIComponent(key),
 		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO,
 		function(dialogContainer){
 			dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{

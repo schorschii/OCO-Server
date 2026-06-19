@@ -3,10 +3,12 @@ $SUBVIEW = 1;
 require_once('../../../loader.inc.php');
 require_once('../../session.inc.php');
 
+$key = $_GET['key'] ?? '';
+$value = '';
 try {
-	$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
-	$key = $_GET['key'] ?? '';
-	$value = $db->settings->get($key) ?? '';
+	$md = $cl->getMobileDevice($_GET['id'] ?? -1);
+	$parameters = json_decode($md->parameters,true)??[];
+	$value = $parameters[$key] ?? '';
 } catch(PermissionException $e) {
 	http_response_code(403);
 	die(LANG('permission_denied'));
@@ -22,7 +24,7 @@ try {
 <table class='fullwidth aligned'>
 	<tr>
 		<td>
-			<input type='text' class='fullwidth monospace' autofocus='true' autocomplete='new-password' name='key' placeholder='<?php echo LANG('key'); ?>' value='<?php echo htmlspecialchars($key); ?>'></input>
+			<input type='text' class='fullwidth monospace' autofocus='true' autocomplete='new-password' name='key' placeholder='<?php echo LANG('name'); ?>' value='<?php echo htmlspecialchars($key); ?>'></input>
 		</td>
 	</tr>
 	<tr>
