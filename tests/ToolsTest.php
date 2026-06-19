@@ -4,6 +4,13 @@ use PHPUnit\Framework\TestCase;
 
 class ToolsTest extends TestCase {
 
+	private function assertMatchesRegularExpressionWrapper($pattern, $text) {
+		if(method_exists($this, 'assertMatchesRegularExpression'))
+			$this->assertMatchesRegularExpression($pattern, $text);
+		else
+			$this->assertRegExp($pattern, $text);
+	}
+
 	// --- startsWith ---
 
 	public function testStartsWithMatch(): void {
@@ -93,7 +100,7 @@ class ToolsTest extends TestCase {
 
 	public function testRandomStringCharacters(): void {
 		$s = randomString(100);
-		$this->assertMatchesRegularExpression('/^[0-9a-z]+$/', $s);
+		$this->assertMatchesRegularExpressionWrapper('/^[0-9a-z]+$/', $s);
 	}
 
 	// --- ipAddressToBits ---
@@ -102,7 +109,7 @@ class ToolsTest extends TestCase {
 		$bits = ipAddressToBits('192.168.1.1');
 		$this->assertIsString($bits);
 		$this->assertSame(32, strlen($bits));
-		$this->assertMatchesRegularExpression('/^[01]+$/', $bits);
+		$this->assertMatchesRegularExpressionWrapper('/^[01]+$/', $bits);
 	}
 
 	public function testIpv6ToBits(): void {
