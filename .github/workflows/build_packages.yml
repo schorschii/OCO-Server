@@ -14,8 +14,8 @@ jobs:
     steps:
       - name: Run phpunit
         run: |
-          apt install -y phpunit
-          phpunit
+          sudo apt install -y phpunit
+          cd tests && phpunit
 
   create_release_deb: # used to identify the output in other jobs
     name: Create Release with Debian package
