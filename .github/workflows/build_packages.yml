@@ -7,9 +7,20 @@ on:
       - 'v*'
 
 jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run phpunit
+        run: |
+          apt install -y phpunit
+          phpunit
+
   create_release_deb: # used to identify the output in other jobs
     name: Create Release with Debian package
     runs-on: ubuntu-latest
+    needs: tests
 
     permissions:
       contents: write
