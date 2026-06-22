@@ -267,11 +267,11 @@ class AndroidEnrollment {
 	}
 
 	public function syncDevices() {
-		$serials = [];
 		foreach($this->getDevices() as $device) {
 			if(empty($device['hardwareInfo']['serialNumber'])) continue;
 			$serial = $device['hardwareInfo']['serialNumber'];
 			$udidSplitter = explode('/', $device['name']);
+			$udid = end($udidSplitter);
 			$state = $device['state'];
 			$model = ($device['hardwareInfo']['brand']??'').' '.($device['hardwareInfo']['model']??'');
 			$family = $device['hardwareInfo']['hardware']??'';
@@ -279,16 +279,11 @@ class AndroidEnrollment {
 			if(!empty($device['softwareInfo']))
 				$os .= ' '.($device['softwareInfo']['androidVersion']??'').' '.($device['softwareInfo']['androidBuildNumber']??'');
 
-			// check for duplicates
-			if(in_array($serial, $serials))
-				echo 'DUPLICATE: '.$serial."\n";
-			$serials[] = $serial;
-
-			$md = $this->db->selectMobileDeviceBySerialNumber($serial);
+			$md = $this->db->selectMobileDeviceByUdid($udid);
 			if($md) {
 				$mdId = $md->id;
 				$this->db->updateMobileDevice($md->id,
-					end($udidSplitter), $state, $md->device_name, $md->serial, ''/*description*/,
+					$udid, $state, $md->device_name, $md->serial, ''/*description*/,
 					$model ? $model : $md->model,
 					$os ? $os : $md->os, $family, ''/*color*/,
 					$device['policy_name']??null, $md->push_token, $md->push_magic, $md->push_sent,
@@ -296,9 +291,9 @@ class AndroidEnrollment {
 					empty($device['lastStatusReportTime']) ? false : date('Y-m-d H:i:s', strtotime($device['lastStatusReportTime']))
 				);
 			} else {
-				echo 'Creating device '.$serial.'...'."\n";
+				echo 'Creating device '.$udid.' '.$serial.'...'."\n";
 				$mdId = $this->db->insertMobileDevice(
-					end($udidSplitter), $state, ''/*name*/, $serial, ''/*description*/,
+					$udid, $state, ''/*name*/, $serial, ''/*description*/,
 					$model, $os, $family, ''/*color*/,
 					$device['policy_name']??null, null/*push_token*/, null/*push_magic*/, null/*push_sent*/,
 					null/*unlock_token*/, json_encode($device), ''/*notes*/, 0/*force_update*/
