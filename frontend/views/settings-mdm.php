@@ -12,19 +12,30 @@ try {
 	$permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 
 	// deliver download file if requested
-	if(!empty($_GET['download'])) switch($_GET['download']) {
-		case 'mdm-vendor-csr':
-			header('Content-Disposition: attachment; filename=mdm-vendor.csr');
-			echo $ade->generateMdmVendorCsr();
+	if(!empty($_GET['download'])) {
+		try {
+			switch($_GET['download']) {
+				case 'mdm-vendor-csr':
+					$filename = 'mdm-vendor.csr';
+					$content  = $ade->generateMdmVendorCsr();
+					break;
+				case 'mdm-apn-csr':
+					$filename = 'mdm-apn.csr';
+					$content  = $ade->generateMdmApnCsr();
+					break;
+				case 'mdm-token-cert':
+					$filename = 'mdm-token-cert.pem';
+					$content  = $ade->generateMdmServerTokenCert();
+					break;
+				default:
+					throw new InvalidRequestException();
+			}
+			header('Content-Disposition: attachment; filename='.$filename);
+			echo $content;
 			die();
-		case 'mdm-apn-csr':
-			header('Content-Disposition: attachment; filename=mdm-apn.csr');
-			echo $ade->generateMdmApnCsr();
-			die();
-		case 'mdm-token-cert':
-			header('Content-Disposition: attachment; filename=mdm-token-cert.pem');
-			echo $ade->generateMdmServerTokenCert();
-			die();
+		} catch(Exception $e) {
+			die($e->getMessage());
+		}
 	}
 
 	// deliver download file if requested
