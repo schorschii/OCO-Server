@@ -70,16 +70,6 @@ class AndroidEnrollment {
 		return $cred;
 	}
 	private function aquireAccessToken() {
-		/*$oauth = new \Google_Client();
-		$oauth->setApplicationName(LANG('app_name'));
-		$oauth->setAuthConfig($this->getOAuthCredentials(), true);
-		$oauth->setScopes(['https://www.googleapis.com/auth/androidmanagement']);
-		$oauth->setAccessToken(json_decode($token, true));
-		if($oauth->isAccessTokenExpired()) {
-			$oauth->refreshTokenWithAssertion();
-		}
-		$token = $oauth->getAccessToken();*/
-
 		// restore cached token
 		$tokenJson = $this->db->settings->get('google-api-token');
 		if($tokenJson) {
@@ -96,7 +86,7 @@ class AndroidEnrollment {
 		}
 		// cache the access token
 		$this->db->insertOrUpdateSettingByKey('google-api-token', json_encode($token));
-		// return the tokem value
+		// return the token value
 		return $token['access_token'];
 	}
 	private function getAccessToken() {
