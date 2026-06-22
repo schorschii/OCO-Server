@@ -127,8 +127,6 @@ You can now add Android devices into OCO by clicking "New Android Device" on the
 // TODO
 
 #### Samsung Knox Zero-Touch Enrollment
-(theory, not tested yet)
-
 If you want to enroll your Samsung devices automatically to OCO MDM, you can configure a Knox enrollment profile on the [Knox Admin Portal](https://central.samsungknox.com).
 
 Set the following values in the profile:
@@ -141,17 +139,22 @@ Set the following values in the profile:
 - DPC extras: `{"com.google.android.apps.work.clouddpc.EXTRA_ENROLLMENT_TOKEN": "<enrollment-token>"}`
   - replace &lt;enrollment-token&gt; with an one year valid token generated on command line via `php scripts/mdm-android.php generate-enrollment-token 31536000`
 
-### General/Configuration Management
+### General / Send Commands
+With the button "Send Command" on the device detail page, you can e.g. lock a device or reset the passcode.
+
+### Configuration Management
 First, ceate a policy (JSON format) in the corresponding "Profiles and Policies" section in the OCO sidebar. See the [Android policy reference](https://developers.google.com/android/management/reference/rest/v1/enterprises.policies#Policy) for possible configuration values. After creating a policy, assign it to mobile device groups.
 
 After the device checked in into OCO MDM, you can add the device to mobile device groups. This will apply the assigned policies.
 
-With the button "Send Command" on the device detail page, you can e.g. lock a device or reset the passcode.
+Placeholders can be used too as described in the iOS section.
 
 ### Installing Apps
 To deploy Android apps, open the managed Play Store by clicking "Manage Android Apps" on the "Managed Apps" page in OCO. A Google Play iframe will be displayed, where you can select the desired apps. After you imported an app into OCO, you can assign them to mobile device groups like on iOS and they will be installed automatically.
 
 When assigning apps to groups, you can add conguration values for the app. Consult the documentation of the specific app which configuration values are supported.
+
+Note that placeholders for app configurations only work when manually adding the config values in the app-to-group assignment dialog. When selecting a previously defined config template (created via Google Play iframe), placeholders cannot be used.
 
 ## Common Best Practices
 ### Certificate Enrollment

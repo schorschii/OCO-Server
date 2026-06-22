@@ -93,6 +93,13 @@ class MobileDeviceCommandController {
 					'configurationVariables' => json_decode($app->config, true),
 				];
 			}
+
+			// replace parameters
+			if(!self::replacePlaceholders($appConfig, json_decode($md->parameters, true)??[])) {
+				echo('Cannot install app '.$app->identifier.' because a parameter is missing'."\n");
+				continue;
+			}
+
 			$policy['applications'][] = $appConfig;
 		}
 		return $policy;
@@ -107,6 +114,12 @@ class MobileDeviceCommandController {
 			// check valid JSON
 			$policyValues = json_decode($p->payload, true);
 			if(!$policyValues || !is_array($policyValues)) continue;
+
+			// replace parameters
+			if(!self::replacePlaceholders($policyValues, json_decode($md->parameters, true)??[])) {
+				echo('Cannot install policy '.$p->name.' because a parameter is missing'."\n");
+				continue;
+			}
 
 			// merge policy values
 			$policy = array_merge($policy, $policyValues);
@@ -140,19 +153,27 @@ class MobileDeviceCommandController {
 		return $success;
 	}
 
-	static function replaceParameters(string &$payload, array $parameters) {
-		preg_match_all('(\$\$.+\$\$)', $payload, $matches);
-		foreach($matches[0] as $paramToReplace) {
-			$found = false;
-			foreach($parameters as $key => $value) {
-				if($paramToReplace === '$$'.$key.'$$')
-					$found = true;
+	static function replacePlaceholders(&$payload, array $parameters) {
+		if(is_string($payload)) {
+			preg_match_all('(\$\$[A-Za-z0-9]+\$\$)', $payload, $matches);
+			foreach($matches[0] as $paramToReplace) {
+				$found = false;
+				foreach($parameters as $key => $value) {
+					if($paramToReplace === '$$'.$key.'$$')
+						$found = true;
+				}
+				if(!$found) // exit if a required param is not defined
+					return false;
 			}
-			if(!$found) // exit if a required param is not defined
-				return false;
-		}
-		foreach($parameters as $key => $value) {
-			$payload = str_replace('$$'.$key.'$$', $value, $payload);
+			foreach($parameters as $key => $value) {
+				$payload = str_replace('$$'.$key.'$$', $value, $payload);
+			}
+		} elseif(is_array($payload)) {
+			foreach($payload as $key => $value) {
+				if(!self::replacePlaceholders($value, $parameters))
+					return false;
+				$payload[$key] = $value;
+			}
 		}
 		return true;
 	}
@@ -168,13 +189,21 @@ class MobileDeviceCommandController {
 			if(!$uuid) continue;
 			if(in_array($uuid, $handledProfileUuids)) continue; // handle 1 profile only once if assigned via 2 groups
 			if(!array_key_exists($uuid, $installedProfileUuids)) {
-				if(!self::replaceParameters($p->payload, json_decode($md->parameters, true)??[])) {
+				// parse the plist into array and replace parameters
+				$plist = new CFPropertyList\CFPropertyList();
+				$plist->parse($p->payload);
+				$payload = $plist->toArray();
+				if(!self::replacePlaceholders($payload, json_decode($md->parameters, true)??[])) {
 					echo('Cannot install profile '.$p->name.' because a parameter is missing'."\n");
 					continue;
 				}
+				// convert processed array back to plist
+				$td = new \CFPropertyList\CFTypeDetector();
+				$plist = new \CFPropertyList\CFPropertyList();
+				$plist->add( $td->toCFType( $payload ) );
 				$result = $this->db->insertMobileDeviceCommand($md->id, 'InstallProfile', json_encode([
 					'RequestType' => 'InstallProfile',
-					'Payload' => base64_encode($p->payload),
+					'Payload' => base64_encode($plist->toXML(true)),
 					'_data' => ['Payload']
 				]));
 				if($result) {
