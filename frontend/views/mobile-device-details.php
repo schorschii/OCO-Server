@@ -439,7 +439,7 @@ try {
 								<?php foreach(json_decode($md->policy??'', true) ?? [] as $key => $value) { ?>
 									<tr>
 										<td><?php echo htmlspecialchars($key); ?></td>
-										<td><?php echo Html::dictTable($value); ?></td>
+										<td><?php echo Html::dictTable($value, [], false, false); ?></td>
 									</tr>
 								<?php } ?>
 							</tbody>

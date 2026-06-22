@@ -86,7 +86,7 @@ try {
 				echo htmlspecialchars($configs[$managedApp->config_id] ?? '?');
 			} ?>
 			</div>
-			<?php Html::dictTable(json_decode($managedApp->config ?? '{}', true)); ?>
+			<?php Html::dictTable(json_decode($managedApp->config ?? '{}', true), [], false, false); ?>
 		</td>
 	</tr>
 </table>

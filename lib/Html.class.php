@@ -33,7 +33,7 @@ class Html {
 			.'</span>';
 	}
 
-	static function dictTable($value, array $exclude=[], $return=false) {
+	static function dictTable($value, array $exclude=[], $return=false, $translate=true) {
 		$html = '';
 		if($value === true) $html .= '<img title="'.LANG('yes').'" src="img/success.dyn.svg">';
 		elseif($value === false) $html .= '<img title="'.LANG('no').'" src="img/close.opacity.svg">';
@@ -42,7 +42,7 @@ class Html {
 			foreach($value as $subkey => $subvalue) {
 				if(in_array($subkey, $exclude)) continue;
 				$html .= '<tr>'
-					.'<th>'.htmlspecialchars(LANG($subkey)).'</th>'
+					.'<th>'.htmlspecialchars($translate ? LANG($subkey) : $subkey).'</th>'
 					.'<td>';
 				$html .= self::dictTable($subvalue, $exclude, true);
 				$html .= '</td>'
