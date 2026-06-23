@@ -70,10 +70,10 @@ class Html {
 				. "</a>";
 		} else {
 			if($c['new_tab'])
-				$onclick = "window.open(\"".htmlspecialchars($actionUrl,ENT_QUOTES)."\")";
+				$onclick = "window.open(this.getAttribute(\"actionurl\"))";
 			else
-				$onclick = "window.location=\"".htmlspecialchars($actionUrl,ENT_QUOTES)."\"";
-			echo "<button title='".htmlspecialchars($description,ENT_QUOTES)."' onclick='".$onclick."'>"
+				$onclick = "window.location=this.getAttribute(\"actionurl\")";
+			echo "<button title='".htmlspecialchars($description,ENT_QUOTES)."' actionurl='".htmlspecialchars($actionUrl,ENT_QUOTES)."' onclick='".$onclick."'>"
 				. (empty($c['icon']) ? "" : "<img src='".$c['icon']."'>&nbsp;")
 				. htmlspecialchars($c['name'])
 				. "</button>";
