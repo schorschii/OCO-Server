@@ -593,7 +593,7 @@ return [
 	'new_ios_device_info' => 'This feature allows you to manually add an iOS device to the MDM. An enrollment profile is downloaded, which must be manually installed on the device.',
 	'new_android_device_info' => 'If necessary, reset the device to factory settings. When the device starts for the first time, tap the welcome screen 6 times and scan the QR code.',
 	'valid_oco_license_vendor_mdm_cert_service_can_be_used' => 'No MDM vendor cert set but you have a valid OCO license and can therefore make use of the MDM APN CSR signing service from the OCO developer.',
-	'no_mdm_vendor_cert_and_no_oco_license' => 'You don\'t have a valid OCO license. You need to get an Apple MDM vendor cert in order to generate a MDM APN CSR.',
+	'no_mdm_vendor_cert_and_no_oco_license' => 'To generate an MDM APN CSR, you must obtain an MDM vendor certificate from Apple or purchase an OCO license to use the OCO developer\'s MDM APN CSR service.',
 	'no_activation_profile_defined' => 'You don\'t have an activation profile defined. Automatic enrollment of a device in MDM via Apple Business Manager is not available. You must manually install the enrollment profile on the device.',
 	'defined' => 'Defined',
 	'not_defined' => 'Not defined',

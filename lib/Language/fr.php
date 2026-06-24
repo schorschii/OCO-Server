@@ -587,7 +587,7 @@ return [
 	'new_ios_device_info' => 'Cette fonctionnalité vous permet d\'ajouter manuellement un appareil iOS au MDM. Un profil d\'inscription est téléchargé et doit être installé manuellement sur l\'appareil.',
 	'new_android_device_info' => 'If necessary, reset the device to factory settings. When the device starts for the first time, tap the welcome screen 6 times and scan the QR code.',
 	'valid_oco_license_vendor_mdm_cert_service_can_be_used' => 'Aucun certificat de fournisseur MDM n\'est défini mais vous avez une licence OCO valide et vous pouvez donc utiliser le service de signature d\APN depuis l\'espace développeur OCO.',
-	'no_mdm_vendor_cert_and_no_oco_license' => 'Vous n\'avez pas de licence OCO valide. Vous devez obtenir un certificat de fournisseur Apple MDM afin de générer un CSR APN.',
+	'no_mdm_vendor_cert_and_no_oco_license' => 'Pour générer un MDM-APN-CSR, vous devez obtenir un certificat de fournisseur MDM auprès d\'Apple ou acheter une licence OCO pour utiliser le service MDM-APN-CSR du développeur OCO.',
 	'no_activation_profile_defined' => 'Vous n\'avez pas de profil d\'activation de défini. L\'inclusion automatique d\'un appareil dans MDM via Apple Business Manager n\'est pas disponible. Vous devez installer manuellement le profil d\'inscription sur l\'appareil.',
 	'defined' => 'Défini',
 	'not_defined' => 'Non défini',

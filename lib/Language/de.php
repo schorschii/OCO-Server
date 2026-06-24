@@ -588,7 +588,7 @@ return [
 	'new_ios_device_info' => 'Mit dieser Funktion können Sie ein iOS-Gerät manuell in das MDM aufnehmen. Es wird ein Enrollment-Profil heruntergeladen, welches Sie manuell auf dem Gerät installieren müssen.',
 	'new_android_device_info' => 'Setzen Sie das Gerät ggf. auf Werkseinstellungen zurück. Wenn das Gerät zum ersten Mal startet, tippen Sie 6 Mal auf den Willkommens-Bildschirm und scannen Sie den QR-Code.',
 	'valid_oco_license_vendor_mdm_cert_service_can_be_used' => 'Kein MDM-Vendor-Zertifikat hochgeladen, aber Sie besitzen eine gültige OCO-Lizenz und können daher den MDM-APN-CSR-Dienst des OCO-Entwicklers nutzen.',
-	'no_mdm_vendor_cert_and_no_oco_license' => 'Sie besitzen keine gültige OCO-Lizenz. Sie müssen sich ein MDM-Vendor-Zertifikat von Apple ausstellen lassen, um einen MDM-APN-CSR generieren zu können.',
+	'no_mdm_vendor_cert_and_no_oco_license' => 'Um einen MDM-APN-CSR generieren zu können müssen Sie sich ein MDM-Vendor-Zertifikat von Apple ausstellen lassen oder eine OCO-Lizenz erwerben, um den MDM-APN-CSR-Dienst des OCO-Entwicklers nutzen zu können.',
 	'no_activation_profile_defined' => 'Sie haben kein Aktivierungsprofil definiert. Die automatische Aufnahme eines Gerätes in das MDM via Apple Business Manager ist nicht verfügbar. Sie müssen das Enrollment-Profil manuell auf dem Gerät installieren.',
 	'defined' => 'Definiert',
 	'not_defined' => 'Nicht definiert',

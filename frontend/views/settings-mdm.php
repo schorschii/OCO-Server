@@ -145,7 +145,7 @@ try {
 						<?php } else { ?>
 							<div class='alert success'><?php echo str_replace('%1', date('Y-m-d H:i:s',$ownMdmVendorCertExpiry), LANG('valid_until_placeholder')); ?></div>
 						<?php } ?>
-					<?php } elseif($license->isValid()) { ?>
+					<?php } elseif($license->isValid() && !$license->isFree()) { ?>
 						<div class='alert info'><?php echo LANG('valid_oco_license_vendor_mdm_cert_service_can_be_used'); ?></div>
 					<?php } else { ?>
 						<div class='alert error'><?php echo LANG('no_mdm_vendor_cert_and_no_oco_license'); ?></div>
