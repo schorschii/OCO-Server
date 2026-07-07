@@ -209,7 +209,7 @@ function getPolicyInput($pd) {
 				</div>
 
 				<div>
-					<h2><?php echo LANG('package_groups'); ?></h2>
+					<h2><?php echo LANG('domain_user_groups'); ?></h2>
 					<ul>
 					<?php
 					foreach($db->selectAllDomainUserGroupByPolicyObject($policyObject->id) as $group) {
