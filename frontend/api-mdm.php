@@ -67,8 +67,8 @@ if($path === '/profile') {
 
 } elseif($path === '/checkin') {
 
-	if(empty($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/x-apple-aspen-mdm-checkin') {
-		throw new RuntimeException('Invalid content-type');
+	if(empty($_SERVER['CONTENT_TYPE']) || !startsWith($_SERVER['CONTENT_TYPE'], 'application/x-apple-aspen-mdm-checkin')) {
+		throw new RuntimeException('Invalid content-type '.($_SERVER['CONTENT_TYPE']??''));
 	}
 
 	$body = file_get_contents('php://input');
@@ -150,7 +150,7 @@ if($path === '/profile') {
 				$md->id, $md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 				$md->model, $md->os, $md->device_family, $md->color,
 				$md->profile_uuid, $request['Token'], $request['PushMagic'], $md->push_sent,
-				$request['UnlockToken'], $md->info, $md->policy, $md->parameters, $md->notes, $md->force_update, true/*last_update*/
+				$request['UnlockToken']??null, $md->info, $md->policy, $md->parameters, $md->notes, $md->force_update, true/*last_update*/
 			);
 			break;
 
@@ -187,8 +187,8 @@ if($path === '/profile') {
 
 } elseif($path === '/mdm') {
 
-	if(empty($_SERVER['CONTENT_TYPE']) || $_SERVER['CONTENT_TYPE'] !== 'application/x-apple-aspen-mdm') {
-		throw new RuntimeException('Invalid content-type');
+	if(empty($_SERVER['CONTENT_TYPE']) || !startsWith($_SERVER['CONTENT_TYPE'], 'application/x-apple-aspen-mdm')) {
+		throw new RuntimeException('Invalid content-type '.($_SERVER['CONTENT_TYPE']??''));
 	}
 
 	/*<?xml version="1.0" encoding="UTF-8"?>

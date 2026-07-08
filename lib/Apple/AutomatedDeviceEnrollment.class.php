@@ -487,7 +487,7 @@ class AutomatedDeviceEnrollment {
 					'ServerURL' => $this->getMdmApiUrl().'/mdm',
 					'Topic' => $this->getMdmApnCert()['certinfo']['subject']['UID'],
 					'AccessRights' => 8191,
-					'ServerCapabilities' => [],
+					'ServerCapabilities' => ['com.apple.mdm.per-user-connections'],
 					'CheckInURL' => $this->getMdmApiUrl().'/checkin',
 					'CheckOutWhenRemoved' => true,
 					'SignMessage' => true,
