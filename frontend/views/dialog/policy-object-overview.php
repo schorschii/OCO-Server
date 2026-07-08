@@ -94,7 +94,7 @@ function getPolicyValue($pd) {
 	if($pd->options == 'TEXT'
 	|| $pd->options == 'TEXT-MULTILINE'
 	|| substr($pd->options, 0, 3) == 'INT') {
-		$html = htmlspecialchars($pd->value??'',ENT_QUOTES);
+		$html = nl2br(htmlspecialchars($pd->value??'',ENT_QUOTES));
 	} elseif($pd->options == 'DICT' || $pd->options == 'LIST') {
 		$html = Html::dictTable(json_decode($pd->value, true), [], true);
 	} elseif($options = json_decode($pd->options, true)) {
