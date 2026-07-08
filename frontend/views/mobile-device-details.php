@@ -152,19 +152,6 @@ try {
 								</tr>
 							<?php } ?>
 						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<div class='spread'>
-										<div>
-										</div>
-										<div class='controls'>
-											<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
 					</table>
 				</div>
 				<div>
