@@ -146,12 +146,16 @@ if($path === '/profile') {
 			}
 			$md = $db->selectMobileDeviceByUdid($request['UDID']);
 			if(!$md) throw new NotFoundException();
-			$db->updateMobileDevice(
-				$md->id, $md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
-				$md->model, $md->os, $md->device_family, $md->color,
-				$md->profile_uuid, $request['Token'], $request['PushMagic'], $md->push_sent,
-				$request['UnlockToken']??null, $md->info, $md->policy, $md->parameters, $md->notes, $md->force_update, true/*last_update*/
-			);
+			if(isset($request['UserID'])) { // user token update
+				$db->insertMobileDeviceUser($md->id, $request['UserShortName'], $request['UserLongName'], $request['UserID'], $request['Token'], $request['PushMagic']);
+			} else { // device token update
+				$db->updateMobileDevice(
+					$md->id, $md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
+					$md->model, $md->os, $md->device_family, $md->color,
+					$md->profile_uuid, $request['Token'], $request['PushMagic'], $md->push_sent,
+					$request['UnlockToken']??null, $md->info, $md->policy, $md->parameters, $md->notes, $md->force_update, true/*last_update*/
+				);
+			}
 			break;
 
 		case 'CheckOut':

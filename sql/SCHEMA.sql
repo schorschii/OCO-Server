@@ -905,6 +905,23 @@ CREATE TABLE `mobile_device_profile` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `mobile_device_user`
+--
+
+CREATE TABLE `mobile_device_user` (
+  `mobile_device_id` int(11) NOT NULL,
+  `short_name` varchar(100) NOT NULL,
+  `long_name` text NOT NULL,
+  `user_id` text NOT NULL,
+  `push_token` blob NOT NULL,
+  `push_magic` text NOT NULL,
+  PRIMARY KEY (`mobile_device_id`,`short_name`),
+  CONSTRAINT `fk_mobile_device_user_1` FOREIGN KEY (`mobile_device_id`) REFERENCES `mobile_device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `managed_app`
 --
 

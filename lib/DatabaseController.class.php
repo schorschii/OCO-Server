@@ -262,6 +262,21 @@ class DatabaseController {
 		if($last_update) $params[':last_update'] = $last_update;
 		return $this->stmt->execute($params);
 	}
+	public function insertMobileDeviceUser($mobile_device_id, $short_name, $long_name, $user_id, $push_token, $push_magic) {
+		$this->stmt = $this->dbh->prepare(
+			'INSERT INTO mobile_device_user (mobile_device_id, short_name, long_name, user_id, push_token, push_magic)
+			VALUES (:mobile_device_id, :short_name, :long_name, :user_id, :push_token, :push_magic)'
+		);
+		if(!$this->stmt->execute([
+			':mobile_device_id' => $mobile_device_id,
+			':short_name' => $short_name,
+			':long_name' => $long_name,
+			':user_id' => $user_id,
+			':push_token' => $push_token,
+			':push_magic' => $push_magic,
+		])) return false;
+		return $this->dbh->lastInsertId();
+	}
 	public function selectAllMobileDeviceAppIdentifierByMobileDeviceId($mobile_device_id) {
 		$identifier = [];
 		$this->stmt = $this->dbh->prepare(

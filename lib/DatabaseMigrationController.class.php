@@ -801,6 +801,23 @@ class DatabaseMigrationController {
 
 			$upgraded = true;
 		}
+		if(!$this->getTableColumnInfo('mobile_device_user', 'short_name')) {
+			if($this->debug) echo 'Upgrading to 1.2.1... (table mobile_device_user)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'CREATE TABLE `mobile_device_user` (
+				  `mobile_device_id` int(11) NOT NULL,
+				  `short_name` varchar(100) NOT NULL,
+				  `long_name` text NOT NULL,
+				  `user_id` text NOT NULL,
+				  `push_token` blob NOT NULL,
+				  `push_magic` text NOT NULL,
+				  PRIMARY KEY (`mobile_device_id`,`short_name`),
+				  CONSTRAINT `fk_mobile_device_user_1` FOREIGN KEY (`mobile_device_id`) REFERENCES `mobile_device` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+				) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
 
 		return $upgraded;
 	}
