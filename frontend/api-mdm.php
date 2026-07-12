@@ -237,44 +237,46 @@ if($path === '/profile') {
 			);
 
 			// store device info
-			if($rt === 'DeviceInformation') {
-				$os = $request['QueryResponses']['OSVersion'] ? 'iOS '.$request['QueryResponses']['OSVersion'] : null;
-				$product = $request['QueryResponses']['ProductName'] ? $request['QueryResponses']['ProductName'] : null;
-				$db->updateMobileDevice(
-					$md->id, $md->udid, $md->state,
-					$request['QueryResponses']['DeviceName']??'?',
-					$request['QueryResponses']['SerialNumber']??$md->serial,
-					$md->vendor_description, $product??$md->model, $os??$md->os, $md->device_family, $md->color,
-					$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
-					$md->unlock_token, json_encode($request['QueryResponses']), $md->policy, $md->parameters, $md->notes, $md->force_update, true/*last_update*/
-				);
-			} elseif($rt === 'InstalledApplicationList') {
-				$apps = [];
-				foreach($request['InstalledApplicationList']??[] as $app) {
-					if(empty($app['Identifier']) || empty($app['Name']) || empty($app['Version']) || empty($app['ShortVersion'])) continue;
-					$apps[] = [
-						'identifier' => $app['Identifier'],
-						'name' => $app['Name'],
-						'display_version' => $app['ShortVersion'],
-						'version' => $app['Version'],
-					];
+			if($state === Models\MobileDeviceCommand::STATE_SUCCESS) {
+				if($rt === 'DeviceInformation') {
+					$os = $request['QueryResponses']['OSVersion'] ? 'iOS '.$request['QueryResponses']['OSVersion'] : null;
+					$product = $request['QueryResponses']['ProductName'] ? $request['QueryResponses']['ProductName'] : null;
+					$db->updateMobileDevice(
+						$md->id, $md->udid, $md->state,
+						$request['QueryResponses']['DeviceName']??$md->device_name??'?',
+						$request['QueryResponses']['SerialNumber']??$md->serial,
+						$md->vendor_description, $product??$md->model, $os??$md->os, $md->device_family, $md->color,
+						$md->profile_uuid, $md->push_token, $md->push_magic, null/*push_sent*/,
+						$md->unlock_token, json_encode($request['QueryResponses'],JSON_PARTIAL_OUTPUT_ON_ERROR), $md->policy, $md->parameters, $md->notes, $md->force_update, true/*last_update*/
+					);
+				} elseif($rt === 'InstalledApplicationList') {
+					$apps = [];
+					foreach($request['InstalledApplicationList']??[] as $app) {
+						if(empty($app['Identifier']) || empty($app['Name']) || empty($app['Version']) || empty($app['ShortVersion'])) continue;
+						$apps[] = [
+							'identifier' => $app['Identifier'],
+							'name' => $app['Name'],
+							'display_version' => $app['ShortVersion'],
+							'version' => $app['Version'],
+						];
+					}
+					$db->updateMobileDeviceApps($md->id, $apps);
+				} elseif($rt === 'ProfileList') {
+					$profiles = [];
+					foreach($request['ProfileList']??[] as $profile) {
+						if(empty($profile['PayloadUUID']) || empty($profile['PayloadIdentifier'])) continue;
+						$plist = new \CFPropertyList\CFPropertyList();
+						$plist->add( $td->toCFType( $profile ) );
+						$profiles[] = [
+							'uuid' => $profile['PayloadUUID'],
+							'identifier' => $profile['PayloadIdentifier'],
+							'display_name' => $profile['PayloadDisplayName'] ?? '',
+							'version' => $profile['PayloadVersion'] ?? '0',
+							'content' => $plist->toXML(true),
+						];
+					}
+					$db->updateMobileDeviceProfiles($md->id, $profiles);
 				}
-				$db->updateMobileDeviceApps($md->id, $apps);
-			} elseif($rt === 'ProfileList') {
-				$profiles = [];
-				foreach($request['ProfileList']??[] as $profile) {
-					if(empty($profile['PayloadUUID']) || empty($profile['PayloadIdentifier'])) continue;
-					$plist = new \CFPropertyList\CFPropertyList();
-					$plist->add( $td->toCFType( $profile ) );
-					$profiles[] = [
-						'uuid' => $profile['PayloadUUID'],
-						'identifier' => $profile['PayloadIdentifier'],
-						'display_name' => $profile['PayloadDisplayName'] ?? '',
-						'version' => $profile['PayloadVersion'] ?? '0',
-						'content' => $plist->toXML(true),
-					];
-				}
-				$db->updateMobileDeviceProfiles($md->id, $profiles);
 			}
 		}
 	}
