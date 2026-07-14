@@ -3275,7 +3275,10 @@ function showDialogEditActivationProfile() {
 		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO,
 		function(dialogContainer){
 			let txtSettingValue = dialogContainer.querySelectorAll('textarea[name=json]')[0];
-			let config = JSON.parse(txtSettingValue.value);
+			let config = {};
+			try {
+				JSON.parse(txtSettingValue.value);
+			} catch(e) {}
 
 			let txtProfileName = dialogContainer.querySelectorAll('input[name=profile_name]')[0];
 			let txtUrl = dialogContainer.querySelectorAll('input[name=url]')[0];
@@ -3287,25 +3290,24 @@ function showDialogEditActivationProfile() {
 			let skipSetupItemsCheckboxes = dialogContainer.querySelectorAll('input[name=skip_setup_items]');
 
 			let updateJson = ()=>{
-				txtSettingValue.value = JSON.stringify({
-					'profile_name': txtProfileName.value,
-					'url': txtUrl.value,
-					'support_email_address': txtSupportEmailAddress.value,
-					'is_supervised': chkIsSupervised.checked,
-					'is_mdm_removable': chkIsMdmRemovable.checked,
-					'language': txtLanguage.value,
-					'region': txtRegion.value,
-					'skip_setup_items': getSelectedCheckBoxValues('skip_setup_items', null, false, dialogContainer),
-				}, null, 2);
+				config['profile_name'] = txtProfileName.value;
+				config['url'] = txtUrl.value;
+				config['profisupport_email_addressle_name'] = txtSupportEmailAddress.value;
+				config['is_supervised'] = chkIsSupervised.checked;
+				config['is_mdm_removable'] = chkIsMdmRemovable.checked;
+				config['language'] = txtLanguage.value;
+				config['region'] = txtRegion.value;
+				config['skip_setup_items'] = getSelectedCheckBoxValues('skip_setup_items', null, false, dialogContainer);
+				txtSettingValue.value = JSON.stringify(config, null, 2);
 			};
 
-			txtProfileName.value = config['profile_name'];
-			txtUrl.value = config['url'];
-			txtSupportEmailAddress.value = config['support_email_address'];
-			chkIsSupervised.checked = config['is_supervised'];
-			chkIsMdmRemovable.checked = config['is_mdm_removable'];
-			txtLanguage.value = config['language'];
-			txtRegion.value = config['region'];
+			txtProfileName.value = config['profile_name'] ?? '';
+			txtUrl.value = config['url'] ?? '';
+			txtSupportEmailAddress.value = config['support_email_address'] ?? '';
+			chkIsSupervised.checked = config['is_supervised'] ?? '';
+			chkIsMdmRemovable.checked = config['is_mdm_removable'] ?? '';
+			txtLanguage.value = config['language'] ?? '';
+			txtRegion.value = config['region'] ?? '';
 			txtProfileName.addEventListener('change', updateJson);
 			txtUrl.addEventListener('change', updateJson);
 			txtSupportEmailAddress.addEventListener('change', updateJson);
@@ -3315,7 +3317,7 @@ function showDialogEditActivationProfile() {
 			txtRegion.addEventListener('change', updateJson);
 			for(let i=0; i<skipSetupItemsCheckboxes.length; i++) {
 				skipSetupItemsCheckboxes[i].addEventListener('change', updateJson);
-				if(config['skip_setup_items'].indexOf(skipSetupItemsCheckboxes[i].value) > -1)
+				if((config['skip_setup_items'] ?? []).indexOf(skipSetupItemsCheckboxes[i].value) > -1)
 					skipSetupItemsCheckboxes[i].checked = true;
 			}
 
