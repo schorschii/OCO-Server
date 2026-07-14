@@ -3269,6 +3269,66 @@ function cleanupDomainUsers(btn) {
 		enableDisableButton(btn, true);
 	});
 }
+function showDialogEditActivationProfile() {
+	showDialogAjax(LANG['activation_profile'],
+		'views/dialog/apple-mdm-activation-profile.php',
+		DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO,
+		function(dialogContainer){
+			let txtSettingValue = dialogContainer.querySelectorAll('textarea[name=json]')[0];
+			let config = JSON.parse(txtSettingValue.value);
+
+			let txtProfileName = dialogContainer.querySelectorAll('input[name=profile_name]')[0];
+			let txtUrl = dialogContainer.querySelectorAll('input[name=url]')[0];
+			let txtSupportEmailAddress = dialogContainer.querySelectorAll('input[name=support_email_address]')[0];
+			let chkIsSupervised = dialogContainer.querySelectorAll('input[name=is_supervised]')[0];
+			let chkIsMdmRemovable = dialogContainer.querySelectorAll('input[name=is_mdm_removable]')[0];
+			let txtLanguage = dialogContainer.querySelectorAll('input[name=language]')[0];
+			let txtRegion = dialogContainer.querySelectorAll('input[name=region]')[0];
+			let skipSetupItemsCheckboxes = dialogContainer.querySelectorAll('input[name=skip_setup_items]');
+
+			let updateJson = ()=>{
+				txtSettingValue.value = JSON.stringify({
+					'profile_name': txtProfileName.value,
+					'url': txtUrl.value,
+					'support_email_address': txtSupportEmailAddress.value,
+					'is_supervised': chkIsSupervised.checked,
+					'is_mdm_removable': chkIsMdmRemovable.checked,
+					'language': txtLanguage.value,
+					'region': txtRegion.value,
+					'skip_setup_items': getSelectedCheckBoxValues('skip_setup_items', null, false, dialogContainer),
+				}, null, 2);
+			};
+
+			txtProfileName.value = config['profile_name'];
+			txtUrl.value = config['url'];
+			txtSupportEmailAddress.value = config['support_email_address'];
+			chkIsSupervised.checked = config['is_supervised'];
+			chkIsMdmRemovable.checked = config['is_mdm_removable'];
+			txtLanguage.value = config['language'];
+			txtRegion.value = config['region'];
+			txtProfileName.addEventListener('change', updateJson);
+			txtUrl.addEventListener('change', updateJson);
+			txtSupportEmailAddress.addEventListener('change', updateJson);
+			chkIsSupervised.addEventListener('change', updateJson);
+			chkIsMdmRemovable.addEventListener('change', updateJson);
+			txtLanguage.addEventListener('change', updateJson);
+			txtRegion.addEventListener('change', updateJson);
+			for(let i=0; i<skipSetupItemsCheckboxes.length; i++) {
+				skipSetupItemsCheckboxes[i].addEventListener('change', updateJson);
+				if(config['skip_setup_items'].indexOf(skipSetupItemsCheckboxes[i].value) > -1)
+					skipSetupItemsCheckboxes[i].checked = true;
+			}
+
+			dialogContainer.querySelectorAll('button[name=edit]')[0].addEventListener('click', (e)=>{
+				editSetting(
+					dialogContainer,
+					'apple-mdm-activation-profile',
+					txtSettingValue.value
+				);
+			});
+		}
+	);
+}
 function showDialogEditSetting(key='', file=false, warning='be_careful_when_manual_editing_settings', hideKey=false, title=null) {
 	if(title == null) {
 		title = LANG['edit_setting'];

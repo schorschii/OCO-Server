@@ -200,7 +200,7 @@ try {
 					<?php } else { ?>
 						<div class='alert warning'><?php echo LANG('no_activation_profile_defined'); ?></div>
 					<?php } ?>
-					<button onclick='showDialogEditSetting("apple-mdm-activation-profile",false,false,true)' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
+					<button onclick='showDialogEditActivationProfile()' <?php if(!$permGeneral) echo 'disabled'; ?>><img src='img/edit.dyn.svg'>&nbsp;<?php echo LANG('edit'); ?></button>
 				</td>
 			</tr>
 			<tr>
