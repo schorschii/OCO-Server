@@ -3277,7 +3277,7 @@ function showDialogEditActivationProfile() {
 			let txtSettingValue = dialogContainer.querySelectorAll('textarea[name=json]')[0];
 			let config = {};
 			try {
-				JSON.parse(txtSettingValue.value);
+				config = JSON.parse(txtSettingValue.value);
 			} catch(e) {}
 
 			let txtProfileName = dialogContainer.querySelectorAll('input[name=profile_name]')[0];
@@ -3285,6 +3285,7 @@ function showDialogEditActivationProfile() {
 			let txtSupportEmailAddress = dialogContainer.querySelectorAll('input[name=support_email_address]')[0];
 			let chkIsSupervised = dialogContainer.querySelectorAll('input[name=is_supervised]')[0];
 			let chkIsMdmRemovable = dialogContainer.querySelectorAll('input[name=is_mdm_removable]')[0];
+			let chkDoNotUseProfileFromBackup = dialogContainer.querySelectorAll('input[name=do_not_use_profile_from_backup]')[0];
 			let txtLanguage = dialogContainer.querySelectorAll('input[name=language]')[0];
 			let txtRegion = dialogContainer.querySelectorAll('input[name=region]')[0];
 			let skipSetupItemsCheckboxes = dialogContainer.querySelectorAll('input[name=skip_setup_items]');
@@ -3292,9 +3293,10 @@ function showDialogEditActivationProfile() {
 			let updateJson = ()=>{
 				config['profile_name'] = txtProfileName.value;
 				config['url'] = txtUrl.value;
-				config['profisupport_email_addressle_name'] = txtSupportEmailAddress.value;
+				config['support_email_address'] = txtSupportEmailAddress.value;
 				config['is_supervised'] = chkIsSupervised.checked;
 				config['is_mdm_removable'] = chkIsMdmRemovable.checked;
+				config['do_not_use_profile_from_backup'] = chkDoNotUseProfileFromBackup.checked;
 				config['language'] = txtLanguage.value;
 				config['region'] = txtRegion.value;
 				config['skip_setup_items'] = getSelectedCheckBoxValues('skip_setup_items', null, false, dialogContainer);
@@ -3304,8 +3306,9 @@ function showDialogEditActivationProfile() {
 			txtProfileName.value = config['profile_name'] ?? '';
 			txtUrl.value = config['url'] ?? '';
 			txtSupportEmailAddress.value = config['support_email_address'] ?? '';
-			chkIsSupervised.checked = config['is_supervised'] ?? '';
-			chkIsMdmRemovable.checked = config['is_mdm_removable'] ?? '';
+			chkIsSupervised.checked = config['is_supervised'] ?? true;
+			chkIsMdmRemovable.checked = config['is_mdm_removable'] ?? false;
+			chkDoNotUseProfileFromBackup.checked = config['do_not_use_profile_from_backup'] ?? true;
 			txtLanguage.value = config['language'] ?? '';
 			txtRegion.value = config['region'] ?? '';
 			txtProfileName.addEventListener('change', updateJson);
@@ -3313,6 +3316,7 @@ function showDialogEditActivationProfile() {
 			txtSupportEmailAddress.addEventListener('change', updateJson);
 			chkIsSupervised.addEventListener('change', updateJson);
 			chkIsMdmRemovable.addEventListener('change', updateJson);
+			chkDoNotUseProfileFromBackup.addEventListener('change', updateJson);
 			txtLanguage.addEventListener('change', updateJson);
 			txtRegion.addEventListener('change', updateJson);
 			for(let i=0; i<skipSetupItemsCheckboxes.length; i++) {

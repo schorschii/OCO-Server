@@ -578,6 +578,7 @@ return [
 	'support_email' => 'Support-E-Mail',
 	'is_supervised' => 'Supervised?',
 	'is_mdm_removable' => 'MDM entfernbar?',
+	'do_not_use_profile_from_backup' => 'Profil aus Backup nicht verwenden?',
 	'language' => 'Sprache',
 	'region' => 'Region',
 	'skip_setup_items' => 'Einrichtungsseiten überpringen',

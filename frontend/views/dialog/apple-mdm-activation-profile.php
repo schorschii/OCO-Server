@@ -52,6 +52,10 @@ try {
 				<td><input type='checkbox' class='' name='is_mdm_removable'></input></td>
 			</tr>
 			<tr>
+				<th><?php echo LANG('do_not_use_profile_from_backup'); ?></th>
+				<td><input type='checkbox' class='' name='do_not_use_profile_from_backup'></input></td>
+			</tr>
+			<tr>
 				<th><?php echo LANG('language'); ?></th>
 				<td><input type='text' class='fullwidth' name='language' placeholder='en'></input></td>
 			</tr>
