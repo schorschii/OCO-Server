@@ -5,7 +5,9 @@ require_once('../../session.inc.php');
 
 try {
 	$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
-	$settingValue = $db->settings->get('apple-mdm-activation-profile') ?? '';
+	$profile = $db->settings->get('apple-mdm-activation-profile') ?? '';
+	$apiUrl = $db->settings->get('apple-mdm-api-url') ?? 'https://oco.example.com/api-mdm.php/profile';
+	$apiUrl .= '/profile';
 } catch(PermissionException $e) {
 	http_response_code(403);
 	die(LANG('permission_denied'));
@@ -37,7 +39,12 @@ try {
 			</tr>
 			<tr>
 				<th><?php echo LANG('url'); ?></th>
-				<td><input type='text' class='fullwidth' name='url' placeholder='https://oco.example.com/api-mdm.php/profile' style='min-width:330px'></input></td>
+				<td>
+					<datalist id='lstUrlProposal'>
+						<option><?php echo htmlspecialchars($apiUrl); ?></option>
+					</datalist>
+					<input type='text' class='fullwidth' name='url' style='min-width:330px' list='lstUrlProposal' placeholder='<?php echo htmlspecialchars($apiUrl,ENT_QUOTES); ?>'></input>
+				</td>
 			</tr>
 			<tr>
 				<th><?php echo LANG('support_email'); ?></th>
@@ -115,7 +122,7 @@ try {
 			</table>
 		</div>
 		<div name='json' class=''>
-			<textarea class='fullwidth monospace' name='json' rows='12' cols='45'><?php echo htmlspecialchars($settingValue); ?></textarea>
+			<textarea class='fullwidth monospace' name='json' rows='12' cols='45'><?php echo htmlspecialchars($profile); ?></textarea>
 		</div>
 
 	</div>
