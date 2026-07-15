@@ -75,7 +75,8 @@ class LicenseCheck {
 	private function checkLicense($licenseContent) {
 		if(!$licenseContent
 		|| !isset($licenseContent['objects'])
-		|| !isset($licenseContent['valid_until'])) {
+		|| !isset($licenseContent['valid_until'])
+		|| !isset($licenseContent['signature'])) {
 			$this->licenseText = LANG('invalid_license');
 			return false;
 		}
