@@ -16,7 +16,7 @@ try {
 
 		case 'devices':
 			var_dump(
-				$ade->getDevices();
+				$ade->getDevices()
 			);
 			die();
 
