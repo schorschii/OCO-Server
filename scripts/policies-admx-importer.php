@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 if(php_sapi_name() != 'cli')
 	die('This script must be executed from command line.'."\n");
