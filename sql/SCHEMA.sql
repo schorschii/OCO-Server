@@ -754,8 +754,7 @@ CREATE TABLE `mobile_device` (
   `last_update` timestamp NULL DEFAULT NULL,
   `force_update` tinyint(4) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `udid` (`udid`),
-  UNIQUE KEY `serial_number` (`serial`)
+  UNIQUE KEY `udid` (`udid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

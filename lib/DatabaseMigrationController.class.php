@@ -818,6 +818,14 @@ class DatabaseMigrationController {
 
 			$upgraded = true;
 		}
+		if($this->getTableColumnInfo('mobile_device', 'serial')['COLUMN_KEY'] === 'UNI') {
+			if($this->debug) echo 'Upgrading to 1.2.1... (remove serial_number unique key)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'ALTER TABLE `mobile_device` DROP INDEX `serial_number`;');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
 
 		return $upgraded;
 	}
