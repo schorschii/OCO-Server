@@ -143,7 +143,8 @@ try {
 
 			if(!in_array($_POST['command'], [
 				'LOCK', 'RESET_PASSWORD', 'REBOOT', 'RELINQUISH_OWNERSHIP',
-				'CLEAR_APP_DATA', 'START_LOST_MODE', 'STOP_LOST_MODE'
+				'CLEAR_APP_DATA', 'START_LOST_MODE', 'STOP_LOST_MODE',
+				'ADD_ESIM', 'REMOVE_ESIM', 'WIPE'
 			])) throw new InvalidRequestException('Unknown command');
 			$parameter = [];
 			if($_POST['command'] == 'RESET_PASSWORD') {
@@ -166,6 +167,30 @@ try {
 			} elseif($_POST['command'] == 'STOP_LOST_MODE') {
 				$parameter = [
 					'stopLostModeParams' => new stdClass()
+				];
+			} elseif($_POST['command'] == 'ADD_ESIM') {
+				if(empty($_POST['activation_code']))
+					throw new InvalidRequestException('Activation code is required for ADD_ESIM command');
+				$parameter = [
+					'addEsimParams' => [
+						'activationCode' => $_POST['activation_code'],
+						'activationState' => 'ACTIVATED'
+					]
+				];
+			} elseif($_POST['command'] == 'REMOVE_ESIM') {
+				if(empty($_POST['icc_id']))
+					throw new InvalidRequestException('ICC ID is required for REMOVE_ESIM command');
+				$parameter = [
+					'removeEsimParams' => [
+						'iccId' => $_POST['icc_id']
+					]
+				];
+			} elseif($_POST['command'] == 'WIPE') {
+				$parameter = [
+					'wipeParams' => [
+						'wipeDataFlags' => [ 'WIPE_EXTERNAL_STORAGE', 'WIPE_ESIMS' ],
+						'wipeReason' => [ 'defaultMessage' => 'MDM' ]
+					]
 				];
 			}
 			$ae = new Android\AndroidEnrollment($db);

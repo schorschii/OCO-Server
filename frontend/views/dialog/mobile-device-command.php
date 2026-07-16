@@ -40,6 +40,9 @@ try {
 
 				<?php } elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) { ?>
 
+				<option value='ADD_ESIM' parameter='activation_code'><?php echo LANG('add_esim'); ?></option>
+				<option value='REMOVE_ESIM' parameter='icc_id'><?php echo LANG('remove_esim'); ?></option>
+				<option value='' disabled>──────────</option>
 				<option value='LOCK' parameter=''><?php echo LANG('lock_device'); ?></option>
 				<option value='RESET_PASSWORD' parameter='password'><?php echo LANG('clear_passcode'); ?></option>
 				<option value='' disabled>──────────</option>
@@ -50,6 +53,8 @@ try {
 				<option value='STOP_LOST_MODE' parameter=''><?php echo LANG('disable_lost_mode'); ?></option>
 				<option value='' disabled>──────────</option>
 				<option value='REBOOT' parameter=''><?php echo LANG('reboot'); ?></option>
+				<option value='' disabled>──────────</option>
+				<option value='WIPE' parameter=''><?php echo LANG('erase_device'); ?></option>
 
 				<?php } ?>
 			</select>
