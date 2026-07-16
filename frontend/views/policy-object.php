@@ -43,7 +43,7 @@ function getContents($group_id, $classMask) {
 		if(!$subGroups) continue;
 		$html .= "<li>";
 		$html .= "<h3><button class='expander'>".htmlspecialchars(translatePolicy($pdg->display_name))."</button></h3>";
-		$html .= "<ul class='hidden'>".$subGroups."</ul>";
+		$html .= "<ul class='tree hidden'>".$subGroups."</ul>";
 		$html .= "</li>\n";
 	}
 
