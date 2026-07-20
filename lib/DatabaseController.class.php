@@ -526,22 +526,22 @@ class DatabaseController {
 		$this->stmt->execute([':managed_app_id' => $managed_app_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
 	}
-	public function insertProfile($type, $name, $payload, $notes, $system_user_id) {
+	public function insertProfile($type, $name, $declaration_type, $payload, $notes, $system_user_id) {
 		$this->stmt = $this->dbh->prepare(
-			'INSERT INTO profile (type, name, payload, notes, created_by_system_user_id)
-			VALUES (:type, :name, :payload, :notes, :created_by_system_user_id)'
+			'INSERT INTO profile (type, name, declaration_type, payload, notes, created_by_system_user_id)
+			VALUES (:type, :name, :declaration_type, :payload, :notes, :created_by_system_user_id)'
 		);
 		$this->stmt->execute([
-			':type' => $type, ':name' => $name, ':payload' => $payload, ':notes' => $notes, ':created_by_system_user_id' => $system_user_id
+			':type' => $type, ':name' => $name, ':declaration_type' => $declaration_type, ':payload' => $payload, ':notes' => $notes, ':created_by_system_user_id' => $system_user_id
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updateProfile($id, $type, $name, $payload, $notes, $system_user_id) {
+	public function updateProfile($id, $type, $name, $declaration_type, $payload, $notes, $system_user_id) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE profile SET type = :type, name = :name, payload = :payload, notes = :notes, created_by_system_user_id = :created_by_system_user_id, LAST_UPDATE = CURRENT_TIMESTAMP WHERE id = :id'
+			'UPDATE profile SET type = :type, name = :name, declaration_type = :declaration_type, payload = :payload, notes = :notes, created_by_system_user_id = :created_by_system_user_id, LAST_UPDATE = CURRENT_TIMESTAMP WHERE id = :id'
 		);
 		return $this->stmt->execute([
-			':id' => $id, ':type' => $type, ':name' => $name, ':payload' => $payload, ':notes' => $notes, ':created_by_system_user_id' => $system_user_id
+			':id' => $id, ':type' => $type, ':name' => $name, ':declaration_type' => $declaration_type, ':payload' => $payload, ':notes' => $notes, ':created_by_system_user_id' => $system_user_id
 		]);
 	}
 	public function insertMobileDeviceGroupProfile($mobile_device_group_id, $profile_id) {

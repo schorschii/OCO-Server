@@ -373,10 +373,11 @@ class CoreLogic {
 				throw new InvalidRequestException(str_replace('%1', $p->name, LANG('payload_identifier_aready_used_by_profile')));
 		}
 	}
-	public function createProfile($type, $name, $payload, $notes) {
+	public function createProfile($type, $name, $declarationType, $payload, $notes) {
 		$this->checkPermission(new Models\Profile(), PermissionManager::METHOD_CREATE);
 
-		if(empty($name) || empty($payload)) {
+		if(empty($name) || empty($payload)
+		|| ($type == Models\Profile::TYPE_IOS_DECLARATION && empty($declarationType))) {
 			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
 		if($type == Models\Profile::TYPE_IOS) {
@@ -389,26 +390,28 @@ class CoreLogic {
 			} catch(DOMException|TypeError $e) {
 				throw new InvalidRequestException('Payload is no valid XML');
 			}
-		} elseif($type == Models\Profile::TYPE_ANDROID) {
+		} elseif($type == Models\Profile::TYPE_ANDROID
+		|| $type == Models\Profile::TYPE_IOS_DECLARATION) {
 			if(!is_string($payload) || json_decode($payload) === null)
 				throw new InvalidRequestException('Payload is no valid JSON');
 		} else {
 			throw new InvalidRequestException('Unknown type');
 		}
 
-		$result = $this->db->insertProfile($type, $name, $payload, $notes, $this->su->id);
+		$result = $this->db->insertProfile($type, $name, $declarationType, $payload, $notes, $this->su->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $result, 'oco.profile.create', [
 			'type' => $type, 'name' => $name, 'payload' => $payload, 'notes' => $notes
 		]);
 		return $result;
 	}
-	public function editProfile($id, $type, $name, $payload, $notes) {
+	public function editProfile($id, $type, $name, $declarationType, $payload, $notes) {
 		$p = $this->db->selectProfile($id);
 		if(empty($p)) throw new NotFoundException();
 		$this->checkPermission($p, PermissionManager::METHOD_WRITE);
 
-		if(empty($name) || empty($payload)) {
+		if(empty($name) || empty($payload)
+		|| ($type == Models\Profile::TYPE_IOS_DECLARATION && empty($declarationType))) {
 			throw new InvalidRequestException(LANG('please_fill_required_fields'));
 		}
 		if($type == Models\Profile::TYPE_IOS) {
@@ -431,14 +434,15 @@ class CoreLogic {
 			$newIdentifier = $plist->toArray()['PayloadIdentifier'] ?? null;
 			$this->checkProfileUnique($type, $newUuid, $newIdentifier, $p->id);
 			$payload = $plist->toXML(true);
-		} elseif($type == Models\Profile::TYPE_ANDROID) {
+		} elseif($type == Models\Profile::TYPE_ANDROID
+		|| $type == Models\Profile::TYPE_IOS_DECLARATION) {
 			if(!is_string($payload) || json_decode($payload) === null)
 				throw new InvalidRequestException('Payload is no valid JSON');
 		} else {
 			throw new InvalidRequestException('Unknown type');
 		}
 
-		$result = $this->db->updateProfile($id, $type, $name, $payload, $notes, $this->su->id);
+		$result = $this->db->updateProfile($id, $type, $name, $declarationType, $payload, $notes, $this->su->id);
 		if(!$result) throw new Exception(LANG('unknown_error'));
 		$this->db->insertLogEntry(Models\Log::LEVEL_INFO, $this->su->username, $result, 'oco.profile.edit', [
 			'id' => $id, 'type' => $type, 'name' => $name, 'payload' => $payload, 'notes' => $notes

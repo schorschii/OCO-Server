@@ -826,6 +826,14 @@ class DatabaseMigrationController {
 
 			$upgraded = true;
 		}
+		if(!$this->getTableColumnInfo('profile', 'declaration_type')) {
+			if($this->debug) echo 'Upgrading to 1.2.1... (add declaration_type column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'ALTER TABLE `profile` ADD `declaration_type` TEXT NULL DEFAULT NULL AFTER `name`;');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
 
 		return $upgraded;
 	}

@@ -107,6 +107,7 @@ try {
 				'DeviceLock', 'EraseDevice', 'ClearPasscode',
 				'EnableLostMode', 'PlayLostModeSound', 'DeviceLocation', 'DisableLostMode',
 				'ShutDownDevice', 'RestartDevice'
+				, 'DeclarativeManagement'
 			])) throw new InvalidRequestException('Unknown command');
 			$parameter = [
 				'RequestType' => $_POST['command'],
@@ -132,8 +133,15 @@ try {
 				$parameter['Message'] = $_POST['message'];
 				#'Footnote' => '',
 				#'PhoneNumber' => '',
+			} elseif($_POST['command'] == 'DeclarativeManagement') {
+				$mdcc = new MobileDeviceCommandController($db);
+				$lastUpdateTime = $mdcc->iosGetLastDeclarationUpdate($md);
+				$parameter['Data'] = base64_encode(json_encode([
+					'SyncTokens' => [ 'Timestamp' => date('Y-m-d\TH:i:s\Z', $lastUpdateTime), 'DeclarationsToken' => md5($lastUpdateTime) ]
+				]));
+				$parameter['_data'] = ['Data'];
 			}
-			$cl->createMobileDeviceCommand($_POST['send_command_to_mobile_device_id'], $_POST['command'], json_encode($parameter), null);
+			$cl->createMobileDeviceCommand($md->id, $_POST['command'], json_encode($parameter), null);
 			die();
 
 		} elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) {
@@ -229,10 +237,10 @@ try {
 		}
 		if($_POST['edit_profile_id'] == '-1') {
 			die(
-				$cl->createProfile($_POST['type'], $_POST['name'], $payload, $_POST['notes']??'')
+				$cl->createProfile($_POST['type'], $_POST['name'], $_POST['declaration_type'], $payload, $_POST['notes']??'')
 			);
 		} else {
-			$cl->editProfile($_POST['edit_profile_id'], $_POST['type'], $_POST['name'], $payload, $_POST['notes']??'');
+			$cl->editProfile($_POST['edit_profile_id'], $_POST['type'], $_POST['name'], $_POST['declaration_type'], $payload, $_POST['notes']??'');
 			die();
 		}
 	}

@@ -26,6 +26,26 @@ class MobileDeviceCommandController {
 				if($this->iosAppInstalls($md)) $force = true;
 				$this->iosInventoryJobs($md, $force);
 
+				$lastUpdateTime = $this->iosGetLastDeclarationUpdate($md);
+				if(md5($lastUpdateTime) != $md->policy) {
+					$result = $this->db->insertMobileDeviceCommand($md->id, 'DeclarativeManagement', json_encode([
+						'RequestType' => 'DeclarativeManagement',
+						'Data' => base64_encode(json_encode([
+							'SyncTokens' => $this->iosSyncTokens($md)
+						])),
+						'_data' => ['Data'],
+					]));
+					if($result) {
+						$this->db->updateMobileDevice(
+							$md->id, $md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
+							$md->model, $md->os, $md->device_family, $md->color,
+							$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent,
+							$md->unlock_token, $md->info, md5($lastUpdateTime)/*policy*/, $md->parameters, $md->notes, $md->force_update
+						);
+						echo('Created command for updating declarations on device '.$md->id."\n");
+					}
+				}
+
 			} elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) {
 				$appPolicy = $this->androidAppInstalls($md);
 				$generalPolicy = $this->androidPolicies($md);
@@ -34,7 +54,7 @@ class MobileDeviceCommandController {
 				}
 			}
 		}
-		$this->iosPush();
+		$this->iosPush($deviceIds);
 		return $success;
 	}
 
@@ -238,6 +258,28 @@ class MobileDeviceCommandController {
 		return $changed;
 	}
 
+	function iosDeclarations(Models\MobileDevice $md) {
+		$declarations = [];
+		foreach($this->getProfilesByMobileDeviceId($md->id) as $p) {
+			if($p->type != Models\Profile::TYPE_IOS_DECLARATION) continue;
+			$declarations[] = $p;
+		}
+		return $declarations;
+	}
+	function iosGetLastDeclarationUpdate(Models\MobileDevice $md) {
+		$lastUpdateTime = 0;
+		foreach($this->iosDeclarations($md) as $p) {
+			// ignore the timezone (= force to UTC) when comparing lastUpdate time because PHP timezone config for Apache and CLI (cron job) can differ!
+			$lastUpdate = strtotime(($p->last_update ?? $p->created).' UTC');
+			if($lastUpdate > $lastUpdateTime) $lastUpdateTime = $lastUpdate;
+		}
+		return $lastUpdateTime;
+	}
+	function iosSyncTokens(Models\MobileDevice $md) {
+		$lastUpdateTime = $this->iosGetLastDeclarationUpdate($md);
+		return [ 'Timestamp' => date('Y-m-d\TH:i:s\Z', $lastUpdateTime), 'DeclarationsToken' => md5($lastUpdateTime) ];
+	}
+
 	private function iosAppInstalls(Models\MobileDevice $md) {
 		$changed = false;
 		// check if every assigned app is installed, otherwise create job
@@ -296,7 +338,7 @@ class MobileDeviceCommandController {
 		}
 	}
 
-	private function iosPush() {
+	private function iosPush(array|null $deviceIds=null) {
 		// get which devices should be contacted via push
 		$wakeMdIds = [];
 		foreach($this->db->selectAllMobileDeviceCommand() as $mdc) {
@@ -317,6 +359,7 @@ class MobileDeviceCommandController {
 			$apnCert = $ade->getMdmApnCert();
 			$apn = new Apple\PushNotificationService($this->db, $ade->getMdmApnCert()['certinfo']['subject']['UID'], $apnCert['cert'], $apnCert['privkey']);
 			foreach($wakeMdIds as $mdId) {
+				if(!empty($deviceIds) && !in_array($mdId, $deviceIds)) continue;
 				$md = $this->db->selectMobileDevice($mdId);
 				if(empty($md->push_token) || empty($md->push_magic)) continue;
 				echo('Sending push notification to device '.$md->id.' '.$md->serial."\n");

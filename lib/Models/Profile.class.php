@@ -5,11 +5,13 @@ namespace Models;
 class Profile {
 
 	const TYPE_IOS = 'ios';
+	const TYPE_IOS_DECLARATION = 'ios-dec';
 	const TYPE_ANDROID = 'android';
 
 	public $id;
 	public $type;
 	public $name;
+	public $declaration_type;
 	public $payload;
 	public $notes;
 	public $created;
@@ -30,6 +32,9 @@ class Profile {
 			$plist->parse($this->payload);
 			return $plist->toArray()['PayloadIdentifier'] ?? null;
 		} catch(\Exception $e) {}
+	}
+	function getToken() {
+		return md5($this->id.'_'.($this->last_update??$this->created));
 	}
 
 }

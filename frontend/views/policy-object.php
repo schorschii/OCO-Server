@@ -229,17 +229,6 @@ function getPolicyInput($pd) {
 </div>
 
 <script>
-// init expand buttons
-let expandButtons = tabControlPolicyObject.querySelectorAll('button.expander');
-for(let i=0; i<expandButtons.length; i++) {
-	expandButtons[i].addEventListener('click', (e) => {
-		let sub = e.srcElement.parentNode.parentNode.childNodes;
-		for(let n=0; n<sub.length; n++) {
-			if(sub[n].tagName == 'UL')
-				sub[n].classList.toggle('hidden');
-		}
-	});
-}
 // init help buttons
 let helpButtons = tabControlPolicyObject.querySelectorAll('a.help');
 for(let i=0; i<helpButtons.length; i++) {

@@ -18,10 +18,14 @@ try {
 	</tr>
 	<tr>
 		<th><?php echo LANG('notes'); ?></th>
-		<td><textarea class='fullwidth' name='notes'><?php echo htmlspecialchars($profile->notes??''); ?></textarea></td>
+		<td><textarea class='fullwidth' name='notes' placeholder='<?php echo LANG('optional_hint'); ?>'><?php echo htmlspecialchars($profile->notes??''); ?></textarea></td>
+	</tr>
+	<tr style='<?php if(($profile->type??$_GET['type']??'') !== Models\Profile::TYPE_IOS_DECLARATION) echo 'display:none'; ?>'>
+		<th><?php echo LANG('type'); ?></th>
+		<td><input type='text' class='fullwidth' autocomplete='new-password' name='declaration_type' value='<?php echo htmlspecialchars($profile->declaration_type??'',ENT_QUOTES); ?>'></input></td>
 	</tr>
 	<tr>
-		<th><?php echo LANG('profile_content'); ?></th>
+		<th><?php echo LANG('content'); ?></th>
 		<td>
 			<div class='tabcontainer'>
 				<div class='tabbuttons marginbottom' style='<?php if(($profile->type??$_GET['type']??'') != Models\Profile::TYPE_IOS) echo 'display:none'; ?>'>
@@ -48,7 +52,15 @@ try {
 	<tr>
 		<th></th>
 		<td>
-			<div class='alert info'><?php echo LANG('policy_docs'); ?></div>
+			<div class='alert info'>
+				<?php if(($profile->type??$_GET['type']??'') === Models\Profile::TYPE_IOS) { ?>
+					<a href="https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys" target="_blank"><?php echo LANG('ios_profile_payloads'); ?></a>
+				<?php } elseif(($profile->type??$_GET['type']??'') === Models\Profile::TYPE_IOS_DECLARATION) { ?>
+					<a href="https://developer.apple.com/documentation/devicemanagement/devicemanagement-declarations" target="_blank"><?php echo LANG('ios_declarations'); ?></a>
+				<?php } elseif(($profile->type??$_GET['type']??'') === Models\Profile::TYPE_ANDROID) { ?>
+					<a href="https://developers.google.com/android/management/reference/rest/v1/enterprises.policies#Policy" target="_blank"><?php echo LANG('android_policy_reference'); ?></a>
+				<?php } ?>
+			</div>
 		</td>
 	</tr>
 </table>

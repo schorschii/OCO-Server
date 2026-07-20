@@ -328,6 +328,7 @@ function ajaxRequest(url, objID, callback, addToHistory=true, showFullscreenLoad
 						setAutofocus(object);
 					}
 					initLinks(object);
+					initExpander(object);
 				}
 				// execute inline scripts
 				var scripts = object.getElementsByTagName('script');
@@ -441,6 +442,46 @@ function initLinks(root) {
 			}
 			refreshContentExplorer('views/'+encodeURIComponent(urlParams.get('view'))+'.php?'+ajaxUrlParams.join('&'));
 		});
+	}
+}
+function initExpander(root) {
+	let expander = root.querySelectorAll('ul.tree');
+	for(let i = 0; i < expander.length; i++) {
+		// init expand buttons
+		let buttons = expander[i].querySelectorAll('button.expander');
+		for(let n = 0; n < buttons.length; n++) {
+			buttons[n].addEventListener('click', (e) => {
+				let sub = e.srcElement.parentNode.parentNode.childNodes;
+				for(let m=0; m<sub.length; m++) {
+					if(sub[m].tagName == 'UL')
+						sub[m].classList.toggle('hidden');
+				}
+			});
+		}
+		if(!expander[i].id) continue;
+		let elements = expander[i].querySelectorAll('ul.tree');
+		if(expander[i].classList.contains('savestate')) {
+			// restore previous expand states
+			let lastState = JSON.parse(localStorage.getItem(expander[i].id));
+			for(let n = 0; n < elements.length; n++) {
+				if(!elements[n].id) continue;
+				if(lastState[elements[n].id]) {
+					elements[n].classList.remove('hidden');
+				}
+			}
+			// save state on change
+			let saveState = (e) => {
+				let newState = {};
+				for(let n = 0; n < elements.length; n++) {
+					if(!elements[n].id) continue;
+					newState[elements[n].id] = !elements[n].classList.contains('hidden');
+				}
+				localStorage.setItem(expander[i].id, JSON.stringify(newState));
+			};
+			for(let n = 0; n < buttons.length; n++) {
+				buttons[n].addEventListener('click', saveState);
+			}
+		}
 	}
 }
 
@@ -2015,13 +2056,17 @@ function sendMobileDeviceCommand(dialogContainer, mobile_device_id, name, parame
 }
 function showDialogEditProfile(type, id=-1) {
 	title = LANG['edit'];
-	if(id == -1)
-		title = type=='android' ? LANG['new_android_policy'] : LANG['new_ios_profile'];
+	if(id == -1) {
+		if(type=='ios') title = LANG['new_ios_profile'];
+		if(type=='ios-dec') title = LANG['new_ios_declaration'];
+		if(type=='android') title = LANG['new_android_policy'];
+	}
 	showDialogAjax(title, 'views/dialog/profile-edit.php?id='+encodeURIComponent(id)+'&type='+encodeURIComponent(type), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
 		let txtId = dialogContainer.querySelectorAll('input[name=id]')[0];
 		let txtType = dialogContainer.querySelectorAll('input[name=type]')[0];
 		let txtName = dialogContainer.querySelectorAll('input[name=name]')[0];
 		let txtNotes = dialogContainer.querySelectorAll('textarea[name=notes]')[0];
+		let txtDeclarationType = dialogContainer.querySelectorAll('input[name=declaration_type]')[0];
 		let flePayload = dialogContainer.querySelectorAll('input[name=payload]')[0];
 		let txtPayload = dialogContainer.querySelectorAll('textarea[name=payload]')[0];
 		let tabFile = dialogContainer.querySelectorAll('.tabcontainer .tabbuttons > a[name=file]')[0];
@@ -2031,13 +2076,14 @@ function showDialogEditProfile(type, id=-1) {
 				txtId.value,
 				txtType.value,
 				txtName.value,
+				txtDeclarationType.value,
 				tabFile.classList.contains('active') ? flePayload.files : txtPayload.value,
 				txtNotes.value
 			);
 		});
 	});
 }
-function editProfile(dialogContainer, id, type, name, payload, notes) {
+function editProfile(dialogContainer, id, type, name, declarationType, payload, notes) {
 	let req = new XMLHttpRequest();
 	let formData = new FormData();
 
@@ -2054,6 +2100,7 @@ function editProfile(dialogContainer, id, type, name, payload, notes) {
 	formData.append('edit_profile_id', id);
 	formData.append('type', type);
 	formData.append('name', name);
+	formData.append('declaration_type', declarationType);
 	formData.append('notes', notes);
 
 	req.onreadystatechange = function() {

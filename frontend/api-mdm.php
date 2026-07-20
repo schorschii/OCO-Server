@@ -1,7 +1,6 @@
 <?php
 require_once(__DIR__.'/../loader.inc.php');
 
-
 $ade = new Apple\AutomatedDeviceEnrollment($db);
 
 $db->insertLogEntry(Models\Log::LEVEL_DEBUG, null, null, Models\Log::ACTION_AGENT_API_RAW, file_get_contents('php://input'));
@@ -184,8 +183,98 @@ if($path === '/profile') {
 			);
 			break;
 
+		case 'DeclarativeManagement':
+			$md = $db->selectMobileDeviceByUdid($request['UDID']);
+			if(!$md) throw new NotFoundException();
+
+			$mdcc = new MobileDeviceCommandController($db);
+			$endpoint = $request['Endpoint'] ?? null;
+			if($endpoint === 'tokens') {
+				header('Content-Type: application/json');
+				echo json_encode([
+					'SyncTokens' => $mdcc->iosSyncTokens($md)
+				]);
+
+			} elseif($endpoint === 'status') {
+				// TODO do something with status report
+				//error_log(json_encode(json_decode($request['Data'])));
+				http_response_code(204);
+
+			} elseif($endpoint === 'declaration-items') {
+				$syncTokens = $mdcc->iosSyncTokens($md);
+				$assets = []; $configurations = []; $management = []; $overallHash = '';
+				foreach($mdcc->iosDeclarations($md) as $p) {
+					$overallHash .= $p->getToken();
+					$declarationItem = [
+						'Identifier' => strval($p->id),
+						'ServerToken' => $p->getToken(),
+					];
+					if(startsWith($p->declaration_type, 'com.apple.asset.'))
+						$assets[] = $declarationItem;
+					if(startsWith($p->declaration_type, 'com.apple.configuration.'))
+						$configurations[] = $declarationItem;
+					if(startsWith($p->declaration_type, 'com.apple.management.'))
+						$management[] = $declarationItem;
+				}
+				header('Content-Type: application/json');
+				echo json_encode([
+					'DeclarationsToken' => $syncTokens['DeclarationsToken'],
+					'Declarations' => [
+						'Activations' => [
+							[
+								'Identifier' => 'com.oco.activation',
+								'ServerToken' => md5($overallHash),
+							]
+						],
+						'Assets' => $assets,
+						'Configurations' => $configurations,
+						'Management' => $management,
+					]
+				]);
+
+			} elseif(startsWith($endpoint, 'declaration/activation')) {
+				$identifiers = []; $overallHash = '';
+				foreach($mdcc->iosDeclarations($md) as $p) {
+					$overallHash .= $p->getToken();
+					$identifiers[] = strval($p->id);
+				}
+				$requestedDeclaration = explode('/', $endpoint)[2];
+				header('Content-Type: application/json');
+				echo json_encode([
+					'Type' => 'com.apple.activation.simple',
+					'Identifier' => 'com.oco.activation',
+					'ServerToken' => md5($overallHash),
+					'Payload' => [
+						'StandardConfigurations' => $identifiers
+					]
+				]);
+
+			} elseif(startsWith($endpoint, 'declaration/configuration/')
+			|| startsWith($endpoint, 'declaration/management/')
+			|| startsWith($endpoint, 'declaration/asset/')) {
+				$requestedDeclaration = explode('/', $endpoint)[2];
+				$p = null;
+				// check if requested declaration is actually assigned to the device
+				foreach($mdcc->iosDeclarations($md) as $d) {
+					if($requestedDeclaration === strval($d->id))
+						$p = $d;
+				}
+				if(!$p) throw new NotFoundException();
+				header('Content-Type: application/json');
+				echo json_encode([
+					'Type' => $p->declaration_type,
+					'Identifier' => strval($p->id),
+					'ServerToken' => $p->getToken(),
+					'Payload' => json_decode($p->payload)
+				]);
+
+			} else {
+				throw new RuntimeException('Unknown declarative management endpoint');
+			}
+			break;
+
 		default:
-			throw new RuntimeException('Unknown message type');
+			throw new RuntimeException('Unknown /checkin message type');
 	}
 
 
@@ -369,4 +458,7 @@ function checkSignature(string $body, string $signature) {
 
 	$returnCode = proc_close($process);
 	if($returnCode != 0) throw new Exception('Signature verification failed: '.$returnCode."\n".$stdErr);
+
+	unlink($tmpFileBody);
+	unlink($tmpFileCa);
 }
