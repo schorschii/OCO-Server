@@ -101,7 +101,10 @@ if($path === '/profile') {
 			if(empty($request['UDID']) || empty($request['SerialNumber'])) {
 				throw new InvalidRequestException('At least one required parameter is missing');
 			}
-			$os = $request['OSVersion'] ? 'iOS '.$request['OSVersion'] : null;
+			$prefix = 'iOS';
+			if(strpos($request['ProductName']??'', 'MacBook') !== false)
+				$prefix = 'macOS';
+			$os = $request['OSVersion'] ? $prefix.' '.$request['OSVersion'] : null;
 			$md = $db->selectMobileDeviceBySerialNumber($request['SerialNumber']);
 			if(!$md) {
 				throw new InvalidRequestException('Device not found');
@@ -332,7 +335,10 @@ if($path === '/profile') {
 			// store device info
 			if($state === Models\MobileDeviceCommand::STATE_SUCCESS) {
 				if($rt === 'DeviceInformation') {
-					$os = $request['QueryResponses']['OSVersion'] ? 'iOS '.$request['QueryResponses']['OSVersion'] : null;
+					$prefix = 'iOS';
+					if(strpos($request['QueryResponses']['ProductName']??'', 'MacBook') !== false)
+						$prefix = 'macOS';
+					$os = $request['QueryResponses']['OSVersion'] ? $prefix.' '.$request['QueryResponses']['OSVersion'] : null;
 					$product = $request['QueryResponses']['ProductName'] ? $request['QueryResponses']['ProductName'] : null;
 					$db->updateMobileDevice(
 						$md->id, $md->udid, $md->state,

@@ -116,7 +116,7 @@ if(!empty($_GET['id'])) {
 	<div class='stickytable'>
 		<?php $apps = [];
 		if(isset($_GET['os']) && $_GET['os'] == 'ios') {
-			echo "<h2>".LANG('ios')."</h2>";
+			echo "<h2>".LANG('ios_macos')."</h2>";
 			$apps = $db->selectAllAppByMobileDeviceOs(Models\MobileDevice::OS_TYPE_IOS);
 		} elseif(isset($_GET['os']) && $_GET['os'] == 'android') {
 			echo "<h2>".LANG('android')."</h2>";

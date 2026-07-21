@@ -36,6 +36,7 @@ class MobileDevice {
 	function getOsType() {
 		if(strpos($this->os, 'Android') !== false) return self::OS_TYPE_ANDROID;
 		elseif(strpos($this->os, 'iOS') !== false) return self::OS_TYPE_IOS;
+		elseif(strpos($this->os, 'macOS') !== false) return self::OS_TYPE_IOS;
 		else return self::OS_TYPE_UNKNOWN;
 	}
 	function getIcon() {

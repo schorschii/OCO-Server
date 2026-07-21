@@ -27,7 +27,7 @@ try {
 <ul id='ulManagedAppsRootView' class='tree savestate'>
 
 	<li>
-		<h3><button class='expander'><?php echo LANG('ios'); ?></button></h3>
+		<h3><button class='expander'><?php echo LANG('ios_macos'); ?></button></h3>
 		<ul id='ulManagedIosApps' class='subtree hidden stickytable'>
 			<table id='tblManagedAppIosData' class='list searchable sortable savesort fullwidth'>
 			<thead>

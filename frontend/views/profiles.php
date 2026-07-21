@@ -28,7 +28,7 @@ try {
 <ul id='ulConfigRootView' class='tree savestate'>
 
 	<li>
-		<h3><button class='expander'><?php echo LANG('ios'); ?> - <?php echo LANG('profiles'); ?></button></h3>
+		<h3><button class='expander'><?php echo LANG('ios_macos'); ?> - <?php echo LANG('profiles'); ?></button></h3>
 		<ul id='ulIosProfiles' class='subtree hidden stickytable'>
 			<table id='tblIosProfileData' class='list searchable sortable savesort actioncolumn fullwidth'>
 			<thead>
@@ -84,7 +84,7 @@ try {
 	</li>
 
 	<li>
-		<h3><button class='expander'><?php echo LANG('ios'); ?> - <?php echo LANG('declarations'); ?></button></h3>
+		<h3><button class='expander'><?php echo LANG('ios_macos'); ?> - <?php echo LANG('declarations'); ?></button></h3>
 		<ul id='ulIosDeclarations' class='subtree hidden stickytable'>
 			<table id='tblIosDeclarationsData' class='list searchable sortable savesort actioncolumn fullwidth'>
 			<thead>

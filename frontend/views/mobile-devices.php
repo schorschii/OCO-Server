@@ -74,7 +74,7 @@ try {
 				<span>
 					<span class='hint'>
 						<?php if($p->type == Models\Profile::TYPE_ANDROID) echo LANG('android').'<br>';
-						elseif($p->type == Models\Profile::TYPE_IOS) echo LANG('ios').'<br>'; ?>
+						elseif($p->type == Models\Profile::TYPE_IOS || $p->type == Models\Profile::TYPE_IOS_DECLARATION) echo LANG('ios_macos').'<br>'; ?>
 					</span>
 					<?php echo htmlspecialchars($p->name); ?>
 				</span>
@@ -86,7 +86,7 @@ try {
 				<span>
 					<span class='hint'>
 						<?php if($ma->type == Models\ManagedApp::TYPE_ANDROID) echo LANG('android').'<br>';
-						elseif($ma->type == Models\ManagedApp::TYPE_IOS) echo LANG('ios').'<br>'; ?>
+						elseif($ma->type == Models\ManagedApp::TYPE_IOS) echo LANG('ios_macos').'<br>'; ?>
 					</span>
 					<?php echo htmlspecialchars($ma->name); ?>
 				</span>

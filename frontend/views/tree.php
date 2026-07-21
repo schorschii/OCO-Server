@@ -96,7 +96,7 @@ require_once('../session.inc.php');
 <div id='divNodeApps' class='node expandable'>
 	<a <?php echo Html::explorerLink('views/apps.php'); ?>><img src='img/apps.dyn.svg'><?php echo LANG('recognised_apps'); ?></a>
 	<div class='subitems'>
-		<a <?php echo Html::explorerLink('views/apps.php?os=ios'); ?>><img src='img/mobile-device-ios.dyn.svg'><?php echo LANG('ios'); ?></a>
+		<a <?php echo Html::explorerLink('views/apps.php?os=ios'); ?>><img src='img/mobile-device-ios.dyn.svg'><?php echo LANG('ios_macos'); ?></a>
 		<a <?php echo Html::explorerLink('views/apps.php?os=android'); ?>><img src='img/mobile-device-android.dyn.svg'><?php echo LANG('android'); ?></a>
 	</div>
 </div>
