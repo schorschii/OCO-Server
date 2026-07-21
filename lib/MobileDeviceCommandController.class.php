@@ -270,7 +270,7 @@ class MobileDeviceCommandController {
 		$lastUpdateTime = 0;
 		foreach($this->iosDeclarations($md) as $p) {
 			// ignore the timezone (= force to UTC) when comparing lastUpdate time because PHP timezone config for Apache and CLI (cron job) can differ!
-			$lastUpdate = strtotime(($p->last_update ?? $p->created).' UTC');
+			$lastUpdate = strtotime(($p->updated ?? $p->created).' UTC');
 			if($lastUpdate > $lastUpdateTime) $lastUpdateTime = $lastUpdate;
 		}
 		return $lastUpdateTime;
