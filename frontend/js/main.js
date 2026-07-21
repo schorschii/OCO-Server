@@ -463,10 +463,12 @@ function initExpander(root) {
 		if(expander[i].classList.contains('savestate')) {
 			// restore previous expand states
 			let lastState = JSON.parse(localStorage.getItem(expander[i].id));
-			for(let n = 0; n < elements.length; n++) {
-				if(!elements[n].id) continue;
-				if(lastState[elements[n].id]) {
-					elements[n].classList.remove('hidden');
+			if(lastState) {
+				for(let n = 0; n < elements.length; n++) {
+					if(!elements[n].id) continue;
+					if(lastState[elements[n].id]) {
+						elements[n].classList.remove('hidden');
+					}
 				}
 			}
 			// save state on change
