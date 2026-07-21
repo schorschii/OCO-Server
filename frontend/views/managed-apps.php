@@ -28,7 +28,7 @@ try {
 
 	<li>
 		<h3><button class='expander'><?php echo LANG('ios'); ?></button></h3>
-		<ul id='ulManagedIosApps' class='tree hidden stickytable'>
+		<ul id='ulManagedIosApps' class='subtree hidden stickytable'>
 			<table id='tblManagedAppIosData' class='list searchable sortable savesort fullwidth'>
 			<thead>
 				<tr>
@@ -79,7 +79,7 @@ try {
 
 	<li class='stickytable'>
 		<h3><button class='expander'><?php echo LANG('android'); ?></button></h3>
-		<ul id='ulManagedAndroidApps' class='tree hidden stickytable'>
+		<ul id='ulManagedAndroidApps' class='subtree hidden stickytable'>
 			<table id='tblManagedAppAndroidData' class='list searchable sortable savesort fullwidth'>
 			<thead>
 				<tr>

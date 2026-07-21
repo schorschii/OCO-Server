@@ -1614,15 +1614,17 @@ table.actioncolumn tr.offline > td:not(:last-child) {
 	display: flex;
 }
 
-ul.tree {
+ul.tree, ul.subtree {
 	padding: 0;
 	list-style-type: none;
 }
-ul.tree > li > ul.tree {
+ul.tree > li > ul.subtree,
+ul.subtree > li > ul.subtree {
 	padding-left: 20px;
 	border-left: 1px dashed rgb(150,150,150,0.4);
 }
-ul.tree button.expander {
+ul.tree button.expander,
+ul.subtree button.expander {
 	width: 100%;
 	text-align: start;
 	text-transform: none;

@@ -43,7 +43,7 @@ function getContents($group_id, $classMask) {
 		if(!$subGroups) continue;
 		$html .= "<li>";
 		$html .= "<h3><button class='expander'>".htmlspecialchars(translatePolicy($pdg->display_name))."</button></h3>";
-		$html .= "<ul class='tree hidden'>".$subGroups."</ul>";
+		$html .= "<ul id='ulPolicies".$pdg->id."' class='subtree hidden'>".$subGroups."</ul>";
 		$html .= "</li>\n";
 	}
 
@@ -174,7 +174,7 @@ function getPolicyInput($pd) {
 			<?php if(empty($content)) { ?>
 				<div class='alert warning'><?php echo LANG('import_policy_definitions_first'); ?></div>
 			<?php } else { ?>
-				<ul class='tree machine'>
+				<ul id='ulPoliciesMachine' class='tree machine savestate'>
 					<?php echo $content; ?>
 				</ul>
 			<?php } ?>
@@ -185,7 +185,7 @@ function getPolicyInput($pd) {
 			<?php if(empty($content)) { ?>
 				<div class='alert warning'><?php echo LANG('import_policy_definitions_first'); ?></div>
 			<?php } else { ?>
-				<ul class='tree user'>
+				<ul id='ulPoliciesUser' class='tree user savestate'>
 					<?php echo $content; ?>
 				</ul>
 			<?php } ?>

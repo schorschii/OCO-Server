@@ -29,7 +29,7 @@ try {
 
 	<li>
 		<h3><button class='expander'><?php echo LANG('ios'); ?> - <?php echo LANG('profiles'); ?></button></h3>
-		<ul id='ulIosProfiles' class='tree hidden stickytable'>
+		<ul id='ulIosProfiles' class='subtree hidden stickytable'>
 			<table id='tblIosProfileData' class='list searchable sortable savesort actioncolumn fullwidth'>
 			<thead>
 				<tr>
@@ -85,7 +85,7 @@ try {
 
 	<li>
 		<h3><button class='expander'><?php echo LANG('ios'); ?> - <?php echo LANG('declarations'); ?></button></h3>
-		<ul id='ulIosDeclarations' class='tree hidden stickytable'>
+		<ul id='ulIosDeclarations' class='subtree hidden stickytable'>
 			<table id='tblIosDeclarationsData' class='list searchable sortable savesort actioncolumn fullwidth'>
 			<thead>
 				<tr>
@@ -141,7 +141,7 @@ try {
 
 	<li>
 		<h3><button class='expander'><?php echo LANG('android'); ?> - <?php echo LANG('policies'); ?></button></h3>
-		<ul id='ulAndroidPolicies' class='tree hidden stickytable'>
+		<ul id='ulAndroidPolicies' class='subtree hidden stickytable'>
 			<table id='tblAndroidProfileData' class='list searchable sortable savesort actioncolumn fullwidth'>
 			<thead>
 				<tr>

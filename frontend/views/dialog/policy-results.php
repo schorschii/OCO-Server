@@ -68,7 +68,7 @@ function getContents($group_id, $classMask) {
 		if(!$subGroups) continue;
 		$html .= "<li>";
 		$html .= "<h3>".htmlspecialchars(translatePolicy($pdg->display_name))."</h3>";
-		$html .= "<ul class='tree'>".$subGroups."</ul>";
+		$html .= "<ul class='subtree'>".$subGroups."</ul>";
 		$html .= "</li>\n";
 	}
 

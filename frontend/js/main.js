@@ -459,7 +459,7 @@ function initExpander(root) {
 			});
 		}
 		if(!expander[i].id) continue;
-		let elements = expander[i].querySelectorAll('ul.tree');
+		let elements = expander[i].querySelectorAll('ul.subtree');
 		if(expander[i].classList.contains('savestate')) {
 			// restore previous expand states
 			let lastState = JSON.parse(localStorage.getItem(expander[i].id));
