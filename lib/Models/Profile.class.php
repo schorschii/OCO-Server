@@ -17,6 +17,7 @@ class Profile {
 	public $created;
 	public $created_by_system_user_id;
 	public $updated;
+	public $updated_by_system_user_id;
 
 	// functions
 	function getUuid() {
