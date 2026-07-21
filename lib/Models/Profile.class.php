@@ -16,7 +16,7 @@ class Profile {
 	public $notes;
 	public $created;
 	public $created_by_system_user_id;
-	public $last_update;
+	public $updated;
 
 	// functions
 	function getUuid() {
@@ -34,7 +34,7 @@ class Profile {
 		} catch(\Exception $e) {}
 	}
 	function getToken() {
-		return md5($this->id.'_'.($this->last_update??$this->created));
+		return md5($this->id.'_'.($this->updated??$this->created));
 	}
 
 }

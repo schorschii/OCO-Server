@@ -150,14 +150,14 @@ CREATE TABLE IF NOT EXISTS `package` (
   `license_count` int(11) DEFAULT NULL,
   `created` timestamp NOT NULL DEFAULT current_timestamp(),
   `created_by_system_user_id` int(11) DEFAULT NULL,
-  `last_update` timestamp NULL DEFAULT NULL,
-  `last_update_by_system_user_id` int(11) DEFAULT NULL,
+  `updated` timestamp NULL DEFAULT NULL,
+  `updated_by_system_user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_package_family_id` (`package_family_id`),
   KEY `fk_package_2` (`created_by_system_user_id`),
   CONSTRAINT `fk_package_family_id` FOREIGN KEY (`package_family_id`) REFERENCES `package_family` (`id`),
   CONSTRAINT `fk_package_2` FOREIGN KEY (`created_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
-  CONSTRAINT `fk_package_3` FOREIGN KEY (`last_update_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `fk_package_3` FOREIGN KEY (`updated_by_system_user_id`) REFERENCES `system_user` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------

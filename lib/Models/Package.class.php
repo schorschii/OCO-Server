@@ -28,8 +28,8 @@ class Package {
 	public $license_count;
 	public $created;
 	public $created_by_system_user_id;
-	public $last_update;
-	public $last_update_by_system_user_id;
+	public $updated;
+	public $updated_by_system_user_id;
 
 	// joined package group attributes
 	public $package_group_member_sequence;
