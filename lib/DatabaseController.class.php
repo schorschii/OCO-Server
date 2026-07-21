@@ -485,7 +485,13 @@ class DatabaseController {
 	}
 
 	public function selectAllProfileByType($type) {
-		$this->stmt = $this->dbh->prepare('SELECT * FROM profile WHERE type = :type ORDER BY name');
+		$this->stmt = $this->dbh->prepare(
+			'SELECT p.*, su.username AS "created_by_system_user_username", su2.username AS "updated_by_system_user_username"
+			FROM profile p
+			LEFT JOIN system_user su ON su.id = p.created_by_system_user_id
+			LEFT JOIN system_user su2 ON su2.id = p.updated_by_system_user_id
+			WHERE p.type = :type ORDER BY p.name'
+		);
 		$this->stmt->execute([':type' => $type]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\Profile');
 	}
@@ -526,22 +532,22 @@ class DatabaseController {
 		$this->stmt->execute([':managed_app_id' => $managed_app_id]);
 		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDeviceGroup', [$this]);
 	}
-	public function insertProfile($type, $name, $declaration_type, $payload, $notes, $system_user_id) {
+	public function insertProfile($type, $name, $declaration_type, $payload, $notes, $created_by_system_user_id) {
 		$this->stmt = $this->dbh->prepare(
 			'INSERT INTO profile (type, name, declaration_type, payload, notes, created_by_system_user_id)
 			VALUES (:type, :name, :declaration_type, :payload, :notes, :created_by_system_user_id)'
 		);
 		$this->stmt->execute([
-			':type' => $type, ':name' => $name, ':declaration_type' => $declaration_type, ':payload' => $payload, ':notes' => $notes, ':created_by_system_user_id' => $system_user_id
+			':type' => $type, ':name' => $name, ':declaration_type' => $declaration_type, ':payload' => $payload, ':notes' => $notes, ':created_by_system_user_id' => $created_by_system_user_id
 		]);
 		return $this->dbh->lastInsertId();
 	}
-	public function updateProfile($id, $type, $name, $declaration_type, $payload, $notes, $system_user_id) {
+	public function updateProfile($id, $type, $name, $declaration_type, $payload, $notes, $updated_by_system_user_id) {
 		$this->stmt = $this->dbh->prepare(
-			'UPDATE profile SET type = :type, name = :name, declaration_type = :declaration_type, payload = :payload, notes = :notes, created_by_system_user_id = :created_by_system_user_id, LAST_UPDATE = CURRENT_TIMESTAMP WHERE id = :id'
+			'UPDATE profile SET type = :type, name = :name, declaration_type = :declaration_type, payload = :payload, notes = :notes, updated = CURRENT_TIMESTAMP, updated_by_system_user_id = :updated_by_system_user_id WHERE id = :id'
 		);
 		return $this->stmt->execute([
-			':id' => $id, ':type' => $type, ':name' => $name, ':declaration_type' => $declaration_type, ':payload' => $payload, ':notes' => $notes, ':created_by_system_user_id' => $system_user_id
+			':id' => $id, ':type' => $type, ':name' => $name, ':declaration_type' => $declaration_type, ':payload' => $payload, ':notes' => $notes, ':updated_by_system_user_id' => $updated_by_system_user_id
 		]);
 	}
 	public function insertMobileDeviceGroupProfile($mobile_device_group_id, $profile_id) {

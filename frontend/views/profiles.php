@@ -36,6 +36,7 @@ try {
 					<th><input type='checkbox' class='toggleAllChecked'></th>
 					<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('notes'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
 					<th class=''><?php echo LANG('action'); ?></th>
 				</tr>
@@ -46,7 +47,14 @@ try {
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
 				echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
-				echo "<td>".htmlspecialchars($p->created)."</td>";
+				echo "<td>"
+					.htmlspecialchars($p->created)
+					.(!empty($p->created_by_system_user_username) ? htmlspecialchars(' ('.$p->created_by_system_user_username.')') : '')
+					."</td>";
+				echo "<td>"
+					.htmlspecialchars($p->updated)
+					.(!empty($p->updated_by_system_user_username) ? htmlspecialchars(' ('.$p->updated_by_system_user_username.')') : '')
+					."</td>";
 				echo "<td><ul>";
 				foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
 					echo "<li class='subbuttons'>"
@@ -92,6 +100,7 @@ try {
 					<th><input type='checkbox' class='toggleAllChecked'></th>
 					<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('notes'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
 					<th class=''><?php echo LANG('action'); ?></th>
 				</tr>
@@ -102,7 +111,14 @@ try {
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
 				echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
-				echo "<td>".htmlspecialchars($p->created)."</td>";
+				echo "<td>"
+					.htmlspecialchars($p->created)
+					.(!empty($p->created_by_system_user_username) ? htmlspecialchars(' ('.$p->created_by_system_user_username.')') : '')
+					."</td>";
+				echo "<td>"
+					.htmlspecialchars($p->updated)
+					.(!empty($p->updated_by_system_user_username) ? htmlspecialchars(' ('.$p->updated_by_system_user_username.')') : '')
+					."</td>";
 				echo "<td><ul>";
 				foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
 					echo "<li class='subbuttons'>"
@@ -148,6 +164,7 @@ try {
 					<th><input type='checkbox' class='toggleAllChecked'></th>
 					<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('notes'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
 					<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
 					<th class=''><?php echo LANG('action'); ?></th>
 				</tr>
@@ -158,7 +175,14 @@ try {
 				echo "<tr>";
 				echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
 				echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
-				echo "<td>".htmlspecialchars($p->created)."</td>";
+				echo "<td>"
+					.htmlspecialchars($p->created)
+					.(!empty($p->created_by_system_user_username) ? htmlspecialchars(' ('.$p->created_by_system_user_username.')') : '')
+					."</td>";
+				echo "<td>"
+					.htmlspecialchars($p->updated)
+					.(!empty($p->updated_by_system_user_username) ? htmlspecialchars(' ('.$p->updated_by_system_user_username.')') : '')
+					."</td>";
 				echo "<td><ul>";
 				foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
 					echo "<li class='subbuttons'>"

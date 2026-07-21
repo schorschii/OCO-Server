@@ -834,6 +834,24 @@ class DatabaseMigrationController {
 
 			$upgraded = true;
 		}
+		if($this->getTableColumnInfo('profile', 'last_update')) {
+			if($this->debug) echo 'Upgrading to 1.2.1... (rename last_update column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'ALTER TABLE `profile` CHANGE `last_update` `updated` TIMESTAMP NULL DEFAULT NULL;');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.2.1... (add updated_by_system_user_id column)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'ALTER TABLE `profile` ADD `updated_by_system_user_id` int(11) DEFAULT NULL AFTER `updated`;');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			if($this->debug) echo 'Upgrading to 1.2.1... (add fk_profile_2 constraint)'."\n";
+			$this->stmt = $this->dbh->prepare(
+				'ALTER TABLE `profile` ADD CONSTRAINT `fk_profile_2` FOREIGN KEY (`updated_by_system_user_id`) REFERENCES `system_user`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;');
+			if(!$this->stmt->execute()) throw new Exception('SQL error');
+
+			$upgraded = true;
+		}
 
 		return $upgraded;
 	}
