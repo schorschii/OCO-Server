@@ -107,7 +107,6 @@ try {
 				'DeviceLock', 'EraseDevice', 'ClearPasscode',
 				'EnableLostMode', 'PlayLostModeSound', 'DeviceLocation', 'DisableLostMode',
 				'ShutDownDevice', 'RestartDevice'
-				, 'DeclarativeManagement'
 			])) throw new InvalidRequestException('Unknown command');
 			$parameter = [
 				'RequestType' => $_POST['command'],
@@ -133,13 +132,6 @@ try {
 				$parameter['Message'] = $_POST['message'];
 				#'Footnote' => '',
 				#'PhoneNumber' => '',
-			} elseif($_POST['command'] == 'DeclarativeManagement') {
-				$mdcc = new MobileDeviceCommandController($db);
-				$lastUpdateTime = $mdcc->iosGetLastDeclarationUpdate($md);
-				$parameter['Data'] = base64_encode(json_encode([
-					'SyncTokens' => [ 'Timestamp' => date('Y-m-d\TH:i:s\Z', $lastUpdateTime), 'DeclarationsToken' => md5($lastUpdateTime) ]
-				]));
-				$parameter['_data'] = ['Data'];
 			}
 			$cl->createMobileDeviceCommand($md->id, $_POST['command'], json_encode($parameter), null);
 			die();
