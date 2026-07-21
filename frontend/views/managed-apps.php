@@ -24,7 +24,7 @@ try {
 	<button onclick='syncAppleAssets(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_apple_vpp'); ?></button>
 </div>
 
-<ul id='ulConfigRootView' class='tree savestate'>
+<ul id='ulManagedAppsRootView' class='tree savestate'>
 
 	<li>
 		<h3><button class='expander'><?php echo LANG('ios'); ?></button></h3>
