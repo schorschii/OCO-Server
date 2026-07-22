@@ -6,6 +6,11 @@ require_once('session-options.inc.php');
 if(!isset($_SESSION['oco_user_id'])) {
 	redirectToLogin();
 }
+// check if path matches
+if(($_SESSION['oco_installation']??'') !== dirname(__FILE__)) {
+	error_log('auth error: installation not matching '.dirname(__FILE__));
+	redirectToLogin();
+}
 // check if user account still exists and is not locked
 if(!isset($db)) { header('Location: index.php'); die(); }
 $currentSystemUser = $db->selectSystemUser($_SESSION['oco_user_id']);

@@ -32,6 +32,7 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		$_SESSION['oco_last_login'] = $user->last_login;
 		$_SESSION['oco_username'] = $user->username;
 		$_SESSION['oco_user_id'] = $user->id;
+		$_SESSION['oco_installation'] = dirname(__FILE__);
 
 		// only allow relative URLs beginning with '/', do not redirect to other websites!
 		$redirect = 'index.php';
@@ -63,7 +64,8 @@ elseif(isset($_GET['logout'])) {
 }
 
 // redirect to index.php if already logged in
-if(!empty($_SESSION['oco_user_id'])) {
+if(!empty($_SESSION['oco_user_id'])
+&& ($_SESSION['oco_installation']??'') === dirname(__FILE__)) {
 	header('Location: index.php');
 	die();
 }
