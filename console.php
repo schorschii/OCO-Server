@@ -20,7 +20,7 @@ try {
 
 		case 'mdmcron':
 			$mdcc = new MobileDeviceCommandController($db, true);
-			$mdcc->mdmCron();
+			$mdcc->syncAppsProfiles();
 			break;
 
 		case 'googlesync':

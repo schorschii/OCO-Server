@@ -190,12 +190,12 @@ if($path === '/profile') {
 			$md = $db->selectMobileDeviceByUdid($request['UDID']);
 			if(!$md) throw new NotFoundException();
 
-			$mdcc = new MobileDeviceCommandController($db);
+			$apple = new Apple\AppleCommandController($db);
 			$endpoint = $request['Endpoint'] ?? null;
 			if($endpoint === 'tokens') {
 				header('Content-Type: application/json');
 				echo json_encode([
-					'SyncTokens' => $mdcc->iosSyncTokens($md)
+					'SyncTokens' => $apple->iosSyncTokens($md)
 				]);
 
 			} elseif($endpoint === 'status') {
@@ -204,9 +204,9 @@ if($path === '/profile') {
 				http_response_code(204);
 
 			} elseif($endpoint === 'declaration-items') {
-				$syncTokens = $mdcc->iosSyncTokens($md);
+				$syncTokens = $apple->iosSyncTokens($md);
 				$assets = []; $configurations = []; $management = []; $overallHash = '';
-				foreach($mdcc->iosDeclarations($md) as $p) {
+				foreach($apple->iosDeclarations($md) as $p) {
 					$overallHash .= $p->getToken();
 					$declarationItem = [
 						'Identifier' => strval($p->id),
@@ -237,7 +237,7 @@ if($path === '/profile') {
 
 			} elseif(startsWith($endpoint, 'declaration/activation')) {
 				$identifiers = []; $overallHash = '';
-				foreach($mdcc->iosDeclarations($md) as $p) {
+				foreach($apple->iosDeclarations($md) as $p) {
 					$overallHash .= $p->getToken();
 					$identifiers[] = strval($p->id);
 				}
@@ -258,7 +258,7 @@ if($path === '/profile') {
 				$requestedDeclaration = explode('/', $endpoint)[2];
 				$p = null;
 				// check if requested declaration is actually assigned to the device
-				foreach($mdcc->iosDeclarations($md) as $d) {
+				foreach($apple->iosDeclarations($md) as $d) {
 					if($requestedDeclaration === strval($d->id))
 						$p = $d;
 				}

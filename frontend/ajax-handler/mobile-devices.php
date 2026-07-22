@@ -33,7 +33,7 @@ try {
 		// instant apps & policy installation + metadata update jobs for iOS for this device
 		try {
 			$mdcc = new MobileDeviceCommandController($db, true);
-			if(!$mdcc->mdmCron([$md->id])) {
+			if(!$mdcc->syncAppsProfiles([$md->id])) {
 				header('HTTP/1.1 520 Some Policies Failed');
 			}
 		} catch(Exception $e) {
@@ -334,7 +334,7 @@ try {
 		$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_MOBILE_DEVICE_SYNC);
 		try {
 			$mdcc = new MobileDeviceCommandController($db, true);
-			if(!$mdcc->mdmCron()) {
+			if(!$mdcc->syncAppsProfiles()) {
 				header('HTTP/1.1 520 Some Policies Failed');
 			}
 		} catch(Exception $e) {
