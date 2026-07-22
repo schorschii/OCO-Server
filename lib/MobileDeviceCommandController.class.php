@@ -26,8 +26,8 @@ class MobileDeviceCommandController {
 				if($this->iosAppInstalls($md)) $force = true;
 				$this->iosInventoryJobs($md, $force);
 
-				$lastUpdateTime = $this->iosGetLastDeclarationUpdate($md);
-				if(md5($lastUpdateTime) != $md->policy) {
+				$overallHash = $this->iosGetOverallDeclarationHash($md);
+				if($overallHash != $md->policy) {
 					$result = $this->db->insertMobileDeviceCommand($md->id, 'DeclarativeManagement', json_encode([
 						'RequestType' => 'DeclarativeManagement',
 						'Data' => base64_encode(json_encode([
@@ -40,7 +40,7 @@ class MobileDeviceCommandController {
 							$md->id, $md->udid, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 							$md->model, $md->os, $md->device_family, $md->color,
 							$md->profile_uuid, $md->push_token, $md->push_magic, $md->push_sent,
-							$md->unlock_token, $md->info, md5($lastUpdateTime)/*policy*/, $md->parameters, $md->notes, $md->force_update
+							$md->unlock_token, $md->info, $overallHash/*policy*/, $md->parameters, $md->notes, $md->force_update
 						);
 						echo('Created command for updating declarations on device '.$md->id."\n");
 					}
@@ -275,9 +275,18 @@ class MobileDeviceCommandController {
 		}
 		return $lastUpdateTime;
 	}
+	function iosGetOverallDeclarationHash(Models\MobileDevice $md) {
+		$overallHash = '';
+		foreach($this->iosDeclarations($md) as $p) {
+			$overallHash .= $p->getToken();
+		}
+		return md5($overallHash);
+	}
 	function iosSyncTokens(Models\MobileDevice $md) {
-		$lastUpdateTime = $this->iosGetLastDeclarationUpdate($md);
-		return [ 'Timestamp' => date('Y-m-d\TH:i:s\Z', $lastUpdateTime), 'DeclarationsToken' => md5($lastUpdateTime) ];
+		return [
+			'Timestamp' => date('Y-m-d\TH:i:s\Z', $this->iosGetLastDeclarationUpdate($md)),
+			'DeclarationsToken' => $this->iosGetOverallDeclarationHash($md)
+		];
 	}
 
 	private function iosAppInstalls(Models\MobileDevice $md) {
