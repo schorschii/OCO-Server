@@ -91,7 +91,7 @@ Important: if a profile contains placeholders, the profile will only be installe
 ABM/ASM offers features for volume purchases of apps and books from the App Store. Before you can deploy apps through OCO, you first need to purchase them in ABM/ASM (even if they are free).
 
 #### Import Content Token (cToken)
-1. To allow OCO to manage your bought assets from the Volume Purchasing Program (VPP), content managers can download a location-based cToken from the "Apps and Books" section under the "Settings" tab in ABM/ASM. Upload this .vpptoken file in OCO Settings -> "Mobile Device Management" -> "VPP Token".
+1. To allow OCO to manage your bought assets from the Volume Purchasing Program (VPP), content managers can download a location-based cToken from the ABM/ASM: "Settings" -> "Payments & Billing" -> tab "Apps & Books" -> "Download" the Content Token (at the bottom). Upload this .vpptoken file in OCO Settings -> "Mobile Device Management" -> "VPP Token".
 2. To retrieve app metadata, you need a key to authorize agaist the App Store API.
    - [Create a service identifier and private key](https://developer.apple.com/help/account/manage-service-configurations/apps-and-books-for-organizations) using a Apple developer account allows you to obtain a key ID to use in your developer token.
    - Upload the .p8 file with the private key in in OCO settings -> "Mobile Device Management" -> "App Store API key". Set the corresponding 10 character key ID and your 10 character Apple developer team ID there too.
