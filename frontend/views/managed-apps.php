@@ -18,7 +18,7 @@ try {
 
 <h1><img src='img/store.dyn.svg'><span id='page-title'><?php echo LANG('managed_apps'); ?></span></h1>
 <div class='controls'>
-	<button onclick='window.open("https://business.apple.com/#/main/appsandbooks", "_blank").focus();' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_ios_apps'); ?></button>
+	<button onclick='window.open("https://business.apple.com/main/apps/store", "_blank").focus();' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_ios_apps'); ?></button>
 	<button onclick='showDialogManagedPlayStore()' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_android_apps'); ?></button>
 	<span class='filler'></span>
 	<button onclick='syncAppleAssets(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_apple_vpp'); ?></button>
