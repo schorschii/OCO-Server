@@ -8,7 +8,7 @@ class MobileDeviceTest extends TestCase {
 
 	public function testReplacePlaceholders(): void {
 		$payload = ['key1' => 'bla blubb', 'key2' => '$$bla$$ $$blubb$$', 'key3' => '$$blubb$$'];
-		$ret = MobileDeviceCommandController::replacePlaceholders(
+		$ret = MobileDeviceCommandControllerBase::replacePlaceholders(
 			$payload,
 			['bla' => 'BLABLA', 'blubb' => 'BLUBBER', 'blib' => 'BLIB']
 		);
@@ -20,7 +20,7 @@ class MobileDeviceTest extends TestCase {
 		$plist = new CFPropertyList\CFPropertyList();
 		$plist->parse(file_get_contents(__DIR__.'/template.mobileconfig'));
 		$payload = $plist->toArray();
-		$ret = MobileDeviceCommandController::replacePlaceholders(
+		$ret = MobileDeviceCommandControllerBase::replacePlaceholders(
 			$payload,
 			['bla' => 'BLABLA', 'blubb' => '&"\'#*', 'blib' => '<format-specific reserved chars>']
 		);
@@ -33,7 +33,7 @@ class MobileDeviceTest extends TestCase {
 
 	public function testReplacePlaceholdersInJson(): void {
 		$payload = json_decode(file_get_contents(__DIR__.'/template.json'), true);
-		$ret = MobileDeviceCommandController::replacePlaceholders(
+		$ret = MobileDeviceCommandControllerBase::replacePlaceholders(
 			$payload,
 			['bla' => 'BLABLA', 'blubb' => '&"\'#*', 'blib' => '<format-specific reserved chars>']
 		);
@@ -43,7 +43,7 @@ class MobileDeviceTest extends TestCase {
 
 	public function testReplacePlaceholdersParameterMissing(): void {
 		$payload = ['key1' => 'bla blubb', 'key2' => '$$bla$$ $$blubb$$', 'key3' => '$$blubb$$'];
-		$ret = MobileDeviceCommandController::replacePlaceholders(
+		$ret = MobileDeviceCommandControllerBase::replacePlaceholders(
 			$payload,
 			['bla' => 'BLABLA', 'blib' => 'BLIB']
 		);
