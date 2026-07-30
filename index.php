@@ -27,13 +27,6 @@
 				<a href="img/computers.png" class="gallery"><img src="img/computers.png" alt="OCO computer list"></a>
 			</div>
 
-			<div class="testimonial left">
-				<a href="img/package.png" class="gallery"><img src="img/package.png" alt="OCO package detail view"></a>
-				<div>
-				It provides software deployment features, a user-computer logon overview, policy management, lists software packages installed on each computer ("recognised software/apps") and features a fine-grained permission/role system. Operating system installation can be automated too.
-				</div>
-			</div>
-
 			<div class="testimonial">
 				<div>
 				This allows you to roll out any new software or updates (patch management) - just create an OCO package and distribute it to your clients. You can track progress and view the results (exit code and command output) of every software job. Custom reports let you to get even more out of your data.
@@ -54,6 +47,13 @@
 						If you need help setting up or integrating OCO into your environment, or if you like to commission a new feature development, you can get commercial service and support directly from the vendor. If you like, <a href="https://georg-sieber.de/impressum">get in touch</a> for an offer.
 					</p>
 				</div>
+			</div>
+
+			<div class="testimonial">
+				<div>
+				Several <a href="https://github.com/schorschii/OCO-Server-Extensions">extensions</a> allow you to manage scheduled power-on via Wake On Lan (WOL) and shutdown of kiosk PCs, automatic package creation, to automate the complete PC installation workflow and more. The system is highly customziable by using the JSON-RPC API.
+				</div>
+				<a href="img/oco-schematic.png" class="gallery"><img src="img/oco-schematic.png" alt="OCO extensions"></a>
 			</div>
 
 		</div>
