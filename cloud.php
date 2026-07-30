@@ -1,24 +1,38 @@
 <?php
-require_once('loader.inc.php');
+# Pear mail libs
+require('Mail.php');
+require('Mail/mime.php');
 
 $info = null; $infoclass = null;
 if(!empty($_POST['company'])
 && !empty($_POST['name']) && filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)
 && !empty($_POST['email'])
 && !empty($_POST['objects'])) {
-	if(mail('it@georg-sieber.de',
-		'OCO Cloud Hosting Trial Request',
-
-		'Company: '.$_POST['company']."\n".
-		'Name: '.$_POST['name']."\n".
-		'Devices: '.$_POST['objects']."\n".
-		'Notes: '.($_POST['notes']??'')."\n",
-
-		['Reply-To'=>$_POST['email']]
-	)) {
+	try {
+		$mime = new Mail_mime("\r\n");
+		$mime->setTXTBody(
+			'Company: '.$_POST['company']."\n".
+			'Name: '.$_POST['name']."\n".
+			'Devices: '.$_POST['objects']."\n".
+			'Notes: '.($_POST['notes']??'')."\n"
+		);
+		$mail = Mail::factory('sendmail');
+		$mail->send('it@georg-sieber.de',
+			$mime->headers([
+				'From' => 'it@georg-sieber.de',
+				'Reply-To' => $_POST['email'],
+				'Subject' => '=?UTF-8?B?'.base64_encode('OCO Cloud Hosting Trial Request').'?=',
+			]),
+			$mime->get([
+				'text_encoding' => '7bit',
+				'text_charset'  => 'UTF-8',
+				'html_charset'  => 'UTF-8',
+				'head_charset'  => 'UTF-8',
+			])
+		);
 		$info = 'Message sent. Thank you for your request.';
 		$infoclass = 'ok';
-	} else {
+	} catch(Exception $e) {
 		$info = 'Message could not be sent.';
 		$infoclass = 'error';
 	}
