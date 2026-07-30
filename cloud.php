@@ -12,7 +12,7 @@ if(!empty($_POST['company'])
 		'Company: '.$_POST['company']."\n".
 		'Name: '.$_POST['name']."\n".
 		'Devices: '.$_POST['objects']."\n".
-		'Notes: '.$_POST['notes'."\n"],
+		'Notes: '.($_POST['notes']??'')."\n",
 
 		['Reply-To'=>$_POST['email']]
 	)) {
