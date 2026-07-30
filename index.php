@@ -45,13 +45,13 @@
 				<a href="img/jobs.png" class="gallery"><img src="img/jobs.png" alt="OCO job list"></a>
 				<div>
 					<p>
-						The self hosted (on premise) approach and open source code base ensures transparency and digital sovereign operation without vendor lock-in. Use the power of Open Source and adaptability through open standards - clone the <a href="https://github.com/schorschii/oco-server">GitHub repo</a> and set up your own OCO server today!
+						The self hosted (on premise) approach and open source code base ensures transparency and digital sovereign operation without vendor lock-in. Use the power of Open Source and adaptability through open standards - clone the <a href="https://github.com/schorschii/oco-server">GitHub repo</a> and set up your own OCO server today or <a href="cloud.php">request a free trial</a> for a cloud-hosted instance.
 					</p>
 					<p>
 						Feedback and contributions and are highly appreciated - if you want to improve OCO, e.g. by translating into your native language, don't hesitate to create a pull request on the <a href="https://github.com/schorschii/oco-server">GitHub repo</a>.
 					</p>
 					<p>
-						Continuity and professionalism through service and support - if you need help setting up or integrating OCO into your environment, or if you like to commission a new feature development, you can get commercial support directly from the vendor. If you like, <a href="https://georg-sieber.de/impressum">get in touch</a> for an offer.
+						If you need help setting up or integrating OCO into your environment, or if you like to commission a new feature development, you can get commercial service and support directly from the vendor. If you like, <a href="https://georg-sieber.de/impressum">get in touch</a> for an offer.
 					</p>
 				</div>
 			</div>

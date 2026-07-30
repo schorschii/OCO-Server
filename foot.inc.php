@@ -9,7 +9,8 @@
 				<a href="https://github.com/schorschii/oco-server">Source Code on Github</a>
 				<a href="https://github.com/schorschii/oco-server/issues">Issue Tracker</a>
 				<a href="licenses.php">Enterprise Licenses</a>
-				<a href="https://georg-sieber.de/contact">Commercial Support</a>
+				<a href="cloud.php">Cloud Hosting</a>
+				<a href="https://georg-sieber.de/?page=contact">Commercial Support</a>
 				<a href="training.php">Training</a>
 			</div>
 			<div>
@@ -18,7 +19,7 @@
 				<a href="https://github.com/schorschii/MASTERPLAN">MASTERPLAN</a>
 				<a href="https://github.com/schorschii/LAPS4LINUX">LAPS4LINUX</a>
 				<a href="https://github.com/slub/switchconfig">Switchconfig</a>
-				<a href="https://github.com/schorschii">... even more on the GitHub Profile</a>
+				<a href="https://github.com/schorschii">... even more on GitHub</a>
 			</div>
 			<div>
 				<div class="headline">About</div>

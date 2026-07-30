@@ -370,6 +370,11 @@ code.block {
 	max-height: 800px;
 }
 
+.fullwidth,
+.fullwidth input, .fullwidth textarea {
+	width: 100%;
+}
+
 
 @media (max-width: 800px) {
 	#menu {
