@@ -14,7 +14,7 @@ if(!empty($_POST['company'])
 		'Devices: '.$_POST['objects']."\n".
 		'Notes: '.$_POST['notes'."\n"],
 
-		['Reply-to:'=>$_POST['email']]
+		['Reply-To'=>$_POST['email']]
 	)) {
 		$info = 'Message sent. Thank you for your request.';
 		$infoclass = 'ok';
