@@ -28,6 +28,13 @@
 			</div>
 
 			<div class="testimonial">
+				<a href="img/package.png" class="gallery"><img src="img/package.png" alt="OCO package detail view"></a>
+				<div>
+				It provides software deployment features, a user-computer logon overview, policy management, lists software packages installed on each computer ("recognised software/apps") and features a fine-grained permission/role system. Operating system installation can be automated too.
+				</div>
+			</div>
+
+			<div class="testimonial">
 				<div>
 				This allows you to roll out any new software or updates (patch management) - just create an OCO package and distribute it to your clients. You can track progress and view the results (exit code and command output) of every software job. Custom reports let you to get even more out of your data.
 				</div>
