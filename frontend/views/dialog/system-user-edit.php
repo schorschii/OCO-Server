@@ -5,9 +5,12 @@ require_once('../../session.inc.php');
 
 $systemUser = null;
 try {
-	$systemUser = $cl->getSystemUser($_GET['id'] ?? -1);
-	if($systemUser && !empty($systemUser->ldap))
-		throw new InvalidRequestException(LANG('ldap_accounts_cannot_be_modified'));
+	$searchId = $_GET['id'] ?? -1;
+	if($searchId > 0) {
+		$systemUser = $cl->getSystemUser($searchId);
+		if($systemUser && !empty($systemUser->ldap))
+			throw new InvalidRequestException(LANG('ldap_accounts_cannot_be_modified'));
+	}
 } catch(PermissionException $e) {
 	http_response_code(403);
 	die(LANG('permission_denied'));
