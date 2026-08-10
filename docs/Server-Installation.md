@@ -233,11 +233,14 @@ If you want to use LDAP to authenticate admin users on the web frontend, please 
    }
    ```
    - Array Key: an integer greater that 0 which uniquely identifies a LDAP server pool
-   - `address` Server IP address or DNS name as LDAP URL, e.g. 'ldap://192.168.56.101' (single) or 'ldaps://192.168.56.101' (secure) or 'ldaps://192.168.56.101 ldaps://192.168.56.102' (multiple).
+   - `address` Server IP address or DNS name as LDAP URL, e.g.:
+     - single: `ldap://192.168.56.101`
+     - secure: `ldaps://ldap.example.com`
+     - multiple: `ldaps://ldap1.example.com ldaps://ldap2.example.com`
    - `username`: The username of the LDAP reader user.
    - `password`: The password of the LDAP reader user.
-   - `query-root`: The LDAP query root, e.g. 'OU=Benutzer,DC=sieber,DC=systems'.
-   - `queries`: Array of LDAP queries and role IDs for syncing. The array key must me a valid LDAP query and the value must be an OCO role ID. The role ID can be viewed in the admin web interface on the system users/roles settings page.
+   - `query-root`: The LDAP query root, e.g. `OU=Benutzer,DC=sieber,DC=system`.
+   - `queries`: Array of LDAP queries and role IDs for syncing. The array key must be a valid LDAP query and the value must be an OCO role ID. The role ID can be viewed in the admin web interface on the system users/roles settings page.
      - The order of the groups is important: the first matching group is used for determining the role ID of a user.
      - You can use any LDAP filter you like. If supported by your LDAP server, you can also resolve recursive group memberships ("group in group"), e.g. with a filter like: `(memberof:1.2.840.113556.1.4.1941:=cn=testgroup,dc=domain,dc=tld)`.
    - `login-binddn-query`: The LDAP query to determine the login DN for LDAP authentication attempts. If you leave this empty, `(&(objectClass=user)(samaccountname=%s))` will be used for use with Active Directory. Note: AD allows LDAP bind in form `DOMAIN\username` or `username@domain.tld`, but other LDAP servers require the login via DN as username (e.g. `cn=user,dc=domain,dc=tld`). `%s` is used as placeholder for the entered username.
