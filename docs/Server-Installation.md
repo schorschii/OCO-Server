@@ -83,16 +83,16 @@ docker exec -it <CONTAINER-ID> bash
    - `max_file_uploads`
    - `max_execution_time`
    - `max_input_time`
-   - `memory_limit`
-   Also, please set your timezone using `date.timezone` in both `/etc/php/x.x/apache2/php.ini` and `/etc/php/x.x/cli/php.ini`.
-7. Adjust you Apache config to allow uploading packages of larger size.
+   - `memory_limit`  
+7. Set your timezone using `date.timezone` in both `/etc/php/x.x/apache2/php.ini` and `/etc/php/x.x/cli/php.ini`.
+8. Adjust you Apache config to allow uploading packages of larger size.
    Pick a value that fit your needs for the settings `LimitRequestBody`, `SSLRenegBufferSize`.
-8. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
-9. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
+9. Use a web browser to open the web frontend. The setup page should appear which allows you to create an admin user account.
+10. Set up a cron job executing `php console.php housekeeping` every 2 minutes as webserver user (`www-data`).
    ```
    */2 *  * * *  www-data  cd /srv/www/oco && php console.php housekeeping
    ```
-10. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
+11. Create a DNS SRV record `_oco._tcp.yourdomain.tld` to enable the [agent](https://github.com/schorschii/oco-agent) on managed clients to find the server automatically via DNS auto discovery.
 
 If you like this project, please do not forget to star the GitHub repo.
 
