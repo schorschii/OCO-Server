@@ -12,6 +12,7 @@ try {
 	$permissionDeploy = $cl->checkPermission($md, PermissionManager::METHOD_DEPLOY, false);
 	$permissionWrite  = $cl->checkPermission($md, PermissionManager::METHOD_WRITE, false);
 	$permissionDelete = $cl->checkPermission($md, PermissionManager::METHOD_DELETE, false);
+	$mobileDeviceCommands = $db->selectAllMobileDeviceCommandByMobileDevice($md->id, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
 } catch(PermissionException $e) {
@@ -462,11 +463,11 @@ try {
 								</tr>
 							</thead>
 							<tbody>
-								<?php foreach($db->selectAllMobileDeviceCommandByMobileDevice($md->id, false) as $c) { ?>
+								<?php foreach($mobileDeviceCommands as $c) { ?>
 									<tr>
 										<td>
 											<img src='img/<?php echo $c->getStatus() ?>.dyn.svg'>
-											<?php if(empty($c->message)) { ?>
+											<?php if(empty($c->message) || ($c->name === 'DeviceLocation' && !$permissionDeploy)) { ?>
 												<?php echo htmlspecialchars($c->getStateString()); ?>
 											<?php } else { ?>
 												<a href='#' onclick='event.preventDefault();showDialog(this.getAttribute("summary"), this.getAttribute("message"), DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_LARGE, true)' summary='<?php echo htmlspecialchars($c->name, ENT_QUOTES); ?>'
