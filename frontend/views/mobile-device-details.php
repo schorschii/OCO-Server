@@ -369,6 +369,8 @@ try {
 							</tr>
 						</table>
 					<?php } ?>
+
+					<?php if($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) require(__DIR__.'/mobile-device-location.php'); ?>
 				</div>
 			</div>
 		</div>
