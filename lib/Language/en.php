@@ -675,7 +675,7 @@ return [
 	'latitude' => 'Latitude',
 	'longitude' => 'Longitude',
 	'accuracy' => 'Accuracy',
-	'device_location_google_maps' => 'Open in Google Maps',
+	'device_location_openstreetmap' => 'Open in OpenStreetMap',
 	'device_location_requires_lost_mode' => 'The device must be in Lost Mode before its location can be requested.',
 	'device_location_requires_supervision' => 'Location requests require a supervised iOS device.',
 	'device_location_supervision_unknown' => 'The supervision status is not available yet. Refresh the device information first.',

@@ -1,13 +1,8 @@
 <?php
 // iOS device location view. Apple only returns DeviceLocation while Managed Lost Mode is active.
-$locationInfo = json_decode($md->info ?? '', true) ?? [];
+if(empty($showDeviceLocationTab) || !$permissionDeploy) return;
 
-// OCO currently maps macOS to OS_TYPE_IOS as well. DeviceLocation is only available on iOS/Shared iPad.
-$productName = $locationInfo['ProductName'] ?? '';
-$isMacOs = stripos($md->os ?? '', 'macOS') !== false || stripos($productName, 'Mac') !== false;
-if($isMacOs || !$permissionDeploy) return;
-
-$locationState = MobileDeviceLocationEvaluator::evaluate($locationInfo, $mobileDeviceCommands, $md->last_update ?? null, function($message) {
+$locationState = MobileDeviceLocationEvaluator::evaluate($info, $mobileDeviceCommands, $md->last_update ?? null, function($message) {
 	$locationPlist = new CFPropertyList\CFPropertyList();
 	$locationPlist->parse($message);
 	return $locationPlist->toArray();
@@ -19,13 +14,14 @@ $locationRequestPending = $locationState['locationRequestPending'];
 $locationRequestFailed = $locationState['locationRequestFailed'];
 $lostModeCommandPending = $locationState['lostModeCommandPending'];
 
-$googleMapsUrl = null;
+$openStreetMapUrl = null;
 if($deviceLocation !== null) {
-	$googleMapsUrl = 'https://www.google.com/maps/search/?api=1&query='.
-		rawurlencode($deviceLocation['Latitude'].','.$deviceLocation['Longitude']);
+	$latitude = number_format($deviceLocation['Latitude'], 6, '.', '');
+	$longitude = number_format($deviceLocation['Longitude'], 6, '.', '');
+	$openStreetMapUrl = 'https://www.openstreetmap.org/?mlat='.rawurlencode($latitude).
+		'&mlon='.rawurlencode($longitude).'#map=18/'.rawurlencode($latitude).'/'.rawurlencode($longitude);
 }
 
-$buttonId = 'btnIosDeviceLocation-'.$md->id;
 $locationButtonDisabled = $isSupervised !== true
 	|| $isLostModeEnabled !== true
 	|| $locationRequestPending
@@ -35,7 +31,7 @@ $locationButtonDisabled = $isSupervised !== true
 <div class='controls heading'>
 	<h2><?php echo LANG('device_location_title'); ?></h2>
 	<div class='filler invisible'></div>
-	<button id='<?php echo htmlspecialchars($buttonId, ENT_QUOTES); ?>' <?php if($locationButtonDisabled) echo 'disabled'; ?>>
+	<button onclick='requestMobileDeviceLocation(this, <?php echo intval($md->id); ?>);return false' <?php if($locationButtonDisabled) echo 'disabled'; ?>>
 		<img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('device_location_refresh'); ?>
 	</button>
 </div>
@@ -84,31 +80,11 @@ $locationButtonDisabled = $isSupervised !== true
 	<div class='alert info'><?php echo LANG('device_location_none'); ?></div>
 <?php } ?>
 
-<?php if($googleMapsUrl !== null) { ?>
+<?php if($openStreetMapUrl !== null) { ?>
 	<div class='controls'>
 		<button onclick='window.open(this.getAttribute("data-url"), "_blank", "noopener,noreferrer");return false'
-			data-url='<?php echo htmlspecialchars($googleMapsUrl, ENT_QUOTES); ?>'>
-			<img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('device_location_google_maps'); ?>
+			data-url='<?php echo htmlspecialchars($openStreetMapUrl, ENT_QUOTES); ?>'>
+			<img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('device_location_openstreetmap'); ?>
 		</button>
 	</div>
 <?php } ?>
-
-<script>
-(function() {
-	var button = document.getElementById(<?php echo json_encode($buttonId); ?>);
-	if(!button) return;
-	button.addEventListener('click', function(event) {
-		event.preventDefault();
-		button.disabled = true;
-		var params = [];
-		params.push({'key':'send_command_to_mobile_device_id', 'value':<?php echo intval($md->id); ?>});
-		params.push({'key':'command', 'value':'DeviceLocation'});
-		ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
-			refreshContent();
-			emitMessage(<?php echo json_encode(LANG('device_location_requested')); ?>, '', MESSAGE_TYPE_SUCCESS);
-		}, function() {
-			button.disabled = false;
-		});
-	});
-})();
-</script>

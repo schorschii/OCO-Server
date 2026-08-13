@@ -670,7 +670,7 @@ return [
 	'latitude' => 'Breitengrad',
 	'longitude' => 'Längengrad',
 	'accuracy' => 'Genauigkeit',
-	'device_location_google_maps' => 'In Google Maps öffnen',
+	'device_location_openstreetmap' => 'In OpenStreetMap öffnen',
 	'device_location_requires_lost_mode' => 'Für die Standortbestimmung muss sich das Gerät im Verloren-Modus befinden.',
 	'device_location_requires_supervision' => 'Die Standortbestimmung erfordert ein betreutes (Supervised) iOS-Gerät.',
 	'device_location_supervision_unknown' => 'Der Supervised-Status ist noch nicht verfügbar. Bitte aktualisieren Sie zuerst die Geräteinformationen.',

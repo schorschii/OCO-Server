@@ -653,7 +653,7 @@ return [
 	'latitude' => 'Latitude',
 	'longitude' => 'Longitude',
 	'accuracy' => 'Précision',
-	'device_location_google_maps' => 'Ouvrir dans Google Maps',
+	'device_location_openstreetmap' => 'Ouvrir dans OpenStreetMap',
 	'device_location_requires_lost_mode' => 'L’appareil doit être en mode perdu avant que sa localisation puisse être demandée.',
 	'device_location_requires_supervision' => 'La demande de localisation nécessite un appareil iOS supervisé.',
 	'device_location_supervision_unknown' => 'L’état de supervision n’est pas encore disponible. Actualisez d’abord les informations de l’appareil.',
