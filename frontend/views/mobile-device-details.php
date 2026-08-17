@@ -19,6 +19,11 @@ try {
 } catch(InvalidRequestException $e) {
 	die("<div class='alert error'>".$e->getMessage()."</div>");
 }
+
+$info = json_decode($md->info ?? '', true) ?? [];
+$isMacOs = stripos($md->os ?? '', 'macOS') !== false || stripos($info['ProductName']??'', 'Mac') !== false;
+$showDeviceLocationTab = $md->getOsType() == Models\MobileDevice::OS_TYPE_IOS && !$isMacOs && $permissionDeploy;
+if($tab == 'location' && !$showDeviceLocationTab) $tab = 'general';
 ?>
 
 <div class='details-header'>
@@ -42,6 +47,9 @@ try {
 		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('general_and_hardware'); ?></a>
 		<a href='#' name='profiles' class='<?php if($tab=='profiles') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('profiles_and_commands'); ?></a>
 		<a href='#' name='apps' class='<?php if($tab=='apps') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('installed_apps'); ?></a>
+		<?php if($showDeviceLocationTab) { ?>
+		<a href='#' name='location' class='<?php if($tab=='location') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('location'); ?></a>
+		<?php } ?>
 		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"),true)'><?php echo LANG('history'); ?></a>
 	</div>
 	<div class='tabcontents'>
@@ -159,8 +167,7 @@ try {
 					<?php
 					if(empty($md->info)) { ?>
 						<div class='alert info'><?php echo LANG('device_does_not_delivered_info_yet'); ?></div>
-					<?php } elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) {
-						$info = json_decode($md->info, true); ?>
+					<?php } elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_IOS) { ?>
 						<table class='list metadata'>
 							<tr>
 								<th><?php echo LANG('build'); ?></th>
@@ -264,8 +271,7 @@ try {
 								?></td>
 							</tr>
 						</table>
-					<?php } elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) {
-						$info = json_decode($md->info, true); ?>
+					<?php } elseif($md->getOsType() == Models\MobileDevice::OS_TYPE_ANDROID) { ?>
 						<table class='list metadata'>
 							<tr>
 								<th><?php echo LANG('management_mode'); ?></th>
@@ -538,6 +544,12 @@ try {
 				</div>
 			</div>
 		</div>
+
+		<?php if($showDeviceLocationTab) { ?>
+		<div name='location' class='<?php if($tab=='location') echo 'active'; ?>'>
+			<?php require(__DIR__.'/mobile-device-location.php'); ?>
+		</div>
+		<?php } ?>
 
 		<div name='history' class='<?php if($tab=='history') echo 'active'; ?>'>
 			<?php if($tab == 'history') { ?>

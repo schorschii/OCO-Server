@@ -2056,6 +2056,18 @@ function sendMobileDeviceCommand(dialogContainer, mobile_device_id, name, parame
 		setInputsDisabled(dialogContainer, false);
 	});
 }
+function requestMobileDeviceLocation(sender, mobile_device_id) {
+	sender.disabled = true;
+	var params = [];
+	params.push({'key':'send_command_to_mobile_device_id', 'value':mobile_device_id});
+	params.push({'key':'command', 'value':'DeviceLocation'});
+	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
+		refreshContent();
+		emitMessage(LANG['device_location_requested'], LANG['reload_page_to_update_status'], MESSAGE_TYPE_SUCCESS);
+	}, function() {
+		sender.disabled = false;
+	});
+}
 function showDialogEditProfile(type, id=-1) {
 	title = LANG['edit'];
 	if(id == -1) {
