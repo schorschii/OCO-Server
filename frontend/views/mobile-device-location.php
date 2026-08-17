@@ -30,17 +30,17 @@ $locationButtonDisabled = $isSupervised !== true
 ?>
 
 <div class='controls heading'>
-	<h2><?php echo LANG('device_location_title'); ?></h2>
+	<h2><?php echo LANG('location'); ?></h2>
 	<div class='filler invisible'></div>
 	<button onclick='requestMobileDeviceLocation(this, <?php echo intval($md->id); ?>);return false' <?php if($locationButtonDisabled) echo 'disabled'; ?>>
-		<img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('device_location_refresh'); ?>
+		<img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('location_refresh'); ?>
 	</button>
 </div>
 
 <?php if($deviceLocation !== null) { ?>
 <table class='list metadata'>
 	<tr>
-		<th><?php echo LANG('device_location_last'); ?></th>
+		<th><?php echo LANG('last_located'); ?></th>
 		<td><?php echo htmlspecialchars(date('Y-m-d H:i:s', strtotime($deviceLocation['Timestamp']??''))); ?></td>
 	</tr>
 	<tr>
@@ -66,13 +66,13 @@ $locationButtonDisabled = $isSupervised !== true
 <?php if($isSupervised === false) { ?>
 	<div class='alert warning'><?php echo LANG('device_location_requires_supervision'); ?></div>
 <?php } elseif($isSupervised === null) { ?>
-	<div class='alert info'><?php echo LANG('device_location_supervision_unknown'); ?></div>
+	<div class='alert warning'><?php echo LANG('device_location_supervision_unknown'); ?></div>
 <?php } elseif($lostModeCommandPending) { ?>
-	<div class='alert info'><?php echo LANG('device_location_lost_mode_pending'); ?></div>
+	<div class='alert warning'><?php echo LANG('device_location_lost_mode_pending'); ?></div>
 <?php } elseif($isLostModeEnabled === false) { ?>
 	<div class='alert warning'><?php echo LANG('device_location_requires_lost_mode'); ?></div>
 <?php } elseif($isLostModeEnabled === null) { ?>
-	<div class='alert info'><?php echo LANG('device_location_lost_mode_unknown'); ?></div>
+	<div class='alert warning'><?php echo LANG('device_location_lost_mode_unknown'); ?></div>
 <?php } elseif($locationRequestPending) { ?>
 	<div class='alert info'><?php echo LANG('device_location_pending'); ?></div>
 <?php } elseif($locationRequestFailed) { ?>
@@ -85,7 +85,7 @@ $locationButtonDisabled = $isSupervised !== true
 	<div class='controls'>
 		<button onclick='window.open(this.getAttribute("data-url"), "_blank", "noopener,noreferrer");return false'
 			data-url='<?php echo htmlspecialchars($openStreetMapUrl, ENT_QUOTES); ?>'>
-			<img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('device_location_openstreetmap'); ?>
+			<img src='img/eye.dyn.svg'>&nbsp;<?php echo LANG('open_in_openstreetmap'); ?>
 		</button>
 	</div>
 <?php } ?>

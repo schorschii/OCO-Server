@@ -48,7 +48,7 @@ if($tab == 'location' && !$showDeviceLocationTab) $tab = 'general';
 		<a href='#' name='profiles' class='<?php if($tab=='profiles') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('profiles_and_commands'); ?></a>
 		<a href='#' name='apps' class='<?php if($tab=='apps') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('installed_apps'); ?></a>
 		<?php if($showDeviceLocationTab) { ?>
-		<a href='#' name='location' class='<?php if($tab=='location') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('device_location_title'); ?></a>
+		<a href='#' name='location' class='<?php if($tab=='location') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"))'><?php echo LANG('location'); ?></a>
 		<?php } ?>
 		<a href='#' name='history' class='<?php if($tab=='history') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlMobileDevice,this.getAttribute("name"),true)'><?php echo LANG('history'); ?></a>
 	</div>
