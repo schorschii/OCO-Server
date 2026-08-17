@@ -2063,7 +2063,7 @@ function requestMobileDeviceLocation(sender, mobile_device_id) {
 	params.push({'key':'command', 'value':'DeviceLocation'});
 	ajaxRequestPost('ajax-handler/mobile-devices.php', urlencodeArray(params), null, function() {
 		refreshContent();
-		emitMessage(LANG['device_location_requested'], '', MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['device_location_requested'], LANG['reload_page_to_update_status'], MESSAGE_TYPE_SUCCESS);
 	}, function() {
 		sender.disabled = false;
 	});
