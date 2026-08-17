@@ -30,5 +30,5 @@ function serveImg($file) {
 	header('Content-Length: '.filesize($file));
 	header('Etag: '.md5_file($file));
 	header('Cache-Control: max-age='.(60*60*24*30));
-	#readfile($file);
+	readfile($file);
 }
