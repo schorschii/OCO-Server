@@ -2,6 +2,7 @@
 // iOS device location view. Apple only returns DeviceLocation while Managed Lost Mode is active.
 if(empty($showDeviceLocationTab) || !$permissionDeploy) return;
 
+$mobileDeviceCommands = $db->selectAllMobileDeviceCommandByMobileDevice($md->id, false);
 $locationState = MobileDeviceLocationEvaluator::evaluate($info, $mobileDeviceCommands, $md->last_update ?? null, function($message) {
 	$locationPlist = new CFPropertyList\CFPropertyList();
 	$locationPlist->parse($message);
@@ -40,7 +41,7 @@ $locationButtonDisabled = $isSupervised !== true
 <table class='list metadata'>
 	<tr>
 		<th><?php echo LANG('device_location_last'); ?></th>
-		<td><?php echo htmlspecialchars($deviceLocation['Timestamp'] ?? ''); ?></td>
+		<td><?php echo htmlspecialchars(date('Y-m-d H:i:s', strtotime($deviceLocation['Timestamp']??''))); ?></td>
 	</tr>
 	<tr>
 		<th><?php echo LANG('latitude'); ?></th>
