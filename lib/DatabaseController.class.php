@@ -3781,7 +3781,7 @@ class DatabaseController {
 			'SELECT * FROM policy_object WHERE name LIKE :search ORDER BY name ASC ' . ($limit==null ? '' : 'LIMIT '.intval($limit))
 		);
 		$this->stmt->execute([':search' => '%'.$search.'%']);
-		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\MobileDevice');
+		return $this->stmt->fetchAll(PDO::FETCH_CLASS, 'Models\PolicyObject');
 	}
 	public function selectAllPolicyObject() {
 		$this->stmt = $this->dbh->prepare(
