@@ -5,6 +5,7 @@
 	- Objects (e.g. Computers, Packages) are *deleted* while assignments (e.g. group memberships) are *removed*
 */
 return [
+	'vote_open_source_competition' => 'Vote now for OCO at the German <i>Open Source Wettbewerb</i> →',
 	'app_name' => 'OCO IT Client Manager',
 	'project_name' => 'Open Computer Orchestration',
 	'project_subtitle' => 'Linux, macOS & Windows client inventory and software delivery made simple<br>iOS & Android mobile device management for everyone',

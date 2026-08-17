@@ -35,6 +35,10 @@ $license = new LicenseCheck($db);
 		<div class='alert bold warning'><?php echo str_replace('%1', $remainingDays, LANG('your_license_expires_in_days')); ?></div>
 	<?php } ?>
 
+	<div class='alert info'>
+		<a href='https://open-source-wettbewerb.de/voting/open-computer-orchestration-projekt-oco/' target='_blank'><?php echo LANG('vote_open_source_competition'); ?></a>
+	</div>
+
 	<div class='box fullwidth margintop stats'>
 		<div>
 			<div class='bold'><?php echo LANG('server_overview'); ?></div>

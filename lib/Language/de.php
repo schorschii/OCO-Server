@@ -1,5 +1,6 @@
 <?php
 return [
+	'vote_open_source_competition' => 'Stimmen Sie jetzt beim <i>Open Source Wettbewerb</i> für OCO ab →',
 	'app_name' => 'OCO IT Client Manager',
 	'project_name' => 'Open Computer Orchestration',
 	'project_subtitle' => 'Linux, macOS & Windows client inventory and software delivery made simple<br>iOS & Android mobile device management for everyone',
