@@ -7,17 +7,18 @@ require_once('../session.inc.php');
 
 $requestUrl = explode('?', $_SERVER['REQUEST_URI']);
 $requestUrlPath = reset($requestUrl);
-$requestUrl = explode('/', $requestUrlPath);
-$requestUrlFile = end($requestUrl);
+$basePath = dirname($_SERVER['SCRIPT_NAME']);
+if(substr($requestUrlPath, 0, strlen($basePath)) === $basePath)
+	$requestUrlPath = ltrim(substr($requestUrlPath, strlen($basePath)), '/');
 
 $extViews = $ext->getAggregatedConf('frontend-views');
 // 1. check if an active extension overrides the file
-if(isset($extViews[$requestUrlFile]) && file_exists($extViews[$requestUrlFile])) {
-	require($extViews[$requestUrlFile]);
+if(isset($extViews[$requestUrlPath]) && file_exists($extViews[$requestUrlPath])) {
+	require($extViews[$requestUrlPath]);
 }
 // 2. fallback to the original core file if it exists
-else if(file_exists($requestUrlFile) && $requestUrlFile !== 'index.php') {
-	require($requestUrlFile);
+elseif(file_exists(__DIR__.'/'.$requestUrlPath) && $requestUrlPath !== 'index.php') {
+	require(__DIR__.'/'.$requestUrlPath);
 }
 // 3. not found
 else {
