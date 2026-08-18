@@ -129,3 +129,9 @@ function isTimeInRange($strRange, $time=null) {
 	if(!$startDateTime || !$endDateTime) throw new Exception(LANG('invalid_time_input'));
 	return ($currentDateTime > $startDateTime && $currentDateTime < $endDateTime);
 }
+
+function isBelowDir($file, $dir) {
+	$file = realpath($file);
+	$dir = realpath($dir);
+	return substr($file, 0, strlen($dir)) === $dir;
+}

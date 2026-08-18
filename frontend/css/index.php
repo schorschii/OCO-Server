@@ -17,7 +17,9 @@ if(isset($extViews[$requestUrlPath]) && file_exists($extViews[$requestUrlPath]))
 	readfile($extViews[$requestUrlPath]);
 }
 // 2. fallback to the original core file if it exists
-elseif(file_exists(__DIR__.'/'.$requestUrlPath) && $requestUrlPath !== 'index.php') {
+elseif(file_exists(__DIR__.'/'.$requestUrlPath)
+	&& isBelowDir(__DIR__.'/'.$requestUrlPath, __DIR__)
+	&& $requestUrlPath !== 'index.php') {
 	header('Content-Type: text/css');
 	readfile(__DIR__.'/'.$requestUrlPath);
 }

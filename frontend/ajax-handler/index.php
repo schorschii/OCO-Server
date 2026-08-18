@@ -17,7 +17,9 @@ if(isset($extViews[$requestUrlPath]) && file_exists($extViews[$requestUrlPath]))
 	require($extViews[$requestUrlPath]);
 }
 // 2. fallback to the original core file if it exists
-elseif(file_exists(__DIR__.'/'.$requestUrlPath) && $requestUrlPath !== 'index.php') {
+elseif(file_exists(__DIR__.'/'.$requestUrlPath)
+	&& isBelowDir(__DIR__.'/'.$requestUrlPath, __DIR__)
+	&& $requestUrlPath !== 'index.php') {
 	require(__DIR__.'/'.$requestUrlPath);
 }
 // 3. not found
