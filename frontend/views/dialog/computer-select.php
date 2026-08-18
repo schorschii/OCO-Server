@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../../loader.inc.php');
-require_once('../../session.inc.php');
+require_once(__DIR__.'/../../../loader.inc.php');
+require_once(__DIR__.'/../../session.inc.php');
 ?>
 
 <div class='dialogStretch'>
@@ -9,7 +9,7 @@ require_once('../../session.inc.php');
 
 	<div class='gallery computerSelection'>
 		<div class='fillHeight'>
-			<?php require('../partial/computer-selection.php'); ?>
+			<?php require(__DIR__.'/../partial/computer-selection.php'); ?>
 		</div>
 	</div>
 

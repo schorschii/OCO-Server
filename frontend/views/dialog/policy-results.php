@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../../loader.inc.php');
-require_once('../../session.inc.php');
+require_once(__DIR__.'/../../../loader.inc.php');
+require_once(__DIR__.'/../../session.inc.php');
 
 $computerPolicies = null;
 $domainUserPolicies = null;
@@ -174,10 +174,10 @@ function getPolicyValue($pd) {
 
 	<div class='details-abreast'>
 		<div class='fillHeight computerSelection'>
-			<?php $SINGLE_SELECTION=1; require('../partial/computer-selection.php'); ?>
+			<?php $SINGLE_SELECTION=1; require(__DIR__.'/../partial/computer-selection.php'); ?>
 		</div>
 		<div class='fillHeight domainUserSelection'>
-			<?php $SINGLE_SELECTION=1; require('../partial/domain-user-selection.php'); ?>
+			<?php $SINGLE_SELECTION=1; require(__DIR__.'/../partial/domain-user-selection.php'); ?>
 		</div>
 	</div>
 

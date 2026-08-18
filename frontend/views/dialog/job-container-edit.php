@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../../loader.inc.php');
-require_once('../../session.inc.php');
+require_once(__DIR__.'/../../../loader.inc.php');
+require_once(__DIR__.'/../../session.inc.php');
 
 try {
 	$jc = $cl->getJobContainer($_GET['id'] ?? -1);
