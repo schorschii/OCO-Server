@@ -1,8 +1,8 @@
 RewriteEngine On
 
-# Intercept existing .php files to check for extension overrides first
+# Intercept existing top-level .php files to check for extension overrides first
 RewriteCond %{REQUEST_URI} !/index\.php$
-RewriteRule ^(.*\.php)$ index.php [L]
+RewriteRule ^[^/]+\.php$ index.php [L]
 
 # Keep the existing fallback for non-existent files (e.g. custom extension views)
 RewriteCond %{SCRIPT_FILENAME} !-f
