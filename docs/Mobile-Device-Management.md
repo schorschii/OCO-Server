@@ -13,7 +13,7 @@ TL;DR: it's complicated. Apple did everything to make it as hard as possible to 
 - MDM APN certificate
   - A MDM APN cert signing request (CSR) sent to Apple must be signed using a special MDM vendor certificate.
   - Such a MDM vendor certificate is only available with a paid Apple developer account. Since the cert can be revoked at any time on misuse, it's not possible to publish my MDM vendor cert with OCO source code.
-  - I'm signing MDM APN CSRs for free with my MDM vendor cert for users who have bought and own a valid OCO license. For that, only an internet connection is required from your OCO server.
+  - I'm signing MDM APN CSRs without further costs using my MDM vendor cert for users who have bought and own a valid OCO license. For that, only an internet connection is required from your OCO server.
 
 ### Enrollment Options
 #### Automated Device Enrollment (ADE)
