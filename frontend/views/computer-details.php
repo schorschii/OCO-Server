@@ -701,7 +701,7 @@ foreach($services as $s) {
 			<?php if($tab == 'events') { ?>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<table id='tblComputerEventsData' class='list searchable sortable savesort margintop'>
+					<table id='tblComputerEventsData' class='list searchable sortable savesort margintop actioncolumn'>
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
@@ -710,6 +710,7 @@ foreach($services as $s) {
 								<th class='searchable sortable'><?php echo LANG('provider'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('event_id'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('data'); ?></th>
+								<th class=''><?php echo LANG('details'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -721,7 +722,8 @@ foreach($services as $s) {
 								echo "<td class='eventlevel ".$e->getLevelClass($computer->getOsType())."'>".htmlspecialchars($e->getLevelText($computer->getOsType()))."</td>";
 								echo "<td>".htmlspecialchars($e->provider)."</td>";
 								echo "<td>".htmlspecialchars($e->event_id)."</td>";
-								echo "<td class='subbuttons'>".htmlspecialchars(shorter($e->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($e->timestamp,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($e->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "<td>".htmlspecialchars(shorter($e->data, 100))."</td>";
+								echo "<td><button onclick='showDialog(\"".htmlspecialchars($e->timestamp,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($e->data),ENT_QUOTES)."'><img src='img/eye.dyn.svg'></button></td>";
 								echo "</tr>";
 							}
 							?>
@@ -753,7 +755,7 @@ foreach($services as $s) {
 			<?php if($tab == 'history') { ?>
 			<div class='details-abreast'>
 				<div class='stickytable'>
-					<table id='tblComputerHistoryData' class='list searchable sortable savesort margintop'>
+					<table id='tblComputerHistoryData' class='list searchable sortable savesort margintop actioncolumn'>
 						<thead>
 							<tr>
 								<th class='searchable sortable'><?php echo LANG('timestamp'); ?></th>
@@ -761,6 +763,7 @@ foreach($services as $s) {
 								<th class='searchable sortable'><?php echo LANG('user'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('action'); ?></th>
 								<th class='searchable sortable'><?php echo LANG('data'); ?></th>
+								<th class=''><?php echo LANG('details'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -771,7 +774,8 @@ foreach($services as $s) {
 								echo "<td>".htmlspecialchars($l->host)."</td>";
 								echo "<td>".htmlspecialchars($l->user)."</td>";
 								echo "<td>".htmlspecialchars($l->action)."</td>";
-								echo "<td class='subbuttons'>".htmlspecialchars(shorter($l->data, 100))." <button onclick='showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img class='small' src='img/eye.dyn.svg'></button></td>";
+								echo "<td>".htmlspecialchars(shorter($l->data, 100))."</td>";
+								echo "<td><button onclick='showDialog(\"".htmlspecialchars($l->action,ENT_QUOTES)."\",this.getAttribute(\"data\"),DIALOG_BUTTONS_CLOSE,DIALOG_SIZE_LARGE,true)' data='".htmlspecialchars(prettyJson($l->data),ENT_QUOTES)."'><img src='img/eye.dyn.svg'></button></td>";
 								echo "</tr>";
 							}
 							?>
