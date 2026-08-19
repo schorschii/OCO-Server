@@ -9,7 +9,7 @@ require_once(__DIR__.'/../../session.inc.php');
 
 	<div class='gallery packageSelection'>
 		<div class='fillHeight'>
-			<?php require(__DIR__.'/../partial/package-selection.php'); ?>
+			<?php if(!empty($_GET['single'])) $SINGLE_SELECTION=1; require(__DIR__.'/../partial/package-selection.php'); ?>
 		</div>
 	</div>
 
