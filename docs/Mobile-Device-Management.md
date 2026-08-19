@@ -72,7 +72,8 @@ Now, you can assign devices in ABM/ASM to your OCO server. Note that you can set
 With the button "Send Command" on the device detail page, you can e.g. lock or erase a device.
 
 ### Configuration Management
-First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles and Policies" section in the OCO sidebar. Such profiles can be created using Apple Configurator, but Apple Configurator only knows a subset of all possible config options. For example configuring an Exchange profile must be done manually. See the [configuration payload reference](https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys) for all possible configuration values. After creating a profile, assign it to mobile device groups.
+#### Classic/Legacy Profiles
+First, upload your configuration profiles (`.mobileconfig` files) in the corresponding "Profiles & Policies" section in the OCO sidebar. Such profiles can be created using Apple Configurator, but Apple Configurator only knows a subset of all possible config options. For example configuring an Exchange profile must be done manually. See the [configuration payload reference](https://developer.apple.com/documentation/devicemanagement/profile-specific-payload-keys) for all possible configuration values. After creating a profile, assign it to mobile device groups.
 
 Common configuration profiles:
 - [Email Account](https://developer.apple.com/documentation/devicemanagement/mail)
@@ -81,11 +82,65 @@ Common configuration profiles:
 - [Enforce Update Settings](https://developer.apple.com/documentation/devicemanagement/softwareupdate)
 - [Display Single App (Kiosk Mode)](https://developer.apple.com/documentation/devicemanagement/applock)
 
-After the device checked in into OCO MDM (via ADE or manual enrollment profile installation), you can add the device to mobile device groups. This will install the assigned configuration profiles.
+#### Declarative Management
+Apple introduced this new management method in 2026. It is based on JSON payloads instead of the XML-based .mobileconfig profile files and offers improved management of e.g. system updates.
 
-You can use parameters to customzize profiles per device. E.g. if you want to deploy a VPN configuration, you may want to directly set the username for the connection. To do this, add a placeholder `$$username$$` in the VPN profile. Then, add a parameter `username` on the device detail page. The placeholder will then be replaced accordingly when installing the profile.
+You can add any [declaration mentioned in the Apple docs](https://developer.apple.com/documentation/devicemanagement/devicemanagement-declarations) into your OCO "Profiles & Policies" section. When adding it into OCO, only add the value *inside* the "Payload" key of the Apple examples into the OCO payload field.
 
-Important: if a profile contains placeholders, the profile will only be installed if all parameters are provided.
+When using Asset Declarations (such as username/password for mail accounts), you need to reference them in the corresponding configuration declaration by using the OCO-internal ID of the asset declaration which is automatically generated. An advanced example with OCO parameters for username and password is shown below.
+
+Example Asset Declaration for username/password:  
+Type: `com.apple.asset.credential.userpassword`  
+```
+{
+   "Reference": {
+       "DataURL": "https://oco.example.com/api-mdm.php/parameters?format=%7B%22UserName%22%3A%22%24%24username%24%24%22%2C+%22Password%22%3A%22%24%24password%24%24%22%7D",
+       "ContentType": "application/json"
+   }
+}
+```
+- `api-mdm.php/parameters` is a special API endpoint created just for this use case. It authenticates the requesting device with its certificate (as done in all MDM API requests) and returns desired values/parameters.
+- The `format` parameter contains the desired return format (urlencoded, with parameters used as described in "Profile/Declaration Deployment"): `{"UserName":"$$username$$", "Password":"$$password$$"}`. You need to create these parameters on the mobile device detail page first.
+- After creating this declaration in OCO, you can get the generated ID (example: 33) by clicking the "View" icon.
+
+Example Asset Declaration for identity:  
+Type: `com.apple.asset.credential.userpassword`  
+```
+{
+  "FullName": "A User",
+  "EmailAddress": "tester@example.com"
+}
+```
+- After creating this declaration in OCO, you can get the generated ID (example: 35) by clicking the "View" icon.
+
+Example Mail Configuration Declaration using this assets:  
+Type: `com.apple.configuration.account.mail`  
+```
+{
+   "VisibleName": "Work Mail",
+   "UserIdentityAssetReference": "35",
+   "IncomingServer": {
+       "ServerType": "IMAP",
+       "HostName": "mail.your-server.de",
+       "AuthenticationMethod": "Password",
+       "AuthenticationCredentialsAssetReference": "33"
+   },
+   "OutgoingServer": {
+       "HostName": "mail.your-server.de",
+       "AuthenticationMethod": "Password",
+       "AuthenticationCredentialsAssetReference": "33"
+   }
+}
+```
+
+**Important:** the asset declarations must be assigned alongside the referencing configuration declaration to the mobile device! Otherwise, the mobile cannot find the referenced asset and will therefore not apply the mail declaration.
+
+#### Profile/Declaration Deployment
+After the device checked in into OCO MDM (via ADE or manual enrollment profile installation), you can add the device to mobile device groups. This will install the assigned configuration profiles and declarations.
+
+You can use parameters to customize profiles/declarations per device. E.g. if you want to deploy a VPN configuration, you may want to directly set the username for the connection. To do this, add a placeholder `$$username$$` in the VPN profile. Then, add a parameter `username` on the device detail page. The placeholder will then be replaced accordingly when installing the profile.
+
+Important: if a profile/delcaration contains placeholders, the profile will only be installed if all parameters are provided.
 
 ### Purchasing & Installing Apps
 ABM/ASM offers features for volume purchases of apps and books from the App Store. Before you can deploy apps through OCO, you first need to purchase them in ABM/ASM (even if they are free).

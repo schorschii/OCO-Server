@@ -63,7 +63,7 @@ try {
 						."</li>";
 				echo "</ul></td>";
 				echo "<td>"
-					."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText, \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
+					."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText+\" (".$p->id.")\", \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
 					."<button class='small' title='".LANG('edit')."' onclick='showDialogEditProfile(\"".Models\Profile::TYPE_IOS."\", ".$p->id.")'><img src='img/edit.dyn.svg'></button>"
 					."</td>";
 				echo "</tr>";

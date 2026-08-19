@@ -238,10 +238,11 @@ if($path === '/profile') {
 			} elseif(startsWith($endpoint, 'declaration/activation')) {
 				$identifiers = []; $overallHash = '';
 				foreach($apple->iosDeclarations($md) as $p) {
+					if(startsWith($p->declaration_type, 'com.apple.asset.'))
+						continue;
 					$overallHash .= $p->getToken();
 					$identifiers[] = strval($p->id);
 				}
-				$requestedDeclaration = explode('/', $endpoint)[2];
 				header('Content-Type: application/json');
 				echo json_encode([
 					'Type' => 'com.apple.activation.simple',
@@ -279,6 +280,28 @@ if($path === '/profile') {
 		default:
 			throw new RuntimeException('Unknown /checkin message type');
 	}
+
+
+} elseif($path === '/parameters') {
+
+	$body = file_get_contents('php://input');
+	$certInfo = checkSignature($body, $_SERVER['HTTP_MDM_SIGNATURE']??null);
+
+	if(empty($certInfo['subject']['CN'])) {
+		throw new InvalidRequestException('Cert subject CN (device serial number) is missing');
+	}
+	$md = $db->selectMobileDeviceBySerialNumber($certInfo['subject']['CN']);
+	if(!$md) throw new NotFoundException();
+
+	$format = json_decode($_GET['format']??'', true);
+	if(!$format) throw new RuntimeException('GET format missing or corrupt');
+
+	if(!MobileDeviceCommandControllerBase::replacePlaceholders($format, json_decode($md->parameters, true)??[])) {
+		throw new RuntimeException('A required parameter is missing');
+	}
+
+	header('Content-Type: application/json');
+	echo json_encode($format);
 
 
 } elseif($path === '/mdm') {
@@ -412,6 +435,7 @@ if($path === '/profile') {
 		}
 	}
 
+
 } elseif(!empty($_GET['enterpriseToken'])) {
 
 	$enterprise = null;
@@ -424,6 +448,7 @@ if($path === '/profile') {
 		header('Location: index.php?view=settings-mdm');
 		die();
 	} else echo 'Enterprise already set!';
+
 
 } else {
 
@@ -443,7 +468,7 @@ function checkSignature(string $body, string $signature) {
 	file_put_contents($tmpFileBody, $body);
 	file_put_contents($tmpFileCa, $ade->getMdmDeviceCaCert());
 
-	// TODO: check CN === $md->id
+	// TODO: check CN === $md->serial
 
 	// it seems not possible to verify detached signatures using PHP's openssl_cms_verify(),
 	// that's why we use the command line utility
@@ -458,7 +483,8 @@ function checkSignature(string $body, string $signature) {
 	);
 	if(!is_resource($process)) throw new Exception('Unable to start openssl verification process');
 
-	fwrite($pipes[0], base64_decode($signature)); fclose($pipes[0]);
+	$signatureDecoded = base64_decode($signature);
+	fwrite($pipes[0], $signatureDecoded); fclose($pipes[0]);
 	$stdOut = stream_get_contents($pipes[1]); fclose($pipes[1]);
 	$stdErr = stream_get_contents($pipes[2]); fclose($pipes[2]);
 
@@ -467,4 +493,28 @@ function checkSignature(string $body, string $signature) {
 
 	unlink($tmpFileBody);
 	unlink($tmpFileCa);
+
+	// get signer cert info
+	$process = proc_open(
+		'/usr/bin/openssl pkcs7 -inform DER -print_certs -in -',
+		array(
+			0 => array('pipe', 'r'), // STDIN
+			1 => array('pipe', 'w'), // STDOUT
+			2 => array('pipe', 'w'), // STDERR
+		),
+		$pipes, null, [/*env*/]
+	);
+	if(!is_resource($process)) throw new Exception('Unable to start openssl cert info extraction process');
+
+	fwrite($pipes[0], $signatureDecoded); fclose($pipes[0]);
+	$stdOut = stream_get_contents($pipes[1]); fclose($pipes[1]);
+	$stdErr = stream_get_contents($pipes[2]); fclose($pipes[2]);
+
+	$returnCode = proc_close($process);
+	if($returnCode != 0) throw new Exception('Cert info extraction failed: '.$returnCode."\n".$stdErr);
+
+	$certInfo = openssl_x509_parse($stdOut);
+	if(!$certInfo) throw new Exception('Cert parsing failed.');
+
+	return $certInfo;
 }
