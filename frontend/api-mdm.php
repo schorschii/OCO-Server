@@ -290,7 +290,13 @@ if($path === '/profile') {
 	if(empty($certInfo['subject']['CN'])) {
 		throw new InvalidRequestException('Cert subject CN (device serial number) is missing');
 	}
-	$md = $db->selectMobileDeviceBySerialNumber($certInfo['subject']['CN']);
+
+	// identities enrolled via ADE sync use the device serial number as CN
+	$md = $db->selectMobileDeviceBySerialNumber($deviceCertCn);
+	// manual (.mobileconfig) enrolled identities get the OCO mobile-device ID as CN
+	if(!$md && is_numeric($deviceCertCn)) {
+		$md = $db->selectMobileDevice((int)$deviceCertCn);
+	}
 	if(!$md) throw new NotFoundException();
 
 	$format = json_decode($_GET['format']??'', true);
