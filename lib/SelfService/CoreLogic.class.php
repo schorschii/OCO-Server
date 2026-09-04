@@ -139,8 +139,8 @@ class CoreLogic {
 		$this->checkPermission(new \Models\JobContainer(), PermissionManager::METHOD_CREATE);
 		foreach($installationIds as $id) {
 			$ap = $this->db->selectComputerPackage($id); if(empty($ap)) continue;
-			if(!$this->checkPermission($this->getMyComputer($ap->computer_id), PermissionManager::METHOD_DEPLOY, false)) continue;
-			if(!$this->checkPermission($this->getMyPackage($ap->package_id), PermissionManager::METHOD_DEPLOY, false)) continue;
+			if(!$this->checkPermission($this->getMyComputer($ap->computer_id), PermissionManager::METHOD_DEPLOY)) continue;
+			if(!$this->checkPermission($this->getMyPackage($ap->package_id), PermissionManager::METHOD_DEPLOY)) continue;
 		}
 
 		// determine priority
