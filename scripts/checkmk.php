@@ -18,7 +18,7 @@ try {
 		printCheckResult('2', 'OCO License', '-', 'License is invalid!');
 	} elseif(!$license->isFree() && $license->getRemainingTime() < 60*60*24*14) {
 		$remainingDays = round($license->getRemainingTime() / (60*60*24));
-		printCheckResult('1', 'OCO License', '-', 'Expires in '.$remainingDays.' day(s)');
+		printCheckResult('1', 'OCO License', '-', 'Expires in '.$remainingDays.' day(s): '.date('Y-m-d', $license->getExpireTime()));
 	} else {
 		printCheckResult('0', 'OCO License', '-', 'Valid until '.date('Y-m-d', $license->getExpireTime()));
 	}
@@ -42,7 +42,8 @@ try {
 		} elseif($mdmApnCertExpiry - time() > 60*60*24*14) {
 			printCheckResult('0', 'Apple MDM APN Cert', '-', 'Valid until '.date('Y-m-d', $mdmApnCertExpiry));
 		} else {
-			printCheckResult('1', 'Apple MDM APN Cert', '-', 'Expires in '.date('Y-m-d', $mdmApnCertExpiry));
+			$remainingDays = round($mdmApnCertExpiry - time() / (60*60*24));
+			printCheckResult('1', 'Apple MDM APN Cert', '-', 'Expires in '.$remainingDays.' day(s): '.date('Y-m-d', $mdmApnCertExpiry));
 		}
 	} catch(RuntimeException $e) {
 		// probably no cert configured - ignoring
@@ -55,7 +56,8 @@ try {
 		} elseif($mdmServerTokenExpiry - time() > 60*60*24*14) {
 			printCheckResult('0', 'Apple MDM Server Token', '-', 'Valid until '.date('Y-m-d', $mdmServerTokenExpiry));
 		} else {
-			printCheckResult('1', 'Apple MDM Server Token', '-', 'Expires in '.date('Y-m-d', $mdmServerTokenExpiry));
+			$remainingDays = round($mdmServerTokenExpiry - time() / (60*60*24));
+			printCheckResult('1', 'Apple MDM Server Token', '-', 'Expires in '.$remainingDays.' day(s): '.date('Y-m-d', $mdmServerTokenExpiry));
 		}
 	} catch(RuntimeException $e) {
 		// probably no token configured - ignoring
@@ -68,7 +70,8 @@ try {
 		} elseif($vppTokenExpiry - time() > 60*60*24*14) {
 			printCheckResult('0', 'Apple MDM VPP Token', '-', 'Valid until '.date('Y-m-d', $vppTokenExpiry));
 		} else {
-			printCheckResult('1', 'Apple MDM VPP Token', '-', 'Expires in '.date('Y-m-d', $vppTokenExpiry));
+			$remainingDays = round($vppTokenExpiry - time() / (60*60*24));
+			printCheckResult('1', 'Apple MDM VPP Token', '-', 'Expires in '.$remainingDays.' day(s): '.date('Y-m-d', $vppTokenExpiry));
 		}
 	} catch(RuntimeException $e) {
 		// probably no token configured - ignoring
