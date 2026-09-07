@@ -42,7 +42,7 @@ try {
 		} elseif($mdmApnCertExpiry - time() > 60*60*24*14) {
 			printCheckResult('0', 'Apple MDM APN Cert', '-', 'Valid until '.date('Y-m-d', $mdmApnCertExpiry));
 		} else {
-			$remainingDays = round($mdmApnCertExpiry - time() / (60*60*24));
+			$remainingDays = round(($mdmApnCertExpiry - time()) / (60*60*24));
 			printCheckResult('1', 'Apple MDM APN Cert', '-', 'Expires in '.$remainingDays.' day(s): '.date('Y-m-d', $mdmApnCertExpiry));
 		}
 	} catch(RuntimeException $e) {
@@ -56,7 +56,7 @@ try {
 		} elseif($mdmServerTokenExpiry - time() > 60*60*24*14) {
 			printCheckResult('0', 'Apple MDM Server Token', '-', 'Valid until '.date('Y-m-d', $mdmServerTokenExpiry));
 		} else {
-			$remainingDays = round($mdmServerTokenExpiry - time() / (60*60*24));
+			$remainingDays = round(($mdmServerTokenExpiry - time()) / (60*60*24));
 			printCheckResult('1', 'Apple MDM Server Token', '-', 'Expires in '.$remainingDays.' day(s): '.date('Y-m-d', $mdmServerTokenExpiry));
 		}
 	} catch(RuntimeException $e) {
@@ -70,7 +70,7 @@ try {
 		} elseif($vppTokenExpiry - time() > 60*60*24*14) {
 			printCheckResult('0', 'Apple MDM VPP Token', '-', 'Valid until '.date('Y-m-d', $vppTokenExpiry));
 		} else {
-			$remainingDays = round($vppTokenExpiry - time() / (60*60*24));
+			$remainingDays = round(($vppTokenExpiry - time()) / (60*60*24));
 			printCheckResult('1', 'Apple MDM VPP Token', '-', 'Expires in '.$remainingDays.' day(s): '.date('Y-m-d', $vppTokenExpiry));
 		}
 	} catch(RuntimeException $e) {
