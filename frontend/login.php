@@ -34,11 +34,14 @@ if(isset($_POST['username']) && isset($_POST['password'])) {
 		$_SESSION['oco_user_id'] = $user->id;
 		$_SESSION['oco_installation'] = dirname(__FILE__);
 
-		// only allow relative URLs beginning with '/', do not redirect to other websites!
+		// only allow root-relative URLs, do not redirect to other websites!
+		// strip control characters, turning an apparently local URL into an external one
 		$redirect = 'index.php';
-		if(!empty($_GET['redirect'])
+		if(isset($_GET['redirect']) && is_string($_GET['redirect'])
 		&& startsWith($_GET['redirect'], '/')
-		&& !startsWith($_GET['redirect'], '//')) {
+		&& !startsWith($_GET['redirect'], '//')
+		&& strpos($_GET['redirect'], '\\') === false
+		&& !preg_match('/[\x00-\x20\x7f]/', $_GET['redirect'])) {
 			$redirect = $_GET['redirect'];
 		}
 		session_regenerate_id(true);
