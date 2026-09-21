@@ -158,6 +158,9 @@ Next, you need to buy something in ABM/ASM (even if the desired apps are free). 
 2. Then, switch to ["Apps and Books"](https://business.apple.com/#/main/appsandbooks) and search the app you want to buy. Enter a quantity and buy the desired app(s).
 3. After the next syncup, your purchases should be visible in OCO "Mobile Devices" -> "Managed Apps". Here, you can now assign apps to a device group in order to start the deployment.
 
+### Storefront
+Some apps are only available in specific storefronts. By default, OCO will query app metadata from the "us" storefront. If your app is not available in "us", you can add a config option named `apple-storefront` and enter your desired local storefront, e.g. `de` or `fr`.
+
 ### Further Information
 - [Setting Up Push Notifications for Your MDM Customers](https://developer.apple.com/documentation/devicemanagement/implementing_device_management/setting_up_push_notifications_for_your_mdm_customers)
 - [Sending notification requests to APNs](https://developer.apple.com/documentation/usernotifications/sending-notification-requests-to-apns)

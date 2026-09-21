@@ -11,7 +11,7 @@ class VolumePurchaseProgram {
 
 	function __construct($db) {
 		$this->db = $db;
-		$this->appStore = new AppStore($db, $this);
+		$this->appStore = new AppStore($db, $this->getToken(), $db->settings->get('apple-storefront', AppStore::DEFAULT_STOREFRONT));
 	}
 
 	function getToken() {
@@ -61,8 +61,10 @@ class VolumePurchaseProgram {
 			|| empty($asset['productType']) || $asset['productType'] != 'App') continue;
 			try {
 				$metadata = $this->appStore->getAppMetadata($asset['adamId']);
-				if(empty($metadata) || empty($metadata['data']))
-					throw new \Exception('Unable to get app metadata');
+				if(empty($metadata) || empty($metadata['data'])) {
+					error_log('Apple VPP sync: got no metadata for '.$asset['adamId'].', check if app is available in your configured storefront!');
+					continue;
+				}
 				$app = $metadata['data'][0];
 			} catch(Exception $e) {
 				echo 'Unable to get app metadata '.$asset['adamId']."\n";

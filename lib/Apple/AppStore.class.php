@@ -4,17 +4,20 @@ namespace Apple;
 
 class AppStore {
 
+	const DEFAULT_STOREFRONT         = 'us';
 	const APPLE_STORE_API_ENTERPRISE = 'https://api.ent.apple.com';
-	const APPLE_STORE_API_EDUCATION  = 'https://api.ent.apple.com';
+	const APPLE_STORE_API_EDUCATION  = 'https://api.edu.apple.com';
 
 	private $apiUrl;
 	private $db;
-	private $vpp;
+	private $vppToken;
+	private $storefront;
 	private $jwt;
 
-	function __construct(\DatabaseController $db, VolumePurchaseProgram $vpp, $apiUrl=self::APPLE_STORE_API_ENTERPRISE) {
+	function __construct(\DatabaseController $db, array $vppToken, string $storefront=self::DEFAULT_STOREFRONT, $apiUrl=self::APPLE_STORE_API_ENTERPRISE) {
 		$this->db = $db;
-		$this->vpp = $vpp;
+		$this->vppToken = $vppToken;
+		$this->storefront = $storefront;
 		$this->apiUrl = $apiUrl;
 	}
 
@@ -60,7 +63,7 @@ class AppStore {
 		}
 		return [
 			'Authorization: Bearer '.$this->jwt,
-			'Cookie: itvt='.base64_encode(json_encode($this->vpp->getToken())),
+			'Cookie: itvt='.base64_encode(json_encode($this->vppToken)),
 			'User-Agent: Open Computer Orchestration (OCO)',
 		];
 	}
@@ -81,8 +84,12 @@ class AppStore {
 	}
 
 	// https://developer.apple.com/documentation/devicemanagement/app_and_book_management/apps_and_books_for_organizations/generating_developer_tokens
+	// https://developer.apple.com/documentation/devicemanagement/handling-requests-and-responses
 	function getAppMetadata($storeId) {
-		$response = $this->curlRequest('GET', $this->apiUrl.'/v1/catalog/us/stoken-authenticated-apps?ids='.urlencode($storeId).'&platform=iphone', null, 200);
+		$response = $this->curlRequest('GET', $this->apiUrl.'/v1/catalog/'.urlencode($this->storefront).'/stoken-authenticated-apps?'.http_build_query([
+			'ids' => $storeId,
+			'platform' => 'iphone',
+		]), null, 200);
 		$values = json_decode($response, true);
 		if(!$values) throw new \Exception('Invalid JSON response from server');
 		return $values;

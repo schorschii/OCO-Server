@@ -49,8 +49,7 @@ class SettingsController {
 		$this->defaults = array_merge($this->defaults, $additionalDefaults);
 	}
 
-	public function get($key) {
-		$value = null;
+	public function get($key, $value=null) {
 		$setting = $this->db->selectSettingByKey($key);
 		if($setting === null && array_key_exists($key, $this->defaults)) {
 			// apply defaults
