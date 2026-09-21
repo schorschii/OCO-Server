@@ -266,14 +266,14 @@ try {
 			if($key == 'apple-appstore-teamid') {
 				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 				$vpp = new Apple\VolumePurchaseProgram($db);
-				$as = new Apple\AppStore($db, $vpp);
+				$as = new Apple\AppStore($db, $vpp->getToken());
 				$as->storeTeamId($_POST['value']);
 				die();
 			}
 			if($key == 'apple-appstore-keyid') {
 				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 				$vpp = new Apple\VolumePurchaseProgram($db);
-				$as = new Apple\AppStore($db, $vpp);
+				$as = new Apple\AppStore($db, $vpp->getToken());
 				$as->storeKeyId($_POST['value']);
 				die();
 			}
@@ -311,7 +311,7 @@ try {
 			if($key == 'apple-appstore-key') {
 				$cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
 				$vpp = new Apple\VolumePurchaseProgram($db);
-				$as = new Apple\AppStore($db, $vpp);
+				$as = new Apple\AppStore($db, $vpp->getToken());
 				$as->storeKey($value);
 				die();
 			}

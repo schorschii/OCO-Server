@@ -6,7 +6,7 @@ require_once('../session.inc.php');
 try {
 	$ade = new Apple\AutomatedDeviceEnrollment($db);
 	$vpp = new Apple\VolumePurchaseProgram($db);
-	$as = new Apple\AppStore($db, $vpp);
+	$as = new Apple\AppStore($db, $vpp->getToken());
 	$ae = new Android\AndroidEnrollment($db);
 	$license = new LicenseCheck($db);
 	$permGeneral = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_GENERAL_CONFIGURATION);
