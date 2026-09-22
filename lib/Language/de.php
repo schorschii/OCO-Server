@@ -9,7 +9,7 @@ return [
 	'support' => 'Support',
 	'training' => 'Training',
 	'self_service_name' => 'OCO Self Service Portal',
-	'self_service_welcome_text' => 'Das Self-Service-Portal ermöglicht es Ihnen selbstständig neue Software, freigegeben von Ihrem Systemadministrator, auf Ihren Computer zu installieren.<br>Bitte wählen Sie einen Computer oder ein Paket aus der Seitenleiste aus, um zu beginnen.',
+	'self_service_welcome_text' => 'Das Self-Service-Portal ermöglicht es Ihnen selbstständig neue Software, freigegeben von Ihrem Systemadministrator, auf Ihren Computer(n) zu installieren.<br>Bitte wählen Sie einen Computer oder ein Software-Paket aus der Seitenleiste aus, um zu beginnen.',
 	'choose_admin_username' => 'Admin-Benutzername wählen...',
 	'choose_admin_password' => 'Admin-Kennwort wählen...',
 	'confirm_admin_password' => 'Admin-Kennwort bestätigen...',
