@@ -11,7 +11,7 @@ return [
 	'website' => 'Website',
 	'github' => 'Github',
 	'self_service_name' => 'Portail du self-service d\'OCO',
-	'self_service_welcome_text' => 'Le portail de self-service vous donne la possibilité d\'installer sur votre ordinateur un logiciel validé au préalable par votre administrateur système. Veuillez commencer par choisir un ordinateur ou un paquet dans la barre latérale.',
+	'self_service_welcome_text' => 'Le portail de self-service vous donne la possibilité d\'installer sur votre ordinateur un logiciel validé au préalable par votre administrateur système.<br>Veuillez commencer par choisir un ordinateur ou un paquet dans la barre latérale.',
 	'choose_admin_username' => 'Choix du nom d\'admin...',
 	'choose_admin_password' => 'Choix du mot de passe...',
 	'confirm_admin_password' => 'Confirmer le mot de passe...',

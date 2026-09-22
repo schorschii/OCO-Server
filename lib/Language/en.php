@@ -14,7 +14,7 @@ return [
 	'support' => 'Support',
 	'training' => 'Training',
 	'self_service_name' => 'OCO Self Service Portal',
-	'self_service_welcome_text' => 'The self-service portal enables you to independently install new software approved by your system administrator on your computer. Please select a computer or package from the sidebar to begin.',
+	'self_service_welcome_text' => 'The self-service portal enables you to independently install new software approved by your system administrator on your computer.<br>Please select a computer or package from the sidebar to begin.',
 	'choose_admin_username' => 'Choose admin username...',
 	'choose_admin_password' => 'Choose admin password...',
 	'confirm_admin_password' => 'Confirm admin password...',
