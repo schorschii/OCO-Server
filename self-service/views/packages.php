@@ -120,7 +120,7 @@ try {
 						</tr>
 						<tr>
 							<th><?php echo LANG('last_updated'); ?></th>
-							<td><?php echo htmlspecialchars($package->last_update); ?></td>
+							<td><?php echo htmlspecialchars($package->updated); ?></td>
 						</tr>
 					</table>
 					<h2><?php echo LANG('installation'); ?></h2>
