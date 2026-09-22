@@ -305,6 +305,7 @@ class CoreLogic {
 	}
 	public function removeManagedAppFromMobileDeviceGroup($maId, $groupId) {
 		$mdcc = new MobileDeviceCommandController($this->db);
+		$amdcc = new Apple\AppleCommandController($this->db);
 
 		$ma = $this->db->selectManagedApp($maId);
 		if(empty($ma)) throw new NotFoundException();
@@ -319,7 +320,7 @@ class CoreLogic {
 		$deviceAppMap = [];
 		foreach($this->db->selectAllMobileDeviceByMobileDeviceGroupId($groupId) as $md) {
 			if($md->getOsType() != Models\MobileDevice::OS_TYPE_IOS) continue;
-			$deviceAppMap[$md->id] = $mdcc->getManagedAppsByMobileDeviceId($md->id);
+			$deviceAppMap[$md->id] = $amdcc->getManagedAppsByMobileDeviceId($md->id);
 		}
 
 		// remove the app from the group
@@ -328,7 +329,7 @@ class CoreLogic {
 
 		// for iOS: get all assigned apps after changes - then uninstall the difference
 		foreach($deviceAppMap as $mdId => $mdApps) {
-			$uninstallApps = array_udiff($mdApps, $mdcc->getManagedAppsByMobileDeviceId($mdId), function($a,$b){
+			$uninstallApps = array_udiff($mdApps, $amdcc->getManagedAppsByMobileDeviceId($mdId), function($a,$b){
 				return $a->id - $b->id;
 			});
 			foreach($uninstallApps as $app) {
