@@ -49,7 +49,10 @@ class VolumePurchaseProgram {
 		$response = curl_exec($ch);
 		$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		if($expectedStatusCode && $statusCode !== $expectedStatusCode)
-			throw new \Exception('Unexpected VPP API status code '.$statusCode.': '.$response);
+			if($statusCode === 429)
+				throw new \TooManyRequestsException('Too many recent requests (VPP API status code '.$statusCode.': '.$response.') - ignoring and trying later');
+			else
+				throw new \Exception('Unexpected VPP API status code '.$statusCode.': '.$response);
 		curl_close($ch);
 		return $response;
 	}

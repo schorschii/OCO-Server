@@ -40,6 +40,22 @@ class AppleCommandController extends \MobileDeviceCommandControllerBase {
 		}
 	}
 
+	function associateLicenses() {
+		// assign licenses in bulk request
+		try {
+			foreach($this->appDeviceAssociation as $appStoreId => $deviceSerials) {
+				$this->vpp->associateAssets(
+					[ [ 'adamId' => $appStoreId ] ],
+					[/*user-ids*/], $deviceSerials
+				);
+				unset($this->appDeviceAssociation[$appStoreId]);
+			}
+			$this->appDeviceAssociation = [];
+		} catch(\TooManyRequestsException $e) {
+			error_log($e->getMessage());
+		}
+	}
+
 	private function iosProfiles(\Models\MobileDevice $md) {
 		$changed = false;
 		// check if every assigned profile is installed, otherwise create command to install it
@@ -100,6 +116,7 @@ class AppleCommandController extends \MobileDeviceCommandControllerBase {
 		return $changed;
 	}
 
+	private $appDeviceAssociation = [];
 	private function iosAppInstalls(\Models\MobileDevice $md) {
 		$changed = false;
 		// check if every assigned app is installed, otherwise create job
@@ -108,13 +125,6 @@ class AppleCommandController extends \MobileDeviceCommandControllerBase {
 			if($app->type != \Models\ManagedApp::TYPE_IOS) continue;
 			if(array_key_exists($app->identifier, $installedApps)) continue;
 
-			// assign VPP license
-			if($app->vpp_amount) {
-				$this->vpp->associateAssets(
-					[ [ 'adamId' => $app->store_id ] ],
-					[], [ $md->serial ]
-				);
-			}
 			// create install command
 			$flagRemoveOnMdmRemove = $app->remove_on_mdm_remove ? 1 : 0;
 			$flagPreventBackup = $app->disable_cloud_backup ? 4 : 0;
@@ -130,6 +140,18 @@ class AppleCommandController extends \MobileDeviceCommandControllerBase {
 			if($result) {
 				$changed = true;
 				echo('Created command for installing app '.$app->identifier.' on device '.$md->id."\n");
+
+				// if the same command already exists pending, the command ID is returned
+				// if a new command was created, True is returned - in this case,
+				// we assign the licenses here once, not on every cron run again
+				if(!is_numeric($result) && $app->vpp_amount) {
+					// make note of VPP license to assign it later in bulk request (to avoid API rate limit)
+					if(isset($this->appDeviceAssociation[$app->store_id]))
+						$this->appDeviceAssociation[$app->store_id][] = $md->serial;
+					else
+						$this->appDeviceAssociation[$app->store_id] = [$md->serial];
+					$this->appDeviceAssociation[$app->store_id] = array_unique($this->appDeviceAssociation[$app->store_id]);
+				}
 			}
 		}
 		return $changed;

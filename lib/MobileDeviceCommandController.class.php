@@ -26,6 +26,7 @@ class MobileDeviceCommandController {
 				}
 			}
 		}
+		$this->apple->associateLicenses();
 		$this->apple->iosPush($deviceIds);
 		return $success;
 	}
