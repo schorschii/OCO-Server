@@ -571,15 +571,7 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 					$decryptedPassword = $password['password'];
 				}
 
-				if(!empty($password['revoke'])) {
-					foreach($db->selectAllComputerPasswordByComputerId($computer->id) as $p) {
-						if($p->username === $password['username']
-						&& $p->password === $decryptedPassword
-						// revoking is only allowed in the first 5 minutes
-						&& time() - strtotime($p->created) < 60*5) {
-							$success = $db->deleteComputerPassword($p->id);
-						}
-					}
+				if(!empty($password['revoke'])) { // TODO: entirely remove this (revoking was removed in agent v1.2.3)
 					continue;
 				}
 				foreach($db->selectAllPasswordRotationRuleByComputerId($computer->id) as $rule) {
