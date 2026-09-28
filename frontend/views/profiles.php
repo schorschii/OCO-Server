@@ -4,9 +4,13 @@ require_once('../../loader.inc.php');
 require_once('../session.inc.php');
 
 try {
-	$profilesIos = $cl->getProfilesByType(Models\Profile::TYPE_IOS);
-	$profilesIosDeclaration = $cl->getProfilesByType(Models\Profile::TYPE_IOS_DECLARATION);
-	$profilesAndroid = $cl->getProfilesByType(Models\Profile::TYPE_ANDROID);
+	$type = $_GET['type']??'';
+	if($type === 'ios')
+		$profiles = $cl->getProfilesByType(Models\Profile::TYPE_IOS);
+	elseif($type === 'ios-decl')
+		$profiles = $cl->getProfilesByType(Models\Profile::TYPE_IOS_DECLARATION);
+	elseif($type === 'android')
+		$profiles = $cl->getProfilesByType(Models\Profile::TYPE_ANDROID);
 	$permissionCreateProfile = $cl->checkPermission(new Models\Profile(), PermissionManager::METHOD_CREATE, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
@@ -17,206 +21,214 @@ try {
 }
 ?>
 
-<h1><img src='img/profile.dyn.svg'><span id='page-title'><?php echo LANG('profiles_and_policies'); ?></span></h1>
-<div class='controls'>
-	<button onclick='showDialogEditProfile("<?php echo Models\Profile::TYPE_IOS; ?>")' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_ios_profile'); ?></button>
-	<button onclick='showDialogEditProfile("<?php echo Models\Profile::TYPE_IOS_DECLARATION; ?>")' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_ios_declaration'); ?></button>
-	<button onclick='showDialogEditProfile("<?php echo Models\Profile::TYPE_ANDROID; ?>")' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_android_policy'); ?></button>
-	<span class='filler'></span>
+<?php if($type === 'ios') { ?>
+
+	<h1><img src='img/profile.dyn.svg'><span id='page-title'><?php echo LANG('profiles_and_policies'); ?> » <?php echo LANG('ios_macos'); ?> - <?php echo LANG('profiles'); ?></span></h1>
+	<div class='controls'>
+		<button onclick='showDialogEditProfile("<?php echo Models\Profile::TYPE_IOS; ?>")' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_ios_profile'); ?></button>
+		<span class='filler'></span>
+	</div>
+
+	<table id='tblIosProfileData' class='list searchable sortable savesort actioncolumn fullwidth'>
+	<thead>
+		<tr>
+			<th><input type='checkbox' class='toggleAllChecked'></th>
+			<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('notes'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
+			<th class=''><?php echo LANG('action'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php
+	foreach($profiles as $p) {
+		echo "<tr>";
+		echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
+		echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
+		echo "<td>"
+			.htmlspecialchars($p->created)
+			.(!empty($p->created_by_system_user_username) ? htmlspecialchars(' ('.$p->created_by_system_user_username.')') : '')
+			."</td>";
+		echo "<td>"
+			.htmlspecialchars($p->updated)
+			.(!empty($p->updated_by_system_user_username) ? htmlspecialchars(' ('.$p->updated_by_system_user_username.')') : '')
+			."</td>";
+		echo "<td><ul>";
+		foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
+			echo "<li class='subbuttons'>"
+				."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
+				."<button onclick='removeProfileFromGroup(null, [this.getAttribute(\"profile_id\")], this.getAttribute(\"group_id\"))' profile_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+				."</li>";
+		echo "</ul></td>";
+		echo "<td>"
+			."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText+\" (".$p->id.")\", \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
+			."<button class='small' title='".LANG('edit')."' onclick='showDialogEditProfile(\"".Models\Profile::TYPE_IOS."\", ".$p->id.")'><img src='img/edit.dyn.svg'></button>"
+			."</td>";
+		echo "</tr>";
+	}
+	?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan='999'>
+				<div class='spread'>
+					<div>
+						<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+						<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
+					</div>
+					<div class='controls'>
+						<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+						<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosProfileData))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
+						<button onclick='removeSelectedProfile(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosProfileData), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</tfoot>
+	</table>
+
+<?php } elseif($type === 'ios-decl') { ?>
+
+	<h1><img src='img/profile.dyn.svg'><span id='page-title'><?php echo LANG('profiles_and_policies'); ?> » <?php echo LANG('ios_macos'); ?> - <?php echo LANG('declarations'); ?></span></h1>
+	<div class='controls'>
+		<button onclick='showDialogEditProfile("<?php echo Models\Profile::TYPE_IOS_DECLARATION; ?>")' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_ios_declaration'); ?></button>
+		<span class='filler'></span>
+	</div>
+
+	<table id='tblIosDeclarationsData' class='list searchable sortable savesort actioncolumn fullwidth'>
+	<thead>
+		<tr>
+			<th><input type='checkbox' class='toggleAllChecked'></th>
+			<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('notes'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
+			<th class=''><?php echo LANG('action'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php
+	foreach($profiles as $p) {
+		echo "<tr>";
+		echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
+		echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
+		echo "<td>"
+			.htmlspecialchars($p->created)
+			.(!empty($p->created_by_system_user_username) ? htmlspecialchars(' ('.$p->created_by_system_user_username.')') : '')
+			."</td>";
+		echo "<td>"
+			.htmlspecialchars($p->updated)
+			.(!empty($p->updated_by_system_user_username) ? htmlspecialchars(' ('.$p->updated_by_system_user_username.')') : '')
+			."</td>";
+		echo "<td><ul>";
+		foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
+			echo "<li class='subbuttons'>"
+				."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
+				."<button onclick='removeProfileFromGroup(null, [this.getAttribute(\"profile_id\")], this.getAttribute(\"group_id\"))' profile_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+				."</li>";
+		echo "</ul></td>";
+		echo "<td>"
+			."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText, \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
+			."<button class='small' title='".LANG('edit')."' onclick='showDialogEditProfile(\"".Models\Profile::TYPE_IOS."\", ".$p->id.")'><img src='img/edit.dyn.svg'></button>"
+			."</td>";
+		echo "</tr>";
+	}
+	?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan='999'>
+				<div class='spread'>
+					<div>
+						<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+						<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
+					</div>
+					<div class='controls'>
+						<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+						<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosDeclarationsData))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
+						<button onclick='removeSelectedProfile(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosDeclarationsData), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</tfoot>
+	</table>
+
+<?php } elseif($type === 'android') { ?>
+
+	<h1><img src='img/profile.dyn.svg'><span id='page-title'><?php echo LANG('profiles_and_policies'); ?> » <?php echo LANG('android'); ?> - <?php echo LANG('policies'); ?></span></h1>
+	<div class='controls'>
+		<button onclick='showDialogEditProfile("<?php echo Models\Profile::TYPE_ANDROID; ?>")' <?php if(!$permissionCreateProfile) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('new_android_policy'); ?></button>
+		<span class='filler'></span>
+	</div>
+
+	<table id='tblAndroidProfileData' class='list searchable sortable savesort actioncolumn fullwidth'>
+	<thead>
+		<tr>
+			<th><input type='checkbox' class='toggleAllChecked'></th>
+			<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('notes'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
+			<th class=''><?php echo LANG('action'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php
+	foreach($profiles as $p) {
+		echo "<tr>";
+		echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
+		echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
+		echo "<td>"
+			.htmlspecialchars($p->created)
+			.(!empty($p->created_by_system_user_username) ? htmlspecialchars(' ('.$p->created_by_system_user_username.')') : '')
+			."</td>";
+		echo "<td>"
+			.htmlspecialchars($p->updated)
+			.(!empty($p->updated_by_system_user_username) ? htmlspecialchars(' ('.$p->updated_by_system_user_username.')') : '')
+			."</td>";
+		echo "<td><ul>";
+		foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
+			echo "<li class='subbuttons'>"
+				."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
+				."<button onclick='removeProfileFromGroup(null, [this.getAttribute(\"profile_id\")], this.getAttribute(\"group_id\"))' profile_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+				."</li>";
+		echo "</ul></td>";
+		echo "<td>"
+			."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText, \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
+			."<button class='small' title='".LANG('edit')."' onclick='showDialogEditProfile(\"".Models\Profile::TYPE_ANDROID."\", ".$p->id.")'><img src='img/edit.dyn.svg'></button>"
+			."</td>";
+		echo "</tr>";
+	}
+	?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan='999'>
+				<div class='spread'>
+					<div>
+						<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+						<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
+					</div>
+					<div class='controls'>
+						<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+						<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]",null,true,tblAndroidProfileData))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
+						<button onclick='removeSelectedProfile(getSelectedCheckBoxValues("profile_id[]",null,true,tblAndroidProfileData), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</tfoot>
+	</table>
+
+<?php } else { ?>
+
+<h1><img src='img/store.dyn.svg'><span id='page-title'><?php echo LANG('profiles_and_policies'); ?></span></h1>
+<div class='actionmenu'>
+	<a <?php echo Html::explorerLink('views/profiles.php?type=ios'); ?>>&rarr;&nbsp;<?php echo LANG('ios_macos'); ?> - <?php echo LANG('profiles'); ?></a>
+	<a <?php echo Html::explorerLink('views/profiles.php?type=ios-decl'); ?>>&rarr;&nbsp;<?php echo LANG('ios_macos'); ?> - <?php echo LANG('declarations'); ?></a>
+	<a <?php echo Html::explorerLink('views/profiles.php?type=android'); ?>>&rarr;&nbsp;<?php echo LANG('android'); ?> - <?php echo LANG('policies'); ?></a>
 </div>
 
-<ul id='ulConfigRootView' class='tree savestate'>
-
-	<li>
-		<h3><button class='expander'><?php echo LANG('ios_macos'); ?> - <?php echo LANG('profiles'); ?></button></h3>
-		<ul id='ulIosProfiles' class='subtree hidden stickytable'>
-			<table id='tblIosProfileData' class='list searchable sortable savesort actioncolumn fullwidth'>
-			<thead>
-				<tr>
-					<th><input type='checkbox' class='toggleAllChecked'></th>
-					<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('notes'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
-					<th class=''><?php echo LANG('action'); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			foreach($profilesIos as $p) {
-				echo "<tr>";
-				echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
-				echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
-				echo "<td>"
-					.htmlspecialchars($p->created)
-					.(!empty($p->created_by_system_user_username) ? htmlspecialchars(' ('.$p->created_by_system_user_username.')') : '')
-					."</td>";
-				echo "<td>"
-					.htmlspecialchars($p->updated)
-					.(!empty($p->updated_by_system_user_username) ? htmlspecialchars(' ('.$p->updated_by_system_user_username.')') : '')
-					."</td>";
-				echo "<td><ul>";
-				foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
-					echo "<li class='subbuttons'>"
-						."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
-						."<button onclick='removeProfileFromGroup(null, [this.getAttribute(\"profile_id\")], this.getAttribute(\"group_id\"))' profile_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
-						."</li>";
-				echo "</ul></td>";
-				echo "<td>"
-					."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText+\" (".$p->id.")\", \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
-					."<button class='small' title='".LANG('edit')."' onclick='showDialogEditProfile(\"".Models\Profile::TYPE_IOS."\", ".$p->id.")'><img src='img/edit.dyn.svg'></button>"
-					."</td>";
-				echo "</tr>";
-			}
-			?>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan='999'>
-						<div class='spread'>
-							<div>
-								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-							</div>
-							<div class='controls'>
-								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-								<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosProfileData))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
-								<button onclick='removeSelectedProfile(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosProfileData), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</tfoot>
-			</table>
-		</ul>
-	</li>
-
-	<li>
-		<h3><button class='expander'><?php echo LANG('ios_macos'); ?> - <?php echo LANG('declarations'); ?></button></h3>
-		<ul id='ulIosDeclarations' class='subtree hidden stickytable'>
-			<table id='tblIosDeclarationsData' class='list searchable sortable savesort actioncolumn fullwidth'>
-			<thead>
-				<tr>
-					<th><input type='checkbox' class='toggleAllChecked'></th>
-					<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('notes'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
-					<th class=''><?php echo LANG('action'); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			foreach($profilesIosDeclaration as $p) {
-				echo "<tr>";
-				echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
-				echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
-				echo "<td>"
-					.htmlspecialchars($p->created)
-					.(!empty($p->created_by_system_user_username) ? htmlspecialchars(' ('.$p->created_by_system_user_username.')') : '')
-					."</td>";
-				echo "<td>"
-					.htmlspecialchars($p->updated)
-					.(!empty($p->updated_by_system_user_username) ? htmlspecialchars(' ('.$p->updated_by_system_user_username.')') : '')
-					."</td>";
-				echo "<td><ul>";
-				foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
-					echo "<li class='subbuttons'>"
-						."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
-						."<button onclick='removeProfileFromGroup(null, [this.getAttribute(\"profile_id\")], this.getAttribute(\"group_id\"))' profile_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
-						."</li>";
-				echo "</ul></td>";
-				echo "<td>"
-					."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText, \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
-					."<button class='small' title='".LANG('edit')."' onclick='showDialogEditProfile(\"".Models\Profile::TYPE_IOS."\", ".$p->id.")'><img src='img/edit.dyn.svg'></button>"
-					."</td>";
-				echo "</tr>";
-			}
-			?>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan='999'>
-						<div class='spread'>
-							<div>
-								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-							</div>
-							<div class='controls'>
-								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-								<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosDeclarationsData))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
-								<button onclick='removeSelectedProfile(getSelectedCheckBoxValues("profile_id[]",null,true,tblIosDeclarationsData), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</tfoot>
-			</table>
-		</ul>
-	</li>
-
-	<li>
-		<h3><button class='expander'><?php echo LANG('android'); ?> - <?php echo LANG('policies'); ?></button></h3>
-		<ul id='ulAndroidPolicies' class='subtree hidden stickytable'>
-			<table id='tblAndroidProfileData' class='list searchable sortable savesort actioncolumn fullwidth'>
-			<thead>
-				<tr>
-					<th><input type='checkbox' class='toggleAllChecked'></th>
-					<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('notes'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('updated'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('groups'); ?></th>
-					<th class=''><?php echo LANG('action'); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			foreach($profilesAndroid as $p) {
-				echo "<tr>";
-				echo "<td><input type='checkbox' name='profile_id[]' value='".$p->id."'></td>";
-				echo "<td><div id='divProfile".$p->id."'>".htmlspecialchars($p->name)."</div><div class='hint'>".htmlspecialchars(shorter(LANG($p->notes)))."</div></td>";
-				echo "<td>"
-					.htmlspecialchars($p->created)
-					.(!empty($p->created_by_system_user_username) ? htmlspecialchars(' ('.$p->created_by_system_user_username.')') : '')
-					."</td>";
-				echo "<td>"
-					.htmlspecialchars($p->updated)
-					.(!empty($p->updated_by_system_user_username) ? htmlspecialchars(' ('.$p->updated_by_system_user_username.')') : '')
-					."</td>";
-				echo "<td><ul>";
-				foreach($db->selectAllMobileDeviceGroupByProfileId($p->id) as $group)
-					echo "<li class='subbuttons'>"
-						."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
-						."<button onclick='removeProfileFromGroup(null, [this.getAttribute(\"profile_id\")], this.getAttribute(\"group_id\"))' profile_id='".$p->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
-						."</li>";
-				echo "</ul></td>";
-				echo "<td>"
-					."<button class='small' title='".LANG('show_content')."' onclick='showDialogAjax(divProfile".$p->id.".innerText, \"views/dialog/profile-details.php?id=".$p->id."\", DIALOG_BUTTONS_CLOSE)'><img src='img/eye.dyn.svg'></button>"
-					."<button class='small' title='".LANG('edit')."' onclick='showDialogEditProfile(\"".Models\Profile::TYPE_ANDROID."\", ".$p->id.")'><img src='img/edit.dyn.svg'></button>"
-					."</td>";
-				echo "</tr>";
-			}
-			?>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan='999'>
-						<div class='spread'>
-							<div>
-								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-							</div>
-							<div class='controls'>
-								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-								<button onclick='showDialogAssignProfileToGroup(getSelectedCheckBoxValues("profile_id[]",null,true,tblAndroidProfileData))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
-								<button onclick='removeSelectedProfile(getSelectedCheckBoxValues("profile_id[]",null,true,tblAndroidProfileData), event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</tfoot>
-			</table>
-		</ul>
-	</li>
-
-</ul>
+<?php } ?>

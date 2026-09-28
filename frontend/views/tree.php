@@ -102,12 +102,21 @@ require_once('../session.inc.php');
 </div>
 <?php } ?>
 
-<div id='divNodeManagedApps' class='node'>
+<div id='divNodeManagedApps' class='node expandable'>
 	<a <?php echo Html::explorerLink('views/managed-apps.php'); ?>><img src='img/store.dyn.svg'><?php echo LANG('managed_apps'); ?></a>
+	<div class='subitems'>
+		<a <?php echo Html::explorerLink('views/managed-apps.php?type=ios'); ?>><img src='img/mobile-device-ios.dyn.svg'><?php echo LANG('ios_macos'); ?></a>
+		<a <?php echo Html::explorerLink('views/managed-apps.php?type=android'); ?>><img src='img/mobile-device-android.dyn.svg'><?php echo LANG('android'); ?></a>
+	</div>
 </div>
 
-<div id='divNodeProfiles' class='node'>
+<div id='divNodeProfiles' class='node expandable'>
 	<a <?php echo Html::explorerLink('views/profiles.php'); ?>><img src='img/profile.dyn.svg'><?php echo LANG('profiles_and_policies'); ?></a>
+	<div class='subitems'>
+		<a <?php echo Html::explorerLink('views/profiles.php?type=ios'); ?>><img src='img/mobile-device-ios.dyn.svg'><?php echo LANG('ios_macos'); ?> - <?php echo LANG('profiles'); ?></a>
+		<a <?php echo Html::explorerLink('views/profiles.php?type=ios-decl'); ?>><img src='img/mobile-device-ios.dyn.svg'><?php echo LANG('ios_macos'); ?> - <?php echo LANG('declarations'); ?></a>
+		<a <?php echo Html::explorerLink('views/profiles.php?type=android'); ?>><img src='img/mobile-device-android.dyn.svg'><?php echo LANG('android'); ?></a>
+	</div>
 </div>
 
 <hr/>

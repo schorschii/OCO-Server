@@ -4,8 +4,11 @@ require_once('../../loader.inc.php');
 require_once('../session.inc.php');
 
 try {
-	$iosApps = $cl->getManagedApps(Models\ManagedApp::TYPE_IOS);
-	$androidApps = $cl->getManagedApps(Models\ManagedApp::TYPE_ANDROID);
+	$type = $_GET['type']??'';
+	if($type === 'ios')
+		$apps = $cl->getManagedApps(Models\ManagedApp::TYPE_IOS);
+	elseif($type === 'android')
+		$apps = $cl->getManagedApps(Models\ManagedApp::TYPE_ANDROID);
 	$permissionSync = $cl->checkPermission(null, PermissionManager::SPECIAL_PERMISSION_MOBILE_DEVICE_SYNC, false);
 } catch(NotFoundException $e) {
 	die("<div class='alert warning'>".LANG('not_found')."</div>");
@@ -16,121 +19,126 @@ try {
 }
 ?>
 
-<h1><img src='img/store.dyn.svg'><span id='page-title'><?php echo LANG('managed_apps'); ?></span></h1>
-<div class='controls'>
-	<button onclick='window.open("https://business.apple.com/main/apps/store", "_blank").focus();' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_ios_apps'); ?></button>
-	<button onclick='showDialogManagedPlayStore()' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_android_apps'); ?></button>
-	<span class='filler'></span>
-	<button onclick='syncAppleAssets(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_apple_vpp'); ?></button>
-</div>
+<?php if($type === 'ios') { ?>
 
-<ul id='ulManagedAppsRootView' class='tree savestate'>
+	<h1><img src='img/store.dyn.svg'><span id='page-title'><?php echo LANG('managed_apps'); ?> » <?php echo LANG('ios_macos'); ?></span></h1>
+	<div class='controls'>
+		<button onclick='window.open("https://business.apple.com/main/apps/store", "_blank").focus();' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_ios_apps'); ?></button>
+		<span class='filler'></span>
+		<button onclick='syncAppleAssets(this)' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/refresh.dyn.svg'>&nbsp;<?php echo LANG('sync_apple_vpp'); ?></button>
+	</div>
 
-	<li>
-		<h3><button class='expander'><?php echo LANG('ios_macos'); ?></button></h3>
-		<ul id='ulManagedIosApps' class='subtree hidden stickytable'>
-			<table id='tblManagedAppIosData' class='list searchable sortable savesort fullwidth'>
-			<thead>
-				<tr>
-					<th><input type='checkbox' class='toggleAllChecked'></th>
-					<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('identifier'); ?></th>
-					<th class='searchable sortable'><?php echo LANG('vpp_amount'); ?></th>
-					<th class='searchable'><?php echo LANG('groups'); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			foreach($iosApps as $a) {
-				echo "<tr>";
-				echo "<td><input type='checkbox' name='managed_app_ios_id[]' value='".$a->id."'></td>";
-				echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";
-				echo "<td>".htmlspecialchars($a->vpp_amount??'-')."</td>";
-				echo "<td><ul>";
-				foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
-					echo "<li class='subbuttons'>"
-						."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
-						."<button onclick='removeManagedAppFromGroup(null, [this.getAttribute(\"managed_app_id\")], this.getAttribute(\"group_id\"))' managed_app_id='".$a->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
-						."</li>";
-				echo "</ul></td>";
-				echo "</tr>";
-			}
-			?>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan='999'>
-						<div class='spread'>
-							<div>
-								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-							</div>
-							<div class='controls'>
-								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-								<button onclick='showDialogAssignManagedAppToGroup(getSelectedCheckBoxValues("managed_app_ios_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
-								<button onclick='removeSelectedManagedApp("managed_app_ios_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</tfoot>
-			</table>
-		</ul>
-	</li>
+	<table id='tblManagedAppIosData' class='list searchable sortable savesort fullwidth'>
+	<thead>
+		<tr>
+			<th><input type='checkbox' class='toggleAllChecked'></th>
+			<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('identifier'); ?></th>
+			<th class='searchable sortable'><?php echo LANG('vpp_amount'); ?></th>
+			<th class='searchable'><?php echo LANG('groups'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php
+	foreach($apps as $a) {
+		echo "<tr>";
+		echo "<td><input type='checkbox' name='managed_app_ios_id[]' value='".$a->id."'></td>";
+		echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";
+		echo "<td>".htmlspecialchars($a->vpp_amount??'-')."</td>";
+		echo "<td><ul>";
+		foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
+			echo "<li class='subbuttons'>"
+				."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
+				."<button onclick='removeManagedAppFromGroup(null, [this.getAttribute(\"managed_app_id\")], this.getAttribute(\"group_id\"))' managed_app_id='".$a->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+				."</li>";
+		echo "</ul></td>";
+		echo "</tr>";
+	}
+	?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan='999'>
+				<div class='spread'>
+					<div>
+						<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+						<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
+					</div>
+					<div class='controls'>
+						<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+						<button onclick='showDialogAssignManagedAppToGroup(getSelectedCheckBoxValues("managed_app_ios_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
+						<button onclick='removeSelectedManagedApp("managed_app_ios_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</tfoot>
+	</table>
 
-	<li class='stickytable'>
-		<h3><button class='expander'><?php echo LANG('android'); ?></button></h3>
-		<ul id='ulManagedAndroidApps' class='subtree hidden stickytable'>
-			<table id='tblManagedAppAndroidData' class='list searchable sortable savesort fullwidth'>
-			<thead>
-				<tr>
-					<th><input type='checkbox' class='toggleAllChecked'></th>
-					<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('identifier'); ?></th>
-					<th class='searchable'><?php echo LANG('configurations'); ?></th>
-					<th class='searchable'><?php echo LANG('groups'); ?></th>
-				</tr>
-			</thead>
-			<tbody>
-			<?php
-			foreach($androidApps as $a) {
-				echo "<tr>";
-				echo "<td><input type='checkbox' name='managed_app_android_id[]' value='".$a->id."'></td>";
-				echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";
-				echo "<td>";
-				echo "<button class='small' onclick='showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\", \"".htmlspecialchars($a->id)."\")'>".LANG('add')."</button>";
-				foreach($a->getConfigurations() as $cId => $cName) {
-					echo "<div><a href='#' onclick='event.preventDefault(); showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\", \"".htmlspecialchars($a->id)."\", \"".htmlspecialchars($cId)."\" )'>".htmlspecialchars($cName)."</a></div>";
-				}
-				echo "<td><ul>";
-				foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
-					echo "<li class='subbuttons'>"
-						."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
-						."<button onclick='removeManagedAppFromGroup(null, [this.getAttribute(\"managed_app_id\")], this.getAttribute(\"group_id\"))' managed_app_id='".$a->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
-						."</li>";
-				echo "</ul></td>";
-				echo "</td>";
-				echo "</tr>";
-			}
-			?>
-			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan='999'>
-						<div class='spread'>
-							<div>
-								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-							</div>
-							<div class='controls'>
-								<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-								<button onclick='showDialogAssignManagedAppToGroup(getSelectedCheckBoxValues("managed_app_android_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
-								<button onclick='removeSelectedManagedApp("managed_app_android_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</tfoot>
-			</table>
-		</ul>
-	</li>
+<?php } elseif($type === 'android') { ?>
 
-</ul>
+	<h1><img src='img/store.dyn.svg'><span id='page-title'><?php echo LANG('managed_apps'); ?> » <?php echo LANG('android'); ?></span></h1>
+	<div class='controls'>
+		<button onclick='showDialogManagedPlayStore()' <?php if(!$permissionSync) echo 'disabled'; ?>><img src='img/add.dyn.svg'>&nbsp;<?php echo LANG('manage_android_apps'); ?></button>
+		<span class='filler'></span>
+	</div>
+
+	<table id='tblManagedAppAndroidData' class='list searchable sortable savesort fullwidth'>
+	<thead>
+		<tr>
+			<th><input type='checkbox' class='toggleAllChecked'></th>
+			<th class='searchable sortable'><?php echo LANG('name').'/'.LANG('identifier'); ?></th>
+			<th class='searchable'><?php echo LANG('configurations'); ?></th>
+			<th class='searchable'><?php echo LANG('groups'); ?></th>
+		</tr>
+	</thead>
+	<tbody>
+	<?php
+	foreach($apps as $a) {
+		echo "<tr>";
+		echo "<td><input type='checkbox' name='managed_app_android_id[]' value='".$a->id."'></td>";
+		echo "<td><div>".htmlspecialchars($a->name)."</div><div class='hint'>".htmlspecialchars($a->identifier)."</div></td>";
+		echo "<td>";
+		echo "<button class='small' onclick='showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\", \"".htmlspecialchars($a->id)."\")'>".LANG('add')."</button>";
+		foreach($a->getConfigurations() as $cId => $cName) {
+			echo "<div><a href='#' onclick='event.preventDefault(); showDialogManagedPlayStoreConfig(\"".htmlspecialchars($a->identifier)."\", \"".htmlspecialchars($a->id)."\", \"".htmlspecialchars($cId)."\" )'>".htmlspecialchars($cName)."</a></div>";
+		}
+		echo "<td><ul>";
+		foreach($db->selectAllMobileDeviceGroupByManagedAppId($a->id) as $group)
+			echo "<li class='subbuttons'>"
+				."<a ".Html::explorerLink('views/mobile-devices.php?id='.$group->id).">".htmlspecialchars($group->getBreadcrumbString())."</a>"
+				."<button onclick='removeManagedAppFromGroup(null, [this.getAttribute(\"managed_app_id\")], this.getAttribute(\"group_id\"))' managed_app_id='".$a->id."' group_id='".$group->id."' title='".LANG('remove_from_group',ENT_QUOTES)."'><img class='small' src='img/folder-remove-from.dyn.svg'></button>"
+				."</li>";
+		echo "</ul></td>";
+		echo "</td>";
+		echo "</tr>";
+	}
+	?>
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan='999'>
+				<div class='spread'>
+					<div>
+						<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+						<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
+					</div>
+					<div class='controls'>
+						<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
+						<button onclick='showDialogAssignManagedAppToGroup(getSelectedCheckBoxValues("managed_app_android_id[]", null, true))'><img src='img/folder-insert-into.dyn.svg'>&nbsp;<?php echo LANG('assign'); ?></button>
+						<button onclick='removeSelectedManagedApp("managed_app_android_id[]", null, event)'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</tfoot>
+	</table>
+
+<?php } else { ?>
+
+	<h1><img src='img/store.dyn.svg'><span id='page-title'><?php echo LANG('managed_apps'); ?></span></h1>
+	<div class='actionmenu'>
+		<a <?php echo Html::explorerLink('views/managed-apps.php?type=ios'); ?>>&rarr;&nbsp;<?php echo LANG('ios_macos'); ?></a>
+		<a <?php echo Html::explorerLink('views/managed-apps.php?type=android'); ?>>&rarr;&nbsp;<?php echo LANG('android'); ?></a>
+	</div>
+
+<?php } ?>
