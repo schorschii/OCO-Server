@@ -9,9 +9,11 @@ class VolumePurchaseProgram {
 	private $db;
 	private $appStore;
 
-	function __construct($db) {
+	function __construct($db, AppStore|bool $appStore=null) {
 		$this->db = $db;
-		$this->appStore = new AppStore($db, $this->getToken(), $db->settings->get('apple-storefront', AppStore::DEFAULT_STOREFRONT));
+		if($appStore === null)
+			$appStore = new AppStore($db, $this->getToken(), $db->settings->get('apple-storefront', AppStore::DEFAULT_STOREFRONT));
+		$this->appStore = $appStore;
 	}
 
 	function getToken() {
