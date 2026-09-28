@@ -31,7 +31,8 @@ if($path === '/profile') {
 	</plist>*/
 	$body = file_get_contents('php://input');
 	$verifiedBody = checkiPhoneCaSignature($body);
-	$requestPlist = new CFPropertyList\CFPropertyList($verifiedBody);
+	$requestPlist = new CFPropertyList\CFPropertyList();
+	$requestPlist->parse($verifiedBody);
 	$request = $requestPlist->toArray();
 
 	// store the UDID
