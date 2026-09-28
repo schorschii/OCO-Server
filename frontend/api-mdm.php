@@ -30,21 +30,8 @@ if($path === '/profile') {
 	</dict>
 	</plist>*/
 	$body = file_get_contents('php://input');
-	$tmpOutFileSmime = '/tmp/iphone-request.p7m';
-	$tmpOutFileData = '/tmp/iphone-request.plist';
-	file_put_contents($tmpOutFileSmime,
-		'MIME-Version: 1.0'."\n"
-		.'Content-Disposition: attachment; filename="smime.p7m"'."\n"
-		.'Content-Type: application/x-pkcs7-mime; smime-type=signed-data; name="smime.p7m"'."\n"
-		.'Content-Transfer-Encoding: base64'."\n"
-		."\n"
-		.chunk_split(base64_encode($body))
-	);
-	// iPhone CA cert is expired, so we need to use PKCS7_NOVERIFY until somebody finds a better solution
-	if(openssl_pkcs7_verify($tmpOutFileSmime, PKCS7_NOVERIFY, null, [], null, $tmpOutFileData) !== true) {
-		throw new RuntimeException('Unable to parse pkcs7 signed plist');
-	}
-	$requestPlist = new CFPropertyList\CFPropertyList($tmpOutFileData);
+	$verifiedBody = checkiPhoneCaSignature($body);
+	$requestPlist = new CFPropertyList\CFPropertyList($verifiedBody);
 	$request = $requestPlist->toArray();
 
 	// store the UDID
@@ -523,4 +510,30 @@ function checkSignature(string $body, string $signature) {
 	if(!$certInfo) throw new Exception('Cert parsing failed.');
 
 	return $certInfo;
+}
+
+function checkiPhoneCaSignature(string $body) {
+	if(empty($body)) throw new Exception('Body missing');
+
+	// iPhone CA cert is expired, so we need no use the command line option "-no_check_time" to ignore the cert date
+	$process = proc_open(
+		'/usr/bin/openssl cms -verify -inform DER -in - -no_check_time -purpose sslclient -partial_chain -CAfile '.escapeshellarg(Apple\AutomatedDeviceEnrollment::APPLE_ROOT_CA_FILE),
+		array(
+			0 => array('pipe', 'r'), // STDIN
+			1 => array('pipe', 'w'), // STDOUT
+			2 => array('pipe', 'w'), // STDERR
+		),
+		$pipes, null, [/*env*/]
+	);
+	if(!is_resource($process)) throw new Exception('Unable to start openssl verification process');
+
+	fwrite($pipes[0], $body); fclose($pipes[0]);
+	$stdOut = stream_get_contents($pipes[1]); fclose($pipes[1]);
+	$stdErr = stream_get_contents($pipes[2]); fclose($pipes[2]);
+
+	$returnCode = proc_close($process);
+	if($returnCode != 0) throw new Exception('Signature verification failed: '.$returnCode."\n".$stdErr);
+
+	if(empty($stdOut)) throw new Exception('Verified body is empty');
+	return $stdOut;
 }
