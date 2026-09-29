@@ -4,6 +4,8 @@ namespace Apple;
 
 class AppStore {
 
+	const OCO_VENDOR_STORE_API = 'https://apps.sieber.systems/oco/appstore-request.php';
+
 	const DEFAULT_STOREFRONT         = 'us';
 	const APPLE_STORE_API_ENTERPRISE = 'https://api.ent.apple.com';
 	const APPLE_STORE_API_EDUCATION  = 'https://api.edu.apple.com';
@@ -86,13 +88,42 @@ class AppStore {
 	// https://developer.apple.com/documentation/devicemanagement/app_and_book_management/apps_and_books_for_organizations/generating_developer_tokens
 	// https://developer.apple.com/documentation/devicemanagement/handling-requests-and-responses
 	function getAppMetadata($storeId) {
-		$response = $this->curlRequest('GET', $this->apiUrl.'/v1/catalog/'.urlencode($this->storefront).'/stoken-authenticated-apps?'.http_build_query([
-			'ids' => $storeId,
-			'platform' => 'iphone',
-		]), null, 200);
-		$values = json_decode($response, true);
-		if(!$values) throw new \Exception('Invalid JSON response from server');
-		return $values;
+		try {
+			$response = $this->curlRequest('GET', $this->apiUrl.'/v1/catalog/'.urlencode($this->storefront).'/stoken-authenticated-apps?'.http_build_query([
+				'ids' => $storeId,
+				'platform' => 'iphone',
+			]), null, 200);
+			$values = json_decode($response, true);
+			if(!$values) throw new \Exception('Invalid JSON response from server');
+			return $values;
+		} catch(\RuntimeException $e) {
+			$license = new \LicenseCheck($this->db);
+			if($license->isValid()) {
+				return $this->getAppMetadataViaOcoVendor($storeId, $this->storefront, json_encode($this->vppToken), $license->getLicenseJson());
+			} else {
+				throw new \RuntimeException('No own AppStore key set and no valid OCO license - cannot get app metadata');
+			}
+		}
+	}
+
+	private function getAppMetadataViaOcoVendor($storeId, $storefront, $vppToken, $ocoLicense) {
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, self::OCO_VENDOR_STORE_API);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array(
+			'store-id' => $storeId,
+			'storefront' => $storefront,
+			'vpp-token' => $vppToken,
+			'oco-license' => $ocoLicense,
+		)));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$response = curl_exec($ch);
+		$resultArray = json_decode($response, true);
+		if(empty($resultArray)) {
+			throw new \RuntimeException('Invalid response from OCO vendor AppStore API: '.$response);
+		}
+		curl_close($ch);
+		return $resultArray;
 	}
 
 }

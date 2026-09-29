@@ -605,6 +605,7 @@ return [
 	'valid_oco_license_vendor_mdm_cert_service_can_be_used' => 'No MDM vendor cert set but you have a valid OCO license and can therefore make use of the MDM APN CSR signing service from the OCO developer.',
 	'no_mdm_vendor_cert_and_no_oco_license' => 'To generate an MDM APN CSR, you must obtain an MDM vendor certificate from Apple or purchase an OCO license to use the OCO developer\'s MDM APN CSR service.',
 	'no_activation_profile_defined' => 'You don\'t have an activation profile defined. Automatic enrollment of a device in MDM via Apple Business Manager is not available. You must manually install the enrollment profile on the device.',
+	'valid_oco_license_vendor_appstore_service_can_be_used' => 'No AppStore API key set but you have a valid OCO license and can therefore make use of the AppStore API service from the OCO developer.',
 	'defined' => 'Defined',
 	'not_defined' => 'Not defined',
 	'valid_until_placeholder' => 'Valid until %1',

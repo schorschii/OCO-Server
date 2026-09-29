@@ -229,6 +229,8 @@ try {
 				<td>
 					<?php if($appStoreKey) { ?>
 						<div class='alert success'><?php echo LANG('defined'); ?></div>
+					<?php } elseif($license->isValid() && !$license->isFree()) { ?>
+						<div class='alert info'><?php echo LANG('valid_oco_license_vendor_appstore_service_can_be_used'); ?></div>
 					<?php } else { ?>
 						<div class='alert warning'><?php echo LANG('no_app_store_api_key_provided'); ?></div>
 					<?php } ?>

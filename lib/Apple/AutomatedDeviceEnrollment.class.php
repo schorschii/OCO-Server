@@ -6,7 +6,7 @@ class AutomatedDeviceEnrollment {
 
 	const APPLE_MDMENROLLMENT_API = 'https://mdmenrollment.apple.com';
 
-	const OCO_VENDOR_SIGNING_API  = 'https://apps.sieber.systems/oco-sign-apn-csr.php';
+	const OCO_VENDOR_SIGNING_API  = 'https://apps.sieber.systems/oco/sign-apn-csr.php';
 
 	const APPLE_ROOT_CA_FILE = __DIR__.'/Assets/Apple Root CA.pem';
 	const APPLE_WDR_CA_FILE  = __DIR__.'/Assets/Apple Worldwide Developer Relations CA.pem';
@@ -171,7 +171,7 @@ class AutomatedDeviceEnrollment {
 		$response = curl_exec($ch);
 		$resultArray = json_decode($response, true);
 		if(!$resultArray || empty($resultArray['signature']) || empty($resultArray['cert-chain'])) {
-			throw new \RuntimeException('Invalid response from OCO vendor APN CSR signing API');
+			throw new \RuntimeException('Invalid response from OCO vendor APN CSR signing API: '.$response);
 		}
 		curl_close($ch);
 		return $resultArray;
