@@ -98,7 +98,7 @@ class AppStore {
 			return $values;
 		} catch(\RuntimeException $e) {
 			$license = new \LicenseCheck($this->db);
-			if($license->isValid()) {
+			if($license->isValid() && !$license->isFree()) {
 				return $this->getAppMetadataViaOcoVendor($storeId, $this->storefront, json_encode($this->vppToken), $license->getLicenseJson());
 			} else {
 				throw new \RuntimeException('No own AppStore key set and no valid OCO license - cannot get app metadata');

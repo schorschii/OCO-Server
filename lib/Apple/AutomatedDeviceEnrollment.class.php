@@ -139,7 +139,7 @@ class AutomatedDeviceEnrollment {
 			$certChain = trim($mdmVendorCertPem)."\n".$appleWdrCa.$appleRootCa;
 		} catch(\RuntimeException $e) {
 			$license = new \LicenseCheck($this->db);
-			if($license->isValid()) {
+			if($license->isValid() && !$license->isFree()) {
 				$sigResult = $this->signMdmApnCsrWithOcoVendorCert($csrDerB64, $license->getLicenseJson());
 				$csrDerSigB64 = $sigResult['signature'];
 				$certChain = $sigResult['cert-chain'];
