@@ -11,11 +11,6 @@ class VolumePurchaseProgram {
 
 	function __construct($db) {
 		$this->db = $db;
-		try {
-			$this->appStore = new AppStore($db, $this->getToken(), $db->settings->get('apple-storefront', AppStore::DEFAULT_STOREFRONT));
-		} catch(\Exception $ignored) {
-			// probably no VPP token configured - managing apps is not available then
-		}
 	}
 
 	function getToken() {
@@ -62,6 +57,10 @@ class VolumePurchaseProgram {
 	}
 
 	function syncAssets() {
+		// init AppStore on demand if needed - OCO MDM should be useable without
+		// VPP token and AppStore keys configured
+		$this->appStore = new AppStore($this->db, $this->getToken(), $this->db->settings->get('apple-storefront', AppStore::DEFAULT_STOREFRONT));
+
 		$assets = $this->getAssets()['assets'];
 		foreach($assets as $asset) {
 			if(empty($asset['adamId']) || empty($asset['totalCount'])
