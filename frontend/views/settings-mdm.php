@@ -5,7 +5,7 @@ require_once('../session.inc.php');
 
 try {
 	$ade = new Apple\AutomatedDeviceEnrollment($db);
-	$vpp = new Apple\VolumePurchaseProgram($db, false);
+	$vpp = new Apple\VolumePurchaseProgram($db);
 	$as = new Apple\AppStore($db, []);
 	$ae = new Android\AndroidEnrollment($db);
 	$license = new LicenseCheck($db);

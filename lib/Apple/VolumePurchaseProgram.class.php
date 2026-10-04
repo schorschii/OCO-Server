@@ -9,11 +9,13 @@ class VolumePurchaseProgram {
 	private $db;
 	private $appStore;
 
-	function __construct($db, AppStore|bool $appStore=null) {
+	function __construct($db) {
 		$this->db = $db;
-		if($appStore === null)
-			$appStore = new AppStore($db, $this->getToken(), $db->settings->get('apple-storefront', AppStore::DEFAULT_STOREFRONT));
-		$this->appStore = $appStore;
+		try {
+			$this->appStore = new AppStore($db, $this->getToken(), $db->settings->get('apple-storefront', AppStore::DEFAULT_STOREFRONT));
+		} catch(\Exception $ignored) {
+			// probably no VPP token configured - managing apps is not available then
+		}
 	}
 
 	function getToken() {
