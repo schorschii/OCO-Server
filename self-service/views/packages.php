@@ -123,48 +123,6 @@ try {
 							<td><?php echo htmlspecialchars($package->updated); ?></td>
 						</tr>
 					</table>
-					<h2><?php echo LANG('installation'); ?></h2>
-					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG('after_completion'); ?></th>
-							<td>
-								<span id='spnPackageInstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->install_procedure_post_action); ?></span>
-								<?php $info = '';
-								switch($package->install_procedure_post_action) {
-									case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
-									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
-									case Models\Package::POST_ACTION_EXIT: $info = LANG('restart_agent'); break;
-									default: $info = LANG('no_action'); break;
-								}
-								echo htmlspecialchars($info);
-								?>
-							</td>
-						</tr>
-					</table>
-					<h2><?php echo LANG('uninstallation'); ?></h2>
-					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG('after_completion'); ?></th>
-							<td>
-								<span id='spnPackageUninstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->uninstall_procedure_post_action); ?></span>
-								<?php $info = '';
-								switch($package->uninstall_procedure_post_action) {
-									case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
-									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
-									default: $info = LANG('no_action'); break;
-								}
-								echo htmlspecialchars($info);
-								?>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('download_for_uninstall'); ?></th>
-							<td>
-								<span id='spnPackageDownloadForUninstall' class='rawvalue'><?php echo htmlspecialchars($package->download_for_uninstall); ?></span>
-								<?php $info = ''; if($package->download_for_uninstall) $info = LANG('yes'); else $info = LANG('no'); echo htmlspecialchars($info); ?>
-							</td>
-						</tr>
-					</table>
 				</div>
 				<div>
 					<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
@@ -197,6 +155,55 @@ try {
 								</td>
 							</tr>
 						</tfoot>
+					</table>
+				</div>
+			</div>
+
+			<div class='details-abreast'>
+				<div>
+					<h2><?php echo LANG('installation'); ?></h2>
+					<table class='list metadata'>
+						<tr>
+							<th><?php echo LANG('after_completion'); ?></th>
+							<td>
+								<span id='spnPackageInstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->install_procedure_post_action); ?></span>
+								<?php $info = '';
+								switch($package->install_procedure_post_action) {
+									case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
+									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
+									case Models\Package::POST_ACTION_EXIT: $info = LANG('restart_agent'); break;
+									default: $info = LANG('no_action'); break;
+								}
+								echo htmlspecialchars($info);
+								?>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div>
+					<h2><?php echo LANG('uninstallation'); ?></h2>
+					<table class='list metadata'>
+						<tr>
+							<th><?php echo LANG('after_completion'); ?></th>
+							<td>
+								<span id='spnPackageUninstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->uninstall_procedure_post_action); ?></span>
+								<?php $info = '';
+								switch($package->uninstall_procedure_post_action) {
+									case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
+									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
+									default: $info = LANG('no_action'); break;
+								}
+								echo htmlspecialchars($info);
+								?>
+							</td>
+						</tr>
+						<tr>
+							<th><?php echo LANG('download_for_uninstall'); ?></th>
+							<td>
+								<span id='spnPackageDownloadForUninstall' class='rawvalue'><?php echo htmlspecialchars($package->download_for_uninstall); ?></span>
+								<?php $info = ''; if($package->download_for_uninstall) $info = LANG('yes'); else $info = LANG('no'); echo htmlspecialchars($info); ?>
+							</td>
+						</tr>
 					</table>
 				</div>
 			</div>
