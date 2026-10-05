@@ -52,7 +52,7 @@ try {
 	<?php } else { ?>
 		<div class='gallery gap'>
 		<?php foreach($packages as $p) { ?>
-			<a class='item orange' <?php echo Html::explorerLink('views/packages.php?id='.$p->id); ?>>
+			<a class='item box' <?php echo Html::explorerLink('views/packages.php?id='.$p->id); ?>>
 				<img src='<?php echo $p->getIcon(); ?>'>
 				<h3><?php echo htmlspecialchars($p->getFullName()); ?></h3>
 			</a>

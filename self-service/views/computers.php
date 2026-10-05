@@ -41,7 +41,7 @@ $commands = Models\Computer::getCommands($ext);
 	<?php } else { ?>
 		<div class='gallery gap'>
 		<?php foreach($computers as $c) { ?>
-			<a class='item blue' <?php echo Html::explorerLink('views/computers.php?id='.$c->id); ?>>
+			<a class='item box' <?php echo Html::explorerLink('views/computers.php?id='.$c->id); ?>>
 				<img src='<?php echo $c->getIcon(); ?>' class='<?php if(!$c->isOnline($db)) echo 'offline'; ?>'>
 				<h3><?php echo htmlspecialchars($c->hostname); ?></h3>
 			</a>

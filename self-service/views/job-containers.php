@@ -44,7 +44,7 @@ try {
 	<?php } else { ?>
 		<div class='gallery gap'>
 		<?php foreach($containers as $jc) { ?>
-			<a class='item red' <?php echo Html::explorerLink('views/job-containers.php?id='.$jc->id); ?>>
+			<a class='item box' <?php echo Html::explorerLink('views/job-containers.php?id='.$jc->id); ?>>
 				<img src='img/<?php echo $jc->getStatus($db->selectAllStaticJobByJobContainer($jc->id)); ?>.dyn.svg'>
 				<h3><?php echo htmlspecialchars($jc->name); ?></h3>
 			</a>
