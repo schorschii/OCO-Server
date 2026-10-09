@@ -1,26 +1,35 @@
 <?php
-$SUBVIEW = 1;
-require_once('../../loader.inc.php');
-require_once('../session.inc.php');
+// self-service/ajax-handler/packages.php
+
+ini_set('display_errors', '0');
+require_once(__DIR__.'/../../loader.inc.php');
+require_once(__DIR__.'/../session.inc.php');
+
+session_write_close();
+
+header('Content-Type: application/json');
 
 try {
-
-	if(!empty($_POST['get_package_names']) && is_array($_POST['get_package_names'])) {
-		$finalArray = [];
-		foreach($_POST['get_package_names'] as $id) {
-			$p = $cl->getMyPackage($id);
-			if(!empty($p)) $finalArray[] = ['id'=>$p->id, 'name'=>$p->getFullName()];
-		}
-		die(json_encode($finalArray));
-	}
-
-} catch(PermissionException $e) {
-	header('HTTP/1.1 403 Forbidden');
-	die(LANG('permission_denied'));
-} catch(Exception $e) {
-	header('HTTP/1.1 400 Invalid Request');
-	die($e->getMessage());
+    $packages = $cl->getMyPackages();
+    $data = [];
+    foreach ($packages as $p) {
+        $data[] = [
+            'id' => intval($p->id),
+            'fullName' => $p->getFullName(),
+            'name' => $p->package_family_name,
+            'version' => $p->version,
+            'compatible_os' => $p->compatible_os,
+            'compatible_os_version' => $p->compatible_os_version,
+            'compatible_architecture' => $p->compatible_architecture,
+            'size' => $p->getSize(),
+            'icon' => $p->getIcon(),
+            'package_family_id' => intval($p->package_family_id),
+            'package_family_name' => $p->package_family_name
+        ];
+    }
+    echo json_encode($data);
+} catch (\Throwable $e) {
+    error_log('OCO Self-Service API Error (packages.php): ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+    http_response_code(500);
+    echo json_encode(['error' => LANG('portal_redesign_api_internal_error')]);
 }
-
-header('HTTP/1.1 400 Invalid Request');
-die(LANG('unknown_method'));

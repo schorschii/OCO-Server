@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../loader.inc.php');
-require_once('../session.inc.php');
+require_once(__DIR__.'/../../loader.inc.php');
+require_once(__DIR__.'/../session.inc.php');
 
 // compile job name
 $default_job_container_name = LANG('install').' '.date('y-m-d H:i:s');

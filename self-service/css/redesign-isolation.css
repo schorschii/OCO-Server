@@ -1,0 +1,56 @@
+/* frontend/css/redesign-isolation.css */
+
+/* ==========================================================================
+   ISOLATION ET ANTI-FUITE DU DARK MODE SYSTÈME EN MODE CLAIR (THEME-LIGHT)
+   ========================================================================== */
+
+/* 1. Protection de la typographie (En-têtes, Titres, Liens) */
+html.theme-light body,
+html.theme-light a,
+html.theme-light #explorer-content h1,
+html.theme-light #explorer-content h2,
+html.theme-light #explorer-content h3,
+html.theme-light #message-container .message .message-title {
+    color: var(--text-primary) !important;
+}
+
+/* 2. Protection des champs de saisie (App Store, Formulaires) */
+html.theme-light input:not([type=range]):not([type=radio]):not([type=checkbox]), 
+html.theme-light select, 
+html.theme-light textarea {
+    color: var(--text-primary) !important;
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.theme-light input:focus, 
+html.theme-light textarea:focus, 
+html.theme-light select:focus {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
+}
+
+html.theme-light input::placeholder {
+    color: var(--text-secondary) !important;
+}
+
+/* 3. Protection des modales (Dialogue Box) et conteneurs d'installation */
+html.theme-light .dialogContainer .dialogBox,
+html.theme-light table.list, 
+html.theme-light .box {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
+}
+
+html.theme-light table.list tr th, 
+html.theme-light table.list tr td,
+html.theme-light hr {
+    border-color: var(--border-color) !important;
+}
+
+/* Protection des bulles de notification */
+html.theme-light #message-container .message {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}

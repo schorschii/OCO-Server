@@ -615,8 +615,8 @@ h3 {
 .gallery > .item {
 	flex-grow: 0;
 	flex-shrink: 0;
-	flex-basis: 180px;
-	padding: 15px;
+	flex-basis: 200px;
+	padding: 10px;
 	background-color: white;
 	transition: 0.2s ease;
 	text-decoration: none !important;
@@ -629,6 +629,18 @@ h3 {
 }
 .gallery > .item:hover {
 	transform: scale(1.05);
+}
+.gallery > .item.blue {
+	border: 3px solid #0079B8;
+	border-radius: 5px;
+}
+.gallery > .item.orange {
+	border: 3px solid #ffa725;
+	border-radius: 5px;
+}
+.gallery > .item.red {
+	border: 3px solid #5f2020;
+	border-radius: 5px;
 }
 
 .controls {

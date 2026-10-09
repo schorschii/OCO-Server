@@ -1,0 +1,361 @@
+/* frontend/css/redesign-home.css */
+
+/* Base Homepage Layout */
+.m3-homepage-container {
+    max-width: 100%;
+    padding: 24px;
+    font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+    /* color: var(--m3-on-surface); */
+}
+
+/* Hero Section */
+.m3-hero-section {
+    background: linear-gradient(135deg, var(--m3-primary-container) 0%, #e8f0fe 100%);
+    border-radius: var(--m3-shape-corner-extra-large);
+    padding: 40px 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--m3-elevation-1);
+    position: relative;
+    overflow: hidden;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    text-align: center !important;
+}
+
+.m3-hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 100%;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+}
+
+.m3-hero-logo {
+    height: 48px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.m3-hero-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--m3-on-primary-container);
+    margin: 0 0 12px 0;
+}
+
+.m3-hero-subtitle {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--m3-on-surface-variant);
+    margin: 0;
+}
+
+/* Action Cards Grid */
+.m3-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+/* Card M3 CTA styling */
+.m3-cta-card {
+    display: flex;
+    align-items: center;
+    text-decoration: none !important;
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-surface-variant);
+    border-radius: var(--m3-shape-corner-large);
+    padding: 24px;
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: var(--m3-elevation-1);
+    cursor: pointer;
+    position: relative;
+}
+
+.m3-cta-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--m3-elevation-2);
+}
+
+.m3-card-install:hover {
+    background-color: #f7f9ff;
+    border-color: var(--m3-primary);
+}
+
+.m3-card-jobs:hover {
+    background-color: #fcf7ff;
+    border-color: var(--m3-tertiary);
+}
+
+.m3-card-updates:hover {
+    background-color: #f0fdf4;
+    border-color: var(--success);
+}
+
+.m3-card-install {
+    border-left: 5px solid var(--m3-primary);
+}
+
+.m3-card-jobs {
+    border-left: 5px solid var(--m3-tertiary);
+}
+
+.m3-card-updates {
+    border-left: 5px solid var(--success);
+}
+
+/* Icon Container with Badge positioning */
+.m3-card-icon-container {
+    background-color: var(--m3-secondary-container);
+    border-radius: var(--m3-shape-corner-medium);
+    width: 64px;
+    height: 64px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 20px;
+    flex-shrink: 0;
+    position: relative;
+}
+
+.m3-card-icon-container img {
+    width: 36px;
+    height: 36px;
+}
+
+/* Notification Badge */
+.m3-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--m3-error);
+    color: var(--m3-on-error);
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 50%;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 2px 4px rgba(0,0,0,0.2);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.m3-card-text {
+    flex-grow: 1;
+}
+
+.m3-card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--m3-on-surface);
+    margin: 0 0 8px 0;
+}
+
+.m3-card-description {
+    font-size: 0.9rem;
+    color: var(--m3-on-surface-variant);
+    margin: 0;
+    line-height: 1.4;
+}
+
+.m3-card-action-arrow {
+    font-size: 1.5rem;
+    color: var(--m3-outline);
+    transition: transform 0.3s ease;
+    margin-left: 12px;
+}
+
+.m3-cta-card:hover .m3-card-action-arrow {
+    transform: translateX(4px);
+}
+
+.m3-card-install:hover .m3-card-action-arrow {
+    color: var(--m3-primary);
+}
+
+.m3-card-jobs:hover .m3-card-action-arrow {
+    color: var(--m3-tertiary);
+}
+
+.m3-card-updates:hover .m3-card-action-arrow {
+    color: var(--success);
+}
+
+/* Resources & Help Section */
+.m3-resources-section {
+    background-color: #fafbfc;
+    border: 1px solid var(--m3-surface-variant);
+    border-radius: var(--m3-shape-corner-large);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--m3-elevation-1);
+}
+
+.m3-resources-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 24px 0;
+    color: var(--m3-on-surface);
+}
+
+.m3-resources-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.m3-resource-item {
+    flex: 1 1 300px;
+    display: flex;
+    align-items: flex-start;
+    padding: 16px;
+    border-radius: var(--m3-shape-corner-medium);
+    text-decoration: none !important;
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-surface-variant);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.m3-resource-item:hover {
+    background-color: var(--m3-secondary-container);
+    border-color: var(--m3-outline);
+}
+
+.m3-resource-icon {
+    font-size: 2rem;
+    margin-right: 16px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.m3-resource-info h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--m3-on-surface);
+    margin: 0 0 4px 0;
+}
+
+.m3-resource-info p {
+    font-size: 0.85rem;
+    color: var(--m3-on-surface-variant);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Recent Installations Section */
+.m3-recent-installs-section {
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-surface-variant);
+    border-radius: var(--m3-shape-corner-large);
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: var(--m3-elevation-1);
+}
+
+.m3-recent-installs-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 24px 0;
+    color: var(--m3-on-surface);
+}
+
+.m3-table-container {
+    overflow-x: auto;
+    border-radius: var(--m3-shape-corner-medium);
+    border: 1px solid var(--m3-surface-variant);
+}
+
+.m3-recent-installs-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    background-color: var(--m3-surface);
+}
+
+.m3-recent-installs-table th {
+    background-color: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+    font-weight: 600;
+    padding: 14px 16px;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--m3-surface-variant);
+}
+
+.m3-recent-installs-table td {
+    padding: 16px;
+    font-size: 0.95rem;
+    color: var(--m3-on-surface);
+    border-bottom: 1px solid var(--m3-surface-variant);
+    vertical-align: middle;
+}
+
+.m3-recent-installs-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.m3-recent-installs-table tbody tr:hover {
+    background-color: var(--m3-secondary-container);
+    opacity: 0.95;
+}
+
+.m3-button {
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.m3-button-tonal {
+    background-color: var(--m3-primary-container);
+    color: var(--m3-on-primary-container);
+}
+
+.m3-button-tonal:hover {
+    background-color: var(--m3-primary);
+    color: var(--m3-on-primary);
+    box-shadow: var(--m3-elevation-1);
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Copyright / Footer positioning */
+.m3-homepage-container .footer,
+.m3-computer-detail-container .footer,
+.m3-store-container .footer,
+.m3-jobs-container .footer {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    text-align: center;
+    padding-top: 24px;
+    border-top: 1px solid var(--m3-surface-variant);
+    font-size: 0.8rem;
+    color: var(--m3-outline);
+    margin-top: 24px;
+    opacity: 1 !important;
+}

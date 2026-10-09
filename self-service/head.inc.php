@@ -10,12 +10,26 @@
 <link rel='apple-touch-icon' sizes='1024x1024' href='img/touchicon.png'>
 
 <link rel='stylesheet' type='text/css' href='css/main.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
-<link rel='stylesheet' type='text/css' href='css/self-service.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
+
+<!-- Redesign CSS files -->
+<link rel='stylesheet' type='text/css' href='css/redesign-variables.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
+<link rel='stylesheet' type='text/css' href='css/redesign-layout.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
+<link rel='stylesheet' type='text/css' href='css/redesign-home.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
+<link rel='stylesheet' type='text/css' href='css/redesign-computers.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
+<link rel='stylesheet' type='text/css' href='css/redesign-store.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
+<link rel='stylesheet' type='text/css' href='css/redesign-jobs.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
+<link rel='stylesheet' type='text/css' href='css/redesign-isolation.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
+<link rel='stylesheet' type='text/css' href='css/custom-self-service.css?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'>
 
 <script src='js/strings.js.php?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 <script src='js/main.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 <script src='js/self-service.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 <script src='js/table.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
+
+<!-- Redesign JS files -->
+<script src='js/redesign-theme.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
+<script src='js/redesign-navbar.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
+<script src='js/redesign-store.js?v=<?php echo urlencode(OcoServer::APP_VERSION); ?>'></script>
 
 <?php
 // include extension JS

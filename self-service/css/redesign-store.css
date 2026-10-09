@@ -1,0 +1,725 @@
+/* frontend/css/redesign-store.css */
+
+/* ==========================================================================
+   Page Catalogue d'Applications "App Store" (M3 styling - Étape 3)
+   ========================================================================== */
+
+/* Store layout container */
+.m3-store-container {
+    max-width: 100%;
+    padding: 24px;
+    font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+    padding-bottom: 120px; /* Space for sticky bottom drawer */
+}
+
+/* Sticky Filter Bar */
+.m3-store-filter-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: rgba(248, 250, 252, 0.95); /* matching --bg-primary with transparency */
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--m3-surface-variant);
+    border-radius: var(--m3-shape-corner-large);
+    padding: 16px 24px;
+    margin-bottom: 32px;
+    box-shadow: var(--m3-elevation-1);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: all 0.3s ease;
+}
+
+/* Filter sections */
+.m3-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.m3-filter-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--m3-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* OS Chips */
+.m3-os-chips {
+    display: flex;
+    gap: 8px;
+}
+
+.m3-os-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 100px; /* pill shape for M3 chips */
+    border: 1px solid var(--m3-outline);
+    background-color: var(--m3-surface);
+    color: var(--m3-on-surface);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m3-os-chip img {
+    height: 16px;
+    width: 16px;
+}
+
+.m3-os-chip:hover {
+    background-color: #f1f5f9;
+}
+
+.m3-os-chip.active {
+    background-color: var(--m3-primary-container);
+    border-color: var(--m3-primary);
+    color: var(--m3-on-primary-container);
+    font-weight: 600;
+}
+
+/* Select targets / Dropdown computers */
+.m3-select-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.m3-computer-select {
+    appearance: none;
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-outline);
+    border-radius: var(--m3-shape-corner-medium);
+    padding: 10px 40px 10px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--m3-on-surface);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 220px;
+}
+
+.m3-computer-select:focus {
+    outline: none;
+    border-color: var(--m3-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.m3-select-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--m3-on-surface-variant);
+    font-size: 0.8rem;
+}
+
+/* Search bar */
+.m3-search-wrapper {
+    position: relative;
+    flex-grow: 1;
+    max-width: 320px;
+}
+
+.m3-store-search {
+    width: 100%;
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-outline);
+    border-radius: var(--m3-shape-corner-medium);
+    padding: 10px 16px 10px 40px;
+    font-size: 0.9rem;
+    color: var(--m3-on-surface);
+    transition: all 0.2s ease;
+}
+
+.m3-store-search:focus {
+    outline: none;
+    border-color: var(--m3-primary);
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.m3-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--m3-on-surface-variant);
+    font-size: 1rem;
+}
+
+/* Checkbox Switch */
+.m3-switch-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--m3-on-surface);
+    cursor: pointer;
+    user-select: none;
+}
+
+.m3-switch-input {
+    appearance: none;
+    width: 52px;
+    height: 28px;
+    background-color: #ffffff !important; /* Fond totalement blanc */
+    background-image: none !important;     /* Supprime les barres de hachures d'OCO */
+    border: 2px solid #94a3b8 !important;
+    border-radius: 100px;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    flex-shrink: 0;
+}
+
+.m3-switch-input::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: #64748b !important;
+    top: 4px;
+    left: 4px;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
+}
+
+.m3-switch-input:checked {
+    background-color: #ffffff !important; /* Reste blanc */
+    border-color: var(--m3-primary) !important; /* Le pourtour devient bleu */
+}
+
+.m3-switch-input:checked::after {
+    transform: translateX(24px) !important;
+    background-color: var(--m3-primary) !important; /* La puce mouvante devient bleue */
+    width: 16px;
+    height: 16px;
+    top: 4px;
+}
+
+/* Store App Cards Grid */
+.m3-store-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); /* Cartes plus larges par défaut */
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+/* Package M3 Card styling */
+.m3-package-card {
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-surface-variant);
+    border-radius: var(--m3-shape-corner-large);
+    padding: 8px 12px; /* Hauteur extrêmement compressée */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrage vertical simple pour un format compact */
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: var(--m3-elevation-1);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    overflow: hidden;
+    min-height: 64px; /* Hauteur minimale fixe réduite */
+    box-sizing: border-box;
+}
+
+.m3-package-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--m3-elevation-2);
+    border-color: var(--m3-primary);
+}
+
+/* Card States */
+.m3-package-card.selected {
+    border: 2px solid var(--m3-primary);
+    background-color: #f0f5ff;
+}
+
+.m3-package-card.installed {
+    border-color: var(--m3-success);
+    background-color: #f0fdf4;
+}
+
+.m3-package-card.installed.selected {
+    border: 2px solid var(--m3-primary);
+}
+
+.m3-package-card.incompatible {
+    opacity: 0.45;
+    pointer-events: none;
+    filter: grayscale(1);
+}
+
+/* Card Badge/Status Icon in upper right */
+.m3-card-status-badge {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-size: 1rem;
+    color: var(--m3-success);
+    background-color: #ffffff;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.1);
+}
+
+.m3-card-checkmark {
+    position: absolute;
+    top: 12px; /* Ajusté pour cartes compactes */
+    right: 12px;
+    font-size: 0.75rem;
+    color: #ffffff;
+    background-color: var(--m3-primary);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
+}
+
+.m3-card-status-badge + .m3-card-checkmark {
+    right: 42px; /* stack nicely if both are visible */
+}
+
+/* Card Content */
+.m3-package-top {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 0; /* Suppression de la marge inutile (pas de body en dessous) */
+    width: 100%;
+    padding-right: 80px; /* Réserve de l'espace à droite pour empêcher le texte de chevaucher le macaron OS absolu */
+    box-sizing: border-box;
+}
+
+.m3-package-top-left {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.m3-package-logo {
+    width: 44px; /* Plus compact pour hauteur réduite */
+    height: 44px;
+    object-fit: contain;
+    background-color: #f8fafc;
+    padding: 4px;
+    border-radius: var(--m3-shape-corner-medium);
+    border: 1px solid var(--m3-surface-variant);
+    flex-shrink: 0;
+}
+
+.m3-package-identity {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.m3-package-name {
+    font-size: 0.95rem; /* Ajusté pour 2 lignes */
+    font-weight: 600;
+    color: var(--m3-on-surface);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limite à exactement deux lignes */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+}
+
+.m3-package-version {
+    font-size: 0.75rem;
+    color: var(--m3-on-surface-variant);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+.m3-package-body {
+    flex-grow: 1;
+}
+
+.m3-package-size {
+    font-size: 0.8rem;
+    color: var(--m3-outline);
+    margin: 0 0 12px 0;
+}
+
+.m3-package-compat {
+    position: absolute;
+    top: 10px; /* Ajusté pour hauteur réduite */
+    right: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 0;
+    z-index: 2;
+    transition: right 0.2s ease;
+}
+
+/* S'il y a un checkmark de sélection affiché en haut à droite, on décale le macaron d'OS vers la gauche pour ne pas se superposer */
+.m3-package-card:has(.m3-card-checkmark) .m3-package-compat {
+    right: 38px; /* Ajusté pour cartes compactes */
+}
+
+.m3-compat-badge {
+    width: 28px; /* Plus petit macaron pour hauteur réduite */
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    background-color: #f1f5f9;
+    transition: all 0.2s ease;
+}
+
+.m3-compat-badge:hover {
+    transform: scale(1.1);
+}
+
+.m3-compat-badge.win {
+    background-color: #e0f2fe;
+    border-color: #bae6fd;
+}
+
+.m3-compat-badge.mac {
+    background-color: #e2e8f0; /* modern slate silver */
+    border-color: #cbd5e1;
+}
+
+.m3-compat-badge.debian {
+    background-color: #fce7f3;
+    border-color: #fbcfe8;
+}
+
+.m3-compat-badge.ubuntu {
+    background-color: #ffedd5;
+    border-color: #fed7aa;
+}
+
+.m3-compat-badge.linux {
+    background-color: #fef3c7;
+    border-color: #fde68a;
+}
+
+.m3-compat-badge.fallback {
+    background-color: #f1f5f9;
+    border-color: #e2e8f0;
+}
+
+.m3-compat-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    /* Soft dark slate color for high contrast and readability on soft backgrounds */
+    filter: opacity(0.85);
+}
+
+/* ==========================================================================
+   Sticky Bottom Drawer / Shopping Cart (M3 styling - Étape 3)
+   ========================================================================== */
+
+.m3-bottom-drawer {
+    position: fixed;
+    bottom: -100px; /* hidden initially */
+    left: 0;
+    right: 0;
+    background-color: var(--m3-surface);
+    border-top: 1px solid var(--m3-surface-variant);
+    box-shadow: 0px -4px 16px rgba(0,0,0,0.08);
+    z-index: 99;
+    padding: 16px 40px;
+    transition: bottom 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m3-bottom-drawer.visible {
+    bottom: 0;
+}
+
+.m3-drawer-content {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.m3-drawer-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.m3-cart-summary-btn {
+    background-color: var(--m3-primary-container) !important;
+    color: var(--m3-on-primary-container) !important;
+    border: none !important;
+    padding: 10px 20px;
+    border-radius: var(--m3-shape-corner-medium);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+}
+
+.m3-cart-summary-btn:hover {
+    background-color: rgba(37, 99, 235, 0.12) !important;
+}
+
+.m3-cart-text-recap {
+    font-size: 0.9rem;
+    color: var(--m3-on-surface-variant);
+}
+
+.m3-cart-text-recap strong {
+    color: var(--m3-on-surface);
+}
+
+.m3-deploy-tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.m3-deploy-tooltip {
+    visibility: hidden;
+    width: 240px;
+    background-color: var(--text-primary);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 12px;
+    position: absolute;
+    z-index: 100;
+    bottom: 125%; /* Position above the button */
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 0.8rem;
+    line-height: 1.3;
+    pointer-events: none;
+}
+
+.m3-deploy-tooltip-wrapper:hover .m3-deploy-tooltip {
+    visibility: visible;
+    opacity: 0.95;
+}
+
+/* Deploy Button in Cart disabled state */
+.m3-btn.primary:disabled {
+    background-color: #e2e8f0;
+    color: #94a3b8;
+    box-shadow: none;
+    cursor: not-allowed;
+    border: 1px solid var(--m3-surface-variant);
+}
+
+/* Drawer Cart Quick Recap Modal Panel */
+.m3-cart-recap-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.2, 0, 0, 1);
+    background-color: #f8fafc;
+    border-radius: var(--m3-shape-corner-medium);
+    margin-top: 10px;
+    padding: 0 20px;
+}
+
+.m3-cart-recap-panel.open {
+    max-height: 200px;
+    padding: 16px 20px;
+    overflow-y: auto;
+    border: 1px solid var(--m3-surface-variant);
+}
+
+.m3-recap-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.9rem;
+    color: var(--m3-on-surface);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* ==========================================================================
+   M3 Material Confirmation Modal (Étape 4)
+   ========================================================================== */
+
+.m3-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.4); /* dark translucent overlay */
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m3-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.m3-modal-card {
+    background-color: var(--m3-surface);
+    border-radius: var(--m3-shape-corner-extra-large); /* beautiful M3 modal rounding */
+    box-shadow: var(--m3-elevation-3);
+    max-width: 500px;
+    width: 90%;
+    overflow: hidden;
+    transform: translateY(24px) scale(0.95);
+    transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.m3-modal-overlay.active .m3-modal-card {
+    transform: translateY(0) scale(1);
+}
+
+.m3-modal-header {
+    padding: 24px 24px 16px 24px;
+}
+
+.m3-modal-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--m3-on-surface);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.m3-modal-title img {
+    height: 28px;
+    width: 28px;
+}
+
+.m3-modal-body {
+    padding: 0 24px 24px 24px;
+    color: var(--m3-on-surface-variant);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.m3-modal-form-row {
+    margin-bottom: 20px;
+}
+
+.m3-modal-input {
+    width: 100%;
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-outline);
+    border-radius: var(--m3-shape-corner-medium);
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    color: var(--m3-on-surface);
+    margin-top: 6px;
+    box-sizing: border-box;
+}
+
+.m3-modal-input:focus {
+    outline: none;
+    border-color: var(--m3-primary);
+}
+
+.m3-modal-recap-box {
+    background-color: #f1f5f9;
+    border-radius: var(--m3-shape-corner-medium);
+    padding: 16px;
+    margin: 16px 0;
+    border-left: 4px solid var(--m3-primary);
+}
+
+.m3-modal-recap-target {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--m3-on-surface);
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+.m3-modal-recap-target img {
+    height: 20px;
+    width: 20px;
+}
+
+.m3-modal-recap-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.9rem;
+    color: var(--m3-on-surface-variant);
+}
+
+.m3-modal-recap-list li {
+    margin-bottom: 4px;
+}
+
+.m3-modal-checkboxes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.m3-modal-actions {
+    padding: 16px 24px;
+    background-color: #fafbfc;
+    border-top: 1px solid var(--m3-surface-variant);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Spinner de chargement M3 */
+.m3-spinner {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #ffffff;
+    animation: m3-spin 0.8s linear infinite;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+@keyframes m3-spin {
+    to { transform: rotate(360deg); }
+}

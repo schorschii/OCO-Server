@@ -1,61 +1,94 @@
 <?php
-$SUBVIEW = 1;
-require_once('../../loader.inc.php');
-require_once('../session.inc.php');
+// self-service/ajax-handler/job-containers.php
 
-try {
+ini_set('display_errors', '0');
 
-	// ----- create install jobs if requested -----
-	if(isset($_POST['create_install_job_container'])) {
-		// create container + jobs
-		die($cl->deploySelfService(
-			$_POST['create_install_job_container'],
-			$_POST['computer_id'] ?? [], $_POST['package_id'] ?? [],
-			date('Y-m-d H:i:s'), null,
-			$_POST['use_wol'] ?? 1, $_POST['shutdown_waked_after_completion'] ?? 0, $_POST['restart_timeout'] ?? 5,
-			0 /*uninstall same version*/, 0 /*sequence_mode*/
-		));
-	}
+require_once(__DIR__.'/../../loader.inc.php');
+require_once(__DIR__.'/../session.inc.php');
 
-	// ----- create uninstall jobs if requested -----
-	if(isset($_POST['create_uninstall_job_container'])
-	&& !empty($_POST['uninstall_package_assignment_id'])
-	&& is_array($_POST['uninstall_package_assignment_id'])
-	&& isset($_POST['use_wol'])
-	&& isset($_POST['shutdown_waked_after_completion'])) {
-		$cl->uninstallSelfService(
-			$_POST['create_uninstall_job_container'],
-			$_POST['uninstall_package_assignment_id'],
-			date('Y-m-d H:i:s'), null,
-			$_POST['use_wol'], $_POST['shutdown_waked_after_completion'], $_POST['restart_timeout'] ?? 5,
-			0/*sequence mode*/
-		);
-		die();
-	}
-
-	// ----- remove jobs in container if requested -----
-	if(!empty($_POST['remove_job_id']) && is_array($_POST['remove_job_id'])) {
-		foreach($_POST['remove_job_id'] as $id) {
-			$cl->removeMyStaticJob($id);
-		}
-		die();
-	}
-
-	// ----- remove job container if requested -----
-	if(!empty($_POST['remove_container_id']) && is_array($_POST['remove_container_id'])) {
-		foreach($_POST['remove_container_id'] as $id) {
-			$cl->removeMyJobContainer($id);
-		}
-		die();
-	}
-
-} catch(PermissionException $e) {
-	header('HTTP/1.1 403 Forbidden');
-	die(LANG('permission_denied'));
-} catch(Exception $e) {
-	header('HTTP/1.1 400 Invalid Request');
-	die($e->getMessage());
+if (!isset($_SESSION['oco_self_service_user_id']) || empty($_SESSION['oco_self_service_user_id'])) {
+    header('HTTP/1.0 401 Unauthorized');
+    echo json_encode(['error' => LANG('portal_redesign_api_unauthorized')]);
+    exit();
 }
 
-header('HTTP/1.1 400 Invalid Request');
-die(LANG('unknown_method'));
+session_write_close();
+header('Content-Type: application/json');
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['error' => 'Method Not Allowed']);
+    exit();
+}
+
+try {
+    $input = json_decode(file_get_contents('php://input'), true);
+    if (!$input) {
+        $input = $_POST;
+    }
+
+    $name = isset($input['name']) ? trim($input['name']) : '';
+    $computers = isset($input['computers']) ? $input['computers'] : [];
+    $packages = isset($input['packages']) ? $input['packages'] : [];
+    $wol = isset($input['wol']) ? (bool)$input['wol'] : false;
+    $shutdown = isset($input['shutdown']) ? (bool)$input['shutdown'] : false;
+    $forceInstall = true;
+
+    // Safety guard: if sockets extension is missing, disable Wake-on-LAN to prevent fatal crash
+    if ($wol && !function_exists('socket_create')) {
+        $wol = false;
+    }
+
+    if (empty($name)) {
+        $name = LANG('portal_redesign_api_default_job_name') . ' ' . date('d/m/Y H:i');
+    }
+
+    if (is_string($computers)) {
+        $computers = array_filter(array_map('intval', explode(',', $computers)));
+    }
+    if (is_string($packages)) {
+        $packages = array_filter(array_map('intval', explode(',', $packages)));
+    }
+
+    if (empty($computers) || empty($packages)) {
+        throw new Exception(LANG('portal_redesign_api_missing_params'));
+    }
+
+    // Execute deployment using OCO CoreLogic
+    $containerId = $cl->deploySelfService(
+        $name,
+        $computers,
+        $packages,
+        date('Y-m-d H:i:s'),
+        null, // dateEnd
+        $wol ? 1 : 0,
+        $shutdown ? 1 : 0,
+        5, // restart_timeout
+        $forceInstall ? 1 : 0,
+        0  // sequence_mode
+    );
+
+    if (!$containerId) {
+        throw new Exception(LANG('portal_redesign_api_creation_failed'));
+    }
+
+    echo json_encode([
+        'success' => true,
+        'message' => LANG('portal_redesign_api_success'),
+        'job_container_id' => intval($containerId)
+    ]);
+
+} catch (\PermissionException $e) {
+    http_response_code(403);
+    echo json_encode([
+        'success' => false,
+        'error' => LANG('portal_redesign_api_permission_denied')
+    ]);
+} catch (\Throwable $e) {
+    error_log('OCO Self-Service API Error (job-containers.php): ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => $e->getMessage() ?: LANG('portal_redesign_api_deploy_error')
+    ]);
+}

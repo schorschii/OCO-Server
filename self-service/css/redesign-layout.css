@@ -1,0 +1,576 @@
+/* frontend/css/redesign-layout.css */
+
+/* ==========================================================================
+   Surcharges de la Navbar supérieure (Top App Bar M3) & Masquage Sidebar
+   ========================================================================== */
+
+#header {
+    background-color: var(--m3-primary) !important; /* Bleu institutionnel OCO (M3 Primary) */
+    color: #ffffff !important;
+    border-bottom: none !important;
+    box-shadow: var(--m3-elevation-2) !important;
+    height: 64px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 0 24px !important;
+    position: relative !important;
+    flex-wrap: nowrap !important; /* Ne jamais afficher sur deux lignes */
+    flex-direction: row !important; /* Force l'affichage horizontal, annule le column natif d'OCO (<750px) */
+}
+
+#header .left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-wrap: nowrap !important; /* Ne jamais afficher sur deux lignes */
+}
+
+#m3NavbarLeftLogo {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin-right: 8px !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+}
+
+#m3NavbarLeftLogo img {
+    height: 32px !important;
+    max-height: 32px !important;
+    width: auto !important;
+    border-radius: 4px !important;
+    filter: brightness(0) invert(1) !important;
+    opacity: 0.9 !important;
+    transition: transform 0.2s ease, opacity 0.2s ease !important;
+}
+
+#m3NavbarLeftLogo img:hover {
+    opacity: 1 !important;
+    transform: scale(1.08) !important;
+}
+
+#header .left .title {
+    font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+    color: #ffffff !important;
+    text-decoration: none !important;
+}
+
+/* Container de la barre de navigation supérieure */
+.m3-navbar-links {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    height: 100% !important;
+}
+
+/* Boutons de la navbar du haut */
+.m3-navbar-link {
+    background: none !important;
+    border: none !important;
+    padding: 8px 16px !important;
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+    border-radius: 100px !important; /* M3 Pill shape */
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.m3-navbar-link:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+.m3-navbar-link:active {
+    background-color: rgba(255, 255, 255, 0.25) !important;
+    color: #ffffff !important;
+}
+
+.m3-navbar-link.active {
+    background-color: rgba(255, 255, 255, 0.22) !important;
+    color: #ffffff !important;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#header .right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: nowrap !important; /* Ne jamais afficher sur deux lignes */
+}
+
+#header .right button, #header .right #btnLogout {
+    background: none !important;
+    border: none !important;
+    color: #ffffff !important;
+    border-radius: 100px !important;
+    padding: 8px 16px !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    height: 40px !important;
+}
+
+#header .right button:hover, #header .right #btnLogout:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+/* Hide legacy separators and help/info buttons */
+#header .separator,
+#header .right #btnInfo,
+#header .right #btnHelp {
+    display: none !important;
+}
+
+/* Hide original sidebar */
+#explorer-tree {
+    display: none !important;
+}
+
+/* Top bar white SVG icon styles */
+.m3-navbar-btn-icon {
+    height: 18px !important;
+    width: 18px !important;
+    vertical-align: middle !important;
+    margin-right: 8px !important;
+    filter: brightness(0) invert(1) !important; /* Rend l'icône noire native d'OCO en blanc pur */
+}
+
+/* Centrage global du corps de la page */
+html, body, #wrapper {
+    background-color: var(--bg-primary) !important;
+    background-image: none !important;
+    min-height: 100vh;
+}
+
+#explorer {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-height: calc(100vh - 64px) !important;
+    background-color: transparent !important;
+}
+
+/* Conteneur principal limité en largeur et centré */
+#explorer-content {
+    background-color: var(--bg-surface) !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 24px !important;
+    box-sizing: border-box !important;
+}
+
+/* Ajustements pour éviter le double padding sur les conteneurs redesignés */
+.m3-homepage-container,
+.m3-computer-detail-container,
+.m3-store-container,
+.m3-jobs-container {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+#header .right button.m3-burger-btn,
+.m3-burger-btn {
+    display: none !important;
+}
+
+/* ==========================================================================
+   REGLES RESPONSIVES GLOBALES (M3 Full Responsive)
+   ========================================================================== */
+
+@media (max-width: 1500px) {
+    /* Hide portal title on screens below 1500px */
+    #header .left .title {
+        display: none !important;
+    }
+}
+
+@media (max-width: 1200px) {
+    /* Avoid title overlapping on desktop transition screen sizes (1001px - 1200px) */
+    #header .left .title {
+        font-size: 1.1rem !important;
+    }
+    
+    .m3-navbar-links {
+        gap: 6px !important;
+    }
+    
+    .m3-navbar-link {
+        padding: 6px 12px !important;
+        font-size: 0.85rem !important;
+        gap: 6px !important;
+    }
+    
+    #header .right button, #header .right #btnLogout {
+        padding: 6px 12px !important;
+        font-size: 0.85rem !important;
+    }
+}
+
+@media (max-width: 1000px) {
+    /* Ensure content remains visible on mobile */
+    #explorer-content {
+        display: block !important;
+    }
+
+    /* 1. Header & Global Navigation (Top Navbar) */
+    #header {
+        height: 64px !important;
+        min-height: 64px !important;
+        flex-wrap: nowrap !important;
+        padding: 0 16px !important;
+        gap: 12px !important;
+    }
+    
+    /* Hide portal title to save space when burger menu is enabled */
+    #header .left .title {
+        display: none !important;
+    }
+    
+    #header .right button.m3-burger-btn {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 8px !important;
+        border-radius: 50% !important;
+        width: 40px !important;
+        height: 40px !important;
+        background: none !important;
+        border: none !important;
+        color: #ffffff !important;
+        cursor: pointer !important;
+        transition: background-color 0.2s ease !important;
+    }
+    
+    #header .right button.m3-burger-btn:hover {
+        background-color: rgba(255, 255, 255, 0.15) !important;
+    }
+    
+    /* Le menu déroulant mobile absolu */
+    .m3-navbar-links {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+        position: absolute !important;
+        top: 100% !important; /* Toujours calé dynamiquement sous le header, peu importe sa hauteur */
+        right: 16px !important;
+        background-color: var(--m3-surface) !important;
+        border: 1px solid var(--m3-surface-variant) !important;
+        border-radius: var(--m3-shape-corner-medium) !important;
+        box-shadow: var(--m3-elevation-3) !important;
+        padding: 8px !important;
+        min-width: 200px !important;
+        z-index: 1000 !important;
+        height: auto !important;
+        width: auto !important;
+        margin-top: 0 !important;
+        transform: none !important;
+        left: auto !important;
+        
+        /* Effet d'apparition moderne */
+        opacity: 0 !important;
+        visibility: hidden !important;
+        transform: translateY(-8px) !important;
+    }
+    
+    .m3-navbar-links.show-mobile-menu {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: translateY(0) !important;
+        transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1), transform 0.2s cubic-bezier(0.2, 0, 0, 1) !important;
+    }
+    
+    .m3-navbar-link {
+        font-size: 0.95rem !important; /* On réaffiche le texte complet */
+        padding: 12px 16px !important;
+        border-radius: var(--m3-shape-corner-medium) !important; /* Forme de pillule/rectangle pour chaque item */
+        width: 100% !important;
+        height: auto !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+        color: var(--m3-on-surface) !important;
+        background: none !important;
+        box-shadow: none !important;
+    }
+    
+    .m3-navbar-link:hover {
+        background-color: var(--m3-secondary-container) !important;
+        color: var(--m3-on-secondary-container) !important;
+    }
+    
+    .m3-navbar-link.active {
+        background-color: var(--m3-primary-container) !important;
+        color: var(--m3-on-primary-container) !important;
+    }
+    
+    /* Sur mobile, dans le menu déroulant (fond clair), l'icône doit être foncée et non blanche ! */
+    .m3-navbar-link .m3-navbar-btn-icon {
+        margin-right: 0 !important;
+        height: 20px !important;
+        width: 20px !important;
+        filter: none !important; /* Retire le brightness(0) invert(1) pour redevenir noire native d'OCO */
+    }
+    
+    #header .right #btnLogout span {
+        display: none !important; /* Hide username on mobile */
+    }
+    
+    #header .right button, #header .right #btnLogout {
+        padding: 8px !important;
+        border-radius: 50% !important;
+        width: 40px !important;
+        height: 40px !important;
+        justify-content: center !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Header très compact (taille medium et moins) */
+    #header .left .title {
+        display: none !important;
+    }
+
+    /* 2. Page d'Accueil */
+    .m3-hero-section {
+        padding: 24px 16px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .m3-hero-title {
+        font-size: 1.6rem !important;
+    }
+    
+    .m3-hero-subtitle {
+        font-size: 0.95rem !important;
+    }
+    
+    .m3-cards-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    .m3-cta-card {
+        padding: 16px !important;
+    }
+    
+    .m3-resources-section {
+        padding: 20px !important;
+    }
+    
+    .m3-resource-item {
+        flex: 1 1 100% !important;
+        padding: 12px !important;
+    }
+
+    /* 3. Page Diagnostic Ordinateur */
+    .m3-computer-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .m3-computer-header .m3-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    .m3-grid-abreast {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    
+    .m3-details-card {
+        padding: 16px !important;
+        overflow-x: auto !important; /* Permet aux tableaux larges de défiler en interne sans casser la page */
+    }
+    
+    .m3-metadata-flex {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 16px !important;
+    }
+    
+    .m3-alert-banner {
+        flex-direction: column !important;
+        padding: 16px !important;
+        gap: 12px !important;
+        text-align: center !important;
+    }
+    
+    .m3-alert-banner .m3-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    .m3-alert-icon {
+        margin-right: 0 !important;
+    }
+
+    /* 4. Catalogue d'Applications / App Store */
+    .m3-store-filter-bar {
+        position: relative !important; /* Désactive le sticky collant sur mobile pour maximiser l'espace vertical */
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 12px 16px !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+    
+    .m3-filter-group {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+    
+    .m3-os-chips {
+        justify-content: center !important;
+    }
+    
+    .m3-search-wrapper, .m3-select-wrapper {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+    
+    .m3-computer-select, .m3-store-search {
+        width: 100% !important;
+    }
+    
+    .m3-store-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    
+    /* Panier / Tiroir collant en bas */
+    .m3-bottom-drawer {
+        padding: 12px 16px !important;
+    }
+    
+    .m3-drawer-content {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+    
+    .m3-drawer-left {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+        text-align: center !important;
+    }
+    
+    .m3-cart-summary-btn {
+        justify-content: center !important;
+        width: 100% !important;
+    }
+    
+    .m3-deploy-tooltip-wrapper, .m3-deploy-tooltip-wrapper .m3-btn {
+        width: 100% !important;
+    }
+
+    /* 5. Suivi des Tâches & Suivi Individuel */
+    .m3-job-card {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        padding: 16px !important;
+    }
+    
+    .m3-job-card-left {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 8px !important;
+    }
+
+    .m3-job-card-right {
+        display: flex !important;
+        align-items: center !important;
+        width: 100% !important;
+        gap: 12px !important;
+        margin-top: 8px !important;
+    }
+    
+    .m3-status-badge {
+        flex-grow: 1 !important;
+        width: auto !important; /* Annule le width 100% qui cassait le positionnement du bouton de suppression */
+        text-align: center !important;
+        font-size: 0.8rem !important;
+        white-space: normal !important; /* Permet un retour à la ligne propre si l'écran est minuscule (<350px) */
+    }
+    
+    .m3-job-header-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        text-align: center !important;
+    }
+    
+    .m3-job-header-left {
+        flex-direction: column !important;
+        gap: 8px !important;
+    }
+    
+    .m3-job-header-right {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    .m3-job-header-right .m3-btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    .m3-subjob-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 12px !important;
+        gap: 12px !important;
+    }
+    
+    .m3-subjob-left {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        gap: 8px !important;
+    }
+    
+    .m3-subjob-right {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+    
+    .m3-subjob-time {
+        text-align: center !important;
+    }
+}
+
+/* Internal scroll management for short height screens (e.g. mobile landscape) */
+@media (max-height: 600px) {
+    .m3-modal-card {
+        max-height: 95vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    
+    .m3-modal-body {
+        overflow-y: auto !important;
+        flex-grow: 1 !important;
+    }
+}

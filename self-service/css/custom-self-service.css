@@ -1,0 +1,9 @@
+/* ==========================================================================
+   Self-Service Custom Styling
+   ========================================================================== */
+
+/* Login screen background image */
+#login-bg {
+    background-image: url('../img/bg-self-service.jpg');
+    filter: none !important;
+}
