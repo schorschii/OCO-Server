@@ -1,0 +1,277 @@
+/* frontend/css/redesign-variables.css */
+
+/* CDCF Preconised CSS Variables */
+:root, html.theme-light {
+    --bg-primary: #EDEDED;         /* Fond de page principal (Blanc uniforme moderne) */
+    --bg-surface: #FFFFFF;         /* Fond des cartes et sections */
+    --text-primary: #0F172A;       /* Couleur du texte principal (Slate 900) */
+    --text-secondary: #475569;     /* Couleur du texte secondaire (Slate 600) */
+    --primary: #2563EB;            /* Bleu institutionnel OCO (Boutons d'action) */
+    --primary-hover: #1D4ED8;      /* État de survol */
+    --success: #10B981;            /* Vert d'état en ligne et succès d'install (Emerald 500) */
+    --danger: #EF4444;             /* Rouge d'état hors-ligne ou erreur (Red 500) */
+    --border-color: #E2E8F0;       /* Séparateurs et bordures fines (Slate 200) */
+
+    /* M3 Tokens / CSS Custom Properties adapted to CDCF palette */
+    --m3-primary: var(--primary);
+    --m3-on-primary: #ffffff;
+    --m3-primary-container: #d1e4ff;
+    --m3-on-primary-container: #001d36;
+    
+    --m3-secondary: var(--text-secondary);
+    --m3-on-secondary: #ffffff;
+    --m3-secondary-container: #e2e8f0;
+    --m3-on-secondary-container: #0f172a;
+
+    --m3-tertiary: #6b5778;
+    --m3-on-tertiary: #ffffff;
+    --m3-tertiary-container: #f2daff;
+    --m3-on-tertiary-container: #251432;
+
+    --m3-error: var(--danger);
+    --m3-on-error: #ffffff;
+    --m3-error-container: #ffdad6;
+    --m3-on-error-container: #410002;
+
+    --m3-success: var(--success);
+    --m3-on-success: #ffffff;
+    --m3-success-container: #d1fae5;
+    --m3-on-success-container: #065f46;
+
+    --m3-surface: var(--bg-surface);
+    --m3-on-surface: var(--text-primary);
+    --m3-surface-variant: var(--border-color);
+    --m3-on-surface-variant: var(--text-secondary);
+    --m3-outline: var(--text-secondary);
+
+    --m3-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    --m3-elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+    --m3-elevation-3: 0px 1px 3px 0px rgba(0,0,0,0.3), 0px 4px 8px 3px rgba(0,0,0,0.15);
+
+    --m3-shape-corner-medium: 12px;
+    --m3-shape-corner-large: 16px;
+    --m3-shape-corner-extra-large: 28px;
+}
+
+/* Dark Mode overrides for CDCF palette */
+html.theme-dark {
+    --bg-primary: #0F172A;         /* Slate 900 */
+    --bg-surface: #1E293B;         /* Slate 800 */
+    --text-primary: #F8FAFC;       /* Slate 50 */
+    --text-secondary: #94A3B8;     /* Slate 400 */
+    --primary: #3B82F6;            /* Blue 500 */
+    --primary-hover: #60A5FA;      /* Blue 400 */
+    --border-color: #334155;       /* Slate 700 */
+
+    /* M3 Tokens / CSS Custom Properties adapted to Dark Mode */
+    --m3-primary: var(--primary);
+    --m3-on-primary: #ffffff;
+    --m3-primary-container: #1e3a8a;
+    --m3-on-primary-container: #d1e4ff;
+    
+    --m3-secondary: var(--text-secondary);
+    --m3-on-secondary: #0f172a;
+    --m3-secondary-container: #334155;
+    --m3-on-secondary-container: #f8fafc;
+
+    --m3-tertiary: #a78bfa;
+    --m3-on-tertiary: #ffffff;
+    --m3-tertiary-container: #4c1d95;
+    --m3-on-tertiary-container: #f5f3ff;
+
+    --m3-error: var(--danger);
+    --m3-on-error: #ffffff;
+    --m3-error-container: #7f1d1d;
+    --m3-on-error-container: #fee2e2;
+
+    --m3-success: var(--success);
+    --m3-on-success: #ffffff;
+    --m3-success-container: #064e3b;
+    --m3-on-success-container: #d1fae5;
+
+    --m3-surface: var(--bg-surface);
+    --m3-on-surface: var(--text-primary);
+    --m3-surface-variant: var(--border-color);
+    --m3-on-surface-variant: var(--text-secondary);
+    --m3-outline: var(--text-secondary);
+}
+
+/* Dark Mode specific overrides for cards, package-cards and job-cards */
+html.theme-dark .m3-card-install:hover {
+    background-color: rgba(37, 99, 235, 0.15) !important;
+}
+html.theme-dark .m3-card-jobs:hover {
+    background-color: rgba(167, 139, 250, 0.15) !important;
+}
+html.theme-dark .m3-card-updates:hover {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+html.theme-dark .m3-job-card.status-success:hover {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+}
+html.theme-dark .m3-job-card.status-success .m3-job-icon-wrapper {
+    background-color: rgba(16, 185, 129, 0.25) !important;
+    color: #10b981 !important;
+}
+
+html.theme-dark .m3-job-card.status-failed:hover {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+}
+html.theme-dark .m3-job-card.status-failed .m3-job-icon-wrapper {
+    background-color: rgba(239, 68, 68, 0.25) !important;
+    color: #ef4444 !important;
+}
+
+html.theme-dark .m3-job-card.status-running:hover {
+    background-color: rgba(59, 130, 246, 0.15) !important;
+}
+html.theme-dark .m3-job-card.status-running .m3-job-icon-wrapper {
+    background-color: rgba(59, 130, 246, 0.25) !important;
+    color: #3b82f6 !important;
+}
+
+html.theme-dark .m3-job-card.status-waiting-for-agent:hover {
+    background-color: rgba(245, 158, 11, 0.15) !important;
+}
+html.theme-dark .m3-job-card.status-waiting-for-agent .m3-job-icon-wrapper {
+    background-color: rgba(245, 158, 11, 0.25) !important;
+    color: #f59e0b !important;
+}
+
+html.theme-dark .m3-job-card.status-waiting:hover {
+    background-color: rgba(148, 163, 184, 0.15) !important;
+}
+html.theme-dark .m3-job-card.status-waiting .m3-job-icon-wrapper {
+    background-color: rgba(148, 163, 184, 0.25) !important;
+    color: #94a3b8 !important;
+}
+
+html.theme-dark .m3-hero-section {
+    background: linear-gradient(135deg, var(--m3-primary-container) 0%, #0f172a 100%) !important;
+}
+
+html.theme-dark .m3-installed-table tbody tr:hover {
+    background-color: rgba(148, 163, 184, 0.1) !important;
+}
+
+html.theme-dark .m3-pending-item {
+    background-color: var(--m3-surface) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.theme-dark .m3-pending-item.clickable:hover {
+    background-color: rgba(148, 163, 184, 0.1) !important;
+}
+
+html.theme-dark .m3-resources-section {
+    background-color: rgba(30, 41, 59, 0.5) !important; /* Soft semi-transparent Slate 800 */
+    border-color: var(--border-color) !important;
+}
+
+html.theme-dark .m3-package-card.selected {
+    background-color: rgba(37, 99, 235, 0.2) !important;
+}
+html.theme-dark .m3-package-card.installed {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+}
+
+html.theme-dark .m3-package-logo {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.theme-dark .m3-compat-badge {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.theme-dark .m3-compat-icon {
+    filter: brightness(0) invert(1) !important;
+}
+
+/* App Store Specific Dark Mode Overrides */
+html.theme-dark .m3-store-filter-bar {
+    background-color: rgba(30, 41, 59, 0.95) !important; /* Soft translucent Slate 800 */
+    border-color: var(--border-color) !important;
+}
+
+html.theme-dark .m3-store-search:focus {
+    background-color: var(--m3-surface) !important; /* Keeps input dark on focus */
+    color: var(--text-primary) !important;
+}
+
+html.theme-dark .m3-os-chip:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+html.theme-dark .m3-switch-input {
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.theme-dark .m3-switch-input::after {
+    background-color: var(--text-secondary) !important;
+}
+
+html.theme-dark .m3-switch-input:checked {
+    background-color: var(--bg-surface) !important;
+    border-color: var(--m3-primary) !important;
+}
+
+html.theme-dark .m3-switch-input:checked::after {
+    background-color: var(--m3-primary) !important;
+}
+
+/* Job Details Specific Dark Mode Overrides */
+html.theme-dark .m3-recap-item {
+    background-color: var(--m3-surface) !important; /* Makes recap boxes dark Slate 800 */
+    border-color: var(--border-color) !important;
+}
+
+html.theme-dark .m3-subjob-row:hover {
+    background-color: rgba(148, 163, 184, 0.1) !important; /* Soft dark hover instead of bright white */
+}
+
+/* Modal & Cart Specific Dark Mode Overrides */
+html.theme-dark .m3-cart-recap-panel {
+    background-color: var(--m3-surface) !important;
+    border-color: var(--border-color) !important;
+}
+
+html.theme-dark .m3-modal-recap-box {
+    background-color: #0f172a !important; /* Dark Slate 900 */
+    border-color: var(--border-color) !important;
+}
+
+html.theme-dark .m3-modal-actions {
+    background-color: #0f172a !important; /* Dark Slate 900 */
+    border-color: var(--border-color) !important;
+}
+
+/* Progress Bar styling forced overrides for Theme Dark and Theme Light */
+html.theme-light .progressbar-container > .progresstext {
+    background: linear-gradient(to right, #FFFFFF var(--progress,0%), #0F172A 0) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+}
+html.theme-light .progressbar {
+    background-color: #E2E8F0 !important;
+}
+html.theme-light .progressbar > .progress {
+    background-color: #2563EB !important;
+}
+
+html.theme-dark .progressbar-container > .progresstext {
+    background: linear-gradient(to right, #0F172A var(--progress,0%), #F8FAFC 0) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
+}
+html.theme-dark .progressbar {
+    background-color: #334155 !important;
+}
+html.theme-dark .progressbar > .progress {
+    background-color: #3B82F6 !important;
+}

@@ -1,5 +1,5 @@
 <?php
-return [
+ return [
 	'app_name' => 'OCO IT Client Manager',
 	'project_name' => 'Open Computer Orchestration',
 	'project_subtitle' => 'Linux, macOS & Windows client inventory and software delivery made simple<br>iOS & Android mobile device management for everyone',
@@ -14,7 +14,7 @@ return [
 	'confirm_admin_password' => 'Admin-Kennwort bestätigen...',
 	'welcome_text' => 'Willkommen in der OCO-Webkonsole!',
 	'welcome_description' => 'Danke, dass Sie sich für OCO entschieden haben.',
-	'requested_view_does_not_exist' => 'Die angeforderte Ansicht existiert nicht',
+'requested_view_does_not_exist' => 'Die angeforderte Ansicht existiert nicht',
 	'about' => 'Informationen',
 	'please_fill_required_fields' => 'Bitte füllen Sie die erforderlichen Felder aus',
 	'copy' => 'Kopieren (STRG+C)',
@@ -825,4 +825,127 @@ return [
 			Spezifische Beispiele können in dem <a href="index.php?view=docs&page=install-uninstall-catalog">Installations-/Deinstallations-Kommando-Katalog</a> gefunden werden.
 		</p>
 	',
+	'portal_redesign_welcome_title' => 'Hallo %s, willkommen im OCO Self-Service-Portal.',
+    'portal_redesign_welcome_subtitle' => 'Laden Sie die von Ihrem Unternehmen freigegebenen Anwendungen sicher herunter.',
+    
+    'portal_redesign_install_software' => 'Software installieren',
+    'portal_redesign_install_software_desc' => 'Entdecken Sie den Katalog der Unternehmensanwendungen, die auf Ihren Rechnern installiert werden können.',
+    
+    'portal_redesign_track_installations' => 'Meine Installationen verfolgen',
+    'portal_redesign_track_installations_desc' => 'Sehen Sie den Fortschritt und den Verlauf der auf Ihren Rechnern gestarteten Installationen.',
+    
+    'portal_redesign_update_computer' => 'Meinen Rechner aktualisieren',
+    'portal_redesign_update_computer_desc' => 'Finden und starten Sie schnell Software-Updates, die für Ihr System freigegeben wurden.',
+    
+    'portal_redesign_resources_assistance' => 'Ressourcen & Support',
+    'portal_redesign_user_guides' => 'Benutzerhandbücher',
+    'portal_redesign_user_guides_desc' => 'Anleitungen und Handbücher zur Installation von Anwendungen.',
+    'portal_redesign_desktop_support' => 'IT-Support',
+    'portal_redesign_desktop_support_desc' => 'Kontaktieren Sie den IT-Support bei Problemen.',
+    
+    'portal_redesign_recent_installs' => 'Kürzliche Installationen',
+    'portal_redesign_table_package' => 'Paket',
+    'portal_redesign_table_computer' => 'Computer',
+    'portal_redesign_table_date' => 'Installationsdatum',
+    'portal_redesign_table_action' => 'Aktion',
+    'portal_redesign_relaunch' => 'Neu starten',
+
+    // App Store (packages.php)
+    'portal_redesign_store_title' => 'Self-Service-Software-Katalog',
+    'portal_redesign_target_computer_label' => 'Ziel-Computer:',
+    'portal_redesign_select_computer_placeholder' => 'Wählen Sie einen Rechner...',
+    'portal_redesign_search_placeholder' => 'Nach einer Anwendung suchen...',
+    'portal_redesign_installed_only' => 'Nur installierte',
+    'portal_redesign_updates_only' => 'Nur Updates',
+    'portal_redesign_loading_catalog' => 'Lade Software-Katalog...',
+    
+    'portal_redesign_cart_count_text' => '%d Paket(e) ausgewählt',
+    'portal_redesign_cart_count_suffix' => 'Paket(e) ausgewählt',
+    'portal_redesign_cart_no_selection' => 'Keine Anwendung ausgewählt.',
+    'portal_redesign_deploy_btn' => 'Zuweisen',
+    'portal_redesign_deploy_tooltip' => 'Bitte wählen Sie einen Ziel-Computer aus, bevor Sie Pakete zuweisen.',
+    
+    'portal_redesign_modal_confirm_title' => 'Zuweisung bestätigen',
+    'portal_redesign_modal_job_name_label' => 'Auftragsname:',
+    'portal_redesign_modal_job_name_placeholder' => 'Softwareinstallation...',
+    'portal_redesign_modal_packages_to_install' => 'Zu installierende Anwendungen:',
+    'portal_redesign_modal_cancel' => 'Abbrechen',
+    'portal_redesign_modal_confirm' => 'Installation bestätigen',
+
+    // JS variables for the App Store (redesign-store.js)
+    'portal_redesign_js_error_loading' => '⚠️ Der Software-Katalog konnte nicht geladen werden.<br>%s',
+    'portal_redesign_js_no_packages_found' => '📭 Keine Pakete mit den aktuellen Filtern verfügbar.',
+    'portal_redesign_js_ready_to_install' => 'Bereit zur Installation: <strong>%s</strong>',
+    'portal_redesign_js_remove' => 'Entfernen',
+    'portal_redesign_js_default_job_name' => 'Softwareinstallation - %s um %s',
+    'portal_redesign_js_recap_target' => 'Zielrechner: <strong>%s</strong>',
+    'portal_redesign_js_deploying' => 'Wird zugewiesen...',
+    'portal_redesign_js_deploy_error' => 'Fehler bei der Zuweisung: %s',
+    'portal_redesign_js_unknown_error' => 'Ein unbekannter Fehler ist aufgetreten.',
+
+    // Navigation & Theme (m3-navbar-lang.php)
+    'portal_redesign_nav_computers' => 'Meine Computer',
+    'portal_redesign_nav_store' => 'App Store',
+    'portal_redesign_nav_jobs' => 'Meine Aufgaben',
+    'portal_redesign_theme_light' => 'Zum hellen Design wechseln',
+    'portal_redesign_theme_dark' => 'Zum dunklen Design wechseln',
+
+    // Computer (computers.php)
+    'portal_redesign_no_computers_found' => 'Kein Computer zugeordnet.',
+    'portal_redesign_offline_help' => 'Wenden Sie sich an den IT-Support, wenn dies ein Fehler ist.',
+    'portal_redesign_last_contact' => 'Letzter Kontakt',
+    'portal_redesign_unavailable' => 'Nicht verfügbar',
+    'portal_redesign_uptime_days' => 'Läuft seit %s Tag(en)',
+    'portal_redesign_uptime_hours' => 'Läuft seit %s Stunde(n)',
+    'portal_redesign_uptime_minutes' => 'Läuft seit %s Minute(n)',
+    'portal_redesign_back_to_computers' => 'Zurück zu Computern',
+    'portal_redesign_offline_warning' => 'Ihr Computer scheint vom OCO-Netzwerk getrennt zu sein',
+    'portal_redesign_install_on_this_computer' => 'Software auf diesem Computer installieren',
+    'portal_redesign_machine_specs' => 'Computereigenschaften',
+    'portal_redesign_os_label' => 'Betriebssystem',
+    'portal_redesign_serial_number' => 'Seriennummer',
+    'portal_redesign_unknown' => 'Unbekannt',
+    'portal_redesign_last_boot' => 'Letzter Systemstart',
+    'portal_redesign_install_status' => 'Installationsstatus',
+    'portal_redesign_installs_in_progress' => 'Laufende Installationen',
+    'portal_redesign_no_downloads' => 'Keine Downloads oder Installationen im Gange.',
+    'portal_redesign_uninstall_badge' => 'Deinstallation',
+    'portal_redesign_install_badge' => 'Installation',
+    'portal_redesign_installed_software' => 'Installierte Software',
+    'portal_redesign_no_packages_installed' => 'Keine Pakete über OCO installiert.',
+
+    // Auftragsverfolgung (job-containers.php)
+    'portal_redesign_status_success' => 'Erfolgreich',
+    'portal_redesign_status_failed' => 'Fehlgeschlagen',
+    'portal_redesign_status_running' => 'Wird ausgeführt',
+    'portal_redesign_status_waiting_agent' => 'Warten auf Agent',
+    'portal_redesign_status_scheduled' => 'Geplant',
+    'portal_redesign_status_pending' => 'Ausstehend',
+    'portal_redesign_filter_by_status' => 'Nach Status filtern:',
+    'portal_redesign_launched_on' => 'Gestartet am',
+    'portal_redesign_delete_task' => 'Aufgabe löschen',
+    'portal_redesign_no_task_filter' => 'Keine Aufgaben entsprechen den ausgewählten Filtern.',
+    'portal_redesign_activate_other_status' => 'Aktivieren Sie andere Status, um Ihre Installationen anzuzeigen.',
+    'portal_redesign_explore_catalog_first_install' => 'Durchsuchen Sie den Anwendungskatalog, um Ihre erste Installation zu starten.',
+    'portal_redesign_back_to_tasks' => 'Zurück zu Aufgaben',
+    'portal_redesign_back_to_computer_sheet' => 'Zurück zu Computerdetails',
+    'portal_redesign_submitted_on' => 'Übermittelt am',
+    'portal_redesign_overall_progress' => 'Gesamtfortschritt',
+    'portal_redesign_on' => 'von',
+    'portal_redesign_validated_packages' => 'abgeschlossene(s) Paket(e)',
+    'portal_redesign_total_execution_time' => 'Gesamte Ausführungszeit',
+    'portal_redesign_software_jobs' => 'Detaillierter Softwarestatus',
+    'portal_redesign_computer_prefix' => 'Computer: ',
+    'portal_redesign_finished_at' => 'Beendet um %s',
+    'portal_redesign_in_progress_suffix' => 'im Gange...',
+
+    // API / AJAX-Rückmeldungen (ajax-handler/)
+    'portal_redesign_api_internal_error' => 'Ein interner Serverfehler ist aufgetreten.',
+    'portal_redesign_api_unauthorized' => 'Nicht autorisiert',
+    'portal_redesign_api_default_job_name' => 'Softwareinstallation - ',
+    'portal_redesign_api_missing_params' => 'Computer oder Paket nicht angegeben.',
+    'portal_redesign_api_permission_denied' => 'Berechtigung zur Erstellung einer Bereitstellungsaufgabe verweigert.',
+    'portal_redesign_api_creation_failed' => 'Auftragscontainer konnte nicht erstellt werden.',
+    'portal_redesign_api_success' => 'Bereitstellungsaufgabe erfolgreich erstellt.',
+    'portal_redesign_api_deploy_error' => 'Beim Erstellen der Bereitstellung ist ein interner Serverfehler aufgetreten.',
 ];

@@ -1,0 +1,466 @@
+/* frontend/css/redesign-jobs.css */
+
+/* ==========================================================================
+   Page Mes Tâches & Suivi (M3 styling - Étape 3.5)
+   ========================================================================== */
+
+.m3-jobs-container {
+    max-width: 100%;
+    padding: 24px;
+    font-family: 'Roboto', 'Segoe UI', system-ui, sans-serif;
+}
+
+.m3-jobs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.m3-job-card-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.m3-job-card {
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-surface-variant);
+    border-radius: var(--m3-shape-corner-large);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    box-shadow: var(--m3-elevation-1);
+    text-decoration: none !important;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    flex-grow: 1;
+    border-left: 6px solid var(--m3-surface-variant); /* Fallback left border */
+}
+
+.m3-job-card-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex-shrink: 0 !important;
+}
+
+/* Coloration des cartes de tâches selon leur statut */
+.m3-job-card.status-success {
+    border-left-color: #10b981;
+}
+.m3-job-card.status-success:hover {
+    border-color: #10b981;
+    background-color: #f0fdf4;
+}
+.m3-job-card.status-success .m3-job-icon-wrapper {
+    background-color: #d1fae5;
+}
+
+.m3-job-card.status-failed {
+    border-left-color: #ef4444;
+}
+.m3-job-card.status-failed:hover {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+.m3-job-card.status-failed .m3-job-icon-wrapper {
+    background-color: #fee2e2;
+}
+
+.m3-job-card.status-running {
+    border-left-color: #3b82f6;
+}
+.m3-job-card.status-running:hover {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+}
+.m3-job-card.status-running .m3-job-icon-wrapper {
+    background-color: #d1e4ff;
+}
+
+.m3-job-card.status-waiting-for-agent {
+    border-left-color: #f59e0b;
+}
+.m3-job-card.status-waiting-for-agent:hover {
+    border-color: #f59e0b;
+    background-color: #fffbeb;
+}
+.m3-job-card.status-waiting-for-agent .m3-job-icon-wrapper {
+    background-color: #fef3c7;
+}
+
+.m3-job-card.status-waiting {
+    border-left-color: #94a3b8;
+}
+.m3-job-card.status-waiting:hover {
+    border-color: #cbd5e1;
+    background-color: #f8fafc;
+}
+.m3-job-card.status-waiting .m3-job-icon-wrapper {
+    background-color: #f1f5f9;
+}
+
+.m3-job-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--m3-elevation-2);
+}
+
+/* Encadré de Filtre par Statut Dynamique */
+.m3-filter-box {
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-surface-variant);
+    border-radius: var(--m3-shape-corner-large);
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.m3-filter-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--m3-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.m3-status-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Filtres Interactifs (Chips) */
+.m3-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+    user-select: none;
+    border: 1px solid transparent;
+}
+
+/* États Actifs / Sélectionnés (correspondance des couleurs M3) */
+.m3-filter-chip.active.success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border-color: var(--m3-success, #10b981);
+}
+.m3-filter-chip.active.failed {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-color: var(--m3-error, #ef4444);
+}
+.m3-filter-chip.active.running {
+    background-color: #d1e4ff;
+    color: #001d36;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.1);
+}
+.m3-filter-chip.active.waiting-for-agent {
+    background-color: #fef3c7;
+    color: #b45309;
+    border-color: #f59e0b;
+}
+.m3-filter-chip.active.waiting {
+    background-color: #f1f5f9;
+    color: #475569;
+    border-color: #cbd5e1;
+}
+
+/* Indicateurs de couleur dans les chips actifs */
+.m3-filter-chip .m3-chip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    transition: all 0.25s ease;
+}
+.m3-filter-chip.active.success .m3-chip-dot { background-color: #10b981; }
+.m3-filter-chip.active.failed .m3-chip-dot { background-color: #ef4444; }
+.m3-filter-chip.active.running .m3-chip-dot { background-color: #3b82f6; }
+.m3-filter-chip.active.waiting-for-agent .m3-chip-dot { background-color: #f59e0b; }
+.m3-filter-chip.active.waiting .m3-chip-dot { background-color: #64748b; }
+
+/* États Désélectionnés / Inactifs (Gris et légèrement plus petit) */
+.m3-filter-chip:not(.active) {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+    transform: scale(0.88);
+    opacity: 0.65;
+}
+.m3-filter-chip:not(.active) .m3-chip-dot {
+    background-color: #cbd5e1;
+}
+
+/* Compteur de tâches de chaque statut */
+.m3-filter-chip .m3-chip-count {
+    background-color: rgba(0, 0, 0, 0.08);
+    padding: 2px 6px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+.m3-filter-chip:not(.active) .m3-chip-count {
+    background-color: rgba(0, 0, 0, 0.04);
+    color: #94a3b8;
+}
+
+/* Hover effects */
+.m3-filter-chip:hover {
+    transform: scale(0.96);
+    opacity: 0.95;
+}
+.m3-filter-chip.active:hover {
+    transform: scale(1.04);
+}
+
+.m3-job-card-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.m3-job-icon-wrapper {
+    background-color: var(--m3-secondary-container);
+    border-radius: var(--m3-shape-corner-medium);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.m3-job-icon-wrapper img {
+    height: 22px;
+    width: 22px;
+}
+
+.m3-job-details {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.m3-job-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--m3-on-surface);
+    margin: 0 0 4px 0;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.m3-job-date {
+    font-size: 0.8rem;
+    color: var(--m3-on-surface-variant);
+}
+
+/* Status Badges */
+.m3-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
+
+.m3-status-badge.waiting {
+    background-color: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.m3-status-badge.waiting-for-agent {
+    background-color: #fef3c7;
+    color: #b45309;
+    border: 1px solid #f59e0b;
+}
+
+.m3-status-badge.running {
+    background-color: #d1e4ff;
+    color: #001d36;
+    border: 1px solid #3b82f6;
+    animation: pulse-border 1.5s infinite;
+}
+
+.m3-status-badge.success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid var(--m3-success);
+}
+
+.m3-status-badge.failed {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid var(--m3-error);
+}
+
+@keyframes pulse-border {
+    0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+    70% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+}
+
+/* Detail View Layout */
+.m3-job-detail-card {
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-surface-variant);
+    border-radius: var(--m3-shape-corner-large);
+    padding: 32px;
+    box-shadow: var(--m3-elevation-1);
+    margin-bottom: 24px;
+}
+
+.m3-job-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--m3-surface-variant);
+    padding-bottom: 20px;
+}
+
+.m3-job-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.m3-job-headline {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--m3-on-surface);
+    margin: 0;
+}
+
+.m3-job-header-right {
+    display: flex;
+    gap: 12px;
+}
+
+.m3-detail-recap-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+.m3-recap-item {
+    background-color: #f8fafc;
+    border-radius: var(--m3-shape-corner-medium);
+    padding: 16px;
+    border: 1px solid var(--m3-surface-variant);
+    display: flex;
+    flex-direction: column;
+}
+
+.m3-recap-label {
+    font-size: 0.8rem;
+    color: var(--m3-on-surface-variant);
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.m3-recap-value {
+    font-size: 1rem;
+    color: var(--m3-on-surface);
+    font-weight: 600;
+}
+
+/* Jobs Packages Sub-list */
+.m3-subjobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.m3-subjob-row {
+    background-color: var(--m3-surface);
+    border: 1px solid var(--m3-surface-variant);
+    border-radius: var(--m3-shape-corner-medium);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.m3-subjob-row:hover {
+    background-color: #fafbfc;
+}
+
+.m3-subjob-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-grow: 1;
+}
+
+.m3-subjob-computer-icon {
+    height: 32px;
+    width: 32px;
+    background-color: var(--m3-secondary-container);
+    border-radius: 6px;
+    padding: 4px;
+}
+
+.m3-subjob-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.m3-subjob-pkg-name {
+    font-weight: 600;
+    color: var(--m3-on-surface);
+    font-size: 0.95rem;
+}
+
+.m3-subjob-target {
+    font-size: 0.8rem;
+    color: var(--m3-on-surface-variant);
+}
+
+.m3-subjob-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.m3-subjob-time {
+    font-size: 0.8rem;
+    color: var(--m3-on-surface-variant);
+}
+
+.m3-status-badge.subjob {
+    padding: 4px 10px;
+    font-size: 0.7rem;
+}

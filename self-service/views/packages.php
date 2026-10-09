@@ -1,376 +1,163 @@
 <?php
+// self-service/views/packages.php
 $SUBVIEW = 1;
+
 require_once(__DIR__.'/../../loader.inc.php');
 require_once(__DIR__.'/../session.inc.php');
 
-// ----- prepare view -----
-$tab = 'general';
-if(!empty($_GET['tab'])) $tab = $_GET['tab'];
+// Check for target computer in URL
+$preselectedComputerId = isset($_GET['computer_id']) ? intval($_GET['computer_id']) : null;
+$preselectedUpdatesOnly = isset($_GET['updates_only']) ? 'true' : 'false';
 
-$package = null;
-try {
-	if(!empty($_GET['id'])) {
-		$package = $cl->getMyPackage($_GET['id']);
-		$permissionDeploy   = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DEPLOY, false);
-		$permissionDownload = $cl->checkPermission($package, SelfService\PermissionManager::METHOD_DOWNLOAD, false);
-
-		// ----- download if requested -----
-		if(!empty($_GET['download'])) {
-			// do not block other frontend requests
-			session_write_close();
-			// get package file
-			if(!$package->getFilePath()) {
-				header('HTTP/1.1 404 Not Found'); die();
-			}
-			// check if domain user is allowed to download
-			$cl->checkPermission($package, SelfService\PermissionManager::METHOD_DOWNLOAD);
-			$package->download();
-			die();
-		}
-	}
-} catch(NotFoundException $e) {
-	die("<div class='alert warning'>".LANG('not_found')."</div>");
-} catch(PermissionException $e) {
-	die("<div class='alert warning'>".LANG('permission_denied')."</div>");
-} catch(InvalidRequestException $e) {
-	die("<div class='alert error'>".$e->getMessage()."</div>");
-} catch(Exception $e) {
-	header('HTTP/1.1 500 Internal Server Error');
-	die();
+// Check for target package in URL (id or package_id)
+$preselectedPackageId = null;
+if (isset($_GET['id'])) {
+    $preselectedPackageId = intval($_GET['id']);
+} elseif (isset($_GET['package_id'])) {
+    $preselectedPackageId = intval($_GET['package_id']);
 }
 ?>
 
-<?php if(empty($package)) { ?>
+<!-- Pass configuration and translations to JavaScript -->
+<script>
+    window.OcoConfig = {
+        preselectedComputerId: <?php echo $preselectedComputerId ? $preselectedComputerId : 'null'; ?>,
+        preselectedPackageId: <?php echo $preselectedPackageId ? $preselectedPackageId : 'null'; ?>,
+        preselectedUpdatesOnly: <?php echo $preselectedUpdatesOnly; ?>,
+        ajaxUrlComputers: 'ajax-handler/computers.php',
+        ajaxUrlPackages: 'ajax-handler/packages.php',
+        ajaxUrlDeploy: 'ajax-handler/job-containers.php'
+    };
+    
+    window.OcoLang = {
+        deploy: <?php echo json_encode(LANG('portal_redesign_deploy_btn')); ?>,
+        cancel: <?php echo json_encode(LANG('portal_redesign_modal_cancel')); ?>,
+        confirm: <?php echo json_encode(LANG('portal_redesign_modal_confirm')); ?>,
+        search: <?php echo json_encode(LANG('portal_redesign_search_placeholder')); ?>,
+        noPackages: <?php echo json_encode(LANG('portal_redesign_js_no_packages_found')); ?>,
+        sendWol: <?php echo json_encode(LANG('send_wol')); ?>,
+        shutdownWaked: <?php echo json_encode(LANG('shutdown_waked_computers')); ?>,
+        selectedItems: <?php echo json_encode(LANG('portal_redesign_cart_count_text')); ?>,
+        
+        // Custom variables used by redesign-store.js
+        errorLoading: <?php echo json_encode(LANG('portal_redesign_js_error_loading')); ?>,
+        readyToInstall: <?php echo json_encode(LANG('portal_redesign_js_ready_to_install')); ?>,
+        remove: <?php echo json_encode(LANG('portal_redesign_js_remove')); ?>,
+        defaultJobName: <?php echo json_encode(LANG('portal_redesign_js_default_job_name')); ?>,
+        recapTarget: <?php echo json_encode(LANG('portal_redesign_js_recap_target')); ?>,
+        deploying: <?php echo json_encode(LANG('portal_redesign_js_deploying')); ?>,
+        deployError: <?php echo json_encode(LANG('portal_redesign_js_deploy_error')); ?>,
+        unknownError: <?php echo json_encode(LANG('portal_redesign_js_unknown_error')); ?>
+    };
 
-	<div class='details-header'>
-		<h1><img src='img/package.dyn.svg'><span id='page-title'><?php echo LANG('available_packages'); ?></span></h1>
-		<div class='controls'></div>
-	</div>
-	<?php $packages = $cl->getMyPackages();
-	if(count($packages) == 0) { ?>
-		<div class='alert info'><?php echo LANG('no_packages_found'); ?></div>
-	<?php } else { ?>
-		<div class='gallery gap'>
-		<?php foreach($packages as $p) { ?>
-			<a class='item box' <?php echo Html::explorerLink('views/packages.php?id='.$p->id); ?>>
-				<img src='<?php echo $p->getIcon(); ?>'>
-				<h3><?php echo htmlspecialchars($p->getFullName()); ?></h3>
-			</a>
-		<?php } ?>
-		</div>
-	<?php } ?>
+    // Initialize package store logic on view load
+    if (typeof window.initOcoPortalRedesign === 'function') {
+        window.initOcoPortalRedesign();
+    }
+</script>
 
-<?php } else { ?>
+<div class="m3-store-container">
+    <div class="details-header" style="margin-bottom: 24px;">
+        <h1><img src="img/package.dyn.svg" style="height: 36px; vertical-align: middle; margin-right: 12px;"><span id="page-title"><?php echo LANG('portal_redesign_store_title'); ?></span></h1>
+    </div>
 
-<div class='details-header'>
-	<h1><img src='<?php echo $package->getIcon(); ?>'><span id='page-title'><?php echo htmlspecialchars($package->getFullName()); ?></span><span id='spnPackageFamilyName' class='rawvalue'><?php echo htmlspecialchars($package->package_family_name); ?></span></h1>
-	<div class='controls'>
-		<button onclick='refreshContentDeploy({"id":<?php echo $package->id; ?>,"name":obj("page-title").innerText});' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
-		<button onclick='window.open("views/packages.php?download=1&id=<?php echo intval($package->id) ?>","_blank")' <?php if(!$package->getSize() || !$permissionDownload) echo "disabled"; ?>><img src='img/download.dyn.svg'>&nbsp;<?php echo LANG('download'); ?></button>
-		<span class='filler'></span>
-	</div>
+    <!-- Sticky M3 Filter Bar -->
+    <div class="m3-store-filter-bar">
+        <!-- Target Machine Selector (Now in First Position) -->
+        <div class="m3-filter-group">
+            <span class="m3-filter-label"><?php echo LANG('portal_redesign_target_computer_label'); ?></span>
+            <div class="m3-select-wrapper">
+                <select class="m3-computer-select" id="m3TargetComputer">
+                    <option value=""><?php echo LANG('portal_redesign_select_computer_placeholder'); ?></option>
+                </select>
+                <span class="m3-select-icon">▼</span>
+            </div>
+        </div>
+
+        <!-- Search Bar and Switch Checkbox -->
+        <div class="m3-filter-group" style="flex-grow: 1; justify-content: flex-end;">
+            <div class="m3-search-wrapper">
+                <span class="m3-search-icon">🔍</span>
+                <input type="search" class="m3-store-search" id="m3StoreSearch" placeholder="<?php echo LANG('portal_redesign_search_placeholder'); ?>">
+            </div>
+            
+            <label class="m3-switch-label">
+                <input type="checkbox" class="m3-switch-input" id="m3InstalledOnly">
+                <span><?php echo LANG('portal_redesign_installed_only'); ?></span>
+            </label>
+
+            <label class="m3-switch-label" style="margin-left: 16px;">
+                <input type="checkbox" class="m3-switch-input" id="m3UpdatesOnly">
+                <span><?php echo LANG('portal_redesign_updates_only'); ?></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- App Store Packages Grid -->
+    <div class="m3-store-grid" id="m3StoreGrid">
+        <!-- Dynamically loaded packages cards go here -->
+        <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-secondary);">
+            <div class="m3-progress-container" style="max-width: 200px; margin: 0 auto 16px auto; height: 4px;">
+                <div class="m3-progress-bar-animated" style="width: 100%;"></div>
+            </div>
+            <?php echo LANG('portal_redesign_loading_catalog'); ?>
+        </div>
+    </div>
 </div>
 
-<div id='tabControlPackage' class='tabcontainer'>
-	<div class='tabbuttons'>
-		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('general_and_dependencies'); ?></a>
-		<a href='#' name='computers' class='<?php if($tab=='computers') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('computer_and_jobs'); ?></a>
-	</div>
-	<div class='tabcontents'>
-		<div name='general' class='<?php if($tab=='general') echo 'active'; ?>'>
-			<div class='details-abreast'>
-				<div>
-					<h2><?php echo LANG('general'); ?></h2>
-					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG('compatible_os'); ?></th>
-							<td>
-								<span id='spnPackageCompatibleOs'><?php echo nl2br(htmlspecialchars($package->compatible_os)); ?></span>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('compatible_os_version'); ?></th>
-							<td>
-								<span id='spnPackageCompatibleOsVersion'><?php echo nl2br(htmlspecialchars($package->compatible_os_version)); ?></span>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('compatible_architecture'); ?></th>
-							<td>
-								<span id='spnPackageCompatibleArchitecture'><?php echo nl2br(htmlspecialchars($package->compatible_architecture)); ?></span>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('size'); ?></th>
-							<td>
-								<?php
-								$size = $package->getSize();
-								if($size) echo niceSize($size, true).' ';
-								else echo LANG('not_found');
-								?>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('author'); ?></th>
-							<td><?php echo htmlspecialchars($package->created_by_system_user_username??''); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('created'); ?></th>
-							<td><?php echo htmlspecialchars($package->created); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('last_updated'); ?></th>
-							<td><?php echo htmlspecialchars($package->updated); ?></td>
-						</tr>
-					</table>
-				</div>
-				<div>
-					<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
-					<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
-					<table id='tblOtherPackagesData' class='list searchable sortable savesort'>
-						<thead>
-							<tr>
-								<th class='searchable sortable'><?php echo LANG('version'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('size'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('created'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
-								if($p->id === $package->id) continue; // do not show this package
-								if(!$cl->checkPermission($p, SelfService\PermissionManager::METHOD_READ, false)) continue;
-								echo '<tr>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
-								echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
-								echo '<td>'.$p->created.'</td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div>
-
-			<div class='details-abreast'>
-				<div>
-					<h2><?php echo LANG('installation'); ?></h2>
-					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG('after_completion'); ?></th>
-							<td>
-								<span id='spnPackageInstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->install_procedure_post_action); ?></span>
-								<?php $info = '';
-								switch($package->install_procedure_post_action) {
-									case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
-									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
-									case Models\Package::POST_ACTION_EXIT: $info = LANG('restart_agent'); break;
-									default: $info = LANG('no_action'); break;
-								}
-								echo htmlspecialchars($info);
-								?>
-							</td>
-						</tr>
-					</table>
-				</div>
-				<div>
-					<h2><?php echo LANG('uninstallation'); ?></h2>
-					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG('after_completion'); ?></th>
-							<td>
-								<span id='spnPackageUninstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->uninstall_procedure_post_action); ?></span>
-								<?php $info = '';
-								switch($package->uninstall_procedure_post_action) {
-									case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
-									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
-									default: $info = LANG('no_action'); break;
-								}
-								echo htmlspecialchars($info);
-								?>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('download_for_uninstall'); ?></th>
-							<td>
-								<span id='spnPackageDownloadForUninstall' class='rawvalue'><?php echo htmlspecialchars($package->download_for_uninstall); ?></span>
-								<?php $info = ''; if($package->download_for_uninstall) $info = LANG('yes'); else $info = LANG('no'); echo htmlspecialchars($info); ?>
-							</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-
-			<div class='details-abreast'>
-				<div>
-					<h2><?php echo LANG('depends_on'); ?></h2>
-					<table id='tblDependencyPackageData' class='list sortable savesort'>
-						<thead>
-							<tr>
-								<th class='sortable'><?php echo LANG('name'); ?></th>
-								<th class='sortable'><?php echo LANG('version'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllPackageDependencyByPackageId($package->id) as $dp) {
-								echo '<tr>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<div class='spread'>
-										<div>
-											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-										</div>
-										<div class='controls'>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-				<div>
-					<h2><?php echo LANG('dependent_packages'); ?></h2>
-					<table id='tblDependentPackageData' class='list sortable savesort'>
-						<thead>
-							<tr>
-								<th class='sortable'><?php echo LANG('name'); ?></th>
-								<th class='sortable'><?php echo LANG('version'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllPackageDependencyByDependentPackageId($package->id) as $dp) {
-								echo '<tr>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<div class='spread'>
-										<div>
-											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-										</div>
-										<div class='controls'>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div>
-		</div>
-
-		<div name='computers' class='<?php if($tab=='computers') echo 'active'; ?>'>
-			<div class='details-abreast'>
-				<div class='stickytable'>
-					<h2><?php echo LANG('installed_on'); ?></h2>
-					<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>
-						<thead>
-							<tr>
-								<th><input type='checkbox' class='toggleAllChecked'></th>
-								<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('initiator'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('installation_date'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllComputerPackageByPackageId($package->id) as $p) {
-								if(!$cl->checkPermission($db->selectComputer($p->computer_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
-								echo '<tr>';
-								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'"></td>';
-								echo '<td><a '.Html::explorerLink('views/computers.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
-								echo '<td>'.htmlspecialchars($p->installed_by_system_user_username??$p->installed_by_domain_user_username??'').'</td>';
-								echo '<td>'.htmlspecialchars($p->installed).'</td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<div class='spread'>
-										<div>
-											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-										</div>
-										<div class='controls'>
-											<button onclick='deploySelectedComputer("package_id[]", "computer_id");'><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
-											<button onclick='showDialogUninstallSelfService()'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-				<div class='stickytable'>
-					<h2><?php echo LANG('pending_jobs'); ?></h2>
-					<table id='tblPendingPackageJobsData' class='list searchable sortable savesort'>
-						<thead>
-							<tr>
-								<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('container'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('priority').'/'.LANG('sequence'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllPendingJobByPackageId($package->id) as $j) {
-								if(!$cl->checkPermission($db->selectComputer($j->computer_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
-								echo '<tr class="'.(!$j->isEnabled()?'offline':'').'">';
-								echo '<td>';
-								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
-								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
-								echo  '<a '.Html::explorerLink('views/computers.php?id='.$j->computer_id).'>'.htmlspecialchars($j->computer_hostname).'</a>';
-								echo '</td>';
-								if($j instanceof Models\DynamicJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.Html::explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
-								} elseif($j instanceof Models\StaticJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.Html::explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
-								}
-								echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
-								echo '<td sort_key="'.htmlspecialchars($j->getSortKey()).'">'.htmlspecialchars($j->getPriority().'-'.$j->sequence).'</td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div>
-		</div>
-
-	</div>
+<!-- Sticky Bottom Drawer / Shopping Cart -->
+<div class="m3-bottom-drawer" id="m3BottomDrawer">
+    <div class="m3-drawer-content">
+        <div class="m3-drawer-left">
+            <button class="m3-cart-summary-btn" id="m3CartSummaryBtn">
+                🛒 <span id="m3CartCount">0</span> <?php echo LANG('portal_redesign_cart_count_suffix'); ?> <span>▼</span>
+            </button>
+            <span class="m3-cart-text-recap" id="m3CartTextRecap"><?php echo LANG('portal_redesign_cart_no_selection'); ?></span>
+        </div>
+        <div class="m3-deploy-tooltip-wrapper">
+            <button class="m3-btn primary" id="m3DeployBtn" disabled>
+                <img src="img/deploy.dyn.svg" style="height: 18px; filter: brightness(0) invert(1); margin-right: 8px;"> <?php echo LANG('portal_redesign_deploy_btn'); ?>
+            </button>
+            <span class="m3-deploy-tooltip" id="m3DeployTooltip"><?php echo LANG('portal_redesign_deploy_tooltip'); ?></span>
+        </div>
+    </div>
+    
+    <!-- Collapsible Cart Recap Panel -->
+    <div class="m3-cart-recap-panel" id="m3CartRecapPanel">
+        <ul class="m3-recap-list" id="m3CartRecapList">
+            <!-- Filled dynamically -->
+        </ul>
+    </div>
 </div>
 
-<?php } ?>
+<!-- Material Design 3 Confirmation Modal -->
+<div class="m3-modal-overlay" id="m3ConfirmModal">
+    <div class="m3-modal-card">
+        <div class="m3-modal-header">
+            <h2 class="m3-modal-title">
+                <img src="img/deploy.dyn.svg" alt="Deploy Icon">
+                <?php echo LANG('portal_redesign_modal_confirm_title'); ?>
+            </h2>
+        </div>
+        <div class="m3-modal-body">
+            <div class="m3-modal-form-row">
+                <label style="font-weight: 600; font-size: 0.9rem; color: var(--m3-on-surface);"><?php echo LANG('portal_redesign_modal_job_name_label'); ?></label>
+                <input type="text" class="m3-modal-input" id="m3JobName" placeholder="<?php echo LANG('portal_redesign_modal_job_name_placeholder'); ?>">
+            </div>
+            
+            <div class="m3-modal-recap-box">
+                <div class="m3-modal-recap-target" id="m3RecapTarget">
+                    <!-- Target machine info with OS icon goes here -->
+                </div>
+                <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 6px;"><?php echo LANG('portal_redesign_modal_packages_to_install'); ?></div>
+                <ul class="m3-modal-recap-list" id="m3ModalRecapList">
+                    <!-- List of selected packages goes here -->
+                </ul>
+            </div>
+        </div>
+        <div class="m3-modal-actions">
+            <button class="m3-btn secondary" id="m3CancelDeployBtn"><?php echo LANG('portal_redesign_modal_cancel'); ?></button>
+            <button class="m3-btn primary" id="m3ConfirmDeployBtn"><?php echo LANG('portal_redesign_modal_confirm'); ?></button>
+        </div>
+    </div>
+</div>

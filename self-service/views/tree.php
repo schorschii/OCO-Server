@@ -1,7 +1,7 @@
 <?php
 $SUBVIEW = 1;
-require_once('../../loader.inc.php');
-require_once('../session.inc.php');
+require_once(__DIR__.'/../../loader.inc.php');
+require_once(__DIR__.'/../session.inc.php');
 ?>
 
 <div id='divNodeComputersSelfService' class='node expandable'>
@@ -37,6 +37,14 @@ require_once('../session.inc.php');
 	<div class='subitems'>
 	<?php
 	$jobContainers = $cl->getMyJobContainers();
+	usort($jobContainers, function($a, $b) {
+		$dateA = !empty($a->created) ? strtotime($a->created) : 0;
+		$dateB = !empty($b->created) ? strtotime($b->created) : 0;
+		if ($dateA === $dateB) {
+			return $b->id <=> $a->id;
+		}
+		return $dateB <=> $dateA;
+	});
 	echo "<div class='subnode'>";
 	foreach($jobContainers as $jc) {
 		echo "<a ".Html::explorerLink('views/job-containers.php?id='.$jc->id)."><img src='img/".$jc->getStatus($db->selectAllStaticJobByJobContainer($jc->id)).".dyn.svg'>".htmlspecialchars($jc->name)."</a>";
