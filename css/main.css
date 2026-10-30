@@ -228,6 +228,7 @@ a:active:not(.nostyle) {
 	text-decoration: none;
 	letter-spacing: 0.2px;
 	font-size: 115%;
+	text-align: center;
 }
 
 
