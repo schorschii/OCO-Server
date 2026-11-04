@@ -4,34 +4,10 @@ require_once(__DIR__.'/../loader.inc.php');
 
 try {
 
-///// handle package download requests
-# TODO: remove old download method in future version
-if(empty($_SERVER['CONTENT_TYPE']) && !empty($_GET['id'])) {
-	// get package
-	$package = $db->selectPackage($_GET['id']);
-	if($package === null || !$package->getFilePath()) {
-		header('HTTP/1.1 404 Not Found'); die();
+	if(empty($_SERVER['CONTENT_TYPE'])
+	|| $_SERVER['CONTENT_TYPE'] != 'application/json') {
+		throw new InvalidRequestException('Content type mismatch');
 	}
-	// check if agent key is correct
-	$computer = $db->selectComputerByHostname($_GET['hostname']??'');
-	if($computer == null || ($_GET['agent-key']??'') !== $computer->agent_key) {
-		header('HTTP/1.1 401 Client Not Authorized'); die();
-	}
-	// allow download only if a job is active
-	if(!$db->selectPendingAndActiveJobForAgentByComputerIdAndPackageId($computer->id, $package->id)) {
-		header('HTTP/1.1 401 No Active Job'); die();
-	}
-	// start download
-	try {
-		$package->download();
-	} catch(Exception $e) {
-		header('HTTP/1.1 500 Internal Server Error'); die();
-	}
-}
-
-
-///// handle agent api metadata requests
-elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'application/json') {
 
 	// get & log body
 	$body = file_get_contents('php://input');
@@ -70,20 +46,14 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			if($computer === null) {
 				// create new computer if self-registration is enabled and agent key matches
 				if($db->settings->get('agent-self-registration-enabled')) {
+					// check registration key
 					$registrationKey = $db->settings->get('agent-registration-key');
-					if(version_compare($data['agent_version']??'1.1.7', '1.1.7', '<')) {
-						// TODO: remove insecure plaintext auth
-						if(!isset($params['agent-key']) || $params['agent-key'] !== $registrationKey) {
-							throw new PermissionException('Agent registration key mismatch', Models\Log::ACTION_AGENT_API_HELLO, $params['hostname']);
-						}
-					} else {
-						$headers = getallheaders();
-						if(!isset($headers['x-oco-agent-signature']))
-							throw new PermissionException('Signature header missing', Models\Log::ACTION_AGENT_API_HELLO, $params['hostname']);
-						$computedSignature = hash_hmac('sha256', file_get_contents('php://input'), $registrationKey);
-						if($headers['x-oco-agent-signature'] !== $computedSignature)
-							throw new PermissionException('Invalid agent signature', Models\Log::ACTION_AGENT_API_HELLO, $params['hostname']);
-					}
+					$headers = getallheaders();
+					if(!isset($headers['x-oco-agent-signature']))
+						throw new PermissionException('Signature header missing', Models\Log::ACTION_AGENT_API_HELLO, $params['hostname']);
+					$computedSignature = hash_hmac('sha256', file_get_contents('php://input'), $registrationKey);
+					if($headers['x-oco-agent-signature'] !== $computedSignature)
+						throw new PermissionException('Invalid agent signature', Models\Log::ACTION_AGENT_API_HELLO, $params['hostname']);
 
 					$updateServerKey = randomString();
 					$updateAgentKey = randomString();
@@ -106,17 +76,14 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 			} else {
 				checkAuth($params, empty($computer->agent_key) ? $db->settings->get('agent-registration-key') : $computer->agent_key);
 
-				if(version_compare($computer->agent_version, '1.1.7', '>=')) {
-					# TODO: remove agent version check
-					// check the timestamp of the client - it must be greater than the last_ping value
-					// using a different timestamp for every request is a security feature
-					// without this changing timestamp value in the request, the signature of the agent_hello is always the same
-					// which may be used by an attacker who captured one agent request
-					$agentTimestamp = $params['timestamp'] ?? 0;
-					if(!is_numeric($agentTimestamp) || doubleval($computer->agent_timestamp) >= doubleval($agentTimestamp))
-						throw new PermissionException('Agent timestamp too old', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
-					$db->updateComputerAgentTimestamp($computer->id, doubleval($agentTimestamp));
-				}
+				// check the timestamp of the client - it must be greater than the last_ping value
+				// using a different timestamp for every request is a security feature
+				// without this changing timestamp value in the request, the signature of the agent_hello is always the same
+				// which may be used by an attacker who captured one agent request
+				$agentTimestamp = $params['timestamp'] ?? 0;
+				if(!is_numeric($agentTimestamp) || doubleval($computer->agent_timestamp) >= doubleval($agentTimestamp))
+					throw new PermissionException('Agent timestamp too old', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
+				$db->updateComputerAgentTimestamp($computer->id, doubleval($agentTimestamp));
 
 				if(empty($computer->agent_key)) {
 					// computer was pre-registered in the web frontend: generate individual key
@@ -607,22 +574,10 @@ elseif(!empty($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] == 'applicat
 	// return response
 	header('content-type: application/json');
 	if(!empty($computer)) {
-		if(version_compare($computer->agent_version, '1.1.7', '<')) {
-			// TODO: remove insecure plaintext auth
-			$resdata['result']['params']['server-key'] = $computer->server_key;
-			if(empty($resdata['result']['params']['agent-key']))
-				$resdata['result']['params']['agent-key'] = null;
-		}
 		$resdata['result']['timestamp'] = microtime(true);
 		header('x-oco-server-signature: '.hash_hmac('sha256', json_encode($resdata), $computer->server_key));
 	}
 	echo json_encode($resdata);
-
-}
-
-else {
-	throw new InvalidRequestException('Content type mismatch');
-}
 
 } catch(PermissionException $e) {
 	// log into webserver log for fail2ban
@@ -646,25 +601,20 @@ else {
 function checkAuth(array $params, string $checkKey=null) {
 	global $db;
 
-	$computer = $db->selectComputerByHostname($params['hostname']);
+	$computer = $db->selectComputerByHostname($params['hostname'] ?? '');
 	if($computer === null)
-		throw new PermissionException('Computer not found', Models\Log::ACTION_AGENT_API, $params['hostname']);
+		throw new PermissionException('Computer not found', Models\Log::ACTION_AGENT_API, $params['hostname'] ?? '');
 
 	if($checkKey === null) $checkKey = $computer->agent_key;
+	if(empty($checkKey)) throw new PermissionException('An empty agent key is not allowed', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
 
-	if(version_compare($computer->agent_version, '1.1.7', '<')
-	// use new HMAC authentication for newly upgraded agents
-	&& version_compare($params['data']['agent_version']??'1.0.0', '1.1.7', '<')) {
-		// TODO: remove insecure plaintext auth
-		if(!isset($params['agent-key']) || $params['agent-key'] !== $checkKey)
-			throw new PermissionException('Agent key mismatch', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
-	} else {
-		$headers = getallheaders();
-		if(!isset($headers['x-oco-agent-signature']))
-			throw new PermissionException('Signature header missing', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
-		$computedSignature = hash_hmac('sha256', file_get_contents('php://input'), $checkKey);
-		if($headers['x-oco-agent-signature'] !== $computedSignature)
-			throw new PermissionException('Invalid agent signature', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
-	}
+	// HMAC signature auth requires agent v1.1.7 or newer
+	$headers = getallheaders();
+	if(!isset($headers['x-oco-agent-signature']))
+		throw new PermissionException('Signature header missing', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
+	$computedSignature = hash_hmac('sha256', file_get_contents('php://input'), $checkKey);
+	if($headers['x-oco-agent-signature'] !== $computedSignature)
+		throw new PermissionException('Invalid agent signature', Models\Log::ACTION_AGENT_API, $params['hostname'], $computer->id);
+
 	return $computer;
 }
