@@ -7,6 +7,7 @@ require_once('loader.inc.php');
 <head>
 
 	<?php require('head.inc.php'); ?>
+	<title>OCO Training & Software Workshops</title>
 
 </head>
 <body>

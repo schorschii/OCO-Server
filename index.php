@@ -5,6 +5,7 @@
 <head>
 
 	<?php require('head.inc.php'); ?>
+	<title>OCO - Open Source Endpoint Management & Software Deployment</title>
 
 </head>
 <body>

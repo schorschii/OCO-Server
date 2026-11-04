@@ -44,6 +44,7 @@ if(!empty($_POST['company'])
 <head>
 
 	<?php require('head.inc.php'); ?>
+	<title>OCO Cloud Hosting - Request a Free Trial</title>
 
 </head>
 <body>

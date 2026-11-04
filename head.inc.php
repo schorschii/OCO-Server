@@ -1,6 +1,5 @@
 <meta charset="utf-8">
-<title>Open Computer Orchestration (OCO)</title>
-<meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.5">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="css/main.css">
 <link rel="stylesheet" href="css/infobox.css">
 <link rel="icon" type="image/svg+xml" href="img/logo.dyn.svg">
