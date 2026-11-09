@@ -68,7 +68,7 @@ $commands = Models\Computer::getCommands($ext);
 	<div class='details-header'>
 		<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline($db) ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline($db) ? LANG('online') : LANG('offline')); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
 		<div class='controls'>
-			<button onclick='refreshContentExplorer("views/job-container-new.php?computer_id=<?php echo $computer->id; ?>")' <?php if(!$permissionDeploy) echo 'disabled'; ?>>
+			<button onclick='refreshContentExplorer("views/packages.php?computer_id=<?php echo $computer->id; ?>")' <?php if(!$permissionDeploy) echo 'disabled'; ?>>
 				<img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('install_packages'); ?>
 			</button>
 			<button onclick='confirmWolComputer([<?php echo $computer->id; ?>])' <?php if(!$permissionWol) echo 'disabled'; ?>><img src='img/wol.dyn.svg'>&nbsp;<?php echo LANG('wol'); ?></button>
@@ -222,7 +222,7 @@ $commands = Models\Computer::getCommands($ext);
 								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 							</div>
 							<div class='controls'>
-								<button onclick='refreshContentExplorer("views/job-container-new.php?computer_id=<?php echo $computer->id; ?>" + Array.from(this.closest("table").querySelectorAll("tbody input[type=checkbox][package_id]:checked"), checkbox => "&package_id[]=" + encodeURIComponent(checkbox.getAttribute("package_id"))).join(""))' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
+								<button onclick='refreshContentExplorer("views/packages.php?computer_id=<?php echo $computer->id; ?>" + Array.from(this.closest("table").querySelectorAll("tbody input[type=checkbox][package_id]:checked"), checkbox => "&package_id[]=" + encodeURIComponent(checkbox.getAttribute("package_id"))).join(""))' <?php if(!$permissionDeploy) echo 'disabled'; ?>><img src='img/deploy.dyn.svg'>&nbsp;<?php echo LANG('deploy'); ?></button>
 								<button onclick='showDialogUninstallSelfService()'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
 							</div>
 						</div>

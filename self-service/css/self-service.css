@@ -81,6 +81,19 @@
 	gap: 6px;
 }
 
+#divStoreGrid .item button {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: auto;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+#divStoreGrid .item:hover button,
+#divStoreGrid .item:focus button {
+	opacity: 1;
+}
+
 #divJobsGrid {
 	display: flex;
 	gap: 16px;

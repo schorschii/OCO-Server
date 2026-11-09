@@ -642,18 +642,6 @@ span.filler {
 .gallery > .item:hover {
 	transform: scale(1.05);
 }
-.gallery > .item.blue {
-	border: 3px solid #0079B8;
-	border-radius: 5px;
-}
-.gallery > .item.orange {
-	border: 3px solid #ffa725;
-	border-radius: 5px;
-}
-.gallery > .item.red {
-	border: 3px solid #5f2020;
-	border-radius: 5px;
-}
 
 .controls {
 	display: flex;
