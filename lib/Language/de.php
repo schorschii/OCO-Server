@@ -847,26 +847,18 @@ return [
 	'portal_redesign_relaunch' => 'Neu starten',
 
 	// App Store (packages.php)
-	'portal_redesign_select_computer_placeholder' => 'Wählen Sie einen Rechner...',
-	'portal_redesign_search_placeholder' => 'Nach einer Anwendung suchen...',
-	'portal_redesign_installed_only' => 'Nur installierte',
-	'portal_redesign_updates_only' => 'Nur Updates',
-	'portal_redesign_loading_catalog' => 'Lade Software-Katalog...',
+	'not_installed_only' => 'Nur nicht installierte',
+	'updates_only' => 'Nur Updates',
 
-	'portal_redesign_cart_count_text' => '%d Paket(e) ausgewählt',
-	'portal_redesign_cart_count_suffix' => 'Paket(e) ausgewählt',
-	'portal_redesign_cart_no_selection' => 'Keine Anwendung ausgewählt.',
+	'packages_selected_placeholder' => '%d Paket(e) ausgewählt',
 	'portal_redesign_deploy_tooltip' => 'Bitte wählen Sie einen Ziel-Computer aus, bevor Sie Pakete zuweisen.',
 
-	'portal_redesign_modal_job_name_label' => 'Auftragsname:',
-	'portal_redesign_modal_job_name_placeholder' => 'Softwareinstallation...',
 	'portal_redesign_modal_packages_to_install' => 'Zu installierende Anwendungen:',
 	'cancel' => 'Abbrechen',
 	'confirm_installation' => 'Installation bestätigen',
 
 	// JS variables for the App Store (redesign-store.js)
-	'portal_redesign_js_error_loading' => '⚠️ Der Software-Katalog konnte nicht geladen werden.<br>%s',
-	'portal_redesign_js_no_packages_found' => '📭 Keine Pakete mit den aktuellen Filtern verfügbar.',
+	'filter_no_packages_found' => 'Keine Pakete mit den aktuellen Filtern verfügbar.',
 	'portal_redesign_js_ready_to_install' => 'Bereit zur Installation: <strong>%s</strong>',
 	'portal_redesign_js_remove' => 'Entfernen',
 	'portal_redesign_js_default_job_name' => 'Softwareinstallation - %s um %s',
@@ -874,26 +866,13 @@ return [
 	'portal_redesign_js_deploy_error' => 'Fehler bei der Zuweisung: %s',
 	'portal_redesign_js_unknown_error' => 'Ein unbekannter Fehler ist aufgetreten.',
 
-	// Navigation & Theme (m3-navbar-lang.php)
-	'portal_redesign_theme_light' => 'Zum hellen Design wechseln',
-	'portal_redesign_theme_dark' => 'Zum dunklen Design wechseln',
-
 	// Computer (computers.php)
-	'portal_redesign_no_computers_found' => 'Kein Computer zugeordnet.',
-	'portal_redesign_offline_help' => 'Wenden Sie sich an den IT-Support, wenn dies ein Fehler ist.',
-	'portal_redesign_unavailable' => 'Nicht verfügbar',
-	'portal_redesign_uptime_days' => 'Läuft seit %s Tag(en)',
-	'portal_redesign_uptime_hours' => 'Läuft seit %s Stunde(n)',
-	'portal_redesign_uptime_minutes' => 'Läuft seit %s Minute(n)',
-	'portal_redesign_back_to_computers' => 'Zurück zu Computern',
-	'portal_redesign_offline_warning' => 'Ihr Computer scheint vom OCO-Netzwerk getrennt zu sein',
-	'portal_redesign_install_on_this_computer' => 'Software auf diesem Computer installieren',
-	'portal_redesign_machine_specs' => 'Computereigenschaften',
+	'self_service_offline_warning' => 'Ihr Computer ist ausgeschaltet oder hat keine Netzwerkverbindung.',
+	'self_service_offline_help' => 'Wenden Sie sich an den IT-Support, wenn dies ein Fehler ist.',
+	'install_packages' => 'Pakete installieren',
 	'portal_redesign_unknown' => 'Unbekannt',
-	'portal_redesign_install_status' => 'Installationsstatus',
-	'portal_redesign_installs_in_progress' => 'Laufende Installationen',
-	'portal_redesign_no_downloads' => 'Keine Downloads oder Installationen im Gange.',
-	'portal_redesign_no_packages_installed' => 'Keine Pakete über OCO installiert.',
+	'no_jobs_in_progress' => 'Keine Downloads oder Installationen im Gange',
+	'no_packages_installed' => 'Keine Pakete installiert',
 
 	// Auftragsverfolgung (job-containers.php)
 	'portal_redesign_filter_by_status' => 'Nach Status filtern:',
@@ -901,8 +880,6 @@ return [
 	'portal_redesign_no_task_filter' => 'Keine Aufgaben entsprechen den ausgewählten Filtern.',
 	'portal_redesign_activate_other_status' => 'Aktivieren Sie andere Status, um Ihre Installationen anzuzeigen.',
 	'portal_redesign_explore_catalog_first_install' => 'Durchsuchen Sie den Anwendungskatalog, um Ihre erste Installation zu starten.',
-	'portal_redesign_back_to_tasks' => 'Zurück zu Aufgaben',
-	'portal_redesign_back_to_computer_sheet' => 'Zurück zu Computerdetails',
 	'portal_redesign_overall_progress' => 'Gesamtfortschritt',
 	'portal_redesign_on' => 'von',
 	'portal_redesign_validated_packages' => 'abgeschlossene(s) Paket(e)',

@@ -852,26 +852,19 @@ return [
 	'portal_redesign_relaunch' => 'Relaunch',
 
 	// App Store (packages.php)
-	'portal_redesign_select_computer_placeholder' => 'Select a machine...',
-	'portal_redesign_search_placeholder' => 'Search an application...',
-	'portal_redesign_installed_only' => 'Installed only',
-	'portal_redesign_updates_only' => 'Updates only',
-	'portal_redesign_loading_catalog' => 'Loading applications catalog...',
+	'not_installed_only' => 'Not installed only',
+	'updates_only' => 'Updates only',
 
 	'portal_redesign_cart_count_text' => '%d package(s) selected',
 	'portal_redesign_cart_count_suffix' => 'package(s) selected',
-	'portal_redesign_cart_no_selection' => 'No application selected.',
 	'portal_redesign_deploy_tooltip' => 'Please select a target computer before deploying packages.',
 
-	'portal_redesign_modal_job_name_label' => 'Job name:',
-	'portal_redesign_modal_job_name_placeholder' => 'Software installation...',
 	'portal_redesign_modal_packages_to_install' => 'Applications to install:',
 	'cancel' => 'Cancel',
 	'confirm_installation' => 'Confirm installation',
 
 	// JS variables for the App Store (redesign-store.js)
-	'portal_redesign_js_error_loading' => '⚠️ Impossible to load the applications catalog.<br>%s',
-	'portal_redesign_js_no_packages_found' => '📭 No packages available with the current filters.',
+	'filter_no_packages_found' => 'No packages available with the current filters.',
 	'portal_redesign_js_ready_to_install' => 'Ready to install: <strong>%s</strong>',
 	'portal_redesign_js_remove' => 'Remove',
 	'portal_redesign_js_default_job_name' => 'Software installation - %s at %s',
@@ -879,26 +872,13 @@ return [
 	'portal_redesign_js_deploy_error' => 'Deployment error: %s',
 	'portal_redesign_js_unknown_error' => 'An unknown error has occurred.',
 
-	// Navigation & Theme (m3-navbar-lang.php)
-	'portal_redesign_theme_light' => 'Switch to light theme',
-	'portal_redesign_theme_dark' => 'Switch to dark theme',
-
 	// Computers (computers.php)
-	'portal_redesign_no_computers_found' => 'No computer associated.',
-	'portal_redesign_offline_help' => 'Contact IT support if this is an error.',
-	'portal_redesign_unavailable' => 'Unavailable',
-	'portal_redesign_uptime_days' => 'Running for %s day(s)',
-	'portal_redesign_uptime_hours' => 'Running for %s hour(s)',
-	'portal_redesign_uptime_minutes' => 'Running for %s minute(s)',
-	'portal_redesign_back_to_computers' => 'Back to computers',
-	'portal_redesign_offline_warning' => 'Your computer seems disconnected from the OCO network',
-	'portal_redesign_install_on_this_computer' => 'Install software on this computer',
-	'portal_redesign_machine_specs' => 'Machine Specifications',
+	'self_service_offline_warning' => 'Your computer is turned off or has no network connection.',
+	'self_service_offline_help' => 'Contact IT support if this is an error.',
+	'install_packages' => 'Install packages',
 	'portal_redesign_unknown' => 'Unknown',
-	'portal_redesign_install_status' => 'Installation Status',
-	'portal_redesign_installs_in_progress' => 'Installations in progress',
-	'portal_redesign_no_downloads' => 'No downloads or installations in progress.',
-	'portal_redesign_no_packages_installed' => 'No package installed via OCO.',
+	'no_jobs_in_progress' => 'No downloads or installations in progress',
+	'no_packages_installed' => 'No package installed',
 
 	// Task Tracking (job-containers.php)
 	'portal_redesign_filter_by_status' => 'Filter by status:',
@@ -906,8 +886,6 @@ return [
 	'portal_redesign_no_task_filter' => 'No tasks match the selected filters.',
 	'portal_redesign_activate_other_status' => 'Activate other statuses to show your installations.',
 	'portal_redesign_explore_catalog_first_install' => 'Explore the application catalog to launch your first installation.',
-	'portal_redesign_back_to_tasks' => 'Back to tasks',
-	'portal_redesign_back_to_computer_sheet' => 'Back to computer details',
 	'portal_redesign_overall_progress' => 'Overall progress',
 	'portal_redesign_on' => 'of',
 	'portal_redesign_validated_packages' => 'completed package(s)',

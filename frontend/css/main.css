@@ -82,16 +82,26 @@ h3 {
 	color: inherit;
 	text-decoration: none;
 }
-#header button {
+#header button,
+#header a {
+	display: inline-block;
 	background: transparent;
 	background-color: transparent;
 	border: none;
 	box-shadow: none;
 	color: #B3B9BE;
 	text-transform: none;
+	padding: 6px 10px;
+	border-radius: 999px;
 }
-#header button.active * {
-	filter: drop-shadow(0px 0px 4px white);
+#header button:hover, #header button:focus,
+#header a:hover, #header a:focus {
+	background-color: rgba(255,255,255,0.05);
+	color: white;
+}
+#header button.active {
+	background-color: rgba(255,255,255,0.15);
+	color: white;
 }
 #header button > span {
 	display: inline-block;
@@ -385,10 +395,12 @@ h3 {
 }
 .filler {
 	align-self: center;
+	flex-grow: 1;
+}
+span.filler {
 	height: 1px;
 	min-width: 5px;
 	background-color: rgb(0,0,0,0.1);
-	flex-grow: 1;
 }
 .filler.invisible {
 	background-color: transparent;
@@ -676,6 +688,9 @@ h3 {
 tfoot .controls {
 	flex-wrap: wrap;
 	margin: 0px;
+}
+.controls > label {
+	align-self: center;
 }
 .controls > *:not(.controls):not(span) {
 	display: inline-block;
@@ -1767,7 +1782,7 @@ ul.subtree button.expander {
 	#login-wall #motd {
 		color: rgba(255,255,255,0.75);
 	}
-	.filler {
+	span.filler {
 		background-color: rgb(255,255,255,0.1);
 	}
 	.dialogContainer.active {

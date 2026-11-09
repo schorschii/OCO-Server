@@ -41,42 +41,38 @@ if(!empty($_GET['view'])) {
 
 	<div id='header' role='banner'>
 		<span class='left'>
-			<a href='index.php' id='m3NavbarLeftLogo' class='noprint' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' title='<?php echo LANG('home_page'); ?>'>
-				<img src='img/logo.dyn.svg' alt='Logo'>
-			</a>
+			<button id='btnSidebar' class='noprint' onclick='toggleSidebar()' title='<?php echo LANG('show_hide_sidebar'); ?>'>
+				<img src='img/menu.light.svg'>
+			</button>
 			<a href='index.php' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' class='title'><?php echo LANG('self_service_name'); ?></a>
 		</span>
 
-		<div id='m3NavLinks' class='m3-navbar-links'>
-			<button id='m3NavComputers' class='m3-navbar-link' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/computers.php");'>
-				<img src='img/computer.dyn.svg' class='m3-navbar-btn-icon'> <?php echo LANG('my_computers'); ?>
+		<div class='navbar-links'>
+			<button id='btnNavComputers' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/computers.php");'>
+				<img src='img/computer.light.svg'> <?php echo LANG('my_computers'); ?>
 			</button>
-			<button id='m3NavStore' class='m3-navbar-link' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/packages.php");'>
-				<img src='img/package.dyn.svg' class='m3-navbar-btn-icon'> <?php echo LANG('available_packages'); ?>
+			<button id='btnNavStore' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/packages.php");'>
+				<img src='img/package.light.svg'> <?php echo LANG('available_packages'); ?>
 			</button>
-			<button id='m3NavJobs' class='m3-navbar-link' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/job-containers.php");'>
-				<img src='img/job.dyn.svg' class='m3-navbar-btn-icon'> <?php echo LANG('my_jobs'); ?>
+			<button id='btnNavJobs' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/job-containers.php");'>
+				<img src='img/job.light.svg'> <?php echo LANG('my_jobs'); ?>
 			</button>
 		</div>
 
 		<span class='right'>
-			<button id='m3BurgerBtn' class='m3-navbar-link m3-burger-btn noprint' onclick='event.preventDefault();event.stopPropagation();document.getElementById("m3NavLinks").classList.toggle("show-mobile-menu");'>
-				<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" style="display: block;">
-					<path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
-				</svg>
-			</button>
-			<button id='btnThemeToggle' class='noprint' onclick='toggleDarkMode()' title='<?php echo LANG('portal_redesign_theme_dark'); ?>'>
-				<img id='imgThemeToggle' src='img/theme-moon.light.svg'>
-			</button>
-			<button id='btnRefresh' class='noprint' onclick='refreshContent();' title='<?php echo LANG('refresh'); ?>'>
-				<img src='img/refresh.light.svg' alt='Refresh'>
+			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG('refresh'); ?>'>
+				<img src='img/refresh.light.svg'>
 			</button>
 			<span class='separator noprint'></span>
-			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'><span><?php echo htmlspecialchars($currentDomainUser->display_name); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
+			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'>
+				<span><?php echo htmlspecialchars($currentDomainUser->display_name); ?>&nbsp;</span><img src='img/exit.light.svg'>
+			</button>
 		</span>
 	</div>
 
-	<div id='explorer'>
+	<div id='explorer' class='nosidebar'>
+		<div id='explorer-tree' onclick='toggleSidebar(false)' role='navigation'>
+		</div>
 		<div id='explorer-content' role='main'>
 			<?php if($initialExplorerContent == null) { ?>
 				<div class='alert error'><?php echo LANG('requested_view_does_not_exist'); ?></div>

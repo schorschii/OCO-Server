@@ -154,7 +154,7 @@ if(isset($cl) && isset($db) && isset($_SESSION['oco_self_service_user_id'])) {
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ($recentInstalls as $install): ?>
+					<?php foreach($recentInstalls as $install): ?>
 					<tr>
 						<td><strong><?php echo htmlspecialchars($install->package_name); ?></strong></td>
 						<td><?php echo htmlspecialchars($install->computer_name); ?></td>

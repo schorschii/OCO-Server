@@ -770,26 +770,19 @@ return [
 	'portal_redesign_relaunch' => 'Relancer',
 
 	// Catalogue d'applications (packages.php)
-	'portal_redesign_select_computer_placeholder' => 'Sélectionnez une machine...',
-	'portal_redesign_search_placeholder' => 'Rechercher une application...',
-	'portal_redesign_installed_only' => 'Installées uniquement',
-	'portal_redesign_updates_only' => 'MAJ uniquement',
-	'portal_redesign_loading_catalog' => 'Chargement du catalogue d\'applications...',
+	'not_installed_only' => 'Non installé uniquement',
+	'updates_only' => 'Mises à jour uniquement',
 
 	'portal_redesign_cart_count_text' => '%d paquet(s) sélectionné(s)',
 	'portal_redesign_cart_count_suffix' => 'paquet(s) sélectionné(s)',
-	'portal_redesign_cart_no_selection' => 'Aucune application sélectionnée.',
 	'portal_redesign_deploy_tooltip' => 'Veuillez sélectionner un ordinateur cible avant de déployer des paquets.',
 
-	'portal_redesign_modal_job_name_label' => 'Nom de la tâche :',
-	'portal_redesign_modal_job_name_placeholder' => 'Installation logicielle...',
 	'portal_redesign_modal_packages_to_install' => 'Applications à installer :',
 	'cancel' => 'Annuler',
 	'confirm_installation' => 'Confirmer l\'installation',
 
 	// Variables JS de l'App Store (redesign-store.js)
-	'portal_redesign_js_error_loading' => '⚠️ Impossible de charger le catalogue d\'applications.<br>%s',
-	'portal_redesign_js_no_packages_found' => '📭 Aucun paquet disponible avec les filtres actuels.',
+	'filter_no_packages_found' => 'Aucun paquet disponible avec les filtres actuels.',
 	'portal_redesign_js_ready_to_install' => 'Prêt à installer : <strong>%s</strong>',
 	'portal_redesign_js_remove' => 'Retirer',
 	'portal_redesign_js_default_job_name' => 'Installation logicielle - %s à %s',
@@ -797,26 +790,13 @@ return [
 	'portal_redesign_js_deploy_error' => 'Erreur lors du déploiement : %s',
 	'portal_redesign_js_unknown_error' => 'Une erreur inconnue est survenue.',
 
-	// Navigation & Thème (m3-navbar-lang.php)
-	'portal_redesign_theme_light' => 'Basculer en thème clair',
-	'portal_redesign_theme_dark' => 'Basculer en thème sombre',
-
 	// Ordinateurs (computers.php)
-	'portal_redesign_no_computers_found' => 'Aucun ordinateur associé.',
-	'portal_redesign_offline_help' => 'Contactez la DSI s\'il s\'agit d\'une erreur.',
-	'portal_redesign_unavailable' => 'Indisponible',
-	'portal_redesign_uptime_days' => 'Démarré depuis %s jour(s)',
-	'portal_redesign_uptime_hours' => 'Démarré depuis %s heure(s)',
-	'portal_redesign_uptime_minutes' => 'Démarré depuis %s minute(s)',
-	'portal_redesign_back_to_computers' => 'Retour aux ordinateurs',
-	'portal_redesign_offline_warning' => 'Votre ordinateur semble déconnecté du réseau OCO',
-	'portal_redesign_install_on_this_computer' => 'Installer un logiciel sur cet ordinateur',
-	'portal_redesign_machine_specs' => 'Caractéristiques de la Machine',
+	'self_service_offline_warning' => 'Votre ordinateur est éteint ou n\'a pas de connexion réseau.',
+	'self_service_offline_help' => 'Contactez la DSI s\'il s\'agit d\'une erreur.',
+	'install_packages' => '?????????????',
 	'portal_redesign_unknown' => 'Inconnu',
-	'portal_redesign_install_status' => 'Statut des Installations',
-	'portal_redesign_installs_in_progress' => 'Installations en cours',
-	'portal_redesign_no_downloads' => 'Aucun téléchargement ou installation en cours.',
-	'portal_redesign_no_packages_installed' => 'Aucun paquet installé via OCO.',
+	'no_jobs_in_progress' => 'Aucun téléchargement ou installation en cours',
+	'no_packages_installed' => 'Aucun paquet installé',
 
 	// Suivi des Tâches (job-containers.php)
 	'portal_redesign_filter_by_status' => 'Filtrer par statut :',
@@ -824,8 +804,6 @@ return [
 	'portal_redesign_no_task_filter' => 'Aucune tâche ne correspond aux filtres sélectionnés.',
 	'portal_redesign_activate_other_status' => 'Activez d\'autres statuts pour afficher vos installations.',
 	'portal_redesign_explore_catalog_first_install' => 'Explorez le catalogue d\'applications pour lancer votre première installation.',
-	'portal_redesign_back_to_tasks' => 'Retour aux tâches',
-	'portal_redesign_back_to_computer_sheet' => 'Retour à la fiche ordinateur',
 	'portal_redesign_overall_progress' => 'Progression globale',
 	'portal_redesign_on' => 'sur',
 	'portal_redesign_validated_packages' => 'paquet(s) validé(s)',
