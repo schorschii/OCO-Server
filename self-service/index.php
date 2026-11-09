@@ -49,13 +49,13 @@ if(!empty($_GET['view'])) {
 
 		<div id='m3NavLinks' class='m3-navbar-links'>
 			<button id='m3NavComputers' class='m3-navbar-link' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/computers.php");'>
-				<img src='img/computer.dyn.svg' class='m3-navbar-btn-icon'> <?php echo LANG('portal_redesign_nav_computers'); ?>
+				<img src='img/computer.dyn.svg' class='m3-navbar-btn-icon'> <?php echo LANG('my_computers'); ?>
 			</button>
 			<button id='m3NavStore' class='m3-navbar-link' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/packages.php");'>
-				<img src='img/package.dyn.svg' class='m3-navbar-btn-icon'> <?php echo LANG('portal_redesign_nav_store'); ?>
+				<img src='img/package.dyn.svg' class='m3-navbar-btn-icon'> <?php echo LANG('available_packages'); ?>
 			</button>
 			<button id='m3NavJobs' class='m3-navbar-link' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/job-containers.php");'>
-				<img src='img/job.dyn.svg' class='m3-navbar-btn-icon'> <?php echo LANG('portal_redesign_nav_jobs'); ?>
+				<img src='img/job.dyn.svg' class='m3-navbar-btn-icon'> <?php echo LANG('my_jobs'); ?>
 			</button>
 		</div>
 

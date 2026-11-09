@@ -31,53 +31,53 @@ $commands = Models\Computer::getCommands($ext);
 
 <?php if(empty($computer)) { ?>
 
-    <div class="m3-computer-detail-container" style="padding-bottom: 0;">
-        <div class='m3-computer-header' style="margin-bottom: 24px;">
-            <div class='m3-computer-identity'>
-                <h1><img src='img/computer.dyn.svg' style="height: 36px; vertical-align: middle; margin-right: 12px;"><span id='page-title'><?php echo LANG('portal_redesign_nav_computers'); ?></span></h1>
-            </div>
-        </div>
+	<div class='m3-computer-detail-container' style='padding-bottom: 0;'>
+		<div class='m3-computer-header' style="margin-bottom: 24px;">
+			<div class='m3-computer-identity'>
+				<h1><img src='img/computer.dyn.svg' style="height: 36px; vertical-align: middle; margin-right: 12px;"><span id='page-title'><?php echo LANG('my_computers'); ?></span></h1>
+			</div>
+		</div>
 
-        <?php $computers = $cl->getMyComputers();
-        if(count($computers) == 0) { ?>
-            <div class='m3-empty-state' style="text-align: center; padding: 48px; background-color: var(--m3-surface); border-radius: var(--m3-shape-corner-large); border: 1px dashed var(--m3-surface-variant);">
-                <div style="font-size: 3rem; margin-bottom: 16px;">💻</div>
-                <h3><?php echo LANG('portal_redesign_no_computers_found'); ?></h3>
-                <p style="color: var(--m3-on-surface-variant); font-size: 0.9rem; margin-top: 8px;"><?php echo LANG('portal_redesign_offline_help'); ?></p>
-            </div>
-        <?php } else { ?>
-            <div class='m3-cards-grid' style="margin-top: 20px;">
-            <?php foreach($computers as $c) { 
-                $compOnline = $c->isOnline($db);
-            ?>
-                <a class='m3-cta-card m3-card-install' <?php echo Html::explorerLink('views/computers.php?id='.$c->id); ?>>
-                    <div class='m3-card-icon-container' style="background-color: var(--m3-secondary-container);">
-                        <img src='<?php echo $c->getIcon(); ?>' onerror="this.src='img/computer.dyn.svg'" alt='Computer Icon'>
-                        <span class='m3-heartbeat-badge <?php echo $compOnline ? 'online' : 'offline'; ?>' style="position: absolute; bottom: -4px; right: -4px; width: 14px; height: 14px; border-width: 2px;"></span>
-                    </div>
-                    <div class='m3-card-text'>
-                        <h2 class='m3-card-title'><?php echo htmlspecialchars($c->hostname); ?></h2>
-                        <p class='m3-card-description'><?php echo htmlspecialchars($c->os . ' ' . $c->os_version); ?></p>
-                        <span style="font-size: 0.75rem; color: var(--m3-on-surface-variant);"><?php echo LANG('portal_redesign_last_contact') . ' : '; ?><?php echo htmlspecialchars($c->last_ping); ?></span>
-                    </div>
-                    <span class='m3-card-action-arrow'>&rarr;</span>
-                </a>
-            <?php } ?>
-            </div>
-        <?php } ?>
-    </div>
+		<?php $computers = $cl->getMyComputers();
+		if(count($computers) == 0) { ?>
+			<div class='m3-empty-state' style="text-align: center; padding: 48px; background-color: var(--m3-surface); border-radius: var(--m3-shape-corner-large); border: 1px dashed var(--m3-surface-variant);">
+				<div style="font-size: 3rem; margin-bottom: 16px;">💻</div>
+				<h3><?php echo LANG('portal_redesign_no_computers_found'); ?></h3>
+				<p style='color: var(--m3-on-surface-variant); font-size: 0.9rem; margin-top: 8px;'><?php echo LANG('portal_redesign_offline_help'); ?></p>
+			</div>
+		<?php } else { ?>
+			<div class='m3-cards-grid' style='margin-top: 20px;'>
+			<?php foreach($computers as $c) { 
+				$compOnline = $c->isOnline($db);
+			?>
+				<a class='m3-cta-card m3-card-install' <?php echo Html::explorerLink('views/computers.php?id='.$c->id); ?>>
+					<div class='m3-card-icon-container' style="background-color: var(--m3-secondary-container);">
+						<img src='<?php echo $c->getIcon(); ?>' onerror="this.src='img/computer.dyn.svg'" alt='Computer Icon'>
+						<span class='m3-heartbeat-badge <?php echo $compOnline ? 'online' : 'offline'; ?>' style="position: absolute; bottom: -4px; right: -4px; width: 14px; height: 14px; border-width: 2px;"></span>
+					</div>
+					<div class='m3-card-text'>
+						<h2 class='m3-card-title'><?php echo htmlspecialchars($c->hostname); ?></h2>
+						<p class='m3-card-description'><?php echo htmlspecialchars($c->os . ' ' . $c->os_version); ?></p>
+						<span style="font-size: 0.75rem; color: var(--m3-on-surface-variant);"><?php echo LANG('last_seen') . ' : '; ?><?php echo htmlspecialchars($c->last_ping); ?></span>
+					</div>
+					<span class='m3-card-action-arrow'>&rarr;</span>
+				</a>
+			<?php } ?>
+			</div>
+		<?php } ?>
+	</div>
 
 <?php } else { 
 	$isOnline = $computer->isOnline($db);
 	
 	// Human-readable uptime calculation
 	$uptimeText = LANG('portal_redesign_unavailable');
-	if (!empty($computer->uptime)) {
+	if(!empty($computer->uptime)) {
 		$seconds = intval($computer->uptime);
 		$hours = floor($seconds / 3600);
 		$days = floor($hours / 24);
 		
-		if ($days > 0) {
+		if($days > 0) {
 			$uptimeText = sprintf(LANG('portal_redesign_uptime_days'), $days);
 		} elseif ($hours > 0) {
 			$uptimeText = sprintf(LANG('portal_redesign_uptime_hours'), $hours);
@@ -134,19 +134,19 @@ $commands = Models\Computer::getCommands($ext);
 					</div>
 					<table class='m3-metadata-table'>
 						<tr>
-							<th><?php echo LANG('portal_redesign_os_label'); ?></th>
+							<th><?php echo LANG('os'); ?></th>
 							<td><?php echo htmlspecialchars($computer->os . ' ' . $computer->os_version); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG('portal_redesign_serial_number'); ?></th>
+							<th><?php echo LANG('serial_no'); ?></th>
 							<td class='monospace'><?php echo htmlspecialchars(!empty($computer->serial) ? $computer->serial : LANG('portal_redesign_unknown')); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG('portal_redesign_last_boot'); ?></th>
+							<th><?php echo LANG('uptime'); ?></th>
 							<td><?php echo htmlspecialchars($uptimeText); ?></td>
 						</tr>
 						<tr>
-							<th><?php echo LANG('portal_redesign_last_contact'); ?></th>
+							<th><?php echo LANG('last_seen'); ?></th>
 							<td><?php echo htmlspecialchars($computer->last_ping); ?></td>
 						</tr>
 					</table>
@@ -181,7 +181,7 @@ $commands = Models\Computer::getCommands($ext);
 									<div class='m3-pending-info'>
 										<span class='m3-pending-title'>
 											<?php if ($j->is_uninstall) { ?>
-												<span style="font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: var(--m3-on-error-container); background-color: var(--m3-error-container); padding: 2px 6px; border-radius: 4px; margin-right: 6px; vertical-align: middle;"><?php echo LANG('portal_redesign_uninstall_badge'); ?></span>
+												<span style="font-size: 0.7rem; font-weight: bold; text-transform: uppercase; color: var(--m3-on-error-container); background-color: var(--m3-error-container); padding: 2px 6px; border-radius: 4px; margin-right: 6px; vertical-align: middle;"><?php echo LANG('uninstallation'); ?></span>
 											<?php } ?>
 											<?php echo htmlspecialchars($j->package_family_name); ?>
 										</span>
@@ -201,7 +201,7 @@ $commands = Models\Computer::getCommands($ext);
 
 				<!-- Installed Software -->
 				<div class='m3-sub-section margintop-24'>
-					<h3><?php echo LANG('portal_redesign_installed_software'); ?></h3>
+					<h3><?php echo LANG('installed_packages'); ?></h3>
 					<?php 
 					$installedPackages = $db->selectAllComputerPackageByComputerId($computer->id);
 					if (count($installedPackages) == 0) {
@@ -217,7 +217,7 @@ $commands = Models\Computer::getCommands($ext);
 						}
 
 						echo "<table class='m3-installed-table'>";
-						echo "<thead><tr><th>" . LANG('portal_redesign_table_package') . "</th><th>" . LANG('portal_redesign_table_date') . "</th><th>" . LANG('portal_redesign_table_action') . "</th></tr></thead>";
+						echo "<thead><tr><th>" . LANG('package') . "</th><th>" . LANG('installation_date') . "</th><th>" . LANG('action') . "</th></tr></thead>";
 						echo "<tbody>";
 						foreach($dedupedInstalled as $p) {
 							if(!$cl->checkPermission($db->selectPackage($p->package_id), SelfService\PermissionManager::METHOD_READ, false)) continue;

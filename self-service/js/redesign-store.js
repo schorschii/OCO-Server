@@ -585,13 +585,9 @@ window.initOcoPortalRedesign = function() {
         }
 
         const osLogo = appState.selectedComputer.icon || 'img/computer.dyn.svg';
-        const recapTargetText = window.OcoLang && window.OcoLang.recapTarget
-            ? window.OcoLang.recapTarget.replace('%s', appState.selectedComputer.hostname)
-            : `Target computer: <strong>${appState.selectedComputer.hostname}</strong>`;
-            
         dom.recapTarget.innerHTML = `
             <img src="${osLogo}" onerror="this.src='img/computer.dyn.svg'" alt="OS Logo">
-            <span>${recapTargetText}</span>
+            <span>${appState.selectedComputer.hostname}</span>
         `;
 
         dom.modalRecapList.innerHTML = '';
@@ -675,7 +671,6 @@ window.initOcoPortalRedesign = function() {
             alert(deployError);
             dom.confirmDeployBtn.disabled = false;
             dom.cancelDeployBtn.disabled = false;
-            dom.confirmDeployBtn.innerHTML = window.OcoLang && window.OcoLang.confirm ? window.OcoLang.confirm : 'Confirm installation';
         }
     }
 
