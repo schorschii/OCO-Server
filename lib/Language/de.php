@@ -825,76 +825,25 @@ return [
 			Spezifische Beispiele können in dem <a href="index.php?view=docs&page=install-uninstall-catalog">Installations-/Deinstallations-Kommando-Katalog</a> gefunden werden.
 		</p>
 	',
-	'portal_redesign_welcome_title' => 'Hallo %s, willkommen im OCO Self-Service-Portal.',
-	'portal_redesign_welcome_subtitle' => 'Laden Sie die von Ihrem Unternehmen freigegebenen Anwendungen sicher herunter.',
-
-	'portal_redesign_install_software' => 'Software installieren',
-	'portal_redesign_install_software_desc' => 'Entdecken Sie den Katalog der Unternehmensanwendungen, die auf Ihren Rechnern installiert werden können.',
-
-	'portal_redesign_track_installations' => 'Meine Installationen verfolgen',
-	'portal_redesign_track_installations_desc' => 'Sehen Sie den Fortschritt und den Verlauf der auf Ihren Rechnern gestarteten Installationen.',
-
-	'portal_redesign_update_computer' => 'Meinen Rechner aktualisieren',
-	'portal_redesign_update_computer_desc' => 'Finden und starten Sie schnell Software-Updates, die für Ihr System freigegeben wurden.',
-
-	'portal_redesign_resources_assistance' => 'Ressourcen & Support',
-	'portal_redesign_user_guides' => 'Benutzerhandbücher',
-	'portal_redesign_user_guides_desc' => 'Anleitungen und Handbücher zur Installation von Anwendungen.',
-	'portal_redesign_desktop_support' => 'IT-Support',
-	'portal_redesign_desktop_support_desc' => 'Kontaktieren Sie den IT-Support bei Problemen.',
-
-	'portal_redesign_recent_installs' => 'Kürzliche Installationen',
-	'portal_redesign_relaunch' => 'Neu starten',
-
-	// App Store (packages.php)
+	'self_service_welcome_title' => 'Hallo %s, willkommen im OCO Self-Service-Portal.',
+	'self_service_welcome_subtitle' => 'Laden Sie die von Ihrem Unternehmen freigegebenen Anwendungen sicher herunter.',
+	'self_service_install_software' => 'Software installieren',
+	'self_service_install_software_desc' => 'Entdecken Sie den Katalog der Unternehmensanwendungen, die auf Ihren Rechnern installiert werden können.',
+	'self_service_track_installations' => 'Meine Installationen verfolgen',
+	'self_service_track_installations_desc' => 'Sehen Sie den Fortschritt und den Verlauf der auf Ihren Rechnern gestarteten Installationen.',
+	'self_service_update_computer' => 'Meinen Rechner aktualisieren',
+	'self_service_update_computer_desc' => 'Finden und starten Sie schnell Software-Updates, die für Ihr System freigegeben wurden.',
+	'user_guides' => 'Hilfe & Anleitungen',
+	'user_guides_desc' => 'Anleitungen und Handbücher zur Installation von Anwendungen.',
 	'not_installed_only' => 'Nur nicht installierte',
 	'updates_only' => 'Nur Updates',
-
 	'packages_selected_placeholder' => '%d Paket(e) ausgewählt',
-	'portal_redesign_deploy_tooltip' => 'Bitte wählen Sie einen Ziel-Computer aus, bevor Sie Pakete zuweisen.',
-
-	'portal_redesign_modal_packages_to_install' => 'Zu installierende Anwendungen:',
 	'cancel' => 'Abbrechen',
 	'confirm_installation' => 'Installation bestätigen',
-
-	// JS variables for the App Store (redesign-store.js)
 	'filter_no_packages_found' => 'Keine Pakete mit den aktuellen Filtern verfügbar.',
-	'portal_redesign_js_ready_to_install' => 'Bereit zur Installation: <strong>%s</strong>',
-	'portal_redesign_js_remove' => 'Entfernen',
-	'portal_redesign_js_default_job_name' => 'Softwareinstallation - %s um %s',
-	'portal_redesign_js_deploying' => 'Wird zugewiesen...',
-	'portal_redesign_js_deploy_error' => 'Fehler bei der Zuweisung: %s',
-	'portal_redesign_js_unknown_error' => 'Ein unbekannter Fehler ist aufgetreten.',
-
-	// Computer (computers.php)
 	'self_service_offline_warning' => 'Ihr Computer ist ausgeschaltet oder hat keine Netzwerkverbindung.',
 	'self_service_offline_help' => 'Wenden Sie sich an den IT-Support, wenn dies ein Fehler ist.',
 	'install_packages' => 'Pakete installieren',
-	'portal_redesign_unknown' => 'Unbekannt',
 	'no_jobs_in_progress' => 'Keine Downloads oder Installationen im Gange',
 	'no_packages_installed' => 'Keine Pakete installiert',
-
-	// Auftragsverfolgung (job-containers.php)
-	'portal_redesign_filter_by_status' => 'Nach Status filtern:',
-	'portal_redesign_delete_task' => 'Aufgabe löschen',
-	'portal_redesign_no_task_filter' => 'Keine Aufgaben entsprechen den ausgewählten Filtern.',
-	'portal_redesign_activate_other_status' => 'Aktivieren Sie andere Status, um Ihre Installationen anzuzeigen.',
-	'portal_redesign_explore_catalog_first_install' => 'Durchsuchen Sie den Anwendungskatalog, um Ihre erste Installation zu starten.',
-	'portal_redesign_overall_progress' => 'Gesamtfortschritt',
-	'portal_redesign_on' => 'von',
-	'portal_redesign_validated_packages' => 'abgeschlossene(s) Paket(e)',
-	'portal_redesign_software_jobs' => 'Detaillierter Softwarestatus',
-	'portal_redesign_computer_prefix' => 'Computer: ',
-	'portal_redesign_finished_at' => 'Beendet um %s',
-	'portal_redesign_in_progress_suffix' => 'im Gange...',
-
-	// API / AJAX-Rückmeldungen (ajax-handler/)
-	'portal_redesign_api_internal_error' => 'Ein interner Serverfehler ist aufgetreten.',
-	'portal_redesign_api_unauthorized' => 'Nicht autorisiert',
-	'portal_redesign_api_default_job_name' => 'Softwareinstallation - ',
-	'portal_redesign_api_missing_params' => 'Computer oder Paket nicht angegeben.',
-	'portal_redesign_api_permission_denied' => 'Berechtigung zur Erstellung einer Bereitstellungsaufgabe verweigert.',
-	'portal_redesign_api_creation_failed' => 'Auftragscontainer konnte nicht erstellt werden.',
-	'portal_redesign_api_success' => 'Bereitstellungsaufgabe erfolgreich erstellt.',
-	'portal_redesign_api_deploy_error' => 'Beim Erstellen der Bereitstellung ist ein interner Serverfehler aufgetreten.',
 ];

@@ -116,7 +116,7 @@ $commands = Models\Computer::getCommands($ext);
 				</tr>
 				<tr>
 					<th><?php echo LANG('serial_no'); ?></th>
-					<td class='monospace'><?php echo htmlspecialchars(!empty($computer->serial) ? $computer->serial : LANG('portal_redesign_unknown')); ?></td>
+					<td><?php echo htmlspecialchars(!empty($computer->serial) ? $computer->serial : '?'); ?></td>
 				</tr>
 				<tr>
 					<th><?php echo LANG('vendor'); ?></th>

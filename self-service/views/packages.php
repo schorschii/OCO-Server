@@ -81,7 +81,7 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 		<span><?php echo LANG('not_installed_only'); ?></span>
 	</label>
 	<label>
-		<input type='checkbox' id='chkUpdatesOnly'>
+		<input type='checkbox' id='chkUpdatesOnly' <?php if(isset($_GET['updates_only'])) echo 'checked'; ?>>
 		<span><?php echo LANG('updates_only'); ?></span>
 	</label>
 </div>

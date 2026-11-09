@@ -748,77 +748,25 @@ return [
 			D\'autres exemples peuvent être trouvés dans le <a href="index.php?view=docs&page=install-uninstall-catalog">Install/désinstall catalogue de commandes</a>.
 		</p>
 	',
-	'portal_redesign_welcome_title' => 'Bonjour %s, bienvenue sur votre espace Self-Service OCO.',
-	'portal_redesign_welcome_subtitle' => 'Téléchargez en toute sécurité les applications validées par votre entreprise',
-
-	'portal_redesign_install_software' => 'Installer un logiciel',
-	'portal_redesign_install_software_desc' => 'Explorez le catalogue des applications d\'entreprise prêtes à être installées sur vos machines.',
-
-	'portal_redesign_track_installations' => 'Suivre mes installations',
-	'portal_redesign_track_installations_desc' => 'Visualisez l\'état d\'avancement et l\'historique des installations lancées sur vos ordinateurs.',
-
-	'portal_redesign_update_computer' => 'Mettre à jour mon poste',
-	'portal_redesign_update_computer_desc' => 'Découvrez et lancez rapidement les mises à jour logicielles validées pour votre système.',
-
-	'portal_redesign_resources_assistance' => 'Ressources & Assistance',
-	'portal_redesign_user_guides' => 'Guides d\'utilisation',
-	'portal_redesign_user_guides_desc' => 'Tutoriels et manuels d\'installation d\'applications.',
-	'portal_redesign_desktop_support' => 'Support Bureautique',
-	'portal_redesign_desktop_support_desc' => 'Contactez le service Bureautique pour un dépannage.',
-
-	'portal_redesign_recent_installs' => 'Dernières installations',
-	'portal_redesign_relaunch' => 'Relancer',
-
-	// Catalogue d'applications (packages.php)
+	'self_service_welcome_title' => 'Bonjour %s, bienvenue sur votre espace Self-Service OCO.',
+	'self_service_welcome_subtitle' => 'Téléchargez en toute sécurité les applications validées par votre entreprise',
+	'self_service_install_software' => 'Installer un logiciel',
+	'self_service_install_software_desc' => 'Explorez le catalogue des applications d\'entreprise prêtes à être installées sur vos machines.',
+	'self_service_track_installations' => 'Suivre mes installations',
+	'self_service_track_installations_desc' => 'Visualisez l\'état d\'avancement et l\'historique des installations lancées sur vos ordinateurs.',
+	'self_service_update_computer' => 'Mettre à jour mon poste',
+	'self_service_update_computer_desc' => 'Découvrez et lancez rapidement les mises à jour logicielles validées pour votre système.',
+	'user_guides' => 'Guides d\'utilisation',
+	'user_guides_desc' => 'Tutoriels et manuels d\'installation d\'applications.',
 	'not_installed_only' => 'Non installé uniquement',
 	'updates_only' => 'Mises à jour uniquement',
-
-	'portal_redesign_cart_count_text' => '%d paquet(s) sélectionné(s)',
-	'portal_redesign_cart_count_suffix' => 'paquet(s) sélectionné(s)',
-	'portal_redesign_deploy_tooltip' => 'Veuillez sélectionner un ordinateur cible avant de déployer des paquets.',
-
-	'portal_redesign_modal_packages_to_install' => 'Applications à installer :',
+	'packages_selected_placeholder' => '%d paquet(s) sélectionné(s)',
 	'cancel' => 'Annuler',
 	'confirm_installation' => 'Confirmer l\'installation',
-
-	// Variables JS de l'App Store (redesign-store.js)
 	'filter_no_packages_found' => 'Aucun paquet disponible avec les filtres actuels.',
-	'portal_redesign_js_ready_to_install' => 'Prêt à installer : <strong>%s</strong>',
-	'portal_redesign_js_remove' => 'Retirer',
-	'portal_redesign_js_default_job_name' => 'Installation logicielle - %s à %s',
-	'portal_redesign_js_deploying' => 'Déploiement en cours...',
-	'portal_redesign_js_deploy_error' => 'Erreur lors du déploiement : %s',
-	'portal_redesign_js_unknown_error' => 'Une erreur inconnue est survenue.',
-
-	// Ordinateurs (computers.php)
 	'self_service_offline_warning' => 'Votre ordinateur est éteint ou n\'a pas de connexion réseau.',
 	'self_service_offline_help' => 'Contactez la DSI s\'il s\'agit d\'une erreur.',
-	'install_packages' => '?????????????',
-	'portal_redesign_unknown' => 'Inconnu',
+	'install_packages' => 'Installer des paquets',
 	'no_jobs_in_progress' => 'Aucun téléchargement ou installation en cours',
 	'no_packages_installed' => 'Aucun paquet installé',
-
-	// Suivi des Tâches (job-containers.php)
-	'portal_redesign_filter_by_status' => 'Filtrer par statut :',
-	'portal_redesign_delete_task' => 'Supprimer la tâche',
-	'portal_redesign_no_task_filter' => 'Aucune tâche ne correspond aux filtres sélectionnés.',
-	'portal_redesign_activate_other_status' => 'Activez d\'autres statuts pour afficher vos installations.',
-	'portal_redesign_explore_catalog_first_install' => 'Explorez le catalogue d\'applications pour lancer votre première installation.',
-	'portal_redesign_overall_progress' => 'Progression globale',
-	'portal_redesign_on' => 'sur',
-	'portal_redesign_validated_packages' => 'paquet(s) validé(s)',
-	'portal_redesign_software_jobs' => 'Statut détaillé des logiciels',
-	'portal_redesign_computer_prefix' => 'Ordinateur : ',
-	'portal_redesign_finished_at' => 'Terminé à %s',
-	'portal_redesign_in_progress_suffix' => 'en cours...',
-
-	// Retours API / AJAX (ajax-handler/)
-	'portal_redesign_api_internal_error' => 'Une erreur interne du serveur est survenue.',
-	'portal_redesign_api_unauthorized' => 'Non autorisé',
-	'portal_redesign_api_default_job_name' => 'Installation logicielle - ',
-	'portal_redesign_api_missing_params' => 'Ordinateur ou paquet non spécifié.',
-	'portal_redesign_api_permission_denied' => 'Permission refusée pour créer une tâche de déploiement.',
-	'portal_redesign_api_creation_failed' => 'Impossible de créer le Job Container.',
-	'portal_redesign_api_success' => 'Tâche de déploiement créée avec succès.',
-	'portal_redesign_api_deploy_error' => 'Une erreur interne du serveur est survenue lors de la création du déploiement.',
 ];

@@ -1,3 +1,19 @@
+.action-cards {
+	justify-content: center;
+	margin-top: 35px;
+}
+.action-cards a.item {
+	text-decoration: none;
+	flex-basis: 30%;
+}
+.action-cards.gallery h2,
+.action-cards.gallery h3 {
+	display: block;
+}
+.action-cards.gallery img {
+	height: 52px;
+}
+
 .tabbuttons > .back {
 	padding: 6px 12px; margin-left: -12px; font-weight: 500; font-size: 0.95rem;
 }
@@ -116,6 +132,12 @@
 }
 #divJobsGrid img {
 	height: 52px;
+}
+
+@media (max-width: 750px) {
+	.navbar-links button span {
+		display: none;
+	}
 }
 
 @media (prefers-color-scheme: dark) {

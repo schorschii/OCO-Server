@@ -49,19 +49,23 @@ if(!empty($_GET['view'])) {
 
 		<div class='navbar-links'>
 			<button id='btnNavComputers' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/computers.php");'>
-				<img src='img/computer.light.svg'> <?php echo LANG('my_computers'); ?>
+				<img src='img/computer.light.svg'> <span><?php echo LANG('my_computers'); ?></span>
 			</button>
 			<button id='btnNavStore' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/packages.php");'>
-				<img src='img/package.light.svg'> <?php echo LANG('available_packages'); ?>
+				<img src='img/package.light.svg'> <span><?php echo LANG('available_packages'); ?></span>
 			</button>
 			<button id='btnNavJobs' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/job-containers.php");'>
-				<img src='img/job.light.svg'> <?php echo LANG('my_jobs'); ?>
+				<img src='img/job.light.svg'> <span><?php echo LANG('my_jobs'); ?></span>
 			</button>
 		</div>
 
 		<span class='right'>
 			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG('refresh'); ?>'>
 				<img src='img/refresh.light.svg'>
+			</button>
+			<span class='separator noprint'></span>
+			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog/about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'>
+				<img src='img/info.light.svg'>
 			</button>
 			<span class='separator noprint'></span>
 			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'>

@@ -830,77 +830,25 @@ return [
 			Specific examples can be found in the <a href="index.php?view=docs&page=install-uninstall-catalog">Install/Uninstall Command Catalog</a>.
 		</p>
 	',
-	'portal_redesign_welcome_title' => 'Hello %s, welcome to your OCO Self-Service portal.',
-	'portal_redesign_welcome_subtitle' => 'Safely download the applications approved by your company',
-	
-	'portal_redesign_install_software' => 'Install a software',
-	'portal_redesign_install_software_desc' => 'Explore the catalog of corporate applications ready to be installed on your machines.',
-
-	'portal_redesign_track_installations' => 'Track my installations',
-	'portal_redesign_track_installations_desc' => 'View the progress and history of installations launched on your computers.',
-
-	'portal_redesign_update_computer' => 'Update my computer',
-	'portal_redesign_update_computer_desc' => 'Quickly discover and run software updates approved for your system.',
-
-	'portal_redesign_resources_assistance' => 'Resources & Support',
-	'portal_redesign_user_guides' => 'User Guides',
-	'portal_redesign_user_guides_desc' => 'Tutorials and manuals for installing applications.',
-	'portal_redesign_desktop_support' => 'IT Support',
-	'portal_redesign_desktop_support_desc' => 'Contact the IT support desk for troubleshooting.',
-
-	'portal_redesign_recent_installs' => 'Recent installations',
-	'portal_redesign_relaunch' => 'Relaunch',
-
-	// App Store (packages.php)
+	'self_service_welcome_title' => 'Hello %s, welcome to your OCO Self-Service portal.',
+	'self_service_welcome_subtitle' => 'Safely download the applications approved by your company',
+	'self_service_install_software' => 'Install a software',
+	'self_service_install_software_desc' => 'Explore the catalog of corporate applications ready to be installed on your machines.',
+	'self_service_track_installations' => 'Track my installations',
+	'self_service_track_installations_desc' => 'View the progress and history of installations launched on your computers.',
+	'self_service_update_computer' => 'Update my computer',
+	'self_service_update_computer_desc' => 'Quickly discover and run software updates approved for your system.',
+	'user_guides' => 'Help & Guides',
+	'user_guides_desc' => 'Tutorials and manuals for installing applications.',
 	'not_installed_only' => 'Not installed only',
 	'updates_only' => 'Updates only',
-
-	'portal_redesign_cart_count_text' => '%d package(s) selected',
-	'portal_redesign_cart_count_suffix' => 'package(s) selected',
-	'portal_redesign_deploy_tooltip' => 'Please select a target computer before deploying packages.',
-
-	'portal_redesign_modal_packages_to_install' => 'Applications to install:',
+	'packages_selected_placeholder' => '%d package(s) selected',
 	'cancel' => 'Cancel',
 	'confirm_installation' => 'Confirm installation',
-
-	// JS variables for the App Store (redesign-store.js)
 	'filter_no_packages_found' => 'No packages available with the current filters.',
-	'portal_redesign_js_ready_to_install' => 'Ready to install: <strong>%s</strong>',
-	'portal_redesign_js_remove' => 'Remove',
-	'portal_redesign_js_default_job_name' => 'Software installation - %s at %s',
-	'portal_redesign_js_deploying' => 'Deploying...',
-	'portal_redesign_js_deploy_error' => 'Deployment error: %s',
-	'portal_redesign_js_unknown_error' => 'An unknown error has occurred.',
-
-	// Computers (computers.php)
 	'self_service_offline_warning' => 'Your computer is turned off or has no network connection.',
 	'self_service_offline_help' => 'Contact IT support if this is an error.',
 	'install_packages' => 'Install packages',
-	'portal_redesign_unknown' => 'Unknown',
 	'no_jobs_in_progress' => 'No downloads or installations in progress',
 	'no_packages_installed' => 'No package installed',
-
-	// Task Tracking (job-containers.php)
-	'portal_redesign_filter_by_status' => 'Filter by status:',
-	'portal_redesign_delete_task' => 'Delete task',
-	'portal_redesign_no_task_filter' => 'No tasks match the selected filters.',
-	'portal_redesign_activate_other_status' => 'Activate other statuses to show your installations.',
-	'portal_redesign_explore_catalog_first_install' => 'Explore the application catalog to launch your first installation.',
-	'portal_redesign_overall_progress' => 'Overall progress',
-	'portal_redesign_on' => 'of',
-	'portal_redesign_validated_packages' => 'completed package(s)',
-	'portal_redesign_software_jobs' => 'Detailed software status',
-	'portal_redesign_computer_prefix' => 'Computer: ',
-	'portal_redesign_finished_at' => 'Finished at %s',
-	'portal_redesign_in_progress_suffix' => 'in progress...',
-
-	// API / AJAX returns (ajax-handler/)
-	'portal_redesign_api_internal_error' => 'An internal server error occurred.',
-	'portal_redesign_api_unauthorized' => 'Unauthorized',
-	'portal_redesign_api_default_job_name' => 'Software installation - ',
-	'portal_redesign_api_missing_params' => 'Computer or package not specified.',
-	'portal_redesign_api_permission_denied' => 'Permission denied to create deployment task.',
-	'portal_redesign_api_creation_failed' => 'Could not create job container.',
-	'portal_redesign_api_success' => 'Deployment task created successfully.',
-	'portal_redesign_api_deploy_error' => 'An internal server error occurred while creating deployment.',
 ];
