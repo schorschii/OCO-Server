@@ -1,35 +1,144 @@
-function deploySelfService(title, computers, packages, useWol, shutdownWakedAfterCompletion) {
-	btnDeploy.disabled = true;
-	btnDeploy.classList.add('hidden');
-	prgDeploy.classList.remove('hidden');
+function initSelfServicePackages() {
+	let divStoreGrid = document.getElementById('divStoreGrid');
+	if(!divStoreGrid || divStoreGrid.dataset.initialized) return;
+	divStoreGrid.dataset.initialized = 'true';
 
-	let req = new XMLHttpRequest();
-	let formData = new FormData();
-	formData.append('create_install_job_container', title);
-	formData.append('use_wol', useWol ? 1 : 0);
-	formData.append('shutdown_waked_after_completion', shutdownWakedAfterCompletion ? 1 : 0);
-	packages.forEach(function(entry) {
-		formData.append('package_id[]', entry);
+	let packageItems = Array.from(divStoreGrid.querySelectorAll('.item'));
+	let sltTargetComputer = document.getElementById('sltTargetComputer');
+	let txtPackageSearch = document.getElementById('txtPackageSearch');
+	let chkNonInstalledOnly = document.getElementById('chkNonInstalledOnly');
+	let chkUpdatesOnly = document.getElementById('chkUpdatesOnly');
+	let divBottomDrawer = document.getElementById('divBottomDrawer');
+	let btnCartSummary = document.getElementById('btnCartSummary');
+	let divCartRecapPanel = document.getElementById('divCartRecapPanel');
+	let btnDeploy = document.getElementById('btnDeploy');
+	let spnCartCount = document.getElementById('spnCartCount');
+	let ulCartRecapList = document.getElementById('ulCartRecapList');
+	let divNoPackagesFound = document.getElementById('divNoPackagesFound');
+	let deploying = false;
+
+	function filterPackages() {
+		let search = txtPackageSearch.value.trim().toLowerCase();
+		let computer = sltTargetComputer.selectedOptions[0];
+		let installedPackages = new Set(sltTargetComputer.value && computer
+			? JSON.parse(computer.getAttribute('data_installed_packages') || '[]').map(String)
+			: []);
+		let installedFamilies = new Set(sltTargetComputer.value && computer
+			? JSON.parse(computer.getAttribute('data_installed_package_families') || '[]').map(String)
+			: []);
+		packageItems.forEach(item => {
+			let nameVersion = item.getAttribute('data_name') + ' ' + item.getAttribute('data_version');
+			let hideInstalled = chkNonInstalledOnly.checked && installedPackages.has(item.getAttribute('data_id'));
+			let hideFamily = chkUpdatesOnly.checked && !installedFamilies.has(item.getAttribute('data_package_family_id'));
+			item.classList.toggle('hidden', !nameVersion.toLowerCase().includes(search) || hideInstalled || hideFamily);
+		});
+		divNoPackagesFound.classList.toggle('hidden', packageItems.some(item => !item.classList.contains('hidden')));
+	}
+
+	function isCompatible(value, compatible) {
+		return !value || !compatible || compatible.split('\n').some(entry => entry.trim() === value.trim());
+	}
+
+	function updateCompatibility() {
+		sltTargetComputer.classList.toggle('marked', sltTargetComputer.value === '');
+		let computer = sltTargetComputer.selectedOptions[0];
+		packageItems.forEach(item => {
+			let incompatible = !!sltTargetComputer.value && !!computer && (
+				!isCompatible(computer.getAttribute('data_os'), item.getAttribute('data_compatible_os')) ||
+				!isCompatible(computer.getAttribute('data_os_version'), item.getAttribute('data_compatible_os_version'))
+			);
+			item.classList.toggle('incompatible', incompatible);
+			if(incompatible) item.classList.remove('selected');
+		});
+		updateCart();
+	}
+
+	function updateCart() {
+		let selectedItems = packageItems.filter(item => item.classList.contains('selected'));
+		ulCartRecapList.replaceChildren();
+		selectedItems.forEach(item => {
+			let entry = document.createElement('li');
+			entry.setAttribute('data_id', item.getAttribute('data_id'));
+			entry.textContent = item.getAttribute('data_name') + ' (' + item.getAttribute('data_version')+')';
+			ulCartRecapList.appendChild(entry);
+		});
+		spnCartCount.textContent = LANG['packages_selected_placeholder'].replace('%d', selectedItems.length);
+		divBottomDrawer.classList.toggle('visible', selectedItems.length > 0);
+		btnDeploy.disabled = deploying || !sltTargetComputer.value || selectedItems.length === 0;
+	}
+
+	btnDeploy.addEventListener('click', () => {
+		if(deploying) return;
+		updateCompatibility();
+		let selectedItems = packageItems.filter(item => item.classList.contains('selected'));
+		if(!sltTargetComputer.value || selectedItems.length === 0) return;
+
+		let name = LANG['install'] + ' - ' + sltTargetComputer.selectedOptions[0].textContent.trim();
+		showDialogAjax(LANG['deploy'], 'views/dialog/install.php?name='+encodeURIComponent(name), DIALOG_BUTTONS_NONE, DIALOG_SIZE_AUTO, function(dialogContainer){
+			// add events
+			let txtName = dialogContainer.querySelectorAll('input[name=name]')[0];
+			let chkWol = dialogContainer.querySelectorAll('input[name=use_wol]')[0];
+			let chkShutdownWaked = dialogContainer.querySelectorAll('input[name=shutdown_waked_after_completion]')[0];
+			chkWol.addEventListener('click', (e)=>{
+				if(e.srcElement.checked) {
+					chkShutdownWaked.disabled = false;
+				} else {
+					chkShutdownWaked.checked = false;
+					chkShutdownWaked.disabled=true;
+				}
+			});
+			dialogContainer.querySelectorAll('button[name=install]')[0].addEventListener('click', async (e)=>{
+				dialogContainer.close();
+				let formData = new FormData();
+				formData.append('create_install_job_container', txtName.value);
+				formData.append('computer_id[]', sltTargetComputer.value);
+				selectedItems.forEach(item => formData.append('package_id[]', item.getAttribute('data_id')));
+				formData.append('use_wol', chkWol.checked ? 1 : 0);
+				formData.append('shutdown_waked_after_completion', chkShutdownWaked.checked ? 1 : 0);
+
+				deploying = true;
+				updateCart();
+				try {
+					let response = await fetch('ajax-handler/job-containers.php', {
+						method: 'POST',
+						body: formData
+					});
+					let result = (await response.text()).trim();
+					if(!response.ok) throw new Error(response.status + ' ' + response.statusText + '\n' + result);
+					if(!/^[1-9]\d*$/.test(result)) throw new Error(result || LANG['error']);
+					selectedItems.forEach(item => item.classList.remove('selected'));
+					emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
+					refreshContentExplorer('views/job-containers.php?id=' + encodeURIComponent(result));
+				} catch(error) {
+					emitMessage(LANG['error'], error.message, MESSAGE_TYPE_ERROR, null);
+				} finally {
+					deploying = false;
+					updateCart();
+				}
+			});
+		});
 	});
-	computers.forEach(function(entry) {
-		formData.append('computer_id[]', entry);
+
+	txtPackageSearch.addEventListener('input', filterPackages);
+	chkNonInstalledOnly.addEventListener('change', filterPackages);
+	chkUpdatesOnly.addEventListener('change', filterPackages);
+	sltTargetComputer.addEventListener('change', () => {
+		updateCompatibility();
+		filterPackages();
 	});
-	req.open('POST', 'ajax-handler/job-containers.php');
-	req.send(formData);
-	req.onreadystatechange = function() {
-		if(this.readyState == 4) {
-			if(this.status == 200) {
-				refreshContentExplorer('views/job-containers.php?id='+parseInt(this.responseText));
-				refreshSidebar();
-				emitMessage(LANG['jobs_created'], title, MESSAGE_TYPE_SUCCESS);
-			} else {
-				emitMessage(LANG['error']+' '+this.status+' '+this.statusText, this.responseText, MESSAGE_TYPE_ERROR, null);
-				btnDeploy.disabled = false;
-				btnDeploy.classList.remove('hidden');
-				prgDeploy.classList.add('hidden');
-			}
-		}
-	};
+	btnCartSummary.addEventListener('click', () => {
+		divCartRecapPanel.classList.toggle('open');
+	});
+	packageItems.forEach(item => {
+		item.addEventListener('click', event => {
+			event.preventDefault();
+			item.classList.toggle('selected');
+			updateCart();
+		});
+	});
+
+	filterPackages();
+	updateCompatibility();
 }
 
 function showDialogUninstallSelfService() {

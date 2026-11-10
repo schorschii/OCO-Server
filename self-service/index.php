@@ -41,23 +41,39 @@ if(!empty($_GET['view'])) {
 
 	<div id='header' role='banner'>
 		<span class='left'>
-			<button id='btnSidebar' class='noprint' onclick='toggleSidebar()' title='<?php echo LANG('show_hide_sidebar'); ?>'><img src='img/menu.light.svg'></button>
 			<a href='index.php' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' class='title'><?php echo LANG('self_service_name'); ?></a>
 		</span>
+
+		<div class='navbar-links'>
+			<button id='btnNavComputers' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/computers.php");'>
+				<img src='img/computer.light.svg'> <span><?php echo LANG('my_computers'); ?></span>
+			</button>
+			<span class='separator noprint'></span>
+			<button id='btnNavStore' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/packages.php");'>
+				<img src='img/package.light.svg'> <span><?php echo LANG('available_packages'); ?></span>
+			</button>
+			<span class='separator noprint'></span>
+			<button id='btnNavJobs' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/job-containers.php");'>
+				<img src='img/job.light.svg'> <span><?php echo LANG('my_jobs'); ?></span>
+			</button>
+		</div>
+
 		<span class='right'>
-			<button id='btnHomepage' class='noprint' onclick='refreshContentExplorer("views/homepage.php")' title='<?php echo LANG('home_page'); ?>'><img src='img/home.light.svg'></button>
+			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG('refresh'); ?>'>
+				<img src='img/refresh.light.svg'>
+			</button>
 			<span class='separator noprint'></span>
-			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG('refresh'); ?>'><img src='img/refresh.light.svg'></button>
+			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog/about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'>
+				<img src='img/info.light.svg'>
+			</button>
 			<span class='separator noprint'></span>
-			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog/about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'><img src='img/info.light.svg'></button>
-			<span class='separator noprint'></span>
-			<button id='btnHelp' class='noprint' onclick='refreshContentExplorer("views/help.php")' title='<?php echo LANG('help'); ?>'><img src='img/help.light.svg'></button>
-			<span class='separator noprint'></span>
-			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'><span><?php echo htmlspecialchars($currentDomainUser->display_name); ?>&nbsp;</span><img src='img/exit.light.svg'></button>
+			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'>
+				<span><?php echo htmlspecialchars($currentDomainUser->display_name); ?>&nbsp;</span><img src='img/exit.light.svg'>
+			</button>
 		</span>
 	</div>
 
-	<div id='explorer'>
+	<div id='explorer' class='nosidebar'>
 		<div id='explorer-tree' onclick='toggleSidebar(false)' role='navigation'>
 		</div>
 		<div id='explorer-content' role='main'>
@@ -80,10 +96,6 @@ if(!empty($_GET['view'])) {
 	</div>
 
 	<script>
-	toggleSidebar(false);
-	refreshSidebar();
-	refreshSidebarTimer = setTimeout(function(){ refreshSidebar(null, true) }, REFRESH_SIDEBAR_TIMEOUT);
-
 	<?php if($initialExplorerContent != null) { ?>
 		ajaxRequest("<?php echo $initialExplorerContent.'?'.$initialExplorerContentParameter; ?>", "explorer-content");
 	<?php } ?>

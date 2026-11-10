@@ -1,3 +1,164 @@
 #login-bg {
 	background-image: url('../img/bg-self-service.jpg');
 }
+
+.action-cards {
+	justify-content: center;
+	margin-top: 35px;
+}
+.action-cards a.item {
+	text-decoration: none;
+	flex-basis: 30%;
+	min-width: 225px;
+}
+.action-cards.gallery h2,
+.action-cards.gallery h3 {
+	display: block;
+}
+.action-cards.gallery img {
+	height: 52px;
+}
+
+.tabbuttons > .back {
+	padding: 6px 12px; margin-left: -12px; font-weight: 500; font-size: 0.95rem;
+}
+
+.filter-bar {
+	position: sticky;
+	top: -20px;
+	z-index: 10;
+	padding: 16px 24px;
+	margin-top: 0px;
+	margin-bottom: 16px;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 16px;
+}
+
+.item.selected {
+	border-color: #007800;
+}
+.item.installed {
+	background-color: #007800;
+}
+.item.incompatible {
+	opacity: 0.45;
+	pointer-events: none;
+	filter: grayscale(1);
+}
+
+#divBottomDrawer {
+	position: fixed;
+	bottom: -100px; /* hidden initially */
+	left: 0;
+	right: 0;
+	border-left: none;
+	border-right: none;
+	border-bottom: none;
+	box-shadow: 0px -4px 16px rgba(0,0,0,0.08);
+	z-index: 99;
+	padding: 20px 0px !important;
+	transition: bottom 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+#divBottomDrawer.visible {
+	bottom: 0;
+}
+#explorer-content,
+#divBottomDrawer > div {
+	max-width: 1120px;
+	margin: 0 auto;
+	box-sizing: border-box;
+	padding-left: 20px !important;
+	padding-right: 20px !important;
+}
+#divBottomDrawer .drawer-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 20px;
+}
+#divBottomDrawer .drawer-left {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+#divBottomDrawer #divCartRecapPanel {
+	font-size: 0.9rem;
+	flex-grow: 1;
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.3s cubic-bezier(0.2, 0, 0, 1);
+	margin-top: 10px;
+	padding: 0 20px;
+}
+#divBottomDrawer #divCartRecapPanel:not(.open) {
+	border: none;
+}
+#divBottomDrawer #divCartRecapPanel.open {
+	max-height: 200px;
+	padding: 16px 20px;
+	overflow-y: auto;
+}
+#ulCartRecapList {
+	margin: 0;
+	padding-left: 20px;
+	font-size: 0.9rem;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+#divStoreGrid {
+	margin-bottom: 80px;
+}
+#divStoreGrid .item button {
+	position: absolute;
+	top: 5px;
+	right: 5px;
+	width: auto;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+#divStoreGrid .item:hover button,
+#divStoreGrid .item:focus button {
+	opacity: 1;
+}
+
+#divJobsGrid {
+	display: flex;
+	gap: 16px;
+	flex-direction: column;
+}
+#divJobsGrid > a {
+	display: flex;
+	gap: 8px;
+	text-align: start !important;
+	flex-basis: auto !important;
+	align-items: center;
+	transition: transform 0.2s ease;
+	text-decoration: none;
+}
+#divJobsGrid > a:hover {
+	transform: scale(1.01);
+}
+#divJobsGrid > :first-child {
+	flex-grow: 0;
+}
+#divJobsGrid img {
+	height: 52px;
+}
+
+@media (max-width: 750px) {
+	.navbar-links button span {
+		display: none;
+	}
+}
+
+@media (prefers-color-scheme: dark) {
+	.item.selected {
+		border-color: #00a000;
+	}
+	.item.installed {
+		background-color: #00a000;
+	}
+}
