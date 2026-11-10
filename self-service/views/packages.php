@@ -105,7 +105,7 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 			<img src='<?php echo $p->getIcon(); ?>'>
 			<h3><?php echo htmlspecialchars($p->package_family_name); ?></h3>
 			<div class='description'><?php echo htmlspecialchars($p->version); ?></div>
-			<button type='button' class='small' title='<?php echo LANG('details'); ?>' onclick='event.preventDefault();event.stopPropagation();refreshContentExplorer("views/packages.php?id=<?php echo intval($p->id); ?>")'><img src='img/list.dyn.svg'></button>
+			<button type='button' class='small' title='<?php echo LANG('details'); ?>' onclick='event.preventDefault();event.stopPropagation();refreshContentExplorer("views/packages.php?id=<?php echo intval($p->id); ?>")'><img src='img/eye.dyn.svg'></button>
 		</a>
 	<?php } ?>
 </div>
