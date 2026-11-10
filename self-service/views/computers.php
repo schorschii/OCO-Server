@@ -29,6 +29,8 @@ try {
 $commands = Models\Computer::getCommands($ext);
 ?>
 
+<div id='self-service-container'>
+
 <?php if(empty($computer)) { ?>
 
 	<div class='details-header'>
@@ -232,3 +234,5 @@ $commands = Models\Computer::getCommands($ext);
 	</div>
 
 <?php } ?>
+
+</div>

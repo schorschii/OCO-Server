@@ -40,6 +40,8 @@ try {
 }
 ?>
 
+<div id='self-service-container'>
+
 <?php if(empty($package)) {
 $preselectedComputerId = isset($_GET['computer_id']) ? intval($_GET['computer_id']) : null;
 $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []));
@@ -340,3 +342,5 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 	</div>
 </div>
 <?php } ?>
+
+</div>

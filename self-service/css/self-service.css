@@ -63,7 +63,7 @@
 #divBottomDrawer.visible {
 	bottom: 0;
 }
-#explorer-content,
+#self-service-container,
 #divBottomDrawer > div {
 	max-width: 1120px;
 	margin: 0 auto;
@@ -110,6 +110,7 @@
 
 #divStoreGrid {
 	margin-bottom: 80px;
+	justify-content: space-between;
 }
 #divStoreGrid .item button {
 	position: absolute;

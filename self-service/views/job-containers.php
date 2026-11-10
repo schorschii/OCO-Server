@@ -32,6 +32,8 @@ try {
 }
 ?>
 
+<div id='self-service-container'>
+
 <?php if(empty($container)) { ?>
 
 	<div class='details-header'>
@@ -262,3 +264,5 @@ try {
 </div>
 
 <?php } ?>
+
+</div>
