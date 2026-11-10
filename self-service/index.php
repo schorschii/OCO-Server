@@ -41,9 +41,6 @@ if(!empty($_GET['view'])) {
 
 	<div id='header' role='banner'>
 		<span class='left'>
-			<button id='btnSidebar' class='noprint' onclick='toggleSidebar()' title='<?php echo LANG('show_hide_sidebar'); ?>'>
-				<img src='img/menu.light.svg'>
-			</button>
 			<a href='index.php' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' class='title'><?php echo LANG('self_service_name'); ?></a>
 		</span>
 
@@ -51,9 +48,11 @@ if(!empty($_GET['view'])) {
 			<button id='btnNavComputers' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/computers.php");'>
 				<img src='img/computer.light.svg'> <span><?php echo LANG('my_computers'); ?></span>
 			</button>
+			<span class='separator noprint'></span>
 			<button id='btnNavStore' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/packages.php");'>
 				<img src='img/package.light.svg'> <span><?php echo LANG('available_packages'); ?></span>
 			</button>
+			<span class='separator noprint'></span>
 			<button id='btnNavJobs' onclick='event.preventDefault();this.parentElement.classList.remove("show-mobile-menu");refreshContentExplorer("views/job-containers.php");'>
 				<img src='img/job.light.svg'> <span><?php echo LANG('my_jobs'); ?></span>
 			</button>

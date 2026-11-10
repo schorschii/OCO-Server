@@ -5,6 +5,7 @@
 .action-cards a.item {
 	text-decoration: none;
 	flex-basis: 30%;
+	min-width: 225px;
 }
 .action-cards.gallery h2,
 .action-cards.gallery h3 {
@@ -20,10 +21,11 @@
 
 .filter-bar {
 	position: sticky;
-	top: 0;
+	top: -20px;
 	z-index: 10;
 	padding: 16px 24px;
-	margin-bottom: 32px;
+	margin-top: 0px;
+	margin-bottom: 16px;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 16px;
@@ -57,20 +59,23 @@
 #divBottomDrawer.visible {
 	bottom: 0;
 }
-.drawer-content {
+#divBottomDrawer > div {
 	max-width: 1120px;
 	margin: 0 auto;
+}
+#divBottomDrawer .drawer-content {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	gap: 20px;
 }
-.drawer-left {
+#divBottomDrawer .drawer-left {
 	display: flex;
 	align-items: center;
 	gap: 16px;
 }
-.cart-text-recap {
+#divBottomDrawer #divCartRecapPanel {
+	margin-top: 10px;
 	font-size: 0.9rem;
 }
 #divCartRecapPanel {
@@ -97,6 +102,9 @@
 	gap: 6px;
 }
 
+#divStoreGrid {
+	margin-bottom: 80px;
+}
 #divStoreGrid .item button {
 	position: absolute;
 	top: 5px;

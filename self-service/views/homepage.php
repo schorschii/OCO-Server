@@ -77,8 +77,9 @@ if(isset($cl) && isset($db)) {
 		</a>
 	</div>
 
+	<?php if(is_file(__DIR__.'/help/index.html')) { ?>
 	<div class='gallery gap action-cards'>
-		<!-- Card : Install software -->
+		<!-- Card : User guides -->
 		<a <?php echo Html::explorerLink('views/help.php'); ?> class='item box'>
 			<div>
 				<img src='img/help.dyn.svg'>
@@ -89,6 +90,7 @@ if(isset($cl) && isset($db)) {
 			</div>
 		</a>
 	</div>
+	<?php } ?>
 
 	<div class='footer'>
 		<?php require('partial/copyright.php'); ?>

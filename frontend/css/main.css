@@ -639,6 +639,9 @@ span.filler {
 	font-weight: bold;
 	margin-bottom: 0px;
 }
+.gallery > a.item {
+	color: inherit;
+}
 .gallery > .item:hover {
 	transform: scale(1.05);
 }
@@ -816,7 +819,7 @@ input:not([type=file]):read-only, textarea:read-only {
 	background-color: rgb(240, 240, 240);
 	background-image: repeating-linear-gradient(45deg, rgb(255,255,255), rgb(255,255,255) 10px, rgb(240, 240, 240) 10px, rgb(240, 240, 240) 20px);
 }
-input.tableSearch {
+table input.tableSearch {
 	width: 100%;
 	min-width: 80px;
 	padding: 0px;
@@ -824,7 +827,8 @@ input.tableSearch {
 	box-shadow: none !important;
 	background-color: transparent !important;
 }
-input.tableSearch:not(:placeholder-shown) {
+input.tableSearch:not(:placeholder-shown),
+.marked {
 	background-color: rgba(255,250,0,0.2) !important;
 }
 table.form input:not([type=checkbox]):not([type=radio]),

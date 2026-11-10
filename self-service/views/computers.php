@@ -57,13 +57,6 @@ $commands = Models\Computer::getCommands($ext);
 	$isOnline = $computer->isOnline($db);
 ?>
 
-	<!-- Contextual Back Button -->
-	<div class='tabbuttons'>
-		<a <?php echo Html::explorerLink('views/computers.php'); ?> class='back'>
-			<span>&larr;</span> <?php echo LANG('back'); ?>
-		</a>
-	</div>
-
 	<!-- Toolbar -->
 	<div class='details-header'>
 		<h1><img src='<?php echo $computer->getIcon(); ?>' class='<?php echo($computer->isOnline($db) ? 'online' : 'offline'); ?>' title='<?php echo($computer->isOnline($db) ? LANG('online') : LANG('offline')); ?>'><span id='page-title'><span id='spnComputerName'><?php echo htmlspecialchars($computer->hostname); ?></span></span></h1>
@@ -141,7 +134,11 @@ $commands = Models\Computer::getCommands($ext);
 		<div class='stickytable'>
 			<h2><?php echo LANG('pending_jobs'); ?></h2>
 			<?php 
-			$pendingJobs = $db->selectAllPendingJobByComputerId($computer->id);
+			$pendingJobs = [];
+			foreach($db->selectAllPendingJobByComputerId($computer->id) as $j) {
+				if(!$cl->checkPermission($db->selectPackage($j->package_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
+				$pendingJobs[] = $j;
+			}
 			if(empty($pendingJobs)) {
 				echo "<div class='alert info'>" . LANG('no_jobs_in_progress') . "</div>";
 			} else {
@@ -157,7 +154,6 @@ $commands = Models\Computer::getCommands($ext);
 				<tbody>
 					<?php
 					foreach($pendingJobs as $j) {
-						if(!$cl->checkPermission($db->selectPackage($j->package_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
 						echo '<tr class="'.(!$j->isEnabled()?'offline':'').'">';
 						echo '<td>';
 						if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";

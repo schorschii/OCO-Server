@@ -251,8 +251,7 @@ try {
 							<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
 						</div>
 						<div class='controls'>
-							<button class='downloadCsv'><img src='img/csv.dyn.svg'>&nbsp;<?php echo LANG('csv'); ?></button>
-							<button onclick='removeSelectedJob("job_id[]")' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
+							<button onclick='removeSelectedJob(getSelectedCheckBoxValues("job_id[]",null,true), event)' <?php if(!$permissionDelete) echo 'disabled'; ?>><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('delete'); ?></button>
 						</div>
 					</div>
 				</td>

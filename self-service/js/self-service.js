@@ -40,6 +40,7 @@ function initSelfServicePackages() {
 	}
 
 	function updateCompatibility() {
+		sltTargetComputer.classList.toggle('marked', sltTargetComputer.value === '');
 		let computer = sltTargetComputer.selectedOptions[0];
 		packageItems.forEach(item => {
 			let incompatible = !!sltTargetComputer.value && !!computer && (

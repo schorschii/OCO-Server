@@ -75,7 +75,7 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 			</select>
 		</span>
 	</div>
-	<input type='search' class='filler' id='txtPackageSearch' placeholder='<?php echo LANG('search_placeholder'); ?>'>
+	<input type='search' class='filler tableSearch' id='txtPackageSearch' placeholder='<?php echo LANG('search_placeholder'); ?>'>
 	<label>
 		<input type='checkbox' id='chkNonInstalledOnly'>
 		<span><?php echo LANG('not_installed_only'); ?></span>
@@ -87,6 +87,9 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 </div>
 
 <!-- Packages Grid -->
+<div id='divNoPackagesFound' class='alert warning hidden'>
+	<?php echo htmlspecialchars(LANG('filter_no_packages_found')); ?>
+</div>
 <div id='divStoreGrid' class='gallery gap'>
 	<?php foreach($cl->getMyPackages() as $p) { ?>
 		<a class='item box<?php if(in_array(intval($p->id), $preselectedPackageIds, true)) echo ' selected'; ?>' href='#'
@@ -105,8 +108,6 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 	<?php } ?>
 </div>
 
-<div id='divNoPackagesFound' class='alert warning hidden'><?php echo htmlspecialchars(LANG('filter_no_packages_found')); ?></div>
-
 <!-- Sticky Bottom Drawer / Shopping Cart -->
 <div class='box' id='divBottomDrawer'>
 	<div class='drawer-content'>
@@ -122,7 +123,6 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 			</button>
 		</div>
 	</div>
-
 	<!-- Collapsible Cart Recap Panel -->
 	<div class='box' id='divCartRecapPanel'>
 		<ul id='ulCartRecapList'>
@@ -144,305 +144,197 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 	</div>
 </div>
 
-<div id='tabControlPackage' class='tabcontainer'>
-	<div class='tabbuttons'>
-		<a href='#' name='general' class='<?php if($tab=='general') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('general_and_dependencies'); ?></a>
-		<a href='#' name='computers' class='<?php if($tab=='computers') echo 'active'; ?>' onclick='event.preventDefault();openTab(tabControlPackage,this.getAttribute("name"))'><?php echo LANG('computer_and_jobs'); ?></a>
+<div class='details-abreast'>
+	<div>
+		<h2><?php echo LANG('general'); ?></h2>
+		<table class='list metadata'>
+			<tr>
+				<th><?php echo LANG('compatible_os'); ?></th>
+				<td>
+					<span id='spnPackageCompatibleOs'><?php echo nl2br(htmlspecialchars($package->compatible_os)); ?></span>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('compatible_os_version'); ?></th>
+				<td>
+					<span id='spnPackageCompatibleOsVersion'><?php echo nl2br(htmlspecialchars($package->compatible_os_version)); ?></span>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('compatible_architecture'); ?></th>
+				<td>
+					<span id='spnPackageCompatibleArchitecture'><?php echo nl2br(htmlspecialchars($package->compatible_architecture)); ?></span>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('size'); ?></th>
+				<td>
+					<?php
+					$size = $package->getSize();
+					if($size) echo niceSize($size, true).' ';
+					else echo LANG('not_found');
+					?>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('installation').' - '.LANG('after_completion'); ?></th>
+				<td>
+					<?php $info = '';
+					switch($package->install_procedure_post_action) {
+						case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
+						case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
+						case Models\Package::POST_ACTION_EXIT: $info = LANG('restart_agent'); break;
+						default: $info = LANG('no_action'); break;
+					}
+					echo htmlspecialchars($info);
+					?>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('uninstallation').' - '.LANG('after_completion'); ?></th>
+				<td>
+					<?php $info = '';
+					switch($package->uninstall_procedure_post_action) {
+						case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
+						case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
+						default: $info = LANG('no_action'); break;
+					}
+					echo htmlspecialchars($info);
+					?>
+				</td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('created'); ?></th>
+				<td><?php echo htmlspecialchars($package->created); ?></td>
+			</tr>
+			<tr>
+				<th><?php echo LANG('last_updated'); ?></th>
+				<td><?php echo htmlspecialchars($package->updated); ?></td>
+			</tr>
+		</table>
+
+		<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
+		<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
+		<table id='tblOtherPackagesData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<th class='searchable sortable'><?php echo LANG('version'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('size'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('created'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
+					if($p->id === $package->id) continue; // do not show this package
+					if(!$cl->checkPermission($p, SelfService\PermissionManager::METHOD_READ, false)) continue;
+					echo '<tr>';
+					echo '<td><a '.Html::explorerLink('views/packages.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
+					echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
+					echo '<td>'.$p->created.'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
 	</div>
-	<div class='tabcontents'>
-		<div name='general' class='<?php if($tab=='general') echo 'active'; ?>'>
-			<div class='details-abreast'>
-				<div>
-					<h2><?php echo LANG('general'); ?></h2>
-					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG('compatible_os'); ?></th>
-							<td>
-								<span id='spnPackageCompatibleOs'><?php echo nl2br(htmlspecialchars($package->compatible_os)); ?></span>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('compatible_os_version'); ?></th>
-							<td>
-								<span id='spnPackageCompatibleOsVersion'><?php echo nl2br(htmlspecialchars($package->compatible_os_version)); ?></span>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('compatible_architecture'); ?></th>
-							<td>
-								<span id='spnPackageCompatibleArchitecture'><?php echo nl2br(htmlspecialchars($package->compatible_architecture)); ?></span>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('size'); ?></th>
-							<td>
-								<?php
-								$size = $package->getSize();
-								if($size) echo niceSize($size, true).' ';
-								else echo LANG('not_found');
-								?>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('author'); ?></th>
-							<td><?php echo htmlspecialchars($package->created_by_system_user_username??''); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('created'); ?></th>
-							<td><?php echo htmlspecialchars($package->created); ?></td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('last_updated'); ?></th>
-							<td><?php echo htmlspecialchars($package->updated); ?></td>
-						</tr>
-					</table>
-				</div>
-				<div>
-					<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
-					<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
-					<table id='tblOtherPackagesData' class='list searchable sortable savesort'>
-						<thead>
-							<tr>
-								<th class='searchable sortable'><?php echo LANG('version'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('size'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('created'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
-								if($p->id === $package->id) continue; // do not show this package
-								if(!$cl->checkPermission($p, SelfService\PermissionManager::METHOD_READ, false)) continue;
-								echo '<tr>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
-								echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
-								echo '<td>'.$p->created.'</td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div>
+	<div class='stickytable'>
+	<h2><?php echo LANG('pending_jobs'); ?></h2>
+	<?php
+	$pendingJobs = [];
+	foreach($db->selectAllPendingJobByPackageId($package->id) as $j) {
+		if(!$cl->checkPermission($db->selectComputer($j->computer_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
+		$pendingJobs[] = $j;
+	}
+	if(empty($pendingJobs)) {
+		echo "<div class='alert info'>" . LANG('no_jobs_in_progress') . "</div>";
+	} else {
+	?>
+		<table id='tblPendingPackageJobsData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('container'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('status'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('priority').'/'.LANG('sequence'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($pendingJobs as $j) {
+					echo '<tr class="'.(!$j->isEnabled()?'offline':'').'">';
+					echo '<td>';
+					if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
+					else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
+					echo  '<a '.Html::explorerLink('views/computers.php?id='.$j->computer_id).'>'.htmlspecialchars($j->computer_hostname).'</a>';
+					echo '</td>';
+					if($j instanceof Models\DynamicJob) {
+						echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.Html::explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
+					} elseif($j instanceof Models\StaticJob) {
+						echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.Html::explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
+					}
+					echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
+					echo '<td sort_key="'.htmlspecialchars($j->getSortKey()).'">'.htmlspecialchars($j->getPriority().'-'.$j->sequence).'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
+		<?php } ?>
 
-			<div class='details-abreast'>
-				<div>
-					<h2><?php echo LANG('installation'); ?></h2>
-					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG('after_completion'); ?></th>
-							<td>
-								<span id='spnPackageInstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->install_procedure_post_action); ?></span>
-								<?php $info = '';
-								switch($package->install_procedure_post_action) {
-									case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
-									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
-									case Models\Package::POST_ACTION_EXIT: $info = LANG('restart_agent'); break;
-									default: $info = LANG('no_action'); break;
-								}
-								echo htmlspecialchars($info);
-								?>
-							</td>
-						</tr>
-					</table>
-				</div>
-				<div>
-					<h2><?php echo LANG('uninstallation'); ?></h2>
-					<table class='list metadata'>
-						<tr>
-							<th><?php echo LANG('after_completion'); ?></th>
-							<td>
-								<span id='spnPackageUninstallProcedurePostAction' class='rawvalue'><?php echo htmlspecialchars($package->uninstall_procedure_post_action); ?></span>
-								<?php $info = '';
-								switch($package->uninstall_procedure_post_action) {
-									case Models\Package::POST_ACTION_RESTART: $info = LANG('restart'); break;
-									case Models\Package::POST_ACTION_SHUTDOWN: $info = LANG('shutdown'); break;
-									default: $info = LANG('no_action'); break;
-								}
-								echo htmlspecialchars($info);
-								?>
-							</td>
-						</tr>
-						<tr>
-							<th><?php echo LANG('download_for_uninstall'); ?></th>
-							<td>
-								<span id='spnPackageDownloadForUninstall' class='rawvalue'><?php echo htmlspecialchars($package->download_for_uninstall); ?></span>
-								<?php $info = ''; if($package->download_for_uninstall) $info = LANG('yes'); else $info = LANG('no'); echo htmlspecialchars($info); ?>
-							</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-
-			<div class='details-abreast'>
-				<div>
-					<h2><?php echo LANG('depends_on'); ?></h2>
-					<table id='tblDependencyPackageData' class='list sortable savesort'>
-						<thead>
-							<tr>
-								<th class='sortable'><?php echo LANG('name'); ?></th>
-								<th class='sortable'><?php echo LANG('version'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllPackageDependencyByPackageId($package->id) as $dp) {
-								echo '<tr>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<div class='spread'>
-										<div>
-											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-										</div>
-										<div class='controls'>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-				<div>
-					<h2><?php echo LANG('dependent_packages'); ?></h2>
-					<table id='tblDependentPackageData' class='list sortable savesort'>
-						<thead>
-							<tr>
-								<th class='sortable'><?php echo LANG('name'); ?></th>
-								<th class='sortable'><?php echo LANG('version'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllPackageDependencyByDependentPackageId($package->id) as $dp) {
-								echo '<tr>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->package_family_name).'</a></td>';
-								echo '<td><a '.Html::explorerLink('views/packages.php?id='.$dp->id).'>'.htmlspecialchars($dp->version).'</a></td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<div class='spread'>
-										<div>
-											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-										</div>
-										<div class='controls'>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div>
-		</div>
-
-		<div name='computers' class='<?php if($tab=='computers') echo 'active'; ?>'>
-			<div class='details-abreast'>
-				<div class='stickytable'>
-					<h2><?php echo LANG('installed_on'); ?></h2>
-					<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>
-						<thead>
-							<tr>
-								<th><input type='checkbox' class='toggleAllChecked'></th>
-								<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('initiator'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('installation_date'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllComputerPackageByPackageId($package->id) as $p) {
-								if(!$cl->checkPermission($db->selectComputer($p->computer_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
-								echo '<tr>';
-								echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'"></td>';
-								echo '<td><a '.Html::explorerLink('views/computers.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
-								echo '<td>'.htmlspecialchars($p->installed_by_system_user_username??$p->installed_by_domain_user_username??'').'</td>';
-								echo '<td>'.htmlspecialchars($p->installed).'</td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<div class='spread'>
-										<div>
-											<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
-											<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
-										</div>
-										<div class='controls'>
-											<button onclick='showDialogUninstallSelfService()'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
-										</div>
-									</div>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-				<div class='stickytable'>
-					<h2><?php echo LANG('pending_jobs'); ?></h2>
-					<table id='tblPendingPackageJobsData' class='list searchable sortable savesort'>
-						<thead>
-							<tr>
-								<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('container'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('status'); ?></th>
-								<th class='searchable sortable'><?php echo LANG('priority').'/'.LANG('sequence'); ?></th>
-							</tr>
-						</thead>
-						<tbody>
-							<?php
-							foreach($db->selectAllPendingJobByPackageId($package->id) as $j) {
-								if(!$cl->checkPermission($db->selectComputer($j->computer_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
-								echo '<tr class="'.(!$j->isEnabled()?'offline':'').'">';
-								echo '<td>';
-								if($j->is_uninstall == 0) echo "<img src='img/install.dyn.svg' title='".LANG('install')."'>&nbsp;";
-								else echo "<img src='img/delete.dyn.svg' title='".LANG('uninstall')."'>&nbsp;";
-								echo  '<a '.Html::explorerLink('views/computers.php?id='.$j->computer_id).'>'.htmlspecialchars($j->computer_hostname).'</a>';
-								echo '</td>';
-								if($j instanceof Models\DynamicJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('deployment_rule').'">&nbsp;<a '.Html::explorerLink('views/deployment-rules.php?id='.$j->deployment_rule_id).'>'.htmlspecialchars($j->deployment_rule_name).'</a></td>';
-								} elseif($j instanceof Models\StaticJob) {
-									echo '<td><img src="'.$j->getContainerIcon().'" title="'.LANG('job_container').'">&nbsp;<a '.Html::explorerLink('views/job-containers.php?id='.$j->job_container_id).'>'.htmlspecialchars($j->job_container_name).'</a></td>';
-								}
-								echo '<td class="middle"><img src="'.$j->getIcon().'">&nbsp;'.$j->getStateString().'</td>';
-								echo '<td sort_key="'.htmlspecialchars($j->getSortKey()).'">'.htmlspecialchars($j->getPriority().'-'.$j->sequence).'</td>';
-								echo '</tr>';
-							}
-							?>
-						</tbody>
-						<tfoot>
-							<tr>
-								<td colspan='999'>
-									<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>
-								</td>
-							</tr>
-						</tfoot>
-					</table>
-				</div>
-			</div>
-		</div>
-
+		<h2><?php echo LANG('installed_on'); ?></h2>
+		<table id='tblPackageAssignedComputersData' class='list searchable sortable savesort'>
+			<thead>
+				<tr>
+					<th><input type='checkbox' class='toggleAllChecked'></th>
+					<th class='searchable sortable'><?php echo LANG('computer'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('initiator'); ?></th>
+					<th class='searchable sortable'><?php echo LANG('installation_date'); ?></th>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach($db->selectAllComputerPackageByPackageId($package->id) as $p) {
+					if(!$cl->checkPermission($db->selectComputer($p->computer_id), SelfService\PermissionManager::METHOD_READ, false)) continue;
+					echo '<tr>';
+					echo '<td><input type="checkbox" name="package_id[]" value="'.$p->id.'" computer_id="'.$p->computer_id.'"></td>';
+					echo '<td><a '.Html::explorerLink('views/computers.php?id='.$p->computer_id).'>'.htmlspecialchars($p->computer_hostname).'</a></td>';
+					echo '<td>'.htmlspecialchars($p->installed_by_system_user_username??$p->installed_by_domain_user_username??'').'</td>';
+					echo '<td>'.htmlspecialchars($p->installed).'</td>';
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan='999'>
+						<div class='spread'>
+							<div>
+								<span class='counterFiltered'>0</span>/<span class='counterTotal'>0</span>&nbsp;<?php echo LANG('elements'); ?>,
+								<span class='counterSelected'>0</span>&nbsp;<?php echo LANG('selected'); ?>
+							</div>
+							<div class='controls'>
+								<button onclick='showDialogUninstallSelfService()'><img src='img/delete.dyn.svg'>&nbsp;<?php echo LANG('uninstall'); ?></button>
+							</div>
+						</div>
+					</td>
+				</tr>
+			</tfoot>
+		</table>
 	</div>
 </div>
-
 <?php } ?>
