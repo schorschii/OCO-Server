@@ -627,8 +627,8 @@ span.filler {
 .gallery > .item {
 	flex-grow: 0;
 	flex-shrink: 0;
-	flex-basis: 200px;
-	padding: 10px;
+	flex-basis: 180px;
+	padding: 15px;
 	background-color: white;
 	transition: 0.2s ease;
 	text-decoration: none !important;
