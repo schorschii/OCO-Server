@@ -22,9 +22,15 @@ require_once(__DIR__.'/../../session.inc.php');
 				<input type='time' class='' name='start_time' value='<?php echo date('H:i:s'); ?>'></input>
 			</div>
 			<div>
-				<label><input type='checkbox' name='wol' <?php if(!empty($db->settings->get('default-use-wol'))) echo 'checked'; ?>><?php echo LANG('send_wol'); ?></label>
+				<label title='<?php echo LANG('send_wol_description'); ?>'>
+					<input type='checkbox' name='wol' <?php if(!empty($db->settings->get('default-use-wol'))) echo 'checked'; ?>>
+					<?php echo LANG('send_wol'); ?>
+				</label>
 				<br/>
-				<label title='<?php echo LANG('shutdown_waked_after_completion'); ?>'><input type='checkbox' name='shutdown_waked' <?php if(!empty($db->settings->get('default-shutdown-waked-after-completion'))) echo 'checked'; else echo 'disabled' ?>><?php echo LANG('shutdown_waked_computers'); ?></label>
+				<label title='<?php echo LANG('shutdown_waked_after_completion'); ?>'>
+					<input type='checkbox' name='shutdown_waked' <?php if(!empty($db->settings->get('default-shutdown-waked-after-completion'))) echo 'checked'; else echo 'disabled' ?>>
+					<?php echo LANG('shutdown_waked_computers'); ?>
+				</label>
 			</div>
 		</td>
 	</tr>
