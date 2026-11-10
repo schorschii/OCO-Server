@@ -123,11 +123,13 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 			</button>
 		</div>
 	</div>
-	<!-- Collapsible Cart Recap Panel -->
-	<div class='box' id='divCartRecapPanel'>
-		<ul id='ulCartRecapList'>
-			<!-- filled dynamically -->
-		</ul>
+	<div class='drawer-content'>
+		<!-- Collapsible Cart Recap Panel -->
+		<div class='box' id='divCartRecapPanel'>
+			<ul id='ulCartRecapList'>
+				<!-- filled dynamically -->
+			</ul>
+		</div>
 	</div>
 </div>
 
