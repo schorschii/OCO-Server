@@ -1,3 +1,7 @@
+#login-bg {
+	background-image: url('../img/bg-self-service.jpg');
+}
+
 .action-cards {
 	justify-content: center;
 	margin-top: 35px;
