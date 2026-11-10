@@ -217,6 +217,15 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 			</tr>
 		</table>
 
+		<?php
+		$otherFamilyPackages = [];
+		foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
+			if($p->id === $package->id) continue; // do not show this package
+			if(!$cl->checkPermission($p, SelfService\PermissionManager::METHOD_READ, false)) continue;
+			$otherFamilyPackages[] = $p;
+		}
+		if(!empty($otherFamilyPackages)) {
+		?>
 		<h2><?php echo LANG('other_packages_from_this_family'); ?></h2>
 		<?php if(!empty($packageFamily->notes)) echo "<p class='quote'>".nl2br(htmlspecialchars($packageFamily->notes))."</p>"; ?>
 		<table id='tblOtherPackagesData' class='list searchable sortable savesort'>
@@ -229,9 +238,7 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 			</thead>
 			<tbody>
 				<?php
-				foreach($db->selectAllPackageByPackageFamilyId($package->package_family_id) as $p) {
-					if($p->id === $package->id) continue; // do not show this package
-					if(!$cl->checkPermission($p, SelfService\PermissionManager::METHOD_READ, false)) continue;
+				foreach($otherFamilyPackages as $p) {
 					echo '<tr>';
 					echo '<td><a '.Html::explorerLink('views/packages.php?id='.$p->id).'>'.htmlspecialchars($p->version).'</a></td>';
 					echo '<td>'.htmlspecialchars(niceSize($p->getSize())).'</td>';
@@ -248,6 +255,7 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 				</tr>
 			</tfoot>
 		</table>
+		<?php } ?>
 	</div>
 	<div class='stickytable'>
 	<h2><?php echo LANG('pending_jobs'); ?></h2>
