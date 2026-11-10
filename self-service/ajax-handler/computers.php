@@ -10,15 +10,6 @@ try {
 		die();
 	}
 
-	if(!empty($_POST['get_computer_names']) && is_array($_POST['get_computer_names'])) {
-		$finalArray = [];
-		foreach($_POST['get_computer_names'] as $id) {
-			$c = $cl->getMyComputer($id);
-			if(!empty($c)) $finalArray[] = ['id'=>$c->id, 'name'=>$c->hostname];
-		}
-		die(json_encode($finalArray));
-	}
-
 } catch(PermissionException $e) {
 	header('HTTP/1.1 403 Forbidden');
 	die(LANG('permission_denied'));
