@@ -124,7 +124,10 @@ function initSelfServicePackages() {
 
 	txtPackageSearch.addEventListener('input', filterPackages);
 	chkNonInstalledOnly.addEventListener('change', filterPackages);
-	chkUpdatesOnly.addEventListener('change', filterPackages);
+	chkUpdatesOnly.addEventListener('change', () => {
+		if(chkUpdatesOnly.checked) chkNonInstalledOnly.checked = true;
+		filterPackages();
+	});
 	sltTargetComputer.addEventListener('change', () => {
 		updateCompatibility();
 		filterPackages();
@@ -140,6 +143,7 @@ function initSelfServicePackages() {
 		});
 	});
 
+	if(chkUpdatesOnly.checked) chkNonInstalledOnly.checked = true;
 	filterPackages();
 	updateCompatibility();
 }
