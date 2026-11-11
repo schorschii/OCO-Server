@@ -628,6 +628,7 @@ span.filler {
 	margin: 0px 5px 0px 0px;
 }
 .gallery > .item {
+	position: relative;
 	flex-grow: 0;
 	flex-shrink: 0;
 	flex-basis: 180px;

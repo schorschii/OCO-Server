@@ -121,7 +121,9 @@
 	transition: opacity 0.2s ease;
 }
 #divStoreGrid .item:hover button,
-#divStoreGrid .item:focus button {
+#divStoreGrid .item:focus button,
+#divStoreGrid .item button:hover,
+#divStoreGrid .item button:focus {
 	opacity: 1;
 }
 
