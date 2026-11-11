@@ -120,7 +120,10 @@ $preselectedPackageIds = array_map('intval', (array)($_GET['package_id'] ?? []))
 			</button>
 		</div>
 		<div class='deploy-tooltip-wrapper'>
-			<button class='primary' id='btnDeploy' disabled>
+			<div id='divNoComputerWarning' class='alert warning nomargin hidden'>
+				<?php echo LANG('no_computer_selected_for_deploy'); ?>
+			</div>
+			<button class='primary hidden' id='btnDeploy' disabled>
 				<img src='img/send.white.svg'>&nbsp;<?php echo LANG('install'); ?>
 			</button>
 		</div>

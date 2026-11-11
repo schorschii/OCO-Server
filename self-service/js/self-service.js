@@ -15,6 +15,7 @@ function initSelfServicePackages() {
 	let spnCartCount = document.getElementById('spnCartCount');
 	let ulCartRecapList = document.getElementById('ulCartRecapList');
 	let divNoPackagesFound = document.getElementById('divNoPackagesFound');
+	let divNoComputerWarning = document.getElementById('divNoComputerWarning');
 	let deploying = false;
 
 	function filterPackages() {
@@ -41,6 +42,8 @@ function initSelfServicePackages() {
 
 	function updateCompatibility() {
 		sltTargetComputer.classList.toggle('marked', sltTargetComputer.value === '');
+		divNoComputerWarning.classList.toggle('hidden', sltTargetComputer.value !== '');
+		btnDeploy.classList.toggle('hidden', sltTargetComputer.value === '');
 		let computer = sltTargetComputer.selectedOptions[0];
 		packageItems.forEach(item => {
 			let incompatible = !!sltTargetComputer.value && !!computer && (

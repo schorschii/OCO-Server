@@ -741,6 +741,7 @@ return [
 	'install_packages' => 'Installer des paquets',
 	'no_jobs_in_progress' => 'Aucun téléchargement ou installation en cours',
 	'no_packages_installed' => 'Aucun paquet installé',
+	'no_computer_selected_for_deploy' => 'Veuillez sélectionner un ordinateur cible.',
 	'package_creation_notes' => '
 		<p>
 			Un paquet consiste en une archive ZIP, qui sera décompressé dans un fichier temporaire. Ensuite une commande (la procédure) est exécutée pour démarrer l\'installation. Les commandes longues doivent être stockées dans un script (.bat or .sh) que vous créez vous-même.
