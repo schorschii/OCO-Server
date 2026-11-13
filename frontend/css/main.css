@@ -59,7 +59,7 @@ h3 {
 	background-color: #314351;
 	color: white;
 	box-sizing: border-box;
-	padding: 5px 15px;
+	padding: 5px;
 	font-weight: 100;
 }
 #header.progress {
@@ -91,8 +91,13 @@ h3 {
 	box-shadow: none;
 	color: #B3B9BE;
 	text-transform: none;
+	margin: 0px 2px;
 	padding: 6px 10px;
 	border-radius: 999px;
+}
+#header button.icononly,
+#header a.icononly {
+	padding: 6px;
 }
 #header button:hover, #header button:focus,
 #header a:hover, #header a:focus {

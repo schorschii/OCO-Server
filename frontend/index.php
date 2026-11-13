@@ -41,7 +41,7 @@ if(!empty($_GET['view'])) {
 
 	<div id='header' role='banner'>
 		<span class='left'>
-			<button id='btnSidebar' class='noprint' onclick='toggleSidebar()' title='<?php echo LANG('show_hide_sidebar'); ?>'>
+			<button id='btnSidebar' class='noprint icononly' onclick='toggleSidebar()' title='<?php echo LANG('show_hide_sidebar'); ?>'>
 				<img src='img/menu.light.svg'>
 			</button>
 			<a href='index.php' onclick='event.preventDefault();refreshContentExplorer("views/homepage.php");' class='title'><?php echo LANG('app_name'); ?></a>
@@ -57,24 +57,24 @@ if(!empty($_GET['view'])) {
 			</div>
 		</span>
 		<span class='right'>
-			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG('refresh'); ?>'>
+			<button id='btnRefresh' class='noprint icononly' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG('refresh'); ?>'>
 				<img src='img/refresh.light.svg'>
 			</button>
 			<span class='separator noprint'></span>
-			<a class='noprint' <?php echo Html::explorerLink('views/settings.php'); ?> title='<?php echo LANG('settings'); ?>'>
+			<a class='noprint icononly' <?php echo Html::explorerLink('views/settings.php'); ?> title='<?php echo LANG('settings'); ?>'>
 				<img src='img/settings.light.svg'>
 			</a>
 			<span class='separator noprint'></span>
-			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog/about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'>
+			<button id='btnInfo' class='noprint icononly' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog/about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'>
 				<img src='img/info.light.svg'>
 			</button>
 			<span class='separator noprint'></span>
-			<a class='noprint' <?php echo Html::explorerLink('views/docs.php'); ?> title='<?php echo LANG('help'); ?>'>
+			<a class='noprint icononly' <?php echo Html::explorerLink('views/docs.php'); ?> title='<?php echo LANG('help'); ?>'>
 				<img src='img/help.light.svg'>
 			</a>
 			<span class='separator noprint'></span>
 			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'>
-				<span><?php echo htmlspecialchars($currentSystemUser->display_name); ?>&nbsp;</span><img src='img/exit.light.svg'>
+				<span><?php echo htmlspecialchars(!empty($currentSystemUser->display_name) ? $currentSystemUser->display_name : $currentSystemUser->username); ?>&nbsp;</span><img src='img/exit.light.svg'>
 			</button>
 		</span>
 	</div>

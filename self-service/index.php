@@ -59,16 +59,16 @@ if(!empty($_GET['view'])) {
 		</div>
 
 		<span class='right'>
-			<button id='btnRefresh' class='noprint' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG('refresh'); ?>'>
+			<button id='btnRefresh' class='noprint icononly' onclick='refreshContent();refreshSidebar();' oncontextmenu='toggleAutoRefresh();return false;' title='<?php echo LANG('refresh'); ?>'>
 				<img src='img/refresh.light.svg'>
 			</button>
 			<span class='separator noprint'></span>
-			<button id='btnInfo' class='noprint' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog/about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'>
+			<button id='btnInfo' class='noprint icononly' onclick='showDialogAjax("<?php echo LANG('about'); ?>", "views/dialog/about.php", DIALOG_BUTTONS_CLOSE, DIALOG_SIZE_SMALL)' title='<?php echo LANG('about'); ?>'>
 				<img src='img/info.light.svg'>
 			</button>
 			<span class='separator noprint'></span>
 			<button id='btnLogout' onclick='window.location.href="login.php?logout"' title='<?php echo LANG('log_out'); ?>'>
-				<span><?php echo htmlspecialchars($currentDomainUser->display_name); ?>&nbsp;</span><img src='img/exit.light.svg'>
+				<span><?php echo htmlspecialchars(!empty($currentDomainUser->display_name) ? $currentDomainUser->display_name : $currentDomainUser->username); ?>&nbsp;</span><img src='img/exit.light.svg'>
 			</button>
 		</span>
 	</div>
