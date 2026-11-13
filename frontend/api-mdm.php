@@ -59,7 +59,7 @@ if($path === '/profile') {
 	}
 
 	$body = file_get_contents('php://input');
-	checkSignature($body, $_SERVER['HTTP_MDM_SIGNATURE']??null);
+	$certInfo = checkSignature($body, $_SERVER['HTTP_MDM_SIGNATURE']??null);
 	$requestPlist = new CFPropertyList\CFPropertyList();
 	$requestPlist->parse($body);
 	$request = $requestPlist->toArray();
@@ -94,9 +94,7 @@ if($path === '/profile') {
 				$prefix = 'macOS';
 			$os = $request['OSVersion'] ? $prefix.' '.$request['OSVersion'] : null;
 			$md = $db->selectMobileDeviceBySerialNumber($request['SerialNumber']);
-			if(!$md) {
-				throw new InvalidRequestException('Device not found');
-			}
+			assertMatchesDevice($certInfo, $md);
 			// device already registered - store the UDID
 			$db->updateMobileDevice(
 				$md->id, $request['UDID'], $md->state, $md->device_name, $md->serial, $md->vendor_description,
@@ -135,7 +133,7 @@ if($path === '/profile') {
 				throw new InvalidRequestException('At least one required parameter is missing');
 			}
 			$md = $db->selectMobileDeviceByUdid($request['UDID']);
-			if(!$md) throw new NotFoundException();
+			assertMatchesDevice($certInfo, $md);
 			if(isset($request['UserID'])) { // user token update
 				$db->insertMobileDeviceUser($md->id, $request['UserShortName'], $request['UserLongName'], $request['UserID'], $request['Token'], $request['PushMagic']);
 			} else { // device token update
@@ -165,7 +163,7 @@ if($path === '/profile') {
 				throw new InvalidRequestException('At least one required parameter is missing');
 			}
 			$md = $db->selectMobileDeviceByUdid($request['UDID']);
-			if(!$md) throw new NotFoundException();
+			assertMatchesDevice($certInfo, $md);
 			$db->updateMobileDevice(
 				$md->id, null/*udid*/, $md->state, $md->device_name, $md->serial, $md->vendor_description,
 				$md->model, $md->os, $md->device_family, $md->color,
@@ -176,7 +174,7 @@ if($path === '/profile') {
 
 		case 'DeclarativeManagement':
 			$md = $db->selectMobileDeviceByUdid($request['UDID']);
-			if(!$md) throw new NotFoundException();
+			assertMatchesDevice($certInfo, $md);
 
 			$apple = new Apple\AppleCommandController($db);
 			$endpoint = $request['Endpoint'] ?? null;
@@ -274,10 +272,7 @@ if($path === '/profile') {
 
 	$body = file_get_contents('php://input');
 	$certInfo = checkSignature($body, $_SERVER['HTTP_MDM_SIGNATURE']??null);
-
-	if(empty($certInfo['subject']['CN'])) {
-		throw new InvalidRequestException('Cert subject CN (device serial number) is missing');
-	}
+	$deviceCertCn = subjectCn($certInfo);
 
 	// identities enrolled via ADE sync use the device serial number as CN
 	$md = $db->selectMobileDeviceBySerialNumber($deviceCertCn);
@@ -285,7 +280,7 @@ if($path === '/profile') {
 	if(!$md && is_numeric($deviceCertCn)) {
 		$md = $db->selectMobileDevice((int)$deviceCertCn);
 	}
-	if(!$md) throw new NotFoundException();
+	assertMatchesDevice($certInfo, $md);
 
 	$format = json_decode($_GET['format']??'', true);
 	if(!$format) throw new RuntimeException('GET format missing or corrupt');
@@ -315,7 +310,7 @@ if($path === '/profile') {
 		</dict>
 	</plist>*/
 	$body = file_get_contents('php://input');
-	checkSignature($body, $_SERVER['HTTP_MDM_SIGNATURE']??null);
+	$certInfo = checkSignature($body, $_SERVER['HTTP_MDM_SIGNATURE']??null);
 	$td = new \CFPropertyList\CFTypeDetector();
 	$requestPlist = new CFPropertyList\CFPropertyList();
 	$requestPlist->parse($body);
@@ -324,7 +319,7 @@ if($path === '/profile') {
 		throw new InvalidRequestException('UDID is missing');
 	}
 	$md = $db->selectMobileDeviceByUdid($request['UDID']);
-	if(!$md) throw new NotFoundException();
+	assertMatchesDevice($certInfo, $md);
 
 	// store info about previous command result
 	if(isset($request['Status']) && isset($request['CommandUUID'])) {
@@ -336,6 +331,9 @@ if($path === '/profile') {
 
 		$mdc = $db->selectMobileDeviceCommand($request['CommandUUID']);
 		if($mdc) {
+			if($mdc->mobile_device_id !== $md->id) {
+				throw new AuthenticationException('Command does not belong to the authenticated device');
+			}
 			// do not throw an exception in case the command UUID cannot be found (e.g. deleted from database)
 			// iOS will retry it infinitely, and so we are unable to manage the device in this case
 			$db->updateMobileDeviceCommand($request['CommandUUID'], $mdc->mobile_device_id, $mdc->name, $mdc->parameter, $state, $body, date('Y-m-d H:i:s'));
@@ -452,7 +450,21 @@ if($path === '/profile') {
 }
 
 
-function checkSignature(string $body, string $signature) {
+function subjectCn(array $certInfo): string {
+	$cn = $certInfo['subject']['CN'] ?? null;
+	if(!is_string($cn) || $cn === '') {
+		throw new AuthenticationException('Signing certificate has no subject CN (device serial number or ID)');
+	}
+	return $cn;
+}
+function assertMatchesDevice(array $certInfo, $md): void {
+	if(!$md) throw new NotFoundException();
+	$cn = subjectCn($certInfo);
+	if($cn !== $md->serial && $cn !== (string)$md->id) {
+		throw new AuthenticationException('Signing certificate does not match the requested device');
+	}
+}
+function checkSignature(string $body, ?string $signature) {
 	global $ade;
 	if(empty($signature)) throw new Exception('Signature missing');
 
@@ -462,12 +474,14 @@ function checkSignature(string $body, string $signature) {
 	file_put_contents($tmpFileBody, $body);
 	file_put_contents($tmpFileCa, $ade->getMdmDeviceCaCert());
 
-	// TODO: check CN === $md->serial
-
 	// it seems not possible to verify detached signatures using PHP's openssl_cms_verify(),
 	// that's why we use the command line utility
 	$process = proc_open(
-		'/usr/bin/openssl cms -verify -binary -inform DER -in - -content '.escapeshellarg($tmpFileBody).' -CAfile '.escapeshellarg($tmpFileCa),
+		'/usr/bin/openssl cms -verify -binary -inform DER -in -'
+		.' -out /dev/null'
+		.' -signer /dev/stdout'
+		.' -content '.escapeshellarg($tmpFileBody)
+		.' -CAfile '.escapeshellarg($tmpFileCa),
 		array(
 			0 => array('pipe', 'r'), // STDIN
 			1 => array('pipe', 'w'), // STDOUT
@@ -488,24 +502,10 @@ function checkSignature(string $body, string $signature) {
 	unlink($tmpFileBody);
 	unlink($tmpFileCa);
 
-	// get signer cert info
-	$process = proc_open(
-		'/usr/bin/openssl pkcs7 -inform DER -print_certs -in -',
-		array(
-			0 => array('pipe', 'r'), // STDIN
-			1 => array('pipe', 'w'), // STDOUT
-			2 => array('pipe', 'w'), // STDERR
-		),
-		$pipes, null, [/*env*/]
-	);
-	if(!is_resource($process)) throw new Exception('Unable to start openssl cert info extraction process');
-
-	fwrite($pipes[0], $signatureDecoded); fclose($pipes[0]);
-	$stdOut = stream_get_contents($pipes[1]); fclose($pipes[1]);
-	$stdErr = stream_get_contents($pipes[2]); fclose($pipes[2]);
-
-	$returnCode = proc_close($process);
-	if($returnCode != 0) throw new Exception('Cert info extraction failed: '.$returnCode."\n".$stdErr);
+	// important: "cms -verify" with "-signer" parameter outputs the verified signers, not arbitrary embedded certificates
+	if(substr_count($stdOut, '-----BEGIN CERTIFICATE-----') !== 1) {
+		throw new AuthenticationException('Exactly one signing certificate is required');
+	}
 
 	$certInfo = openssl_x509_parse($stdOut);
 	if(!$certInfo) throw new Exception('Cert parsing failed.');
