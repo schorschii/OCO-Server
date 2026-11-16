@@ -33,9 +33,9 @@ class LicenseCheck {
 		}
 		foreach($db->selectAllMobileDevice() as $mobileDevice) {
 			$serial = trim($mobileDevice->serial ?? '');
-			// Agent and MDM records for the same device consume one license.
+			// Computer and MobileDevice records for the same device (macOS) consume one license
 			if($serial === '' || !isset($computerSerials[$serial])) {
-				$this->currentObjectCount++;
+				$this->currentObjectCount ++;
 			}
 		}
 		$this->licenseCompany = LANG('unregistered');
