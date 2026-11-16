@@ -24,7 +24,20 @@ class LicenseCheck {
 	private $licenseJson        = '';
 
 	function __construct($db) {
-		$this->currentObjectCount = count($db->selectAllComputer()) + count($db->selectAllMobileDevice());
+		$computers = $db->selectAllComputer();
+		$this->currentObjectCount = count($computers);
+		$computerSerials = [];
+		foreach($computers as $computer) {
+			$serial = trim($computer->serial ?? '');
+			if($serial !== '') $computerSerials[$serial] = true;
+		}
+		foreach($db->selectAllMobileDevice() as $mobileDevice) {
+			$serial = trim($mobileDevice->serial ?? '');
+			// Agent and MDM records for the same device consume one license.
+			if($serial === '' || !isset($computerSerials[$serial])) {
+				$this->currentObjectCount++;
+			}
+		}
 		$this->licenseCompany = LANG('unregistered');
 
 		$this->licenseJson = $db->settings->get('license');
