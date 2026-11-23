@@ -23,6 +23,7 @@ try {
 } catch(Exception $e) {
 	$error = 'SQL-Error: '.$e->getMessage();
 }
+$collapseQuery = preg_match_all('/\r\n|\r|\n/', $report->query) >= 16;
 ?>
 
 <div class='details-header'>
@@ -41,7 +42,14 @@ try {
 <div class='details-abreast'>
 	<div>
 		<h2><?php echo LANG('query'); ?></h2>
-		<code class='block'><?php echo htmlspecialchars($report->query); ?></code>
+		<div class='report-query<?php if($collapseQuery) echo ' collapsed'; ?>'>
+			<code id='report-query-text' class='block'><?php echo htmlspecialchars($report->query); ?></code>
+			<?php if($collapseQuery) { ?>
+				<button type='button' class='report-query-expand' aria-controls='report-query-text' aria-expanded='false' aria-label='<?php echo LANG('query', ENT_QUOTES); ?>' title='<?php echo LANG('query', ENT_QUOTES); ?>' onclick='this.setAttribute("aria-expanded", !this.parentElement.classList.toggle("collapsed"));'>
+					<img src='img/expand.dyn.svg' alt=''>
+				</button>
+			<?php } ?>
+		</div>
 	</div>
 	<div>
 		<h2><?php echo LANG('description'); ?></h2>

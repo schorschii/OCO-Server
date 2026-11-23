@@ -1337,6 +1337,26 @@ code.block.hscroll {
 	white-space: pre;
 	overflow-x: auto;
 }
+.report-query.collapsed > code.block {
+	box-sizing: border-box;
+	max-height: calc(17 * 1.3em + 14px);
+	overflow: hidden;
+	-webkit-mask-image: linear-gradient(to bottom, black calc(100% - 4em), transparent);
+	mask-image: linear-gradient(to bottom, black calc(100% - 4em), transparent);
+}
+.report-query-expand {
+	display: block;
+	width: 100%;
+	padding: 0;
+	border: 0;
+	background: transparent;
+}
+.report-query-expand > img {
+	transform: rotate(-90deg);
+}
+.report-query.collapsed > .report-query-expand > img {
+	transform: rotate(90deg);
+}
 
 div.details-abreast {
 	display: flex;
