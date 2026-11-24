@@ -110,7 +110,7 @@ function initSelfServicePackages() {
 					if(!response.ok) throw new Error(response.status + ' ' + response.statusText + '\n' + result);
 					if(!/^[1-9]\d*$/.test(result)) throw new Error(result || LANG['error']);
 					selectedItems.forEach(item => item.classList.remove('selected'));
-					emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
+					emitMessage(LANG['jobs_created'], name+'\n\n'+LANG['refresh_to_see_job_state'], MESSAGE_TYPE_SUCCESS);
 					refreshContentExplorer('views/job-containers.php?id=' + encodeURIComponent(result));
 				} catch(error) {
 					emitMessage(LANG['error'], error.message, MESSAGE_TYPE_ERROR, null);
@@ -195,6 +195,6 @@ function uninstallSelfService(dialogContainer, checkboxName, name, useWol, shutd
 	ajaxRequestPost('ajax-handler/job-containers.php', paramString, null, function() {
 		dialogContainer.close();
 		refreshSidebar(); refreshContent();
-		emitMessage(LANG['jobs_created'], name, MESSAGE_TYPE_SUCCESS);
+		emitMessage(LANG['jobs_created'], name+'\n\n'+LANG['refresh_to_see_job_state'], MESSAGE_TYPE_SUCCESS);
 	});
 }

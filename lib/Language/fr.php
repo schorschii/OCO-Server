@@ -160,6 +160,7 @@ return [
 	'package_created' => 'Paquet créé',
 	'computer_created' => 'Ordinateur créé',
 	'jobs_created' => 'Tâche(s) créée',
+	'refresh_to_see_job_state' => 'Rafraîchissez la page pour voir l\'état actuel de la tâche.',
 	'group_created' => 'Groupe créé',
 	'report_created' => 'Rapport créé',
 	'no_elements_selected' => 'Aucun objet sélectionné',

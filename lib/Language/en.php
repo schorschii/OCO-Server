@@ -162,6 +162,7 @@ return [
 	'package_created' => 'Package created',
 	'computer_created' => 'Computer created',
 	'jobs_created' => 'Job(s) created',
+	'refresh_to_see_job_state' => 'Refresh the page to see the current job state.',
 	'group_created' => 'Group created',
 	'report_created' => 'Report created',
 	'no_elements_selected' => 'No objects selected',

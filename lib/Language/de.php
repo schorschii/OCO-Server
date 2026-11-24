@@ -157,6 +157,7 @@ return [
 	'package_created' => 'Paket wurde erstellt',
 	'computer_created' => 'Computer wurde erstellt',
 	'jobs_created' => 'Job(s) wurden erstellt',
+	'refresh_to_see_job_state' => 'Aktualisieren Sie die Seite, um den aktuellen Job-Status zu sehen.',
 	'group_created' => 'Gruppe wurde erstellt',
 	'report_created' => 'Report wurde erstellt',
 	'no_elements_selected' => 'Keine Elemente ausgewählt',
